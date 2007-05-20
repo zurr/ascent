@@ -1035,26 +1035,6 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Warden"
-			>
-			<File
-				RelativePath="..\..\src\game\RC4Engine.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\WardenHandler.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\WardenHandler.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\WardenKeyGeneration.h"
-				>
-			</File>
-		</Filter>
 		<File
 			RelativePath="..\..\src\game\StdAfx.cpp"
 			>

@@ -114,11 +114,7 @@ SVN_Revision_Extractor.exe
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"
-				Description="Extracting SVN Revision..."
-				CommandLine="cd ..\..\src\shared
-SVN_Revision_Extractor.exe
-"/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool

@@ -414,11 +414,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\antrix\antrixConsole.cpp"
+			RelativePath="..\..\src\antrix\CConsole.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\antrix\antrixConsole.h"
+			RelativePath="..\..\src\antrix\CConsole.h"
 			>
 		</File>
 	</Files>

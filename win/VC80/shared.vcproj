@@ -26,8 +26,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN Revision..."
-				CommandLine="cd ..\..\src\shared&#x0D;&#x0A;SVN_Revision_Extractor.exe&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -107,8 +105,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN Revision..."
-				CommandLine="cd ..\..\src\shared&#x0D;&#x0A;SVN_Revision_Extractor.exe&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -186,8 +182,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN Revision..."
-				CommandLine="cd ..\..\src\shared&#x0D;&#x0A;SVN_Revision_Extractor.exe&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -263,8 +257,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN Revision..."
-				CommandLine="cd ..\..\src\shared&#x0D;&#x0A;SVN_Revision_Extractor.exe&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
