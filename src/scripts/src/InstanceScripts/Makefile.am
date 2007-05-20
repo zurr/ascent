@@ -1,0 +1,10 @@
+INCLUDES += -I$(srcdir) -I$(srcdir)/../../../../dep/include -I$(srcdir)/../../../shared
+INCLUDES += -I$(srcdir)/../../../script -I$(srcdir)/../../../../src -I$(srcdir)/../../../game
+INCLUDES += -I$(srcdir)/../../../logonserver
+
+AM_CXXFLAGS = -DSCRIPTLIB
+
+lib_LTLIBRARIES = libInstanceScripts.la
+
+libInstanceScripts_la_SOURCES = Instance_Deadmines.cpp Instance_MoltenCore.cpp Instance_ShadowfangKeep.cpp \
+Instance_BlackwingLair.cpp Instance_Botanica.cpp Instance_ZulGurub.cpp Instance_Naxxramas.cpp OnyxiaAI.cpp Setup.cpp
