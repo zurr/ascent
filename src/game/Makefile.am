@@ -117,7 +117,6 @@ libgame_a_SOURCES = \
     QuestMgr.cpp \
     QuestMgr.h \
     RaidHandler.cpp \
-    RC4Engine.h \
     RecallCommands.cpp \
     ReputationHandler.cpp \
     ScriptMgr.cpp \
@@ -149,9 +148,6 @@ libgame_a_SOURCES = \
     Unit.h \
     UpdateFields.h \
     UpdateMask.h \
-    WardenHandler.cpp \
-    WardenHandler.h \
-    WardenKeyGeneration.h \
     WarsongGulch.cpp \
     WarsongGulch.h \
     WayPoints.cpp \
