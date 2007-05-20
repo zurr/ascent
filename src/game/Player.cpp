@@ -809,7 +809,7 @@ void Player::_EventAttack(bool offhand)
         return;
     }
 
-	sEventMgr.ModifyEventTimeLeft(this,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL);
+	/*sEventMgr.ModifyEventTimeLeft(this,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL);*/
 
     if (!canReachWithAttack(pVictim))
     {
@@ -950,8 +950,8 @@ void Player::_EventCharmAttack()
 void Player::EventAttackStart()
 {
     m_attacking = true;
-	if(!sEventMgr.HasEvent(this,EVENT_ATTACK_TIMEOUT)) //do not add excesive attack events 
-		sEventMgr.AddEvent(this,EventAttackStop,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL,1); //attack timeout on no attack after 5 seconds
+	/*if(!sEventMgr.HasEvent(this,EVENT_ATTACK_TIMEOUT)) //do not add excesive attack events 
+		sEventMgr.AddEvent(this,EventAttackStop,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL,1); //attack timeout on no attack after 5 seconds*/
 }
 
 void Player::EventAttackStop()
@@ -959,7 +959,7 @@ void Player::EventAttackStop()
     if(m_CurrentCharm != NULL)
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHARM_ATTACK);
 
-	sEventMgr.RemoveEvents(this,EVENT_ATTACK_TIMEOUT); //have no idea why we need an attack timeout event
+	/*sEventMgr.RemoveEvents(this,EVENT_ATTACK_TIMEOUT); //have no idea why we need an attack timeout event*/
 
     setAttackTarget(NULL);  // nice and simple!
     m_attacking = false;

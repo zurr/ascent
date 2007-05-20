@@ -1891,8 +1891,8 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
     
     if(m_spellInfo->Effect[i]<TOTAL_SPELL_EFFECTS)
 	{
-		if(unitTarget && p_caster && isAttackable(p_caster,unitTarget))
-			sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL);
+		/*if(unitTarget && p_caster && isAttackable(p_caster,unitTarget))
+			sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL);*/
 
 		(*this.*SpellEffectsHandler[m_spellInfo->Effect[i]])(i);
 	}
