@@ -1043,6 +1043,11 @@ void Pet::ApplySummonLevelAbilities()
     BaseStats[STAT_INTELLECT] = FL2UINT(pet_int);
     BaseStats[STAT_SPIRIT] = FL2UINT(pet_spr);
 
+    double pet_min_dmg = base_min_dmg + pet_level * mod_min_dmg;
+    double pet_max_dmg = base_max_dmg + pet_level * mod_max_dmg;
+    BaseDamage[0] = FL2UINT(pet_min_dmg);
+    BaseDamage[1] = FL2UINT(pet_max_dmg);
+
     for(uint32 x = 0; x < 5; ++x)
         CalcStat(x);
 
