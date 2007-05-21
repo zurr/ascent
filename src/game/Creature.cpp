@@ -120,7 +120,7 @@ void Creature::SafeDelete()
 void Creature::OnRemoveCorpse()
 {
     // time to respawn!
-    if (IsInWorld())
+    if (IsInWorld() && m_mapMgr->GetInstanceID() == m_instanceId)
     {
 
         sLog.outDetail("Removing corpse of "I64FMT"...", GetGUID());

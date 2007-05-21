@@ -52,6 +52,9 @@ AuctionHouse::~AuctionHouse()
 
 void AuctionHouse::QueueDeletion(Auction * auct, uint32 Reason)
 {
+	if(auct->Deleted)
+		return;
+
     auct->Deleted = true;
     auct->DeletedReason = Reason;
     removalLock.Acquire();
@@ -208,12 +211,9 @@ void AuctionHouse::RemoveAuction(Auction * auct)
     itemLock.ReleaseWriteLock();
 
     // Destroy the item from memory (it still remains in the db)
-    if(auct->pItem->GetProto()->ContainerSlots)
-        delete ((Container*)auct->pItem);
-    else
-        delete auct->pItem;
+	delete auct->pItem;
 
-    // Finally destroy the auction instance.
+	// Finally destroy the auction instance.
     auct->DeleteFromDB();
     delete auct;
 }

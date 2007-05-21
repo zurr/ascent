@@ -37,7 +37,7 @@ class SERVER_DECL Item : public Object
 public:
     Item ( );
 	Item(uint32 high,uint32 low);
-    ~Item();
+    virtual ~Item();
 
     void Create( uint32 itemid, Player* owner );
 
