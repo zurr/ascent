@@ -140,20 +140,20 @@ AC_CHECK_FUNCS(                                               \
    sqrt stpcpy strchr strpbrk strrchr strstr strtol strtoul   \
 )
 
-AC_DEFINE_UNQUOTED([SVN_REVISION],
-	`svn info| ${SED} '/^Last Changed Rev: */!d; s///;q'`,
-	[SVN last changed revision]
-)
+#AC_DEFINE_UNQUOTED([SVN_REVISION],
+#	`svn info| ${SED} '/^Last Changed Rev: */!d; s///;q'`,
+#	[SVN last changed revision]
+#)
 
-AC_DEFINE_UNQUOTED([SVN_DATE],
-	"`svn info | ${SED} '/^Last Changed Date: */!d; s///;q' | ${AWK} '{ print $1 }'`",
-	[SVN last changed date]
-)
+#AC_DEFINE_UNQUOTED([SVN_DATE],
+#	"`svn info | ${SED} '/^Last Changed Date: */!d; s///;q' | ${AWK} '{ print $1 }'`",
+#	[SVN last changed date]
+#)
 
-AC_DEFINE_UNQUOTED([SVN_TIME],
-	"`svn info | ${SED} '/^Last Changed Date: */!d; s///;q' | awk '{ print $2 }'`",
-	[SVN last change time]
-)
+#AC_DEFINE_UNQUOTED([SVN_TIME],
+#	"`svn info | ${SED} '/^Last Changed Date: */!d; s///;q' | awk '{ print $2 }'`",
+#	[SVN last change time]
+#)
 
 AC_CONFIG_FILES([
    ./Makefile
