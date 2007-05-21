@@ -8,7 +8,7 @@ static int SVN_REVISION = 0;
 
 inline void g_initRevision()
 {
-	char * p = REVISION_TEXT + 1;
+	char * p = REVISION_TEXT + 6;
 	SVN_REVISION = atoi(p);
 }
 
