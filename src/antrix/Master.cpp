@@ -26,13 +26,7 @@
 #include <sched.h>
 #endif
 
-#ifndef SVN_REVISION
- #ifdef WIN32
-        #include "../shared/svn_revision.h"
- #else // UNIX
-        #include "config.h"
- #endif
-#endif
+#include "../shared/svn_revision.h"
 
 #include "../game/WorldSession.h"
 #include "LogonCommClient.h"
