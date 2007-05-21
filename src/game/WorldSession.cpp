@@ -642,6 +642,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_SPIRIT_HEALER_ACTIVATE].handler                    = &WorldSession::HandleSpiritHealerActivateOpcode;
     WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler                            = &WorldSession::HandleNpcTextQueryOpcode;
     WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler                           = &WorldSession::HandleBinderActivateOpcode;
+	WorldPacketHandlers[CMSG_ACTIVATE_MULTIPLE_TAXI].handler					= &WorldSession::HandleMultipleActivateTaxiOpcode;
     
     // Item / Vendors
     WorldPacketHandlers[CMSG_SWAP_INV_ITEM].handler                             = &WorldSession::HandleSwapInvItemOpcode;

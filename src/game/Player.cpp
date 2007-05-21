@@ -774,6 +774,8 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     UnSetTaxiPos();
     m_taxi_ride_time = 0;
 
+	uint32 modelid = GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID);
+
     SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
     RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_MOUNT_SIT );
 
@@ -786,6 +788,14 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
 
     // Save to database on dismount
     SaveToDB(false);
+
+	// If we have multiple "trips" to do, "jump" on the next one :p
+	if(m_taxiPaths.size())
+	{
+		TaxiPath * p = *m_taxiPaths.begin();
+		m_taxiPaths.erase(m_taxiPaths.begin());
+		TaxiStart(p, taxi_model_id, 0);
+	}
 }
 
 void Player::_EventAttack(bool offhand)

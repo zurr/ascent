@@ -369,6 +369,7 @@ protected:
     void HandleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
     void HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
     void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
+	void HandleMultipleActivateTaxiOpcode(WorldPacket & recvPacket);
 
     /// NPC opcodes (NPCHandler.cpp)
     void HandleTabardVendorActivateOpcode(WorldPacket& recvPacket);

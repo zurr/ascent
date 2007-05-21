@@ -482,7 +482,8 @@ public:
 	std::map<uint32, uint32> m_wratings;
 
     // Taxi
-    void TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node);
+	uint32 taxi_model_id;
+    void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
     uint32 lastNode;
     inline TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
     void EventDismount(uint32 money, float x, float y, float z);
@@ -1258,6 +1259,7 @@ public:
     }
 
     FactionReputation * reputationByListId[128];
+	vector<TaxiPath*> m_taxiPaths;
 
 protected:
 	uint32 iActivePet;
