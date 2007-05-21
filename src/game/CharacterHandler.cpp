@@ -332,6 +332,8 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 
         delete plr;
 
+		/* remove player info */
+		objmgr.DeletePlayerInfo(guid);
     }
 
     OutPacket(SMSG_CHAR_DELETE, 1, &fail);
