@@ -209,9 +209,9 @@ void StatDumper::DumpStats()
     {
         // Dump server information.
 #ifdef WIN32
-        fprintf(f, "    <platform>Win32 v2.0.12-%u</platform>\n", SVN_REVISION);
+        fprintf(f, "    <platform>Antrix/Win32 v2.0.12-%u</platform>\n", SVN_REVISION);
 #else
-        fprintf(f, "    <platform>Linux v2.0.12-%u</platform>\n", SVN_REVISION);
+        fprintf(f, "    <platform>Antrix/Linux v2.0.12-%u</platform>\n", SVN_REVISION);
 #endif
 
         char uptime[80];
@@ -318,6 +318,8 @@ void StatDumper::DumpStats()
                 fprintf(f, "      <name>%s</name>\n", plr->GetName());
                 fprintf(f, "      <race>%u</race>\n", plr->getRace());
                 fprintf(f, "      <class>%u</class>\n", plr->getClass());
+				fprintf(f, "      <gender>%u</gender>\n", plr->getGender());
+				fprintf(f, "      <pvprank>%u</pvprank>\n", plr->GetPVPRank());
                 fprintf(f, "      <level>%u</level>\n", plr->GetUInt32Value(UNIT_FIELD_LEVEL));
                 fprintf(f, "      <map>%u</map>\n", plr->GetMapId());
                 fprintf(f, "      <areaid>%u</areaid>\n", plr->GetAreaID());
