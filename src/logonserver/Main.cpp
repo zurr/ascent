@@ -57,6 +57,7 @@ void _OnSignal(int s)
 
 int main(int argc, char** argv)
 {
+	g_initRevision();
     new LogonServer;
 
     // Run!

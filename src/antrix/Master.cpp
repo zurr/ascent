@@ -90,6 +90,8 @@ struct Addr
 
 bool Master::Run()
 {
+	g_initRevision();
+
     // Startup banner
     sLog.Init();
 	sLog.outString("===============================================================================");
