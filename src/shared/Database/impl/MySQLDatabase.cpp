@@ -242,19 +242,22 @@ QueryResult * MySQLDatabase::Query(const char* QueryString, ...)
 
 bool MySQLDatabase::Execute(const char* QueryString, ...)
 {
-	char * query=new char[16384];
+	char query[16384];
 
 	va_list vlist;
-    va_start(vlist, QueryString);
+	va_start(vlist, QueryString);
 	vsprintf(query, QueryString, vlist);
 	va_end(vlist);
 
-	if(ThreadRunning)
-        queries_queue.push(query);
-    else
-        WaitExecute(query);
+	if(!ThreadRunning)
+		return WaitExecute(query);
 
-    return true;
+	int len = strlen(query);
+	char * pBuffer = new char[len+1];
+	memcpy(pBuffer, query, len + 1);
+
+	queries_queue.push(pBuffer);
+	return true;
 }
 
 //this will wait for completion
