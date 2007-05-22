@@ -6628,7 +6628,7 @@ void Player::SaveHonorFields()
 
 void Player::CalculateBaseStats()
 {
-    if(!BaseStats) return;
+    if(!lvlinfo) return;
 
     memcpy(BaseStats, lvlinfo->Stat, sizeof(uint32) * 5);
     SetUInt32Value(UNIT_FIELD_MAXHEALTH, lvlinfo->HP);
