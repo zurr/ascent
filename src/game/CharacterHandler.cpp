@@ -576,7 +576,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
     // Send revision (if enabled)
     if(sWorld.sendRevisionOnJoin)
     {
-        uint32 rev = SVN_REVISION;
+        uint32 rev = g_getRevision();
         if(!sWorld.SendStatsOnJoin) {
             _player->BroadcastMessage("Server: %s%s%s Core v2.1.0-%u/%s|r %s %s", MSG_COLOR_LIGHTBLUE, 
                 SERVER_NAME, MSG_COLOR_WHITE, rev, PLATFORM_TEXT, __DATE__, __TIME__);

@@ -2145,8 +2145,11 @@ bool Player::LoadFromDB(uint32 guid)
 
     // obtain level/stats information
     lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), getLevel());
-    assert(lvlinfo);
-    CalculateBaseStats();
+    
+	if(!lvlinfo)
+		return false;
+    
+	CalculateBaseStats();
 
     // set xp
     m_uint32Values[PLAYER_XP] = get_next_field.GetUInt32();

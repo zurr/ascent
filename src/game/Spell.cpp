@@ -1205,6 +1205,9 @@ void Spell::cast(bool check)
                     Unit *Target = m_caster->GetMapMgr()->GetUnit(*i);
                     if(Target)
                        reflected = reflect(Target);
+					
+					if(reflected)
+						break;
                 }
             }
 
@@ -1436,19 +1439,20 @@ void Spell::SendCastResult(int8 result)
     if (m_caster->GetTypeId() != TYPEID_PLAYER)
         return;
 
-    WorldPacket data(SMSG_CAST_RESULT, 6);
-    data << m_spellInfo->Id;
-
-    if(result != -1)
-    {
-        data << uint8(2);
+	if(result != -1)
+	{
+		WorldPacket data(SMSG_CAST_RESULT, 6);
+		data << m_spellInfo->Id;
         data << (uint8)result;
         if(result == SPELL_FAILED_REQUIRES_SPELL_FOCUS)
             data << (uint32)m_spellInfo->RequiresSpellFocus;
-    }
-    else
-        data << uint8(0);
-    static_cast<Player*>(m_caster)->GetSession()->SendPacket(&data);
+
+		static_cast<Player*>(m_caster)->GetSession()->SendPacket(&data);
+	}
+	else
+	{
+		// result packet sent in handleeffects()
+	}
 }
 
 void Spell::SendSpellStart()
@@ -1603,7 +1607,10 @@ void Spell::writeSpellGoTargets( WorldPacket * data )
 {
     TargetsList::iterator i;
     for ( i = UniqueTargets.begin(); i != UniqueTargets.end(); i++ )
+	{
+		SendCastSuccess(*i);
         *data << (*i);
+	}
 }
 
 void Spell::writeSpellMissedTargets( WorldPacket * data )
@@ -3097,3 +3104,29 @@ uint32 GetDiminishingGroup(uint32 NameHash)
 
     return ret;
 }
+
+void Spell::SendCastSuccess(Object * target)
+{
+	if(!p_caster)
+		return;
+
+	WorldPacket data(SMSG_TARGET_CAST_RESULT, 13);
+	data << ((target != 0) ? target->GetNewGUID() : uint8(0));
+	data << m_spellInfo->Id;
+	
+	p_caster->GetSession()->SendPacket(&data);
+}
+
+void Spell::SendCastSuccess(const uint64& guid)
+{
+	if(!p_caster)
+		return;
+
+	// fuck bytebuffers
+	unsigned char buffer[13];
+	uint32 c = FastGUIDPack(guid, buffer, 0);
+	*(uint32*)&buffer[c] = m_spellInfo->Id;			c += 4;
+
+	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
+}
+

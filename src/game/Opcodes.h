@@ -825,7 +825,8 @@ enum Opcodes {
     SMSG_MOVE_UNLOCK_MOVEMENT           = 912,  //(0x390)
     CMSG_MOVE_UNLOCK_MOVEMENT_ACK       = 913,  //(0x391)
 	SMSG_SET_COMBO_POINTS				= 925,  //(0x39D)
-    NUM_MSG_TYPES                       = 926,  //(0x39E)
+	SMSG_TARGET_CAST_RESULT				= 934,	//(0x3A6)
+    NUM_MSG_TYPES                       = 935,  //(0x3A7)
 };
 
 enum FriendsResult {

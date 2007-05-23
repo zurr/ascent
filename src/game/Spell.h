@@ -1314,6 +1314,9 @@ public:
     uint32 castedItemId;
     bool judgement;
 
+	void SendCastSuccess(Object * target);
+	void SendCastSuccess(const uint64& guid);
+
 protected:
     bool m_usesMana;
     bool failed;//for 5sr

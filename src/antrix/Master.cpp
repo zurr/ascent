@@ -84,13 +84,11 @@ struct Addr
 
 bool Master::Run()
 {
-	g_initRevision();
-
     // Startup banner
     sLog.Init();
 	sLog.outString("===============================================================================");
     sLog.outString("Antrix :: World Server (running under %s)", PLATFORM_TEXT);
-    sLog.outString("Compatibility is tested with 2.1.0. Revision %u.", SVN_REVISION);
+    sLog.outString("Compatibility is tested with 2.1.0. Revision %u.", g_getRevision());
     sLog.outString("===============================================================================");
     sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
     sLog.outString("");
