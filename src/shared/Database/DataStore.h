@@ -28,6 +28,8 @@ public:
     DataStore(const char* filename)
     {
         d.Load(filename);
+		if((sizeof(T) / 4) != d.GetCols())
+			printf("[DBC] Warning: Incompatible structures. (%s, %u / %u)\n", filename, sizeof(T) / 4, d.GetCols());
     }
     virtual ~DataStore() {}
 

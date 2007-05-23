@@ -41,6 +41,7 @@ struct Lock
 	uint32 lockmisc[5]; // if type is 1 here is a item to unlock, else is unknow for now
 	uint32 unk2[3];
 	uint32 minlockskill[5]; // min skill in lockpiking to unlock.
+	uint32 unk3[11];
 };
 
 struct emoteentry
@@ -226,49 +227,81 @@ struct SpellEntry
     uint32 NameAlt5;                        //129
     uint32 NameAlt6;                        //130
     uint32 NameAlt7;                        //131
-    uint32 NameFlags;                       //132
-    uint32 Rank;                            //133
-    uint32 RankAlt1;                        //134
-    uint32 RankAlt2;                        //135
-    uint32 RankAlt3;                        //136
-    uint32 RankAlt4;                        //137
-    uint32 RankAlt5;                        //138
-    uint32 RankAlt6;                        //139
-    uint32 RankAlt7;                        //140
-    uint32 RankFlags;                       //141
-    uint32 Description;                     //142
-    uint32 DescriptionAlt1;                 //143
-    uint32 DescriptionAlt2;                 //144
-    uint32 DescriptionAlt3;                 //145
-    uint32 DescriptionAlt4;                 //146
-    uint32 DescriptionAlt5;                 //147
-    uint32 DescriptionAlt6;                 //148
-    uint32 DescriptionAlt7;                 //149
-    uint32 DescriptionFlags;                //150
-    uint32 BuffDescription;                 //151
-    uint32 BuffDescriptionAlt1;             //152
-    uint32 BuffDescriptionAlt2;             //153
-    uint32 BuffDescriptionAlt3;             //154
-    uint32 BuffDescriptionAlt4;             //155
-    uint32 BuffDescriptionAlt5;             //156
-    uint32 BuffDescriptionAlt6;             //157
-    uint32 BuffDescriptionAlt7;             //158
-    uint32 buffdescflags;                   //159
-    uint32 ManaCostPercentage;              //160
-    uint32 unkflags;                        //161 
-    uint32 StartRecoveryTime;               //162
-    uint32 StartRecoveryCategory;           //163
-    uint32 SpellFamilyName;                 //164
-    uint32 SpellGroupType;                  //165   flags 
-    uint32 unkne;                           //166   flags hackwow=shit 
-    uint32 MaxTargets;                      //167 
-    uint32 Spell_Dmg_Type;                  //168   dmg_class Integer      0=None, 1=Magic, 2=Melee, 3=Ranged
-    uint32 FG;                              //169   0,1,2 related to Spell_Dmg_Type I think
-    int32 FH;                               //170   related to paladin aura's 
-    float dmg_multiplier[3];                //171 - 173   if the name is correct I dono
-    uint32 FL;                              //174   only one spellid:6994 has this value = 369
-    uint32 FM;                              //175   only one spellid:6994 has this value = 4
-    //uint32 FN;                              //176   only one spellid:26869  has this flag = 1
+	uint32 NameAlt8;                        //132
+	uint32 NameAlt9;                        //133
+	uint32 NameAlt10;                       //134
+	uint32 NameAlt11;                       //135
+	uint32 NameAlt12;                       //136
+	uint32 NameAlt13;                       //137
+	uint32 NameAlt14;                       //138
+	uint32 NameAlt15;                       //139
+    uint32 NameFlags;                       //140
+    uint32 Rank;                            //141
+    uint32 RankAlt1;                        //142
+    uint32 RankAlt2;                        //143
+    uint32 RankAlt3;                        //144
+    uint32 RankAlt4;                        //145
+    uint32 RankAlt5;                        //146
+    uint32 RankAlt6;                        //147
+	uint32 RankAlt7;                        //148
+	uint32 RankAlt8;                        //149
+    uint32 RankAlt9;                        //150
+	uint32 RankAlt10;                       //151
+	uint32 RankAlt11;                       //152
+	uint32 RankAlt12;                       //153
+	uint32 RankAlt13;                       //154
+	uint32 RankAlt14;                       //155
+	uint32 RankAlt15;                       //156
+    uint32 RankFlags;                       //157
+    uint32 Description;                     //158
+    uint32 DescriptionAlt1;                 //159
+    uint32 DescriptionAlt2;                 //160
+    uint32 DescriptionAlt3;                 //161
+    uint32 DescriptionAlt4;                 //162
+    uint32 DescriptionAlt5;                 //163
+    uint32 DescriptionAlt6;                 //164
+    uint32 DescriptionAlt7;                 //165
+	uint32 DescriptionAlt8;                 //166
+	uint32 DescriptionAlt9;                 //167
+	uint32 DescriptionAlt10;                //168
+	uint32 DescriptionAlt11;                //169
+	uint32 DescriptionAlt12;                //170
+	uint32 DescriptionAlt13;                //171
+	uint32 DescriptionAlt14;                //172
+	uint32 DescriptionAlt15;                //173
+    uint32 DescriptionFlags;                //174
+    uint32 BuffDescription;                 //175
+    uint32 BuffDescriptionAlt1;             //176
+    uint32 BuffDescriptionAlt2;             //177
+    uint32 BuffDescriptionAlt3;             //178
+    uint32 BuffDescriptionAlt4;             //179
+    uint32 BuffDescriptionAlt5;             //180
+    uint32 BuffDescriptionAlt6;             //181
+    uint32 BuffDescriptionAlt7;             //182
+	uint32 BuffDescriptionAlt8;             //183
+	uint32 BuffDescriptionAlt9;             //184
+	uint32 BuffDescriptionAlt10;            //185
+	uint32 BuffDescriptionAlt11;            //186
+	uint32 BuffDescriptionAlt12;            //187
+	uint32 BuffDescriptionAlt13;            //188
+	uint32 BuffDescriptionAlt14;            //189
+	uint32 BuffDescriptionAlt15;            //190
+    uint32 buffdescflags;                   //191
+    uint32 ManaCostPercentage;              //192
+    uint32 unkflags;                        //193 
+    uint32 StartRecoveryTime;               //194
+    uint32 StartRecoveryCategory;           //195
+    uint32 SpellFamilyName;                 //196
+    uint32 SpellGroupType;                  //197   flags 
+    uint32 unkne;                           //198   flags hackwow=shit 
+    uint32 MaxTargets;                      //199 
+    uint32 Spell_Dmg_Type;                  //200   dmg_class Integer      0=None, 1=Magic, 2=Melee, 3=Ranged
+    uint32 FG;                              //201   0,1,2 related to Spell_Dmg_Type I think
+    int32 FH;                               //202   related to paladin aura's 
+    float dmg_multiplier[3];                //203 - 205   if the name is correct I dono
+    uint32 FL;                              //206   only one spellid:6994 has this value = 369
+    uint32 FM;                              //207   only one spellid:6994 has this value = 4
+    //uint32 FN;                              //208   only one spellid:26869  has this flag = 1
 
     // soz guys, gotta use these 3 vars :p
     //uint32 unk201_4; // these are related to creating a item through a spell
@@ -276,11 +309,11 @@ struct SpellEntry
     //uint32 unk201_6; // related to custom spells, summon spell quest related spells
     
     // custom shit
-    uint32 buffType;                        //177
+    uint32 buffType;                        //209
 
     // this protects players from having >1 rank of a spell
-    uint32 RankNumber;                      //178
-    uint32 NameHash;                        //179
+    uint32 RankNumber;                      //210
+    uint32 NameHash;                        //211
 
     uint32 DiminishStatus;
 };
@@ -305,6 +338,7 @@ struct TalentEntry
     uint32  DependsOn;
     uint32  unk1[2];
     uint32  DependsOnRank;
+	uint32  unk2[4];
 };
 struct Trainerspell
 {
@@ -336,7 +370,7 @@ struct SpellRange
     uint32 ID;
     float minRange;
     float maxRange;
-    uint32 unks[18];
+    uint32 unks[19];
 };
 
 struct SpellDuration
@@ -449,6 +483,7 @@ struct WorldMapArea
     uint32    zoneName;
     float    y1, y2;
     float    x1, x2;
+	uint32 unk;
 };
 
 struct WorldMapOverlay
