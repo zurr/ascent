@@ -785,7 +785,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     if (HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER ))   
         RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
 
-    SetPlayerSpeed(RUN, m_runSpeed, 6, true);
+    SetPlayerSpeed(RUN, m_runSpeed);
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
 
@@ -3186,53 +3186,42 @@ void Player::SetMovement(uint8 pType, uint32 flag)
         SendMessageToSet(&data, true);
 }
 
-void Player::SetPlayerSpeed(uint8 SpeedType, float value, uint32 flag, bool forced)
+void Player::SetPlayerSpeed(uint8 SpeedType, float value)
 {
     WorldPacket data(18);
+	data << GetNewGUID();
+	data << m_speedChangeCounter++;
+	
+	if(SpeedType == RUN)			// nfi what this is.. :/
+		data << uint8(1);
 
+	data << value;
+    
     switch(SpeedType)
     {
     case RUN:
         {
-            if(forced) { data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE); }
-            else { data.SetOpcode(MSG_MOVE_SET_RUN_SPEED); }
-            data << GetNewGUID();
-            data << flag;
-            data << float(value);
+            data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
             m_runSpeed = value;
         }break;
     case RUNBACK:
         {
-            if(forced) { data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE); }
-            else { data.SetOpcode(MSG_MOVE_SET_RUN_BACK_SPEED); }
-            data << GetNewGUID();
-            data << flag;
-            data << float(value);
+			data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
             m_backWalkSpeed = value;
         }break;
     case SWIM:
         {
-            if(forced) { data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE); }
-            else { data.SetOpcode(MSG_MOVE_SET_SWIM_SPEED); }
-            data << GetNewGUID();
-            data << flag;
-            data << float(value);
+            data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
             m_swimSpeed = value;
         }break;
     case SWIMBACK:
         {
             data.SetOpcode(MSG_MOVE_SET_SWIM_BACK_SPEED);
-            data << GetNewGUID();
-            data << flag;
-            data << float(value);
             m_backSwimSpeed = value;
         }break;
     case FLY:
         {
             data.SetOpcode(SMSG_MOVE_SET_FLY_SPEED);
-            data << GetNewGUID();
-            data << flag;
-            data << float(value);
             m_flySpeed = value;
         }break;
     default:return;
@@ -5484,7 +5473,7 @@ void Player::JumpToEndTaxiNode(TaxiPath * path)
     if (HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER ))   
         RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
 
-    SetPlayerSpeed(RUN, m_runSpeed, 6, true);
+    SetPlayerSpeed(RUN, m_runSpeed);
 
     SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 }
@@ -5913,8 +5902,8 @@ void Player::ProcessPendingUpdates()
     // resend speed if needed
     if(resend_speed)
     {
-        SetPlayerSpeed(RUN, m_runSpeed, 6, true);
-        SetPlayerSpeed(FLY, m_flySpeed, 0, true);
+        SetPlayerSpeed(RUN, m_runSpeed);
+        SetPlayerSpeed(FLY, m_flySpeed);
     }
 }
 
@@ -6708,8 +6697,8 @@ void Player::CompleteLoading()
         {
             // Revive us, we lost our corpse somehow :/
             SetMovement(MOVE_UNROOT, 5);
-            SetPlayerSpeed(RUN, (float)7.5, 6, true);
-            SetPlayerSpeed(SWIM, (float)4.9, 7, true);
+            SetPlayerSpeed(RUN, (float)7.5);
+            SetPlayerSpeed(SWIM, (float)4.9);
             SetMovement(MOVE_LAND_WALK, 8);
             ResurrectPlayer();
             SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH) / 2);

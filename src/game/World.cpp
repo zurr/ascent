@@ -691,7 +691,7 @@ void World::SetInitialWorldSettings()
                         pr|=PROC_ON_MELEE_ATTACK;
                     if(strstr(desc,"after being the victim of a critical strike"))
                         pr|=PROC_ON_CRIT_HIT_VICTIM;
-                    if(strstr(desc,"On successful melee or ranged attack"))
+                    if(strstr(desc,"on successful melee or ranged attack"))
                         pr|=PROC_ON_MELEE_ATTACK|PROC_ON_RANGED_ATTACK;
                     if(strstr(desc,"enemy that strikes you in melee"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;

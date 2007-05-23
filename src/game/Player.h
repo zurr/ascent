@@ -758,7 +758,7 @@ public:
 
     //Movement stuff
     void SetMovement(uint8 pType, uint32 flag);
-    void SetPlayerSpeed(uint8 SpeedType, float value, uint32 flag, bool forced=false);
+    void SetPlayerSpeed(uint8 SpeedType, float value);
     float GetPlayerSpeed(){return m_runSpeed;}
     uint8 m_currentMovement;
     bool m_isMoving;
@@ -1269,6 +1269,8 @@ public:
 
 	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
 	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; UpdateComboPoints(); }
+
+	uint32 m_speedChangeCounter;
 
 protected:
 	uint32 iActivePet;

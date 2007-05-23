@@ -944,8 +944,8 @@ bool ChatHandler::HandleReviveStringcommand(const char* args, WorldSession* m_se
     {
         plr->ResurrectPlayer();
         plr->SetMovement(MOVE_UNROOT, 5);
-        plr->SetPlayerSpeed(RUN, (float)7.5, 6, true);
-        plr->SetPlayerSpeed(SWIM, (float)4.9, 7, true);
+        plr->SetPlayerSpeed(RUN, (float)7.5);
+        plr->SetPlayerSpeed(SWIM, (float)4.9);
         plr->SetMovement(MOVE_LAND_WALK, 8);
         plr->SetUInt32Value(UNIT_FIELD_HEALTH, plr->GetUInt32Value(UNIT_FIELD_MAXHEALTH) );
         GreenSystemMessage(m_session, "Revived player %s.", args);

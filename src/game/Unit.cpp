@@ -2292,8 +2292,8 @@ void Unit::UpdateSpeed(bool delay /* = false */)
             static_cast<Player*>(this)->resend_speed = delay;
         else
         {
-            static_cast<Player*>(this)->SetPlayerSpeed(RUN, m_runSpeed, 6, TRUE);
-            static_cast<Player*>(this)->SetPlayerSpeed(FLY, m_flySpeed, 0, TRUE);
+            static_cast<Player*>(this)->SetPlayerSpeed(RUN, m_runSpeed);
+            static_cast<Player*>(this)->SetPlayerSpeed(FLY, m_flySpeed);
         }
     }
 }
