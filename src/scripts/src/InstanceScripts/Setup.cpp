@@ -15,6 +15,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupBotanica(mgr);
 	SetupBlackwingLair(mgr);
 	SetupNaxxramas(mgr);
+	SetupOnyxiaAI(mgr);
 }
 
 #ifdef WIN32
