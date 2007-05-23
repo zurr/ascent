@@ -1000,7 +1000,7 @@ void Player::_EventExploration()
     if(at == 0)
         return;
 
-    char areaname[200];
+    /*char areaname[200];
     if(at)
     {
         strcpy(areaname, sAreaStore.LookupString((uint32)at->name));
@@ -1008,7 +1008,7 @@ void Player::_EventExploration()
     else
     {
         strcpy(areaname, "UNKNOWN");
-    }
+    }*/
 
     int offset = at->explorationFlag / 32;
     offset += PLAYER_EXPLORED_ZONES_1;

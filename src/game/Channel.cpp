@@ -400,7 +400,7 @@ void Channel::Say(Player *p, const char *what, Player *t)
 		data << p->GetGUID();
         data << messageLength;
         data << what;
-        data << (uint8)(p->bGMTagOn ? 3 : 0);
+        data << (uint8)(p->bGMTagOn ? 4 : 0);
 
         if(t == NULL)
             SendToAll(&data);
