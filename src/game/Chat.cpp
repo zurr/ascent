@@ -499,19 +499,11 @@ WorldPacket * ChatHandler::FillMessageData( uint32 type, uint32 language, const 
     data->Initialize(SMSG_MESSAGECHAT);
     *data << (uint8)type;
     *data << language;
-    
-    /*if (type == CHAT_MSG_CHANNEL)
-    {
-        ASSERT(channelName);
-        *data << channelName;
-    }*/
 
-    *data << guid;
+	*data << guid;
 	*data << uint32(0);
 
-    // crashfix
-    if (type == CHAT_MSG_SAY || type == CHAT_MSG_YELL || type == CHAT_MSG_PARTY || type == 0x53)
-		*data << guid;
+	*data << guid;
 
     *data << messageLength;
     *data << message;
@@ -528,7 +520,10 @@ WorldPacket* ChatHandler::FillSystemMessageData(const char *message) const
     WorldPacket * data = new WorldPacket(SMSG_MESSAGECHAT, 20 + messageLength);
     *data << (uint8)CHAT_MSG_SYSTEM;
     *data << (uint32)LANG_UNIVERSAL;
-    *data << (uint64)0; // Who cares about guid when there's no nickname displayed heh ?
+    
+	*data << (uint64)0; // Who cares about guid when there's no nickname displayed heh ?
+	*data << (uint32)0;
+	*data << (uint64)0;
 
     *data << messageLength;
     *data << message;
