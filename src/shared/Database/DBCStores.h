@@ -23,7 +23,7 @@ struct ItemSetEntry
 {
     uint32 id;                  //1
     uint32 name;                //2
-    uint32 unused_shit[7];      //3 - 9
+    uint32 unused_shit[15];      //3 - 9
     uint32 flag;                //10 constant
     uint32 itemid[8];           //11 - 18
     uint32 more_unused_shit[9]; //19 - 27
@@ -101,7 +101,15 @@ struct EnchantEntry
     uint32 NameAlt5;
     uint32 NameAlt6;
     uint32 NameAlt7;
-    uint32 NameFlags;
+	uint32 NameAlt8;
+	uint32 NameAlt9;
+	uint32 NameAlt10;
+	uint32 NameAlt11;
+	uint32 NameAlt12;
+	uint32 NameAlt13;
+	uint32 NameAlt14;
+	uint32 NameAlt15;
+	uint32 NameFlags;
     uint32 visual;
     uint32 EnchantGroups;
 	uint32 GemEntry;
@@ -130,6 +138,14 @@ struct skilllineentry
     uint32 NameAlt5;
     uint32 NameAlt6;
     uint32 NameAlt7;
+	uint32 NameAlt8;
+	uint32 NameAlt9;
+	uint32 NameAlt10;
+	uint32 NameAlt11;
+	uint32 NameAlt12;
+	uint32 NameAlt13;
+	uint32 NameAlt14;
+	uint32 NameAlt15;
     uint32 NameFlags;
     uint32 Description;
     uint32 DescriptionAlt1;
@@ -139,6 +155,14 @@ struct skilllineentry
     uint32 DescriptionAlt5;
     uint32 DescriptionAlt6;
     uint32 DescriptionAlt7;
+	uint32 DescriptionAlt8;
+	uint32 DescriptionAlt9;
+	uint32 DescriptionAlt10;
+	uint32 DescriptionAlt11;
+	uint32 DescriptionAlt12;
+	uint32 DescriptionAlt13;
+	uint32 DescriptionAlt14;
+	uint32 DescriptionAlt15;
     uint32 DescriptionFlags;
     uint32 unk2;
 
@@ -370,7 +394,7 @@ struct SpellRange
     uint32 ID;
     float minRange;
     float maxRange;
-    uint32 unks[19];
+    uint32 unks[35];
 };
 
 struct SpellDuration
@@ -396,6 +420,14 @@ struct RandomProps
     uint32 RankAlt5;
     uint32 RankAlt6;
     uint32 RankAlt7;
+	uint32 RankAlt8;
+	uint32 RankAlt9;
+	uint32 RankAlt10;
+	uint32 RankAlt11;
+	uint32 RankAlt12;
+	uint32 RankAlt13;
+	uint32 RankAlt14;
+	uint32 RankAlt15;
     uint32 RankFlags;
 
 };
@@ -421,6 +453,14 @@ struct AreaTable
     uint32 nameAlt5;
     uint32 nameAlt6;
     uint32 nameAlt7;
+    uint32 nameAlt8;
+    uint32 nameAlt9;
+	uint32 nameAlt10;
+	uint32 nameAlt11;
+	uint32 nameAlt12;
+	uint32 nameAlt13;
+	uint32 nameAlt14;
+	uint32 nameAlt15;
     uint32 nameFlags;
     uint32 factiongroup;
     uint32 unk7;
@@ -457,6 +497,14 @@ struct AuctionHouseDBC
     char* nameAlt5;
     char* nameAlt6;
     char* nameAlt7;
+	char* nameAlt8;
+	char* nameAlt9;
+	char* nameAlt10;
+	char* nameAlt11;
+	char* nameAlt12;
+	char* nameAlt13;
+	char* nameAlt14;
+	char* nameAlt15;
     char* nameFlags;
 };
 
@@ -470,9 +518,9 @@ struct FactionDBC
     uint32 unk2[4];
     uint32 parentFaction;
     uint32 Name;
-    uint32 shit[8];
+    uint32 shit[16];
     uint32 Description;
-    uint32 shit2[8];
+    uint32 shit2[16];
 };
 
 struct WorldMapArea
@@ -514,15 +562,23 @@ struct DBCTaxiNode
     float x;
     float y;
     float z;
-    uint32 unk1;
-    uint32 unk2;
     uint32 name;
-    uint32 unk3;
-    uint32 unk4;
-    uint32 unk5;
-    uint32 unk6;
-    uint32 unk7;
-    uint32 unk8;
+    uint32 namealt1;
+	uint32 namealt2;
+	uint32 namealt3;
+	uint32 namealt4;
+	uint32 namealt5;
+	uint32 namealt6;
+	uint32 namealt7;
+	uint32 namealt8;
+	uint32 namealt9;
+    uint32 namealt10;
+	uint32 namealt11;
+	uint32 namealt12;
+	uint32 namealt13;
+	uint32 namealt14;
+	uint32 namealt15;
+	uint32 nameflags;
     uint32 horde_mount;
     uint32 alliance_mount;
 };
@@ -546,6 +602,8 @@ struct DBCTaxiPathNode
     float z;
     uint32 unk1;
     uint32 waittime;
+	uint32 unk2;
+	uint32 unk3;
 };
 
 struct GraveyardEntry
@@ -555,7 +613,8 @@ struct GraveyardEntry
     float   x;
     float   y;
     float   z;
-    uint32  not_used[7];
+	uint32  name;
+    uint32  not_used[15];
     uint32  flag;
 };
 
@@ -605,6 +664,14 @@ struct CharRaceEntry
     uint32 unk19;
     uint32 unk20;
     uint32 unk21;
+	uint32 unk22;
+	uint32 unk23;
+	uint32 unk24;
+	uint32 unk25;
+	uint32 unk26;
+	uint32 unk27;
+	uint32 unk28;
+	uint32 unk29;
 };
 
 struct CharClassEntry
@@ -615,18 +682,24 @@ struct CharClassEntry
     uint32 power_type;
     uint32 unk3;
     uint32 name;
-    uint32 unk4;
-    uint32 unk5;
-    uint32 unk6;
-    uint32 unk7;
-    uint32 unk8;
-    uint32 unk9;
-    uint32 unk10;
-    uint32 unk11;
-    uint32 unk12;
-    uint32 unk13;
-    uint32 unk14;
-    uint32 unk15;
+	uint32 namealt1;
+	uint32 namealt2;
+	uint32 namealt3;
+	uint32 namealt4;
+	uint32 namealt5;
+	uint32 namealt6;
+	uint32 namealt7;
+	uint32 namealt8;
+	uint32 namealt9;
+	uint32 namealt10;
+	uint32 namealt11;
+    uint32 namealt12;
+	uint32 namealt13;
+	uint32 namealt14;
+	uint32 namealt15;
+	uint32 nameflags;
+	uint32 unk4;
+	uint32 unk5;
 };
 
 struct CreatureFamilyEntry
@@ -640,15 +713,23 @@ struct CreatureFamilyEntry
     uint32 tameable;
     uint32 pet_food_id;
     uint32 name;
-    uint32 unk7;
-    uint32 unk8;
-    uint32 unk9;
-    uint32 unk10;
-    uint32 unk11;
-    uint32 unk12;
-    uint32 unk13;
-    uint32 unk14;
-    uint32 unk15;
+	uint32 namealt1;
+	uint32 namealt2;
+	uint32 namealt3;
+	uint32 namealt4;
+	uint32 namealt5;
+	uint32 namealt6;
+	uint32 namealt7;
+	uint32 namealt8;
+	uint32 namealt9;
+	uint32 namealt10;
+	uint32 namealt11;
+	uint32 namealt12;
+	uint32 namealt13;
+	uint32 namealt14;
+	uint32 namealt15;
+	uint32 nameflags;
+	uint32 unk1;
 };
 
 struct MapEntry
@@ -728,6 +809,54 @@ struct MapEntry
     uint32 unk67;
     uint32 unk68;
     uint32 unk69;
+	uint32 aunk1;
+	uint32 aunk2;
+	uint32 aunk3;
+	uint32 aunk4;
+	uint32 aunk5;
+	uint32 aunk6;
+	uint32 aunk7;
+	uint32 aunk8;
+	uint32 aunk9;
+	uint32 aunk10;
+	uint32 aunk11;
+	uint32 aunk12;
+	uint32 aunk13;
+	uint32 aunk14;
+	uint32 aunk15;
+	uint32 aunk16;
+	uint32 aunk17;
+	uint32 aunk18;
+	uint32 aunk19;
+	uint32 aunk20;
+	uint32 aunk21;
+	uint32 aunk22;
+	uint32 aunk23;
+	uint32 aunk24;
+	uint32 bunk1;
+	uint32 bunk2;
+	uint32 bunk3;
+	uint32 bunk4;
+	uint32 bunk5;
+	uint32 bunk6;
+	uint32 bunk7;
+	uint32 bunk8;
+	uint32 bunk9;
+	uint32 bunk10;
+	uint32 bunk11;
+	uint32 bunk12;
+	uint32 bunk13;
+	uint32 bunk14;
+	uint32 bunk15;
+	uint32 bunk16;
+	uint32 bunk17;
+	uint32 bunk18;
+	uint32 bunk19;
+	uint32 bunk20;
+	uint32 bunk21;
+	uint32 bunk22;
+	uint32 bunk23;
+	uint32 bunk24;
 };
 
 inline float GetRadius(SpellRadius *radius)
