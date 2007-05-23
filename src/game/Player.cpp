@@ -2103,7 +2103,10 @@ bool Player::LoadFromDB(uint32 guid)
 
     QueryResult *result = sDatabase.Query("SELECT * FROM characters WHERE guid=%u AND banned=0 AND forced_rename_pending = 0",guid);
     if(!result)
+	{
+		printf("Player login query failed., guid %u\n", guid);
         return false;
+	}
 
     Field *fields = result->Fetch();
 
@@ -2131,6 +2134,7 @@ bool Player::LoadFromDB(uint32 guid)
     if(!myClass || !myRace)
     {
         // bad character
+		printf("guid %u failed to login, no race or class dbc found. (race %u class %u)\n", guid, getRace(), getClass());
         return false;
     }
 
@@ -2150,7 +2154,10 @@ bool Player::LoadFromDB(uint32 guid)
     lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), getLevel());
     
 	if(!lvlinfo)
+	{
+		printf("guid %u level %u class %u race %u levelinfo not found!\n", guid, getLevel(), getClass(), getRace());
 		return false;
+	}
     
 	CalculateBaseStats();
 

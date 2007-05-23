@@ -411,7 +411,6 @@ void World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadGMTickets);
     MAKE_TASK(SocialMgr, LoadFromDB);
     MAKE_TASK(AddonMgr, LoadFromDB);
-    MAKE_TASK(ObjectMgr, GenerateLevelUpInfo);
     MAKE_TASK(ObjectMgr, SetHighestGuids);
     MAKE_TASK(QuestMgr, LoadSQLQuests);
     MAKE_TASK(ObjectMgr, LoadReputationModifiers);

@@ -634,6 +634,8 @@ void ObjectMgr::LoadPlayerCreateInfo()
     } while( result->NextRow() );
 
     delete result;
+
+	GenerateLevelUpInfo();
 }
 
 // DK:LoadGuilds()
