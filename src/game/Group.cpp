@@ -170,6 +170,8 @@ void Group::Update()
             data << uint8(m_GroupType);    //0=party,1=raid
             data << uint8(0);   // unk
             data << uint8(sg1->GetID());
+			data << uint8(0);	// unk2
+			data << uint64(0);	// unk3
             data << uint32(m_MemberCount-1);    // we don't include self
             for(j=0;j<m_SubGroupCount;j++)
             {
@@ -184,7 +186,8 @@ void Group::Update()
                             data << uint8(80 + sg2->GetID());
                         else*/      // how do we do this? 80 obviously doesn't work.
                             data << uint8(sg2->GetID());
-                    }
+						data << uint8(0);
+					}
                 }
             }
 
@@ -198,8 +201,8 @@ void Group::Update()
 
             data << uint16(m_LootThreshold);
 
-            data << uint64(0);      // new in 2.0.3, dunno what it is
-            data << uint64(0);      // new in 2.0.3, dunno what it is
+            /*data << uint64(0);      // new in 2.0.3, dunno what it is
+            data << uint64(0);      // new in 2.0.3, dunno what it is*/
             
             (*itr1)->GetSession()->SendPacket(&data);
         }        
