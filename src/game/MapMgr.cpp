@@ -124,7 +124,12 @@ void MapMgr::PushObject(Object *obj)
     
     obj->ClearInRangeSet();
     ASSERT(obj->GetMapId() == _mapId);
-    ASSERT(obj->GetPositionX() < _maxX && obj->GetPositionX() > _minX);
+    if(!(obj->GetPositionX() < _maxX && obj->GetPositionX() > _minX) || 
+	   !(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY))
+	{
+		obj->SetPosition(0, 0, 0, 0, false);
+	}
+
     ASSERT(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY);
     ASSERT(_cells);
 
@@ -138,7 +143,7 @@ void MapMgr::PushObject(Object *obj)
     if(x >= _sizeX || y >= _sizeY)
     {
         obj->SetMapMgr(0);
-        return;
+		return;		
     }
 
     MapCell *objCell = GetCell(x,y);
