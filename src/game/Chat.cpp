@@ -507,10 +507,11 @@ WorldPacket * ChatHandler::FillMessageData( uint32 type, uint32 language, const 
     }*/
 
     *data << guid;
+	*data << uint32(0);
 
     // crashfix
     if (type == CHAT_MSG_SAY || type == CHAT_MSG_YELL || type == CHAT_MSG_PARTY || type == 0x53)
-        *data << guid;
+		*data << guid;
 
     *data << messageLength;
     *data << message;

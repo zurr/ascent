@@ -394,9 +394,10 @@ void Channel::Say(Player *p, const char *what, Player *t)
         data.Initialize(SMSG_MESSAGECHAT);
         data << (uint8)14; // CHAT_MESSAGE_CHANNEL
         data << (uint32)0; // Universal lang
-        data << name.c_str();
-        //data << (uint32)0; // pvp ranks
-        data << p->GetGUID();
+		data << p->GetGUID();
+		data << uint32(0);		// pvp rank??
+		data << name;
+		data << p->GetGUID();
         data << messageLength;
         data << what;
         data << (uint8)(p->bGMTagOn ? 3 : 0);
