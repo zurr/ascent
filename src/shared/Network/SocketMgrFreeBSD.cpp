@@ -31,7 +31,9 @@ void SocketMgr::AddSocket(Socket * s)
 void SocketMgr::RemoveSocket(Socket * s)
 {
     //printf("remove fd: %u\n", s->GetFd());
-    assert(fds[s->GetFd()] == s);
+    //assert(fds[s->GetFd()] == s);
+    if(fds[s->GetFd()] != s)
+        return;
 
     // remove kevent
     struct kevent ev;

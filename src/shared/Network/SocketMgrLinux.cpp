@@ -33,7 +33,9 @@ void SocketMgr::AddSocket(Socket * s)
 
 void SocketMgr::RemoveSocket(Socket * s)
 {
-    assert(fds[s->GetFd()] == s);
+    //assert(fds[s->GetFd()] == s);
+    if(fds[s->GetFd()] != s)
+        return;
 
     // Remove from epoll list.
     struct epoll_event ev;
