@@ -1256,7 +1256,7 @@ public:
                 Dur = (uint32)-1;
             if(p_caster)  
             {
-                uint32 cp=p_caster->GetCP();
+                uint32 cp=p_caster->m_comboPoints;
                 if(cp)
                 {
                     uint32 bonus=(cp*(sd->Duration3-sd->Duration1))/5;

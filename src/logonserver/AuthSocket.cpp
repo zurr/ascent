@@ -90,7 +90,6 @@ void AuthSocket::HandleChallenge()
         m_challenge.build < LogonServer::getSingleton().min_build)
     {
         SendChallengeError(CE_WRONG_BUILD_NUMBER);
-        Disconnect();
         return;
     }
 
@@ -105,12 +104,10 @@ void AuthSocket::HandleChallenge()
 	{
 		case BAN_STATUS_PERMANANT_BAN:
 			SendChallengeError(CE_ACCOUNT_CLOSED);
-            Disconnect();
 			return;
 
         case BAN_STATUS_TIME_LEFT_ON_BAN:
 			SendChallengeError(CE_ACCOUNT_FREEZED);
-            Disconnect();
 			return;
     }
 
@@ -128,7 +125,6 @@ void AuthSocket::HandleChallenge()
 
 		// Non-existant account
 		SendChallengeError(CE_NO_ACCOUNT);
-        Disconnect();
 		return;
 	}
 
@@ -141,13 +137,11 @@ void AuthSocket::HandleChallenge()
 	if(m_account->Banned == 1)
 	{
 		SendChallengeError(CE_ACCOUNT_CLOSED);
-        Disconnect();
 		return;
 	}
 	else if(m_account->Banned > 0)
 	{
 		SendChallengeError(CE_ACCOUNT_FREEZED);
-        Disconnect();
 		return;
 	}
 
@@ -279,7 +273,6 @@ void AuthSocket::HandleProof()
         //SendProofError(4, 0);
 	    SendChallengeError(CE_NO_ACCOUNT);
         sLog.outDebug("[AuthLogonProof] M1 values don't match.");
-        Disconnect();
         return;
     }
 

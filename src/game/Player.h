@@ -1087,15 +1087,6 @@ public:
     bool PowerCheat;
     bool FlyCheat;
 
-	inline uint8 GetCP()
-    {
-		return GetByte(PLAYER_FIELD_BYTES,1);
-    }
-    inline void SetCP(uint8 cp)
-    {
-		SetByte(PLAYER_FIELD_BYTES,1,cp);
-    }
-
     void ZoneUpdate(uint32 ZoneId);
     inline uint32 GetAreaID() { return m_AreaID; }
     void SetAreaID(uint32 area) { m_AreaID = area; }
@@ -1260,6 +1251,21 @@ public:
 
     FactionReputation * reputationByListId[128];
 	vector<TaxiPath*> m_taxiPaths;
+
+	uint64 m_comboTarget;
+	int8 m_comboPoints;
+	void UpdateComboPoints();
+	inline void AddComboPoint(uint64 target, int8 count)
+	{
+		if(m_comboTarget == target)
+			m_comboPoints += count;
+		else
+			m_comboPoints = count;
+        UpdateComboPoints();
+	}
+
+	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
+	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; UpdateComboPoints(); }
 
 protected:
 	uint32 iActivePet;

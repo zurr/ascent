@@ -824,7 +824,8 @@ enum Opcodes {
     SMSG_FLIGHT_SPLINE_SYNC             = 904,  //(0x388)
     SMSG_MOVE_UNLOCK_MOVEMENT           = 912,  //(0x390)
     CMSG_MOVE_UNLOCK_MOVEMENT_ACK       = 913,  //(0x391)
-    NUM_MSG_TYPES                       = 914,  //(0x392)
+	SMSG_SET_COMBO_POINTS				= 925,  //(0x39D)
+    NUM_MSG_TYPES                       = 926,  //(0x39E)
 };
 
 enum FriendsResult {

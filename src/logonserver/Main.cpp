@@ -107,7 +107,7 @@ void LogonServer::Run()
     sLog.Init();
     sLog.outString("===============================================================================");
     sLog.outString("Antrix :: Logon Server (running under %s)", PLATFORM_TEXT);
-    sLog.outString("Compatibility is tested with 2.0.8. Revision %u.", SVN_REVISION);
+    sLog.outString("Compatibility is tested with 2.1.0. Revision %u.", SVN_REVISION);
     sLog.outString("===============================================================================");
     sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
     sLog.outString("");

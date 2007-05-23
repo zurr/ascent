@@ -15,10 +15,7 @@
 #include "StdAfx.h"
 #include <openssl/md5.h>
 #include "../shared/AuthCodes.h"
-
-#ifdef WIN32
 #include "../shared/svn_revision.h"
-#endif
 
 #if PLATFORM == PLATFORM_WIN32
 #define PLATFORM_TEXT "Win32"
@@ -579,12 +576,12 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
     // Send revision (if enabled)
     if(sWorld.sendRevisionOnJoin)
     {
-        uint32 rev = 0;
+        uint32 rev = SVN_REVISION;
         if(!sWorld.SendStatsOnJoin) {
-            _player->BroadcastMessage("Server: %s%s%s Core v2.0.12-%u/%s|r %s %s", MSG_COLOR_LIGHTBLUE, 
+            _player->BroadcastMessage("Server: %s%s%s Core v2.1.0-%u/%s|r %s %s", MSG_COLOR_LIGHTBLUE, 
                 SERVER_NAME, MSG_COLOR_WHITE, rev, PLATFORM_TEXT, __DATE__, __TIME__);
         } else {
-            _player->BroadcastMessage("Server Version: %s%s%s Core v2.0.12-%u/%s|r %s\nOnline Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_LIGHTBLUE, 
+            _player->BroadcastMessage("Server Version: %s%s%s Core v2.1.0-%u/%s|r %s\nOnline Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_LIGHTBLUE, 
                 SERVER_NAME, MSG_COLOR_WHITE, rev, PLATFORM_TEXT, __DATE__, 
                 MSG_COLOR_WHITE, sWorld.GetSessionCount(), MSG_COLOR_WHITE, sWorld.PeakSessionCount, MSG_COLOR_WHITE, sWorld.mAcceptedConnections);
         }

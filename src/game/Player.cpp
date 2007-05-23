@@ -312,6 +312,9 @@ Player::Player ( uint32 high, uint32 low )
     rename_pending = false;
     iInstanceType           = 0;
     memset(reputationByListId, 0, sizeof(FactionReputation*) * 128);
+
+	m_comboTarget = 0;
+	m_comboPoints = 0;
 }
 
 
@@ -7197,4 +7200,28 @@ void Player::CalcDamage()
 void Player::EventPortToGM(Player *p)
 {
 	SafeTeleport(p->GetMapId(),p->GetInstanceID(),p->GetPosition());
+}
+
+void Player::UpdateComboPoints()
+{
+	// fuck bytebuffers :D
+	unsigned char buffer[10];
+	uint32 c = 2;
+
+	// check for overflow
+	if(m_comboPoints > 5)
+		m_comboPoints = 5;
+	
+	if(m_comboPoints < 0)
+		m_comboPoints = 0;
+
+	if(m_comboTarget != 0)
+	{
+		c = FastGUIDPack(m_comboTarget, buffer, 0);
+		buffer[c] = m_comboPoints;
+	}
+	else
+		buffer[0] = buffer[1] = 0;
+
+	m_session->OutPacket(SMSG_SET_COMBO_POINTS, c, buffer);
 }

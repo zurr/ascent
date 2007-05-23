@@ -1391,7 +1391,7 @@ void Spell::finish()
     {
         if(m_requiresCP && !failed)
         {
-			p_caster->SetCP(0);
+			p_caster->ResetComboPoints();
         }
         if(m_delayed)
         {
@@ -2563,8 +2563,8 @@ int32 Spell::CalculateEffect(uint32 i)
     {    
 		if(m_spellInfo->NameHash==3448285709 && i == 0 )//Envenom
 		{
-			value *= p_caster->GetCP();
-			value+=p_caster->GetAP()*(0.03*p_caster->GetCP());
+			value *= p_caster->m_comboPoints;
+			value+=p_caster->GetAP()*(0.03*p_caster->m_comboPoints);
             m_requiresCP=true;
 		}
         int32 comboDamage = (int32)m_spellInfo->EffectPointsPerComboPoint[i];
@@ -2573,9 +2573,9 @@ int32 Spell::CalculateEffect(uint32 i)
         {
 			
 			if(m_spellInfo->NameHash==3356779121) //Eviscerate
-			value+=p_caster->GetAP()*(0.03*p_caster->GetCP());
+			value+=p_caster->GetAP()*(0.03*p_caster->m_comboPoints);
 
-			value += (comboDamage * p_caster->GetCP());
+			value += (comboDamage * p_caster->m_comboPoints);
             m_requiresCP=true;
         }
 

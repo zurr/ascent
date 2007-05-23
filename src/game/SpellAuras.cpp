@@ -4823,32 +4823,9 @@ void Aura::SpellAuraRetainComboPoints(bool apply)
     Player *p_caster = static_cast<Player*>(GetCaster());
 
     if(apply)
-    {      
-        if(p_caster->GetUInt64Value(PLAYER__FIELD_COMBO_TARGET) != p_caster->GetSelection())
-        {
-            p_caster->SetUInt64Value(PLAYER__FIELD_COMBO_TARGET, p_caster->GetSelection());
-            p_caster->SetCP(mod->m_amount);
-        }
-        else
-        {
-            uint32 comboPoints = p_caster->GetCP()+mod->m_amount;
-            p_caster->SetCP((comboPoints>=5) ? 5 : comboPoints);
-        }
-    }
+		p_caster->AddComboPoint(p_caster->GetSelection(), mod->m_amount);
     else
-    {
-        if(p_caster->GetUInt64Value(PLAYER__FIELD_COMBO_TARGET) != p_caster->GetSelection())
-        {
-            p_caster->SetUInt64Value(PLAYER__FIELD_COMBO_TARGET, p_caster->GetSelection());
-            p_caster->SetCP(mod->m_amount);
-        }
-        else
-        {
-            int32 comboPoints = p_caster->GetCP()-mod->m_amount;
-            p_caster->SetCP((comboPoints<0) ? 0 : comboPoints);
-        }
-
-    }
+		p_caster->AddComboPoint(p_caster->GetSelection(), -mod->m_amount);
 }
 
 void Aura::SpellAuraResistPushback(bool apply)

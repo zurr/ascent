@@ -2980,16 +2980,7 @@ void Spell::SpellEffectAddComboPoints(uint32 i) // Add Combo Points
     if(!p_caster)
         return;
   
-    if(p_caster->GetUInt64Value(PLAYER__FIELD_COMBO_TARGET) != p_caster->GetSelection())
-    {
-        p_caster->SetUInt64Value(PLAYER__FIELD_COMBO_TARGET,p_caster->GetSelection());
-        p_caster->SetCP(damage);
-    }
-    else
-    {
-        uint32 comboPoints = p_caster->GetCP()+damage;
-        p_caster->SetCP((comboPoints>=5)?5:comboPoints);
-    }
+	p_caster->AddComboPoint(p_caster->GetSelection(), damage);
 }
 
 void Spell::SpellEffectDuel(uint32 i) // Duel

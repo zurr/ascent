@@ -740,10 +740,9 @@ void WorldSession::HandleSetSelectionOpcode( WorldPacket & recv_data )
     else
         return;
 
-    if(GetPlayer( )->GetUInt64Value(PLAYER__FIELD_COMBO_TARGET) != guid)
+    if(_player->m_comboPoints && _player->m_comboTarget != guid)
     { // if its a new Target set Combo Points Target to 0
-        GetPlayer( )->SetUInt64Value(PLAYER__FIELD_COMBO_TARGET,0);
-        GetPlayer( )->SetCP(0);
+        _player->ResetComboPoints();
     }
 
     _player->SetUInt64Value(UNIT_FIELD_TARGET, guid);
