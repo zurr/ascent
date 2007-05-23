@@ -7218,7 +7218,7 @@ void Player::UpdateComboPoints()
 	if(m_comboTarget != 0)
 	{
 		c = FastGUIDPack(m_comboTarget, buffer, 0);
-		buffer[c] = m_comboPoints;
+		buffer[c++] = m_comboPoints;
 	}
 	else
 		buffer[0] = buffer[1] = 0;
