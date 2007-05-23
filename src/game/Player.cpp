@@ -4082,17 +4082,25 @@ void Player::UpdateStats()
 		AP=str*2-20;
         
 		if(GetShapeShift()==FORM_CAT)
-			AP+=agi;
+			AP += agi + lev * 2;
+
+		if(GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR)
+			AP += lev * 3;
+
         break;
         
         case ROGUE:
-        AP = lev * 2 + str + agi - 20;
-        RAP = lev + agi * 2 - 20;
+        //AP = lev * 2 + str + agi - 20;
+        //RAP = lev + agi * 2 - 20;
+		AP = str + agi - 20;
+		RAP = lev + agi - 10;
         break;
         
         case HUNTER:
-        AP = lev* 2 + str + agi - 20;
-        RAP = (lev + agi)*2 - 20;
+        //AP = lev* 2 + str + agi - 20;
+        //RAP = (lev + agi)*2 - 20;
+		AP = str + agi - 20;
+		RAP = lev * 2 + agi - 10;
         break;
 
         case SHAMAN:
@@ -4100,12 +4108,15 @@ void Player::UpdateStats()
         break;
     
         case PALADIN:
-        AP = lev * 3 + str * 2 - 20;
+        //AP = lev * 3 + str * 2 - 20;
+		AP = str * 2 - 20;
         break;
 
         case WARRIOR:
-        AP = lev * 3 + str * 2 - 20;
-        RAP = (lev+agi)*2 - 20;
+        //AP = lev * 3 + str * 2 - 20;
+        //RAP = (lev+agi)*2 - 20;
+		AP = str * 2 - 20;
+		RAP = lev + agi - 20;
         break;
         default://mage,priest,warlock
         AP = str-10;
@@ -7042,13 +7053,23 @@ void Player::CalcDamage()
         delta = GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS)-GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG);
         if(IsInFeralForm())
 		{
-			if(ss==FORM_CAT)
+			uint32 lev = getLevel();
+			/*if(ss==FORM_CAT)
 				r = delta + ap_bonus * 1000.0;
 			else
-				r = delta + ap_bonus * 2500.0;
+				r = delta + ap_bonus * 2500.0;*/
+
+			if(ss == FORM_CAT)
+				r = lev + delta + ap_bonus * 1000.0;
+			else
+				r = lev + delta + ap_bonus * 2500.0;
 			
-			SetFloatValue(UNIT_FIELD_MINDAMAGE,r);
-	        SetFloatValue(UNIT_FIELD_MAXDAMAGE,r);
+			//SetFloatValue(UNIT_FIELD_MINDAMAGE,r);
+	        //SetFloatValue(UNIT_FIELD_MAXDAMAGE,r);
+
+			SetFloatValue(UNIT_FIELD_MINDAMAGE,r * 0.9);
+			SetFloatValue(UNIT_FIELD_MAXDAMAGE,r * 1.1);
+
 			return;
 		}
 //////no druid ss	

@@ -838,7 +838,11 @@ void World::SendWorldText(const char* text, WorldSession *self)
     data.Initialize(SMSG_MESSAGECHAT);
     data << uint8(CHAT_MSG_SYSTEM);
     data << uint32(LANG_UNIVERSAL);
-    data << uint64(0);
+	
+	data << (uint64)0; // Who cares about guid when there's no nickname displayed heh ?
+	data << (uint32)0;
+	data << (uint64)0;
+
     data << textLen;
     data << text;
     data << uint8(0);
