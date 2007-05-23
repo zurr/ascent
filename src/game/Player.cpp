@@ -986,7 +986,7 @@ void Player::_EventExploration()
     if (!IsInWorld())
         return;
 
-	if(m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _maxY)
+	if(m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _minY)
 		return;
 
     if(GetMapMgr()->GetCellByCoords(GetPositionX(),GetPositionY()) == NULL) 
