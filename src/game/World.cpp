@@ -458,8 +458,8 @@ void World::SetInitialWorldSettings()
         // SpellID
         uint32 spellid = dbc.getRecord(x).getUInt(0);
         // Description field
-        const char* desc = dbc.getRecord(x).getString(141); 
-        const char* ranktext = dbc.getRecord(x).getString(132);
+        char* desc = (char*)dbc.getRecord(x).getString(157); 
+        const char* ranktext = dbc.getRecord(x).getString(140);
         const char* nametext = dbc.getRecord(x).getString(123);
 
         uint32 rank = 0;
@@ -620,6 +620,10 @@ void World::SetInitialWorldSettings()
                         }                    
                     }
                     pr=0;
+
+					int len = strlen(desc);
+					for(int i = 0; i < len; ++i)
+						desc[i] = tolower(desc[i]);
                     //dirty code for procs, if any1 got any better idea-> u are welcome
                     //139944 --- some magic number, it will trigger on all hits etc
                         //for seems to be smth like custom check
@@ -633,9 +637,9 @@ void World::SetInitialWorldSettings()
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;
                     if(strstr(desc,"target casts a spell"))
                         pr|=PROC_ON_CAST_SPELL;
-                    if(strstr(desc,"Any damage caused"))
+                    if(strstr(desc,"any damage caused"))
                         pr|=PROC_ON_ANY_DAMAGE_VICTIM;
-                    if(strstr(desc,"The next melee attack against the caster"))
+                    if(strstr(desc,"the next melee attack against the caster"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;
                     if(strstr(desc,"when successfully hit"))
                         pr|=PROC_ON_MELEE_ATTACK ;
@@ -657,7 +661,7 @@ void World::SetInitialWorldSettings()
                         pr|=PROC_ON_ANY_DAMAGE_VICTIM;
                     if(strstr(desc,"when the caster is using melee attacks"))
                         pr|=PROC_ON_MELEE_ATTACK;
-                    if(strstr(desc,"When struck in combat"))
+                    if(strstr(desc,"when struck in combat"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;
                     if(strstr(desc,"on a successful melee attack"))
                         pr|=PROC_ON_MELEE_ATTACK;
@@ -669,17 +673,17 @@ void World::SetInitialWorldSettings()
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;
                     if(strstr(desc,"when hit by a melee attack"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;
-                    if(strstr(desc,"Your critical strikes"))
+                    if(strstr(desc,"your critical strikes"))
                         pr|=PROC_ON_CRIT_ATTACK;
                     if(strstr(desc,"whenever you deal ranged damage"))
                         pr|=PROC_ON_RANGED_ATTACK;
                     if(strstr(desc,"whenever you deal melee damage"))
                         pr|=PROC_ON_MELEE_ATTACK;
-                    if(strstr(desc,"When struck in melee combat"))
+                    if(strstr(desc,"when struck in melee combat"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;
-                    if(strstr(desc,"Any successful spell cast against the priest"))
+                    if(strstr(desc,"any successful spell cast against the priest"))
                         pr|=PROC_ON_SPELL_HIT_VICTIM;
-                    if(strstr(desc,"The next melee attack on the caster"))
+                    if(strstr(desc,"the next melee attack on the caster"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM;
                     if(strstr(desc,"striking melee or ranged attackers"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM|PROC_ON_RANGED_ATTACK_VICTIM;
@@ -709,7 +713,7 @@ void World::SetInitialWorldSettings()
                         pr|=PROC_ON_MELEE_ATTACK;
                     if(strstr(desc,"spell criticals against you"))
                         pr|=PROC_ON_SPELL_CRIT_HIT_VICTIM;
-                    if(strstr(desc,"After being struck by a melee or ranged critical hit"))
+                    if(strstr(desc,"after being struck by a melee or ranged critical hit"))
                         pr|=PROC_ON_CRIT_HIT_VICTIM;
                     if(strstr(desc,"on a critical hit"))
                         pr|=PROC_ON_CRIT_ATTACK;
@@ -719,11 +723,11 @@ void World::SetInitialWorldSettings()
                         pr|=PROC_ON_ANY_DAMAGE_VICTIM;
                     if(strstr(desc,"after dealing a critical strike"))
                         pr|=PROC_ON_CRIT_ATTACK;
-                    if(strstr(desc,"Each melee or ranged damage hit against the priest"))
+                    if(strstr(desc,"each melee or ranged damage hit against the priest"))
                         pr|=PROC_ON_MELEE_ATTACK_VICTIM|PROC_ON_RANGED_ATTACK_VICTIM;                
                     if(strstr(desc, "a chance to deal additional"))
                         pr|=PROC_ON_MELEE_ATTACK;
-                    if(strstr(desc, "Gives your"))
+                    if(strstr(desc, "gives your"))
                         pr|=PROC_ON_CAST_SPECIFIC_SPELL;
                 }
             }            
