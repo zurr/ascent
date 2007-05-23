@@ -678,10 +678,9 @@ struct CharClassEntry
 {
     uint32 class_id;
     uint32 unk1;
-    uint32 unk2;
     uint32 power_type;
-    uint32 unk3;
-    uint32 name;
+	uint32 unk2;
+	uint32 name;
 	uint32 namealt1;
 	uint32 namealt2;
 	uint32 namealt3;
@@ -698,6 +697,7 @@ struct CharClassEntry
 	uint32 namealt14;
 	uint32 namealt15;
 	uint32 nameflags;
+	uint32 unk3;
 	uint32 unk4;
 	uint32 unk5;
 };

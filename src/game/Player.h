@@ -1260,7 +1260,10 @@ public:
 		if(m_comboTarget == target)
 			m_comboPoints += count;
 		else
+		{
+			m_comboTarget = target;
 			m_comboPoints = count;
+		}
         UpdateComboPoints();
 	}
 
