@@ -496,6 +496,7 @@ void ObjectMgr::LoadItemPrototypes()
         pItemPrototype->GemProperties = fields[128].GetUInt32();
         pItemPrototype->ItemExtendedCost = fields[129].GetUInt32();
         pItemPrototype->DisenchantReqSkill = fields[130].GetUInt32();
+		pItemPrototype->ArmorDamageModifier = fields[131].GetUInt32();
 
         // item sets
         if(pItemPrototype->ItemSet > 0)
