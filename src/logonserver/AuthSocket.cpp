@@ -49,8 +49,9 @@ AuthSocket::~AuthSocket()
 
 void AuthSocket::OnDisconnect()
 {
-	if(m_authenticated)
+	if(m_authenticated && m_account)
 		sInfoCore.DeleteSessionKey(m_account->AccountId);
+
 	if(!removedFromSet)
 	{
 		_authSocketLock.Acquire();
