@@ -24,39 +24,39 @@
 
 inline uint32 getMSTime()
 {
-    uint32 time_in_ms = 0;
+	uint32 time_in_ms = 0;
 #if PLATFORM == PLATFORM_WIN32
-    time_in_ms = timeGetTime();
+	time_in_ms = timeGetTime();
 #else
-    struct timeb tp;
-    ftime(&tp);
+	struct timeb tp;
+	ftime(&tp);
 
-    time_in_ms = tp.time * 1000 + tp.millitm;
+	time_in_ms = tp.time * 1000 + tp.millitm;
 #endif
 
-    return time_in_ms;
+	return time_in_ms;
 }
 
 class IntervalTimer
 {
 public:
-    IntervalTimer() : _interval(0), _current(0) {}
+	IntervalTimer() : _interval(0), _current(0) {}
 
-    void Update(time_t diff) { _current += diff; if(_current<0) _current=0;}
-    bool Passed() { return _current >= _interval; }
-    void Reset() { if(_current >= _interval) _current = _current%_interval;  }
-    
-    void SetCurrent(time_t current) { _current = current; }
-    void SetInterval(time_t interval) {
-        _current = 0;
-        _interval = interval; 
-    }
-    time_t GetInterval() const { return _interval; }
-    time_t GetCurrent() const { return _current; }
+	void Update(time_t diff) { _current += diff; if(_current<0) _current=0;}
+	bool Passed() { return _current >= _interval; }
+	void Reset() { if(_current >= _interval) _current = _current%_interval;  }
+	
+	void SetCurrent(time_t current) { _current = current; }
+	void SetInterval(time_t interval) {
+		_current = 0;
+		_interval = interval; 
+	}
+	time_t GetInterval() const { return _interval; }
+	time_t GetCurrent() const { return _current; }
 
 private:
-    time_t _interval;
-    time_t _current;
+	time_t _interval;
+	time_t _current;
 };
 
 #endif

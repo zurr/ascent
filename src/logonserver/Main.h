@@ -23,11 +23,11 @@ class LogonServer;
 class LogonServer : public Singleton< LogonServer >
 {
 public:
-    void CheckForDeadSockets();
-    void Run();
-    void Stop();
-    uint32 max_build;
-    uint32 min_build;
+	void CheckForDeadSockets();
+	void Run();
+	void Stop();
+	uint32 max_build;
+	uint32 min_build;
 private:
-    bool m_stopEvent;
+	bool m_stopEvent;
 };

@@ -24,8 +24,8 @@
 class WorldRunnable : public CThread
 {
 public:
-    WorldRunnable();
-    void run();
+	WorldRunnable();
+	void run();
 };
 
 #endif

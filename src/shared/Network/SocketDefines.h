@@ -13,7 +13,7 @@
 using namespace std;
 
 /* Implementation Selection */
-#ifdef WIN32        // Easy
+#ifdef WIN32		// Easy
 #define CONFIG_USE_IOCP
 #else
 
@@ -42,20 +42,20 @@ using namespace std;
 #ifdef CONFIG_USE_IOCP
 enum SocketIOEvent
 {
-    SOCKET_IO_EVENT_READ_COMPLETE   = 0,
-    SOCKET_IO_EVENT_WRITE_END       = 1,
-    NUM_SOCKET_IO_EVENTS            = 2,
+	SOCKET_IO_EVENT_READ_COMPLETE   = 0,
+	SOCKET_IO_EVENT_WRITE_END	   = 1,
+	NUM_SOCKET_IO_EVENTS			= 2,
 };
 
 class OverlappedStruct
 {
 public:
-    OVERLAPPED m_overlap;
-    SocketIOEvent m_event;
-    OverlappedStruct(SocketIOEvent ev) : m_event(ev)
-    {
-        memset(&m_overlap, 0, sizeof(OVERLAPPED));
-    };
+	OVERLAPPED m_overlap;
+	SocketIOEvent m_event;
+	OverlappedStruct(SocketIOEvent ev) : m_event(ev)
+	{
+		memset(&m_overlap, 0, sizeof(OVERLAPPED));
+	};
 };
 
 #endif

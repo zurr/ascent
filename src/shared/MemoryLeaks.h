@@ -25,7 +25,7 @@
 #endif
 
 struct MemoryManager : public Singleton < MemoryManager > {
-    MemoryManager();
+	MemoryManager();
 };
 
 #endif

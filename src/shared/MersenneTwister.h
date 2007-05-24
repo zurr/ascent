@@ -17,22 +17,22 @@
 
 // Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
 // Copyright (C) 2000 - 2003, Richard J. Wagner
-// All rights reserved.                          
+// All rights reserved.						  
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
 // are met:
 //
 //   1. Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//	  notice, this list of conditions and the following disclaimer.
 //
 //   2. Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in the
-//      documentation and/or other materials provided with the distribution.
+//	  notice, this list of conditions and the following disclaimer in the
+//	  documentation and/or other materials provided with the distribution.
 //
 //   3. The names of its contributors may not be used to endorse or promote 
-//      products derived from this software without specific prior written 
-//      permission.
+//	  products derived from this software without specific prior written 
+//	  permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -48,8 +48,8 @@
 
 // The original code included the following notice:
 //
-//     When you use this, send an email to: matumoto@math.keio.ac.jp
-//     with an appropriate reference to your work.
+//	 When you use this, send an email to: matumoto@math.keio.ac.jp
+//	 with an appropriate reference to your work.
 //
 // It would be nice to CC: rjwagner@writeme.com and Cokus@math.washington.edu
 // when you write.
@@ -73,15 +73,15 @@ class MTRand : public Singleton<MTRand> {
 public:
 	typedef unsigned long uint32;  // unsigned integer type, at least 32 bits
 	
-	enum { N = 624 };       // length of state vector
+	enum { N = 624 };	   // length of state vector
 	enum { SAVE = N + 1 };  // length of array for save()
 
 protected:
 	enum { M = 397 };  // period parameter
 	
 	uint32 state[N];   // internal state
-	uint32 *pNext;     // next value to get from state
-	int left;          // number of values left before reload needed
+	uint32 *pNext;	 // next value to get from state
+	int left;		  // number of values left before reload needed
 	Mutex m_Lock;
 
 //Methods
@@ -95,14 +95,14 @@ public:
 	// reading 624 consecutive values.
 	
 	// Access to 32-bit random numbers
-	double rand();                          // real number in [0,1]
-	double rand( const double& n );         // real number in [0,n]
-	double randExc();                       // real number in [0,1)
-	double randExc( const double& n );      // real number in [0,n)
-	double randDblExc();                    // real number in (0,1)
+	double rand();						  // real number in [0,1]
+	double rand( const double& n );		 // real number in [0,n]
+	double randExc();					   // real number in [0,1)
+	double randExc( const double& n );	  // real number in [0,n)
+	double randDblExc();					// real number in (0,1)
 	double randDblExc( const double& n );   // real number in (0,n)
-	uint32 randIntInternal(bool lock);      // integer in [0,2^32-1], shouldn't be called from outside.
-	uint32 randInt( const uint32& n );      // integer in [0,n] for n < 2^32
+	uint32 randIntInternal(bool lock);	  // integer in [0,2^32-1], shouldn't be called from outside.
+	uint32 randInt( const uint32& n );	  // integer in [0,n] for n < 2^32
 	double operator()() { return rand(); }  // same as rand()
 	
 	// Access to 53-bit random numbers (capacity of IEEE double precision)
@@ -403,39 +403,39 @@ inline std::istream& operator>>( std::istream& is, MTRand& mtrand )
 // Change log:
 //
 // v0.1 - First release on 15 May 2000
-//      - Based on code by Makoto Matsumoto, Takuji Nishimura, and Shawn Cokus
-//      - Translated from C to C++
-//      - Made completely ANSI compliant
-//      - Designed convenient interface for initialization, seeding, and
-//        obtaining numbers in default or user-defined ranges
-//      - Added automatic seeding from /dev/urandom or time() and clock()
-//      - Provided functions for saving and loading generator state
+//	  - Based on code by Makoto Matsumoto, Takuji Nishimura, and Shawn Cokus
+//	  - Translated from C to C++
+//	  - Made completely ANSI compliant
+//	  - Designed convenient interface for initialization, seeding, and
+//		obtaining numbers in default or user-defined ranges
+//	  - Added automatic seeding from /dev/urandom or time() and clock()
+//	  - Provided functions for saving and loading generator state
 //
 // v0.2 - Fixed bug which reloaded generator one step too late
 //
 // v0.3 - Switched to clearer, faster reload() code from Matthew Bellew
 //
 // v0.4 - Removed trailing newline in saved generator format to be consistent
-//        with output format of built-in types
+//		with output format of built-in types
 //
 // v0.5 - Improved portability by replacing static const int's with enum's and
-//        clarifying return values in seed(); suggested by Eric Heimburg
-//      - Removed MAXINT constant; use 0xffffffffUL instead
+//		clarifying return values in seed(); suggested by Eric Heimburg
+//	  - Removed MAXINT constant; use 0xffffffffUL instead
 //
 // v0.6 - Eliminated seed overflow when uint32 is larger than 32 bits
-//      - Changed integer [0,n] generator to give better uniformity
+//	  - Changed integer [0,n] generator to give better uniformity
 //
 // v0.7 - Fixed operator precedence ambiguity in reload()
-//      - Added access for real numbers in (0,1) and (0,n)
+//	  - Added access for real numbers in (0,1) and (0,n)
 //
 // v0.8 - Included time.h header to properly support time_t and clock_t
 //
 // v1.0 - Revised seeding to match 26 Jan 2002 update of Nishimura and Matsumoto
-//      - Allowed for seeding with arrays of any length
-//      - Added access for real numbers in [0,1) with 53-bit resolution
-//      - Added access for real numbers from normal (Gaussian) distributions
-//      - Increased overall speed by optimizing twist()
-//      - Doubled speed of integer [0,n] generation
-//      - Fixed out-of-range number generation on 64-bit machines
-//      - Improved portability by substituting literal constants for long enum's
-//      - Changed license from GNU LGPL to BSD
+//	  - Allowed for seeding with arrays of any length
+//	  - Added access for real numbers in [0,1) with 53-bit resolution
+//	  - Added access for real numbers from normal (Gaussian) distributions
+//	  - Increased overall speed by optimizing twist()
+//	  - Doubled speed of integer [0,n] generation
+//	  - Fixed out-of-range number generation on 64-bit machines
+//	  - Improved portability by substituting literal constants for long enum's
+//	  - Changed license from GNU LGPL to BSD

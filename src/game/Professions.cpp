@@ -16,85 +16,85 @@
 
 uint32 GetGOReqSkill(GameObject * gameObjTarget)  
 {
-    if(gameObjTarget->GetEntry()==180215)return 300;
-    GameObjectInfo*gi= objmgr.GetGameObjectName_(gameObjTarget->GetEntry());
-    if(!gi)
-    {
-        sLog.outError("Unknown go entry=%u",gameObjTarget->GetEntry());
-        return 0;
-    }
+	if(gameObjTarget->GetEntry()==180215)return 300;
+	GameObjectInfo*gi= objmgr.GetGameObjectName_(gameObjTarget->GetEntry());
+	if(!gi)
+	{
+		sLog.outError("Unknown go entry=%u",gameObjTarget->GetEntry());
+		return 0;
+	}
 
-    Lock *lock = sLockStore.LookupEntry( gi->SpellFocus );
-    if(!lock) return 0;
-    for(uint32 i=0;i<5;i++)
-        if(lock->locktype[i] == 2 && lock->minlockskill[i])
-        {
-            return lock->minlockskill[i];
-        }
-    return 0;
+	Lock *lock = sLockStore.LookupEntry( gi->SpellFocus );
+	if(!lock) return 0;
+	for(uint32 i=0;i<5;i++)
+		if(lock->locktype[i] == 2 && lock->minlockskill[i])
+		{
+			return lock->minlockskill[i];
+		}
+	return 0;
 }
 
 void AddItemFromDisenchant(ItemPrototype *proto,Player*owner)
 {
-    uint32 count = 0,item = 0;
-    uint32 l=proto->ItemLevel;
-    if(proto->Quality ==4 && l>=51)
-    {
-        count=1;
-        item=20725;
-    }
-    else
-    {
-        if(proto->Quality ==2)//green -> dust for armor, essence for weapon
-        {
-            if(proto->Class==4)//armor->dust
-            {
-                if(l<=20)item=10940;
-                else if(l<=30)item=11083;
-                else if(l<=40)item=11137;
-                else if(l<=50)item=5803;
-                else item=16204;
-                 
-            }
-            else
-            {
-                if(l<=10)item=10938;
-                else if(l<=15)item=10939;
-                else if(l<=20)item=10998;
-                else if(l<=25)item=11082;
-                else if(l<=30)item=11134;
-                else if(l<=35)item=11135;
-                else if(l<=40)item=11174;
-                else if(l<=45)item=11175;
-                else if(l<=50)item=16202;
-                else item=16203;
-            
-            }
-            count =1+rand()%3; 
-        }
-        else if(proto->Quality >=3)//blue -> shards
-        {
-                if(l<=20)item=10978;
-                else if(l<=25)item=11084;
-                else if(l<=30)item=11138;
-                else if(l<=35)item=11139;
-                else if(l<=40)item=11177;
-                else if(l<=45)item=11178;
-                else if(l<=50)item=14343;
-                else item=14344;
-        
-            count = proto->Quality-2+rand()%3;
-        }
-    }
+	uint32 count = 0,item = 0;
+	uint32 l=proto->ItemLevel;
+	if(proto->Quality ==4 && l>=51)
+	{
+		count=1;
+		item=20725;
+	}
+	else
+	{
+		if(proto->Quality ==2)//green -> dust for armor, essence for weapon
+		{
+			if(proto->Class==4)//armor->dust
+			{
+				if(l<=20)item=10940;
+				else if(l<=30)item=11083;
+				else if(l<=40)item=11137;
+				else if(l<=50)item=5803;
+				else item=16204;
+				 
+			}
+			else
+			{
+				if(l<=10)item=10938;
+				else if(l<=15)item=10939;
+				else if(l<=20)item=10998;
+				else if(l<=25)item=11082;
+				else if(l<=30)item=11134;
+				else if(l<=35)item=11135;
+				else if(l<=40)item=11174;
+				else if(l<=45)item=11175;
+				else if(l<=50)item=16202;
+				else item=16203;
+			
+			}
+			count =1+rand()%3; 
+		}
+		else if(proto->Quality >=3)//blue -> shards
+		{
+				if(l<=20)item=10978;
+				else if(l<=25)item=11084;
+				else if(l<=30)item=11138;
+				else if(l<=35)item=11139;
+				else if(l<=40)item=11177;
+				else if(l<=45)item=11178;
+				else if(l<=50)item=14343;
+				else item=14344;
+		
+			count = proto->Quality-2+rand()%3;
+		}
+	}
 
-    Item * it=objmgr.CreateItem(item,owner);
+	Item * it=objmgr.CreateItem(item,owner);
    
-    it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
-    bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
-    if(!result)
-    {
-        printf("Error whole trying to add disenchanted items to free slots");
-    }
+	it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+	bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+	if(!result)
+	{
+		printf("Error whole trying to add disenchanted items to free slots");
+	}
 }
 /*
 Dusts usually are extracted from armors, but also occasionally found from weapons. 

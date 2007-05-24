@@ -115,30 +115,30 @@ protected:
 class Mutex
 {
 public:
-    Mutex()
-    {
-        pthread_mutex_init(&mutex, NULL);
-    }
+	Mutex()
+	{
+		pthread_mutex_init(&mutex, NULL);
+	}
 
-    ~Mutex()
-    {
-        pthread_mutex_destroy(&mutex);
-    }
+	~Mutex()
+	{
+		pthread_mutex_destroy(&mutex);
+	}
 
-    inline void Acquire()
-    {
-        pthread_mutex_lock(&mutex);
-    }
+	inline void Acquire()
+	{
+		pthread_mutex_lock(&mutex);
+	}
 
-    inline void Release()
-    {
-        pthread_mutex_unlock(&mutex);
-    }
+	inline void Release()
+	{
+		pthread_mutex_unlock(&mutex);
+	}
 
-    inline bool AttemptAcquire()
-    {
-        return (pthread_mutex_trylock(&mutex) == 0);
-    }
+	inline bool AttemptAcquire()
+	{
+		return (pthread_mutex_trylock(&mutex) == 0);
+	}
 
 protected:
 	friend class Condition;

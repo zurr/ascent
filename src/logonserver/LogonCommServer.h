@@ -17,25 +17,25 @@
 
 class LogonCommServerSocket : public Socket
 {
-    uint16 remaining;
-    uint16 opcode;
+	uint16 remaining;
+	uint16 opcode;
 public:
-    LogonCommServerSocket(SOCKET fd);
-    ~LogonCommServerSocket();
+	LogonCommServerSocket(SOCKET fd);
+	~LogonCommServerSocket();
 
-    void OnRead();
-    void OnDisconnect();
-    void SendPacket(WorldPacket * data);
-    void HandlePacket(WorldPacket & recvData);
+	void OnRead();
+	void OnDisconnect();
+	void SendPacket(WorldPacket * data);
+	void HandlePacket(WorldPacket & recvData);
 
-    void HandleRegister(WorldPacket & recvData);
-    void HandlePing(WorldPacket & recvData);
-    void HandleSessionRequest(WorldPacket & recvData);
-    void HandleSQLExecute(WorldPacket & recvData);
+	void HandleRegister(WorldPacket & recvData);
+	void HandlePing(WorldPacket & recvData);
+	void HandleSessionRequest(WorldPacket & recvData);
+	void HandleSQLExecute(WorldPacket & recvData);
 
-    uint32 last_ping;
-    bool removed;
-    set<uint32> server_ids;
+	uint32 last_ping;
+	bool removed;
+	set<uint32> server_ids;
 };
 
 #endif

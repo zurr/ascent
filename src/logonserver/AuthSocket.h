@@ -22,7 +22,7 @@ class LogonCommServerSocket;
 
 class AuthSocket : public Socket
 {
-    friend class LogonCommServerSocket;
+	friend class LogonCommServerSocket;
 public:
 
 	///////////////////////////////////////////////////
@@ -47,11 +47,11 @@ public:
 
 	void SendChallengeError(uint8 Error);
 	void SendProofError(uint8 Error, uint8 * M2);
-    inline sAuthLogonChallenge_C * GetChallenge() { return &m_challenge; }
-    inline void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
-    void OnDisconnect();
-    inline time_t GetLastRecv() { return last_recv; }
-    bool removedFromSet;
+	inline sAuthLogonChallenge_C * GetChallenge() { return &m_challenge; }
+	inline void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
+	void OnDisconnect();
+	inline time_t GetLastRecv() { return last_recv; }
+	bool removedFromSet;
 
 protected:
 
@@ -71,7 +71,7 @@ protected:
 	/////////////////////////
 
 	BigNumber m_sessionkey;
-    time_t last_recv;
+	time_t last_recv;
 };
 
 #endif

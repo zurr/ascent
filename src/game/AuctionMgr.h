@@ -19,23 +19,23 @@ class AuctionHouse;
 class AuctionMgr : public Singleton <AuctionMgr>
 {
 public:
-    AuctionMgr()
-    {
-        loopcount = 0;
-        maxId = 1;
-    }
+	AuctionMgr()
+	{
+		loopcount = 0;
+		maxId = 1;
+	}
 
-    ~AuctionMgr()
-    {
-        vector<AuctionHouse*>::iterator itr = auctionHouses.begin();
-        for(; itr != auctionHouses.end(); ++itr)
-            delete (*itr);
-    }
+	~AuctionMgr()
+	{
+		vector<AuctionHouse*>::iterator itr = auctionHouses.begin();
+		for(; itr != auctionHouses.end(); ++itr)
+			delete (*itr);
+	}
 
-    void LoadAuctionHouses();
-    void Update();
+	void LoadAuctionHouses();
+	void Update();
 
-    AuctionHouse * GetAuctionHouse(uint32 Entry);
+	AuctionHouse * GetAuctionHouse(uint32 Entry);
 
 	inline uint32 GenerateAuctionId()
 	{ 
@@ -46,11 +46,11 @@ public:
 	}
 
 private:
-    HM_NAMESPACE::hash_map<uint32, AuctionHouse*> auctionHouseEntryMap;
-    vector<AuctionHouse*> auctionHouses;
+	HM_NAMESPACE::hash_map<uint32, AuctionHouse*> auctionHouseEntryMap;
+	vector<AuctionHouse*> auctionHouses;
 	volatile uint32 maxId;
 	Mutex lock;
-    uint32 loopcount;
+	uint32 loopcount;
 };
 
 #define sAuctionMgr AuctionMgr::getSingleton()

@@ -36,14 +36,14 @@ typedef struct
 	float	z;
 	float	o;
 	Formation* form;
-    uint32 movetype;
-    uint32 displayid;
-    uint32 factionid;
-    uint32 flags;
-    uint32 bytes;
-    uint32 bytes2;
-    uint32 emote_state;
-    uint32 respawnNpcLink;
+	uint32 movetype;
+	uint32 displayid;
+	uint32 factionid;
+	uint32 flags;
+	uint32 bytes;
+	uint32 bytes2;
+	uint32 emote_state;
+	uint32 respawnNpcLink;
 }CreatureSpawn;
 
 typedef struct
@@ -63,7 +63,7 @@ typedef struct
 	uint32	faction;
 //	uint32	level;
 	float scale;
-    uint32 stateNpcLink;
+	uint32 stateNpcLink;
 } GOSpawn;
 
 typedef std::set<CreatureSpawn*> CreatureSpawnList;
@@ -78,28 +78,28 @@ typedef struct
 class Map
 {
 public:
-    Map(uint32 mapid);
-    ~Map();
+	Map(uint32 mapid);
+	~Map();
 
-    inline InstanceMap::iterator GetInstancesBegin() { return _instances.begin(); }
-    inline InstanceMap::iterator GetInstancesEnd() { return _instances.end(); }
+	inline InstanceMap::iterator GetInstancesBegin() { return _instances.begin(); }
+	inline InstanceMap::iterator GetInstancesEnd() { return _instances.end(); }
 
-    MapMgr * CreateMapMgrInstance(uint32 instanceid = 0);
-    void DestroyMapMgrInstance(uint32 instanceId);
-    MapMgr * GetFirstInstance();    // for main continents
+	MapMgr * CreateMapMgrInstance(uint32 instanceid = 0);
+	void DestroyMapMgrInstance(uint32 instanceId);
+	MapMgr * GetFirstInstance();	// for main continents
 
-    MapMgr * GetInstance(Object* obj);
-    MapMgr * GetInstance(uint32 instanceId);
-    MapMgr * GetRawInstance(uint32 instanceid); //this function bypass pending stattes
-    MapMgr * GetInstanceByGroup(Group *pGroup, Player *pCaller);
-    MapMgr * GetInstanceByCreator(Player *pCreator);
-    MapMgr * GetInstanceByGroupInstanceId(uint32 InstanceID, bool Lock);
-    MapMgr * InstanceExists(uint32 instanceId);
-    inline TerrainMgr * GetTerrainMgr() { return _terrain; }
-    inline string GetNameString() { return name; }
-    inline const char* GetName() { return name.c_str(); }
-    inline MapEntry* GetDBCEntry() { return me; }
-    void BuildXMLStats(char * m_file);
+	MapMgr * GetInstance(Object* obj);
+	MapMgr * GetInstance(uint32 instanceId);
+	MapMgr * GetRawInstance(uint32 instanceid); //this function bypass pending stattes
+	MapMgr * GetInstanceByGroup(Group *pGroup, Player *pCaller);
+	MapMgr * GetInstanceByCreator(Player *pCreator);
+	MapMgr * GetInstanceByGroupInstanceId(uint32 InstanceID, bool Lock);
+	MapMgr * InstanceExists(uint32 instanceId);
+	inline TerrainMgr * GetTerrainMgr() { return _terrain; }
+	inline string GetNameString() { return name; }
+	inline const char* GetName() { return name.c_str(); }
+	inline MapEntry* GetDBCEntry() { return me; }
+	void BuildXMLStats(char * m_file);
 	inline CellSpawns *GetSpawnsList(uint32 cellx,uint32 celly)
 	{
 		ASSERT(cellx < _sizeX);
@@ -107,26 +107,26 @@ public:
 
 		return spawns[cellx][celly];
 	}
-    inline CellSpawns * GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
-    {
-        ASSERT(cellx < _sizeX);
-        ASSERT(celly < _sizeY);
-        if(spawns[cellx][celly] == 0)
-            spawns[cellx][celly] = new CellSpawns;
-        return spawns[cellx][celly];
-    }
+	inline CellSpawns * GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
+	{
+		ASSERT(cellx < _sizeX);
+		ASSERT(celly < _sizeY);
+		if(spawns[cellx][celly] == 0)
+			spawns[cellx][celly] = new CellSpawns;
+		return spawns[cellx][celly];
+	}
 
 	void LoadSpawns(bool reload);//set to true to make clean up
-    uint32 CreatureSpawnCount;
-    uint32 GameObjectSpawnCount;
+	uint32 CreatureSpawnCount;
+	uint32 GameObjectSpawnCount;
 
 private:
-    InstanceMap     _instances;    
-    MapInfo *       _mapInfo;
-    TerrainMgr*     _terrain;
-    uint32 _mapId;
-    string name;
-    MapEntry * me;
+	InstanceMap	 _instances;	
+	MapInfo *	   _mapInfo;
+	TerrainMgr*	 _terrain;
+	uint32 _mapId;
+	string name;
+	MapEntry * me;
 	Mutex listmutex;
 	
 

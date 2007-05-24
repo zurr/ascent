@@ -54,129 +54,129 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 {
 public:
 
-    void LoadScripts();
-    void UnloadScripts();
+	void LoadScripts();
+	void UnloadScripts();
 
-    CreatureAIScript * CreateAIScriptClassForEntry(Creature* pCreature);
-    GameObjectAIScript * CreateAIScriptClassForGameObject(uint32 uEntryId, GameObject* pGameObject);
+	CreatureAIScript * CreateAIScriptClassForEntry(Creature* pCreature);
+	GameObjectAIScript * CreateAIScriptClassForGameObject(uint32 uEntryId, GameObject* pGameObject);
 
-    bool CallScriptedDummySpell(uint32 uSpellId, uint32 i, Spell* pSpell);
-    bool CallScriptedDummyAura( uint32 uSpellId, uint32 i, Aura* pAura, bool apply);
+	bool CallScriptedDummySpell(uint32 uSpellId, uint32 i, Spell* pSpell);
+	bool CallScriptedDummyAura( uint32 uSpellId, uint32 i, Aura* pAura, bool apply);
 
-    GossipScript* GetGossipScript(uint32 uEntryId);
+	GossipScript* GetGossipScript(uint32 uEntryId);
 
-    void register_creature_script(uint32 entry, exp_create_creature_ai callback);
-    void register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback);
-    void register_gossip_script(uint32 entry, exp_create_gossip_script callback);
-    void register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback);
-    void register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback);
+	void register_creature_script(uint32 entry, exp_create_creature_ai callback);
+	void register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback);
+	void register_gossip_script(uint32 entry, exp_create_gossip_script callback);
+	void register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback);
+	void register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback);
 
 protected:
-    CreatureCreateMap _creatures;
-    GameObjectCreateMap _gameobjects;
-    GossipCreateMap _gossips;
-    HandleDummyAuraMap _auras;
-    HandleDummySpellMap _spells;
-    LibraryHandleMap _handles;
+	CreatureCreateMap _creatures;
+	GameObjectCreateMap _gameobjects;
+	GossipCreateMap _gossips;
+	HandleDummyAuraMap _auras;
+	HandleDummySpellMap _spells;
+	LibraryHandleMap _handles;
 };
 
 class SERVER_DECL CreatureAIScript
 {
 public:
-    CreatureAIScript(Creature* creature);
-    virtual ~CreatureAIScript() {};
+	CreatureAIScript(Creature* creature);
+	virtual ~CreatureAIScript() {};
 
-    virtual void OnCombatStart(Unit* mTarget) {}
-    virtual void OnCombatStop(Unit* mTarget) {}
-    virtual void OnDamageTaken(Unit* mAttacker, float fAmount) {}
-    virtual void OnCastSpell(uint32 iSpellId) {}
-    virtual void OnTargetParried(Unit* mTarget) {}
-    virtual void OnTargetDodged(Unit* mTarget) {}
-    virtual void OnTargetBlocked(Unit* mTarget, int32 iAmount) {}
-    virtual void OnTargetCritHit(Unit* mTarget, float fAmount) {}
-    virtual void OnTargetDied(Unit* mTarget) {}
-    virtual void OnParried(Unit* mTarget) {}
-    virtual void OnDodged(Unit* mTarget) {}
-    virtual void OnBlocked(Unit* mTarget, int32 iAmount) {}
-    virtual void OnCritHit(Unit* mTarget, float fAmount) {}
-    virtual void OnHit(Unit* mTarget, float fAmount) {}
-    virtual void OnDied(Unit *mKiller) {}
-    virtual void OnAssistTargetDied(Unit* mAssistTarget) {}
-    virtual void OnFear(Unit* mFeared, uint32 iSpellId) {}
-    virtual void OnFlee(Unit* mFlee) {}
-    virtual void OnCallForHelp() {}
-    virtual void OnLoad() {}
-    virtual void OnReachWP(uint32 iWaypointId, bool bForwards) {}
-    virtual void OnLootTaken(Player* pPlayer, ItemPrototype *pItemPrototype) {}
-    virtual void AIUpdate() {}
+	virtual void OnCombatStart(Unit* mTarget) {}
+	virtual void OnCombatStop(Unit* mTarget) {}
+	virtual void OnDamageTaken(Unit* mAttacker, float fAmount) {}
+	virtual void OnCastSpell(uint32 iSpellId) {}
+	virtual void OnTargetParried(Unit* mTarget) {}
+	virtual void OnTargetDodged(Unit* mTarget) {}
+	virtual void OnTargetBlocked(Unit* mTarget, int32 iAmount) {}
+	virtual void OnTargetCritHit(Unit* mTarget, float fAmount) {}
+	virtual void OnTargetDied(Unit* mTarget) {}
+	virtual void OnParried(Unit* mTarget) {}
+	virtual void OnDodged(Unit* mTarget) {}
+	virtual void OnBlocked(Unit* mTarget, int32 iAmount) {}
+	virtual void OnCritHit(Unit* mTarget, float fAmount) {}
+	virtual void OnHit(Unit* mTarget, float fAmount) {}
+	virtual void OnDied(Unit *mKiller) {}
+	virtual void OnAssistTargetDied(Unit* mAssistTarget) {}
+	virtual void OnFear(Unit* mFeared, uint32 iSpellId) {}
+	virtual void OnFlee(Unit* mFlee) {}
+	virtual void OnCallForHelp() {}
+	virtual void OnLoad() {}
+	virtual void OnReachWP(uint32 iWaypointId, bool bForwards) {}
+	virtual void OnLootTaken(Player* pPlayer, ItemPrototype *pItemPrototype) {}
+	virtual void AIUpdate() {}
 
-    void RegisterAIUpdateEvent(uint32 frequency);
-    void RemoveAIUpdateEvent();
+	void RegisterAIUpdateEvent(uint32 frequency);
+	void RemoveAIUpdateEvent();
 
-    virtual void Destroy() {}
-    Creature* GetUnit() { return _unit; }
+	virtual void Destroy() {}
+	Creature* GetUnit() { return _unit; }
 
 protected:
-    Creature* _unit;
+	Creature* _unit;
 };
 
 class SERVER_DECL GameObjectAIScript
 {
 public:
-    GameObjectAIScript(GameObject* goinstance);
-    virtual ~GameObjectAIScript() {}
+	GameObjectAIScript(GameObject* goinstance);
+	virtual ~GameObjectAIScript() {}
 
-    virtual void OnCreate() {}
-    virtual void OnSpawn() {}
-    virtual void OnDespawn() {}
-    virtual void OnLootTaken(Player * pLooter, ItemPrototype *pItemInfo) {}
-    virtual void OnActivate(Player * pPlayer) {}
-    virtual void AIUpdate() {}
-    virtual void Destroy() {}
+	virtual void OnCreate() {}
+	virtual void OnSpawn() {}
+	virtual void OnDespawn() {}
+	virtual void OnLootTaken(Player * pLooter, ItemPrototype *pItemInfo) {}
+	virtual void OnActivate(Player * pPlayer) {}
+	virtual void AIUpdate() {}
+	virtual void Destroy() {}
 
-    void RegisterAIUpdateEvent(uint32 frequency);
+	void RegisterAIUpdateEvent(uint32 frequency);
 
 protected:
 
-    GameObject* _gameobject;
+	GameObject* _gameobject;
 };
 
 class SERVER_DECL GossipScript
 {
 public:
-    GossipScript();
-    virtual ~GossipScript() {} 
+	GossipScript();
+	virtual ~GossipScript() {} 
 
-    virtual void GossipHello(Creature* pCreature, Player* Plr, bool AutoSend);
-    virtual void GossipSelectOption(Creature* pCreature, Player* Plr, uint32 Id, uint32 IntId);
-    virtual void GossipEnd(Creature* pCreature, Player* Plr);
-    virtual void Destroy();
+	virtual void GossipHello(Creature* pCreature, Player* Plr, bool AutoSend);
+	virtual void GossipSelectOption(Creature* pCreature, Player* Plr, uint32 Id, uint32 IntId);
+	virtual void GossipEnd(Creature* pCreature, Player* Plr);
+	virtual void Destroy();
 
-    bool AutoCreated;
+	bool AutoCreated;
 };
 
 class SERVER_DECL QuestScript
 {
 public:
-    QuestScript(QuestLogEntry* qle);
-    virtual ~QuestScript() {};
+	QuestScript(QuestLogEntry* qle);
+	virtual ~QuestScript() {};
 
-    virtual void OnQuestStart(Player* mTarget) {}
-    virtual void OnQuestComplete(Player* mTarget) {}
-    virtual void OnQuestCancel(Player* mTarget) {}
-    virtual void OnGameObjectActivate(uint32 entry, Player* mTarget) {}
-    virtual void OnCreatureKill(uint32 entry, Player* mTarget) {}
-    virtual void OnExploreArea(uint32 areaId, Player* mTarget) {}
-    virtual void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget) {}
-    virtual void EventUpdate() {};
+	virtual void OnQuestStart(Player* mTarget) {}
+	virtual void OnQuestComplete(Player* mTarget) {}
+	virtual void OnQuestCancel(Player* mTarget) {}
+	virtual void OnGameObjectActivate(uint32 entry, Player* mTarget) {}
+	virtual void OnCreatureKill(uint32 entry, Player* mTarget) {}
+	virtual void OnExploreArea(uint32 areaId, Player* mTarget) {}
+	virtual void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget) {}
+	virtual void EventUpdate() {};
 
-    void RegisterQuestEvent(uint32 frequency);
-    void RemoveQuestEvent();
+	void RegisterQuestEvent(uint32 frequency);
+	void RemoveQuestEvent();
 
-    virtual void Destroy() {}
+	virtual void Destroy() {}
 
 protected:
-    QuestLogEntry *_qLogEntry;
+	QuestLogEntry *_qLogEntry;
 };
 
 #define sScriptMgr ScriptMgr::getSingleton()

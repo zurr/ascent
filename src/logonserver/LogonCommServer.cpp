@@ -16,17 +16,17 @@
 
 typedef struct
 {
-    uint16 opcode;
-    uint16 size;
+	uint16 opcode;
+	uint16 size;
 }logonpacket;
 
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 4096, 4096)
 {
-    // do nothing
-    last_ping = time(NULL);
-    remaining = opcode = 0;
-    sInfoCore.AddServerSocket(this);
-    removed = false;
+	// do nothing
+	last_ping = time(NULL);
+	remaining = opcode = 0;
+	sInfoCore.AddServerSocket(this);
+	removed = false;
 }
 
 LogonCommServerSocket::~LogonCommServerSocket()
@@ -36,160 +36,160 @@ LogonCommServerSocket::~LogonCommServerSocket()
 
 void LogonCommServerSocket::OnDisconnect()
 {
-    // if we're registered -> de-register
-    if(!removed)
-    {
-        set<uint32>::iterator itr = server_ids.begin();
-        for(; itr != server_ids.end(); ++itr)
-            sInfoCore.RemoveRealm((*itr));
+	// if we're registered -> de-register
+	if(!removed)
+	{
+		set<uint32>::iterator itr = server_ids.begin();
+		for(; itr != server_ids.end(); ++itr)
+			sInfoCore.RemoveRealm((*itr));
 
-        sInfoCore.RemoveServerSocket(this);
-    }
+		sInfoCore.RemoveServerSocket(this);
+	}
 }
 
 void LogonCommServerSocket::OnRead()
 {
-    while(true)
-    {
-        if(!remaining)
-        {
-            if(GetReadBufferSize() < 4)
-                return;     // no header
+	while(true)
+	{
+		if(!remaining)
+		{
+			if(GetReadBufferSize() < 4)
+				return;	 // no header
 
-            // read header
-            Read(2, (uint8*)&opcode);
-            Read(2, (uint8*)&remaining);
-        }
+			// read header
+			Read(2, (uint8*)&opcode);
+			Read(2, (uint8*)&remaining);
+		}
 
-        // do we have a full packet?
-        if(GetReadBufferSize() < remaining)
-            return;
+		// do we have a full packet?
+		if(GetReadBufferSize() < remaining)
+			return;
 
-        // create the buffer
-        WorldPacket buff(opcode, remaining);
-        buff.resize(remaining);
-        Read(remaining, (uint8*)buff.contents());
+		// create the buffer
+		WorldPacket buff(opcode, remaining);
+		buff.resize(remaining);
+		Read(remaining, (uint8*)buff.contents());
 
-        // handle the packet
-        HandlePacket(buff);
+		// handle the packet
+		HandlePacket(buff);
 
-        remaining = 0;
-        opcode = 0;
-    }
+		remaining = 0;
+		opcode = 0;
+	}
 }
 
 void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 {
-    switch(recvData.GetOpcode())
-    {
-    case RCMSG_REGISTER_REALM:
-        HandleRegister(recvData);
-        break;
+	switch(recvData.GetOpcode())
+	{
+	case RCMSG_REGISTER_REALM:
+		HandleRegister(recvData);
+		break;
 
-    case RCMSG_REQUEST_SESSION:
-        HandleSessionRequest(recvData);
-        break;
+	case RCMSG_REQUEST_SESSION:
+		HandleSessionRequest(recvData);
+		break;
 
-    case RCMSG_PING:
-        HandlePing(recvData);
-        break;
+	case RCMSG_PING:
+		HandlePing(recvData);
+		break;
 
-    case RCMSG_SQL_EXECUTE:
-        HandleSQLExecute(recvData);
-        break;
+	case RCMSG_SQL_EXECUTE:
+		HandleSQLExecute(recvData);
+		break;
 
-    default:
-        printf("Got unknwon packet from logoncomm: %u\n", recvData.GetOpcode());
-        break;
-    }
+	default:
+		printf("Got unknwon packet from logoncomm: %u\n", recvData.GetOpcode());
+		break;
+	}
 }
 
 void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 {
-    Realm realm;
+	Realm realm;
 
-    recvData >> realm.Name >> realm.Address;
-    recvData >> realm.Colour >> realm.Icon >> realm.TimeZone >> realm.Population;
+	recvData >> realm.Name >> realm.Address;
+	recvData >> realm.Colour >> realm.Icon >> realm.TimeZone >> realm.Population;
 
-    uint32 my_id = sInfoCore.GenerateRealmID();
-    sLog.outString("Registering realm `%s` under ID %u.", realm.Name.c_str(), my_id);
+	uint32 my_id = sInfoCore.GenerateRealmID();
+	sLog.outString("Registering realm `%s` under ID %u.", realm.Name.c_str(), my_id);
 
-    // Add to the main realm list
-    sInfoCore.AddRealm(my_id, &realm);
+	// Add to the main realm list
+	sInfoCore.AddRealm(my_id, &realm);
 
-    // Send back response packet.
-    WorldPacket data(RSMSG_REALM_REGISTERED, 4);
-    data << uint32(0);      // Error
-    data << my_id;          // Realm ID
-    data << realm.Name;
-    SendPacket(&data);
-    server_ids.insert(my_id);
+	// Send back response packet.
+	WorldPacket data(RSMSG_REALM_REGISTERED, 4);
+	data << uint32(0);	  // Error
+	data << my_id;		  // Realm ID
+	data << realm.Name;
+	SendPacket(&data);
+	server_ids.insert(my_id);
 }
 
 void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 {
-    uint32 request_id;
-    string account_name;
-    recvData >> request_id;
-    recvData >> account_name;
+	uint32 request_id;
+	string account_name;
+	recvData >> request_id;
+	recvData >> account_name;
 
-    // get sessionkey!
-    uint32 error = 0;
-    Account * acct = sAccountMgr.GetAccount(account_name);
-    BigNumber * sessionkey = acct ? sInfoCore.GetSessionKey(acct->AccountId) : 0;
-    
-    if(sessionkey == 0 || acct == 0)
-        error = 1;          // Unauthorized user.
+	// get sessionkey!
+	uint32 error = 0;
+	Account * acct = sAccountMgr.GetAccount(account_name);
+	BigNumber * sessionkey = acct ? sInfoCore.GetSessionKey(acct->AccountId) : 0;
+	
+	if(sessionkey == 0 || acct == 0)
+		error = 1;		  // Unauthorized user.
 
-    // build response packet
-    WorldPacket data(RSMSG_SESSION_RESULT, 150);
-    data << request_id;
-    data << error;
-    if(!error)
-    {
-        // Append account information.
-        data << acct->AccountId;
-        data << acct->Username;
-        data << acct->GMFlags;
-        data << acct->AccountFlags;
-        data.append(sessionkey->AsByteArray(), 40);
-    }
-    
-    SendPacket(&data);
+	// build response packet
+	WorldPacket data(RSMSG_SESSION_RESULT, 150);
+	data << request_id;
+	data << error;
+	if(!error)
+	{
+		// Append account information.
+		data << acct->AccountId;
+		data << acct->Username;
+		data << acct->GMFlags;
+		data << acct->AccountFlags;
+		data.append(sessionkey->AsByteArray(), 40);
+	}
+	
+	SendPacket(&data);
 
-    printf("Sessionkey sent for account %s, err %u\n", account_name.c_str(), error);
+	printf("Sessionkey sent for account %s, err %u\n", account_name.c_str(), error);
 }
 
 void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 {
-    uint32 seq;
-    recvData >> seq;
+	uint32 seq;
+	recvData >> seq;
 
-    WorldPacket data(RSMSG_PONG, 4);
-    data << seq;
-    SendPacket(&data);
-    last_ping = time(NULL);
+	WorldPacket data(RSMSG_PONG, 4);
+	data << seq;
+	SendPacket(&data);
+	last_ping = time(NULL);
 }
 
 void LogonCommServerSocket::SendPacket(WorldPacket * data)
 {
-    BurstBegin();       //  << Lock
+	BurstBegin();	   //  << Lock
 
-    logonpacket header;
-    header.opcode = data->GetOpcode();
-    header.size   = data->size();
+	logonpacket header;
+	header.opcode = data->GetOpcode();
+	header.size   = data->size();
 
-    BurstSend((uint8*)&header, 4);
-    if(data->size() > 0)
-        BurstSend(data->contents(), data->size());
+	BurstSend((uint8*)&header, 4);
+	if(data->size() > 0)
+		BurstSend(data->contents(), data->size());
 
-    BurstPush();
-    BurstEnd();         //  >> Unlock
+	BurstPush();
+	BurstEnd();		 //  >> Unlock
 }
 
 void LogonCommServerSocket::HandleSQLExecute(WorldPacket & recvData)
 {
-    string Query;
-    recvData >> Query;
-    sLogonSQL->Execute(Query.c_str());
+	string Query;
+	recvData >> Query;
+	sLogonSQL->Execute(Query.c_str());
 }

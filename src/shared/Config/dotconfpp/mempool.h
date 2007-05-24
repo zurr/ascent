@@ -29,32 +29,32 @@
 class AsyncDNSMemPool
 {
 private:
-    struct PoolChunk {
-        void * pool;
-        size_t pos;
-        size_t size;
+	struct PoolChunk {
+		void * pool;
+		size_t pos;
+		size_t size;
 
-        PoolChunk(size_t _size);
-        ~PoolChunk();
-    };
-    PoolChunk ** chunks;
-    size_t chunksCount;
-    size_t defaultSize;
+		PoolChunk(size_t _size);
+		~PoolChunk();
+	};
+	PoolChunk ** chunks;
+	size_t chunksCount;
+	size_t defaultSize;
 
-    size_t poolUsage;
-    size_t poolUsageCounter;
+	size_t poolUsage;
+	size_t poolUsageCounter;
 
-    void addNewChunk(size_t size);
+	void addNewChunk(size_t size);
 
 public:
-    AsyncDNSMemPool(size_t _defaultSize = 4096);
-    virtual ~AsyncDNSMemPool();
+	AsyncDNSMemPool(size_t _defaultSize = 4096);
+	virtual ~AsyncDNSMemPool();
 
-    int initialize();
-    void free();
-    void * alloc(size_t size);
-    void * calloc(size_t size);
-    char * strdup(const char *str);
+	int initialize();
+	void free();
+	void * alloc(size_t size);
+	void * calloc(size_t size);
+	char * strdup(const char *str);
 };
 
 #endif

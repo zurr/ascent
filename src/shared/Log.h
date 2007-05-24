@@ -69,33 +69,33 @@ public:
 class Anticheat_Log : public Singleton<Anticheat_Log>
 {
 public:
-    Anticheat_Log();
-    ~Anticheat_Log();
+	Anticheat_Log();
+	~Anticheat_Log();
 
-    void init(const char* filename);
-    void write(const char* format, ...);
-    void writefromsession(WorldSession* session, const char* format, ...);
-    void close();
+	void init(const char* filename);
+	void write(const char* format, ...);
+	void writefromsession(WorldSession* session, const char* format, ...);
+	void close();
 
 protected:
-    FILE * out;
-    Mutex MUTEX;
+	FILE * out;
+	Mutex MUTEX;
 };
 
 class GMCommand_Log : public Singleton<GMCommand_Log>
 {
 public:
-    GMCommand_Log();
-    ~GMCommand_Log();
+	GMCommand_Log();
+	~GMCommand_Log();
 
-    void init(const char* filename);
-    void write(const char* format, ...);
-    void writefromsession(WorldSession* session, const char* format, ...);
-    void close();
+	void init(const char* filename);
+	void write(const char* format, ...);
+	void writefromsession(WorldSession* session, const char* format, ...);
+	void close();
 
 protected:
-    FILE * out;
-    Mutex MUTEX;
+	FILE * out;
+	Mutex MUTEX;
 };
 
 SERVER_DECL void script_errorlog(const char* str, ...);
@@ -108,13 +108,13 @@ SERVER_DECL void script_debuglog(const char* str, ...);
 class WorldLog : public Singleton<WorldLog> 
 {
 public:
-    WorldLog();
-    ~WorldLog();
-    void LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction);
+	WorldLog();
+	~WorldLog();
+	void LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction);
 private:
 	Mutex mutex;
-    bool bEnabled;
-    FILE *fout;
+	bool bEnabled;
+	FILE *fout;
 };
 
 #define sWorldLog WorldLog::getSingleton()

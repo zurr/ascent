@@ -19,29 +19,29 @@
 
 class LogonCommClientSocket : public Socket
 {
-    uint16 remaining;
-    uint16 opcode;
+	uint16 remaining;
+	uint16 opcode;
 public:
-    LogonCommClientSocket(SOCKET fd);
-    ~LogonCommClientSocket();
-    
-    void OnRead();
-    void SendPacket(WorldPacket * data);
-    void HandlePacket(WorldPacket & recvData);
-    void SendPing();
+	LogonCommClientSocket(SOCKET fd);
+	~LogonCommClientSocket();
+	
+	void OnRead();
+	void SendPacket(WorldPacket * data);
+	void HandlePacket(WorldPacket & recvData);
+	void SendPing();
 
-    void HandleRegister(WorldPacket & recvData);
-    void HandlePong(WorldPacket & recvData);
-    void HandleSessionInfo(WorldPacket & recvData);
+	void HandleRegister(WorldPacket & recvData);
+	void HandlePong(WorldPacket & recvData);
+	void HandleSessionInfo(WorldPacket & recvData);
 
-    void OnDisconnect();
-    uint32 last_ping;
+	void OnDisconnect();
+	uint32 last_ping;
 
-    uint32 pingtime;
-    uint32 latency;
-    uint32 pingseq;
-    uint32 _id;
-    bool gotpong;
+	uint32 pingtime;
+	uint32 latency;
+	uint32 pingseq;
+	uint32 _id;
+	bool gotpong;
 };
 
 #endif

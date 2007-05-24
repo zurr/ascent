@@ -21,18 +21,18 @@
 
 enum TimeVariables
 {
-    TIME_SECOND = 1,
-    TIME_MINUTE = TIME_SECOND * 60,
-    TIME_HOUR   = TIME_MINUTE * 60,
-    TIME_DAY    = TIME_HOUR * 24,
+	TIME_SECOND = 1,
+	TIME_MINUTE = TIME_SECOND * 60,
+	TIME_HOUR   = TIME_MINUTE * 60,
+	TIME_DAY	= TIME_HOUR * 24,
 };
 
 enum MsTimeVariables
 {
-    MSTIME_SECOND = 1000,
-    MSTIME_MINUTE = MSTIME_SECOND * 60,
-    MSTIME_HOUR   = MSTIME_MINUTE * 60,
-    MSTIME_DAY    = MSTIME_HOUR * 24,
+	MSTIME_SECOND = 1000,
+	MSTIME_MINUTE = MSTIME_SECOND * 60,
+	MSTIME_HOUR   = MSTIME_MINUTE * 60,
+	MSTIME_DAY	= MSTIME_HOUR * 24,
 };
 
 #ifdef HAVE_CONFIG_H
@@ -64,7 +64,7 @@ enum MsTimeVariables
 #endif
 
 #define COMPILER_MICROSOFT 0
-#define COMPILER_GNU       1
+#define COMPILER_GNU	   1
 #define COMPILER_BORLAND   2
 
 #ifdef _MSC_VER
@@ -101,14 +101,14 @@ enum MsTimeVariables
 #endif
 
 #if PLATFORM == PLATFORM_WIN32
-    #define ASYNC_NET
+	#define ASYNC_NET
 #endif
 
 #ifdef USE_EPOLL
-    #define CONFIG_USE_EPOLL
+	#define CONFIG_USE_EPOLL
 #endif
 #ifdef USE_KQUEUE
-    #define CONFIG_USE_KQUEUE
+	#define CONFIG_USE_KQUEUE
 #endif
 
 #include <set>
@@ -122,8 +122,8 @@ enum MsTimeVariables
 
 #if defined (__GNUC__)
 #  define GCC_VERSION (__GNUC__ * 10000 \
-                       + __GNUC_MINOR__ * 100 \
-                       + __GNUC_PATCHLEVEL__)
+					   + __GNUC_MINOR__ * 100 \
+					   + __GNUC_PATCHLEVEL__)
 #endif
 
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
@@ -132,13 +132,13 @@ enum MsTimeVariables
 #  include <string.h>
 #  define MAX_PATH 1024
 #  if defined (__GNUC__)
-#    if GCC_VERSION >= 30400
-#      define __fastcall __attribute__((__fastcall__))
-#    else
-#      define __fastcall __attribute__((__regparm__(3)))
-#    endif
+#	if GCC_VERSION >= 30400
+#	  define __fastcall __attribute__((__fastcall__))
+#	else
+#	  define __fastcall __attribute__((__regparm__(3)))
+#	endif
 #  else
-#    define __fastcall __attribute__((__fastcall__))
+#	define __fastcall __attribute__((__fastcall__))
 #  endif
 #endif
 
@@ -186,14 +186,14 @@ using __gnu_cxx::hash_set;
 
 namespace __gnu_cxx
 {
-    template<> struct hash<unsigned long long>
-    {
-        size_t operator()(const unsigned long long &__x) const { return (size_t)__x; }
-    };
-    template<typename T> struct hash<T *>
-    {
-        size_t operator()(T * const &__x) const { return (size_t)__x; }
-    };
+	template<> struct hash<unsigned long long>
+	{
+		size_t operator()(const unsigned long long &__x) const { return (size_t)__x; }
+	};
+	template<typename T> struct hash<T *>
+	{
+		size_t operator()(T * const &__x) const { return (size_t)__x; }
+	};
 
 };
 
@@ -207,38 +207,38 @@ using std::hash_map;
 #else
   typedef long long int64;
 #endif
-typedef long        int32;
-typedef short       int16;
-typedef char        int8;
+typedef long		int32;
+typedef short	   int16;
+typedef char		int8;
 
 #if COMPILER == COMPILER_MICROSOFT
   typedef unsigned __int64   uint64;
-  typedef __int64            int64;
+  typedef __int64			int64;
 #else
   typedef unsigned long long uint64;
-  typedef long long          int64;
-  typedef unsigned long      DWORD;
+  typedef long long		  int64;
+  typedef unsigned long	  DWORD;
 #endif
 
-typedef unsigned long        uint32;
-typedef unsigned short       uint16;
-typedef unsigned char        uint8;
+typedef unsigned long		uint32;
+typedef unsigned short	   uint16;
+typedef unsigned char		uint8;
 
 /* 
 Scripting system exports/imports
 */
 
 #ifdef WIN32
-    #ifndef SCRIPTLIB
-        #define SERVER_DECL __declspec(dllexport)
-        #define SCRIPT_DECL __declspec(dllimport)
-    #else
-        #define SERVER_DECL __declspec(dllimport)
-        #define SCRIPT_DECL __declspec(dllexport)
-    #endif
+	#ifndef SCRIPTLIB
+		#define SERVER_DECL __declspec(dllexport)
+		#define SCRIPT_DECL __declspec(dllimport)
+	#else
+		#define SERVER_DECL __declspec(dllimport)
+		#define SCRIPT_DECL __declspec(dllexport)
+	#endif
 #else
-    #define SERVER_DECL 
-    #define SCRIPT_DECL 
+	#define SERVER_DECL 
+	#define SCRIPT_DECL 
 #endif
 
 // Include all threading files
@@ -278,20 +278,20 @@ Scripting system exports/imports
 #define for if(true) for
 
 #ifdef GNL_BIG_ENDIAN
-#  define GNL_LOWER_WORD_BYTE    4
+#  define GNL_LOWER_WORD_BYTE	4
 #else
-#  define GNL_LOWER_WORD_BYTE    0
+#  define GNL_LOWER_WORD_BYTE	0
 #endif
 
-#define GNL_LONG_AT_BYTE(x,b)    *(long *)(((char *)&x) + b)
+#define GNL_LONG_AT_BYTE(x,b)	*(long *)(((char *)&x) + b)
 #define FIST_MAGIC_QROUND (((65536.0 * 65536.0 * 16.0) + (65536.0 * 0.5)) * 65536.0)
 
 
 /// Round a floating-point value and convert to integer
 static inline long QRound (double inval)
 {
-    double dtemp = FIST_MAGIC_QROUND + inval;
-    return GNL_LONG_AT_BYTE (dtemp, GNL_LOWER_WORD_BYTE) - 0x80000000;
+	double dtemp = FIST_MAGIC_QROUND + inval;
+	return GNL_LONG_AT_BYTE (dtemp, GNL_LOWER_WORD_BYTE) - 0x80000000;
 }
 
 /// Convert a float to a cross-platform 32-bit format (no endianess adjustments!)
@@ -325,7 +325,7 @@ static inline float long2float (long l)
 #endif
 
 inline uint32 now()
-{    
+{	
 #ifdef WIN32
 return timeGetTime();
 #else
@@ -337,7 +337,7 @@ return  tp.time * 1000 + tp.millitm;
 
 #ifndef WIN32
 #define FALSE   0
-#define TRUE    1
+#define TRUE	1
 #endif
 
 #ifndef WIN32
@@ -353,7 +353,7 @@ return  tp.time * 1000 + tp.millitm;
 #pragma warning(disable:4800) 
 #pragma warning(disable:4996)
 #pragma warning(disable:4251)
-#endif      
+#endif	  
 #endif
 
 #undef INTEL_COMPILER
@@ -366,23 +366,23 @@ return  tp.time * 1000 + tp.millitm;
 #include "Util.h"
 struct WayPoint
 {
-    WayPoint()
-    {
-        o = 0.0f;
-    }
-    uint32 id;
-    float x;
-    float y;
-    float z;
-    float o;
-    uint32 waittime; //ms
-    uint32 flags;
-    bool forwardemoteoneshot;
-    uint32 forwardemoteid;
-    bool backwardemoteoneshot;
-    uint32 backwardemoteid;
-    uint32 forwardskinid;
-    uint32 backwardskinid;
+	WayPoint()
+	{
+		o = 0.0f;
+	}
+	uint32 id;
+	float x;
+	float y;
+	float z;
+	float o;
+	uint32 waittime; //ms
+	uint32 flags;
+	bool forwardemoteoneshot;
+	uint32 forwardemoteid;
+	bool backwardemoteoneshot;
+	uint32 backwardemoteid;
+	uint32 forwardskinid;
+	uint32 backwardskinid;
 
 };
 

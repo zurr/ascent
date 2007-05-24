@@ -32,7 +32,7 @@ public:
 		p->pNext=NULL;
 		
 		//lock.Acquire();
-        cond.BeginSynchronized();
+		cond.BeginSynchronized();
 		if(last)//have some items
 		{
 			last->pNext=p;
@@ -46,13 +46,13 @@ public:
 			cond.Signal();
 		}
 		//lock.Release();
-        cond.EndSynchronized();
+		cond.EndSynchronized();
 	}
 
 	T pop()
 	{
 		//lock.Acquire();
-        cond.BeginSynchronized();
+		cond.BeginSynchronized();
 		if(size==0)
 		cond.Wait();
 
@@ -67,7 +67,7 @@ public:
 			first=last=NULL;
 		}
 		//lock.Release();
-        cond.EndSynchronized();
+		cond.EndSynchronized();
 
 		T returnVal = tmp->value;
 		delete tmp;

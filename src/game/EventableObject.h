@@ -29,44 +29,44 @@ typedef set<TimedEvent*> EventList;
 
 class SERVER_DECL EventableObject
 {
-    friend class EventMgr;
-    friend class EventableObjectHolder;
+	friend class EventMgr;
+	friend class EventableObjectHolder;
 
 protected:
-    void event_RemoveEvents();
-    void event_RemoveEvents(uint32 EventType);
-    void event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft);
-    void event_ModifyTime(uint32 EventType, uint32 Time);
-    void event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time);
-    bool event_HasEvent(uint32 EventType);
+	void event_RemoveEvents();
+	void event_RemoveEvents(uint32 EventType);
+	void event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft);
+	void event_ModifyTime(uint32 EventType, uint32 Time);
+	void event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time);
+	bool event_HasEvent(uint32 EventType);
 
 public:
 	uint32 event_GetEventPeriod(uint32 EventType);
-    // Public methods
-    EventableObject();
-    virtual ~EventableObject();
+	// Public methods
+	EventableObject();
+	virtual ~EventableObject();
 
-    inline bool event_HasEvents() { return m_events.size() > 0 ? true : false; }
-    void event_AddEvent(TimedEvent * ptr);
-    void event_UpdateActiveStatus();
-    bool event_UpdateEvents(uint32 diff);
-    void event_SetActive(bool value);
-    void event_Relocate();
-    
-    // this func needs to be implemented by all eventable classes. use it to retreive the instance
-    // id that it needs to attach itself to.
-    
-    virtual int32 event_GetInstanceID() { return -1; }
+	inline bool event_HasEvents() { return m_events.size() > 0 ? true : false; }
+	void event_AddEvent(TimedEvent * ptr);
+	void event_UpdateActiveStatus();
+	bool event_UpdateEvents(uint32 diff);
+	void event_SetActive(bool value);
+	void event_Relocate();
+	
+	// this func needs to be implemented by all eventable classes. use it to retreive the instance
+	// id that it needs to attach itself to.
+	
+	virtual int32 event_GetInstanceID() { return -1; }
 
 protected:
 
-    Mutex eventListLock;
-    EventList m_events;
-    EventableObjectHolder * m_eventHolder;
-    EventableObjectHolder * m_lastHolder;
-    uint32 m_active;
-    bool m_isOwnInstance;
-    
+	Mutex eventListLock;
+	EventList m_events;
+	EventableObjectHolder * m_eventHolder;
+	EventableObjectHolder * m_lastHolder;
+	uint32 m_active;
+	bool m_isOwnInstance;
+	
 };
 
 /**
@@ -84,25 +84,25 @@ typedef set<EventableObject*> EventableObjectSet;
 class EventableObjectHolder
 {
 public:
-    EventableObjectHolder(int32 instance_id);
-    ~EventableObjectHolder();
+	EventableObjectHolder(int32 instance_id);
+	~EventableObjectHolder();
 
-    void Update(uint32 time_difference);
+	void Update(uint32 time_difference);
 
-    void AddObject(EventableObject * obj);
-    void RemoveObject(EventableObject * obj);
-    inline uint32 GetInstanceID() { return mInstanceId; }
-    bool deletedObject;
+	void AddObject(EventableObject * obj);
+	void RemoveObject(EventableObject * obj);
+	inline uint32 GetInstanceID() { return mInstanceId; }
+	bool deletedObject;
 
 protected:
-    int32 mInstanceId;
-    //set<EventableObject*> myObjects;
-    //set<EventableObject*> removalList;
+	int32 mInstanceId;
+	//set<EventableObject*> myObjects;
+	//set<EventableObject*> removalList;
 
-    Mutex setLock;
-    EventableObjectSet myObjects;
-    RMutex iteratorLock;
-    EventableObjectSet::iterator current;
+	Mutex setLock;
+	EventableObjectSet myObjects;
+	RMutex iteratorLock;
+	EventableObjectSet::iterator current;
 };
 
 #endif

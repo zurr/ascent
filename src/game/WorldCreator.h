@@ -21,20 +21,20 @@
 
 enum INSTANCE_TYPE
 {
-    INSTANCE_NULL,
-    INSTANCE_RAID,
-    INSTANCE_NONRAID,
-    INSTANCE_PVP,
-    INSTANCE_MULTIMODE,
+	INSTANCE_NULL,
+	INSTANCE_RAID,
+	INSTANCE_NONRAID,
+	INSTANCE_PVP,
+	INSTANCE_MULTIMODE,
 };
 
 enum INSTANCE_ABORT_ERROR
 {
-    INSTANCE_ABORT_ERROR     = 0x00,
-    INSTANCE_ABORT_FULL      = 0x01,
-    INSTANCE_ABORT_NOT_FOUND = 0x02,
-    INSTANCE_ABORT_TOO_MANY  = 0x03,
-    INSTANCE_ABORT_ENCOUNTER = 0x04,
+	INSTANCE_ABORT_ERROR	 = 0x00,
+	INSTANCE_ABORT_FULL	  = 0x01,
+	INSTANCE_ABORT_NOT_FOUND = 0x02,
+	INSTANCE_ABORT_TOO_MANY  = 0x03,
+	INSTANCE_ABORT_ENCOUNTER = 0x04,
 };
 
 #define INSTANCE_OK  INSTANCE_ABORT_TOO_MANY + 0x01
@@ -55,40 +55,40 @@ typedef std::map<uint32, std::map<uint32, std::pair<Map*, Battleground*> > > Bat
 class SERVER_DECL WorldCreator :  public Singleton < WorldCreator >
 {
 public:
-    WorldCreator(TaskList * tl);    
-    ~WorldCreator();
+	WorldCreator(TaskList * tl);	
+	~WorldCreator();
 
-    Map* GetMap(uint32 mapid);
-    MapMgr * GetInstance(uint32 mapid, Object* obj);
-    MapMgr * GetInstance(uint32 mapid, uint32 instanceId);
-    MapMgr * GetInstance(uint32 instanceId);
-    MapMgr * GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 mapid, bool Lock);
-    MapMgr * GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo *pMapInfo);
-    MapMgr * GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo);
+	Map* GetMap(uint32 mapid);
+	MapMgr * GetInstance(uint32 mapid, Object* obj);
+	MapMgr * GetInstance(uint32 mapid, uint32 instanceId);
+	MapMgr * GetInstance(uint32 instanceId);
+	MapMgr * GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 mapid, bool Lock);
+	MapMgr * GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo *pMapInfo);
+	MapMgr * GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo);
 
-    //Normal instance management
-    uint32 CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid, uint32 instanceid = 0, uint32 creation = 0, MapMgr ** destptr = 0);
-    void DeleteInstance(uint32 instanceid, uint32 mapid);
-    bool CheckInstanceForObject(Object *obj, MapInfo *pMapinfo);
+	//Normal instance management
+	uint32 CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid, uint32 instanceid = 0, uint32 creation = 0, MapMgr ** destptr = 0);
+	void DeleteInstance(uint32 instanceid, uint32 mapid);
+	bool CheckInstanceForObject(Object *obj, MapInfo *pMapinfo);
 
-    uint32 GenerateInstanceID();
-    void InstanceSoftReset(MapMgr *mMapMgr);
-    void InstanceHardReset(MapMgr *mMapMgr);
+	uint32 GenerateInstanceID();
+	void InstanceSoftReset(MapMgr *mMapMgr);
+	void InstanceHardReset(MapMgr *mMapMgr);
 
-    void CreateBattlegroundInstance(Battleground* m_Battleground);
-    void DestroyBattlegroundInstance(Battleground* m_Battleground);
-    void DestroyBattlegroundInstance(uint32 mapid, uint32 instanceid); //only to be used after bg class is destroyed.
-    void BuildXMLStats(char * m_file);
-    void CreateMap(uint32 mapid) { _CreateMap(mapid); }
+	void CreateBattlegroundInstance(Battleground* m_Battleground);
+	void DestroyBattlegroundInstance(Battleground* m_Battleground);
+	void DestroyBattlegroundInstance(uint32 mapid, uint32 instanceid); //only to be used after bg class is destroyed.
+	void BuildXMLStats(char * m_file);
+	void CreateMap(uint32 mapid) { _CreateMap(mapid); }
 
 private:
-    Map* _CreateMap(uint32 mapid);
-    std::map<uint32, Map*> _maps;
+	Map* _CreateMap(uint32 mapid);
+	std::map<uint32, Map*> _maps;
 
-    uint32 m_InstanceHigh;
+	uint32 m_InstanceHigh;
 
-    //thread locks
-    Mutex _busy;
+	//thread locks
+	Mutex _busy;
 };
 
 #define sWorldCreator WorldCreator::getSingleton()

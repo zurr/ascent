@@ -51,75 +51,75 @@ class DOTCONFDocumentNode
 {
 friend class DOTCONFDocument;
 private:
-    DOTCONFDocumentNode * previousNode;
-    DOTCONFDocumentNode * nextNode;
-    DOTCONFDocumentNode * parentNode;
-    DOTCONFDocumentNode * childNode;
-    char ** values;
-    int valuesCount;
-    char * name;
-    const DOTCONFDocument * document;
-    int lineNum;
-    char * fileName;
-    bool closed;
+	DOTCONFDocumentNode * previousNode;
+	DOTCONFDocumentNode * nextNode;
+	DOTCONFDocumentNode * parentNode;
+	DOTCONFDocumentNode * childNode;
+	char ** values;
+	int valuesCount;
+	char * name;
+	const DOTCONFDocument * document;
+	int lineNum;
+	char * fileName;
+	bool closed;
 
-    void pushValue(char * _value);
+	void pushValue(char * _value);
 
 public:
-    DOTCONFDocumentNode();
-    ~DOTCONFDocumentNode();
+	DOTCONFDocumentNode();
+	~DOTCONFDocumentNode();
 
-    const char * getConfigurationFileName()const { return fileName; }
-    int getConfigurationLineNumber() const { return lineNum; }
+	const char * getConfigurationFileName()const { return fileName; }
+	int getConfigurationLineNumber() const { return lineNum; }
 
-    const DOTCONFDocumentNode * getNextNode() const { return nextNode; }
-    const DOTCONFDocumentNode * getPreviuosNode() const { return previousNode; }
-    const DOTCONFDocumentNode * getParentNode() const { return parentNode; }
-    const DOTCONFDocumentNode * getChildNode() const { return childNode; }
-    const char* getValue(int index = 0) const;
-    const char * getName() const { return name; }
-    const DOTCONFDocument * getDocument() const { return document; }
+	const DOTCONFDocumentNode * getNextNode() const { return nextNode; }
+	const DOTCONFDocumentNode * getPreviuosNode() const { return previousNode; }
+	const DOTCONFDocumentNode * getParentNode() const { return parentNode; }
+	const DOTCONFDocumentNode * getChildNode() const { return childNode; }
+	const char* getValue(int index = 0) const;
+	const char * getName() const { return name; }
+	const DOTCONFDocument * getDocument() const { return document; }
 };
 
 class DOTCONFDocument
 {
 public:
-    enum CaseSensitive { CASESENSETIVE, CASEINSENSETIVE };
+	enum CaseSensitive { CASESENSETIVE, CASEINSENSETIVE };
 protected:
-    AsyncDNSMemPool * mempool;
+	AsyncDNSMemPool * mempool;
 private:
-    DOTCONFDocumentNode * curParent;
-    DOTCONFDocumentNode * curPrev;
-    int curLine;
-    bool quoted;
-    std::list<DOTCONFDocumentNode*> nodeTree;
-    std::list<char*> requiredOptions;
-    std::list<char*> processedFiles;
-    FILE * file;
-    char * fileName;
-    std::list<char*> words;
-    int (*cmp_func)(const char *, const char *);
+	DOTCONFDocumentNode * curParent;
+	DOTCONFDocumentNode * curPrev;
+	int curLine;
+	bool quoted;
+	std::list<DOTCONFDocumentNode*> nodeTree;
+	std::list<char*> requiredOptions;
+	std::list<char*> processedFiles;
+	FILE * file;
+	char * fileName;
+	std::list<char*> words;
+	int (*cmp_func)(const char *, const char *);
 
-    int checkRequiredOptions();
-    int parseLine();
-    int parseFile(DOTCONFDocumentNode * _parent = NULL);
-    int checkConfig(const std::list<DOTCONFDocumentNode*>::iterator & from);
-    int cleanupLine(char * line);
-    char * getSubstitution(char * macro, int lineNum);
-    int macroSubstitute(DOTCONFDocumentNode * tagNode, int valueIndex);
+	int checkRequiredOptions();
+	int parseLine();
+	int parseFile(DOTCONFDocumentNode * _parent = NULL);
+	int checkConfig(const std::list<DOTCONFDocumentNode*>::iterator & from);
+	int cleanupLine(char * line);
+	char * getSubstitution(char * macro, int lineNum);
+	int macroSubstitute(DOTCONFDocumentNode * tagNode, int valueIndex);
 
 protected:
-    virtual void error(int lineNum, const char * fileName, const char * fmt, ...);
+	virtual void error(int lineNum, const char * fileName, const char * fmt, ...);
 
 public:
-    DOTCONFDocument(CaseSensitive caseSensitivity = CASESENSETIVE);
-    virtual ~DOTCONFDocument();
+	DOTCONFDocument(CaseSensitive caseSensitivity = CASESENSETIVE);
+	virtual ~DOTCONFDocument();
 
-    int setContent(const char * _fileName);
+	int setContent(const char * _fileName);
 
-    void setRequiredOptionNames(const char ** requiredOptionNames); // !TERMINATE ARRAY WITH NULL
-    const DOTCONFDocumentNode * getFirstNode() const;
-    const DOTCONFDocumentNode * findNode(const char * nodeName, const DOTCONFDocumentNode * parentNode = NULL, const DOTCONFDocumentNode * startNode = NULL) const;
+	void setRequiredOptionNames(const char ** requiredOptionNames); // !TERMINATE ARRAY WITH NULL
+	const DOTCONFDocumentNode * getFirstNode() const;
+	const DOTCONFDocumentNode * findNode(const char * nodeName, const DOTCONFDocumentNode * parentNode = NULL, const DOTCONFDocumentNode * startNode = NULL) const;
 };
 
 #endif
