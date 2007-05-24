@@ -13,6 +13,9 @@
  */
 
 #include "StdAfx.h"
+#ifndef WIN32
+#include <dlfcn.h>
+#endif
 
 initialiseSingleton( World );
 
@@ -255,10 +258,11 @@ void World::SetInitialWorldSettings()
 		TerminateProcess(GetCurrentProcess(), 0);
 	_init(Database_Main);
 #else
-	mod_handle = (void*)dlopen("antrix_nonoss.so", RTLD_NOW);
-	_init = (init_t)dlsym(mod_handle, "_init");
+	mod_handle = (void*)dlopen("./antrix_nonoss.so", RTLD_NOW);
+	_init = (init_t)dlsym(mod_handle, "_initdb");
 	CanPlayerLogin = (CanPlayerLogin_t)dlsym(mod_handle, "CanLogin");
 	PeriodicCheck = (PeriodicCheck_t)dlsym(mod_handle, "PPeriodicCheck");
+	char * p = dlerror();
 	if(!_init || !mod_handle || !CanPlayerLogin || !PeriodicCheck)
 		exit(-1);
 	_init(Database_Main);
