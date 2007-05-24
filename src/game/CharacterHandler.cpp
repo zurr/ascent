@@ -199,9 +199,6 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
 	// CHAR_CREATE_SUCCESS
 	OutPacket(SMSG_CHAR_CREATE, 1, "\x2E");
-
-	if(!CanPlayerLogin(pn->guid))
-		return;
 }
 
 /* FOR 1.10.1
@@ -299,8 +296,6 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 
 	uint64 guid;
 	recv_data >> guid;
-	if(!CanPlayerLogin(guid))
-		return;
 
 	if(objmgr.GetPlayer(guid) != NULL)
 	{
@@ -387,9 +382,6 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket & recv_data)
 	sDatabase.WaitExecute("UPDATE characters SET forced_rename_pending = 0 WHERE guid = %u", (uint32)guid);
 	
 	data << uint8(0) << guid << name;
-	if(!CanPlayerLogin(guid))
-		return;
-
 	SendPacket(&data);
 }
 
@@ -409,8 +401,6 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		OutPacket(SMSG_CHARACTER_LOGIN_FAILED, 1, &respons);
 		return;
 	}
-	if(!CanPlayerLogin(playerGuid))
-		return;
 
 	Player* plr = new Player(HIGHGUID_PLAYER,playerGuid);
 	ASSERT(plr);

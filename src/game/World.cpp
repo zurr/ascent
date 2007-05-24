@@ -13,15 +13,8 @@
  */
 
 #include "StdAfx.h"
-#ifndef WIN32
-#include <dlfcn.h>
-#endif
 
 initialiseSingleton( World );
-
-/* Closed src lib imports */
-CanPlayerLogin_t CanPlayerLogin;
-PeriodicCheck_t PeriodicCheck;
 
 World::World()
 {
@@ -50,7 +43,6 @@ World::World()
 	HordePlayers = 0;
 	AlliancePlayers = 0;
 	m_isOwnInstance = true;
-	CanPlayerLogin = 0;
 }
 
 World::~World()
@@ -248,25 +240,6 @@ void BasicTaskExecutor::run()
 
 void World::SetInitialWorldSettings()
 {
-	/* load anticheat library */
-#ifdef WIN32
-	mod_handle = (void*)LoadLibrary("antrix_nonoss.dll");
-	_init = (init_t)GetProcAddress((HMODULE)mod_handle, "_init");
-	CanPlayerLogin = (CanPlayerLogin_t)GetProcAddress((HMODULE)mod_handle, "CanLogin");
-	PeriodicCheck = (PeriodicCheck_t)GetProcAddress((HMODULE)mod_handle, "PPeriodicCheck");
-	if(!_init || !mod_handle || !CanPlayerLogin || !PeriodicCheck)
-		TerminateProcess(GetCurrentProcess(), 0);
-	_init(Database_Main);
-#else
-	mod_handle = (void*)dlopen("./antrix_nonoss.so", RTLD_NOW);
-	_init = (init_t)dlsym(mod_handle, "_initdb");
-	CanPlayerLogin = (CanPlayerLogin_t)dlsym(mod_handle, "CanLogin");
-	PeriodicCheck = (PeriodicCheck_t)dlsym(mod_handle, "PPeriodicCheck");
-	char * p = dlerror();
-	if(!_init || !mod_handle || !CanPlayerLogin || !PeriodicCheck)
-		exit(-1);
-	_init(Database_Main);
-#endif
 	sDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
    
 	reqGmClient = Config.MainConfig.GetBoolDefault("reqGmClient", false);

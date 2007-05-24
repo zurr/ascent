@@ -19,8 +19,6 @@ extern bool bLogChat;
 
 void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 {
-	PeriodicCheck(_player);
-
 	CHECK_PACKET_SIZE(recv_data, 9);
 	WorldPacket *data;
 	if(!_player->IsInWorld())

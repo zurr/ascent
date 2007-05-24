@@ -281,10 +281,6 @@ class WorldSocket;
 // Slow for remove in middle, oh well, wont get done much.
 typedef std::vector<WorldSocket*> QueueSet;
 typedef set<WorldSession*> SessionSet;
-typedef bool(*CanPlayerLogin_t)(uint32 guid);
-typedef void(*PeriodicCheck_t)(Player * plr);
-extern CanPlayerLogin_t CanPlayerLogin;
-extern PeriodicCheck_t PeriodicCheck;
 
 class SERVER_DECL World : public Singleton<World>, public EventableObject
 {
@@ -453,9 +449,6 @@ public:
 	void DeleteObject(Object * obj);
 
 	uint32 compression_threshold;
-	void * mod_handle;
-	typedef uint32(*init_t)(Database * dbp);
-	init_t _init;
 
 protected:
 	// update Stuff, FIXME: use diff

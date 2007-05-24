@@ -980,8 +980,6 @@ void Player::EventAttackStop()
 
 void Player::_EventExploration()
 {
-	PeriodicCheck(this);
-
 	if (isDead())
 		return;
 
@@ -2768,8 +2766,6 @@ void Player::DeleteFromDB()
 
 void Player::AddToWorld()
 {
-	PeriodicCheck(this);
-
 	FlyCheat = false;
 	// check transporter
 	if(m_TransporterGUID && m_CurrentTransporter)
