@@ -2565,6 +2565,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
 {
 	if(!m_target->IsPlayer())
 		return;
+	if(static_cast<Player*>(m_target)->m_MountSpellId)
+		m_target->RemoveAura(static_cast<Player*>(m_target)->m_MountSpellId);//these spells are not compatible
 	
 	uint32 spellId = 0;
 	uint32 modelId = 0;
@@ -3123,6 +3125,8 @@ void Aura::SpellAuraTransform(bool apply)
 	CreatureInfo* ci = objmgr.GetCreatureName(mod->m_miscValue);
 	if(ci)
 		displayId = ci->DisplayID;
+	if(m_target->IsPlayer() &&  static_cast<Player*>(m_target)->m_MountSpellId)
+		m_target->RemoveAura(static_cast<Player*>(m_target)->m_MountSpellId);
 	
    // SetPositive();
 	switch(GetSpellProto()->Id)

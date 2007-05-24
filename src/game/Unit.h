@@ -678,6 +678,7 @@ public:
 	bool RemoveAura(uint32 spellId,uint64 guid);
 	//! Remove all auras
 	void RemoveAllAuras();
+    void RemoveAllAuraType(uint32 auratype);//ex:to remove morph spells
 	void RemoveNegativeAuras();
 	void RemoveAllAreaAuras();
 	// Temporary remove all auras

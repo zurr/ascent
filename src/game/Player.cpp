@@ -5375,6 +5375,12 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 {
 	if(this->m_MountSpellId)
 		RemoveAura(m_MountSpellId);
+	//also remove morph spells
+	if(GetUInt32Value(UNIT_FIELD_DISPLAYID)!=GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID))
+	{
+		RemoveAllAuraType(SPELL_AURA_TRANSFORM);
+		RemoveAllAuraType(SPELL_AURA_MOD_SHAPESHIFT);
+	}
 	
 	SetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID, modelid );
 	
