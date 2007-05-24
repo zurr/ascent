@@ -47,8 +47,8 @@ public:
 
 	uint32 GetGroupSignature() { return mGroupSignature; }
 	void SetGroupSignature(uint32 iGroupSignature) { mGroupSignature = iGroupSignature; }
-	MapInfo *GetMapInfo() { return m_pMapInfo; }
-	MapInfo *SetMapInfo(MapInfo *pMapInfo) { m_pMapInfo = pMapInfo; }
+	inline MapInfo *GetMapInfo() { return m_pMapInfo; }
+	inline void SetMapInfo(MapInfo *pMapInfo) { m_pMapInfo = pMapInfo; }
 
 	uint32 GetInstanceID() { return m_instanceid; }
 	void SetInstanceID(uint32 instanceid) { m_instanceid = instanceid; }
@@ -100,8 +100,8 @@ public:
 
 	Instance_Map_InstanceId_Holder *GetInstanceId(uint32 instanceid);
 	Instance_Map_InstanceId_Holder *getInstanceIdByPlayer(uint64 guid);
-	MapInfo *GetMapInfo() { return m_pMapInfo; }
-	MapInfo *SetMapInfo(MapInfo *pMapInfo) { m_pMapInfo = pMapInfo; }
+	inline MapInfo *GetMapInfo() { return m_pMapInfo; }
+	inline void SetMapInfo(MapInfo *pMapInfo) { m_pMapInfo = pMapInfo; }
 
 private:
 	InstanceIdList mInstanceIdList;
