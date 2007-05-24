@@ -3277,6 +3277,7 @@ void Player::BuildPlayerRepop()
 	SetFlag(PLAYER_FLAGS, 0x10);
 
 	SetMovement(MOVE_UNROOT, 1);
+	SetMovement(MOVE_WATER_WALK, 1);
 }
 
 void Player::RepopRequestedPlayer()
@@ -3345,6 +3346,7 @@ void Player::ResurrectPlayer()
 		if(p == 0) return;
 		_Relocate(p->GetMapMgr()->GetMapId(), p->GetPosition(),false,false);
 	}
+	SetMovement(MOVE_LAND_WALK, 1);
 }
 
 void Player::KillPlayer()
