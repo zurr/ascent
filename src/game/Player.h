@@ -1270,6 +1270,9 @@ public:
 	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
 	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; UpdateComboPoints(); }
 
+	Unit *PolyTarget();
+	void  SetPolyTarget(uint64 newtarget) { polytarget = newtarget; }
+
 	uint32 m_speedChangeCounter;
 
 protected:
@@ -1464,6 +1467,7 @@ protected:
 
 	uint32 _fields[PLAYER_END];
 	void JumpToEndTaxiNode(TaxiPath * path);
+	uint64	polytarget;//temp variable that stores our poly target to be able to remove it when polymorphing others 
 };
 
 #endif

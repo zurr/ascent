@@ -315,6 +315,8 @@ Player::Player ( uint32 high, uint32 low )
 
 	m_comboTarget = 0;
 	m_comboPoints = 0;
+
+	polytarget				= 0;
 }
 
 

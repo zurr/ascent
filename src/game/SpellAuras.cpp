@@ -3148,6 +3148,19 @@ void Aura::SpellAuraTransform(bool apply)
 		case 28271:	 // Polymorph: Turtle
 		case 28272:	 // Polymorph: Pig
 			{
+				//test if caster already has a polymorphed thing
+			    Unit* m_caster = GetUnitCaster();
+				if(m_caster && m_caster->IsPlayer())
+				{
+					Unit* polytarget=static_cast<Player*>(m_caster)->PolyTarget();
+					//remove poly from old target before we set it to new
+					if(polytarget && polytarget!=m_target && polytarget->GetUInt32Value(UNIT_FIELD_DISPLAYID)!=polytarget->GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID))
+						polytarget->RemoveAura(GetSpellProto()->Id);
+					//set new poly target if necesarry
+					if(apply)
+						static_cast<Player*>(m_caster)->SetPolyTarget(m_target->GetGUID());
+					else static_cast<Player*>(m_caster)->SetPolyTarget(NULL);
+				}
 				if(!displayId)
 				{
 					switch(GetSpellProto()->Id)
