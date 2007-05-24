@@ -834,6 +834,18 @@ enum SpellTypes
 	SPELL_TYPE_STING		= 16,
 	SPELL_TYPE_ARMOR		= 32,
 	SPELL_TYPE_AURA		 = 64,
+	//hmm these could be named simply incompatible spells. One active at a time
+	SPELL_TYPE_MARK_GIFT			= 128,
+	SPELL_TYPE_TRACK				= 256,
+	SPELL_TYPE_HUNTER_TRAP			= 512,
+	SPELL_TYPE_MAGE_INTEL			= 1024,
+	SPELL_TYPE_MAGE_MAGI			= 2048,
+	SPELL_TYPE_MAGE_WARDS			= 4096,
+	SPELL_TYPE_PRIEST_SH_PPROT		= 8192,
+	SPELL_TYPE_SHIELD				= 16384,
+	SPELL_TYPE_FRTITUDE				= 32768,
+	SPELL_TYPE_SPIRIT				= 65536,
+	SPELL_TYPE_WARLOCK_CURSES		= 131072,
 };
 
 class SpellCastTargets
@@ -1355,7 +1367,3 @@ void UnapplyDiminishingReturnTimer(Unit * Target, SpellEntry * spell);
 uint32 GetDiminishingGroup(uint32 NameHash);
 
 #endif
-
-
-
-

@@ -475,31 +475,59 @@ void World::SetInitialWorldSettings()
 		if(!sscanf(ranktext, "Rank %d", &rank))
 			rank = 0;
 
-		// hash the name
-		namehash = crc32((const unsigned char*)nametext, strlen(nametext));
+        // hash the name
+		//!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
+        namehash = crc32((const unsigned char*)nametext, strlen(nametext));
 
-		// look for seal, etc in name
-		if(strstr(nametext, "Seal"))
-			type |= SPELL_TYPE_SEAL;
-
-		if(strstr(nametext, "Blessing"))
-			type |= SPELL_TYPE_BLESSING;
-
-		if(strstr(nametext, "Curse"))
-			type |= SPELL_TYPE_CURSE;
-
-		if(strstr(nametext, "Aspect"))
-			type |= SPELL_TYPE_ASPECT;
-
-		if(strstr(nametext, "Sting") || strstr(nametext, "sting"))
-			type |= SPELL_TYPE_STING;
-
-		// don't break armor items!
-		if(strcmp(nametext, "Armor") && strstr(nametext, "Armor") || strstr(nametext, "Demon Skin"))
-			type |= SPELL_TYPE_ARMOR;
-
-		if(strstr(nametext, "Aura"))
-			type |= SPELL_TYPE_AURA;
+		//these mostly do not mix so we can use else 
+        // look for seal, etc in name
+        if(strstr(nametext, "Seal"))
+            type |= SPELL_TYPE_SEAL;
+        else if(strstr(nametext, "Blessing"))
+            type |= SPELL_TYPE_BLESSING;
+        else if(strstr(nametext, "Curse"))
+            type |= SPELL_TYPE_CURSE;
+        else if(strstr(nametext, "Aspect"))
+            type |= SPELL_TYPE_ASPECT;
+        else if(strstr(nametext, "Sting") || strstr(nametext, "sting"))
+            type |= SPELL_TYPE_STING;
+        // don't break armor items!
+        else if(strcmp(nametext, "Armor") && strstr(nametext, "Armor") || strstr(nametext, "Demon Skin"))
+            type |= SPELL_TYPE_ARMOR;
+        else if(strstr(nametext, "Aura"))
+            type |= SPELL_TYPE_AURA;
+		else if(strstr(nametext, "Track")==nametext)
+            type |= SPELL_TYPE_TRACK;
+//		else if(strstr(nametext, "Gift of the Wild") || strstr(nametext, "Mark of the Wild"))
+		else if(namehash==4152142663 || namehash==539958644)
+            type |= SPELL_TYPE_MARK_GIFT;
+//		else if(strstr(nametext, "Immolation Trap") || strstr(nametext, "Freezing Trap") || strstr(nametext, "Frost Trap") || strstr(nametext, "Explosive Trap") || strstr(nametext, "Snake Trap"))
+		else if(namehash==596634354 || namehash==1497202375 || namehash==4147219415 || namehash==1421276142 || namehash==4117979579)
+            type |= SPELL_TYPE_HUNTER_TRAP;
+//		else if(strstr(nametext, "Arcane Intellect") || strstr(nametext, "Arcane Brilliance"))
+		else if(namehash==795875514 || namehash==2628295428)
+            type |= SPELL_TYPE_MAGE_INTEL;
+//		else if(strstr(nametext, "Amplify Magic") || strstr(nametext, "Dampen Magic"))
+		else if(namehash==1977789695 || namehash==1011753988)
+            type |= SPELL_TYPE_MAGE_MAGI;
+//		else if(strstr(nametext, "Fire Ward") || strstr(nametext, "Frost Ward"))
+		else if(namehash==3359283659 || namehash==2161224959)
+            type |= SPELL_TYPE_MAGE_WARDS;
+//		else if(strstr(nametext, "Shadow Protection") || strstr(nametext, "Prayer of Shadow Protection"))
+		else if(namehash==3650389800 || namehash==3181823868)
+            type |= SPELL_TYPE_PRIEST_SH_PPROT;
+//		else if(strstr(nametext, "Water Shield") || strstr(nametext, "Earth Shield") || strstr(nametext, "Lightning Shield"))
+		else if(namehash==3118121598 || namehash==36158091 || namehash==555994910)
+            type |= SPELL_TYPE_SHIELD;
+//		else if(strstr(nametext, "Power Word: Fortitude") || strstr(nametext, "Prayer of Fortitude"))
+		else if(namehash==2421609042 || namehash==1369413555)
+            type |= SPELL_TYPE_FRTITUDE;
+//		else if(strstr(nametext, "Divine Spirit") || strstr(nametext, "Prayer of Spirit"))
+		else if(namehash==2977508401 || namehash==3371527599)
+            type |= SPELL_TYPE_SPIRIT;
+//		else if(strstr(nametext, "Curse of Weakness") || strstr(nametext, "Curse of Agony") || strstr(nametext, "Curse of Recklessness") || strstr(nametext, "Curse of Tongues") || strstr(nametext, "Curse of the Elements") || strstr(nametext, "Curse of Idiocy") || strstr(nametext, "Curse of Shadow") || strstr(nametext, "Curse of Doom"))
+		else if(namehash==4129426293 || namehash==885131426 || namehash==626036062 || namehash==3551228837 || namehash==2784647472 || namehash==776142553 || namehash==3407058720 || namehash==202747424)
+            type |= SPELL_TYPE_WARLOCK_CURSES;
 
 		/*FILE * f = fopen("C:\\spells.txt", "a");
 		fprintf(f, "case 0x%08X:		// %s\n", namehash, nametext);

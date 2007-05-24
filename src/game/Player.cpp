@@ -7250,3 +7250,10 @@ void Player::UpdateComboPoints()
 
 	m_session->OutPacket(SMSG_SET_COMBO_POINTS, c, buffer);
 }
+
+Unit *Player::PolyTarget()
+{
+	if(!polytarget)
+		return NULL;
+	return GetMapMgr()->GetUnit(polytarget);
+}
