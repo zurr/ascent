@@ -27,6 +27,13 @@ AC_PROG_LIBTOOL
 AH_TEMPLATE([USE_EPOLL], [Define if you want to use the epoll socket engine module.])
 AH_TEMPLATE([USE_KQUEUE], [Define if you want to use the kqueue socket engine module.])
 
+# Default prefix
+AC_PREFIX_DEFAULT(.)
+test "$prefix" = "NONE" && prefix='.'
+test "$sysconfdir" = "\${prefix}/etc" && sysconfdir='../etc'
+test "$libdir" = "\${exec_prefix}/lib" && libdir='../lib'
+test "$scriptdir" = "" && scriptdir='../lib'
+
 # Determine architecture
 #AC_CHECK_FUNCS([ kqueue kevent ])
 #AC_CHECK_FUNCS([ epoll_ctl ])
@@ -132,7 +139,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STRFTIME
-AC_FUNC_STRNLEN
+#AC_FUNC_STRNLEN
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(                                               \
    ftime strcspn strtoul atexit bzero floor gethostbyname     \
@@ -140,23 +147,9 @@ AC_CHECK_FUNCS(                                               \
    sqrt stpcpy strchr strpbrk strrchr strstr strtol strtoul   \
 )
 
-#AC_DEFINE_UNQUOTED([SVN_REVISION],
-#	`svn info| ${SED} '/^Last Changed Rev: */!d; s///;q'`,
-#	[SVN last changed revision]
-#)
-
-#AC_DEFINE_UNQUOTED([SVN_DATE],
-#	"`svn info | ${SED} '/^Last Changed Date: */!d; s///;q' | ${AWK} '{ print $1 }'`",
-#	[SVN last changed date]
-#)
-
-#AC_DEFINE_UNQUOTED([SVN_TIME],
-#	"`svn info | ${SED} '/^Last Changed Date: */!d; s///;q' | awk '{ print $2 }'`",
-#	[SVN last change time]
-#)
-
-test "" = "NONE" && prefix=""
-AC_DEFINE_UNQUOTED(PREFIX, "", Prefix)
+AC_DEFINE_UNQUOTED([PREFIX], "${prefix}", "Prefix")
+AC_DEFINE_UNQUOTED([SCRIPTDIR], "${scriptdir}", "librarydir")
+AC_DEFINE_UNQUOTED([CONFDIR], "${sysconfdir}", "configdir")
 
 AC_CONFIG_FILES([
    ./Makefile
