@@ -547,67 +547,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		}break;
 	case 13535:// Tame Beast
 		{
-			// grep: much easier now ;)
-			if(!m_triggeredByAura)
-				return;
-			if(m_triggeredByAura->GetTarget()->GetTypeId() != TYPEID_UNIT)
-				return;  // wtf?
-			if(GUID_HIPART(m_triggeredByAura->m_casterGuid)!=HIGHGUID_PLAYER)
-				return;
-
-			Creature *tame = static_cast<Creature*>(m_triggeredByAura->GetTarget());
-			Player   *plyr = static_cast<Player*>(m_triggeredByAura->GetCaster());
-
-			/* Error Checking */
-			int8 result = -1;
-
-			if(!tame)
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(!tame->GetCreatureName())
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(tame->GetCreatureName()->Type != BEAST)
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(tame->getLevel() > plyr->getLevel())
-				result = SPELL_FAILED_HIGHLEVEL;
-			else if(plyr->GeneratePetNumber() == 0)
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(!tame->GetCreatureName()->Family)
-				result = SPELL_FAILED_BAD_TARGETS;
-			else
-			{
-				CreatureFamilyEntry *cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureName()->Family);
-				if(cf)
-				{
-					if(!cf->tameable)
-					{
-						result = SPELL_FAILED_BAD_TARGETS;
-					}
-				}
-			}
-
-			if(result > 0)
-			{
-				SendCastResult(result);
-				return;
-			}
-
-			Pet *old_tame = plyr->GetSummon();
-			if(old_tame != NULL)
-			{
-				old_tame->Dismiss(false);
-			}
-
-			// Remove target
-			tame->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, plyr, 0);
-
-			Pet *pPet = objmgr.CreatePet();
-			pPet->SetInstanceID(plyr->GetInstanceID());
-			pPet->CreateAsSummon(tame->GetEntry(), tame->GetCreatureName(), tame, static_cast<Unit*>(plyr), NULL, 2, 0);
-
-			tame->RemoveFromWorld(false);
-			//sEventMgr.AddEvent(tame, &Creature::SafeDelete, EVENT_CREATURE_SAFE_DELETE, 1, 1);
-			delete tame;
-
+			
 		}break;
 	case 13006:// Shrink Ray
 		{

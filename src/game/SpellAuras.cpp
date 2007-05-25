@@ -1393,6 +1393,71 @@ void Aura::SpellAuraDummy(bool apply)
 			//if(!apply)
 
 		}break;
+
+	case 1515:			// Tame beast
+		{
+			// Only on non-apply (at end of channeling)
+			if(apply)
+				return;
+
+			Creature *tame = ((m_target->GetTypeId() == TYPEID_UNIT) ? ((Creature*)m_target) : 0);
+			Player   *plyr = m_target->GetMapMgr()->GetPlayer(m_casterGuid);
+
+			/* Error Checking */
+			int8 result = -1;
+
+			if(!tame || !plyr || !plyr->isAlive() || !tame->isAlive())
+				result = SPELL_FAILED_BAD_TARGETS;
+			else if(!tame->GetCreatureName())
+				result = SPELL_FAILED_BAD_TARGETS;
+			else if(tame->GetCreatureName()->Type != BEAST)
+				result = SPELL_FAILED_BAD_TARGETS;
+			else if(tame->getLevel() > plyr->getLevel())
+				result = SPELL_FAILED_HIGHLEVEL;
+			else if(plyr->GeneratePetNumber() == 0)
+				result = SPELL_FAILED_BAD_TARGETS;
+			else if(!tame->GetCreatureName()->Family)
+				result = SPELL_FAILED_BAD_TARGETS;
+			else
+			{
+				CreatureFamilyEntry *cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureName()->Family);
+				if(cf)
+				{
+					if(!cf->tameable)
+					{
+						result = SPELL_FAILED_BAD_TARGETS;
+					}
+				}
+			}
+
+			if(result > 0)
+			{
+				// hack!
+				WorldPacket data(SMSG_CAST_RESULT, 6);
+				data << m_spellProto->Id;
+				data << (uint8)result;
+				plyr->GetSession()->SendPacket(&data);
+				return;
+			}
+
+			Pet *old_tame = plyr->GetSummon();
+			if(old_tame != NULL)
+			{
+				old_tame->Dismiss(false);
+			}
+
+			// Remove target
+			tame->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, plyr, 0);
+
+			Pet *pPet = objmgr.CreatePet();
+			pPet->SetInstanceID(plyr->GetInstanceID());
+			pPet->CreateAsSummon(tame->GetEntry(), tame->GetCreatureName(), tame, static_cast<Unit*>(plyr), NULL, 2, 0);
+
+			//tame->RemoveFromWorld(false);
+			//sEventMgr.AddEvent(tame, &Creature::SafeDelete, EVENT_CREATURE_SAFE_DELETE, 1, 1);
+			tame->SafeDelete();
+			//delete tame;/
+		}break;
 	}	
 }
 

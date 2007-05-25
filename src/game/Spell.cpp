@@ -359,7 +359,9 @@ void Spell::FillTargetMap(uint32 i)
 					SafeAddTarget(tmpMap,p_caster->GetSummon()->GetGUID());
 			}
 			   }break;
-		case 6:{// Single Target Enemy
+		case 6:// Single Target Enemy
+		case 77:					// grep: i think this fits
+			{
 			if(m_spellInfo->TargetCreatureType  && GUID_HIPART(m_targets.m_unitTarget)==HIGHGUID_UNIT)
 			{
 			
