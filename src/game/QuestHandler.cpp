@@ -635,7 +635,6 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 		qst_giver->BuildFieldUpdatePacket(GetPlayer(), UNIT_DYNAMIC_FLAGS, qst_giver->GetUInt32Value(UNIT_DYNAMIC_FLAGS));
 	}
 
-	//check for room in inventory for all items
     //check for room in inventory for all items
 	if(!sQuestMgr.CanStoreReward(GetPlayer(),qst,reward_slot))
     {

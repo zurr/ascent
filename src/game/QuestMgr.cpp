@@ -1450,7 +1450,7 @@ bool QuestMgr::CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot)
             ItemPrototype *proto = objmgr.GetItemPrototype(qst->reward_item[i]);
             if(!proto)
                 sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
-            else if(!plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
+            else if(plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
 				return false;
         }
     }
@@ -1461,7 +1461,7 @@ bool QuestMgr::CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot)
         ItemPrototype *proto = objmgr.GetItemPrototype(qst->reward_choiceitem[reward_slot]);
         if(!proto)
             sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
-        else if(!plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))
+        else if(plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))
 			return false;
     }
 	return true;
