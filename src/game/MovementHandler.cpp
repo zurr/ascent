@@ -371,8 +371,6 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 
 void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 {
-	if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || _player->GodModeCheat)
-		return;
 
 	//17 lava,9 water
 
@@ -384,13 +382,21 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 	else
 	{
 		if(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
+		{
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
+			//should make another condition to filter out of water jumps. Too complex :P
+			_player->RemoveAura(1066);//remove aquatic form on land
+		}
 
 		if(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
 		return;
 	}
+
+	//moved from the start of the function. Test if this changes something regarding "inwater" state
+	if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || _player->GodModeCheat)
+		return;
 
 //	uint8 wtype  = _player->m_mapMgr->GetWaterType(movement_info.x, movement_info.y);
 	float wlevel = _player->m_mapMgr->GetWaterHeight(movement_info.x, movement_info.y);
