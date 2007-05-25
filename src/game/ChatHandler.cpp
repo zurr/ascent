@@ -180,7 +180,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(!_player->GetSession()->GetPermissionCount() && player->bGMTagOn && player->gmTargets.count(_player) == 0)
 			{
 				// Build automated reply
-				string Reply = "I am currently occupied, please submit your problem through the GM Ticket System.";
+				string Reply = "This Game Master does not currently have an open ticket from you and did not recive you whisper. Please subit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
 				data = sChatHandler.FillMessageData( CHAT_MSG_WHISPER, LANG_UNIVERSAL, Reply.c_str(), player->GetGUID(), 3);
 				SendPacket(data);
 				delete data;
