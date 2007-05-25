@@ -31,7 +31,6 @@ AH_TEMPLATE([USE_KQUEUE], [Define if you want to use the kqueue socket engine mo
 AC_PREFIX_DEFAULT(.)
 test "$prefix" = "NONE" && prefix='.'
 test "$sysconfdir" = "\${prefix}/etc" && sysconfdir='../etc'
-test "$libdir" = "\${exec_prefix}/lib" && libdir='../lib'
 test "$scriptdir" = "" && scriptdir='../lib'
 
 # Determine architecture
