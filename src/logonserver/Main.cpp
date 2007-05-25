@@ -116,8 +116,8 @@ void LogonServer::Run()
 	sLog.outColor(TYELLOW, "  >> logonserver.conf :: ");
 	if(Config.MainConfig.SetSource("logonserver.conf"))
 #else
-	sLog.outColor(TYELLOW, "  >> " CONFDIR "/etc/logonserver.conf :: ");
-	if(Config.MainConfig.SetSource(CONFDIR "/etc/logonserver.conf"))
+	sLog.outColor(TYELLOW, "  >> " CONFDIR "logonserver.conf :: ");
+	if(Config.MainConfig.SetSource(CONFDIR "logonserver.conf"))
 #endif
 	{
 		sLog.outColor(TGREEN, "ok!");

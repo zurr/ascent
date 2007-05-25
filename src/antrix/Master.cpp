@@ -106,8 +106,8 @@ bool Master::Run()
 	sLog.outColor(TYELLOW, "  >> antrix.conf :: ");
 	if(Config.MainConfig.SetSource("antrix.conf"))
 #else
-	sLog.outColor(TYELLOW, "  >> " CONFDIR "/etc/antrix.conf :: ");
-	if(Config.MainConfig.SetSource(CONFDIR "/etc/antrix.conf"))
+	sLog.outColor(TYELLOW, "  >> " CONFDIR "/antrix.conf :: ");
+	if(Config.MainConfig.SetSource(CONFDIR "/antrix.conf"))
 #endif
 	{
 		sLog.outColor(TGREEN, "ok!");
@@ -124,8 +124,8 @@ bool Master::Run()
 	sLog.outColor(TYELLOW, "  >> realms.conf :: ");
 	if(Config.RealmConfig.SetSource("realms.conf"))
 #else
-	sLog.outColor(TYELLOW, "  >> " CONFDIR "/etc/realms.conf :: ");
-	if(Config.RealmConfig.SetSource(CONFDIR "/etc/realms.conf"))
+	sLog.outColor(TYELLOW, "  >> " CONFDIR "/realms.conf :: ");
+	if(Config.RealmConfig.SetSource(CONFDIR "/realms.conf"))
 #endif
 	{
 		sLog.outColor(TGREEN, "ok!");
