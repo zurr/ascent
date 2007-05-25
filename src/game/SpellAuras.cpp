@@ -3831,6 +3831,9 @@ void Aura::SpellAuraModRegen(bool apply)
 
 void Aura::EventPeriodicHeal1(uint32 amount)
 {
+	if(!m_target->isAlive())
+		return;
+
 	uint32 ch = m_target->GetUInt32Value(UNIT_FIELD_HEALTH);
 	ch+=amount;
 	uint32 mh = m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
