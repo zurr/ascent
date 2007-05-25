@@ -94,6 +94,8 @@ public:
 	void SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry);
 	inline bool IsQuestRepeatable(Quest *qst) { return qst->is_repeatable; }
 
+	bool CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot);
+
 	inline int32 QuestHasMob(Quest* qst, uint32 mob)
 	{
 		for(uint32 i = 0; i < 4; ++i)

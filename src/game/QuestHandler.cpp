@@ -636,6 +636,13 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 	}
 
 	//check for room in inventory for all items
+    //check for room in inventory for all items
+	if(!sQuestMgr.CanStoreReward(GetPlayer(),qst,reward_slot))
+    {
+        GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+        return;
+    }
+
 	
 	sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, reward_slot);
 	//if(qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(((Creature*)qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
