@@ -99,7 +99,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_CREATE_HOUSE - 81
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_BIND_SIGHT - 82
 		&Spell::SpellEffectDuel,//SPELL_EFFECT_DUEL - 83
-		&Spell::SpellEffectNULL,//SPELL_EFFECT_STUCK - 84
+		&Spell::SpellEffectStuck,//SPELL_EFFECT_STUCK - 84
 		&Spell::SpellEffectSummonPlayer,//SPELL_EFFECT_SUMMON_PLAYER - 85
 		&Spell::SpellEffectActivateObject,//SPELL_EFFECT_ACTIVATE_OBJECT - 86
 		&Spell::SpellEffectSummonTotem,//SPELL_EFFECT_SUMMON_TOTEM_SLOT1 - 87
@@ -2986,6 +2986,14 @@ void Spell::SpellEffectDuel(uint32 i) // Duel
 	}
 
 	p_caster->RequestDuel(playerTarget);
+}
+
+void Spell::SpellEffectStuck(uint32 i)
+{
+    if(!playerTarget)
+        return;
+
+	playerTarget->SafeTeleport(playerTarget->GetBindMapId(), 0, playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(), 3.14f);
 }
 
 void Spell::SpellEffectSummonPlayer(uint32 i)

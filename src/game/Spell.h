@@ -1128,6 +1128,7 @@ public:
 	void SpellEffectSanctuary(uint32 i);
 	void SpellEffectAddComboPoints(uint32 i);
 	void SpellEffectDuel(uint32 i);
+    void SpellEffectStuck(uint32 i);
 	void SpellEffectSummonPlayer(uint32 i);
 	void SpellEffectActivateObject(uint32 i);
 	void SpellEffectSummonTotem(uint32 i);
