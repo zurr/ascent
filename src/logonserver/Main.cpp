@@ -112,8 +112,13 @@ void LogonServer::Run()
 	sLog.outString("");
 
 	sLog.outColor(TNORMAL, "Loading Config Files...\n");
+#ifdef WIN32
 	sLog.outColor(TYELLOW, "  >> logonserver.conf :: ");
 	if(Config.MainConfig.SetSource("logonserver.conf"))
+#else
+	sLog.outColor(TYELLOW, "  >> " PREFIX "/etc/logonserver.conf :: ");
+	if(Config.MainConfig.SetSource(PREFIX "/etc/logonserver.conf"))
+#endif
 	{
 		sLog.outColor(TGREEN, "ok!");
 		sLog.outColor(TNORMAL, "\n\n");

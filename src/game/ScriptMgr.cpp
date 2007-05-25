@@ -19,7 +19,8 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstring>
 #endif
 
 initialiseSingleton(ScriptMgr);
@@ -89,19 +90,18 @@ void ScriptMgr::LoadScripts()
 #else
 	/* Loading system for *nix */
 	struct dirent ** list;
-	int filecount = scandir("../lib/", &list, 0, 0);
+	int filecount = scandir(PREFIX "/lib/", &list, 0, 0);
 	uint32 count = 0;
 
 	if(!filecount || !list)
 		sLog.outError("  No external scripts found! Server will continue to function with limited functionality.");
 	else
 	{
-		int leng;
+char *ext;
 		while(filecount--)
 		{
-			leng = strlen(list[filecount]->d_name);
-			if(list[filecount]->d_name[leng-1] == 'o' && list[filecount]->d_name[leng-2] == 's' && list[filecount]->d_name[leng-3] == '.')
-			{
+			ext = strrchr(list[filecount]->d_name, '.');
+			if (ext != NULL && !strcmp(ext, "so")) {
 				string full_path = "../lib/" + string(list[filecount]->d_name);
 				SCRIPT_MODULE mod = dlopen(full_path.c_str(), RTLD_NOW);
 				printf("  %s : 0x%08X : ", list[filecount]->d_name, mod);

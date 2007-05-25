@@ -1,7 +1,7 @@
 ## Process this file with autoconf to produce a configure script.
 
 AC_INIT([Antrix],
-        [2.0.10],
+        [2.1.0],
         [Antrix],
         [antrix])
 
@@ -154,6 +154,9 @@ AC_CHECK_FUNCS(                                               \
 #	"`svn info | ${SED} '/^Last Changed Date: */!d; s///;q' | awk '{ print $2 }'`",
 #	[SVN last change time]
 #)
+
+test "" = "NONE" && prefix=""
+AC_DEFINE_UNQUOTED(PREFIX, "", Prefix)
 
 AC_CONFIG_FILES([
    ./Makefile

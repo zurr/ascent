@@ -102,8 +102,13 @@ bool Master::Run()
 	uint32 LoadingTime = getMSTime();
 
 	sLog.outColor(TNORMAL, "Loading Config Files...\n");
+#ifdef WIN32
 	sLog.outColor(TYELLOW, "  >> antrix.conf :: ");
 	if(Config.MainConfig.SetSource("antrix.conf"))
+#else
+	sLog.outColor(TYELLOW, "  >> " PREFIX "/etc/antrix.conf :: ");
+	if(Config.MainConfig.SetSource(PREFIX "/etc/antrix.conf"))
+#endif
 	{
 		sLog.outColor(TGREEN, "ok!");
 		sLog.outColor(TNORMAL, "\n");
@@ -115,8 +120,13 @@ bool Master::Run()
 		return false;
 	}
 
+#ifdef WIN32
 	sLog.outColor(TYELLOW, "  >> realms.conf :: ");
 	if(Config.RealmConfig.SetSource("realms.conf"))
+#else
+	sLog.outColor(TYELLOW, "  >> " PREFIX "/etc/realms.conf :: ");
+	if(Config.RealmConfig.SetSource(PREFIX "/etc/realms.conf"))
+#endif
 	{
 		sLog.outColor(TGREEN, "ok!");
 		sLog.outColor(TNORMAL, "\n\n");
