@@ -483,18 +483,23 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				HandleEvent(EVENT_FOLLOWOWNER, m_Unit, 0);
 			}
 
-			if(m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID)
-			{
-				if(m_Unit->GetTypeId() == TYPEID_UNIT)
-				{
-					if(static_cast<Creature*>(m_Unit)->GetCreatureName() && static_cast<Creature*>(m_Unit)->GetCreatureName()->Rank == 3)
-					{
-						m_Unit->GetMapMgr()->RemoveCombatInProgress(m_Unit->GetGUID());
-						sInstanceSavingManager.SaveObjectStateToInstance(m_Unit);
-						m_Unit->GetMapMgr()->SavePlayersToInstance();
-					}
-				}
-			}
+			if(m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_MULTIMODE)
+            {
+                if(m_Unit->GetTypeId() == TYPEID_UNIT)
+                {
+                    if(static_cast<Creature*>(m_Unit)->GetCreatureName() && static_cast<Creature*>(m_Unit)->GetCreatureName()->Rank == 3)
+                    {
+                        m_Unit->GetMapMgr()->RemoveCombatInProgress(m_Unit->GetGUID());
+                        sInstanceSavingManager.SaveObjectStateToInstance(m_Unit);
+                        m_Unit->GetMapMgr()->SavePlayersToInstance();
+                    }
+                    else if(static_cast<Creature*>(m_Unit)->proto->boss && m_Unit->GetMapMgr()->iInstanceMode == MODE_HEROIC)
+                    {
+                        sInstanceSavingManager.SaveObjectStateToInstance(m_Unit);
+                        m_Unit->GetMapMgr()->SavePlayersToInstance();
+                    }
+                }
+            }
 		}break;
 	}
 }

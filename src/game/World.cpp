@@ -940,6 +940,7 @@ void World::LoadMapInformation()
 		mapinfo->name = fields[9].GetString();
 		mapinfo->flags =  fields[10].GetUInt32();
 		mapinfo->cooldown =  fields[11].GetUInt32();
+        mapinfo->lvl_mod_a =  fields[12].GetUInt32();
 
 		AddMapInformation(mapinfo);
 

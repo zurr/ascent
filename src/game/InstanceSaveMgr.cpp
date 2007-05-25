@@ -41,11 +41,12 @@ void InstanceSavingManagement::BuildSavedInstancesForPlayer(Player *pPlayer)
 	bool hasBeenSaved = false;
 	WorldPacket data;
 
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::const_iterator itr;
 	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
 	{
 		Instance_Map_Info_Holder *p = itr->second;
-		result = p->FindPlayer(pPlayer->GetGUID(), NULL); //find only non grouped results
+		result = p->FindPlayer(pPlayer->GetGUID(), NULL, MODE_NORMAL); //find only non grouped results
 		if(result)
 		{
 			data.Initialize(SMSG_INSTANCE_SAVE);
@@ -59,6 +60,7 @@ void InstanceSavingManagement::BuildSavedInstancesForPlayer(Player *pPlayer)
 			hasBeenSaved = true;
 		}
 	}
+    instanceInfoListMutex.Release();
 
 	if(!hasBeenSaved)
 	{
@@ -72,6 +74,7 @@ Instance_Map_Info_Holder *InstanceSavingManagement::SaveInstance(MapMgr *pInstan
 {
 	ASSERT( pInstance->GetInstanceID() );
 
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( pInstance->GetMapId() );
 	if(itr == mInstanceInfoList.end())
 	{
@@ -82,6 +85,7 @@ Instance_Map_Info_Holder *InstanceSavingManagement::SaveInstance(MapMgr *pInstan
 		mapholder->AddInstanceId(pInstance);
 
 		mInstanceInfoList[pInstance->GetMapId()] = mapholder;
+        instanceInfoListMutex.Release();
 		return mapholder;
 	}
 	else
@@ -89,8 +93,10 @@ Instance_Map_Info_Holder *InstanceSavingManagement::SaveInstance(MapMgr *pInstan
 		Instance_Map_Info_Holder *mapholder = itr->second;
 		mapholder->SetMapInfo(pInstance->GetMapInfo());
 		mapholder->AddInstanceId(pInstance);
+        instanceInfoListMutex.Release();
 		return mapholder;
 	}
+    instanceInfoListMutex.Release();
 	return NULL;
 }
 
@@ -98,19 +104,21 @@ void InstanceSavingManagement::SavePlayerToInstance(Player *pPlayer, uint32 mapi
 {
 	WorldPacket data;
 
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
-		bool result = itr->second->FindPlayer(pPlayer->GetGUID(), (pPlayer->InGroup() ? pPlayer->GetGroup()->GetID() : 0));
+        bool result = itr->second->FindPlayer(pPlayer->GetGUID(), (pPlayer->InGroup() ? pPlayer->GetGroup()->GetID() : 0), pPlayer->iInstanceType);
 		if(result)
 		{
+            instanceInfoListMutex.Release();
 			return;
 		}
 		else
 		{
 			if(pPlayer->GetInstanceID()) //check if player is really on a instanceid
 			{
-				if(itr->second->GetMapInfo() && itr->second->GetMapInfo()->type == INSTANCE_RAID)
+                if(itr->second->GetMapInfo() && itr->second->GetMapInfo()->type == INSTANCE_RAID || itr->second->GetMapInfo() && itr->second->GetMapInfo()->type == INSTANCE_MULTIMODE && pPlayer->iInstanceType == MODE_HEROIC)
 				{
 					itr->second->AddPlayer(pPlayer->GetGUID(), pPlayer->GetInstanceID());
 					sChatHandler.SystemMessageToPlr(pPlayer,"You are now saved to this instance.");
@@ -133,6 +141,7 @@ void InstanceSavingManagement::SavePlayerToInstance(Player *pPlayer, uint32 mapi
 			}
 		}
 	}
+    instanceInfoListMutex.Release();
 }
 
 void InstanceSavingManagement::ResetSavedInstancesForPlayer(Player *pPlayer)
@@ -140,11 +149,12 @@ void InstanceSavingManagement::ResetSavedInstancesForPlayer(Player *pPlayer)
 	bool result;
 	WorldPacket data;
 
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::const_iterator itr;
 	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
 	{
 		Instance_Map_Info_Holder *p = itr->second;
-		if(p->GetMapInfo()->type == INSTANCE_RAID)
+        if(p->GetMapInfo()->type == INSTANCE_RAID)
 			continue;
 
 		if(pPlayer->InGroup())
@@ -159,6 +169,7 @@ void InstanceSavingManagement::ResetSavedInstancesForPlayer(Player *pPlayer)
 			pPlayer->GetSession()->SendPacket(&data);
 		}
 	}
+    instanceInfoListMutex.Release();
 }
 
 void InstanceSavingManagement::RemoveSavedInstance(uint32 mapid, uint32 instanceid, bool bHardReset)
@@ -172,21 +183,23 @@ void InstanceSavingManagement::RemoveSavedInstance(uint32 mapid, uint32 instance
 	ASSERT( mapid );
 	ASSERT( instanceid );
 
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
 		Instance_Map_Info_Holder *p1 = itr->second;
 		MapInfo * pMapInfo = sWorld.GetMapInformation(mapid);
-		if(bHardReset && pMapInfo && pMapInfo->type == INSTANCE_RAID)
+        if(bHardReset && pMapInfo && pMapInfo->type == INSTANCE_RAID || bHardReset && pMapInfo && pMapInfo->type == INSTANCE_MULTIMODE)
 		{
 			p1->RemoveInstanceId(instanceid);
 			DeleteInstanceFromDB(instanceid);
 		}
-		else if(!bHardReset && pMapInfo && pMapInfo->type != INSTANCE_RAID )
+        else if(!bHardReset && pMapInfo && pMapInfo->type != INSTANCE_RAID && pMapInfo->type != INSTANCE_MULTIMODE )
 		{
 			p1->RemoveInstanceId(instanceid);
 		}
 	}
+    instanceInfoListMutex.Release();
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -196,32 +209,44 @@ void InstanceSavingManagement::RemoveSavedInstance(uint32 mapid, uint32 instance
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 bool InstanceSavingManagement::IsPlayerSavedToMap(uint32 mapid, Player *pPlayer)
 {
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
   
 	if(itr != mInstanceInfoList.end())
 	{
 		Instance_Map_Info_Holder *p = itr->second;
-		if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID)
+        if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
-			bool result = p->FindPlayer(pPlayer->GetGUID(), NULL);
-			if(result) return true;
+            bool result = p->FindPlayer(pPlayer->GetGUID(), NULL, pPlayer->iInstanceType);
+			if(result)
+            {
+                instanceInfoListMutex.Release();
+                return true;
+            }
 		}
 	}
+    instanceInfoListMutex.Release();
 	return false;
 }
 bool InstanceSavingManagement::IsPlayerSavedToInstanceId(uint32 mapid, uint32 instanceid, Player *pPlayer)
 {
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
   
 	if(itr != mInstanceInfoList.end())
 	{
 		Instance_Map_Info_Holder *p = itr->second;
-		if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID)
+        if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
 			bool result = p->IsPlayerSavedToInstanceId(pPlayer->GetGUID(), instanceid);
-			if(result) return true;
+			if(result) 
+            {
+                instanceInfoListMutex.Release();
+                return true;
+            }
 		}
 	}
+    instanceInfoListMutex.Release();
 	return false;
 }
 
@@ -254,6 +279,7 @@ void InstanceSavingManagement::LoadSavedInstances()
 		ia->MapId = fields[1].GetUInt32();
 		ia->Creation = fields[4].GetUInt32();
 		ia->ExpireTime = fields[5].GetUInt32();
+        ia->difficulty = fields[6].GetUInt32();
 		sInstanceSavingManager.AddInactiveInstance(ia);
 		sInstanceSavingManager.SaveInstance(ia);
 		sInstanceSavingManager.RepopulateSavedData(fields[1].GetUInt32(), fields[0].GetUInt32(), fields[2].GetString(), fields[3].GetString());
@@ -285,7 +311,7 @@ void InstanceSavingManagement::RepopulateSavedData(uint32 mapid, uint32 instance
 					break;
 				}
 
-				sscanf(ndata.substr(last_pos, (pos-last_pos)).c_str(), I64FMT, &val);
+				sscanf(ndata.substr(last_pos, (pos-last_pos)).c_str(), I64FMTD, &val);
 				last_pos = pos+1;
 				if(val)
 					pi->AddPlayer(val);
@@ -317,6 +343,7 @@ void InstanceSavingManagement::RepopulateSavedData(uint32 mapid, uint32 instance
 
 void InstanceSavingManagement::SaveInstanceIdToDB(uint32 instanceid, uint32 mapid)
 {
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
@@ -327,9 +354,11 @@ void InstanceSavingManagement::SaveInstanceIdToDB(uint32 instanceid, uint32 mapi
 			pi->SaveInstanceToDB();
 		}
 	}
+    instanceInfoListMutex.Release();
 }
 void InstanceSavingManagement::SaveObjectStateToInstance(Unit *pUnit)
 {
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( pUnit->GetMapId() );
 	if(itr != mInstanceInfoList.end())
 	{
@@ -340,10 +369,12 @@ void InstanceSavingManagement::SaveObjectStateToInstance(Unit *pUnit)
 			pi->AddObject(static_cast<Creature*>(pUnit)->GetSQL_id());
 		}
 	}
+    instanceInfoListMutex.Release();
 }
 
 Instance_Map_InstanceId_Holder *InstanceSavingManagement::GetInstance(uint32 mapid, uint32 instanceid)
 {
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
@@ -351,27 +382,32 @@ Instance_Map_InstanceId_Holder *InstanceSavingManagement::GetInstance(uint32 map
 		Instance_Map_InstanceId_Holder *pi = p->GetInstanceId(instanceid);
 		if(pi)
 		{
+            instanceInfoListMutex.Release();
 			return pi;
 		}
 	}
+    instanceInfoListMutex.Release();
 	return NULL;
 }
 
-Instance_Map_InstanceId_Holder *InstanceSavingManagement::GetRaidInstance(uint32 mapid, Player * pPlayer)
+Instance_Map_InstanceId_Holder *InstanceSavingManagement::GetRaidAndMMInstance(uint32 mapid, Player * pPlayer)
 {
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
 		Instance_Map_Info_Holder *p = itr->second;
-		if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID)
+        if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
-			Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID());
+            Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType);
 			if(pi)
 			{
+                instanceInfoListMutex.Release();
 				return pi;
 			}
 		}
 	}
+    instanceInfoListMutex.Release();
 	return NULL;
 }
 
@@ -385,13 +421,14 @@ void InstanceSavingManagement::BuildRaidSavedInstancesForPlayer(Player *pPlayer)
 
 	data.Initialize(SMSG_RAID_INSTANCE_INFO);
 
+    instanceInfoListMutex.Acquire();
 	InstanceInfo::const_iterator itr;
 	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
 	{
 		Instance_Map_Info_Holder *p = itr->second;
-		if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID)
+        if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
-			Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID());
+            Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType, true);
 			if(pi)
 			{
 				data << uint32(0x00);
@@ -403,6 +440,7 @@ void InstanceSavingManagement::BuildRaidSavedInstancesForPlayer(Player *pPlayer)
 			}
 		}
 	}
+    instanceInfoListMutex.Release();
 	data.wpos(0);
 	data << counter;
 
@@ -441,21 +479,26 @@ Instance_Map_Info_Holder::~Instance_Map_Info_Holder()
 
 void Instance_Map_Info_Holder::RemoveInstanceId(uint32 instanceid)
 {
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr = mInstanceIdList.find( instanceid );
 	if(itr != mInstanceIdList.end())
 	{
 		delete itr->second;
 		mInstanceIdList.erase(itr);
 	}
+    instanceIdListMutex.Release();
 }
 
 Instance_Map_InstanceId_Holder *Instance_Map_Info_Holder::GetInstanceId(uint32 instanceid)
 {
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr = mInstanceIdList.find( instanceid );
 	if(itr != mInstanceIdList.end())
 	{
+        instanceIdListMutex.Release();
 		return itr->second;
 	}
+    instanceIdListMutex.Release();
 	return NULL;
 }
 
@@ -463,6 +506,7 @@ void Instance_Map_Info_Holder::AddInstanceId(MapMgr *pInstance)
 {
 	ASSERT( pInstance->GetInstanceID() );
 
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr = mInstanceIdList.find( pInstance->GetInstanceID() );
 	if(itr == mInstanceIdList.end())
 	{
@@ -472,17 +516,20 @@ void Instance_Map_Info_Holder::AddInstanceId(MapMgr *pInstance)
 		pIdList->SetCreationTime(pInstance->CreationTime);
 		pIdList->SetRaidExpireTime(pInstance->RaidExpireTime);
 		pIdList->SetInstanceID(pInstance->GetInstanceID());
+        pIdList->SetDifficulty(pInstance->iInstanceMode);
 
 		pIdList->SetGroupSignature(pInstance->GetGroupSignature()); //allows multiple instanceids per mapid
 
 		mInstanceIdList[pInstance->GetInstanceID()] = pIdList;
 	}
+    instanceIdListMutex.Release();
 }
 
 void Instance_Map_Info_Holder::AddInstanceId(InactiveInstance * ia)
 {
 	ASSERT( ia->InstanceId );
 
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr = mInstanceIdList.find( ia->InstanceId );
 	if(itr == mInstanceIdList.end())
 	{
@@ -494,35 +541,41 @@ void Instance_Map_Info_Holder::AddInstanceId(InactiveInstance * ia)
 		pIdList->SetCreationTime(ia->Creator);
 		pIdList->SetRaidExpireTime(ia->ExpireTime);
 		pIdList->SetInstanceID(ia->InstanceId);
+        pIdList->SetDifficulty(ia->difficulty);
 
 		mInstanceIdList[ia->InstanceId] = pIdList;
 	}
+    instanceIdListMutex.Release();
 }
 
 void Instance_Map_Info_Holder::AddPlayer(uint64 guid, uint32 InstanceID)
 {
 	ASSERT( InstanceID );
 
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr = mInstanceIdList.find( InstanceID );
 	if(itr != mInstanceIdList.end())
 	{
 		 Instance_Map_InstanceId_Holder *p = itr->second;
 		 p->AddPlayer(guid);
 	}
+    instanceIdListMutex.Release();
 }
 
 bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid, uint32 InstanceID)
 {
 	ASSERT( InstanceID );
 	bool result = false;
-
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr = mInstanceIdList.find( InstanceID );
 	if(itr != mInstanceIdList.end())
 	{
 		Instance_Map_InstanceId_Holder *p = itr->second;
 		 result = p->RemovePlayer(guid);
+         instanceIdListMutex.Release();
 		 return result;
 	}
+    instanceIdListMutex.Release();
 	return false;
 }
 
@@ -531,13 +584,14 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 	bool result = false;
 	bool result2 = false;
 
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr, itr2;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end();)
 	{
 		 itr2 = itr;
 		 ++itr;
 		 Instance_Map_InstanceId_Holder *p = itr2->second;
-		 if(!p->GetGroupSignature() && GetMapInfo()->type != INSTANCE_RAID) //only resets solo instances
+         if(!p->GetGroupSignature() && GetMapInfo()->type != INSTANCE_RAID && p->GetDifficulty() != MODE_HEROIC) //only resets solo instances
 		 {
 			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true);
 			 if(mapMgr)
@@ -548,7 +602,8 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 					 Player * pPlayer = objmgr.GetPlayer(guid);
 					 if(pPlayer) 
 						 sChatHandler.SystemMessageToPlr(pPlayer,"You are trying to reset a instance when there are still players inside");
-					 return false;
+					 instanceIdListMutex.Release();
+                     return false;
 				 }
 			 }
 			 result = p->RemovePlayer(guid);
@@ -562,6 +617,7 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 			 }
 		 }
 	}
+    instanceIdListMutex.Release();
 	return result2;
 }
 bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
@@ -569,6 +625,7 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 	bool result = false;
 	bool result2 = false;
 
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr, itr2;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end();)
 	{
@@ -577,6 +634,7 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 		Instance_Map_InstanceId_Holder *p = itr2->second;
 		 if(p->GetGroupSignature() && p->GetGroupSignature() == iGroupSignature) //only resets this group instance ids
 		 {
+             if(p->GetDifficulty() == MODE_HEROIC || p->GetMapInfo()->type == INSTANCE_RAID) { continue; }
 			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true);
 			 if(mapMgr)
 			 {
@@ -590,6 +648,7 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 						if(pPlayer) 
 							sChatHandler.SystemMessageToPlr(pPlayer,"You are trying to reset a instance when there are still players inside");
 					}
+                     instanceIdListMutex.Release();
 					 return false;
 				 }
 			 }
@@ -604,11 +663,13 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 			 }
 		 }
 	}
+    instanceIdListMutex.Release();
 	return result2;
 }
 
-bool Instance_Map_Info_Holder::FindPlayer(uint64 guid, uint32 iGroupSignature)
+bool Instance_Map_Info_Holder::FindPlayer(uint64 guid, uint32 iGroupSignature, uint32 difficulty)
 {
+    instanceIdListMutex.Acquire();
 	InstanceIdList::const_iterator itr;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end(); itr++)
 	{
@@ -616,27 +677,32 @@ bool Instance_Map_Info_Holder::FindPlayer(uint64 guid, uint32 iGroupSignature)
 		// group matches, returns false and breaks loop if it fails
 		// cant exist 2 groups with same id  so no point in continue loop
 		// raid groups are ignored for this check.
-		if(iGroupSignature && this->GetMapInfo()->type != INSTANCE_RAID)
+        if(iGroupSignature && GetMapInfo()->type != INSTANCE_RAID || iGroupSignature && GetMapInfo()->type == INSTANCE_MULTIMODE && p->GetDifficulty() == MODE_NORMAL && difficulty == MODE_NORMAL)
 		{
 			if(p->GetGroupSignature() == iGroupSignature)
 			{
 				bool result = p->FindPlayer(guid);
-				if(result) { return true; }
-
+				if(result) { instanceIdListMutex.Release(); return true; }
+                instanceIdListMutex.Release();
 				return false;
 			}
 		}
 		else
 		{
-			bool result = p->FindPlayer(guid);
-			if(result) { return true; }
+            if(p->GetDifficulty() == difficulty)
+            {
+			    bool result = p->FindPlayer(guid);
+			    if(result) { instanceIdListMutex.Release(); return true; }
+            }
 		}
 	}
+    instanceIdListMutex.Release();
 	return false;
 }
 
 bool Instance_Map_Info_Holder::IsPlayerSavedToInstanceId(uint64 guid, uint32 instanceid)
 {
+    instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr = mInstanceIdList.find( instanceid );
 	if(itr != mInstanceIdList.end())
 	{
@@ -644,23 +710,39 @@ bool Instance_Map_Info_Holder::IsPlayerSavedToInstanceId(uint64 guid, uint32 ins
 		if(p->GetInstanceID() == instanceid)
 		{
 			bool result = p->FindPlayer(guid);
-			if(result) { return true; }
+            if(result) {  instanceIdListMutex.Release(); return true; }
 		}
 	}
+    instanceIdListMutex.Release();
 	return false;
 }
 
-Instance_Map_InstanceId_Holder *Instance_Map_Info_Holder::getInstanceIdByPlayer(uint64 guid)
+Instance_Map_InstanceId_Holder *Instance_Map_Info_Holder::getInstanceIdByPlayer(uint64 guid, uint32 difficulty, bool iIgnoreDifficulty)
 {
+    instanceIdListMutex.Acquire();
 	InstanceIdList::const_iterator itr;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end(); itr++)
 	{
 		Instance_Map_InstanceId_Holder *p = itr->second;
-		if(p->FindPlayer(guid))
-		{
-			return p;
-		}
+        if(iIgnoreDifficulty)
+        {
+            if(p->FindPlayer(guid))
+		    {
+                instanceIdListMutex.Release();
+			    return p;
+		    }
+
+        }
+        else
+        {
+            if(p->FindPlayer(guid) && p->GetDifficulty() == difficulty)
+		    {
+                instanceIdListMutex.Release();
+			    return p;
+		    }
+        }
 	}
+    instanceIdListMutex.Release();
 	return NULL;
 }
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -673,6 +755,7 @@ Instance_Map_InstanceId_Holder::Instance_Map_InstanceId_Holder()
 	ExpireTime = 0;
 	IsSaved = false;
 	m_instanceid = 0;
+    difficulty = MODE_NORMAL;
 }
 
 Instance_Map_InstanceId_Holder::~Instance_Map_InstanceId_Holder()
@@ -683,62 +766,79 @@ Instance_Map_InstanceId_Holder::~Instance_Map_InstanceId_Holder()
 
 bool Instance_Map_InstanceId_Holder::FindPlayer(uint64 guid)
 {
+    playerListMutex.Acquire();
 	PlayerList::iterator itr = mPlayerList.find( guid );
 	if(itr == mPlayerList.end())
 	{
+        playerListMutex.Release();
 		return false;
 	}
 	else
 	{
+        playerListMutex.Release();
 		return true;
 	}
 }
 bool Instance_Map_InstanceId_Holder::ClearAllPlayers()
 {
+    playerListMutex.Acquire();
 	mPlayerList.clear();
+    playerListMutex.Release();
 	return true;
 }
 
 bool Instance_Map_InstanceId_Holder::ClearAllObjects()
 {
+    npcListMutex.Acquire();
 	mNpcList.clear();
+    npcListMutex.Release();
 	return true;
 }
 
 void Instance_Map_InstanceId_Holder::AddPlayer(uint64 guid)
 {
+    playerListMutex.Acquire();
 	mPlayerList[guid] = guid;
+    playerListMutex.Release();
 }
 
 void Instance_Map_InstanceId_Holder::AddObject(uint32 entry)
 {
+    npcListMutex.Acquire();
 	mNpcList[entry] = entry;
+    npcListMutex.Release();
 }
 
 bool Instance_Map_InstanceId_Holder::FindObject(uint32 entry)
 {
+    npcListMutex.Acquire();
 	NpcList::iterator itr = mNpcList.find( entry );
 	if(itr == mNpcList.end())
 	{
+        npcListMutex.Release();
 		return false;
 	}
 	else
 	{
+        npcListMutex.Release();
 		return true;
 	}
 }
 
 bool Instance_Map_InstanceId_Holder::RemovePlayer(uint64 guid)
 {
+    playerListMutex.Acquire();
 	PlayerList::iterator itr = mPlayerList.find( guid );
 	if(itr == mPlayerList.end())
 	{
 		//error
+        playerListMutex.Release();
 		return false;
 	}
 	else
 	{
 		mPlayerList.erase(itr);
+        playerListMutex.Release();
 		return true;
 	}
 }
@@ -752,21 +852,24 @@ void Instance_Map_InstanceId_Holder::SaveInstanceToDB()
 	ss << m_instanceid << ", ";
 	ss << GetMapInfo()->mapid << ", '";
 
+    npcListMutex.Acquire();
 	for (itr = mNpcList.begin();itr != mNpcList.end(); itr++)
 	{
-	ss << itr->first << " ";
-
+	    ss << itr->first << " ";
 	}
+    npcListMutex.Release();
 	ss << "', '";
 
+    playerListMutex.Acquire();
 	for (itr = mPlayerList.begin();itr != mPlayerList.end(); itr++)
 	{
-	ss << itr->first << " ";
-
+	    ss << itr->first << " ";
 	}
+    playerListMutex.Release();
 	ss << "', ";
 	ss << CreationTime << ", ";
-	ss << ExpireTime << ");";
+	ss << ExpireTime << ", ";
+    ss << difficulty << ");";
 	sDatabase.Execute( ss.str().c_str() );
 }
 
@@ -795,6 +898,7 @@ void InstanceSavingManagement::CreateInactiveInstance(MapMgr * mgr)
 	ia->MapId = mgr->GetMapId();
 	ia->Creator = mgr->GetCreator();
 	ia->GroupSignature = mgr->GetGroupSignature();
+    ia->difficulty = mgr->iInstanceMode;
 
 	AddInactiveInstance(ia);
 }

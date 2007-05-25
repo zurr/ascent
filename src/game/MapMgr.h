@@ -251,6 +251,7 @@ public:
 	void SetNewExpireTime(time_t creation);
 	bool bEncounterInProgress;
 	time_t InactiveMoveTime;
+    uint32 iInstanceMode;
 
 protected:
 

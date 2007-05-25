@@ -3138,7 +3138,7 @@ void ObjectMgr::LoadCreatureProtos()
 			if(id)
 				cn->start_auras.insert( id );
 		}
-
+        cn->boss = get_next_field.GetUInt32();
 		m_creatureproto[cn->Id]=cn;
 	} while( result->NextRow() );
 	delete result;

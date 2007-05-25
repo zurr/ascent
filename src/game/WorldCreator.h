@@ -28,6 +28,13 @@ enum INSTANCE_TYPE
 	INSTANCE_MULTIMODE,
 };
 
+enum INSTANCE_MODE
+{
+    MODE_NORMAL = 0,
+    MODE_HEROIC = 1,
+    MODE_EPIC   = 2,
+};
+
 enum INSTANCE_ABORT_ERROR
 {
 	INSTANCE_ABORT_ERROR	 = 0x00,
@@ -67,8 +74,9 @@ public:
 	MapMgr * GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo);
 
 	//Normal instance management
-	uint32 CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid, uint32 instanceid = 0, uint32 creation = 0, MapMgr ** destptr = 0);
-	void DeleteInstance(uint32 instanceid, uint32 mapid);
+	uint32 CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid, uint32 instanceid = 0, uint32 creation = 0, MapMgr ** destptr = 0, uint32 difficulty = 0);
+
+    void DeleteInstance(uint32 instanceid, uint32 mapid);
 	bool CheckInstanceForObject(Object *obj, MapInfo *pMapinfo);
 
 	uint32 GenerateInstanceID();

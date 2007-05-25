@@ -673,7 +673,7 @@ WayPoint * Creature::CreateWaypointStruct()
 	return new WayPoint();
 }
 
-bool Creature::Load(CreatureSpawn *spawn)
+bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 {
 	m_spawn = spawn;
 	proto = objmgr.GetCreatureProto(spawn->entry);
@@ -688,9 +688,9 @@ bool Creature::Load(CreatureSpawn *spawn)
 	SetUInt32Value(OBJECT_FIELD_ENTRY,proto->Id);
 	SetFloatValue(OBJECT_FIELD_SCALE_X,proto->Scale);
 	
-	SetUInt32Value(UNIT_FIELD_HEALTH,proto->Health);
-	SetUInt32Value(UNIT_FIELD_BASE_HEALTH,proto->Health);
-	SetUInt32Value(UNIT_FIELD_MAXHEALTH,proto->Health);
+	SetUInt32Value(UNIT_FIELD_HEALTH, (mode ? proto->Health * 1.5  : proto->Health));
+	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, (mode ? proto->Health * 1.5  : proto->Health));
+	SetUInt32Value(UNIT_FIELD_MAXHEALTH, (mode ? proto->Health * 1.5  : proto->Health));
 
 	SetUInt32Value(UNIT_FIELD_POWER2,proto->Mana);
 	SetUInt32Value(UNIT_FIELD_MAXPOWER2,proto->Mana);
@@ -704,13 +704,13 @@ bool Creature::Load(CreatureSpawn *spawn)
 	if(spawn->displayid != creature_info->DisplayID)
 		setGender(1);   // Female
 	
-	SetUInt32Value(UNIT_FIELD_LEVEL,proto->Level);
+    SetUInt32Value(UNIT_FIELD_LEVEL, (mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
 	for(uint32 i = 0; i < 7; ++i)
 		SetUInt32Value(UNIT_FIELD_RESISTANCES+i,proto->Resistances[i]);
 
 	SetUInt32Value(UNIT_FIELD_BASEATTACKTIME,proto->AttackTime);
-	SetFloatValue(UNIT_FIELD_MINDAMAGE,proto->MinDamage);
-	SetFloatValue(UNIT_FIELD_MAXDAMAGE,proto->MaxDamage);
+	SetFloatValue(UNIT_FIELD_MINDAMAGE, (mode ? proto->MinDamage * 1.5  : proto->MinDamage));
+	SetFloatValue(UNIT_FIELD_MAXDAMAGE, (mode ? proto->MaxDamage * 1.5  : proto->MaxDamage));
 
 	SetUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,proto->RangedAttackTime);
 	SetFloatValue(UNIT_FIELD_MINRANGEDDAMAGE,proto->RangedMinDamage);

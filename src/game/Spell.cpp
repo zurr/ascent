@@ -1274,45 +1274,48 @@ void Spell::cast(bool check)
 }
 
 void Spell::AddTime(uint32 type)
-{	
-	if(m_spellInfo->SpellGroupType && u_caster)
-	{
-		float ch=0;
-		SM_FFValue(u_caster->SM_PNonInterrupt,&ch,m_spellInfo->SpellGroupType);
-		if(Rand(ch))
-			return;
-	}
-	if(p_caster)
-	{
-		if(Rand(p_caster->SpellDelayResist[type]))
-			return;
-	}
-	if(m_spellState==SPELL_STATE_PREPARING)
-	{
-		uint32 delay = m_castTime/4;
-		m_timer+=delay;
-		if(m_timer>m_castTime)
-			m_timer=m_castTime;
-		
-		WorldPacket data(SMSG_SPELL_DELAYED, 13);
-		data << u_caster->GetNewGUID();
-		data << uint32(delay);
-		u_caster->SendMessageToSet(&data, true);
-		
-		if(!p_caster)
-		{
-			if(m_caster->GetTypeId() == TYPEID_UNIT)
-				u_caster->GetAIInterface()->AddStopTime(delay);
-		}
-	}
-	else if(m_spellInfo->ChannelInterruptFlags != 48140)
-	{		
-		m_timer-=GetDuration()/3;
-		m_delayed = true;
-		if(m_timer>0)
-			SendChannelUpdate(m_timer);
-		
-	}
+{	    
+    if(u_caster && u_caster->IsPlayer())
+    {
+	    if(m_spellInfo->SpellGroupType && u_caster)
+	    {
+		    float ch=0;
+		    SM_FFValue(u_caster->SM_PNonInterrupt,&ch,m_spellInfo->SpellGroupType);
+		    if(Rand(ch))
+			    return;
+	    }
+	    if(p_caster)
+	    {
+		    if(Rand(p_caster->SpellDelayResist[type]))
+			    return;
+	    }
+	    if(m_spellState==SPELL_STATE_PREPARING)
+	    {
+		    uint32 delay = m_castTime/4;
+		    m_timer+=delay;
+		    if(m_timer>m_castTime)
+			    m_timer=m_castTime;
+    		
+		    WorldPacket data(SMSG_SPELL_DELAYED, 13);
+		    data << u_caster->GetNewGUID();
+		    data << uint32(delay);
+		    u_caster->SendMessageToSet(&data, true);
+    		
+		    if(!p_caster)
+		    {
+			    if(m_caster->GetTypeId() == TYPEID_UNIT)
+				    u_caster->GetAIInterface()->AddStopTime(delay);
+		    }
+	    }
+	    else if(m_spellInfo->ChannelInterruptFlags != 48140)
+	    {		
+		    m_timer-=GetDuration()/3;
+		    m_delayed = true;
+		    if(m_timer>0)
+			    SendChannelUpdate(m_timer);
+    		
+	    }
+    }
 }
 
 void Spell::update(uint32 difftime)

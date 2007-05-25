@@ -915,6 +915,7 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 	uint64 crap;
 	uint32 crap2;
 	string name;
+    uint8 error;
 	recv_data >> creature_guid >> crap >> crap2 >> name;
 
 	Creature * crt = _player->GetMapMgr()->GetCreature(creature_guid);
@@ -941,27 +942,35 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 		return;
 	}
 
-	// Meh...
-	WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 100);
-	data << uint32(0x000019C2);
-	data << creature_guid;
-	SendPacket(&data);
+	if(error = _player->GetItemInterface()->CanReceiveItem(objmgr.GetItemPrototype(ITEM_ENTRY_GUILD_CHARTER),1))
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(NULL,NULL,error);
+    }
+    else
+    {
+        // Meh...
+        WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 100);
+        data << uint32(0x000019C2);
+        data << creature_guid;
+        SendPacket(&data);
 
-	// Create the item and charter
-	Item * i = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
-	c = objmgr.CreateCharter(_player->GetGUID());
-	c->GuildName = name;
-	c->ItemGuid = i->GetGUID();
+        // Create the item and charter
+        Item * i = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
+        c = objmgr.CreateCharter(_player->GetGUID());
+        c->GuildName = name;
+        c->ItemGuid = i->GetGUID();
 
-	i->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
-	i->SetUInt32Value(ITEM_FIELD_FLAGS, 1);
-	i->SetUInt32Value(ITEM_FIELD_ENCHANTMENT, c->GetID());
-	i->SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
-	assert(_player->GetItemInterface()->AddItemToFreeSlot(i));
-	c->SaveToDB();
 
-	_player->m_charter = c;
-	_player->SaveToDB(false);
+        i->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+        i->SetUInt32Value(ITEM_FIELD_FLAGS, 1);
+        i->SetUInt32Value(ITEM_FIELD_ENCHANTMENT, c->GetID());
+        i->SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
+        assert(_player->GetItemInterface()->AddItemToFreeSlot(i));
+        c->SaveToDB();
+
+        _player->m_charter = c;
+        _player->SaveToDB(false);
+    }
 }
 
 void SendShowSignatures(Charter * c, uint64 i, Player * p)

@@ -77,6 +77,7 @@ struct CreatureProto
 	float BoundingRadius;
 	set<uint32> start_auras;
 	list<AI_Spell*> spells;
+    uint32 boss;
 
 	/* AI Stuff */
 	bool m_canRangedAttack;
@@ -166,7 +167,7 @@ public:
 
 	Creature(uint32 high, uint32 low);
 	virtual ~Creature();
-	bool Load(CreatureSpawn *spawn);
+    bool Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info);
 
 	void AddToWorld();
 	void RemoveFromWorld(bool addrespawnevent);

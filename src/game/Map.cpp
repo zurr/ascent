@@ -340,7 +340,9 @@ MapMgr * Map::GetInstanceByGroup(Group *pGroup, Player * pCaller)
 		//instances on hardreset cant be accessed again, ignore them to avoid problems
 		//and ofc allow new instances to be created since save manager was already reseted.
 		if(pInstance->IsDeletionPending()) { continue; }
-		if(pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_RAID)
+        //skip any heroic mode instance if player is not set to heroic difficulty.
+        if(pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_MULTIMODE && pInstance->iInstanceMode != pGroup->GetLeader()->iInstanceType) {  continue; }
+        if(pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_RAID || pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_MULTIMODE && pInstance->iInstanceMode == MODE_HEROIC && pGroup->GetLeader()->iInstanceType == MODE_HEROIC)
 		{
 			//Detects if the player requesting the instance is already saved to one.
 			if(sInstanceSavingManager.IsPlayerSavedToInstanceId(pInstance->GetMapId(), pInstance->GetInstanceID(), pCaller))
@@ -409,7 +411,8 @@ MapMgr * Map::GetInstanceByCreator(Player *pCreator)
 	{
 		pInstance = itr->second;
 		if(pInstance->IsDeletionPending()) { listmutex.Release(); return NULL; }
-		if(pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_RAID)
+        if(pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_MULTIMODE && pInstance->iInstanceMode != pCreator->iInstanceType) {  continue; }
+        if(pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_RAID || pInstance->GetMapInfo() && pInstance->GetMapInfo()->type == INSTANCE_MULTIMODE && pInstance->iInstanceMode == MODE_HEROIC && pCreator->iInstanceType == MODE_HEROIC)
 		{
 			if(sInstanceSavingManager.IsPlayerSavedToInstanceId(pInstance->GetMapId(), pInstance->GetInstanceID(), pCreator))
 			{

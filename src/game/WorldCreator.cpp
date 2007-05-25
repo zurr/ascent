@@ -103,7 +103,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, Object* obj)
 				else
 				{
 					MapMgr * dm = 0;
-					CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                    CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 					obj->SetMapId(ia->MapId);
 					delete ia;
 					return dm;
@@ -112,7 +112,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, Object* obj)
 			else
 			{
 				MapMgr * dm = 0;
-				CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 				obj->SetMapId(ia->MapId);
 				delete ia;
 				return dm;
@@ -145,7 +145,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, uint32 instanceId)
 				else
 				{
 					MapMgr * dm = 0;
-					CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                    CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 					delete ia;
 					return dm;
 				}
@@ -153,7 +153,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, uint32 instanceId)
 			else
 			{
 				MapMgr * dm = 0;
-				CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 				delete ia;
 				return dm;
 			}
@@ -185,7 +185,7 @@ MapMgr* WorldCreator::GetInstance(uint32 instanceId)
 				else
 				{
 					MapMgr * dm = 0;
-					CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                    CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 					delete ia;
 					return dm;
 				}
@@ -193,7 +193,7 @@ MapMgr* WorldCreator::GetInstance(uint32 instanceId)
 			else
 			{
 				MapMgr * dm = 0;
-				CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 				delete ia;
 				return dm;
 			}
@@ -273,6 +273,7 @@ bool WorldCreator::CheckInstanceForObject(Object *obj, MapInfo *pMapinfo)
 		{
 			case INSTANCE_NONRAID:
 			case INSTANCE_RAID:
+            case INSTANCE_MULTIMODE:
 				{
 					//instance creation detection types
 					//case 1, player is inside a group aka not soloing
@@ -371,16 +372,12 @@ bool WorldCreator::CheckInstanceForObject(Object *obj, MapInfo *pMapinfo)
 						 }
 					 }
 				}break;
-			case INSTANCE_MULTIMODE:
-				{
-					return false;
-				}break;
 		}
 	}
 	return true;
 }
 
-uint32 WorldCreator::CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid, uint32 instanceid, uint32 creation, MapMgr ** destptr)
+uint32 WorldCreator::CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid, uint32 instanceid, uint32 creation, MapMgr ** destptr, uint32 difficulty)
 {
 	if(pGroup == NULL && pPlayer == NULL && instanceid == 0)
 	{
@@ -399,11 +396,17 @@ uint32 WorldCreator::CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid
 	if(pGroup)
 	{
 		pInstance->SetGroupSignature(pGroup->GetID());
+        pInstance->iInstanceMode = pGroup->GetLeader()->iInstanceType;
 	}
 	if(pPlayer)
 	{
 		pInstance->SetCreator(pPlayer);
+        pInstance->iInstanceMode = pPlayer->iInstanceType;
 	}
+    if(difficulty)
+    {
+       pInstance->iInstanceMode = difficulty;
+    }
 
 	Instance_Map_Info_Holder *pMapHolder = sInstanceSavingManager.SaveInstance(pInstance); //first time instance saving holder
 	if(destptr)
@@ -421,66 +424,11 @@ MapMgr *WorldCreator::GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo
 	}
 	else
 	{
-		bool result =  sInstanceSavingManager.IsPlayerSavedToMap(pMapInfo->mapid, pPlayer);
+		
+		bool result = sInstanceSavingManager.IsPlayerSavedToMap(pMapInfo->mapid, pPlayer);
 		if(result)
 		{
-			bool result = sInstanceSavingManager.IsPlayerSavedToMap(pMapInfo->mapid, pPlayer);
-			if(result)
-			{
-				Instance_Map_InstanceId_Holder *p = sInstanceSavingManager.GetRaidInstance(pMapInfo->mapid, pPlayer);
-				if(p)
-				{
-					InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(p->GetInstanceID());
-					if(ia != 0)
-					{
-						//create that inactive instance.
-						//extra, it now checks if the instance should expire.
-						MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
-						if(pMapInfo)
-						{
-							if(time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))
-							{
-								sInstanceSavingManager.RemoveSavedInstance(ia->MapId,ia->InstanceId,true);
-								sInstanceSavingManager.RemoveSavedInstance(ia->InstanceId);
-							}
-							else
-							{
-								MapMgr * dm = 0;
-								CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
-								delete ia;
-								return dm;
-							}
-						}
-						else
-						{
-							MapMgr * dm = 0;
-							CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
-							delete ia;
-							return dm;
-						}
-					}
-
-				}
-				
-			}
-		}
-	}
-	return NULL;
-}
-
-MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
-{
-	MapMgr *mgr = GetMap(pMapInfo->mapid)->GetInstanceByCreator(pCreator);
-	if(mgr)
-	{
-		return mgr;
-	}
-	else
-	{
-		bool result = sInstanceSavingManager.IsPlayerSavedToMap(pMapInfo->mapid, pCreator);
-		if(result)
-		{
-			Instance_Map_InstanceId_Holder *p = sInstanceSavingManager.GetRaidInstance(pMapInfo->mapid, pCreator);
+            Instance_Map_InstanceId_Holder *p = sInstanceSavingManager.GetRaidAndMMInstance(pMapInfo->mapid, pPlayer);
 			if(p)
 			{
 				InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(p->GetInstanceID());
@@ -499,7 +447,7 @@ MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
 						else
 						{
 							MapMgr * dm = 0;
-							CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+							CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 							delete ia;
 							return dm;
 						}
@@ -507,7 +455,60 @@ MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
 					else
 					{
 						MapMgr * dm = 0;
-						CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                        CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
+						delete ia;
+						return dm;
+					}
+				}
+
+			}
+			
+		}
+		
+	}
+	return NULL;
+}
+
+MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
+{
+	MapMgr *mgr = GetMap(pMapInfo->mapid)->GetInstanceByCreator(pCreator);
+	if(mgr)
+	{
+		return mgr;
+	}
+	else
+	{
+		bool result = sInstanceSavingManager.IsPlayerSavedToMap(pMapInfo->mapid, pCreator);
+		if(result)
+		{
+            Instance_Map_InstanceId_Holder *p = sInstanceSavingManager.GetRaidAndMMInstance(pMapInfo->mapid, pCreator);
+			if(p)
+			{
+				InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(p->GetInstanceID());
+				if(ia != 0)
+				{
+					//create that inactive instance.
+					//extra, it now checks if the instance should expire.
+					MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+					if(pMapInfo)
+					{
+						if(time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))
+						{
+							sInstanceSavingManager.RemoveSavedInstance(ia->MapId,ia->InstanceId,true);
+							sInstanceSavingManager.RemoveSavedInstance(ia->InstanceId);
+						}
+						else
+						{
+							MapMgr * dm = 0;
+                            CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
+							delete ia;
+							return dm;
+						}
+					}
+					else
+					{
+						MapMgr * dm = 0;
+						CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 						delete ia;
 						return dm;
 					}
@@ -586,7 +587,7 @@ MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 ma
 				else
 				{
 					MapMgr * dm = 0;
-					CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                    CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 					delete ia;
 					return dm;
 				}
@@ -594,7 +595,7 @@ MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 ma
 			else
 			{
 				MapMgr * dm = 0;
-				CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm);
+                CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 				delete ia;
 				return dm;
 			}

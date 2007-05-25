@@ -26,7 +26,7 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 	m_instanceID = instanceid;
 	m_UpdateDistance = sWorld.GetUpdateDistance();
 	pMapInfo = sWorld.GetMapInformation(mapId);
-
+    iInstanceMode = 0;
 	reset_pending = false;
 	DeletionPending = false;
 
@@ -36,7 +36,7 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 	CreationTime = time(NULL);
 	ExpiryTime = 0;
 	RaidExpireTime = 0;
-	if(pMapInfo && pMapInfo->type == INSTANCE_RAID)
+	if(pMapInfo && pMapInfo->type == INSTANCE_RAID || pMapInfo && pMapInfo->type == INSTANCE_MULTIMODE)
 	{
 		RaidExpireTime = (CreationTime + (pMapInfo ? pMapInfo->cooldown : 604800));
 	}
@@ -988,7 +988,7 @@ void MapMgr::Do()
 		///////////
 		if(ExpiryTime && t >= ExpiryTime)
 		{
-			if(GetMapInfo() && GetMapInfo()->type == INSTANCE_RAID)
+            if(GetMapInfo() && GetMapInfo()->type == INSTANCE_RAID || GetMapInfo() && GetMapInfo()->type == INSTANCE_MULTIMODE && iInstanceMode == MODE_HEROIC)
 			{
 				if(HasPlayers())
 				{

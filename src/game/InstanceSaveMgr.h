@@ -23,6 +23,7 @@ struct InactiveInstance
 	uint32 GroupSignature;
 	uint32 Creator;
 	uint32 ExpireTime;
+    uint32 difficulty;
 };
 
 //-------------------------------------------------------------------//
@@ -59,6 +60,9 @@ public:
 	void SetCreationTime(time_t time) { CreationTime = time; }
 	void SetRaidExpireTime(time_t time) { ExpireTime = time; }
 
+    uint32 GetDifficulty() { return difficulty; }
+    void SetDifficulty(uint32 mode) { difficulty = mode; }
+
 	//save functions
 	void SaveInstanceToDB();
 	bool IsSaved;
@@ -66,11 +70,14 @@ public:
 private:
 	PlayerList mPlayerList;
 	NpcList mNpcList;
+    Mutex playerListMutex;
+    Mutex npcListMutex;
 	uint32 mGroupSignature;
 	MapInfo *m_pMapInfo;
 	time_t CreationTime;
 	time_t ExpireTime;
 	uint32 m_instanceid;
+    uint32 difficulty;
 };
 
 
@@ -86,8 +93,7 @@ public:
 	Instance_Map_Info_Holder();
 	~Instance_Map_Info_Holder();
 
-	bool FindPlayer(uint64 guid, uint32 InstanceID, uint32 iGroupSignature);
-	bool FindPlayer(uint64 guid, uint32 iGroupSignature);
+	bool FindPlayer(uint64 guid, uint32 iGroupSignature, uint32 difficulty);
 	bool IsPlayerSavedToInstanceId(uint64 guid, uint32 instanceid);
 	bool RemovePlayer(uint64 guid, uint32 InstanceID);
 	bool RemovePlayer(uint64 guid);
@@ -99,12 +105,13 @@ public:
 	void AddInstanceId(InactiveInstance * ia);
 
 	Instance_Map_InstanceId_Holder *GetInstanceId(uint32 instanceid);
-	Instance_Map_InstanceId_Holder *getInstanceIdByPlayer(uint64 guid);
+	Instance_Map_InstanceId_Holder *getInstanceIdByPlayer(uint64 guid, uint32 difficulty, bool iIgnoreDifficulty = false);
 	inline MapInfo *GetMapInfo() { return m_pMapInfo; }
 	inline void SetMapInfo(MapInfo *pMapInfo) { m_pMapInfo = pMapInfo; }
 
 private:
 	InstanceIdList mInstanceIdList;
+    Mutex instanceIdListMutex;
 	MapInfo *m_pMapInfo;
 };
 
@@ -134,7 +141,7 @@ public:
 	void SaveInstanceIdToDB(uint32 instanceid, uint32 mapid);
 	void SaveObjectStateToInstance(Unit *pUnit);
 	Instance_Map_InstanceId_Holder *GetInstance(uint32 mapid, uint32 instanceid);
-	Instance_Map_InstanceId_Holder *GetRaidInstance(uint32 mapid, Player * pPlayer);
+    Instance_Map_InstanceId_Holder *GetRaidAndMMInstance(uint32 mapid, Player * pPlayer);
 
 	//INACTIVE INSTANCE FUNCTIONS.
 	void SaveInstance(InactiveInstance *ia);

@@ -1718,3 +1718,12 @@ void WorldSession::HandleToggleHelmOpcode(WorldPacket &recv_data)
 	else
 		_player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM);
 }
+
+void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recv_data)
+{
+    uint32 data;
+    recv_data >> data;
+
+    _player->iInstanceType = data;
+    sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
+}

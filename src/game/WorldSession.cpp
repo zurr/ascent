@@ -495,8 +495,8 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_FLY_PITCH_DOWN_AFTER_UP].handler				   = &WorldSession::HandleMovementOpcodes;
 	WorldPacketHandlers[MSG_MOVE_START_FORWARD].handler						 = &WorldSession::HandleMovementOpcodes;
 	WorldPacketHandlers[MSG_MOVE_START_BACKWARD].handler						= &WorldSession::HandleMovementOpcodes;
-	WorldPacketHandlers[MSG_MOVE_SET_FACING].handler							= &WorldSession::HandleBasicMovementOpcodes;
-	WorldPacketHandlers[MSG_MOVE_START_STRAFE_LEFT].handler					 = &WorldSession::HandleMovementOpcodes;
+    WorldPacketHandlers[MSG_MOVE_SET_FACING].handler                            = &WorldSession::HandleMovementOpcodes;
+    WorldPacketHandlers[MSG_MOVE_START_STRAFE_LEFT].handler					 = &WorldSession::HandleMovementOpcodes;
 	WorldPacketHandlers[MSG_MOVE_START_STRAFE_RIGHT].handler					= &WorldSession::HandleMovementOpcodes;
 	WorldPacketHandlers[MSG_MOVE_STOP_STRAFE].handler						   = &WorldSession::HandleMovementOpcodes;
 	WorldPacketHandlers[MSG_MOVE_START_TURN_LEFT].handler					   = &WorldSession::HandleBasicMovementOpcodes;
@@ -812,7 +812,8 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_RESET_INSTANCE].handler							= &WorldSession::HandleResetInstanceOpcode;
 	WorldPacketHandlers[CMSG_SELF_RES].handler								  = &WorldSession::HandleSelfResurrectOpcode;
 	WorldPacketHandlers[MSG_RANDOM_ROLL].handler								= &WorldSession::HandleRandomRollOpcode;
-	
+	WorldPacketHandlers[CMSG_DUNGEON_DIFFICULTY].handler                        = &WorldSession::HandleDungeonDifficultyOpcode;
+
 	// Misc
 	WorldPacketHandlers[CMSG_OPEN_ITEM].handler								 = &WorldSession::HandleOpenItemOpcode;
 	WorldPacketHandlers[CMSG_COMPLETE_CINEMATIC].handler						= &WorldSession::HandleCompleteCinematic;

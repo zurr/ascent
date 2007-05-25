@@ -136,7 +136,7 @@ void MapCell::LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pIns
 			c->SetMapId(_mapmgr->GetMapId());
 			c->SetInstanceID(_mapmgr->GetInstanceID());
 
-			  if(c->Load(*i))
+            if(c->Load(*i, _mapmgr->iInstanceMode, _mapmgr->GetMapInfo()))
 			{
 				c->PushToWorld(_mapmgr);
 			}

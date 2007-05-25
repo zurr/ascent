@@ -196,6 +196,7 @@ struct MapInfo
 	uint32 repopmapid;
 	uint32 flags;
 	std::string name;
+    uint32 lvl_mod_a;
 };
 struct AreaTable;
 

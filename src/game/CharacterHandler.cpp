@@ -422,6 +422,14 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
 	memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 	
+    WorldPacket datab;
+    datab.Initialize(CMSG_DUNGEON_DIFFICULTY);
+    datab << plr->iInstanceType;
+    datab << uint32(0x01);
+    datab << uint32(0x00);
+    SendPacket(&datab);
+
+
 	plr->LoadPropertiesFromDB();
 	plr->UpdateAttackSpeed();
 

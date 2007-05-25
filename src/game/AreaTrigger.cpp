@@ -117,8 +117,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 						return;
 					}
 
-					if(pMapinfo && pMapinfo->type != INSTANCE_MULTIMODE && GetPlayer()->iInstanceType == INSTANCE_MULTIMODE)
-					{
+                    if(pMapinfo && pMapinfo->type != INSTANCE_MULTIMODE && GetPlayer()->iInstanceType == MODE_HEROIC && pMapinfo->type != INSTANCE_NULL)
+                    {
 						WorldPacket msg;
 						msg.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
 						msg << uint32(0) << "Heroic mode is not available for this instance." << uint8(0) << uint8(0);

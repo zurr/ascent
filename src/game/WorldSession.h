@@ -590,6 +590,7 @@ protected:
 
 	//instances
 	void HandleResetInstanceOpcode(WorldPacket& recv_data);
+    void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
 
 	uint8 TrainerGetSpellStatus(TrainerSpell* pSpell);
 	void __fastcall CHECK_PACKET_SIZE(WorldPacket& data, uint32 size);

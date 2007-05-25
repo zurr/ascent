@@ -20,7 +20,7 @@ void CConsoleThread::run()
 	delete_after_use = false;
 	char i = 0;
 	char cmd[96];
-	bool running = true;
+    running = true;
 	sCConsole.running_link = &running;	
 
 	while (ThreadState != THREADSTATE_TERMINATE && running)
@@ -184,7 +184,7 @@ void CConsole::TranslateThreads(char* str)
 
 CConsoleThread::~CConsoleThread()
 {
-
+    running = false;
 }
 
 void CConsole::ObjectStats(char *str)

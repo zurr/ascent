@@ -2005,8 +2005,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	ss << m_lastHonorResetTime << ", ";
 	ss << m_killsToday << ", " << m_killsYesterday << ", " << m_killsLifetime << ", ";
 	ss << m_honorToday << ", " << m_honorYesterday << ", ";
-	ss << m_honorPoints << ")";
-
+	ss << m_honorPoints << ", ";
+    ss << iInstanceType << ")";
 	
 	if(bNewCharacter)
 		sDatabase.WaitExecute(ss.str().c_str());
@@ -2498,6 +2498,7 @@ bool Player::LoadFromDB(uint32 guid)
 	m_honorToday = get_next_field.GetUInt32();
 	m_honorYesterday = get_next_field.GetUInt32();
 	m_honorPoints = get_next_field.GetUInt32();
+    iInstanceType = get_next_field.GetUInt32();
 
 	uint32 next_update = HonorHandler::GetNextUpdateTime();
 	
@@ -4006,12 +4007,11 @@ The crit constant is class and level dependent and for a level 60 character (pat
 	map<uint32, WeaponModifier>::iterator i = tocritchance.begin();
 	Item*it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 	float b=0;
-	for(;i!=tocritchance.end();i++)
+	for(;i!=tocritchance.end();)
 	{
-		if( 
-			(i->second.wclass==-1) || //any weapon
-			(it && (1 << it->GetProto()->SubClass & i->second.subclass)  )
-			)
+        ++i;
+        //-1 = any weapon
+		if((i->second.wclass==-1) || (it && (1 << it->GetProto()->SubClass & i->second.subclass)))
 		{
 			b+=i->second.value;
 		}
@@ -5134,7 +5134,7 @@ void Player::SendInitialLogonPackets()
 	time_t hours = minutes / 60; minutes %= 60;
 	time_t gameTime = minutes + ( hours << 6 );
 	data << (uint32)gameTime;
-	data << (float)0.017f;  // Normal Game Speed
+	data << (float)0.0166666669777748f;  // Normal Game Speed
 	GetSession()->SendPacket( &data );
 
 	sLog.outDetail("WORLD: Sent initial logon packets for %s.", GetName());
@@ -6804,14 +6804,14 @@ void Player::OnWorldPortAck()
 			welcome_msg = "Welcome to ";
 			welcome_msg += pMapinfo->name;
 			welcome_msg += ".";
-			if(pMapinfo->type == INSTANCE_RAID)
+            if(pMapinfo->type == INSTANCE_RAID || pMapinfo->type == INSTANCE_MULTIMODE && iInstanceType == MODE_HEROIC)
 			{
 				welcome_msg += "This instance is scheduled to reset on ";
 				welcome_msg += asctime(localtime(&GetMapMgr()->RaidExpireTime));
 			}
 			sChatHandler.SystemMessage(m_session, welcome_msg.c_str());
 		}
-		if(pMapinfo->type == INSTANCE_NONRAID)
+		if(pMapinfo->type == INSTANCE_NONRAID || pMapinfo->type == INSTANCE_MULTIMODE && iInstanceType == MODE_NORMAL)
 		{
 			data.SetOpcode(SMSG_INSTANCE_RESET_ACTIVATE);
 			data << uint32(0x00);
