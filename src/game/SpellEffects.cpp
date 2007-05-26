@@ -983,6 +983,9 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		}break;
 	case 27174:
 		{
+			if(!u_caster || !unitTarget)
+				return;
+
 			uint32 sp;
 			if(isAttackable(unitTarget,u_caster))
 				sp=27176;
@@ -3686,8 +3689,8 @@ void Spell::SpellEffectTranformItem(uint32 i)
 	//Save durability of the old item
 	Player * owner=i_caster->GetOwner();
 	uint32 dur= i_caster->GetUInt32Value(ITEM_FIELD_DURABILITY);
-//	int8 slot=owner->GetItemInterface()->GetInventorySlotByGuid(i_caster->GetGUID());
-//	uint32 invt=i_caster->GetProto()->InventoryType;
+	//	int8 slot=owner->GetItemInterface()->GetInventorySlotByGuid(i_caster->GetGUID());
+	//	uint32 invt=i_caster->GetProto()->InventoryType;
 
 	   result  = owner->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
 	if(!result)

@@ -832,7 +832,7 @@ void MapMgr::ChangeFarsightLocation(Player *plr, Creature *farsight)
 		for(ObjectSet::iterator itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end();
 			++itr)
 		{
-			if(!plr->IsVisible((*itr)))
+			if(!plr->IsVisible((*itr)) && plr->CanSee((*itr)))
 			{
 				// Send destroy
 				plr->PushOutOfRange((*itr)->GetNewGUID());
@@ -865,7 +865,7 @@ void MapMgr::ChangeFarsightLocation(Player *plr, Creature *farsight)
 					for(; iter != iend; ++iter)
 					{
 						obj = (*iter);
-						if(!plr->IsVisible(obj) && farsight->GetDistance2dSq(obj) <= m_UpdateDistance)
+						if(!plr->IsVisible(obj) && plr->CanSee(obj) && farsight->GetDistance2dSq(obj) <= m_UpdateDistance)
 						{
 							ByteBuffer buf;
 							count = obj->BuildCreateUpdateBlockForPlayer(&buf, plr);

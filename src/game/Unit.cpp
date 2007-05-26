@@ -1033,10 +1033,13 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	//vstate=1-wound,2-dodge,3-parry,4-interrupt,5-block,6-evade,7-immune,8-deflect
 	
 	// hack fix for stormstirke loop here.
-	if( !(ability && ability->NameHash == 0x2535ed19) )
-		this->HandleProc(aproc,pVictim, ability,realdamage);
+	if(damagetype != DUALWIELD)
+    {
+	    if( !(ability && ability->NameHash == 0x2535ed19) )
+		    this->HandleProc(aproc,pVictim, ability,realdamage);
 
-	pVictim->HandleProc(vproc,this, ability,realdamage);
+	    pVictim->HandleProc(vproc,this, ability,realdamage);
+	}
 	
 	if(pVictim->GetTypeId() == TYPEID_UNIT)
 	{

@@ -311,7 +311,6 @@ public:
 			if(itr->second) // dunno why it happens, but it does :P
 				delete itr->second;
 		}
-		sm->clear();
 	}
 	float m_sourceX, m_sourceY, m_sourceZ;
 	uint32 m_totalMoveTime;

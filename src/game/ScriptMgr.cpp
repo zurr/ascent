@@ -101,7 +101,7 @@ char *ext;
 		while(filecount--)
 		{
 			ext = strrchr(list[filecount]->d_name, '.');
-			if (ext != NULL && !strcmp(ext, "so")) {
+			if (ext != NULL && !strcmp(ext, ".so")) {
 				string full_path = "../lib/" + string(list[filecount]->d_name);
 				SCRIPT_MODULE mod = dlopen(full_path.c_str(), RTLD_NOW);
 				printf("  %s : 0x%08X : ", list[filecount]->d_name, mod);

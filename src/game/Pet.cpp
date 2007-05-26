@@ -1131,7 +1131,7 @@ void Pet::ApplyPetLevelAbilities()
 	// Calculate HP
 	double pet_hp	= ( ( ( 0.6 * dlevel * dlevel + 10.6 * dlevel + 33 ) + ( pet_sta_bonus * 10 ) ) * pet_mod_sta);
 	double pet_armor = ( ( -75 + 50 * dlevel ) * pet_mod_arm + pet_arm_bonus );
-	double pet_attack_power = ( ( ( 40 * dlevel)  -60 ) + pet_ap_bonus ) * pet_mod_dps;
+	double pet_attack_power = ( ( ( 20 * dlevel) - 60 ) + pet_ap_bonus ) * pet_mod_dps;
 
 	if(pet_attack_power <= 0.0f) pet_attack_power = 1;
 	if(pet_armor <= 0.0f) pet_armor = 1;

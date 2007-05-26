@@ -11,10 +11,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
-
 #ifndef _PLAYER_H
 #define _PLAYER_H
-
 struct BattlegroundScore;
 class Channel;
 class Creature;
@@ -27,23 +25,18 @@ class Guild;
 class Pet;
 class Charter;
 struct LevelInfo;
-
 #define myabs(a) (a<0)?(-a):a
-
 #define MAX_PET_NO 3
-
 #define PLAYER_NORMAL_RUN_SPEED 7.0
 #define PLAYER_NORMAL_SWIM_SPEED 4.722222
 #define PLAYER_NORMAL_FLIGHT_SPEED 7.0
 #define PLAYER_LEVEL_CAP 70
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
-
 //====================================================================
 //  Inventory
 //  Holds the display id and item type id for objects in
 //  a character's inventory
 //====================================================================
-
 enum Classes
 {
 	WARRIOR = 1,
@@ -56,7 +49,6 @@ enum Classes
 	WARLOCK = 9,
 	DRUID = 11,
 };
-
 enum Races
 {
 	RACE_HUMAN = 1,
@@ -70,25 +62,21 @@ enum Races
 	RACE_BLOODELF = 10,
 	RACE_DRAENEI = 11,
 };
-
 enum PlayerStatus
 {
 	NONE			 = 0,
 	TRANSFER_PENDING = 1,
 };
-
 struct spells
 {
 	uint16 spellId;
 	uint16 slotId;
 };
-
 struct aurloads
 {
 	uint16 id;
 	uint32 dur;
 };
-
 #pragma pack(push,1)
 struct ActionButton
 {
@@ -97,7 +85,6 @@ struct ActionButton
 	uint8 Misc;
 };
 #pragma pack(pop)
-
 enum PvPAreaStatus
 {
 	AREA_ALLIANCE = 1,
@@ -105,29 +92,24 @@ enum PvPAreaStatus
 	AREA_CONTESTED = 3,
 	AREA_PVPARENA = 4,
 };
-
 struct PvPArea {
 	uint32 AreaId;
 	std::string AreaName;
 	uint16 PvPType;
-
 	bool HomeFor(Player* plr);
 };
-
 struct CreateInfo_ItemStruct
 {
 	uint32 protoid;
 	uint8 slot;
 	uint32 amount;
 };
-
 struct CreateInfo_SkillStruct
 {
 	uint32 skillid;
 	uint32 currentval;
 	uint32 maxval;
 };
-
 struct CreateInfo_ActionBarStruct
 {
 	uint32 button;
@@ -135,7 +117,6 @@ struct CreateInfo_ActionBarStruct
 	uint32 type;
 	uint32 misc;
 };
-
 struct PlayerCreateInfo{
 	uint8 index;
 	uint8 race;
@@ -168,7 +149,6 @@ struct PlayerCreateInfo{
 	//uint8 item_slot[10];
 	//uint16 spell[10];
 };
-
 struct DamageSplit
 {
 	Player* caster;
@@ -180,7 +160,6 @@ struct DamageSplit
 		float damagePCT;
 	};
 };
-
 enum PlayerMovementType
 {
 	MOVE_ROOT	   = 1,
@@ -188,7 +167,6 @@ enum PlayerMovementType
 	MOVE_WATER_WALK = 3,
 	MOVE_LAND_WALK  = 4,
 };
-
 enum PlayerSpeedType
 {
 	RUN	  = 1,
@@ -198,7 +176,6 @@ enum PlayerSpeedType
 	WALK	 = 5,
 	FLY	  = 6,
 };
-
 enum Standing
 {
 	STANDING_HATED,
@@ -210,7 +187,6 @@ enum Standing
 	STANDING_REVERED,
 	STANDING_EXALTED
 };
-
 enum PlayerFlags
 {
 	PLAYER_FLAG_PARTY_LEADER			= 0x01,
@@ -236,10 +212,6 @@ Unfriendly	 3,000	 Cannot buy, sell or interact.
 Hostile	 3,000	 You will always be attacked on sight
 Hated	 36,000 
 */
-
-
-
-
 enum FactionRating
 {
 	HATED,
@@ -251,7 +223,6 @@ enum FactionRating
 	REVERED,
 	EXALTED
 };
-
 struct FactionReputation
 {
 	int32 standing;
@@ -276,11 +247,9 @@ struct FactionReputation
 			return UNFRIENDLY;
 		if(st>-6000)
 			return HOSTILE;
-
 		return HATED;
 	}
 };
-
 struct PlayerInfo
 {
 	uint64 guid;
@@ -298,7 +267,6 @@ struct PlayerInfo
 	uint32 lastZone;
 	uint32 lastLevel;
 };
-
 struct PlayerPet
 {
 	string name;
@@ -314,7 +282,6 @@ struct PlayerPet
 	bool summon;
 	uint32 autocastspell;
 };
-
 enum MeetingStoneQueueStatus
 {
 	MEETINGSTONE_STATUS_NONE								= 0,
@@ -324,27 +291,22 @@ enum MeetingStoneQueueStatus
 	MEETINGSTONE_STATUS_LOOKING_FOR_NEW_PARTY_IN_QUEUE	  = 4,
 	MEETINGSTONE_STATUS_NONE_UNK							= 5,
 };
-
 enum ItemPushResultTypes
 {
 	ITEM_PUSH_TYPE_LOOT			 = 0x00000000,
 	ITEM_PUSH_TYPE_RECEIVE		  = 0x00000001,
 	ITEM_PUSH_TYPE_CREATE		   = 0x00000002,
 };
-
 struct WeaponModifier
 {
 	uint32 wclass;
 	uint32 subclass;
 	float value;
 };
-
 struct PetActionBar
 {
 	uint32 spell[10];
 };
-
-
 struct ItemCooldown
 {
 	uint16 SpellID;
@@ -353,7 +315,6 @@ struct ItemCooldown
 	uint32 CooldownTimeStamp;
 	uint32 Cooldown;
 };
-
 struct classScriptOverride
 {
 	uint32 id;
@@ -362,7 +323,6 @@ struct classScriptOverride
 	uint32 damage;
 	bool percent;
 };
-
 class Spell;
 class Item;
 class Container;
@@ -370,13 +330,11 @@ class WorldSession;
 class ItemInterface;
 class GossipMenu;
 struct TaxiPathNode;
-
 #define RESTSTATE_RESTED			 1
 #define RESTSTATE_NORMAL			 2
 #define RESTSTATE_TIRED100		   3
 #define RESTSTATE_TIRED50			4
 #define RESTSTATE_EXHAUSTED		  5
-
 #define UNDERWATERSTATE_NONE		 0
 #define UNDERWATERSTATE_SWIMMING	 1
 #define UNDERWATERSTATE_UNDERWATER   2
@@ -385,7 +343,6 @@ struct TaxiPathNode;
 #define UNDERWATERSTATE_FATIGUE	  16
 #define UNDERWATERSTATE_LAVA		 32
 #define UNDERWATERSTATE_SLIME		64
-
 enum TRADE_STATUS
 {
 	TRADE_STATUS_PLAYER_BUSY	   = 0x00,
@@ -405,32 +362,27 @@ enum TRADE_STATUS
 	TRADE_STATUS_PETITION		  = 0x0E,
 	TRADE_STATUS_PLAYER_IGNORED	= 0x0F,
 };
-
 enum TRADE_DATA
 {
 	TRADE_GIVE		= 0x00,
 	TRADE_RECEIVE	 = 0x01,
 };
-
 enum DUEL_STATUS
 {
 	DUEL_STATUS_OUTOFBOUNDS,
 	DUEL_STATUS_INBOUNDS
 };
-
 enum DUEL_STATE
 {
 	DUEL_STATE_REQUESTED,
 	DUEL_STATE_STARTED,
 	DUEL_STATE_FINISHED
 };
-
 enum DUEL_WINNER
 {
 	DUEL_WINNER_KNOCKOUT,
 	DUEL_WINNER_RETREAT,
 };
-
 #define PLAYER_ATTACK_TIMEOUT_INTERVAL	5000
 //====================================================================
 //  Player
@@ -438,49 +390,36 @@ enum DUEL_WINNER
 //
 //  TODO:  Attach characters to user accounts
 //====================================================================
-
 typedef std::set<uint32> SpellSet;
 typedef std::set<ItemCooldown*> ItemCooldownSet;
-
 typedef std::list<classScriptOverride*> ScriptOverrideList;
-
 typedef std::set<uint32> SaveSet;
 typedef std::map<uint32, uint32> SpellCooldownHolderMap;
 typedef std::map<uint64, ByteBuffer*> SplineMap;
 typedef std::map<uint32, ScriptOverrideList* > SpellOverrideMap;
 typedef std::map<uint32, uint32> SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*> ReputationMap;
-
-
 class SERVER_DECL Player : public Unit
 {
 	friend class WorldSession;
 public:
 	Player ( uint32 high, uint32 low );
 	~Player ( );
-
 	void AddToWorld();
 	void RemoveFromWorld();
-
 	bool Create ( WorldPacket &data );
 	
 	void Update( uint32 time );
-
 	void BuildEnumData( WorldPacket * p_data );
-
 	std::string m_afk_reason;
 	void SetAFKReason(std::string reason) { m_afk_reason = reason; };
-
 	inline const char* GetName() { return m_name.c_str(); }
 	inline std::string* GetNameString() { return &m_name; }
-
 	void Die();
 	//void KilledMonster(uint32 entry, const uint64 &guid);
 	void GiveXP(uint32 xp, const uint64 &guid, bool allowbonus);   // to stop rest xp being given
 	void ModifyBonuses(uint32 type,int32 val);
-
 	std::map<uint32, uint32> m_wratings;
-
 	// Taxi
 	uint32 taxi_model_id;
 	void TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node);
@@ -506,7 +445,6 @@ public:
 		m_taxi_pos_y = 0;
 		m_taxi_pos_z = 0;
 	}
-
 	//Quest stuff
 	bool HasQuests() 
 	{
@@ -525,7 +463,6 @@ public:
 	{
 		m_removequests.insert(questid);
 	}
-
 	//void ResetQuestSlots();
 	void AddToFinishedQuests(uint32 quest_id);
 	bool HasFinishedQuest(uint32 quest_id);
@@ -533,7 +470,6 @@ public:
 	void SetQuestSharer(uint64 guid) { m_questSharer = guid; }
 	inline uint64 GetQuestSharer() { return m_questSharer; }
 	void EventPortToGM(Player *p);
-
 	inline uint32 GetTeam()
 	{
 		uint32 r=getRace();
@@ -552,13 +488,10 @@ public:
 			return false;
 	}
 	void CalcDamage();
-
 	const uint64& GetSelection( ) const { return m_curSelection; }
 	const uint64& GetTarget( ) const { return m_curTarget; }
-
 	void SetSelection(const uint64 &guid) { m_curSelection = guid; }
 	void SetTarget(const uint64 &guid) { m_curTarget = guid; }
-
 	// Spells
 	bool HasSpell(uint32 spell);
 	bool HasDeletedSpell(uint32 spell);
@@ -566,20 +499,16 @@ public:
 	void addSpell(uint32 spell_idy);
 	void removeSpellByHashName(uint32 hash);
 	bool removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpell, uint32 SupercededSpellID);
-
 	//action bar
 	void setAction(uint8 button, uint16 action, uint8 type, uint8 misc);
 	//void addLoadAur(uint16 id, uint32 dur);
 	bool m_actionsDirty;
 	//std::list<struct aurloads>::iterator GetaurBegin() { return m_aurloads.begin();};
 	//std::list<struct aurloads>::iterator GetaurEnd() { return m_aurloads.end();};
-
 	void smsg_InitialActions();
-
 	///////////////////////////////////////
 	// grep: Reputation
 	///////
-
 	void ModStanding(uint32 Faction, int32 Value);
 	int32 GetStanding(uint32 Faction);
 	int32 GetBaseStanding(uint32 Faction);
@@ -592,12 +521,10 @@ public:
 	void Reputation_OnKilledUnit(Unit * pUnit);
 	void Reputation_OnTalk(FactionDBC * dbc);
 	static Standing GetReputationRankFromStanding(int32 Standing_);
-
 	// factions
 	void smsg_InitialFactions();
 	int32 pctReputationMod;
 	uint32 GetFactionId();
-
 	inline uint8 GetPVPRank()
 	{
 		return (uint8)((GetUInt32Value(PLAYER_BYTES_3) >> 24) & 0xFF);
@@ -606,11 +533,9 @@ public:
 	{
 		SetUInt32Value(PLAYER_BYTES_3, ((GetUInt32Value(PLAYER_BYTES_3) & 0x00FFFFFF) | (uint8(newrank) << 24)));
 	}
-
 	// groups
 	void SetInviter(uint64 pInviter) { m_GroupInviter = pInviter; }
 	uint64 GetInviter() { return m_GroupInviter; }
-
 	inline bool InGroup() { return (m_Group != NULL && !m_GroupInviter); }
 	bool IsGroupLeader()
 	{
@@ -621,26 +546,20 @@ public:
 		}
 		return false;
 	}
-
 	int HasBeenInvited() { return m_GroupInviter != 0; }
-
 	Group* GetGroup() { return m_Group; }
 	void SetGroup(Group* grp) { m_Group = grp; }
 	SubGroup* GetSubGroup() { return m_SubGroup; }
 	void SetSubGroup(SubGroup* group) { m_SubGroup = group; }
-
 	std::set<uint32> OnMeleeAuras;
-
 	// DK isGroupMember(plyr)
 	bool IsGroupMember(Player *plyr);
-
 	//DK ban
 	void SetBanned() { m_banned = 4;}
 	void SetBanned(string Reason) { m_banned = 4; m_banreason = Reason;}
 	void UnSetBanned() { m_banned = 0; }
 	inline bool IsBanned() { return ((m_banned > 0) ? true : false); }
 	string GetBanReason() {return m_banreason;}
-
 	//DK:Guild
 	inline  bool IsInGuild() {return (bool)GetUInt32Value(PLAYER_GUILDID);}
 	inline uint32 GetGuildId() { return m_uint32Values[PLAYER_GUILDID]; }
@@ -657,26 +576,21 @@ public:
 	void RequestDuel(Player *pTarget);
 	void DuelBoundaryTest();
 	void EndDuel(uint8 WinCondition);
-
 	void DuelCountdown();
-
 	void SetDuelStatus(uint8 status) { m_duelStatus = status; }
 	inline uint8 GetDuelStatus() { return m_duelStatus; }
 	void SetDuelState(uint8 state) { m_duelState = state; }
 	inline uint8 GetDuelState() { return m_duelState; }
 	void SendTradeUpdate(void);
-
 	inline void ResetTradeVariables()
 	{
 		mTradeGold = 0;
 		memset(&mTradeItems, 0, sizeof(Item*) * 8);
 		mTradeStatus = 0;
 	}
-
 	//Pet
 	inline void SetSummon(Pet *pet) { m_Summon = pet; }
 	inline Pet* GetSummon(void) { return m_Summon; }
-
 	uint32 GeneratePetNumber(void);
 	void RemovePlayerPet(uint32 pet_number);
 	inline void AddPlayerPet(PlayerPet* pet, uint32 index) { m_Pets[index] = pet; }
@@ -687,7 +601,6 @@ public:
 		else
 			return NULL;
 	}
-
 	void SpawnPet(uint32 pet_number);
 	void DespawnPet();
 	uint32 GetFirstPetNumber(void)
@@ -699,28 +612,23 @@ public:
 	inline PlayerPet* GetFirstPet(void) { return GetPlayerPet(GetFirstPetNumber()); }
 	inline void SetStableSlotCount(uint8 count) { m_StableSlotCount = count; }
 	inline uint8 GetStableSlotCount(void) { return m_StableSlotCount; }
-
 	// Items
 	//Item Interface
 	inline ItemInterface* GetItemInterface() { return m_ItemInterface; } // Player Inventory Item storage
 	inline void ApplyItemMods(Item *item, int8 slot, bool apply) {  _ApplyItemMods(item, slot, apply); }
-
 	// looting
 	inline const uint64& GetLootGUID() const { return m_lootGuid; }
 	void SetLootGUID(const uint64 &guid) { m_lootGuid = guid; }
 	void SendLoot(uint64 guid,uint8 loot_type);
-
 	inline WorldSession* GetSession() const { return m_session; }
 	void SetSession(WorldSession *s) { m_session = s; }
 	void SetBindPoint(float x, float y, float z, uint32 m, uint32 v) { m_bind_pos_x = x; m_bind_pos_y = y; m_bind_pos_z = z; m_bind_mapid = m; m_bind_zoneid = v;}
-
 	void SendDelayedPacket(WorldPacket *data, bool bDeleteOnSend)
 	{
 		if(data == NULL) return;
 		if(GetSession() != NULL) GetSession()->SendPacket(data);
 		if(bDeleteOnSend) delete data;
 	}
-
 	float offhand_dmg_mod;
 	float GetSpellTimeMod(uint32 id);
 	int GetSpellDamageMod(uint32 id);
@@ -737,14 +645,12 @@ public:
 	// Serialize character to db
 	void SaveToDB(bool bNewCharacter);
 	void SaveAuras(stringstream&);
-
 	bool LoadFromDB(uint32 guid);
 	void LoadFromDB_Light(Field *fields, uint32 guid);
 	void LoadPropertiesFromDB();
 	void LoadNamesFromDB(uint32 guid);
 	void DeleteFromDB();
 	bool m_FirstLogin;
-
 	//Death Stuff
 	void SpawnCorpseBody();
 	void SpawnCorpseBones();
@@ -755,29 +661,23 @@ public:
 	void RepopRequestedPlayer();
 	void DeathDurabilityLoss(double percent);
 	void RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid);
-
 	//Movement stuff
 	void SetMovement(uint8 pType, uint32 flag);
 	void SetPlayerSpeed(uint8 SpeedType, float value);
 	float GetPlayerSpeed(){return m_runSpeed;}
 	uint8 m_currentMovement;
 	bool m_isMoving;
-
 	//Invisibility stuff
 	bool m_isGmInvisible;
-
 	//Channel stuff
 	void JoinedChannel(Channel *c);
 	void LeftChannel(Channel *c);
 	void CleanupChannels();
-
 	//Attack stuff
 	void EventAttackStart();
 	void EventAttackStop();
 	void EventAttackUpdateSpeed() { }
-
 	void EventDeath();
-
 	// skilllines
 	void AddLanguage(uint32 id);
 	void AddLanguages();
@@ -802,9 +702,7 @@ public:
 	void UpdateStats();
 	void UpdateHit(int32 hit);
    
-
 	bool canCast(SpellEntry *m_spellInfo);
-
 	inline float GetBlockFromSpellPCT() { return m_blockfromspellPCT; }
 	inline float GetBlockFromSpell() { return m_blockfromspell; }
 	inline float GetSpellCritFromSpell() { return m_spellcritfromspell; }
@@ -819,26 +717,21 @@ public:
 	void SetDodgeFromSpell(float value) { m_dodgefromspell = value; }
 	void SetHitFromMeleeSpell(float value) { m_hitfrommeleespell = value; }
 	void SetHitFromSpell(float value) { m_hitfromspell = value; }
-
 	inline uint32 GetHealthFromSpell() { return m_healthfromspell; }
 	inline uint32 GetManaFromSpell() { return m_manafromspell; }
 	void SetHealthFromSpell(uint32 value) { m_healthfromspell = value;}
 	void SetManaFromSpell(uint32 value) { m_manafromspell = value;}
-
 	uint32 CalcTalentResetCost(uint32 resetnum);
 	void SendTalentResetConfirm();
 	uint32 GetTalentResetTimes() { return m_talentresettimes; }
 	inline void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
-
 	void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
 	inline uint8 GetPlayerStatus() { return m_status; }
-
 	const float& GetBindPositionX( ) const { return m_bind_pos_x; }
 	const float& GetBindPositionY( ) const { return m_bind_pos_y; }
 	const float& GetBindPositionZ( ) const { return m_bind_pos_z; }
 	const uint32& GetBindMapId( ) const { return m_bind_mapid; }
 	const uint32& GetBindZoneId( ) const { return m_bind_zoneid; }
-
 	inline uint8 GetShapeShift()
 	{
 		return GetByte(UNIT_FIELD_BYTES_1,2);
@@ -846,24 +739,18 @@ public:
 	
 	std::set<uint32> m_SSSPecificSpells;
 	void SetShapeShift(uint8 ss);
-
-
 	//inline uint32 GetEating() { return eating; }
 	//void SetEating(uint32 spell) { eating = spell; }
 	//Showing Units WayPoints
 	AIInterface* waypointunit;
-
 	void SaveGuild();
 	
 	uint32 m_nextSave;
-
 	//Tutorials
 	uint32 GetTutorialInt(uint32 intId );
 	void SetTutorialInt(uint32 intId, uint32 value);
-
 	//Base stats calculations
 	//void CalcBaseStats();
-
 	// Rest
 	void AddRestXP(uint32 amount);
 	uint32 SubtractRestXP(uint32 amount);
@@ -872,7 +759,6 @@ public:
 	void EventPlayerRest();
 	void ApplyPlayerRestState(bool apply);
 	void UpdateRestState();
-
 	//falling?
 	uint32 m_fallTime;
 	bool bSafeFall;
@@ -881,7 +767,6 @@ public:
 	void CleanupGossipMenu();
 	void Gossip_Complete();
 	void Gossip_SendPOI(float X, float Y, uint32 Icon, uint32 Flags, uint32 Data, const char* Name);
-
 	int m_lifetapbonus;
 	uint32 m_lastShotTime;
 	
@@ -891,7 +776,6 @@ public:
 	int32 m_UnderwaterTimeMod;
 	uint32 m_SwimmingTime;
 	uint32 m_BreathDamageTimer;
-
 	// Visible objects
 	bool CanSee(Object* obj);
 	inline bool IsVisible(Object* pObj) { return !(m_visibleObjects.find(pObj) == m_visibleObjects.end()); }
@@ -914,7 +798,6 @@ public:
 	float m_TransporterZ;
 	float m_TransporterO;
 	float m_TransporterUnk;
-
 	// Misc
 	void EventCannibalize(uint32 amount);
 	void EventReduceDrunk(bool full);
@@ -923,12 +806,10 @@ public:
 	int32 m_rangedattackspeedmod;
 	int32 m_meleeattackspeedmod;
 	void EventFieldUpdateExpire();
-
 	void SendInitialLogonPackets();
 	void Reset_Spells();
 	void Reset_Talents();
 	void Reset_ToLevel1();
-
 	// Battlegrounds xD
 	bool m_bgInBattleground;
 	uint32 m_bgBattlegroundID;
@@ -942,12 +823,9 @@ public:
 	uint32 m_bgTeam;
 	Battleground* GetCurrentBattleground();
 	bool m_bgHasFlag;
-
 	void EventRepeatSpell();
 	void EventCastRepeatedSpell(uint32 spellid, Unit *target);
 	bool CanShootRangedWeapon(uint32 spellid, Unit *target, bool autoshot);
-
-
 	uint32 m_AutoShotDuration;
 	uint32 m_AutoShotAttackTimer;
 	bool m_onAutoShot;
@@ -956,14 +834,12 @@ public:
 	float m_AutoShotStartY;
 	float m_AutoShotStartZ;
 	SpellEntry *m_AutoShotSpell;
-
 	void _InitialReputation();
 	void EventActivateGameObject(GameObject* obj);
 	void EventDeActivateGameObject(GameObject* obj);
 	void UpdateNearbyGameObjects();
 	void EventTimedQuestExpire(Quest *qst, QuestLogEntry *qle, uint32 log_slot);
 	uint32 timed_quest_slot;	
-
 	void CalcResistance(uint32 type);
 	uint32 FlatResistanceModifierPos[7];
 	uint32 FlatResistanceModifierNeg[7];
@@ -982,13 +858,11 @@ public:
 	uint32 StatModPctNeg[5];
 	uint32 TotalStatModPctPos[5];
 	uint32 TotalStatModPctNeg[5];
-
 	float IncreaseDamageByTypePCT[12];
 	float IncreaseCricticalByTypePCT[12];
-
 	int32 DetectedRange;
-
 	float PctIgnoreRegenModifier;
+	uint32 m_retainedrage;
 /*	
 	union {
 		float mRatingToPct[37];
@@ -1015,14 +889,12 @@ public:
 	bool cannibalize;
 	uint8 cannibalizeCount;
 	int32 rageFromDamageDealt;
-
 	// GameObject commands
 	GameObject *m_GM_SelectedGO;
 	
 	void _Relocate(uint32 mapid,const LocationVector & v, bool sendpending, bool force_new_world);
 	void AddItemsToWorld();
 	void RemoveItemsFromWorld();
-
 	bool bShouldHaveLootableOnCorpse;
 	uint32 m_ShapeShifted;
 	uint32 m_MountSpellId;
@@ -1030,7 +902,6 @@ public:
 	void RemoveSpellsFromLine(uint32 skill_line);
 	bool bGMTagOn;
 	uint32 TrackingSpell;
-
 	void _EventCharmAttack();
 	void _Kick();
 	void Kick(uint32 delay = 0);
@@ -1042,33 +913,24 @@ public:
 	void SetSummonedObject (Object * t_SummonedObject) {m_SummonedObject = t_SummonedObject;};
 	uint32 roll;
 	std::set<LootRoll*> m_rolls;
-
-
 	void AddRecoverCooldown(SpellEntry * spellInfo);
-
 	void AddCooldown(uint32 spell,uint32 time);
 	void AddCategoryCooldown(uint32 cat, uint32 time);
 	void AddGlobalCooldown(uint32 time);
 	uint32 GetGlobalCooldown() { return GlobalCooldown; }
 	void SetGlobalCooldown(uint32 time) { GlobalCooldown = time; }
-
 	void ClearCooldownsOnLine(uint32 skill_line, uint32 called_from);
 	void ClearCooldownForSpell(uint32 spell_id);
-
 	bool bProcessPending;
 	Mutex _bufferS;
-
 	void PushUpdateData(ByteBuffer *data, uint32 updatecount);
 	void PushOutOfRange(const WoWGuid & guid);
 	void ProcessPendingUpdates();
 	bool __fastcall CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer);
 	void ClearAllPendingUpdates();
-
 	bool CanFinishQuest(Quest* qst);
-
 	uint32 GetArmorProficiency() { return armor_proficiency; }
 	uint32 GetWeaponProficiency() { return weapon_proficiency; }
-
 	void ResetHeartbeatCoords();
 	float _lastHeartbeatX;
 	float _lastHeartbeatY;
@@ -1077,20 +939,16 @@ public:
 	void AddSplinePacket(uint64 guid, ByteBuffer* packet);
 	ByteBuffer* GetAndRemoveSplinePacket(uint64 guid);
 	void ClearSplinePackets();
-
 	bool ExitInstance();
 	void SaveEntryPoint();
-
 	bool CooldownCheat;
 	bool CastTimeCheat;
 	bool GodModeCheat;
 	bool PowerCheat;
 	bool FlyCheat;
-
 	void ZoneUpdate(uint32 ZoneId);
 	inline uint32 GetAreaID() { return m_AreaID; }
 	void SetAreaID(uint32 area) { m_AreaID = area; }
-
 	SpellSet mSpells;
 	SpellSet mDeletedSpells;
 	SpellOverrideMap mSpellOverrideMap;
@@ -1102,9 +960,7 @@ public:
 	bool m_AutoAddMem;
 	void StopMirrorTimer(uint32 Type);
 	BattlegroundScore* m_bgScore;
-
 	void UpdateChanceFields();
-
 	//Honor Variables
 	uint32 m_honorToday;
 	uint32 m_honorYesterday;
@@ -1114,17 +970,13 @@ public:
 	uint32 m_killsYesterday;
 	uint32 m_killsLifetime;
 	bool m_honorless;
-
 	uint32 m_lastSeenWeather;
 	set<Object*> m_visibleFarsightObjects;
-
 	void EventTeleport(uint32 mapid, float x, float y, float z);
 	void ApplyLevelInfo(LevelInfo* Info, uint32 Level);
-
 	void BroadcastMessage(const char* Format, ...);
 	map<uint32, set<uint32> > SummonSpells;
 	map<uint32, PetSpellMap*> PetSpells;
-
 	void AddSummonSpell(uint32 Entry, uint32 SpellID);
 	void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
 	set<uint32>* GetSummonSpells(uint32 Entry);
@@ -1140,18 +992,14 @@ public:
 	bool blinked;
 	uint16 m_speedhackChances;
 	uint32 m_explorationTimer;
-
 	// DBC stuff
 	CharRaceEntry * myRace;
 	CharClassEntry * myClass;
-
 	Unit * linkTarget;
 	bool stack_cheat;
-
 	bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
 	bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
 	Guild * myGuild;
-
 	/*****************
 	  PVP Stuff
 	******************/
@@ -1166,7 +1014,6 @@ public:
 		if(!HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP))
 			SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP);
 	}
-
 	//! Removal
 	inline void RemovePvPFlag()
 	{
@@ -1174,35 +1021,27 @@ public:
 		if(HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP))
 			RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP);			
 	}
-
 	//! Do this on /pvp off
 	inline void ResetPvPTimer();
-
 	//! Stop the timer for pvp off
 	inline void StopPvPTimer() { m_pvpTimer = 0; }
 	
 	//! Called at login to add the honorless buff, etc.
 	void LoginPvPSetup();
-
 	//! Update our pvp area (called when zone changes)
 	void UpdatePvPArea();
-
 	//! PvP Toggle (called on /pvp)
 	void PvPToggle();
-
 	bool CanCastDueToCooldown(SpellEntry * spellid);
 	void SaveHonorFields();
-
 	inline uint32 LastHonorResetTime() const { return m_lastHonorResetTime; }
 	inline void LastHonorResetTime(uint32 val) { m_lastHonorResetTime = val; }
-
 	uint32 OnlineTime;
 	bool tutorialsDirty;
 	LevelInfo * lvlinfo;
 	void CalculateBaseStats();
 	uint32 load_health;
 	uint32 load_mana;
-
 	void CompleteLoading();
 	set<SpellEntry *> castSpellAtLogin;
 	void OnPushToWorld();
@@ -1210,7 +1049,6 @@ public:
 	uint32 m_TeleportState;
 	set<Unit*> visiblityChangableSet;
 	bool m_beingPushed;
-
 	bool CanSignCharter(Charter * charter, Player * requester);
 	Charter * m_charter;
 	uint32 flying_aura;
@@ -1218,13 +1056,10 @@ public:
 	bool resend_speed;
 	bool rename_pending;
 	uint32 iInstanceType;
-
 	inline void SetName(string& name) { m_name = name; }
-
 	// spell to (delay, last time)
 	map< SpellEntry*, pair<uint32, uint32> > m_onStrikeSpells;
 	map< uint32, OnHitSpell > m_onStrikeSpellDmg;
-
 	// PLEASE DO NOT INLINE!
 	void AddOnStrikeSpell(SpellEntry* sp, uint32 delay)
 	{
@@ -1234,7 +1069,6 @@ public:
 	{
 		m_onStrikeSpells.erase(sp);
 	}
-
 	void AddOnStrikeSpellDamage(uint32 spellid, uint32 mindmg, uint32 maxdmg)
 	{
 		OnHitSpell sp;
@@ -1243,15 +1077,12 @@ public:
 		sp.maxdmg = maxdmg;
 		m_onStrikeSpellDmg[spellid] = sp;
 	}
-
 	void RemoveOnStrikeSpellDamage(uint32 spellid)
 	{
 		m_onStrikeSpellDmg.erase(spellid);
 	}
-
 	FactionReputation * reputationByListId[128];
 	vector<TaxiPath*> m_taxiPaths;
-
 	uint64 m_comboTarget;
 	int8 m_comboPoints;
 	void UpdateComboPoints();
@@ -1266,31 +1097,23 @@ public:
 		}
 		UpdateComboPoints();
 	}
-
 	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
 	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; UpdateComboPoints(); }
-
 	Unit *PolyTarget();
 	void  SetPolyTarget(uint64 newtarget) { polytarget = newtarget; }
-
 	uint32 m_speedChangeCounter;
-
 protected:
 	uint32 iActivePet;
 	void _SetCreateBits(UpdateMask *updateMask, Player *target) const;
 	void _SetUpdateBits(UpdateMask *updateMask, Player *target) const;
 	void _SetVisibleBits(UpdateMask *updateMask, Player *target) const;
-
 /* Update system components */
-
 	ByteBuffer bUpdateBuffer;
 	uint32 mUpdateCount;
 	uint32 mOutOfRangeIdCount;
 	ByteBuffer mOutOfRangeIds;
 	SplineMap _splineMap;
-
 /* End update system */
-
 	void _LoadTutorials();
 	void _SaveTutorials();
 	void _SaveInventory(bool firstsave);
@@ -1305,25 +1128,20 @@ protected:
 	void _LoadPetSpells();
 	void _SavePet();
 	void _SavePetSpells();
-
 	void _SaveItemCooldown();
 	void _LoadItemCooldown();
 	void _SaveSpellCoolDownSecurity();
 	void _LoadSpellCoolDownSecurity();
-
 	void _ApplyItemMods(Item *item, int8 slot,bool apply);
    
 	void _EventAttack(bool offhand);
 	void _EventExploration();
-
 	void UpdateCooldowns();
-
 	// Cooldown stuff
 	std::map<uint32,uint32>	 SpellCooldownMap;
 	std::map<uint32,uint32>	 SpellCooldownCategoryMap;
 	ItemCooldownSet			 m_itemcooldown;
 	uint32					  GlobalCooldown;
-
 	/************************************************************************/
 	/* Trade																*/
 	/************************************************************************/
@@ -1332,33 +1150,24 @@ protected:
 	uint32 mTradeGold;
 	Player* mTradeTarget;
 	uint32 mTradeStatus;
-
 	PlayerCreateInfo *info;
-
 	uint32 m_AttackMsgTimer;	// "too far away" and "wrong facing" timer
 	bool m_attacking;
 	
 	uint64 m_lootGuid;
-
 	//uint32 eating;
-
 	std::string m_name;	// max 21 character name
-
 	uint32 m_Tutorials[8];
 	//uint32 m_mod_damage_done[7];
  
 	uint64 m_invitersGuid; // It is guild inviters guid ,0 when its not used
-
 	// Character Ban
 	uint32 m_banned;
 	string m_banreason;
-
 	uint32 m_AreaID;
-
 	Pet* m_Summon;
 	uint32 m_PetNumberMax;
 	std::map<uint32, PlayerPet*> m_Pets;
-
 	//Taxi
 	bool m_onTaxi;
 	uint32 m_taximask[8];
@@ -1367,7 +1176,6 @@ protected:
 	float m_taxi_pos_y;
 	float m_taxi_pos_z;
 	uint32 m_taxi_ride_time;
-
 	float m_bind_pos_x;
 	float m_bind_pos_y;
 	float m_bind_pos_z;
@@ -1378,16 +1186,13 @@ protected:
 	uint32 m_duelCountdownTimer;
 	uint8 m_duelStatus;
 	uint8 m_duelState;
-
 	// Rested State Stuff
 	uint32 m_timeLogoff;
 	// Played time
 	uint32 m_playedtime[3];
-
 	uint8 m_isResting;
 	uint8 m_restState;
 	uint32 m_restAmount;
-
 	//combat mods
 	float m_blockfromspell;
 	float m_blockfromspellPCT;
@@ -1397,7 +1202,6 @@ protected:
 	float m_parryfromspell;
 	float m_hitfromspell;
 	float m_hitfrommeleespell;
-
 	//stats mods
 	uint32 m_healthfromspell;
 	uint32 m_manafromspell;
@@ -1406,70 +1210,49 @@ protected:
 	
 	uint32  armor_proficiency;
 	uint32  weapon_proficiency;
-
 	// Talents
 	uint32 m_talentresettimes;
-
 	// STATUS
 	uint8 m_status;
-
 	// guid of current target
 	uint64 m_curTarget;
-
 	// guid of current selection
 	uint64 m_curSelection;
-
 	//Quests
 	QuestLogEntry* m_questlog[25];
 	std::set<uint32> m_removequests;
 	std::set<uint32> m_finishedQuests;
 	uint64 m_questSharer;
-
 	// Raid
 	uint8 m_targetIcon;
-
 	std::list<struct aurloads> m_aurloads;
-
 	//Player Action Bar
 	ActionButton mActions[120];
-
 	// Player Reputation
 	ReputationMap m_reputation;
-
 	// Pointer to this char's game client
 	WorldSession *m_session;
-
 	// Channels
 	std::list<Channel*> m_channels;
-
 	// Visible objects
 	std::set<Object*> m_visibleObjects;
-
 	// Groups/Raids
 	Group* m_Group;
 	SubGroup* m_SubGroup;
 	uint64 m_GroupInviter;
 	uint8 m_StableSlotCount;
-
 	std::set<uint32> m_QuestGOInProgress;
-
 	// Fishing related
 	Object *m_SummonedObject;
-
 	// loot related
 	uint64 m_currentLoot;
-
 	ItemInterface *m_ItemInterface;
 	
 	Corpse * myCorpse;
 	uint32 m_cooldownTimer;
 	uint32 m_lastHonorResetTime;
-
 	uint32 _fields[PLAYER_END];
 	void JumpToEndTaxiNode(TaxiPath * path);
 	uint64	polytarget;//temp variable that stores our poly target to be able to remove it when polymorphing others 
 };
-
 #endif
-
-

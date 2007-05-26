@@ -779,6 +779,8 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 	// Remove srcitem
 	if(qst->srcitem && qst->srcitem != qst->receive_items[0])
 		plr->GetItemInterface()->RemoveItemAmt(qst->srcitem, qst->srcitemcount ? qst->srcitemcount : 1);
+
+	// cast learning spell
 	if(qst->reward_spell)
 	{
 		if(!plr->HasSpell(qst->reward_spell))
@@ -806,6 +808,19 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 
 			// Teach the spell
 			plr->addSpell(qst->reward_spell);
+		}
+	}
+
+	// cast Effect Spell
+	if(qst->effect_on_player)
+	{
+		SpellEntry  * inf =sSpellStore.LookupEntry(qst->effect_on_player);
+		if(inf)
+		{
+			Spell * spe = new Spell(qst_giver,inf,true,NULL);
+			SpellCastTargets tgt;
+			tgt.m_unitTarget = plr->GetGUID();
+			spe->prepare(&tgt);
 		}
 	}
 

@@ -1195,6 +1195,17 @@ void Aura::SpellAuraDummy(bool apply)
 					m_target->m_noInterrupt = 0;
 			}
 		}
+		case 12295:
+		case 12676:
+		case 12677:
+		case 12678:
+			{
+				if(apply)
+					((Player*)m_target)->m_retainedrage += mod->m_amount;
+				else
+					((Player*)m_target)->m_retainedrage -= mod->m_amount;
+			}
+
 	case 2096://MindVision
 		{
 		}break;
@@ -1502,7 +1513,7 @@ void Aura::SpellAuraModCharm(bool apply)
 	Player * caster = ((Player*)ucaster);
 	Creature * target = ((Creature*)m_target);
   
-	if(ucaster->GetTypeId() != TYPEID_PLAYER || m_target->getLevel() > mod->m_amount || m_target->IsPet() || m_target->GetTypeId() != TYPEID_UNIT)
+	if(!ucaster || ucaster->GetTypeId() != TYPEID_PLAYER || m_target->getLevel() > mod->m_amount || m_target->IsPet() || m_target->GetTypeId() != TYPEID_UNIT)
 		return;
 
 	// this should be done properly
@@ -2768,8 +2779,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
 	if (apply)
 	{
-		if(m_target->getClass() == WARRIOR)//REMOVE/FIX THAT WHEN BONUSES OF TALENTS ARE IMPLEMENTED
-			m_target->SetUInt32Value(UNIT_FIELD_POWER2, 0);//0 rage
+		if(m_target->getClass() == WARRIOR && m_target->GetUInt32Value(UNIT_FIELD_POWER2) > static_cast<Player*>(m_target)->m_retainedrage)
+			m_target->SetUInt32Value(UNIT_FIELD_POWER2, static_cast<Player*>(m_target)->m_retainedrage);
 
 		if(spellId != GetSpellId())
 		{

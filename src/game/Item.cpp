@@ -345,14 +345,10 @@ uint32 GetSellPriceForItem(ItemPrototype *proto, uint32 count)
 
 	switch(proto->Class)
 	{
+	case ITEM_CLASS_CONSUMABLE:
 	case ITEM_CLASS_PROJECTILE: // as far as i can tell these can't be sold at all
 		{
-			cost = ( proto->SellPrice * ((count < 1) ? 1 : count) )/* / proto->MaxCount*/;
-		}break;
-	case ITEM_CLASS_CONSUMABLE: // same as default, but leaving it like that in case
-								// someone can correct me	 - 
-		{
-			cost = ( proto->SellPrice * ((count < 1) ? 1 : count) );
+			cost = (proto->SellPrice * ((count < 1) ? 1 : count)) / proto->MaxCount;
 		}break;
 	default:
 		{
@@ -372,7 +368,7 @@ uint32 GetBuyPriceForItem(ItemPrototype *proto, uint32 count, uint32 vendorcount
 	case ITEM_CLASS_PROJECTILE:
 	case ITEM_CLASS_CONSUMABLE:
 		{
-			cost = ( proto->BuyPrice * ((count < 1) ? 1 : count) )/* / ((vendorcount < 1) ? proto->MaxCount : vendorcount)*/;
+			cost = ( proto->BuyPrice * ((count < 1) ? 1 : count) ) / proto->MaxCount;
 		}break;
 	default:
 		{
@@ -580,7 +576,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 				TS.origId = 0;
 				TS.procFlags = PROC_ON_MELEE_ATTACK;
 				TS.procCharges = 0;
-				TS.procChance = Entry->min[c] ? Entry->min[c] : 101;
+				TS.procChance = Entry->min[c] ? Entry->min[c] : 35;
 				TS.deleted = false;
 
 				

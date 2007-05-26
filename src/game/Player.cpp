@@ -246,6 +246,7 @@ Player::Player ( uint32 high, uint32 low )
 	}
 
 	PctIgnoreRegenModifier  = 0.0f;
+	m_retainedrage          = 0;
 	DetectedRange		   = 0;
 
 	m_targetIcon			= 0;
@@ -1354,8 +1355,11 @@ void Player::_SaveItemCooldown()
 			ItemCooldown * temp = (*itr);		   // get a temp pointer
 			it2 = itr;
 			++itr;
-			m_itemcooldown.erase(it2);			  // remove the object of the list
-			delete temp;							// delete its mem, using the temp pointer
+			if(temp)
+			{
+				m_itemcooldown.erase(it2);			  // remove the object of the list
+				delete temp;							// delete its mem, using the temp pointer
+			}
 			continue;
 		}
 		query << "("<< GetGUIDLow() << "," << (*itr)->ItemEntry << "," << (*itr)->SpellID << "," << (*itr)->SpellCategory
@@ -5359,6 +5363,8 @@ void Player::UpdateNearbyGameObjects()
 
 void Player::EventTaxiInterpolate()
 {
+	if(!m_CurrentTaxiPath) return;
+
 	float x,y,z;
 	uint32 ntime = getMSTime();
 
