@@ -373,7 +373,7 @@ void QuestMgr::BuildQuestComplete(Player*plr, Quest* qst)
 		plr->GiveXP(xp, 0, false);
 	}
   
-	WorldPacket data( SMSG_QUESTGIVER_QUEST_COMPLETE );
+	WorldPacket data( SMSG_QUESTGIVER_QUEST_COMPLETE,72 );
 
 	data <<  qst->id;
 	data <<  uint32(3);
