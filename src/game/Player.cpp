@@ -4809,7 +4809,7 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 			continue;
 
 		ItemPrototype* itemProto =objmgr.GetItemPrototype(iter->item.itemid);
-		if (!itemProto || (itemProto->Class == ITEM_CLASS_QUEST) && !HasQuestForItem(iter->item.itemid))		   
+		if (!itemProto || (itemProto->Class == ITEM_CLASS_QUEST && !HasQuestForItem(iter->item.itemid)))		   
 			continue;
 
 		slottype = 0;

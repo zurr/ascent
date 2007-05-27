@@ -346,21 +346,25 @@ void WorldSession::LogoutPlayer(bool Save)
 	SetLogoutTimer(0);
 }
 
-void WorldSession::BuildItemPushResult(WorldPacket *data, uint64 guid, uint32 type, uint32 count, uint32 itemid, uint32 randomprop, uint8 unk, uint32 unk2, uint32 unk3, uint32 unk4)
+void WorldSession::BuildItemPushResult(WorldPacket *data, uint64 guid, uint32 type, uint32 count, uint32 itemid, uint32 randomprop, uint8 unk, uint32 unk2, uint32 unk3, uint32 count_have)
 {
-	ItemPrototype *proto = objmgr.GetItemPrototype(itemid);
-	if(!proto) return;
+    ItemPrototype *proto = objmgr.GetItemPrototype(itemid);
+    if(!proto) return;
 
-	data->Initialize(SMSG_ITEM_PUSH_RESULT);
-	*data << guid;
-	*data << type << unk2;
-	*data << uint32(1);	  // show msg
-	*data << unk;
-	*data << unk3;
-	*data << itemid;
-	*data << randomprop;
-	*data << proto->Quality;
-	*data << count;
+    data->Initialize(SMSG_ITEM_PUSH_RESULT);
+    *data << guid;
+    *data << type << unk2;
+    *data << uint32(1);      // show msg
+    *data << unk;
+    *data << unk3;
+    *data << itemid;
+	//not sure if random property. 
+	//For quest items also sent at loot list but it's changing in time.
+	//in SMSG_ITEM_PUSH_RESULT packet it's used as sent in first occurance of lootlist packet
+    *data << randomprop; 
+    *data << proto->Quality;
+    *data << count;
+    *data << count_have;
 }
 
 void WorldSession::SendBuyFailed(uint64 guid, uint32 itemid, uint8 error)

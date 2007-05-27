@@ -132,14 +132,13 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 			plr->GetSession()->SendPacket(&data);
 	}
 
-	if(it->Class == 12)
-	{
-		uint32 pcount = GetPlayer()->GetItemInterface()->GetItemCount(it->ItemId, true);
-		amt = pcount;
-	}
-
-	WorldPacket idata;
-	BuildItemPushResult(&idata, GetPlayer()->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(lootSlot).iRandomProperty);
+    WorldPacket idata;
+    if(it->Class == ITEM_CLASS_QUEST)
+    {
+        uint32 pcount = _player->GetItemInterface()->GetItemCount(it->ItemId, true);
+		BuildItemPushResult(&idata, _player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(lootSlot).iRandomProperty,0xFF,0,0xFFFFFFFF,pcount);
+    }
+    else BuildItemPushResult(&idata, _player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(lootSlot).iRandomProperty);
 
 	if(_player->InGroup())
 		_player->GetGroup()->SendPacketToAll(&idata);
@@ -1545,14 +1544,13 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 			plr->GetSession()->SendPacket(&data);
 	}
 
-	if(it->Class == 12)
-	{
-		uint32 pcount = player->GetItemInterface()->GetItemCount(it->ItemId, true);
-		amt = pcount;
-	}
-
-	WorldPacket idata;
-	BuildItemPushResult(&idata, player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(slotid).iRandomProperty);
+    WorldPacket idata;
+    if(it->Class == ITEM_CLASS_QUEST)
+    {
+        uint32 pcount = player->GetItemInterface()->GetItemCount(it->ItemId, true);
+		BuildItemPushResult(&idata, GetPlayer()->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(slotid).iRandomProperty,0xFF,0,0xFFFFFFFF,pcount);
+    }
+    else BuildItemPushResult(&idata, player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(slotid).iRandomProperty);
 
 	if(_player->InGroup())
 		_player->GetGroup()->SendPacketToAll(&idata);
