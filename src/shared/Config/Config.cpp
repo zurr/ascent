@@ -185,7 +185,7 @@ std::string ConfigFile::GetStringVA(const char* def, const char * name, ...)
 	return std::string(node->getValue());
 }
 
-bool ConfigFile::GetString(const char * buffer, const char * name, const char * def, uint32 len)
+bool ConfigFile::GetString(char * buffer, const char * name, const char * def, uint32 len)
 {
 	if(!mConf)
 		return false;
