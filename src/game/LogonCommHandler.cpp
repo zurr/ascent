@@ -20,6 +20,13 @@ LogonCommHandler::LogonCommHandler()
 	idhigh = 1;
 	next_request = 1;
 	pings = !Config.MainConfig.GetBoolDefault("DisablePings", false);
+	string logon_pass = Config.MainConfig.GetStringDefault("LogonServer.RemotePassword", "r3m0t3");
+	
+	// sha1 hash it
+	Sha1Hash hash;
+	hash.UpdateData(logon_pass);
+	hash.Finalize();
+	memcpy(sql_passhash, hash.GetDigest(), 20);
 }
 
 LogonCommHandler::~LogonCommHandler()
@@ -242,7 +249,8 @@ void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
 	char query[1024];
 	vsprintf(query, str, ap);
 	va_end(ap);
-	WorldPacket data(RCMSG_SQL_EXECUTE, strlen(query)+1);
+	WorldPacket data(RCMSG_SQL_EXECUTE, strlen(query)+ 17);
+	data.append(sql_passhash, 16);
 	data << query;
 	
 	// Send request packet to server.

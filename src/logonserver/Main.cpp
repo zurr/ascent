@@ -174,6 +174,11 @@ void LogonServer::Run()
 	string shost = Config.MainConfig.GetStringDefault("ISHost", host.c_str());
 	min_build = Config.MainConfig.GetIntDefault("MinClientBuild", 6180);
 	max_build = Config.MainConfig.GetIntDefault("MaxClientBuild", 6999);
+	string logon_pass = Config.MainConfig.GetStringDefault("LogonServer.RemotePassword", "r3m0t3b4d");
+	Sha1Hash hash;
+	hash.UpdateData(logon_pass);
+	hash.Finalize();
+	memcpy(sql_hash, hash.GetDigest(), 20);
 	
 	launch_thread(new LogonConsoleThread);
 

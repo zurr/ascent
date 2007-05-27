@@ -189,7 +189,21 @@ void LogonCommServerSocket::SendPacket(WorldPacket * data)
 
 void LogonCommServerSocket::HandleSQLExecute(WorldPacket & recvData)
 {
+	uint8 key[20];
 	string Query;
+	recvData.read(key, 20);
 	recvData >> Query;
+
+	if(memcmp(key, LogonServer::getSingleton().sql_hash, 20))
+	{
+		sLog.outString("Invalid SQL execute attempted from %s, query was %s", this->GetRemoteIP().c_str(), Query.c_str());
+		
+		// Kill the socket off, we don't want to keep bad people around.
+		Disconnect();
+
+		// Might wanna add an IP ban after this.. meh :/
+		return;
+	}
+	
 	sLogonSQL->Execute(Query.c_str());
 }

@@ -58,6 +58,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
 	Mutex pendingLock;
 	bool pings;
 	uint32 _realmType;
+	uint8 sql_passhash[20];
 
 public:
 

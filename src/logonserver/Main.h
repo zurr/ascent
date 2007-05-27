@@ -28,6 +28,8 @@ public:
 	void Stop();
 	uint32 max_build;
 	uint32 min_build;
+	uint8 sql_hash[20];
+
 private:
 	bool m_stopEvent;
 };
