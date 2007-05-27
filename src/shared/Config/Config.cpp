@@ -184,3 +184,24 @@ std::string ConfigFile::GetStringVA(const char* def, const char * name, ...)
 
 	return std::string(node->getValue());
 }
+
+bool ConfigFile::GetString(const char * buffer, const char * name, const char * def, uint32 len)
+{
+	if(!mConf)
+		return false;
+
+	DOTCONFDocumentNode *node = (DOTCONFDocumentNode *)mConf->findNode(name);
+	if(!node || !node->getValue())
+		return false;
+
+	const char * value = node->getValue();
+	int blen = strlen(value);
+	if(blen > len)
+		blen = len;
+
+	memcpy(buffer, value, blen);
+	buffer[blen] = 0;
+    
+	return true;
+}
+

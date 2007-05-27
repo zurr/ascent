@@ -27,6 +27,7 @@ public:
 	bool GetString(const char* name, std::string *value);
 	std::string GetStringDefault(const char* name, const char* def);
 	std::string GetStringVA(const char* def, const char * name, ...);
+	bool GetString(const char * buffer, const char * name, const char * def, uint32 len);
 
 	bool GetBool(const char* name, bool *value);
 	bool GetBoolDefault(const char* name, const bool def = false);
