@@ -2178,6 +2178,7 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
 			case SKILL_COOKING:
 				target->addSpell(2538);//Charred Wolf Meat
 				target->addSpell(2540);//Roasted Boar Meat
+				target->addSpell(818);//Basic Campfire
 				break;
 			case SKILL_BLACKSMITHING:
 				target->addSpell(2660);//Rough Sharpening Stone
