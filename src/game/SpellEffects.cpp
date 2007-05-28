@@ -1247,9 +1247,40 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 		if(m_spellInfo->EffectSpellGroupRelation[j] == 0)
 			continue;
 
-		if(p_caster->GetItemInterface()->CanReceiveItem(m_itemProto, damage)) //reversed since it sends >1 as invalid and 0 as valid
+		uint32 item_count;
+		if (m_itemProto->Class != ITEM_CLASS_CONSUMABLE || m_spellInfo->SpellFamilyName != 3) //SpellFamilyName 3 is mage
 		{
-			 SendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
+			int32 basePoints = m_spellInfo->EffectBasePoints[i];
+			int32 randomPoints = m_spellInfo->EffectDieSides[i];
+			if (randomPoints)
+				item_count = basePoints + rand() % randomPoints;
+			else
+				item_count = basePoints + 1;
+		}
+		else if(p_caster->getLevel() >= m_spellInfo->spellLevel)
+			item_count = ((p_caster->getLevel() - (m_spellInfo->spellLevel-1))*2);
+		else
+			item_count = damage;
+
+		//conjure water ranks 7,8 & 9 and conjure food ranks 7 & 8 have different starting amounts
+		switch(m_spellInfo->Id)
+		{
+		case 27389: //Conjure Food 7
+		case 33718: //Conjure Food 8
+		case 10140: //Conjure Water 7
+		case 37420: //Conjure Water 8
+		case 27090: //Conjure Water 9
+			item_count += 8;
+			break;
+		}
+
+		//scale item_count down if its over 20
+		if(item_count > 20)
+			item_count = 20;
+
+		if(p_caster->GetItemInterface()->CanReceiveItem(m_itemProto, item_count)) //reversed since it sends >1 as invalid and 0 as valid
+		{
+			SendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
 			return;
 		}
 
@@ -1266,12 +1297,12 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 			
 			newItem =objmgr.CreateItem(m_spellInfo->EffectSpellGroupRelation[i],p_caster);
 			newItem->SetUInt64Value(ITEM_FIELD_CREATOR,m_caster->GetGUID());
-			newItem->SetUInt32Value(ITEM_FIELD_STACK_COUNT, damage);
+			newItem->SetUInt32Value(ITEM_FIELD_STACK_COUNT, item_count);
 
 			if(p_caster->GetItemInterface()->SafeAddItem(newItem,slotresult.ContainerSlot, slotresult.Slot))
 			{
 				WorldPacket data(88);
-				p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, damage, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);
+				p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, item_count, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);
 				p_caster->SendMessageToSet(&data, true);
 			} else {
 				delete newItem;
@@ -1282,9 +1313,33 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 		} 
 		else 
 		{
-			add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + damage);
+			//scale item_count down if total stack will be more than 20
+			if(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + item_count > 20)
+			{
+				uint32 item_count_filled;
+				item_count_filled = 20 - add->GetUInt32Value(ITEM_FIELD_STACK_COUNT);
+				add->SetCount(20);
+
+				slotresult = p_caster->GetItemInterface()->FindFreeInventorySlot(m_itemProto);
+				if(!slotresult.Result)
+					item_count = item_count_filled;
+				else
+				{
+					newItem =objmgr.CreateItem(m_spellInfo->EffectSpellGroupRelation[i],p_caster);
+					newItem->SetUInt64Value(ITEM_FIELD_CREATOR,m_caster->GetGUID());
+					newItem->SetUInt32Value(ITEM_FIELD_STACK_COUNT, item_count - item_count_filled);
+					if(!p_caster->GetItemInterface()->SafeAddItem(newItem,slotresult.ContainerSlot, slotresult.Slot))
+					{
+						delete newItem;
+						item_count = item_count_filled;
+					}
+                }
+			}
+			else
+				add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + item_count);
+
 			WorldPacket data(88);
-			p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, damage, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);
+			p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, item_count, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);
 			p_caster->SendMessageToSet(&data, true);
 			if(skill)
 				DetermineSkillUp(skill->skilline);
