@@ -1230,7 +1230,8 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	}
 
 	// This one is easy. If we're attacking a hostile target, and we're not flagged, flag us.
-	if(pVictim->IsPlayer() && IsPlayer())
+	// Also, you WONT get flagged if you are dueling that person - FiShBaIt
+	if(pVictim->IsPlayer() && IsPlayer() && static_cast<Player*>(pVictim)->DuelingWith != static_cast<Player*>(this))
 	{
 		if( isHostile( this, pVictim ) )
 			((Player*)this)->SetPvPFlag();
