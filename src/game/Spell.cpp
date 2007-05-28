@@ -869,69 +869,8 @@ void Spell::prepare(SpellCastTargets * targets)
 			AddStartCooldown();
 		}
 
-		if (i_caster)
-		{			
-			ItemPrototype *proto = NULL;
-			proto = i_caster->GetProto();
-			if (proto->Class == ITEM_CLASS_CONSUMABLE || proto->Class == ITEM_CLASS_RECIPE
-				||proto->Class == ITEM_CLASS_TRADEGOODS || proto->Flags & 2)//flag&2 --conjured item
-			{
-				if (((int32)i_caster->GetUInt32Value(ITEM_FIELD_SPELL_CHARGES)) <= 1)//number of charges might be -1,->remove
-				{
-					if (i_caster->GetUInt32Value(ITEM_FIELD_STACK_COUNT) <= 1)
-					{
-						if(i_caster->GetProto()->ItemId != 5507) //Ornate SpyGlass
-						{
-							  bool result = i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
-							if(!result)
-							{
-								//should never get here
-								printf("Spell: Prepare, Item destruction failed");
-								this->cancel();
-								return;
-							}
-						}
-					}
-					else
-					{
-						i_caster->SetUInt32Value(ITEM_FIELD_SPELL_CHARGES, proto->SpellCharges[0] );
-						i_caster->ModUInt32Value(ITEM_FIELD_STACK_COUNT,-1);
-						//i_caster->Update();
-					}
-				}
-				else
-				{
-					i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,-1);
-				}
-			}
-			else if(proto->Class == ITEM_CLASS_QUEST )
-			{					
-				if(proto->SpellCharges[0]!=-1)
-				{
-					int32 cha=i_caster->GetUInt32Value(ITEM_FIELD_SPELL_CHARGES);
-					//0 - remove, -1 don't remove otherwise inc count
-					if(cha)
-					{
-						i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,1);
-						//i_caster->Update ();
-					}
-						
-					if(!cha && proto->Class != ITEM_CLASS_QUEST)	// quest items shouldn't disappear..
-					{
-						bool result = i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
-						if(!result)
-						{
-							//should never get here
-							printf("Spell: Prepare, Item destruction failed");
-							this->cancel();
-							return;
-						}
-						i_caster=NULL;
-					}
-				}
-			}
-		}
-		else
+		
+		if(!i_caster)
 		{
 			if(p_caster && m_timer > 0)
 				p_caster->setAttackTimer(m_timer + 1000, false);
@@ -1116,6 +1055,69 @@ void Spell::cast(bool check)
 			if(Target)
 				Target->RemoveBySpecialType(sp->specialtype, p_caster->GetGUID());
 		}*/
+
+		if (i_caster)
+		{			
+			ItemPrototype *proto = NULL;
+			proto = i_caster->GetProto();
+			if (proto->Class == ITEM_CLASS_CONSUMABLE || proto->Class == ITEM_CLASS_RECIPE
+				||proto->Class == ITEM_CLASS_TRADEGOODS || proto->Flags & 2)//flag&2 --conjured item
+			{
+				if (((int32)i_caster->GetUInt32Value(ITEM_FIELD_SPELL_CHARGES)) <= 1)//number of charges might be -1,->remove
+				{
+					if (i_caster->GetUInt32Value(ITEM_FIELD_STACK_COUNT) <= 1)
+					{
+						if(i_caster->GetProto()->ItemId != 5507) //Ornate SpyGlass
+						{
+							bool result = i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
+							if(!result)
+							{
+								//should never get here
+								printf("Spell: Prepare, Item destruction failed");
+								this->cancel();
+								return;
+							}
+						}
+					}
+					else
+					{
+						i_caster->SetUInt32Value(ITEM_FIELD_SPELL_CHARGES, proto->SpellCharges[0] );
+						i_caster->ModUInt32Value(ITEM_FIELD_STACK_COUNT,-1);
+						//i_caster->Update();
+					}
+				}
+				else
+				{
+					i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,-1);
+				}
+			}
+			else if(proto->Class == ITEM_CLASS_QUEST )
+			{					
+				if(proto->SpellCharges[0]!=-1)
+				{
+					int32 cha=i_caster->GetUInt32Value(ITEM_FIELD_SPELL_CHARGES);
+					//0 - remove, -1 don't remove otherwise inc count
+					if(cha)
+					{
+						i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,1);
+						//i_caster->Update ();
+					}
+
+					if(!cha && proto->Class != ITEM_CLASS_QUEST)	// quest items shouldn't disappear..
+					{
+						bool result = i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
+						if(!result)
+						{
+							//should never get here
+							printf("Spell: Prepare, Item destruction failed");
+							this->cancel();
+							return;
+						}
+						i_caster=NULL;
+					}
+				}
+			}
+		}
 
 		if(!(m_spellInfo->Attributes & ATTRIBUTE_ON_NEXT_ATTACK  && !m_triggeredSpell))//on next attack
 		{

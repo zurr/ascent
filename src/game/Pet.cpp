@@ -634,6 +634,19 @@ void Pet::AddSpell(SpellEntry * sp)
 		CreateAISpell(sp);
 	}
 	
+	if(IsInWorld() && sp->Effect[0] == SPELL_EFFECT_APPLY_AREA_AURA)
+	{
+		// Autocast by default
+		SetSpellState(sp, PET_ACTION_SPELL);
+
+		// Add to the actionbar.
+        for(int i = 0; i < 10; ++i)
+			if(ActionBar[i] == 0)
+				ActionBar[i] = sp->Id;
+
+		// Cast it.
+		CastSpell(this, sp, true);
+	}
 	if(IsInWorld())
 		SendSpellsToOwner();
 }
