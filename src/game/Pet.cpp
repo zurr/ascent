@@ -290,7 +290,7 @@ void Pet::CreateAISpell(SpellEntry * info)
 	sp->spellId = info->Id;
 	sp->spellType = STYPE_DAMAGE;
 	sp->spelltargetType = TTYPE_SINGLETARGET;
-	if(info->Effect[0] == SPELL_EFFECT_APPLY_AURA)
+	if(info->Effect[0] == SPELL_EFFECT_APPLY_AURA || info->Effect[0] == SPELL_EFFECT_APPLY_AREA_AURA)
 		sp->agent = STYPE_BUFF;
 
 	if(info->EffectImplicitTargetA[0] == 24)
