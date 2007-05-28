@@ -842,6 +842,12 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 		m_useAI = false;
 	}
 
+	/* more hacks! */
+	if(proto->Mana != 0)
+		SetPowerType(POWER_TYPE_MANA);
+	else
+		SetPowerType(0);
+
 	return true;
 }
 
