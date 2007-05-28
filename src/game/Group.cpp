@@ -154,7 +154,7 @@ void Group::SetLeader(Player* pPlayer)
 
 void Group::Update()
 {
-	WorldPacket data;
+	WorldPacket data(50 + (m_MemberCount * 20));
 	GroupMembersSet::iterator itr1, itr2;
 
 	uint32 i=0,j=0;
@@ -458,14 +458,10 @@ void Group::SetSubGroupLeader(Player *pPlayer, uint8 subgroup)
 
 void Group::SendNullUpdate(Player *pPlayer)
 {
-	WorldPacket data;
-
-	data.Initialize(SMSG_GROUP_LIST);
-	data << uint8(0);
-	data << uint8(0);
-	data << uint32(0);
-	data << uint64(0);
-	pPlayer->GetSession()->SendPacket(&data);
+	// this packet is 24 bytes long.		// AS OF 2.1.0
+	uint8 buffer[24];
+	memset(buffer, 0, 24);
+	pPlayer->GetSession()->OutPacket(SMSG_GROUP_LIST, 24, buffer);
 }
 
 // player is object class becouse its called from unit class
@@ -474,8 +470,7 @@ void Group::SendPartyKillLog(Object * player, Object * Unit)
 	if (!player || !Unit || !HasMember(((Player*)player)))
 		return;
 
-	WorldPacket data(16);
-	data.Initialize(SMSG_PARTYKILLLOG);
+	WorldPacket data(SMSG_PARTYKILLLOG, 16);
 	data << player->GetGUID();
 	data << Unit->GetGUID();
 	SendPacketToAll(&data);
