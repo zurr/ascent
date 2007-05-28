@@ -507,11 +507,6 @@ void WorldSession::HandleAuctionListOwnerItems( WorldPacket & recv_data )
 	pCreature->auctionHouse->SendOwnerListPacket(_player, &recv_data);
 }
 
-inline bool FindXinYString(string& x, string& y)
-{
-	return y.find(x) != string::npos;
-}
-
 void AuctionHouse::SendAuctionList(Player * plr, WorldPacket * packet)
 {
 	uint32 start_index, current_index = 0;

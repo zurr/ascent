@@ -2449,8 +2449,11 @@ bool ChatHandler::HandleForceRenameCommand(const char * args, WorldSession * m_s
 bool ChatHandler::HandleGetStandingCommand(const char * args, WorldSession * m_session)
 {
 	uint32 faction = atoi(args);
-	int32 standing = m_session->GetPlayer()->GetStanding(faction);
-	int32 bstanding = m_session->GetPlayer()->GetBaseStanding(faction);
+	Player * plr = getSelectedChar(m_session, true);
+	if(!plr) return true;
+
+	int32 standing = plr->GetStanding(faction);
+	int32 bstanding = plr->GetBaseStanding(faction);
 
 	GreenSystemMessage(m_session, "Reputation for faction %u:", faction);
 	SystemMessage(m_session,	  "   Base Standing: %d", bstanding);
@@ -2464,8 +2467,106 @@ bool ChatHandler::HandleSetStandingCommand(const char * args, WorldSession * m_s
 	int32 standing;
 	if(sscanf(args, "%u %d", &faction, &standing) != 2)
 		return false;
+	Player * plr = getSelectedChar(m_session, true);
+	if(!plr) return true;;
 
-	m_session->GetPlayer()->SetStanding(faction, standing);
-	GreenSystemMessage(m_session, "Set standing of faction %u to %d.", faction, standing);
+	BlueSystemMessage(m_session, "Setting standing of %u to %d on %s.", faction, standing, plr->GetName());
+	plr->SetStanding(faction, standing);
+	GreenSystemMessageToPlr(plr, "%s set your standing of faction %u to %d.", m_session->GetPlayer()->GetName(), faction, standing);
+	return true;
+}
+
+void SendHighlightedName(WorldSession * m_session, string& fullname, string& lowercase_name, string& highlight, uint32 id, bool item)
+{
+	char message[500];
+	char start[50];
+	start[0] = message[0] = 0;
+
+	sprintf(start, "%s %u: %s", item ? "Item" : "Creature", id, MSG_COLOR_WHITE);
+
+	string::size_type hlen = highlight.length();
+	string::size_type offset = lowercase_name.find(highlight);
+	string::size_type remaining = fullname.size() - offset - hlen;
+	strcat(message, start);
+	strncat(message, fullname.c_str(), offset);
+	if(remaining > 0)
+	{
+		strcat(message, MSG_COLOR_LIGHTRED);
+		strncat(message, (fullname.c_str() + offset), hlen);
+		strcat(message, MSG_COLOR_WHITE);
+		strncat(message, (fullname.c_str() + offset + hlen), remaining);
+	}
+
+	sChatHandler.SystemMessage(m_session, message);
+}
+
+bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_session)
+{
+	if(!*args) return false;
+
+	string x = string(args);
+	transform(x.begin(), x.end(), x.begin(), tolower);
+	if(x.length() < 4)
+	{
+		RedSystemMessage(m_session, "Your search string must be at least 5 characters long.");
+		return true;
+	}
+
+	ObjectMgr::ItemPrototypeMap::iterator itr = objmgr.BeginItemPrototype();
+	ObjectMgr::ItemPrototypeMap::iterator eitr = objmgr.EndItemPrototype();
+
+	BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
+	uint32 t = getMSTime();
+	ItemPrototype * it;
+	for(; itr != eitr; ++itr)
+	{
+		it = itr->second;
+		if(FindXinYString(x, it->lowercase_name))
+		{
+			// Print out the name in a cool highlighted fashion
+			SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
+		}
+	}
+
+	BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
+	return true;
+}
+
+bool ChatHandler::HandleLookupCreatureCommand(const char * args, WorldSession * m_session)
+{
+	if(!*args) return false;
+
+	string x = string(args);
+	transform(x.begin(), x.end(), x.begin(), tolower);
+	if(x.length() < 4)
+	{
+		RedSystemMessage(m_session, "Your search string must be at least 5 characters long.");
+		return true;
+	}
+
+	ObjectMgr::CreatureNameMap::iterator itr = objmgr.BeginCreatureInfo();
+	ObjectMgr::CreatureNameMap::iterator eitr = objmgr.EndCreatureInfo();
+
+	GreenSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
+	uint32 t = getMSTime();
+	CreatureInfo * i;
+	for(; itr != eitr; ++itr)
+	{
+		i = itr->second;
+		if(FindXinYString(x, i->lowercase_name))
+		{
+			// Print out the name in a cool highlighted fashion
+			SendHighlightedName(m_session, i->Name, i->lowercase_name, x, i->Id, false);
+		}
+	}
+
+	GreenSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
+	return true;
+}
+
+bool ChatHandler::HandleReloadAccountsCommand(const char * args, WorldSession * m_session)
+{
+	BlueSystemMessage(m_session, "Instructing logonserver to reload accounts...");
+	sLogonCommHandler.LogonDatabaseReloadAccounts();
 	return true;
 }

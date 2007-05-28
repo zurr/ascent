@@ -16,6 +16,10 @@
 #define _OBJECTMGR_H
 #include "../shared/Threading/RWLock.h"
 
+inline bool FindXinYString(std::string& x, std::string& y)
+{
+	return y.find(x) != std::string::npos;
+}
 
 enum SpellSpecialType
 {
@@ -459,6 +463,12 @@ public:
 	void LoadGuildCharters();
 	Charter * GetCharterByName(string &charter_name);
 	Charter * GetCharterByItemGuid(uint64 guid);
+
+	inline ItemPrototypeMap::iterator BeginItemPrototype() { return mItemPrototypes.begin(); }
+	inline ItemPrototypeMap::iterator EndItemPrototype() { return mItemPrototypes.end(); }
+
+	inline CreatureNameMap::iterator BeginCreatureInfo() { return mCreatureNames.begin(); }
+	inline CreatureNameMap::iterator EndCreatureInfo() { return mCreatureNames.end(); }
 
 protected:
 	RWLock playernamelock;

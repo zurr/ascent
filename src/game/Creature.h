@@ -44,6 +44,8 @@ struct CreatureInfo
 	uint8  Leader;
 	float unk2;
 	float unk3;
+	
+	std::string lowercase_name;
 };
 
 struct CreatureProto

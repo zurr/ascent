@@ -74,6 +74,7 @@ public:
 	void UpdateSockets();
 	void Connect(LogonServer * server);
 	void LogonDatabaseSQLExecute(const char* str, ...);
+	void LogonDatabaseReloadAccounts();
 
 	void LoadRealmConfiguration();
 	void AddServer(string Name, string Address, uint32 Port);

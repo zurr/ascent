@@ -263,6 +263,20 @@ void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
 	itr->second->SendPacket(&data);
 }
 
+void LogonCommHandler::LogonDatabaseReloadAccounts()
+{
+	WorldPacket data(RCMSG_RELOAD_ACCOUNTS, 16);
+	data.append(sql_passhash, 16);
+
+	map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+	if(logons.size() == 0 || itr->second == 0)
+	{
+		// No valid logonserver is connected.
+		return;
+	}
+	itr->second->SendPacket(&data);
+}
+
 void LogonCommHandler::LoadRealmConfiguration()
 {
 	uint32 logoncount = Config.RealmConfig.GetIntDefault("LogonServerCount", 0);

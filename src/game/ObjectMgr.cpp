@@ -368,6 +368,9 @@ void ObjectMgr::LoadCreatureNames()
 			cn->Civilian = fields[12].GetUInt8();
 			cn->Leader = fields[13].GetUInt8();
 
+			cn->lowercase_name = cn->Name;
+			transform(cn->lowercase_name.begin(), cn->lowercase_name.end(), cn->lowercase_name.begin(), tolower);
+
 			mCreatureNames[cn->Id] = cn;
 		} while( result->NextRow() );
 		delete result;

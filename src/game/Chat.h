@@ -385,6 +385,12 @@ protected:
 	bool HandleGetStandingCommand(const char * args, WorldSession * m_session);
 	bool HandleSetStandingCommand(const char * args, WorldSession * m_session);
 	bool HandleGetBaseStandingCommand(const char * args, WorldSession * m_session);
+
+	bool HandleReloadAccountsCommand(const char * args, WorldSession * m_session);
+	bool HandleLookupItemCommand(const char * args, WorldSession * m_session);
+	bool HandleLookupCreatureCommand(const char * args, WorldSession * m_session);
+	bool HandleLookupObjectCommand(const char * args, WorldSession * m_session);
+	bool HandleLookupSpellCommand(const char * args, WorldSession * m_session);
 };
 
 
