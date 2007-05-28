@@ -82,6 +82,7 @@ Creature::Creature(uint32 high, uint32 low)
 	m_spawn = 0;
 	spawnid = 0;
 	auctionHouse = 0;
+	has_waypoint_text = has_combat_text = false;
 }
 
 
@@ -847,6 +848,9 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 		SetPowerType(POWER_TYPE_MANA);
 	else
 		SetPowerType(0);
+
+	has_combat_text = objmgr.HasMonsterSay(GetEntry(), MONSTER_SAY_EVENT_ENTER_COMBAT);
+	has_waypoint_text = objmgr.HasMonsterSay(GetEntry(), MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
 
 	return true;
 }

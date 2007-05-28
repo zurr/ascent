@@ -413,6 +413,7 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, SetHighestGuids);
 	MAKE_TASK(QuestMgr, LoadSQLQuests);
 	MAKE_TASK(ObjectMgr, LoadReputationModifiers);
+	MAKE_TASK(ObjectMgr, LoadMonsterSay);
 
 #undef MAKE_TASK
 

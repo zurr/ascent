@@ -182,7 +182,14 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 		{
 		case EVENT_ENTERCOMBAT:
 			{
-				CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
+				/* send the message */
+				if(m_Unit->GetTypeId() == TYPEID_UNIT)
+				{
+					if(((Creature*)m_Unit)->has_combat_text)
+						objmgr.HandleMonsterSayEvent(((Creature*)m_Unit), MONSTER_SAY_EVENT_ENTER_COMBAT);
+
+					CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
+				}
 				
 				// Stop the emote
 				m_Unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
@@ -2400,6 +2407,10 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 					if(wp)
 					{
 						CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wp->id, !m_moveBackward);
+
+						if(((Creature*)m_Unit)->has_waypoint_text)
+							objmgr.HandleMonsterSayEvent(((Creature*)m_Unit), MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
+
 						//Lets face to correct orientation
 						wayO = wp->o;
 						m_moveTimer = wp->waittime; //wait before next move

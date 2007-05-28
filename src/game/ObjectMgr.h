@@ -156,6 +156,24 @@ struct ReputationModifier
 	vector<ReputationMod> mods;
 };
 
+struct NpcMonsterSay
+{
+	float Chance;
+	uint32 Language;
+	uint32 Type;
+	const char * MonsterName;
+
+	uint32 TextCount;
+	const char ** Texts;
+};
+
+enum MONSTER_SAY_EVENTS
+{
+	MONSTER_SAY_EVENT_ENTER_COMBAT		= 0,
+	MONSTER_SAY_EVENT_RANDOM_WAYPOINT,
+	NUM_MONSTER_SAY_EVENTS,
+};
+
 class SERVER_DECL GossipMenu
 {
 public:
@@ -469,6 +487,13 @@ public:
 
 	inline CreatureNameMap::iterator BeginCreatureInfo() { return mCreatureNames.begin(); }
 	inline CreatureNameMap::iterator EndCreatureInfo() { return mCreatureNames.end(); }
+
+	typedef HM_NAMESPACE::hash_map<uint32, NpcMonsterSay*> MonsterSayMap;
+	MonsterSayMap mMonsterSays[NUM_MONSTER_SAY_EVENTS];
+
+	void HandleMonsterSayEvent(Creature * pCreature, MONSTER_SAY_EVENTS Event);
+	bool HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event);
+	void LoadMonsterSay();
 
 protected:
 	RWLock playernamelock;

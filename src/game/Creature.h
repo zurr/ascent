@@ -395,6 +395,8 @@ public:
 	void OnPushToWorld();
 
 	AuctionHouse * auctionHouse;
+	bool has_waypoint_text;
+	bool has_combat_text;
 
 protected:
 	CreatureAIScript *_myScriptClass;

@@ -3587,3 +3587,81 @@ ReputationModifier * ObjectMgr::GetReputationModifier(uint32 entry_id, uint32 fa
 	// no data. fallback to default -5 value.
 	return 0;
 }
+
+void ObjectMgr::LoadMonsterSay()
+{
+	QueryResult * result = sDatabase.Query("SELECT * FROM npc_monstersay");
+	if(!result) return;
+
+	uint32 Entry, Event;
+	Field * fields = result->Fetch();
+	do 
+	{
+		Entry = fields[0].GetUInt32();
+		Event = fields[1].GetUInt32();
+
+		if(Event >= NUM_MONSTER_SAY_EVENTS)
+			continue;
+
+		NpcMonsterSay * ms = new NpcMonsterSay;
+		ms->Chance = fields[2].GetFloat();
+		ms->Language = fields[3].GetUInt32();
+		ms->Type = fields[4].GetUInt32();
+		ms->MonsterName = fields[5].GetString() ? strdup(fields[5].GetString()) : "None";
+
+		const char * texts[5];
+		const char * text;
+		uint32 textcount = 0;
+
+		for(uint32 i = 0; i < 5; ++i)
+		{
+			text = fields[6+i].GetString();
+			if(!text) continue;
+
+			texts[textcount++] = strdup(fields[6+i].GetString());
+
+			// check for ;
+			if(texts[textcount-1][strlen(texts[textcount-1])-1] == ';')
+				(char)(texts[textcount-1][strlen(texts[textcount-1])-1]) = 0;
+		}
+
+		if(!textcount)
+		{
+			delete ms;
+			continue;
+		}
+
+		ms->Texts = new const char*[textcount];
+		memcpy(ms->Texts, texts, sizeof(char*) * textcount);
+		ms->TextCount = textcount;
+
+		mMonsterSays[Event].insert( make_pair( Entry, ms ) );
+
+	} while(result->NextRow());
+	delete result;
+}
+
+void ObjectMgr::HandleMonsterSayEvent(Creature * pCreature, MONSTER_SAY_EVENTS Event)
+{
+	MonsterSayMap::iterator itr = mMonsterSays[Event].find(pCreature->GetEntry());
+	if(itr == mMonsterSays[Event].end())
+		return;
+
+	NpcMonsterSay * ms = itr->second;
+	if(Rand(ms->Chance))
+	{
+		// chance successful.
+		int choice = (ms->TextCount == 1) ? 0 : sRand.randInt(ms->TextCount - 1);
+		const char * text = ms->Texts[choice];
+		pCreature->SendChatMessage(ms->Type, ms->Language, text);
+	}
+}
+
+bool ObjectMgr::HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event)
+{
+	MonsterSayMap::iterator itr = mMonsterSays[Event].find(Entry);
+	if(itr == mMonsterSays[Event].end())
+		return false;
+
+	return true;
+}
