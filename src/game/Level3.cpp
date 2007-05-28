@@ -2135,7 +2135,16 @@ bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession * m_se
 
 bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession * m_session)
 {
-	Player* plr = getSelectedChar(m_session, true);
+	Player * plr;
+	if(strlen(args) > 2)
+	{
+		plr = objmgr.GetPlayer(args, false);
+		if(!plr) RedSystemMessage(m_session, "Cannot find player with name `%s`.", args);
+		return true;
+	}
+	else
+		plr = getSelectedChar(m_session, true);
+	
 	if(!plr) return true;
 	if(!plr->GetSession())
 	{
