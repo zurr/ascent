@@ -2228,6 +2228,11 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 
 void Aura::EventPeriodicTriggerSpell(SpellEntry* spellInfo, uint64 target)
 {
+	// esp: we dont wanna delete the aura here.. otherwise it'll have memory problems.
+	// eye of grillok
+	if(m_spellProto->Id == 38495)
+		return;
+
 	// Trigger Spell
 	// check for spell id
 
