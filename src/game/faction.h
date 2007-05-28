@@ -127,14 +127,14 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 		(objB->GetTypeId() != TYPEID_PLAYER) && objB->m_faction->Faction != 31) // B is attackable if its a neutral Creature*/
 
 	// Neutral Creature Check
-	if(objA->IsPlayer())
+	if(objA->IsPlayer() || objA->IsPet())
 	{
 		if(objB->m_factionDBC->RepListId == -1 && objB->m_faction->HostileMask == 0 && objB->m_faction->FriendlyMask == 0)
 		{
 			attackable = true;
 		}
 	}
-	else if(objB->IsPlayer())
+	else if(objB->IsPlayer() || objB->IsPet())
 	{
 		if(objA->m_factionDBC->RepListId == -1 && objA->m_faction->HostileMask == 0 && objA->m_faction->FriendlyMask == 0)
 		{
