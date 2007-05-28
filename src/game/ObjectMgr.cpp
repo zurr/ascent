@@ -3609,20 +3609,20 @@ void ObjectMgr::LoadMonsterSay()
 		ms->Type = fields[4].GetUInt32();
 		ms->MonsterName = fields[5].GetString() ? strdup(fields[5].GetString()) : "None";
 
-		const char * texts[5];
-		const char * text;
+		char * texts[5];
+		char * text;
 		uint32 textcount = 0;
 
 		for(uint32 i = 0; i < 5; ++i)
 		{
-			text = fields[6+i].GetString();
+			text = (char*)fields[6+i].GetString();
 			if(!text) continue;
 
 			texts[textcount++] = strdup(fields[6+i].GetString());
 
 			// check for ;
 			if(texts[textcount-1][strlen(texts[textcount-1])-1] == ';')
-				(char)(texts[textcount-1][strlen(texts[textcount-1])-1]) = 0;
+				texts[textcount-1][strlen(texts[textcount-1])-1] = 0;
 		}
 
 		if(!textcount)
