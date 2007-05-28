@@ -1743,6 +1743,7 @@ void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 					data << type;
 					data << lang;
 					data << GetGUID();
+					data << uint32(0);			// new in 2.1.0
 					data << UnitNameLength;
 					data << UnitName;
 					data << ((Player*)(*i))->GetGUID();
@@ -1765,6 +1766,7 @@ void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 					data << type;
 					data << lang;
 					data << GetGUID();
+					data << uint32(0);			// new in 2.1.0
 					data << UnitNameLength;
 					data << UnitName;
 					data << ((Player*)(*i))->GetGUID();
@@ -1787,6 +1789,7 @@ void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 					data << type;
 					data << lang;
 					data << GetGUID();
+					data << uint32(0);			// new in 2.1.0
 					data << UnitNameLength;
 					data << UnitName;
 					data << ((Player*)(*i))->GetGUID();
