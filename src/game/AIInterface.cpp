@@ -192,6 +192,9 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 
 				m_moveRun = true; //run to the target
 
+				// dismount if mounted
+				m_Unit->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+
 				if(m_AIState != STATE_ATTACKING)
 					StopMovement(0);
 
@@ -272,6 +275,13 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 							  m_Unit->GetMapMgr()->RemoveCombatInProgress(m_Unit->GetGUID());
 						}
 					}
+				}
+
+				// Remount if mounted
+				if(m_Unit->GetTypeId() == TYPEID_UNIT)
+				{
+					if(((Creature*)m_Unit)->proto)
+						m_Unit->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, ((Creature*)m_Unit)->proto->MountedDisplayID);
 				}
 			}break;
 		case EVENT_DAMAGETAKEN:
