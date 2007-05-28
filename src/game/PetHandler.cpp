@@ -200,6 +200,11 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 			printf("WARNING: Unknown pet action received. Action = %.4X, Misc = %.4X\n", action, misc);
 		}break;
 	}
+
+	/* Send pet action sound - WHEE THEY TALK */
+	WorldPacket action(SMSG_PET_ACTION_SOUND, 12);
+	data << pPet->GetGUID() << uint32(1);
+	SendPacket(&action);
 }
 
 void WorldSession::HandlePetInfo(WorldPacket & recv_data)

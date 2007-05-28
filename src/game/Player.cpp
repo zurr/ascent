@@ -3323,6 +3323,11 @@ void Player::RepopRequestedPlayer()
 	}
 	
 	SpawnCorpseBody();
+
+	/* Send Spirit Healer Location */
+	WorldPacket data(SMSG_SPIRIT_HEALER_POS, 16);
+	data << m_mapId << m_position;
+	m_session->SendPacket(&data);
 }
 
 void Player::ResurrectPlayer()
