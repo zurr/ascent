@@ -2527,6 +2527,7 @@ bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_se
 	BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
 	uint32 t = getMSTime();
 	ItemPrototype * it;
+	uint32 count = 0;
 	for(; itr != eitr; ++itr)
 	{
 		it = itr->second;
@@ -2534,6 +2535,12 @@ bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_se
 		{
 			// Print out the name in a cool highlighted fashion
 			SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
+			++count;
+			if(count == 25)
+			{
+				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				break;
+			}
 		}
 	}
 
@@ -2559,6 +2566,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char * args, WorldSession * 
 	GreenSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
 	uint32 t = getMSTime();
 	CreatureInfo * i;
+	uint32 count = 0;
 	for(; itr != eitr; ++itr)
 	{
 		i = itr->second;
@@ -2566,6 +2574,13 @@ bool ChatHandler::HandleLookupCreatureCommand(const char * args, WorldSession * 
 		{
 			// Print out the name in a cool highlighted fashion
 			SendHighlightedName(m_session, i->Name, i->lowercase_name, x, i->Id, false);
+
+			++count;
+			if(count == 25)
+			{
+				RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+				break;
+			}
 		}
 	}
 

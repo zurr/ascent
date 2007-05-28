@@ -1247,7 +1247,7 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 		if(m_spellInfo->EffectSpellGroupRelation[j] == 0)
 			continue;
 
-		uint32 item_count;
+		uint32 item_count = 0;
 		if (m_itemProto->Class != ITEM_CLASS_CONSUMABLE || m_spellInfo->SpellFamilyName != 3) //SpellFamilyName 3 is mage
 		{
 			int32 basePoints = m_spellInfo->EffectBasePoints[i];
@@ -1259,7 +1259,8 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 		}
 		else if(p_caster->getLevel() >= m_spellInfo->spellLevel)
 			item_count = ((p_caster->getLevel() - (m_spellInfo->spellLevel-1))*2);
-		else
+
+		if(!item_count)
 			item_count = damage;
 
 		//conjure water ranks 7,8 & 9 and conjure food ranks 7 & 8 have different starting amounts
