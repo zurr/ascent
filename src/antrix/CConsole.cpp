@@ -80,6 +80,10 @@ void CConsole::ProcessCmd(char *cmd)
 		{ "wannounce", &CConsole::WideAnnounce },
 		{ "saveall", &CConsole::SaveallPlayers },
 		{ "quit", &CConsole::TranslateQuit}, { "exit", &CConsole::TranslateQuit}, 
+		{ "kick", &CConsole::Kick},
+		{ "banaccount", &CConsole::BanAccount},
+		{ "banip", &CConsole::IPBan},
+		{ "playerinfo", &CConsole::PlayerInfo},
 	};
 
 	if(_thread->GetThreadState() == THREADSTATE_TERMINATE)
@@ -166,6 +170,10 @@ void CConsole::ProcessHelp(char *command)
 		sLog.outString("   announce: announces a msg to the server.");
 		sLog.outString("   wannounce: announces a widescreen msg to the server");
 		sLog.outString("   saveall: saves all players");
+		sLog.outString("   kick: kicks a player with a reason");
+		sLog.outString("   banaccount: bans an account");
+		sLog.outString("   banip: bans an ip");
+		sLog.outString("   playerinfo: gets info on an online player");
 		sLog.outString("   quit, exit: close program");
 	}
 }
@@ -202,6 +210,65 @@ void CConsole::Announce(char* str)
 	char msg[500];
 	sprintf(msg, "%sConsole:%s%s", "|cff00ccff", "|r", str);
 	sWorld.SendWorldText(msg, 0);
+}
+
+void CConsole::BanAccount(char* str)
+{
+	sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET banned = 1 WHERE login = '%s'", str);
+	sLog.outString("User %s banned!", str);
+	sLogonCommHandler.LogonDatabaseReloadAccounts();
+}
+
+void CConsole::IPBan(char* str)
+{
+	sLogonCommHandler.LogonDatabaseSQLExecute("INSERT INTO ipbans (ip, time) VALUES ('%s', '0')", str);
+	sLog.outString("IP %s banned!", str);
+	sLogonCommHandler.LogonDatabaseReloadAccounts();
+}
+
+void CConsole::PlayerInfo(char* str)
+{
+	Player * _plr = objmgr.GetPlayer(str, false);
+	if(!_plr)
+	{
+		sLog.outString("Cannot find online player %s", str);
+		return;
+	}
+
+		static const char* classes[12] =
+	{"None","Warrior", "Paladin", "Hunter", "Rogue", "Priest", "None", "Shaman", "Mage", "Warlock", "None", "Druid"};
+	static const char* races[12] =
+	{"None","Human","Orc","Dwarf","Night Elf","Undead","Tauren","Gnome","Troll","None","Blood Elf","Draenei"};
+
+
+	sLog.outString("Name: %s", _plr->GetName());
+	sLog.outString("Account: %s", _plr->GetSession()->GetAccountName());
+	sLog.outString("Level: %s", _plr->getLevel());
+	sLog.outString("Race: %s", races[_plr->getRace()]);
+	sLog.outString("Class: %s", classes[_plr->getClass()]);
+	sLog.outString("Map: %s", _plr->GetMapId());
+	sLog.outString("Banned: %s", _plr->IsBanned());
+}
+
+void CConsole::Kick(char* str)
+{
+	char player[100];
+	char reason[256];
+	if(sscanf(str, "%s %s", player, reason) != 2)
+		return;
+
+	Player * _plr = objmgr.GetPlayer(player, false);
+	if(!_plr)
+	{
+		sLog.outColor(TRED, "Unable to find player %s", player);
+		return;
+	}
+
+	_plr->BroadcastMessage("|cff00ccffYou have been kicked for |cffff0000%s", reason);
+	_plr->Kick(6000);
+
+
+	
 }
 
 void CConsole::WideAnnounce(char *str)

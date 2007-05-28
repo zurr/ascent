@@ -51,6 +51,10 @@ protected:					// Protected methods:
 	void WideAnnounce(char *str);
 	void Announce(char* str);
 	void SaveallPlayers(char *str);
+	void Kick(char *str);
+	void IPBan(char *str);
+	void BanAccount(char *str);
+	void PlayerInfo(char *str);
 };
 
 #define sCConsole CConsole::getSingleton()
