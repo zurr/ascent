@@ -32,6 +32,7 @@ public:
 	void HandlePing(WorldPacket & recvData);
 	void HandleSessionRequest(WorldPacket & recvData);
 	void HandleSQLExecute(WorldPacket & recvData);
+	void HandleReloadAccounts(WorldPacket & recvData);
 
 	uint32 last_ping;
 	bool removed;

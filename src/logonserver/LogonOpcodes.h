@@ -31,6 +31,7 @@ enum RealmListOpcodes
 
 	// SQL Query Execute
 	RCMSG_SQL_EXECUTE				= 7,
+	RCMSG_RELOAD_ACCOUNTS			= 8,
 };
 
 #endif

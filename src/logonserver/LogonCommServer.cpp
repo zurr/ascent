@@ -98,6 +98,10 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 		HandleSQLExecute(recvData);
 		break;
 
+	case RCMSG_RELOAD_ACCOUNTS:
+		HandleReloadAccounts(recvData);
+		break;
+
 	default:
 		printf("Got unknwon packet from logoncomm: %u\n", recvData.GetOpcode());
 		break;
@@ -206,4 +210,23 @@ void LogonCommServerSocket::HandleSQLExecute(WorldPacket & recvData)
 	}
 	
 	sLogonSQL->Execute(Query.c_str());
+}
+
+void LogonCommServerSocket::HandleReloadAccounts(WorldPacket & recvData)
+{
+	uint8 key[20];
+	recvData.read(key, 20);
+
+	if(memcmp(key, LogonServer::getSingleton().sql_hash, 20))
+	{
+		sLog.outString("Invalid account reload attempted from %s.", this->GetRemoteIP().c_str());
+
+		// Kill the socket off, we don't want to keep bad people around.
+		Disconnect();
+
+		// Might wanna add an IP ban after this.. meh :/
+		return;
+	}
+
+	sAccountMgr.ReloadAccounts(true);
 }
