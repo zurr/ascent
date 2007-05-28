@@ -61,6 +61,7 @@ void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_
 		SetUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
 		SetUInt32Value(UNIT_FIELD_PETNUMBER, GetGUIDLow());
 		SetPowerType(POWER_TYPE_MANA);
+		m_name = sWorld.GenerateName();
 
 	} else {
 		SetUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
@@ -224,7 +225,7 @@ void Pet::SendSpellsToOwner()
 			if(uint16(ActionBar[i]))
 				*data << uint16(ActionBar[i]) << GetSpellState(ActionBar[i]);
 			else
-				*data << uint16(0) << uint8(0) << uint8(i-1);
+				*data << uint16(0) << uint8(0) << uint8(i+5);
 		}
 	}
 

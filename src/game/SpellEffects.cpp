@@ -1998,11 +1998,17 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
 		if(pPet->IsSummon())
 		{
 			p_caster->AddSummonSpell(unitTarget->GetEntry(), m_spellInfo->EffectTriggerSpell[i]);
+			pPet->AddSpell(m_spellInfo->EffectTriggerSpell[i]);
 		}
 		else
 		{
 			pPet->AddSpell(m_spellInfo->EffectTriggerSpell[i]);
 		}		
+
+		// Send Packet
+		WorldPacket data(SMSG_PET_LEARNT_SPELL, 21);
+		data << pPet->GetGUID() << uint8(0) << uint32(m_spellInfo->EffectTriggerSpell[i]) << uint32(-1) << uint32(0);
+		p_caster->GetSession()->SendPacket(&data);
 	}
 }
 
