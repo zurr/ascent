@@ -202,9 +202,9 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 	}
 
 	/* Send pet action sound - WHEE THEY TALK */
-	WorldPacket action(SMSG_PET_ACTION_SOUND, 12);
-	data << pPet->GetGUID() << uint32(1);
-	SendPacket(&action);
+	WorldPacket actionp(SMSG_PET_ACTION_SOUND, 12);
+	actionp << pPet->GetGUID() << uint32(1);
+	SendPacket(&actionp);
 }
 
 void WorldSession::HandlePetInfo(WorldPacket & recv_data)
