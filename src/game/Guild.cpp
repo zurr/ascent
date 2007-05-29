@@ -345,7 +345,7 @@ void Guild::CreateRank(std::string name,uint32 rights)
 std::string Guild::GetRankName(uint32 rankId)
 {
 	std::list<RankInfo*>::iterator itr;
-	if(rankId > m_rankList.size()-1) return NULL;
+	if(rankId > m_rankList.size()-1) return "Internal Error";
 
 	for (itr = m_rankList.begin(); itr != m_rankList.end();itr++)
 	{
