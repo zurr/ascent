@@ -198,10 +198,11 @@ void ExtractMapsFromMpq()
 
 int main(int argc, char * arg[])
 {
-    printf("antrix map extractor for versions 2.0.1 and above.. maybe :p\n");
+    printf("antrix map extractor for versions 2.1.0 and above.. maybe :p\n");
     printf("============================================================\n\n");
     
-	const char* archiveNames[] = {"common.mpq", "enUS/locale-enUS.MPQ",0 };
+//	const char* archiveNames[] = {"common.mpq", "enUS/locale-enUS.MPQ",0 };
+	const char* archiveNames[] = {"common.mpq", "enUS/locale-enUS.MPQ", "expansion.mpq", "enUS/expansion-locale-enUS.MPQ", "patch.MPQ", "enUS/patch-enUS.MPQ",0 };
 	for (size_t i=0; archiveNames[i] != 0; i++)
 	{
         char tmp[100];
