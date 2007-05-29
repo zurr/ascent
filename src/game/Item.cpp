@@ -345,8 +345,9 @@ uint32 GetSellPriceForItem(ItemPrototype *proto, uint32 count)
 
 	switch(proto->Class)
 	{
-	case ITEM_CLASS_CONSUMABLE:
-	case ITEM_CLASS_PROJECTILE: // as far as i can tell these can't be sold at all
+		case ITEM_CLASS_WEAPON:
+		case ITEM_CLASS_CONSUMABLE:
+		case ITEM_CLASS_PROJECTILE: // as far as i can tell these can't be sold at all
 		{
 			cost = (proto->SellPrice * ((count < 1) ? 1 : count)) / proto->MaxCount;
 		}break;
@@ -365,8 +366,9 @@ uint32 GetBuyPriceForItem(ItemPrototype *proto, uint32 count, uint32 vendorcount
 
 	switch(proto->Class)
 	{
-	case ITEM_CLASS_PROJECTILE:
-	case ITEM_CLASS_CONSUMABLE:
+		case ITEM_CLASS_WEAPON::
+		case ITEM_CLASS_PROJECTILE:
+		case ITEM_CLASS_CONSUMABLE:
 		{
 			cost = ( proto->BuyPrice * ((count < 1) ? 1 : count) ) / proto->MaxCount;
 		}break;
