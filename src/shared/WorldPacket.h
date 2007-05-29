@@ -37,7 +37,7 @@ public:
 	//! Clear packet and set opcode all in one mighty blow
 	__inline void Initialize(uint16 opcode )
 	{
-		Clear();
+		StackBuffer<Size>::Clear();
 		m_opcode = opcode;
 	}
 
