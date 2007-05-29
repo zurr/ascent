@@ -77,7 +77,7 @@ enum MsTimeVariables
 #  pragma error "FATAL ERROR: Unknown compiler."
 #endif
 
-#if PLATFORM == PLATFORM_UNIX
+#if PLATFORM == PLATFORM_UNIX || PLATFORM == PLATFORM_APPLE
 #ifdef USE_KQUEUE
 #define UNIX_FLAVOUR UNIX_FLAVOUR_BSD
 #else
@@ -133,7 +133,11 @@ enum MsTimeVariables
 #  define MAX_PATH 1024
 #  if defined (__GNUC__)
 #	if GCC_VERSION >= 30400
-#	  define __fastcall __attribute__((__fastcall__))
+#         ifdef HAVE_DARWIN
+#	      define __fastcall
+#         else
+#    	      define __fastcall __attribute__((__fastcall__))
+#         endif
 #	else
 #	  define __fastcall __attribute__((__regparm__(3)))
 #	endif

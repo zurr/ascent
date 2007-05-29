@@ -26,6 +26,7 @@ AC_PROG_LIBTOOL
 # autoheader templates
 AH_TEMPLATE([USE_EPOLL], [Define if you want to use the epoll socket engine module.])
 AH_TEMPLATE([USE_KQUEUE], [Define if you want to use the kqueue socket engine module.])
+AH_TEMPLATE([HAVE_DARWIN], [Define if you have MacOSX Darwin, to include the correct headers for kevent])
 
 # Default prefix
 AC_PREFIX_DEFAULT(.)
@@ -51,6 +52,11 @@ case "$OSNAME" in
 		AC_MSG_RESULT(Linux)
 		LINUX=yes
 	;;
+	Darwin*)
+		dnl Darwin owns to (includes BSD) :P
+		AC_MSG_RESULT(Darwin)
+		FREEBSD=yes
+	;;
 	*)
 		AC_MSG_RESULT(no)
 	;;
@@ -65,6 +71,9 @@ if test -z "$SVN"; then AC_MSG_ERROR(Subversion not found); fi
 AC_CHECK_PROG([SED], [sed], yes)
 if test -z "$SED"; then AC_MSG_ERROR(Sed not found); fi
 
+AC_CHECK_PROG([TADA], [tada.wav\ extensions], yes)
+if test -z "$TADA"; then AC_MSG_WARN(this build has no tada.wav extensions); fi
+
 # Checks for libraries.
 AC_CHECK_LIB( pthread, pthread_create, [],
     [LDFLAGS="-pthread $LDFLAGS"
@@ -75,7 +84,17 @@ AC_CHECK_LIB( pthread, pthread_create, [],
 AC_CHECK_LIB( z, compress, [],[AC_MSG_ERROR([Missing zlib])] )
 AC_CHECK_LIB( compat, ftime )
 AC_CHECK_LIB( mysqlclient, mysql_init, [],[AC_CHECK_LIB(mysql, mysql_init,[],[AC_MSG_ERROR([Missing mysql])])])
-AC_CHECK_LIB( ssl, SHA1_Init, [], [AC_CHECK_LIB(ssl, SHA1_Init,[],[AC_MSG_ERROR([Missing openssl])])])
+
+if test "x$OSNAME" = "xDarwin" ; then
+	AC_CHECK_LIB( crypto, SHA1_Init, [], [AC_CHECK_LIB(ssl, SHA1_Init,[],[AC_MSG_ERROR([Missing openssl])])])
+	AC_DEFINE(HAVE_DARWIN)
+	LIB_EXPORT="-u __dummy -framework System -framework Foundation"
+	AC_SUBST(LIB_EXPORT)
+else
+	AC_CHECK_LIB( ssl, SHA1_Init, [], [AC_CHECK_LIB(ssl, SHA1_Init,[],[AC_MSG_ERROR([Missing openssl])])])
+	LIB_EXPORT="-Wl,--export-dynamic"
+	AC_SUBST(LIB_EXPORT)
+fi
 
 AC_ARG_ENABLE(profiling,
      AC_HELP_STRING([--enable-profiling],[build for profiling using gprof.])],
@@ -100,6 +119,16 @@ if test "x$OSNAME" = "xFreeBSD" ; then
 	AC_CHECK_FUNC(kevent, , AC_MSG_ERROR([Cannot find kevent() function for socket engine]))
 	AC_CHECK_HEADER(sys/event.h, , AC_MSG_ERROR([Cannot find sys/event.h for socket engine]))
 	AC_DEFINE(USE_KQUEUE)
+fi
+
+if test "x$OSNAME" = "xDarwin" ; then
+	AC_MSG_RESULT(kqueue)
+	AC_CHECK_FUNC(kevent, , AC_MSG_ERROR([Cannot find kevent() function for socket engine]))
+	AC_CHECK_HEADER(sys/event.h, , AC_MSG_ERROR([Cannot find sys/event.h for socket engine]))
+	AC_DEFINE(USE_KQUEUE)
+
+	INCLUDES="-I/sw/include/mysql -I/usr/include/openssl $INCLUDES"
+	LDFLAGS="-L/sw/lib/mysql $LDFLAGS -L/usr/lib"
 fi
 
 CPPFLAGS_SAVE=$CPPFLAGS
