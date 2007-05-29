@@ -30,6 +30,7 @@
 #include "../shared/WorldPacket.h"
 #include "../shared/Log.h"
 #include "../shared/ByteBuffer.h"
+#include "../shared/StackBuffer.h"
 #include "../shared/Config/ConfigEnv.h"
 #include "../shared/crc32.h"
 #include "../shared/LocationVector.h"

@@ -354,6 +354,9 @@
 				RelativePath="..\..\src\shared\Singleton.h">
 			</File>
 			<File
+				RelativePath="..\..\src\shared\StackBuffer.h">
+			</File>
+			<File
 				RelativePath="..\..\src\shared\StackWalker.cpp">
 			</File>
 			<File
