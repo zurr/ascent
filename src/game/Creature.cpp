@@ -873,3 +873,10 @@ void Creature::OnPushToWorld()
 	Unit::OnPushToWorld();
 }
 
+// this is used for guardians. They are non respawnable creatures linked to a player
+void Creature::SummonExpire()
+{
+	RemoveFromWorld(false);
+	SafeDelete();//delete creature totaly.
+}
+

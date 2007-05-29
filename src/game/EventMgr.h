@@ -164,7 +164,8 @@ enum EventTypes
 	EVENT_AURA_REGEN,
 	EVENT_AURA_PERIODIC_REGEN,
 	EVENT_AURA_PERIODIC_HEALPERC,
-	EVENT_ATTACK_TIMEOUT,
+	EVENT_ATTACK_TIMEOUT,		//Zack 2007 05 05: if no action is taken then combat should be exited after 5 seconds.
+	EVENT_SUMMON_EXPIRE,		//Zack 2007 05 28: similar to pet expire but we can have multiple guardians
 
 };
 

@@ -339,6 +339,8 @@ public:
 	void OnRespawn();
 	void SafeDelete();
 	//void Despawn();
+	void SummonExpire(); // this is used for guardians. They are non respawnable creatures linked to a player
+
 
 	// In Range
 	void AddInRangeObject(Object* pObj);
