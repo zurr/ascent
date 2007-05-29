@@ -1450,7 +1450,7 @@ void Spell::SendCastResult(int8 result)
 	{
 		WorldPacket data(SMSG_CAST_RESULT, 6);
 		data << m_spellInfo->Id;
-		data << (uint8)result;
+		data << (uint8)(result+1);
 		if(result == SPELL_FAILED_REQUIRES_SPELL_FOCUS)
 			data << (uint32)m_spellInfo->RequiresSpellFocus;
 
@@ -1672,7 +1672,7 @@ void Spell::SendInterrupted(uint8 result)
 	{
 		data << m_caster->GetNewGUID();
 		data << m_spellInfo->Id;
-		data << result;
+		data << uint8(result);
 		plr->GetSession()->SendPacket(&data);
 	}
 
