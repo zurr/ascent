@@ -773,7 +773,6 @@ public:
 	bool m_bUnlimitedBreath;
 	uint32 m_UnderwaterTime;
 	uint32 m_UnderwaterState;
-	int32 m_UnderwaterTimeMod;
 	uint32 m_SwimmingTime;
 	uint32 m_BreathDamageTimer;
 	// Visible objects

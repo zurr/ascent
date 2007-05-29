@@ -5000,10 +5000,12 @@ void Aura::SpellAuraModUnderwaterBreathing(bool apply)
 {
 	if(m_target->GetTypeId() == TYPEID_PLAYER)
 	{
+                uint32 m_UnderwaterMaxTimeSaved = static_cast<Player*>(m_target)->m_UnderwaterMaxTime;
 		if(apply)
-			static_cast<Player*>(m_target)->m_UnderwaterTimeMod += mod->m_amount/100;
+			static_cast<Player*>(m_target)->m_UnderwaterMaxTime *= (1 + mod->m_amount/100);
 		else
-			static_cast<Player*>(m_target)->m_UnderwaterTimeMod -= mod->m_amount/100;
+			static_cast<Player*>(m_target)->m_UnderwaterMaxTime /= (1 + mod->m_amount/100);
+                static_cast<Player*>(m_target)->m_UnderwaterTime *= static_cast<Player*>(m_target)->m_UnderwaterMaxTime / m_UnderwaterMaxTimeSaved;
 	}
 }
 

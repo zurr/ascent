@@ -182,7 +182,6 @@ Player::Player ( uint32 high, uint32 low )
 
 	m_bUnlimitedBreath	  = false;
 	m_UnderwaterState	   = 0;
-	m_UnderwaterTimeMod	 = 0;
 	m_UnderwaterTime		= 60000;
 	m_UnderwaterMaxTime	 = 60000;
 	m_UnderwaterLastDmg	 = getMSTime();
@@ -677,12 +676,7 @@ void Player::Update( uint32 p_time )
 			if(p_time >= m_UnderwaterTime)
 				m_UnderwaterTime = 0;
 			else
-			{
-				if(m_UnderwaterTimeMod != 0)
-					m_UnderwaterTime -= p_time/m_UnderwaterTimeMod;
-				else
-					m_UnderwaterTime -= p_time;
-			}
+                                m_UnderwaterTime -= p_time;
 		}
 
 		if(!m_UnderwaterTime)
