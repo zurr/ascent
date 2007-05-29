@@ -366,7 +366,7 @@ uint32 GetBuyPriceForItem(ItemPrototype *proto, uint32 count, uint32 vendorcount
 
 	switch(proto->Class)
 	{
-		case ITEM_CLASS_WEAPON::
+		case ITEM_CLASS_WEAPON:
 		case ITEM_CLASS_PROJECTILE:
 		case ITEM_CLASS_CONSUMABLE:
 		{
