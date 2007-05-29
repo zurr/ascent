@@ -1,0 +1,66 @@
+Shaman:
+Talents
+
+Elemental:
+
+Enhancement:
+Ancestral Knowledge - works, but untill you logout - need confirmation should increase your max mana by 1/2/3/4/5%
+Guardian Totems - Not working.
+Thundering Strikes - Works.
+Enhancing Totems - Not working.
+Two-Handed Axes and Maces - Works. But remains after re-spec.
+Flurry - Works.
+Toughness - Works untill you logout. gives you additionly 2/4/6/8/10% value on your armor from your items
+Improved Weapon Totems - Not tested.
+Elemental Weapons - Not working.
+Mental Quickness - Not tested.
+Weapon Mastery - Works.
+Stormstrike - It doesn't give the debuff effect, or correct damage, it also never crits NO SHAMAN SHOULD BE USING THIS IN PVP, IT PERMENANTLY BUGS PLAYERS/MOBS TO DO INSANE DAMAGE WHEN YOU USE IT ON THEM UNTILL THEY RELOG! (THATS RIGHT THEY GET THE DMG BONUS)
+Unleashed Rage - Doesnt work. should increase your party members attack power, based on your melee crits
+Shamanistic Rage - Doesnt work. should give you a chance to restore 15% of your attack-power into mana
+Dual Wield Specialization - Can't tell.
+Dual Wield - Works, but when you unlearn your talents, you still got dual wield.
+Shield Specialization - Works.
+Improved Ghost Wolf - Works.
+Improved Lightning Shield - Works.
+Anticipation - Works.
+Spirit Weapons - Works. (Although Parry might be bugged)
+
+Restoration:
+Ancestral Healing - Doesn't work
+Imp Reincarnation - Doesn't work
+Healing Focus - Doesn't work (not certain)
+Tidal Mastery - Works (Not certain)
+Restorative Totem - Doesn't work
+Healing Way - Doesn't work
+Focused Mind - Doesn't work
+Earth Shield - Only 1 rank available, and it stacks with other shields, sometimes it triggers the heal without losing the charge
+
+
+Spells
+
+Elemental:
+Light Shield - Works but it sometimes triggers the damage without losing a charge
+Earthbind Totem - It works vs other faction but not vs your own, and vs mobs when it stacks with any other cripple effect a shaman has it makes the mob warp towards you at a very high speed (Usefull to control mobs still, BTW ;) )
+Magma Totem -Doesn't work
+Purge - Works well enough, in some cases it removes things it shouldent (Palidins bubble) and on some things it doesn't work at all (Priests Divine Spirit)
+Fire Nova Totem - Doesn't work
+Searing Totem -Doesn't work
+
+Enhancement:
+Stoneclaw Totem - Doesn't work
+Flametongue Weapon - Doesn't work
+Rockbiter Weapon (Rank 2+) - Doesn't work
+Frostbrand Weapon - Procs on every hit (Probably shouldent be fixed untill other weapons work for the shaman at least)
+Windfury Totem (Rank 4+) - Doesn't work
+Winfury Weapon - Doesn't work
+Far Sight - Creates small taurens that lag the server, although it does work decently enough, (It also detects invis units, again, not sure if this is normal)
+Flametongue Totem - Doesn't work
+Grounding Totem - Doesn't work
+Sentry Totem - Doesn't work
+
+Restoration:
+Tremor Totem - Doesn't work
+Cure Poison - Seems to only truly remove some poisons only after you start moving a tiny bit (Like rogues Crippling poison), otherwise it works fine
+Poison Cleansing Totem - Doesn't work
+Disease Cleansing Totem - Doesn't work

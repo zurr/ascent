@@ -1,0 +1,27 @@
+Priest:
+
+Shadow talents:
+Talents:
+Blackout; should give shadow damage spells 10% chance to stun the target for 3 seconds; does not work at all.
+
+Shadow Weaving; should give shadow damage spells 100% chance to cause target to become vulnerable to shadow damage, increasing shadow damage caused to target by 3% for 15 seconds, stacks up to 5 times; does not work at all.
+
+Improved Mind Blast; should reduce the cooldown of mind blast by 2.5 seconds; does not work at all.
+
+Misery; should make shadow word: pain, mind flay, and vampiric touch increase target spell damage taken by 5%; does not work at all.
+
+Focused Mind; should reduce mana cost of mind blast, mind control, and mind flay by 15%; does not work at all (I think).
+
+Vampiric Touch; should cause all party members and self to gain mana equal to 5% of all shadow damage you deal to target; the DOT works, but it does not recover mana.
+
+Disciple:
+
+Talent : Inner Focus
+
+What it does : Instant / 3min cooldown / When activated , reduces the mana cost of your next spell by 100% and increases its critical effect chance by 25% if it is capable of a critical strike
+
+Spells:
+
+Psychic Scream - the target runs waaay to far out of range and warps around. In duels it is unusable for it is resisted or, the enemy is screamed but can still move about as normal.
+
+Mind Control - When used on anyone besides an NPC, the mind controlled victim is unusable.
