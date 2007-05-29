@@ -272,6 +272,7 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	if(!_player->IsInWorld())
 		return;
 
+    movement_info.init(recv_data);
 	// check for bad coords
 	if( !((movement_info.y >= _minY) && (movement_info.y <= _maxY)) ||
 		!((movement_info.x >= _minX) && (movement_info.x <= _maxX)) )
