@@ -694,8 +694,8 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, (mode ? proto->Health * 1.5  : proto->Health));
 	SetUInt32Value(UNIT_FIELD_MAXHEALTH, (mode ? proto->Health * 1.5  : proto->Health));
 
-	SetUInt32Value(UNIT_FIELD_POWER2,proto->Mana);
-	SetUInt32Value(UNIT_FIELD_MAXPOWER2,proto->Mana);
+	SetUInt32Value(UNIT_FIELD_POWER1,proto->Mana);
+	SetUInt32Value(UNIT_FIELD_MAXPOWER1,proto->Mana);
 	SetUInt32Value(UNIT_FIELD_BASE_MANA,proto->Mana);
 	
 	SetUInt32Value(UNIT_FIELD_DISPLAYID,spawn->displayid);
