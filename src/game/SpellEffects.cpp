@@ -2773,9 +2773,9 @@ void Spell::SpellEffectSummonPossessed(uint32 i) // eye of kilrog
 		p_caster->SetUInt64Value(PLAYER_FARSIGHT, NewSummon->GetGUID());
 		p_caster->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
 		
-		WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
-		data << NewSummon->GetNewGUID() << uint8(1);
-		p_caster->GetSession()->SendPacket(&data);
+//		WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
+//		data << NewSummon->GetNewGUID() << uint8(1);
+//		p_caster->GetSession()->SendPacket(&data);
 		p_caster->m_noInterrupt++;
 
 		//FIXME: use Spell::SentCHannelStart

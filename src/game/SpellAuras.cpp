@@ -863,14 +863,9 @@ void Aura::SpellAuraModPossess(bool apply)
 				return;
 		}		
 	}
-	WorldPacket data1;
 	target->GetAIInterface()->StopMovement(5000);
 	target->m_useAI = !apply;
 	//target->GetAIInterface()->m_canMove = !apply;
-
-	data1.Initialize(SMSG_DEATH_NOTIFY_OBSOLETE);
-	data1 << target->GetNewGUID() << uint8(0x01);
-	static_cast<Player*>(caster)->GetSession()->SendPacket(&data1);
 
 	if(apply)
 	{
@@ -893,6 +888,10 @@ void Aura::SpellAuraModPossess(bool apply)
 			fl |= U_FIELD_FLAG_PLAYER_CONTROLLED_CREATURE;
 
 			target->BuildFieldUpdatePacket(((Player*)(target)), UNIT_FIELD_FLAGS, fl);
+			WorldPacket data1;
+			data1.Initialize(SMSG_DEATH_NOTIFY_OBSOLETE);
+			data1 << target->GetNewGUID() << uint8(0x00);
+			static_cast<Player*>(caster)->GetSession()->SendPacket(&data1); //lock player
 		}
 
 		target->_setFaction();  // update faction pointers
@@ -927,6 +926,10 @@ void Aura::SpellAuraModPossess(bool apply)
 		if(target->GetTypeId() == TYPEID_PLAYER)
 		{
 			target->BuildFieldUpdatePacket(((Player*)target), UNIT_FIELD_FLAGS, target->GetUInt32Value(UNIT_FIELD_FLAGS));
+			WorldPacket data1;
+			data1.Initialize(SMSG_DEATH_NOTIFY_OBSOLETE);
+			data1 << target->GetNewGUID() << uint8(0x01);
+			static_cast<Player*>(caster)->GetSession()->SendPacket(&data1); //unlock player
 		}
 
 		caster->SetCharmTempVal(0);
@@ -1365,7 +1368,7 @@ void Aura::SpellAuraDummy(bool apply)
 				pCaster->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
 
 				WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
-				data << m_target->GetNewGUID() << uint8(1);
+				data << m_target->GetNewGUID() << uint8(0);
 				pCaster->GetSession()->SendPacket(&data);
 			}
 			else
