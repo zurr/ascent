@@ -1450,7 +1450,7 @@ void Spell::SendCastResult(int8 result)
 	{
 		WorldPacket data(SMSG_CAST_RESULT, 6);
 		data << m_spellInfo->Id;
-		data << (uint8)(result+1);
+		data << (uint8)(result);
 		if(result == SPELL_FAILED_REQUIRES_SPELL_FOCUS)
 			data << (uint32)m_spellInfo->RequiresSpellFocus;
 
@@ -1668,7 +1668,7 @@ void Spell::SendInterrupted(uint8 result)
 	if(!plr && m_caster->IsPet())
 		plr = static_cast<Pet*>(m_caster)->GetPetOwner();
 
-	if(plr)
+a	if(plr)
 	{
 		data << m_caster->GetNewGUID();
 		data << m_spellInfo->Id;
