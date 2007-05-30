@@ -156,15 +156,15 @@ World::~World()
 WorldSession* World::FindSession(uint32 id)
 {
 	m_sessionlock.AcquireReadLock();
-
+	WorldSession * ret = 0;
 	SessionMap::const_iterator itr = m_sessions.find(id);
 
 	if(itr != m_sessions.end())
-		return itr->second;
-	else
-		return 0;
-
+		ret = itr->second;
+	
 	m_sessionlock.ReleaseReadLock();
+
+	return ret;
 }
 
 void World::RemoveSession(uint32 id)
