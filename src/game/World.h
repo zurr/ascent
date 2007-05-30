@@ -17,6 +17,8 @@
 
 #define IS_INSTANCE(a) (((a)>1)&&((a)!=530))
 
+#include "../shared/Threading/RWLock.h"
+
 class Object;
 class WorldPacket;
 class WorldSession;
