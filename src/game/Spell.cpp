@@ -1668,7 +1668,7 @@ void Spell::SendInterrupted(uint8 result)
 	if(!plr && m_caster->IsPet())
 		plr = static_cast<Pet*>(m_caster)->GetPetOwner();
 
-a	if(plr)
+	if(plr)
 	{
 		data << m_caster->GetNewGUID();
 		data << m_spellInfo->Id;
