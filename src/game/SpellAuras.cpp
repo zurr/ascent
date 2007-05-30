@@ -1578,9 +1578,13 @@ void Aura::SpellAuraModFear(bool apply)
 		
 		if(m_target->GetTypeId() == TYPEID_PLAYER)
 		{
-			m_target->SetFlag(UNIT_FIELD_FLAGS, 0x00040000);
-			m_target->SetFlag(UNIT_FIELD_FLAGS, 0x04);
+            m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
+            m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
 			m_target->setAItoUse(true);
+			WorldPacket data1(9);
+			data1.Initialize(SMSG_DEATH_NOTIFY_OBSOLETE);
+			data1 << m_target->GetNewGUID() << uint8(0x00); //block player movement ?
+			static_cast<Player*>(m_target)->GetSession()->SendPacket(&data1);
 		}
 		m_target->GetAIInterface()->SetUnitToFear(GetUnitCaster());
 		m_target->GetAIInterface()->HandleEvent(EVENT_FEAR, m_target, 0); 
@@ -1589,10 +1593,14 @@ void Aura::SpellAuraModFear(bool apply)
 	{
 		if(m_target->GetTypeId() == TYPEID_PLAYER)
 		{
-			m_target->RemoveFlag(UNIT_FIELD_FLAGS, 0x00040004);
-		  //  m_target->RemoveFlag(UNIT_FIELD_FLAGS, 0x04);
+            m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
+            m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
 			m_target->GetAIInterface()->StopMovement(1);
 			m_target->setAItoUse(false);
+			WorldPacket data1(9);
+			data1.Initialize(SMSG_DEATH_NOTIFY_OBSOLETE);
+			data1 << m_target->GetNewGUID() << uint8(0x01); //enable player movement ?
+			static_cast<Player*>(m_target)->GetSession()->SendPacket(&data1);
 		}
 		m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, m_target, 0);
 		m_target->GetAIInterface()->SetUnitToFear(NULL);
