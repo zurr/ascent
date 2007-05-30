@@ -153,7 +153,7 @@ World::~World()
 }
 
 
-WorldSession* World::FindSession(uint32 id) const
+WorldSession* World::FindSession(uint32 id)
 {
 	m_sessionlock.AcquireReadLock();
 

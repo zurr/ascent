@@ -291,7 +291,7 @@ public:
 	World();
 	~World();
 
-	WorldSession* FindSession(uint32 id) const;
+	WorldSession* FindSession(uint32 id);
 	WorldSession* FindSessionByName(const char *);
 	void AddSession(WorldSession *s);
 	void RemoveSession(uint32 id);
