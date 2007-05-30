@@ -1122,16 +1122,17 @@ public:
         objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
 
         Menu->AddItem(0, "Auction House", 1);
-        Menu->AddItem(0, "Bank", 2);
-        Menu->AddItem(0, "Gulid Master", 3);
-        Menu->AddItem(0, "The Inn", 4);
-        Menu->AddItem(0, "Mailbox", 5);    
-        Menu->AddItem(0, "Stable Master", 6);
-        Menu->AddItem(0, "Weapon Trainer", 7);
-        Menu->AddItem(0, "Wind Master", 8);
+        Menu->AddItem(0, "The Bank", 2);
+		Menu->AddItem(0, "Bat Handler", 3);
+        Menu->AddItem(0, "Gulid Master", 4);
+        Menu->AddItem(0, "The Inn", 5);
+        Menu->AddItem(0, "Mailbox", 6);    
+        Menu->AddItem(0, "Stable Master", 7);
+        Menu->AddItem(0, "Weapon Master", 8);
         Menu->AddItem(0, "Battlemaster", 9);
         Menu->AddItem(0, "Class Trainer", 10);
         Menu->AddItem(0, "Profession Trainer", 11);
+        Menu->AddItem(0, "Mana Loom", 12);
 
         if(AutoSend)
             Menu->SendTo(Plr);
@@ -1151,242 +1152,245 @@ public:
             /////
 
         case 1:     // Auction House
+			objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
+            Menu->AddItem(0, "To the west."  , 13);
+            Menu->AddItem(0, "To the east."    , 14);
+            Menu->SendTo(Plr);
+            break;
+
+        case 2:     // The Bank
+			objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9322, Plr);
+            Menu->AddItem(0, "The west."  , 15);
+            Menu->AddItem(0, "The east."    , 16);
+            Menu->SendTo(Plr);
+            break;
+
+		case 3:     // Bat Handler
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(9672.73, -7528.61, 6, 6, 0, "Silvermoon Auction House");
+            Plr->Gossip_SendPOI(9378.45, -7163.94, 6, 6, 0, "Silvermoon City, Flight Master");
             break;
 
-        case 2:     // Bank
-            SendQuickMenu(9322);
-            Plr->Gossip_SendPOI(9808.4, -7488.16, 6, 6, 0, "Silvermoon Bank");
-            break;
-
-        case 3:     // Guild Master
+        case 4:     // Guild Master
             SendQuickMenu(9324);
-            Plr->Gossip_SendPOI(9474.97, -7345.21, 6, 6, 0, "Silvermoon Guild Master");
+            Plr->Gossip_SendPOI(9480.75, -7345.587, 6, 6, 0, "Silvermoon City, Guild Master");
             break;
 
-        case 4:     // Inn
-            SendQuickMenu(9325);
-            Plr->Gossip_SendPOI(9683.82, -7365.19, 6, 6, 0, "Silvermoon Inn");
+        case 5:     // The Inn
+			objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9325, Plr);
+            Menu->AddItem(0, "The Silvermoon City Inn."  , 17);
+            Menu->AddItem(0, "The Wayfarer's Rest tavern."    , 18);
+            Menu->SendTo(Plr);
             break;
 
-        case 5:     // Mailbox
+        case 6:     // Mailbox
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(9658.33, -7492.17, 6, 6, 0, "Silvermoon Mailbox");
+            Plr->Gossip_SendPOI(9743.078, -7466.4, 6, 6, 0, "Silvermoon City, Mailbox");
             break;
 
-        case 6:     // Stable Master
+        case 7:     // Stable Master
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(9904.95, -7404.31, 6, 6, 0, "Shalenn");
+            Plr->Gossip_SendPOI(9904.95, -7404.31, 6, 6, 0, "Silvermoon City, Stable Master");
             break;
 
-        case 7:     // Weapon Trainer
+        case 8:     // Weapon Master
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(9841.17, -7505.13, 6, 6, 0, "Ileda");
-            break;
-
-        case 8:     // Wind Master
-            SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(9378.45, -7163.94, 6, 6, 0, "Silvermoon Wind Master");
+            Plr->Gossip_SendPOI(9841.17, -7505.13, 6, 6, 0, "Silvermoon City, Weapon Master");
             break;
 
 	    case 9:     // Battlemasters
-			objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
-            Menu->AddItem(0, "Alterac Valley"  , 12);
-            Menu->AddItem(0, "Arathi Basin"    , 13);
-			Menu->AddItem(0, "Arena"           , 14);
-			Menu->AddItem(0, "Eye of the Storm", 15);
-            Menu->AddItem(0, "Warsong Gulch"   , 16);
-            Menu->SendTo(Plr);
+			SendQuickMenu(9316);
+            Plr->Gossip_SendPOI(9850.74, -7563.84, 6, 6, 0, "Silvermoon City, Battlemasters");
             break;
 
         case 10:    // Class Trainers
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
-                Menu->AddItem( 0, "Druid"       , 17);
-                Menu->AddItem( 0, "Hunter"      , 18);
-                Menu->AddItem( 0, "Mage"        , 19);
-                Menu->AddItem( 0, "Paladin"     , 20);
-                Menu->AddItem( 0, "Priest"      , 21);
-                Menu->AddItem( 0, "Rogue"       , 22);
-                Menu->AddItem( 0, "Warlock"     , 23);
+                Menu->AddItem( 0, "Druid"       , 19);
+                Menu->AddItem( 0, "Hunter"      , 20);
+                Menu->AddItem( 0, "Mage"        , 21);
+                Menu->AddItem( 0, "Paladin"     , 22);
+                Menu->AddItem( 0, "Priest"      , 23);
+                Menu->AddItem( 0, "Rogue"       , 24);
+                Menu->AddItem( 0, "Warlock"     , 25);
                 Menu->SendTo(Plr);
             }break;
 
         case 11:    // Profession Trainers
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9338, Plr);
-                Menu->AddItem( 0, "Alchemy"           , 24);
-                Menu->AddItem( 0, "Blacksmithing"     , 25);
-                Menu->AddItem( 0, "Cooking"           , 26);
-                Menu->AddItem( 0, "Enchanting"        , 27);
-                Menu->AddItem( 0, "Engineering"       , 28);
-                Menu->AddItem( 0, "First Aid"         , 29);
-                Menu->AddItem( 0, "Fishing"           , 30);
-				Menu->AddItem( 0, "Jewelcrafting"     , 31);
-                Menu->AddItem( 0, "Herbalism"         , 32);
-                Menu->AddItem( 0, "Leatherworking"    , 33);
-                Menu->AddItem( 0, "Mining"            , 34);
-                Menu->AddItem( 0, "Skinning"          , 35);
-                Menu->AddItem( 0, "Tailoring"         , 36);
+                Menu->AddItem( 0, "Alchemy"           , 26);
+                Menu->AddItem( 0, "Blacksmithing"     , 27);
+                Menu->AddItem( 0, "Cooking"           , 28);
+                Menu->AddItem( 0, "Enchanting"        , 29);
+                Menu->AddItem( 0, "Engineering"       , 30);
+                Menu->AddItem( 0, "First Aid"         , 31);
+                Menu->AddItem( 0, "Fishing"           , 32);
+				Menu->AddItem( 0, "Herbalism"         , 33);
+				Menu->AddItem( 0, "Jewelcrafting"     , 34);
+                Menu->AddItem( 0, "Leatherworking"    , 35);
+                Menu->AddItem( 0, "Mining"            , 36);
+                Menu->AddItem( 0, "Skinning"          , 37);
+                Menu->AddItem( 0, "Tailoring"         , 38);
                 Menu->SendTo(Plr);
             }break;
 
-            //////////////////
-            // Battlemaster submenu
-            ////////
-
-        case 12://AV
+		case 12: //Mana Loom
             {
-                Plr->Gossip_SendPOI(9850.49, -7572.26, 6, 6, 0, "Gurak");
+                Plr->Gossip_SendPOI(9751.013, -7074.85, 6, 6, 0, "Silvermoon City, Mana Loom");
                 SendQuickMenu(9316);
             }break;
 
-        case 13://AB
+        case 13: //To the west - Auction House no. 1
             {
-                Plr->Gossip_SendPOI(9857.18, -7564.36, 6, 6, 0, "Karen Wentworth");
+                Plr->Gossip_SendPOI(9649.429, -7134.027, 6, 6, 0, "Silvermoon City, Auction House");
                 SendQuickMenu(9316);
             }break;
 
-        case 14://A
+        case 14: //To the east - Auction House no. 2
             {
-                Plr->Gossip_SendPOI(9850.6, -7559.25, 6, 6, 0, "Bipp Glizzitor");
+                Plr->Gossip_SendPOI(9682.864, -7515.786, 6, 6, 0, "Silvermoon City, Auction House");
                 SendQuickMenu(9316);
             }break;
 
-        case 15://EoS
+        case 15:     // The bank - The west.
+            SendQuickMenu(9324);
+            Plr->Gossip_SendPOI(9522.104, -7208.878, 6, 6, 0, "Silvermoon City, Bank");
+            break;
+
+        case 16:     // The bank - The east.
+            SendQuickMenu(9324);
+            Plr->Gossip_SendPOI(9791.07, -7488.041, 6, 6, 0, "Silvermoon City, Bank");
+            break;
+
+        case 17: //The Silvermoon City Inn
             {
-                Plr->Gossip_SendPOI(9857.18, -7564.36, 6, 6, 0, "Karen Wentworth");
+                Plr->Gossip_SendPOI(9677.113, -7367.575, 6, 6, 0, "Silvermoon City, Inn");
                 SendQuickMenu(9316);
             }break;
 
-        case 16://WSG
+        case 18: //The Wayfarer's Rest tavern
             {
-                Plr->Gossip_SendPOI(9845.45, -7562.58, 6, 6, 0, "Krukk");
-                SendQuickMenu(1);
-            }break;
-
-            ////////////////
-            // Class trainer submenu
-            ////////
-
-        case 17: //Druid
-            {
-                Plr->Gossip_SendPOI(9700.55, -7262.57, 6, 6, 0, "Silvermoon Druid Trainer");
+                Plr->Gossip_SendPOI(9562.813, -7218.63, 6, 6, 0, "Silvermoon City, Inn");
                 SendQuickMenu(9316);
             }break;
 
-        case 18: //Hunter
+        case 19: //Druid
             {
-                Plr->Gossip_SendPOI(9927.48, -7426.14, 6, 6, 0, "Silvermoon Hunter Trainer");
+                Plr->Gossip_SendPOI(9700.55, -7262.57, 6, 6, 0, "Silvermoon City, Druid Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 19: //Mage
+        case 20: //Hunter
             {
-                Plr->Gossip_SendPOI(9995.07, -7118.17, 6, 6, 0, "Silvermoon Mage Trainer");
+                Plr->Gossip_SendPOI(9930.568, -7412.115, 6, 6, 0, "Silvermoon City, Hunter Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 20: //Paladin
+        case 21: //Mage
             {
-                Plr->Gossip_SendPOI(9850.22, -7516.93, 6, 6, 0, "Silvermoon Paladin Trainer");
+                Plr->Gossip_SendPOI(9996.914, -7104.803, 6, 6, 0, "Silvermoon City, Mage Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 21: //Priest
+        case 22: //Paladin
             {
-                Plr->Gossip_SendPOI(9926.79, -7066.66, 6, 6, 0, "Silvermoon Priest Trainer");
+                Plr->Gossip_SendPOI(9850.22, -7516.93, 6, 6, 0, "Silvermoon City, Paladin Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 22: //Rogue
+        case 23: //Priest
             {
-                Plr->Gossip_SendPOI(9739.88, -7374.33, 6, 6, 0, "Silvermoon Rogue Trainer");
+                Plr->Gossip_SendPOI(9935.37, -7131.14, 6, 6, 0, "Silvermoon City, Priest Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 23: //Warlock
+        case 24: //Rogue
             {
-                Plr->Gossip_SendPOI(9787.57, -7284.63, 6, 6, 0, "Silvermoon Warlock Trainer");
+                Plr->Gossip_SendPOI(9739.88, -7374.33, 6, 6, 0, "Silvermoon City, Rogue Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 24: //Alchemy
+        case 25: //Warlock
             {
-                Plr->Gossip_SendPOI(9998.09, -7214.36, 6, 6, 0, "Silvermoon Alchemy Trainer");
+                Plr->Gossip_SendPOI(9803.052, -7316.967, 6, 6, 0, "Silvermoon City, Warlock Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 25: //Blacksmithing
+        case 26: //Alchemy
             {
-                Plr->Gossip_SendPOI(9841.43, -7361.53, 6, 6, 0, "Silvermoon Blacksmithing Trainer");
+                Plr->Gossip_SendPOI(10000.9, -7216.63, 6, 6, 0, "Silvermoon City, Alchemy");
+                SendQuickMenu(9316);
+            }break;
+
+        case 27: //Blacksmithing
+            {
+                Plr->Gossip_SendPOI(9841.43, -7361.53, 6, 6, 0, "Silvermoon City, Blacksmithing");
                 SendQuickMenu(9340);
             }break;
 
-        case 26: //Cooking
+        case 28: //Cooking
             {
-                Plr->Gossip_SendPOI(9577.26, -7243.6, 6, 6, 0, "Silvermoon Cooking Trainer");
+                Plr->Gossip_SendPOI(9577.26, -7243.6, 6, 6, 0, "Silvermoon City, Cooking");
                 SendQuickMenu(9316);
             }break;
 
-        case 27: //Enchanting
+        case 29: //Enchanting
             {
-                Plr->Gossip_SendPOI(9962.57, -7246.18, 6, 6, 0, "Silvermoon Enchanting Trainer");
+                Plr->Gossip_SendPOI(9962.57, -7246.18, 6, 6, 0, "Silvermoon City, Enchanting");
                 SendQuickMenu(9341);
             }break;
 
-        case 28: //Engineering
+        case 30: //Engineering
             {
-                Plr->Gossip_SendPOI(9820.18, -7329.56, 6, 6, 0, "Silvermoon Engineering Trainer");
+                Plr->Gossip_SendPOI(9808.85, -7287.31, 6, 6, 0, "Silvermoon City, Engineering");
                 SendQuickMenu(9316);
             }break;
 
-        case 29: //First Aid
+        case 31: //First Aid
             {
-                Plr->Gossip_SendPOI(9579.8, -7343.71, 6, 6, 0, "Silvermoon First Aid Trainer");
+                Plr->Gossip_SendPOI(9588.61, -7337.526, 6, 6, 0, "Silvermoon City, First Aid");
                 SendQuickMenu(9316);
             }break;
 
-        case 30: //Fishing
+        case 32: //Fishing
             {
-                Plr->Gossip_SendPOI(9607.73, -7324.3, 6, 6, 0, "Silvermoon Fishing Trainer");
+                Plr->Gossip_SendPOI(9601.97, -7332.34, 6, 6, 0, "Silvermoon City, Fishing");
                 SendQuickMenu(9316);
             }break;
 
-        case 31: //Jewelcrafting
+        case 33: //Herbalism
             {
-                Plr->Gossip_SendPOI(9553.54, -7506.43, 6, 6, 0, "Silvermoon Jewelcrafting Trainer");
+                Plr->Gossip_SendPOI(9996.96, -7208.39, 6, 6, 0, "Silvermoon City, Herbalism");
+                SendQuickMenu(9316);
+            }break;
+
+        case 34: //Jewelcrafting
+            {
+                Plr->Gossip_SendPOI(9552.8, -7502.12, 6, 6, 0, "Silvermoon City, Jewelcrafting");
                 SendQuickMenu(9346);
             }break;
 
-        case 32: //Herbalism
+        case 35: //Leatherworking
             {
-                Plr->Gossip_SendPOI(10004.4, -7216.86, 6, 6, 0, "Silvermoon Herbalism Trainer");
-                SendQuickMenu(9316);
-            }break;
-
-        case 33: //Leatherworking
-            {
-                Plr->Gossip_SendPOI(9503.72, -7430.16, 6, 6, 0, "Silvermoon Leatherworking Trainer");
+                Plr->Gossip_SendPOI(9502.486, -7425.51, 6, 6, 0, "Silvermoon City, Leatherworking");
                 SendQuickMenu(9347);
             }break;
 
-        case 34: //Mining
+        case 36: //Mining
             {
-                Plr->Gossip_SendPOI(9805.1, -7355.56, 6, 6, 0, "Silvermoon Mining Trainer");
+                Plr->Gossip_SendPOI(9813.73, -7360.19, 6, 6, 0, "Silvermoon City, Mining");
                 SendQuickMenu(9348);
             }break;
 
-        case 35: //Skinning
+        case 37: //Skinning
             {
-                Plr->Gossip_SendPOI(9513.37, -7429.4, 6, 6, 0, "Silvermoon Skinning Trainer");
+                Plr->Gossip_SendPOI(9513.37, -7429.4, 6, 6, 0, "Silvermoon City, Skinning");
                 SendQuickMenu(9316);
             }break;
 
-		case 36: //Tailoring
+		case 38: //Tailoring
             {
-                Plr->Gossip_SendPOI(9750.55, -7095.28, 6, 6, 0, "Silvermoon Tailor");
+                Plr->Gossip_SendPOI(9727.56, -7086.65, 6, 6, 0, "Silvermoon City, Tailoring");
                 SendQuickMenu(9350);
             }break;
         }
@@ -3145,6 +3149,413 @@ public:
     }
 };
 
+class SCRIPT_DECL FalconwingGuard : public GossipScript
+{
+public:
+    ADD_GOSSIP_FACTORY_FUNCTION(FalconwingGuard);
+    void GossipHello(Creature * pCreature, Player * Plr, bool AutoSend)
+    {
+        GossipMenu *Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 2593, Plr);
+        Menu->AddItem(0, "Bat Handler", 1);
+        Menu->AddItem(0, "Guild Master", 2);
+        Menu->AddItem(0, "The Inn", 3);
+        Menu->AddItem(0, "Stable Master", 4);
+        Menu->AddItem(0, "Class Trainer", 5);
+        Menu->AddItem(0, "Profession Trainer", 6);
+        if(AutoSend)
+            Menu->SendTo(Plr);
+    }
+
+    void GossipSelectOption(Creature* pCreature, Player* Plr, uint32 Id, uint32 IntId)
+    {
+        GossipMenu * Menu;
+        switch(IntId)
+        {
+        case 0:     // Return to start
+            GossipHello(pCreature, Plr, true);
+            break;
+
+            //////////////////////
+            // Main menu handlers
+            /////
+
+        case 1:     //Bat Handler
+            SendQuickMenu(2593);
+			Plr->Gossip_SendPOI(-5582.66, -525.89, 6, 6, 0, "Silvermoon City, Flight Master");
+            break;
+
+        case 2:     //Guild Master
+            SendQuickMenu(2593);
+			break;
+			
+        case 3:     //The Inn
+            SendQuickMenu(2593);
+            Plr->Gossip_SendPOI(-5582.66, -525.89, 6, 6, 0, "Falconwing Square, Innkeeper");
+			break;
+
+        case 4:     //Stable Master
+            SendQuickMenu(2593);
+            Plr->Gossip_SendPOI(-5604, -509.58, 6, 6, 0, "Falconwing Square, Stable Master");
+            break;
+
+        case 5:     //Class Trainer
+			{
+                objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 4292, Plr);
+                Menu->AddItem( 0, "Druid"        , 7);
+				Menu->AddItem( 0, "Hunter"       , 8);
+				Menu->AddItem( 0, "Mage"         , 9);
+				Menu->AddItem( 0, "Paladin"     , 10);
+                Menu->AddItem( 0, "Priest"      , 11);
+				Menu->AddItem( 0, "Rogue"       , 12);
+                Menu->AddItem( 0, "Warlock"     , 13);
+                Menu->SendTo(Plr);
+			}break;
+
+        case 6:     // Profession Trainer
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 2593, Plr);
+                Menu->AddItem( 0, "Alchemy"           , 14);
+                Menu->AddItem( 0, "Blacksmithing"     , 15);
+                Menu->AddItem( 0, "Cooking"           , 16);
+                Menu->AddItem( 0, "Enchanting"        , 17);
+                Menu->AddItem( 0, "Engineering"       , 18);
+                Menu->AddItem( 0, "First Aid"         , 19);
+                Menu->AddItem( 0, "Fishing"           , 20);
+                Menu->AddItem( 0, "Herbalism"         , 21);
+                Menu->AddItem( 0, "Leatherworking"    , 22);
+                Menu->AddItem( 0, "Mining"            , 23);
+                Menu->AddItem( 0, "Skinning"          , 24);
+                Menu->AddItem( 0, "Tailoring"         , 25);
+                Menu->SendTo(Plr);
+            }break;
+
+
+            ////////////////
+            // Class trainer submenu
+            ////////
+
+        case 7: //Druid
+            {
+                Plr->Gossip_SendPOI(-5618.29, -454.25, 6, 6, 0, "Grif Wildheart");
+                SendQuickMenu(2593);
+            }break;
+
+        case 8: //Hunter
+            {
+                Plr->Gossip_SendPOI(-5585.6, -539.99, 6, 6, 0, "Falconwing Square, Hunter Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 9: //Mage
+            {
+                Plr->Gossip_SendPOI(-5585.6, -539.99, 6, 6, 0, "Azar Stronghammer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 10: //Paladin
+			{
+                Plr->Gossip_SendPOI(-5591.74, -525.61, 6, 6, 0, "Maxan Anvol");
+                SendQuickMenu(2593);
+            }break;
+
+        case 11: //Priest
+            {
+                Plr->Gossip_SendPOI(-5602.75, -542.4, 6, 6, 0, "Falconwing Square, Priest Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 12: //Rogue
+            {
+                Plr->Gossip_SendPOI(-5641.97, -523.76, 6, 6, 0, "Falconwing Square, Rogue Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 13: //Warlock
+            {
+                Plr->Gossip_SendPOI(-5604.79, -529.38, 6, 6, 0, "Falconwing Square, Warlock Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 14: //Alchemy
+            {
+                SendQuickMenu(2593);
+            }break;
+
+        case 15: //Blacksmithing
+            {
+				Plr->Gossip_SendPOI(-5584.72, -428.41, 6, 6, 0, "Tognus Flintfire");
+                SendQuickMenu(2593);
+            }break;
+
+        case 16: //Cooking
+            {
+				Plr->Gossip_SendPOI(-5596.85, -541.43, 6, 6, 0, "Gremlock Pilsnor");
+                SendQuickMenu(2593);
+            }break;
+
+        case 17: //Enchanting
+            {
+				SendQuickMenu(2593);
+            }break;
+			
+        case 18: //Engineering
+            {
+                SendQuickMenu(2593);
+            }break;
+
+        case 19: //First Aid
+            {
+                Plr->Gossip_SendPOI(-5603.67, -523.57, 6, 6, 0, "Thamner Pol");
+                SendQuickMenu(2593);
+            }break;
+
+        case 20: //Fishing
+            {
+                Plr->Gossip_SendPOI(-5202.39, -51.36, 6, 6, 0, "Paxton Ganter");
+                SendQuickMenu(2593);
+            }break;
+
+        case 21: //Herbalism
+            {
+                SendQuickMenu(2593);
+            }break;
+
+        case 22: //Leatherworking
+            {
+                SendQuickMenu(2593);
+            }break;
+
+        case 23: //Mining
+            {
+				Plr->Gossip_SendPOI(-5531, -666.53, 6, 6, 0, "Yarr Hamerstone");
+                SendQuickMenu(2593);
+            }break;
+
+        case 24: //Skinning
+            {
+                SendQuickMenu(2593);
+            }break;
+
+		case 25: //Tailoring
+            {
+                SendQuickMenu(2593);
+            }break;
+        }
+    }
+};
+
+class SCRIPT_DECL AzureWatchGuard : public GossipScript
+{
+public:
+    ADD_GOSSIP_FACTORY_FUNCTION(AzureWatchGuard);
+    void GossipHello(Creature * pCreature, Player * Plr, bool AutoSend)
+    {
+        GossipMenu *Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 2593, Plr);
+        Menu->AddItem(0, "Bank", 1);
+        Menu->AddItem(0, "Hippogryph Master", 2);
+        Menu->AddItem(0, "Guild Master", 3);
+        Menu->AddItem(0, "Inn", 4);
+        Menu->AddItem(0, "Stable", 5);
+        Menu->AddItem(0, "Class Trainer", 6);
+		Menu->AddItem(0, "Profession Trainer", 7);
+        if(AutoSend)
+            Menu->SendTo(Plr);
+    }
+
+    void GossipSelectOption(Creature* pCreature, Player* Plr, uint32 Id, uint32 IntId)
+    {
+        GossipMenu * Menu;
+        switch(IntId)
+        {
+        case 0:     // Return to start
+            GossipHello(pCreature, Plr, true);
+            break;
+
+            //////////////////////
+            // Main menu handlers
+            /////
+
+        case 1:     //Bank
+            SendQuickMenu(2593);
+            break;
+
+        case 2:     //Hippogryph Master
+            SendQuickMenu(2593);
+			break;
+			
+        case 3:     //Guild Master
+            SendQuickMenu(2593);
+			break;
+
+        case 4:     //Inn
+            SendQuickMenu(2593);
+            Plr->Gossip_SendPOI(-4127.81, -12467.7, 6, 6, 0, "Azure Watch, Innkeeper");
+            break;
+
+        case 5:     //Stable Master
+            SendQuickMenu(2593);
+            Plr->Gossip_SendPOI(-4146.42, -12492.7, 6, 6, 0, "Azure Watch, Stable Master");
+            break;
+
+        case 6:     //Class Trainer
+			{
+                objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 4292, Plr);
+                Menu->AddItem( 0, "Druid"        , 8);
+				Menu->AddItem( 0, "Hunter"       , 9);
+				Menu->AddItem( 0, "Mage"        , 10);
+				Menu->AddItem( 0, "Paladin"     , 11);
+                Menu->AddItem( 0, "Priest"      , 12);
+				Menu->AddItem( 0, "Shaman"      , 13);
+                Menu->AddItem( 0, "Warrior"     , 14);
+                Menu->SendTo(Plr);
+			}break;
+
+        case 7:     //Profession Trainer
+            {
+                objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 2593, Plr);
+                Menu->AddItem( 0, "Alchemy"           , 15);
+                Menu->AddItem( 0, "Blacksmithing"     , 16);
+                Menu->AddItem( 0, "Cooking"           , 17);
+                Menu->AddItem( 0, "Enchanting"        , 18);
+                Menu->AddItem( 0, "Engineering"       , 19);
+                Menu->AddItem( 0, "First Aid"         , 20);
+                Menu->AddItem( 0, "Fishing"           , 21);
+                Menu->AddItem( 0, "Herbalism"         , 22);
+				Menu->AddItem( 0, "Jewelcrafting"     , 23);
+                Menu->AddItem( 0, "Leatherworking"    , 24);
+                Menu->AddItem( 0, "Mining"            , 25);
+                Menu->AddItem( 0, "Skinning"          , 26);
+                Menu->AddItem( 0, "Tailoring"         , 27);
+                Menu->SendTo(Plr);
+            }break;
+
+
+            ////////////////
+            // Class trainer submenu
+            ////////
+
+        case 8: //Druid
+            {
+                SendQuickMenu(2593);
+            }break;
+
+        case 9: //Hunter
+            {
+                Plr->Gossip_SendPOI(-4203.65, -12467.7, 6, 6, 0, "Azure Watch, Hunter Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 10: //Mage
+            {
+                Plr->Gossip_SendPOI(-4149.62, -12530.1, 6, 6, 0, "Azure Watch, Mage Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 11: //Paladin
+			{
+                Plr->Gossip_SendPOI(-4138.98, -12468.5, 6, 6, 0, "Azure Watch, Paladin Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 12: //Priest
+            {
+                Plr->Gossip_SendPOI(-4131.66, -12478.6, 6, 6, 0, "Azure Watch, Priest Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 13: //Shaman
+            {
+                Plr->Gossip_SendPOI(-4162.33, -12456.1, 6, 6, 0, "Azure Watch, Shaman Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 14: //Warrior
+            {
+                Plr->Gossip_SendPOI(-4165.05, -12536.4, 6, 6, 0, "Azure Watch, Warrior Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 15: //Alchemy
+            {
+                Plr->Gossip_SendPOI(-4191.15, -12470, 6, 6, 0, "Azure Watch, Alchemist");
+                SendQuickMenu(2593);
+            }break;
+
+        case 16: //Blacksmithing
+            {
+				Plr->Gossip_SendPOI(-4726.29, -12387.0, 6, 6, 0, "Odesyus' Landing, Blacksmith");
+                SendQuickMenu(2593);
+            }break;
+
+        case 17: //Cooking
+            {
+				Plr->Gossip_SendPOI(-4708.59, -12400.3, 6, 6, 0, "Odesyus' Landing, Cook");
+                SendQuickMenu(2593);
+            }break;
+
+        case 18: //Enchanting
+            {
+				SendQuickMenu(2593);
+            }break;
+			
+        case 19: //Engineering
+            {
+                Plr->Gossip_SendPOI(-4157.57, -12470.2, 6, 6, 0, "Azure Watch, Engineering Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 20: //First Aid
+            {
+                Plr->Gossip_SendPOI(-4199.1, -12469.9, 6, 6, 0, "Azure Watch, First Aid Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 21: //Fishing
+            {
+                Plr->Gossip_SendPOI(-4266.34, -12985.4, 6, 6, 0, "Ammen Ford, Fisherwoman");
+                SendQuickMenu(2593);
+            }break;
+
+        case 22: //Herbalism
+            {
+                Plr->Gossip_SendPOI(-4189.43, -12459.4, 6, 6, 0, "Azure Watch, Herbalist");
+                SendQuickMenu(2593);
+            }break;
+
+        case 23: //Jewelcrafting
+            {
+                SendQuickMenu(2593);
+            }break;
+
+        case 24: //Leatherworking
+            {
+                Plr->Gossip_SendPOI(-3442.68, -12322.2, 6, 6, 0, "Stillpine Hold, Leatherworker");
+                SendQuickMenu(2593);
+            }break;
+
+        case 25: //Mining
+            {
+				Plr->Gossip_SendPOI(-4179.89, -12493.1, 6, 6, 0, "Azure Watch, Mining Trainer");
+                SendQuickMenu(2593);
+            }break;
+
+        case 26: //Skinning
+            {
+				Plr->Gossip_SendPOI(-3431.17, -12316.5, 6, 6, 0, "Stillpine Hold, Skinner");
+                SendQuickMenu(2593);
+            }break;
+
+		case 27: //Tailoring
+            {
+				Plr->Gossip_SendPOI(-4711.54, -12386.7, 6, 6, 0, "Odesyus' Landing, Tailor");
+                SendQuickMenu(2593);
+            }break;
+        }
+    }
+};
+
 void SetupGuardGossip(ScriptMgr * mgr)
 {
     /* Guard List */
@@ -3155,10 +3566,8 @@ void SetupGuardGossip(ScriptMgr * mgr)
     mgr->register_gossip_script(5624,  &UndercityGuard::Create);		// Undercity Guardian
     mgr->register_gossip_script(3571,  &DolanaarGuard::Create);			// Teldrassil Sentinel
 	mgr->register_gossip_script(16222, &SilvermoonGuard::Create);	    // Silvermoon City Guardian
-	//mgr->register_gossip_script(18103, &SilvermoonGuard::Create);	    // Arcane Guardian
-	//mgr->register_gossip_script(20672, &SilvermoonGuard::Create);	    // Royal Guard
 	mgr->register_gossip_script(16733, &ExodarGuard::Create);	        // Exodar Peacekeeper
-	//mgr->register_gossip_script(20674, &ExodarGuard::Create);	        // Shield of Velen
+	mgr->register_gossip_script(20674, &ExodarGuard::Create);	        // Shield of Velen
 	mgr->register_gossip_script(3296, &OrgrimmarGuard::Create);	        // Orgrimmar Grunt
 	mgr->register_gossip_script(3084, &ThunderbluffGuard::Create);	    // Bluffwatcher
 	mgr->register_gossip_script(3222, &BloodhoofGuard::Create);			// Brave Wildrunner
@@ -3183,6 +3592,8 @@ void SetupGuardGossip(ScriptMgr * mgr)
 	mgr->register_gossip_script(1742, &BrillGuard::Create);				// Deathguard Bartholomew
 	mgr->register_gossip_script(5595, &IronforgeGuard::Create);			// Ironforge Guard
 	mgr->register_gossip_script(727,  &KharanosGuard::Create);			// Ironforge Mountaineer
+	mgr->register_gossip_script(16221,&FalconwingGuard::Create);		// Silvermoon Guardian
+	mgr->register_gossip_script(18038,&AzureWatchGuard::Create);		// Azuremyst Peacekeeper
 }	
 
 	// To Bloodhoof Guards - I don't know if those are all guards with dialog menu,
@@ -3192,12 +3603,13 @@ void SetupGuardGossip(ScriptMgr * mgr)
 	// then delete comment.
 
 	// To do:
-	//	- Rewrite Exodar and Silvermoon Scripts to delete part about Battlemasters,
+	//	- Rewrite Exodar Script to delete part about Battlemasters,
 	//	  because there must be only one options for all masters.
-	//	- Make whole menu (with options) blizzlike for Exodar and Silvermoon (need
+	//	- Make whole menu (with options) blizzlike for Exodar (need
 	//	  infos about it with screenshots of menus (normal, class & profession) as
 	//	  screens/infos about map arrow directory and it's name.
-	//	- Added (if needed) Scripts for "mini cities" (like Brill) for Dranaei's & Blood
+	//	- Adding Scripts for "mini city" (like Brill) for Blood
 	//	  Elf's starting locations.
 	//	- Add (eventually) missing guards which should use one of those guard menus.
+
 
