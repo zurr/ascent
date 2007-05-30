@@ -3487,7 +3487,36 @@ void Aura::SpellAuraModCastingSpeed(bool apply)
 void Aura::SpellAuraFeighDeath(bool apply)
 {
 	//Not sure
-	apply ? m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_DEAD) : m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_DEAD);
+	//apply ? m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_DEAD) : m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_DEAD);
+            
+        if(m_target->IsPlayer()) 
+        {
+                if (apply)
+                {
+                        m_target->setDeathState(JUST_DIED);    
+                        static_cast<Player*>(m_target)->EventDeath();
+                        
+                        m_target->SetFlag(UNIT_FIELD_FLAGS, 0x08);
+                        m_target->SetFlag(UNIT_FIELD_FLAGS_2, 0x00000001);
+                        m_target->SetFlag(UNIT_DYNAMIC_FLAGS, 0x00);
+                        
+                        m_target->clearAttackers(true);
+                        m_target->addStateFlag(UF_TARGET_DIED);
+                }
+                else
+                {
+                        m_target->setDeathState(ALIVE);
+                    
+                        m_target->RemoveFlag(UNIT_FIELD_FLAGS, 0x08);
+                        m_target->RemoveFlag(UNIT_FIELD_FLAGS_2, 0x00000001);
+                        m_target->clearStateFlag(UF_TARGET_DIED);
+                    
+                        WorldPacket data;
+                        data.SetOpcode(SMSG_COOLDOWN_EVENT);
+                        data << (uint32)GetSpellProto()->Id << m_target->GetGUID();
+                        static_cast<Player*>(m_target)->GetSession()->SendPacket(&data);
+                }
+        }
 }
 
 void Aura::SpellAuraModDisarm(bool apply)
