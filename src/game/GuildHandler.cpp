@@ -965,8 +965,12 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
         i->SetUInt32Value(ITEM_FIELD_FLAGS, 1);
         i->SetUInt32Value(ITEM_FIELD_ENCHANTMENT, c->GetID());
         i->SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
-        assert(_player->GetItemInterface()->AddItemToFreeSlot(i));
+        _player->GetItemInterface()->AddItemToFreeSlot(i);
         c->SaveToDB();
+
+		data.clear();
+		BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, 1, ITEM_ENTRY_GUILD_CHARTER, 0);
+		SendPacket(&data);
 
         _player->m_charter = c;
         _player->SaveToDB(false);
