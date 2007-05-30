@@ -5848,11 +5848,29 @@ void Player::ClearCooldownsOnLine(uint32 skill_line, uint32 called_from)
 	}
 }
 
-void Player::EventFieldUpdateExpire()
+void Player::EventFieldUpdateExpire(uint32 spellID, uint32 amount)
 {
 	//gift of life only for now
 	//SpellId = 23725
-	//ModPFloatValue(UNIT_FIELD_MAXHEALTH,0.15,false);	
+	//ModPFloatValue(UNIT_FIELD_MAXHEALTH,0.15,false);
+	switch(spellID)
+	{
+		case 23725:
+		case 12975:
+		{
+			uint32 newMaxHealth = GetUInt32Value(UNIT_FIELD_MAXHEALTH) - amount;
+			uint32 newHealth = GetUInt32Value(UNIT_FIELD_HEALTH) - amount;
+			
+			if (GetUInt32Value(UNIT_FIELD_HEALTH) < amount)
+				newHealth = 1;
+			
+			if (!isAlive())
+				newHealth = 0;
+
+			SetUInt32Value(UNIT_FIELD_MAXHEALTH, newMaxHealth);
+			SetUInt32Value(UNIT_FIELD_HEALTH, newHealth);
+		}break;
+	}
 }
 
 void Player::PushUpdateData(ByteBuffer *data, uint32 updatecount)

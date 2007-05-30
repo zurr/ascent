@@ -725,12 +725,24 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			if(!playerTarget)
 				break;
 
-			uint32 amount = (playerTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH))*0.15;
-			Heal((int32)amount);
+			uint32 amount = 1500;
 
-			playerTarget->ModPUInt32Value(UNIT_FIELD_MAXHEALTH,0.15,true);
+			playerTarget->ModUInt32Value(UNIT_FIELD_MAXHEALTH,amount);
+			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
 
-			sEventMgr.AddEvent(playerTarget, &Player::EventFieldUpdateExpire, EVENT_FIELD_UPDATE_EXPIRE, 20000, 1);
+			sEventMgr.AddEvent(playerTarget, &Player::EventFieldUpdateExpire, spellId, amount, EVENT_FIELD_UPDATE_EXPIRE, 20000, 1);
+		}break;
+	case 12975:// Last Stand
+		{
+			if(!playerTarget)
+				break;
+
+			uint32 amount = (playerTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) * 0.3;
+
+			playerTarget->ModUInt32Value(UNIT_FIELD_MAXHEALTH,amount);
+			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
+
+			sEventMgr.AddEvent(playerTarget, &Player::EventFieldUpdateExpire, spellId, amount, EVENT_FIELD_UPDATE_EXPIRE, 20000, 1);
 		}break;
 	case 24325:// Pagle's Point Cast - Create Mudskunk Lure
 		{
