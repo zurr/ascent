@@ -750,7 +750,9 @@ public:
 	float BaseOffhandDamage[2];
 	float BaseRangedDamage[2];
 	uint64 VampEmbCaster;
+        uint64 VampTchCaster;
 	void VampiricEmbrace(uint32 dmg,Unit* tgt);
+        void VampiricTouch(uint32 dmg,Unit* tgt);
 	SchoolAbsorb Absorbs[7];
 	uint32 AbsorbDamage(uint32 School,uint32 * dmg);//returns amt of absorbed dmg, decreases dmg by absorbed value
 	int32 RAPvModifier;

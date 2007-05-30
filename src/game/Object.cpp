@@ -1853,13 +1853,20 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	if (pVictim->GetCurrentSpell())
 		pVictim->GetCurrentSpell()->AddTime(school);
 
-	//VampiricEmbrace
+	
 	if(school == SHADOW_DAMAGE)
 	{
+                //VampiricEmbrace
 		if(this->GetGUID() == pVictim->VampEmbCaster && IsUnit())
 		{
 			if(static_cast<Unit*>(this)->isAlive())
 				static_cast<Unit*>(this)->VampiricEmbrace(res, pVictim);
+		}
+                //VampiricTouch
+		if(this->GetGUID() == pVictim->VampTchCaster && IsUnit())
+		{
+			if(static_cast<Unit*>(this)->isAlive())
+				static_cast<Unit*>(this)->VampiricTouch(res, pVictim);
 		}
 	}
 }

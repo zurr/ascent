@@ -1069,8 +1069,16 @@ void Aura::EventPeriodicDamage(uint32 amount)
 				{
 					if(c)
 						c->VampiricEmbrace(res, m_target);
-					}
+                                }
 			}
+                        if(m_casterGuid == m_target->VampTchCaster)
+                        {
+                                if(GetUnitCaster() && GetUnitCaster()->isAlive())
+                                {
+                                        if(c)
+                                            c->VampiricTouch(res, m_target);
+                                }
+                        }
 		}
 	}
 	// grep: this is hack.. some auras seem to delete this shit.
@@ -1237,6 +1245,20 @@ void Aura::SpellAuraDummy(bool apply)
 				m_target->VampEmbCaster = 0;
 			}
 		}break;
+        case 34914://Vampiric Touch
+        case 34918:
+        case 34917:
+                {
+                        if(apply)
+                        {
+                                SetNegative();
+                                m_target->VampTchCaster = this->GetUnitCaster()->GetGUID();
+                        }
+                        else
+                        {
+                                m_target->VampTchCaster = 0;
+                        }
+                }break;
 	case 18182:
 	case 18183:
 		{//improved life tap give amt% bonus for convers

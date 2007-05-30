@@ -45,7 +45,8 @@ Unit::Unit()
 	PctPowerRegenModifier = 1;
 	m_speedModifier = 0;
 	m_mountedspeedModifier=0;
-	VampEmbCaster=0;	
+	VampEmbCaster=0;
+        VampTchCaster=0;
 	for(uint32 x=0;x<26;x++)
 		MechanicsDispels[x]=0;
 
@@ -2149,6 +2150,54 @@ void Unit::VampiricEmbrace(uint32 dmg,Unit* tgt)
 		}
 	}
 
+}
+
+// based of vampiric embrace code
+void Unit::VampiricTouch(uint32 dmg,Unit* tgt)
+{
+        if(!IsPlayer() || this->getClass() == WARRIOR || this->getClass() == ROGUE)
+                return;//just in case
+        
+        int32 perc = 5;
+        SM_FIValue(SM_FDummy,&perc,4); // need fixing if required
+        uint32 man = (dmg*perc) / 100;
+        
+        uint32 cm=this->GetUInt32Value(UNIT_FIELD_POWER1);
+        uint32 mm=this->GetUInt32Value(UNIT_FIELD_MAXPOWER1);
+        
+        if(mm!=cm)
+        {
+                cm += man;
+                if(cm > mm)
+                        this->SetUInt32Value(UNIT_FIELD_POWER1, mm);
+                else 
+                        this->SetUInt32Value(UNIT_FIELD_POWER1, cm);
+        }
+    
+        if(SubGroup* pGroup = static_cast<Player*>(this)->GetSubGroup())
+        {
+                GroupMembersSet::iterator itr;
+                for(itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)
+                {
+                        if((*itr) == this)
+                                continue;
+                        Player *p = (*itr);
+                        if(!p->isAlive() || this->getClass()==WARRIOR || this->getClass() == ROGUE)
+                                continue;
+                        
+                        uint32 cm=p->GetUInt32Value(UNIT_FIELD_POWER1);
+                        uint32 mm=p->GetUInt32Value(UNIT_FIELD_MAXPOWER1);
+            
+                        if(mm!=cm)
+                        {
+                                cm += man;
+                                if(cm > mm)
+                                        this->SetUInt32Value(UNIT_FIELD_POWER1, mm);
+                                else 
+                                        this->SetUInt32Value(UNIT_FIELD_POWER1, cm);
+                        }
+                }
+        }
 }
 
 // grep: Remove any AA spells that aren't owned by this player.
