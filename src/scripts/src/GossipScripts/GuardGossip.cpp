@@ -3182,7 +3182,7 @@ public:
 
         case 1:     //Bat Handler
             SendQuickMenu(2593);
-			Plr->Gossip_SendPOI(-5582.66, -525.89, 6, 6, 0, "Silvermoon City, Flight Master");
+			Plr->Gossip_SendPOI(9376.4, -7164.92, 6, 6, 0, "Silvermoon City, Flight Master");
             break;
 
         case 2:     //Guild Master
@@ -3191,12 +3191,12 @@ public:
 			
         case 3:     //The Inn
             SendQuickMenu(2593);
-            Plr->Gossip_SendPOI(-5582.66, -525.89, 6, 6, 0, "Falconwing Square, Innkeeper");
+            Plr->Gossip_SendPOI(9476.916, -6859.2, 6, 6, 0, "Falconwing Square, Innkeeper");
 			break;
 
         case 4:     //Stable Master
             SendQuickMenu(2593);
-            Plr->Gossip_SendPOI(-5604, -509.58, 6, 6, 0, "Falconwing Square, Stable Master");
+            Plr->Gossip_SendPOI(9487.6, -6830.59, 6, 6, 0, "Falconwing Square, Stable Master");
             break;
 
         case 5:     //Class Trainer
@@ -3223,10 +3223,11 @@ public:
                 Menu->AddItem( 0, "First Aid"         , 19);
                 Menu->AddItem( 0, "Fishing"           , 20);
                 Menu->AddItem( 0, "Herbalism"         , 21);
-                Menu->AddItem( 0, "Leatherworking"    , 22);
-                Menu->AddItem( 0, "Mining"            , 23);
-                Menu->AddItem( 0, "Skinning"          , 24);
-                Menu->AddItem( 0, "Tailoring"         , 25);
+				Menu->AddItem( 0, "Jewelcrafting"     , 22);
+                Menu->AddItem( 0, "Leatherworking"    , 23);
+                Menu->AddItem( 0, "Mining"            , 24);
+                Menu->AddItem( 0, "Skinning"          , 25);
+                Menu->AddItem( 0, "Tailoring"         , 26);
                 Menu->SendTo(Plr);
             }break;
 
@@ -3235,67 +3236,68 @@ public:
             // Class trainer submenu
             ////////
 
-        case 7: //Druid
+        case 7: //Druid <-- Need additional checks
             {
-                Plr->Gossip_SendPOI(-5618.29, -454.25, 6, 6, 0, "Grif Wildheart");
                 SendQuickMenu(2593);
             }break;
 
         case 8: //Hunter
             {
-                Plr->Gossip_SendPOI(-5585.6, -539.99, 6, 6, 0, "Falconwing Square, Hunter Trainer");
+                Plr->Gossip_SendPOI(9529.2, -6864.58, 6, 6, 0, "Falconwing Square, Hunter Trainer");
                 SendQuickMenu(2593);
             }break;
 
-        case 9: //Mage
+        case 9: //Mage <-- Need additional checks
             {
-                Plr->Gossip_SendPOI(-5585.6, -539.99, 6, 6, 0, "Azar Stronghammer");
+                Plr->Gossip_SendPOI(9462.24, -6853.45, 6, 6, 0, "Falconwing Square, Mage Trainer");
                 SendQuickMenu(2593);
             }break;
 
-        case 10: //Paladin
+        case 10: //Paladin <-- Need additional checks
 			{
-                Plr->Gossip_SendPOI(-5591.74, -525.61, 6, 6, 0, "Maxan Anvol");
+                Plr->Gossip_SendPOI(9516.05, -6870.96, 6, 6, 0, "Falconwing Square, Paladin Trainer");
                 SendQuickMenu(2593);
             }break;
 
         case 11: //Priest
             {
-                Plr->Gossip_SendPOI(-5602.75, -542.4, 6, 6, 0, "Falconwing Square, Priest Trainer");
+                Plr->Gossip_SendPOI(9466.62, -6844.23, 6, 6, 0, "Falconwing Square, Priest Trainer");
                 SendQuickMenu(2593);
             }break;
 
         case 12: //Rogue
             {
-                Plr->Gossip_SendPOI(-5641.97, -523.76, 6, 6, 0, "Falconwing Square, Rogue Trainer");
+                Plr->Gossip_SendPOI(9534.15, -6876.0, 6, 6, 0, "Falconwing Square, Rogue Trainer");
                 SendQuickMenu(2593);
             }break;
 
         case 13: //Warlock
             {
-                Plr->Gossip_SendPOI(-5604.79, -529.38, 6, 6, 0, "Falconwing Square, Warlock Trainer");
+                Plr->Gossip_SendPOI(9467.63, -6862.82, 6, 6, 0, "Falconwing Square, Warlock Trainer");
                 SendQuickMenu(2593);
             }break;
 
         case 14: //Alchemy
             {
+				Plr->Gossip_SendPOI(8661.36, -6367.0, 6, 6, 0, "Saltheril's Haven, Alchemist");
                 SendQuickMenu(2593);
             }break;
 
         case 15: //Blacksmithing
             {
-				Plr->Gossip_SendPOI(-5584.72, -428.41, 6, 6, 0, "Tognus Flintfire");
+				Plr->Gossip_SendPOI(8986.43, -7419.07, 6, 6, 0, "Farstrider Retreat, Blacksmith");
                 SendQuickMenu(2593);
             }break;
 
         case 16: //Cooking
             {
-				Plr->Gossip_SendPOI(-5596.85, -541.43, 6, 6, 0, "Gremlock Pilsnor");
+				Plr->Gossip_SendPOI(9494.86, -6879.45, 6, 6, 0, "Falconwing Square, Cook");
                 SendQuickMenu(2593);
             }break;
 
         case 17: //Enchanting
             {
+				Plr->Gossip_SendPOI(8657.6, -6366.7, 6, 6, 0, "Saltheril's Haven, Enchanter");
 				SendQuickMenu(2593);
             }break;
 			
@@ -3306,39 +3308,47 @@ public:
 
         case 19: //First Aid
             {
-                Plr->Gossip_SendPOI(-5603.67, -523.57, 6, 6, 0, "Thamner Pol");
+                Plr->Gossip_SendPOI(9479.53, -6880.07, 6, 6, 0, "Falconwing Square, First Aid");
                 SendQuickMenu(2593);
             }break;
 
         case 20: //Fishing
             {
-                Plr->Gossip_SendPOI(-5202.39, -51.36, 6, 6, 0, "Paxton Ganter");
                 SendQuickMenu(2593);
             }break;
 
         case 21: //Herbalism
             {
+				Plr->Gossip_SendPOI(8678.92, -6329.09, 6, 6, 0, "Saltheril's Haven, Herbalist");
                 SendQuickMenu(2593);
             }break;
 
-        case 22: //Leatherworking
+        case 22: //Jewelcrafting
+            {
+				Plr->Gossip_SendPOI(9484.79, -6876.58, 6, 6, 0, "Falconwing Square, Jewelcrafter");
+                SendQuickMenu(2593);
+            }break;
+
+        case 23: //Leatherworking
+            {
+				Plr->Gossip_SendPOI(9363.75, -7130.75, 6, 6, 0, "Eversong Woods, Leatherworker");
+                SendQuickMenu(2593);
+            }break;
+
+        case 24: //Mining
             {
                 SendQuickMenu(2593);
             }break;
 
-        case 23: //Mining
+        case 25: //Skinning
             {
-				Plr->Gossip_SendPOI(-5531, -666.53, 6, 6, 0, "Yarr Hamerstone");
+				Plr->Gossip_SendPOI(9362.89, -7134.58, 6, 6, 0, "Eversong Woods, Skinner");
                 SendQuickMenu(2593);
             }break;
 
-        case 24: //Skinning
+		case 26: //Tailoring
             {
-                SendQuickMenu(2593);
-            }break;
-
-		case 25: //Tailoring
-            {
+				Plr->Gossip_SendPOI(8680.36, -6327.51, 6, 6, 0, "Saltheril's Haven, Tailor");
                 SendQuickMenu(2593);
             }break;
         }
