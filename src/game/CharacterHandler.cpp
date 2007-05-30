@@ -33,6 +33,22 @@
 
 #define SERVER_NAME "Antrix"
 
+bool VerifyName(const char * name, size_t nlen)
+{
+	static char * bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+	char * p;
+	for(size_t i = 0; i < nlen; ++i)
+	{
+        p = bannedCharacters;
+		while(*p != 0 && name[i] != *p && name[i] != 0)
+			++p;
+
+		if(*p != 0)
+			return false;
+	}
+	return true;
+}
+
 void CapitalizeString(string& arg)
 {
 	if(arg.length() == 0) return;
@@ -110,23 +126,8 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	recv_data >> name;
 	recv_data.rpos(0);
 
-	const char * szName=name.c_str();
-	for(uint32 x=0;x<strlen(szName);x++)
+	if(!VerifyName(name.c_str(), name.length()))
 	{
-		if(((int)szName[x]<65&&(int)szName[x]!=39) ||
-			((int)szName[x]>90&&(int)szName[x]<97) ||
-			(int)szName[x]>122)
-		{
-			OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
-			return;
-		}
-	}
-	//Zehamster: use of double quotes allows us to put apostrophies in the query without problems :)
-	QueryResult *result = sDatabase.Query("SELECT guid FROM characters WHERE name = \"%s\"", szName);
-	if (result)
-	{
-		delete result;
-		//CHAR_CREATE_IN_USE
 		OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
 		return;
 	}
