@@ -8,8 +8,10 @@
 createFileSingleton(CConsole);
 CConsole::~CConsole()
 {
-	*running_link = false;
-	delete _thread;
+	if(running_link)
+		*running_link = false;
+	if(_thread)
+		delete _thread;
 }
 
 void CConsoleThread::run()
@@ -99,7 +101,7 @@ void CConsole::ProcessCmd(char *cmd)
 	for (int i = 0; i < sizeof(cmds)/sizeof(SCmd); i++)
 		if (strncmp(cmd2, cmds[i].name, strlen(cmds[i].name)) == 0)
 		{
-			(this->*(cmds[i].tr)) (cmd + strlen(cmds[i].name));
+			(this->*(cmds[i].tr)) (cmd + strlen(cmds[i].name) +1);
 			return;
 		}
 
