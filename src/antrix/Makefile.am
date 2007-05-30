@@ -15,5 +15,6 @@ antrix_LDADD = -lgame -ldatabase -lconfig -lauth -lshared -lzlib -lnetwork
 
 antrix_LDFLAGS = -L$(srcdir)/../shared \
                -L$(srcdir)/../game \
-               -L$(srcdir)/../../dep/src/zlib
+               -L$(srcdir)/../../dep/src/zlib \
+               -Wl,-export-dynamic
 #               @DLL_EXPORT@
