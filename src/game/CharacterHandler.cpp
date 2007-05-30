@@ -422,13 +422,11 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
 	memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 	
-    WorldPacket datab;
-    datab.Initialize(CMSG_DUNGEON_DIFFICULTY);
+    StackWorldPacket<12> datab(CMSG_DUNGEON_DIFFICULTY);
     datab << plr->iInstanceType;
     datab << uint32(0x01);
     datab << uint32(0x00);
     SendPacket(&datab);
-
 
 	plr->LoadPropertiesFromDB();
 	plr->UpdateAttackSpeed();
@@ -454,7 +452,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	}
 
 	// account data == UI config
-	WorldPacket data(SMSG_ACCOUNT_DATA_MD5, 128);
+	StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_MD5);
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -471,7 +469,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		MD5_Update(&ctx, acct_data->data, acct_data->sz);
 		uint8 md5hash[MD5_DIGEST_LENGTH];
 		MD5_Final(md5hash, &ctx);
-		data.append(md5hash, MD5_DIGEST_LENGTH);
+		data.Write(md5hash, MD5_DIGEST_LENGTH);
 	}
 	SendPacket(&data);
 
@@ -493,9 +491,9 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 			if(plr->GetMapId() != pTrans->GetMapId())	   // loaded wrong map
 			{
 				plr->SetMapId(pTrans->GetMapId());
-				WorldPacket data(SMSG_NEW_WORLD, 20);
-				data << pTrans->GetMapId() << c_tposx << c_tposy << c_tposz << plr->GetOrientation();
-				SendPacket(&data);
+				StackWorldPacket<20> dataw(SMSG_NEW_WORLD);
+				dataw << pTrans->GetMapId() << c_tposx << c_tposy << c_tposz << plr->GetOrientation();
+				SendPacket(&dataw);
 
 				// shit is sent in worldport ack.
 				enter_world = false;

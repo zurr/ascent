@@ -1435,7 +1435,7 @@ void Spell::finish()
 	}
 }
 
-void Spell::SendCastResult(int8 result)
+void Spell::SendCastResult(int16 result)
 {
 	if(result != -1)
 		failed = true;
@@ -1448,9 +1448,9 @@ void Spell::SendCastResult(int8 result)
 
 	if(result != -1)
 	{
-		WorldPacket data(SMSG_CAST_RESULT, 6);
+		StackWorldPacket<9> data(SMSG_CAST_RESULT);
 		data << m_spellInfo->Id;
-		data << (uint8)(result);
+		data << (uint8)result;
 		if(result == SPELL_FAILED_REQUIRES_SPELL_FOCUS)
 			data << (uint32)m_spellInfo->RequiresSpellFocus;
 

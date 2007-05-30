@@ -153,6 +153,12 @@ public:
 			_socket->SendPacket(packet);
 	}
 
+	inline void SendPacket(StackBufferBase * packet)
+	{
+		if(_socket && _socket->IsConnected())
+			_socket->SendPacket(packet);
+	}
+
 	inline void OutPacket(uint16 opcode)
 	{
 		if(_socket && _socket->IsConnected())

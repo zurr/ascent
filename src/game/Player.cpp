@@ -5101,7 +5101,7 @@ void Player::SendInitialLogonPackets()
 	// Initial Packets... they seem to be re-sent on port.
 	m_session->OutPacket(SMSG_SET_REST_START, 4, &m_timeLogoff);
 
-	WorldPacket data(SMSG_BINDPOINTUPDATE, 32);
+	StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
 	data << m_bind_pos_x;
 	data << m_bind_pos_y;
 	data << m_bind_pos_z;
@@ -5115,7 +5115,7 @@ void Player::SendInitialLogonPackets()
 	data << armor_proficiency ; 
 	GetSession()->SendPacket(&data);
 
-	data.clear();
+	data.Clear();
 	data << (uint8)2;
 	data << weapon_proficiency; 
 	GetSession()->SendPacket(&data);

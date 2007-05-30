@@ -20,16 +20,16 @@
 #include "LocationVector.h"
 
 /* This is needed because of template gayness. */
-class StackBufferBase
+class SERVER_DECL StackBufferBase
 {
 public:
 	virtual uint8 * GetBufferPointer() = 0;
-	virtual uint16 GetOpcode() = 0;
+	virtual uint16 GetOpcode() { return 0; }
 	virtual uint32 GetSize() = 0;
 };
 
 template<uint32 Size>
-class StackBuffer : public StackBufferBase
+class SERVER_DECL StackBuffer : public StackBufferBase
 {
 protected:
 	uint8 m_stackBuffer[Size];
@@ -103,6 +103,19 @@ public:
 		m_writePos += sizeof(T);
 	}
 
+	/** writes x bytes to the buffer, while checking for overflows
+	 * @param ptr the data to be written
+	 * @param size byte count
+	 */
+	void Write(uint8 * data, size_t size)
+	{
+		if(m_writePos + size > m_space)
+			ReallocateOnHeap();
+
+		memcpy(&m_bufferPointer[m_writePos], data, size);
+		m_writePos += size;
+	}
+
 	/** Ensures the buffer is big enough to fit the specified number of bytes.
 	 * @param bytes number of bytes to fit
 	 */
@@ -119,8 +132,8 @@ public:
 
 	/** Fast read/write operators without using the templated read/write functions.
 	 */
-#define DEFINE_FAST_READ_OPERATOR(type, size) void operator >> (type& dest) { if(m_readPos + size > m_writePos) { dest = (type)0; } else { dest = *(type*)&m_bufferPointer[m_readPos]; m_readPos += size; } }
-#define DEFINE_FAST_WRITE_OPERATOR(type, size) void operator << (type src) { if(m_writePos + size > m_space) { ReallocateOnHeap(); } *(type*)&m_bufferPointer[m_writePos] = src; m_writePos += size; }
+#define DEFINE_FAST_READ_OPERATOR(type, size) StackBuffer<Size>& operator >> (type& dest) { if(m_readPos + size > m_writePos) { dest = (type)0; } else { dest = *(type*)&m_bufferPointer[m_readPos]; m_readPos += size; return *this; } }
+#define DEFINE_FAST_WRITE_OPERATOR(type, size) StackBuffer<Size>& operator << (type src) { if(m_writePos + size > m_space) { ReallocateOnHeap(); } *(type*)&m_bufferPointer[m_writePos] = src; m_writePos += size; return *this; }
 
 	/** Integer/float r/w operators
 	 */
@@ -141,12 +154,12 @@ public:
 	/** boolean (1-byte) read/write operators
 	 */
 	DEFINE_FAST_WRITE_OPERATOR(bool, 1);
-	void operator >> (bool & dst) { dst = (Read<char>() > 0 ? true : false); }
+	StackBuffer<Size>& operator >> (bool & dst) { dst = (Read<char>() > 0 ? true : false); return *this; }
 
 	/** string (null-terminated) operators
 	 */
-	void operator << (std::string & value) { EnsureBufferSize(value.length() + 1); memcpy(&m_bufferPointer[m_writePos], value.c_str(), value.length()+1); m_writePos += (value.length() + 1); }
-	void operator >> (std::string & dest)
+	StackBuffer<Size>& operator << (std::string & value) { EnsureBufferSize(value.length() + 1); memcpy(&m_bufferPointer[m_writePos], value.c_str(), value.length()+1); m_writePos += (value.length() + 1); return *this; }
+	StackBuffer<Size>& operator >> (std::string & dest)
 	{
 		dest.clear();
 		char c;
@@ -156,46 +169,56 @@ public:
 			if(c == 0) break;
 			dest += c;
 		}
+		return *this;
 	}
 
 	/** WoWGuid read/write operators
 	 */
-	void operator << (WoWGuid & value)
+	StackBuffer<Size>& operator << (const WoWGuid & value)
 	{
 		EnsureBufferSize(value.GetNewGuidLen() + 1);
 		Write<uint8>(value.GetNewGuidMask());
 		memcpy(&m_bufferPointer[m_writePos], value.GetNewGuid(), value.GetNewGuidLen());
 		m_writePos += value.GetNewGuidLen();
+		return *this;
 	}
 	
-	void operator >> (WoWGuid & value)
+	StackBuffer<Size>& operator >> (WoWGuid & value)
 	{
 		uint8 mask = Read<uint8>();
 		value.Init(mask);
 		for(uint32 i = 0; i < BitCount8(mask); ++i)
 			value.AppendField(Read<uint8>());
+		return *this;
 	}
 
 	/** LocationVector read/write operators
 	 */
-	void operator << (LocationVector & val)
+	StackBuffer<Size>& operator << (LocationVector & val)
 	{
 		// espire: I would've done this as one memcpy.. but we don't know how the struct alignment is gonna come out :/
 		Write<float>(val.x);
 		Write<float>(val.y);
 		Write<float>(val.z);
+		return *this;
 	}
 
-	void operator >> (LocationVector & dst)
+	StackBuffer<Size>& operator >> (LocationVector & dst)
 	{
 		dst.x = Read<float>();
 		dst.y = Read<float>();
 		dst.z = Read<float>();
+		return *this;
 	}
 
 	/** Clears the buffer
 	 */
 	void Clear() { m_writePos = m_readPos = 0; }
+
+	/** Gets the write position
+	 * @return buffer size
+	 */
+	uint32 GetSize() { return m_writePos; }
 };
 
 #endif

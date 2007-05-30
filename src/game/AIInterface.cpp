@@ -1774,7 +1774,7 @@ void AIInterface::SendMoveToPacket(float toX, float toY, float toZ, float toO, u
 	0x00000100 - Run
 	0x00000300 - Fly
 	*/
-	WorldPacket data(SMSG_MONSTER_MOVE, 50);   // 50 bytes should be more than enough
+	StackWorldPacket<60> data(SMSG_MONSTER_MOVE);
 	data << m_Unit->GetNewGUID();
 	data << m_Unit->GetPositionX() << m_Unit->GetPositionY() << m_Unit->GetPositionZ();
 	data << getMSTime();

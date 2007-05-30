@@ -1055,7 +1055,7 @@ public:
 	inline uint32 getState() { return m_spellState; }
 
 	// Send Packet functions
-	void SendCastResult(int8 result);
+	void SendCastResult(int16 result);
 	void SendSpellStart();
 	void SendSpellGo();
 	void SendLogExecute(uint32 damage, uint64 & targetGuid);
