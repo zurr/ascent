@@ -155,16 +155,22 @@ World::~World()
 
 WorldSession* World::FindSession(uint32 id) const
 {
+	m_sessionlock.AcquireReadLock();
+
 	SessionMap::const_iterator itr = m_sessions.find(id);
 
 	if(itr != m_sessions.end())
 		return itr->second;
 	else
 		return 0;
+
+	m_sessionlock.ReleaseReadLock();
 }
 
 void World::RemoveSession(uint32 id)
 {
+	m_sessionlock.AcquireWriteLock();
+
 	SessionMap::iterator itr = m_sessions.find(id);
 
 	if(itr != m_sessions.end())
@@ -172,15 +178,21 @@ void World::RemoveSession(uint32 id)
 		delete itr->second;
 		m_sessions.erase(itr);
 	}
+
+	m_sessionlock.ReleaseWriteLock();
 }
 
 void World::AddSession(WorldSession* s)
 {
+	m_sessionlock.AcquireWriteLock();
+
 	ASSERT(s);
 	m_sessions[s->GetAccountId()] = s;
 
 	if(m_sessions.size() >  PeakSessionCount)
 		PeakSessionCount = m_sessions.size();
+
+	m_sessionlock.ReleaseWriteLock();
 }
 
 void World::AddGlobalSession(WorldSession *session)
@@ -829,6 +841,8 @@ void World::Update(time_t diff)
 
 void World::SendGlobalMessage(WorldPacket *packet, WorldSession *self)
 {
+	m_sessionlock.AcquireReadLock();
+
 	SessionMap::iterator itr;
 	for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
 	{
@@ -839,10 +853,14 @@ void World::SendGlobalMessage(WorldPacket *packet, WorldSession *self)
 			itr->second->SendPacket(packet);
 		}
 	}
+
+	m_sessionlock.ReleaseReadLock();
 }
 
 void World::SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *self)
 {
+	m_sessionlock.AcquireReadLock();
+
 	SessionMap::iterator itr;
 	for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
 	{
@@ -854,6 +872,8 @@ void World::SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *se
 				itr->second->SendPacket(packet);
 		}
 	}
+
+	m_sessionlock.ReleaseReadLock();
 }
 
 void World::SendWorldText(const char* text, WorldSession *self)
@@ -991,14 +1011,20 @@ std::string World::GenerateName(uint32 type)
 
 void World::DeleteSession(WorldSession *session)
 {
+	m_sessionlock.AcquireWriteLock();
 	// remove from big map
 	m_sessions.erase(session->GetAccountId());
+
+	m_sessionlock.ReleaseWriteLock();
+
 	// delete us
 	delete session;
 }
 
 uint32 World::GetNonGmSessionCount()
 {
+	m_sessionlock.AcquireReadLock();
+
 	uint32 total = m_sessions.size();
 
 	SessionMap::const_iterator itr = m_sessions.begin();
@@ -1007,6 +1033,8 @@ uint32 World::GetNonGmSessionCount()
 		if( (itr->second)->HasGMPermissions() )
 			total--;
 	}
+
+	m_sessionlock.ReleaseReadLock();
 
 	return total;
 }
@@ -1151,13 +1179,19 @@ void World::SaveAllPlayers()
 
 WorldSession* World::FindSessionByName(const char * Name)//case insensetive
 {
+	m_sessionlock.AcquireReadLock();
+
 	// loop sessions, see if we can find him
 	SessionMap::iterator itr = m_sessions.begin();
 	for(; itr != m_sessions.end(); ++itr)
 	{
 	  if(!stricmp(itr->second->GetAccountName().c_str(),Name))
+	  {
+		  m_sessionlock.ReleaseReadLock();
 			return itr->second;
+	  }
 	}
+	m_sessionlock.ReleaseReadLock();
 	return 0;
 }
 

@@ -2164,7 +2164,7 @@ int8 Spell::CanCast(bool rangetolerate)
 
 			// if target is already skinned, don't let it be skinned again
 			if (m_spellInfo->Effect[0] == SPELL_EFFECT_SKINNING) // skinning
-				if ( (((Creature*)target)->Skinned) )
+				if (target->IsUnit() && (((Creature*)target)->Skinned) )
 					return SPELL_FAILED_TARGET_UNSKINNABLE;
 
 			// all spells with target 61 need to be in group or raid
@@ -2174,7 +2174,7 @@ int8 Spell::CanCast(bool rangetolerate)
 				m_spellInfo->EffectImplicitTargetA[1] == 61 || 
 				m_spellInfo->EffectImplicitTargetA[2] == 61)
 			{
-				if (!((Player*)target)->InGroup())
+				if (target->IsPlayer() && !((Player*)target)->InGroup())
 					return SPELL_FAILED_NOT_READY;//return SPELL_FAILED_TARGET_NOT_IN_PARTY or SPELL_FAILED_TARGET_NOT_IN_PARTY;
 			}
 
