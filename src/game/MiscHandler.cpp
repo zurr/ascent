@@ -754,10 +754,6 @@ void WorldSession::HandleStandStateChangeOpcode( WorldPacket & recv_data )
 	uint8 animstate;
 	recv_data >> animstate;
 
-	//send ack
-	WorldPacket packet(SMSG_STANDSTATE_CHANGE_ACK, 1);
-	packet << uint8(animstate);
-	SendPacket( &packet );
 	_player->SetStandState(animstate);
 }
 

@@ -2304,6 +2304,9 @@ void Unit::SetStandState(uint8 standstate)
 	SetByte(UNIT_FIELD_BYTES_1,0,standstate);
 	if(standstate == STANDSTATE_STAND)//standup
 		RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
+
+	if(m_objectTypeId == TYPEID_PLAYER)
+		((Player*)this)->GetSession()->OutPacket(SMSG_STANDSTATE_CHANGE_ACK, 1, &standstate);
 }
 
 void Unit::RemoveAurasByInterruptFlag(uint32 flag)
