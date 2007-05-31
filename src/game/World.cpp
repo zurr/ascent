@@ -28,6 +28,7 @@ World::World()
 	m_UpdateDistance = 0.0f;
 	m_StartTime = 0;
 	eventholder = new EventableObjectHolder(-1);
+	m_holder = eventholder;
 
 	mQueueUpdateInterval = 10000;
 	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("SendBuildOnJoin", false);

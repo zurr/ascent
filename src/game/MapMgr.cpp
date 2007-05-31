@@ -60,6 +60,8 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 	lastUnitUpdate = getMSTime();
 	lastGameobjectUpdate = getMSTime();
 	m_battleground = 0;
+
+	m_holder = &eventHolder;
 }
 
 
