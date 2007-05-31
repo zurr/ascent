@@ -236,6 +236,16 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//218
 		&Aura::SpellAuraRegenManaStatPCT,//219 Regenerate mana equal to $s1% of your Intellect every 5 sec, even while casting
 		&Aura::SpellAuraSpellHealingStatPCT,//220 Increases your healing spells  by up to $s1% of your Strength
+                &Aura::SpellAuraNULL,//221
+                &Aura::SpellAuraNULL,//222
+                &Aura::SpellAuraNULL,//223
+                &Aura::SpellAuraNULL,//224
+                &Aura::SpellAuraNULL,//225
+                &Aura::SpellAuraNULL,//226
+                &Aura::SpellAuraNULL,//227
+                &Aura::SpellAuraNULL,//228
+                &Aura::SpellAuraNULL,//229
+                &Aura::SpellAuraIncreaseMaxHealth,//230 Increase Max Health (commanding shout);
 };
 /*
 inline void ApplyFloatSM(float ** m,float v,uint32 mask, float def)
@@ -5754,4 +5764,24 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
 			m_target->HealDoneMod[x]-=mod->realamount;
 
 	}
+}
+
+void Aura::SpellAuraIncreaseMaxHealth(bool apply)
+{
+        if(apply)
+	{
+                m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, mod->m_amount);
+                m_target->ModUInt32Value(UNIT_FIELD_HEALTH, mod->m_amount);
+        }
+        else
+        {       
+                m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, -mod->m_amount);
+                if (!m_target->isAlive())
+                        return;
+                uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) - mod->m_amount;
+                
+                if (m_target->GetUInt32Value(UNIT_FIELD_HEALTH) < mod->m_amount)
+                        newHealth = 1;
+                m_target->SetUInt32Value(UNIT_FIELD_HEALTH, newHealth);
+        }
 }

@@ -217,7 +217,8 @@ enum MOD_TYPES
 	SPELL_AURA_INCREASE_CASTING_TIME_PCT = 216,
 	SPELL_AURA_REGEN_MANA_STAT_PCT=219,
 	SPELL_AURA_HEALING_STAT_PCT=220,
-	TOTAL_SPELL_AURAS = 221,
+        SPELL_AURA_INCREASE_MAX_HEALTH=230,//Used by Commanding Shout
+	TOTAL_SPELL_AURAS = 231,
 };
 enum AuraTickFlags
 {
@@ -481,6 +482,7 @@ public:
 	void SpellAuraIncreaseCastTimePCT(bool apply);
 	void SpellAuraRegenManaStatPCT(bool apply);
 	void SpellAuraSpellHealingStatPCT(bool apply);
+        void SpellAuraIncreaseMaxHealth(bool apply);
 
 	void SendModifierLog(int32 ** m,int32 v,uint32 mask,uint8 type,bool pct = false);
 	// Events
