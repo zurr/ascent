@@ -43,8 +43,9 @@ using namespace std;
 enum SocketIOEvent
 {
 	SOCKET_IO_EVENT_READ_COMPLETE   = 0,
-	SOCKET_IO_EVENT_WRITE_END	   = 1,
-	NUM_SOCKET_IO_EVENTS			= 2,
+	SOCKET_IO_EVENT_WRITE_END		= 1,
+	SOCKET_IO_THREAD_SHUTDOWN		= 2,
+	NUM_SOCKET_IO_EVENTS			= 3,
 };
 
 class OverlappedStruct

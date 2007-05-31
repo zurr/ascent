@@ -184,7 +184,16 @@ struct TimedEvent
 	int instanceId;
 	int ref;
 
-	inline void DecRef() { --ref; if(ref <= 0) delete this; }
+	inline void DecRef()
+	{
+		--ref;
+		if(ref <= 0)
+		{
+			 delete cb;
+			 delete this;
+		}
+	}
+
 	inline void IncRef() { ++ref; }
 };
 

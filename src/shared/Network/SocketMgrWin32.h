@@ -36,6 +36,9 @@ public:
 		socketLock.Release();
 	}
 
+	void ShutdownThreads();
+	long threadcount;
+
 private:
 	HANDLE m_completionPort;
 	set<Socket*> _sockets;
@@ -54,10 +57,12 @@ public:
 
 void SERVER_DECL HandleReadComplete(Socket * s, uint32 len);
 void SERVER_DECL HandleWriteComplete(Socket * s, uint32 len);
+void SERVER_DECL HandleShutdown(Socket * s, uint32 len);
 
 static OperationHandler ophandlers[NUM_SOCKET_IO_EVENTS] = {
 	&HandleReadComplete,
-	&HandleWriteComplete, };
+	&HandleWriteComplete,
+	&HandleShutdown };
 
 #endif
 #endif

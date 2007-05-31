@@ -28,8 +28,10 @@ void SocketMgr::SpawnWorkerThreads()
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 
-	printf("IOCP: Spawning %u worker threads.\n", si.dwNumberOfProcessors);
-	for(uint32 x = 0; x < si.dwNumberOfProcessors; ++x)
+	threadcount = si.dwNumberOfProcessors;
+
+	printf("IOCP: Spawning %u worker threads.\n", threadcount);
+	for(uint32 x = 0; x < threadcount; ++x)
 		launch_thread(new SocketWorkerThread());
 }
 
@@ -46,10 +48,16 @@ void SocketWorkerThread::run()
 		if(!GetQueuedCompletionStatus(cp, &len, (LPDWORD)&s, &ol_ptr, 10000))
 			continue;
 
+		ov = CONTAINING_RECORD(ol_ptr, OverlappedStruct, m_overlap);
+
+		if(ov->m_event == SOCKET_IO_THREAD_SHUTDOWN)
+		{
+			delete ov;
+			return;
+		}
+
 		if(s->IsDeleted())
 			continue;
-
-		ov = CONTAINING_RECORD(ol_ptr, OverlappedStruct, m_overlap);
 
 		if(ov->m_event < NUM_SOCKET_IO_EVENTS)
 			ophandlers[ov->m_event](s, len);
@@ -87,6 +95,11 @@ void HandleWriteComplete(Socket * s, uint32 len)
 	}
 }
 
+void HandleShutdown(Socket * s, uint32 len)
+{
+	
+}
+
 void SocketMgr::CloseAll()
 {
 	list<Socket*> tokill;
@@ -106,6 +119,15 @@ void SocketMgr::CloseAll()
 		size = _sockets.size();
 		socketLock.Release();
 	}while(size);
+}
+
+void SocketMgr::ShutdownThreads()
+{
+	for(int i = 0; i < threadcount; ++i)
+	{
+		OverlappedStruct * ov = new OverlappedStruct(SOCKET_IO_THREAD_SHUTDOWN);
+		PostQueuedCompletionStatus(m_completionPort, 0, (ULONG_PTR)0, &ov->m_overlap);
+	}
 }
 
 #endif

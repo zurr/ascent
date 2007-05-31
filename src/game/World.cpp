@@ -42,7 +42,6 @@ World::World()
 	mAcceptedConnections = 0;
 	HordePlayers = 0;
 	AlliancePlayers = 0;
-	m_isOwnInstance = true;
 }
 
 World::~World()

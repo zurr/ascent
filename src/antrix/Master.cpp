@@ -351,6 +351,12 @@ bool Master::Run()
 
 	sLog.outString("All pending database operations cleared.\n");
 
+#ifdef WIN32
+	sLog.outString("Killing Socket Threads...");
+	sSocketMgr.ShutdownThreads();
+	sLog.outString("Done.");
+#endif
+
 	sWorld.SaveAllPlayers();
 	sLog.outString("");
 

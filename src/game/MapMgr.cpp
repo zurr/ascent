@@ -32,7 +32,6 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 
 	// Create script interface
 	ScriptInterface = new MapScriptInterface(*this);
-	m_isOwnInstance = true;
 	CreationTime = time(NULL);
 	ExpiryTime = 0;
 	RaidExpireTime = 0;

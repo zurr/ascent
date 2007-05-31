@@ -442,7 +442,6 @@ Battleground::Battleground()
 	m_HordeGroup = m_AllianceGroup = NULL;
 	m_GameStatus = false;
 	m_GameWin = false;
-	m_isOwnInstance = true;
 }
 
 Battleground::~Battleground()

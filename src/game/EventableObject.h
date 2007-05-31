@@ -60,7 +60,6 @@ public:
 protected:
 
 	int32 m_event_Instanceid;
-	bool m_isOwnInstance;
 	Mutex m_lock;
 	EventMap m_events;
 	EventableObjectHolder * m_holder;
