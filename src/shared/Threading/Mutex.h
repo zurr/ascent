@@ -52,7 +52,7 @@ protected:
 	/** Static mutex attribute
 	 */
 	static bool attr_initalized;
-	static pthread_mutexaddr_t attr;
+	static pthread_mutexattr_t attr;
 
 	/** pthread struct used in system calls
 	 */

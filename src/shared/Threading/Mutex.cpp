@@ -23,7 +23,7 @@ bool Mutex::AttemptAcquire() { return TryEnterCriticalSection(&cs); }
 
 /* Linux mutex implementation */
 static bool attr_initalized = false;
-static pthread_mutexaddr_t attr;
+static pthread_mutexattr_t attr;
 
 Mutex::Mutex()
 {
@@ -39,7 +39,7 @@ Mutex::Mutex()
 Mutex::~Mutex() { pthread_mutex_destroy(&mutex); }
 
 void Mutex::Acquire() { pthread_mutex_lock(&mutex); }
-void Mutex::Release() { pthread_mutex_release(&mutex); }
+void Mutex::Release() { pthread_mutex_destroy(&mutex); }
 bool Mutex::AttemptAcquire() { pthread_mutex_trylock(&mutex); }
 
 #endif
