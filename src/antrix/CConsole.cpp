@@ -230,26 +230,46 @@ void CConsole::IPBan(char* str)
 
 void CConsole::PlayerInfo(char* str)
 {
-	Player * _plr = objmgr.GetPlayer(str, false);
+	char player[100];
+	if(sscanf(str, "%s", player) != 1)
+		return;
+
+	Player * _plr = objmgr.GetPlayer(player, false);
 	if(!_plr)
 	{
 		sLog.outString("Cannot find online player %s", str);
 		return;
 	}
+	
+	if(!_plr) return;
+	if(!_plr->GetSession())
+	{
+		sLog.outString("ERROR: this player hasn't got any session !");
+		return;
+	}
 
-		static const char* classes[12] =
+	WorldSession* sess = _plr->GetSession();
+
+		static const char* _classes[12] =
 	{"None","Warrior", "Paladin", "Hunter", "Rogue", "Priest", "None", "Shaman", "Mage", "Warlock", "None", "Druid"};
-	static const char* races[12] =
+	static const char* _races[12] =
 	{"None","Human","Orc","Dwarf","Night Elf","Undead","Tauren","Gnome","Troll","None","Blood Elf","Draenei"};
 
 
-	sLog.outString("Name: %s", _plr->GetName());
-	sLog.outString("Account: %s", _plr->GetSession()->GetAccountName());
-	sLog.outString("Level: %s", _plr->getLevel());
-	sLog.outString("Race: %s", races[_plr->getRace()]);
-	sLog.outString("Class: %s", classes[_plr->getClass()]);
-	sLog.outString("Map: %s", _plr->GetMapId());
-	sLog.outString("Banned: %s", _plr->IsBanned());
+	sLog.outColor(TGREEN, "Name: ");
+	sLog.outColor(TNORMAL, "%s\n", _plr->GetName());
+	sLog.outColor(TGREEN, "Account: ");
+	sLog.outColor(TNORMAL, "%s\n", sess->GetAccountName().c_str());
+	sLog.outColor(TGREEN, "Level: ");
+	sLog.outColor(TNORMAL, "%d\n",  _plr->getLevel());
+	sLog.outColor(TGREEN, "Race: ");
+	sLog.outColor(TNORMAL, "%s\n", _races[_plr->getRace()]);
+	sLog.outColor(TGREEN, "Class: ");
+	sLog.outColor(TNORMAL, "%s\n", _classes[_plr->getClass()]);
+	sLog.outColor(TGREEN, "Map: ");
+	sLog.outColor(TNORMAL, "%d\n",  _plr->GetMapId());
+	sLog.outColor(TGREEN, "Banned: ");
+	sLog.outColor(TNORMAL, "%s\n",  (_plr->IsBanned() ? "Yes" : "No"));
 }
 
 void CConsole::Kick(char* str)
@@ -262,7 +282,7 @@ void CConsole::Kick(char* str)
 	Player * _plr = objmgr.GetPlayer(player, false);
 	if(!_plr)
 	{
-		sLog.outColor(TRED, "Unable to find player %s", player);
+		sLog.outColor(TRED, "Unable to find player %s\n", player);
 		return;
 	}
 
