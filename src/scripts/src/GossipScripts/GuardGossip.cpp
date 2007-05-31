@@ -1406,14 +1406,14 @@ public:
         GossipMenu *Menu;
         objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
         Menu->AddItem(0, "Auction House", 1);
-        Menu->AddItem(0, "Bank", 2);
-        Menu->AddItem(0, "Gulid Master", 3);
-        Menu->AddItem(0, "Hippogryph Master", 4);
-        Menu->AddItem(0, "Inn", 5);    
+        Menu->AddItem(0, "The Bank", 2);
+        Menu->AddItem(0, "Hippogryph Master", 3);
+		Menu->AddItem(0, "Gulid Master", 4);
+        Menu->AddItem(0, "The Inn", 5);    
         Menu->AddItem(0, "Mailbox", 6);
         Menu->AddItem(0, "Stable Master", 7);
-        Menu->AddItem(0, "Weapon Trainer", 8);
-        Menu->AddItem(0, "Battlemaster", 9);
+        Menu->AddItem(0, "Weapon Master", 8);
+        Menu->AddItem(0, "Battlemasters", 9);
         Menu->AddItem(0, "Class Trainer", 10);
         Menu->AddItem(0, "Profession Trainer", 11);
         if(AutoSend)
@@ -1435,83 +1435,80 @@ public:
 
         case 1:     // Auction House
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(-4023.6, -11739.3, 6, 6, 0, "Exodar Auction House");
+            Plr->Gossip_SendPOI(-4013.82, -11729.64, 6, 6, 0, "Exodar, Auctioneer");
             break;
 
-        case 2:     // Bank
+        case 2:     // The Bank
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(-3923.89, -11544.5, 6, 6, 0, "Exodar Bank");
+            Plr->Gossip_SendPOI(-3923.89, -11544.5, 6, 6, 0, "Exodar, bank");
             break;
 
-        case 3:     // Guild Master
-            SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(-4092.57, -11626.5, 6, 6, 0, "Exodar Guild Master");
-            break;
-
-        case 4:     // Hippogryph Master
+        case 3:     // Hippogryph Master
             SendQuickMenu(9530);
-            Plr->Gossip_SendPOI(-4060.46, -11787.1, 6, 6, 0, "Exodar Hippogryph Master");
+            Plr->Gossip_SendPOI(-4058.45, -11789.7, 6, 6, 0, "Exodar, Hippogryph Master");
             break;
 
-        case 5:     // Inn
+        case 4:     // Guild Master
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(-3741.87, -11695.1, 6, 6, 0, "Exodar Inn");
+            Plr->Gossip_SendPOI(-4093.38, -11630.39, 6, 6, 0, "Exodar, Guild Master");
+            break;
+
+        case 5:     // The Inn
+            SendQuickMenu(9316);
+            Plr->Gossip_SendPOI(-3765.34, -11695.8, 6, 6, 0, "Exodar, Inn");
             break;
 
         case 6:     // Mailbox
             SendQuickMenu(9316);
-            //Plr->Gossip_SendPOI(1, 1, 6, 6, 0, "Exodar Mailbox"); // Still need to check it's location.
+            Plr->Gossip_SendPOI(-3913.75, -11606.83, 6, 6, 0, "Exodar, Mailbox");
             break;
 
         case 7:     // Stable Master
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(-4146, -12492.4, 6, 6, 0, "Esbina");
+            Plr->Gossip_SendPOI(-3787.01, -11702.7, 6, 6, 0, "Exodar, Stable Master");
             break;
 
-        case 8:     // Weapon Trainer
+        case 8:     // Weapon Master
             SendQuickMenu(9316);
-            Plr->Gossip_SendPOI(-4215.68, -11628.9, 6, 6, 0, "Handiir");
+            Plr->Gossip_SendPOI(-4215.68, -11628.9, 6, 6, 0, "Exodar, Weapon Master");
             break;
 
 	    case 9:     // Battlemasters
+            Plr->Gossip_SendPOI(-3999.82, -11368.33, 6, 6, 0, "Exodar, Battlemasters");
 			objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
-            Menu->AddItem(0, "Alterac Valley"  , 12);
-            Menu->AddItem(0, "Arathi Basin"    , 13);
-			Menu->AddItem(0, "Arena"           , 14);
-			Menu->AddItem(0, "Eye of the Storm", 15);
-            Menu->AddItem(0, "Warsong Gulch"   , 16);
+            Menu->AddItem(0, "Arena Battlemaster"  , 12);
             Menu->SendTo(Plr);
             break;
 
         case 10:    // Class Trainers
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
-                Menu->AddItem( 0, "Druid"       , 17);
-                Menu->AddItem( 0, "Hunter"      , 18);
-                Menu->AddItem( 0, "Mage"        , 19);
-                Menu->AddItem( 0, "Paladin"     , 20);
-                Menu->AddItem( 0, "Priest"      , 21);
-                Menu->AddItem( 0, "Shaman"      , 22);
-                Menu->AddItem( 0, "Warrior"     , 23);
+                Menu->AddItem( 0, "Druid"       , 13);
+                Menu->AddItem( 0, "Hunter"      , 14);
+                Menu->AddItem( 0, "Mage"        , 15);
+                Menu->AddItem( 0, "Paladin"     , 16);
+                Menu->AddItem( 0, "Priest"      , 17);
+                Menu->AddItem( 0, "Shaman"      , 18);
+                Menu->AddItem( 0, "Warrior"     , 19);
                 Menu->SendTo(Plr);
             }break;
 
         case 11:    // Profession Trainers
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 9316, Plr);
-                Menu->AddItem( 0, "Alchemy"           , 24);
-                Menu->AddItem( 0, "Blacksmithing"     , 25);
-                Menu->AddItem( 0, "Cooking"           , 26);
-                Menu->AddItem( 0, "Enchanting"        , 27);
-                Menu->AddItem( 0, "Engineering"       , 28);
-                Menu->AddItem( 0, "First Aid"         , 29);
-                Menu->AddItem( 0, "Fishing"           , 30);
-				Menu->AddItem( 0, "Jewelcrafting"     , 31);
-                Menu->AddItem( 0, "Herbalism"         , 32);
-                Menu->AddItem( 0, "Leatherworking"    , 33);
-                Menu->AddItem( 0, "Mining"            , 34);
-                Menu->AddItem( 0, "Skinning"          , 35);
-                Menu->AddItem( 0, "Tailoring"         , 36);
+                Menu->AddItem( 0, "Alchemy"           , 20);
+                Menu->AddItem( 0, "Blacksmithing"     , 21);
+                Menu->AddItem( 0, "Enchanting"        , 22);
+                Menu->AddItem( 0, "Engineering"       , 23);
+                Menu->AddItem( 0, "First Aid"         , 24);
+                Menu->AddItem( 0, "Fishing"           , 25);
+                Menu->AddItem( 0, "Herbalism"         , 26);
+				Menu->AddItem( 0, "Jewelcrafting"     , 27);
+                Menu->AddItem( 0, "Leatherworking"    , 28);
+                Menu->AddItem( 0, "Mining"            , 29);
+                Menu->AddItem( 0, "Skinning"          , 30);
+                Menu->AddItem( 0, "Tailoring"         , 31);
+                Menu->AddItem( 0, "Cooking"           , 32);
                 Menu->SendTo(Plr);
             }break;
 
@@ -1519,158 +1516,130 @@ public:
             // Battlemaster submenu
             ////////
 
-        case 12://AV
+		case 12://Arena Battlemaster Exodar
             {
-                Plr->Gossip_SendPOI(-3963.2, -11346.0, 6, 6, 0, "Alterac Valley Battlemaster");
+                Plr->Gossip_SendPOI(-3725.25, -11688.3, 6, 6, 0, "Arena Battlemaster Exodar");
                 SendQuickMenu(9316);
             }break;
 
-        case 13://AB
+        case 13: //Druid
             {
-                Plr->Gossip_SendPOI(-3998.5, -11326.3, 6, 6, 0, "Arathi Basin Battlemaster");
+                Plr->Gossip_SendPOI(-4274.81, -11495.3, 6, 6, 0, "Exodar, Druid Trainer"); 
                 SendQuickMenu(9316);
             }break;
 
-        case 14://A
+        case 14: //Hunter
             {
-                Plr->Gossip_SendPOI(-3735.7, -11683.63, 6, 6, 0, "Arena Battlemaster"); 
-				SendQuickMenu(9316);
-            }break;
-
-        case 15://EoS
-            {
-                Plr->Gossip_SendPOI(-3961.6, -11348.2, 6, 6, 0, "Eye Of The Storm Battlemaster");
+                Plr->Gossip_SendPOI(-4229.36, -11563.36, 6, 6, 0, "Exodar, Hunter Trainers");
                 SendQuickMenu(9316);
             }break;
 
-        case 16://WSG
+        case 15: //Mage
             {
-                Plr->Gossip_SendPOI(-3961.27, -11389.6, 6, 6, 0, "Warsong Gulch Battlemaster");
+                Plr->Gossip_SendPOI(-4048.8, -11559.02, 6, 6, 0, "Exodar, Mage Trainers");
                 SendQuickMenu(9316);
             }break;
 
-            ////////////////
-            // Class trainer submenu
-            ////////
-
-        case 17: //Druid
+        case 16: //Paladin
             {
-                Plr->Gossip_SendPOI(-4170.3, -11578.3, 6, 6, 0, "Exodar Druid Trainer"); // Can't find him in Exodar, so probably this will be deleted (no infos on sites too)
+                Plr->Gossip_SendPOI(-4176.57, -11476.46, 6, 6, 0, "Exodar, Paladin Trainers");
                 SendQuickMenu(9316);
             }break;
 
-        case 18: //Hunter
+        case 17: //Priest
             {
-                Plr->Gossip_SendPOI(-4232.18, -11569.2, 6, 6, 0, "Exodar Hunter Trainer");
+                Plr->Gossip_SendPOI(-3972.38, -11483.2, 6, 6, 0, "Exodar, Priest Trainers");
                 SendQuickMenu(9316);
             }break;
 
-        case 19: //Mage
+        case 18: //Shaman
             {
-                Plr->Gossip_SendPOI(-4057.32, -11556.5, 6, 6, 0, "Exodar Mage Trainer");
-                SendQuickMenu(9316);
-            }break;
-
-        case 20: //Paladin
-            {
-                Plr->Gossip_SendPOI(-4191.2, -11470.4, 6, 6, 0, "Exodar Paladin Trainer");
-                SendQuickMenu(9316);
-            }break;
-
-        case 21: //Priest
-            {
-                Plr->Gossip_SendPOI(-3969.63, -11482.8, 6, 6, 0, "Exodar Priest Trainer");
-                SendQuickMenu(9316);
-            }break;
-
-        case 22: //Shaman
-            {
-                Plr->Gossip_SendPOI(-3886.88, -11339.7, 6, 6, 0, "Exodar Shaman Trainer");
+                Plr->Gossip_SendPOI(-3843.8, -11390.75, 6, 6, 0, "Exodar, Shaman Trainer");
                 SendQuickMenu(9556);
             }break;
 
-        case 23: //Warrior
+        case 19: //Warrior
             {
-                Plr->Gossip_SendPOI(-4189.43, -11653.7, 6, 6, 0, "Exodar Warrior Trainer");
+                Plr->Gossip_SendPOI(-4191.11, -11650.45, 6, 6, 0, "Exodar, Warrior Trainers");
                 SendQuickMenu(9316);
             }break;
 
-        case 24: //Alchemy
+        case 20: //Alchemy
             {
-                Plr->Gossip_SendPOI(-4032.95, -11361.0, 6, 6, 0, "Exodar Alchemy Trainer");
+                Plr->Gossip_SendPOI(-4042.37, -11366.3, 6, 6, 0, "Exodar, Alchemist Trainers");
                 SendQuickMenu(9316);
             }break;
 
-        case 25: //Blacksmithing
+        case 21: //Blacksmithing
             {
-                Plr->Gossip_SendPOI(-4243.9, -11706.7, 6, 6, 0, "Exodar Blacksmithing Trainer");
+                Plr->Gossip_SendPOI(-4232.4, -11705.23, 6, 6, 0, "Exodar, Blacksmithing Trainers");
                 SendQuickMenu(9340);
             }break;
 
-        case 26: //Cooking
+        case 22: //Enchanting
             {
-                Plr->Gossip_SendPOI(-4710, -12393.8, 6, 6, 0, "Exodar Cooking Trainer"); // Can't find correct location in Exodar.
-                SendQuickMenu(9316);
-            }break;
-
-        case 27: //Enchanting
-            {
-                Plr->Gossip_SendPOI(-3889.3, -11495, 6, 6, 0, "Exodar Enchanting Trainer");
+                Plr->Gossip_SendPOI(-3889.3, -11495, 6, 6, 0, "Exodar, Enchanters");
                 SendQuickMenu(9341);
             }break;
 
-        case 28: //Engineering
+        case 23: //Engineering
             {
-                Plr->Gossip_SendPOI(-4257.68, -11640.3, 6, 6, 0, "Exodar Engineering Trainer");
+                Plr->Gossip_SendPOI(-4257.93, -11636.53, 6, 6, 0, "Exodar, Engineering");
                 SendQuickMenu(9316);
             }break;
 
-        case 29: //First Aid
+        case 24: //First Aid
             {
-                Plr->Gossip_SendPOI(-3766.05, -11481.8, 6, 6, 0, "Exodar First Aid Trainer");
+                Plr->Gossip_SendPOI(-3766.05, -11481.8, 6, 6, 0, "Exodar, First Aid Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 30: //Fishing
+        case 25: //Fishing
             {
-                Plr->Gossip_SendPOI(-3712.96, -11404.0, 6, 6, 0, "Exodar Fishing Trainer");
+                Plr->Gossip_SendPOI(-3726.64, -11384.43, 6, 6, 0, "Exodar, Fishing Trainer");
                 SendQuickMenu(9316);
             }break;
 
-        case 31: //Jewelcrafting
+        case 26: //Herbalism
             {
-                Plr->Gossip_SendPOI(-3787.7, -11547.6, 6, 6, 0, "Exodar Jewelcrafting Trainer");
+                Plr->Gossip_SendPOI(-4052.5, -11356.6, 6, 6, 0, "Exodar, Herbalism Trainer");
+                SendQuickMenu(9316);
+            }break;
+
+        case 27: //Jewelcrafting
+            {
+                Plr->Gossip_SendPOI(-3786.27, -11541.33, 6, 6, 0, "Exodar, Jewelcrafters");
                 SendQuickMenu(9346);
             }break;
 
-        case 32: //Herbalism
+        case 28: //Leatherworking
             {
-                Plr->Gossip_SendPOI(-4052.5, -11356.6, 6, 6, 0, "Exodar Herbalism Trainer");
-                SendQuickMenu(9316);
-            }break;
-
-        case 33: //Leatherworking
-            {
-                Plr->Gossip_SendPOI(-4140.6, -11776.7, 6, 6, 0, "Exodar Leatherworking Trainer");
+                Plr->Gossip_SendPOI(-4134.42, -11772.93, 6, 6, 0, "Exodar, Leatherworking");
                 SendQuickMenu(9347);
             }break;
 
-        case 34: //Mining
+        case 29: //Mining
             {
-                Plr->Gossip_SendPOI(-4228.17, -11697.1, 6, 6, 0, "Exodar Mining Trainer");
+                Plr->Gossip_SendPOI(-4220.31, -11694.29, 6, 6, 0, "Exodar, Mining Trainers");
                 SendQuickMenu(9348);
             }break;
 
-        case 35: //Skinning
+        case 30: //Skinning
             {
-                Plr->Gossip_SendPOI(-4134.97, -11760.5, 6, 6, 0, "Exodar Skinning Trainer");
+                Plr->Gossip_SendPOI(-4134.97, -11760.5, 6, 6, 0, "Exodar, Skinning Trainer");
                 SendQuickMenu(9316);
             }break;
 
-		case 36: //Tailoring
+		case 31: //Tailoring
             {
-                Plr->Gossip_SendPOI(-4095.78, -11746.9, 6, 6, 0, "Exodar Tailor");
+                Plr->Gossip_SendPOI(-4095.78, -11746.9, 6, 6, 0, "Exodar, Tailors");
                 SendQuickMenu(9350);
+            }break;
+
+        case 32: //Cooking
+            {
+                Plr->Gossip_SendPOI(-3799.69, -11650.51, 6, 6, 0, "Exodar, Cook");
+                SendQuickMenu(9316);
             }break;
         }
     }
@@ -3236,7 +3205,7 @@ public:
             // Class trainer submenu
             ////////
 
-        case 7: //Druid <-- Need additional checks
+        case 7: //Druid
             {
                 SendQuickMenu(2593);
             }break;
@@ -3247,13 +3216,13 @@ public:
                 SendQuickMenu(2593);
             }break;
 
-        case 9: //Mage <-- Need additional checks
+        case 9: //Mage
             {
                 Plr->Gossip_SendPOI(9462.24, -6853.45, 6, 6, 0, "Falconwing Square, Mage Trainer");
                 SendQuickMenu(2593);
             }break;
 
-        case 10: //Paladin <-- Need additional checks
+        case 10: //Paladin <-- Needs to change flag to other sign (don't know how to describe it)
 			{
                 Plr->Gossip_SendPOI(9516.05, -6870.96, 6, 6, 0, "Falconwing Square, Paladin Trainer");
                 SendQuickMenu(2593);
@@ -3609,17 +3578,9 @@ void SetupGuardGossip(ScriptMgr * mgr)
 	// To Bloodhoof Guards - I don't know if those are all guards with dialog menu,
 	// but they were all I could find. Same to Deathguards.
 
-	// I wasn't sure of commented guards so if they are correct (I mean gossip to NPC)
-	// then delete comment.
-
 	// To do:
-	//	- Rewrite Exodar Script to delete part about Battlemasters,
-	//	  because there must be only one options for all masters.
-	//	- Make whole menu (with options) blizzlike for Exodar (need
-	//	  infos about it with screenshots of menus (normal, class & profession) as
-	//	  screens/infos about map arrow directory and it's name.
-	//	- Adding Scripts for "mini city" (like Brill) for Blood
-	//	  Elf's starting locations.
 	//	- Add (eventually) missing guards which should use one of those guard menus.
+	//	- Check all scripts + add guard text to DB and connect them with correct scripts.
+
 
 
