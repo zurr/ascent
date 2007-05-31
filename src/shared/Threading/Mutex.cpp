@@ -22,8 +22,8 @@ bool Mutex::AttemptAcquire() { return TryEnterCriticalSection(&cs); }
 #endif
 
 /* Linux mutex implementation */
-static bool attr_initalized = false;
-static pthread_mutexattr_t attr;
+bool Mutex::attr_initalized = false;
+pthread_mutexattr_t Mutex::attr;
 
 Mutex::Mutex()
 {
@@ -31,6 +31,7 @@ Mutex::Mutex()
 	{
 		pthread_mutexattr_init(&attr);
 		pthread_mutexattr_settype(&attr, recursive_mutex_flag);
+		attr_initalized = true;
 	}
 
 	pthread_mutex_init(&mutex, &attr);
