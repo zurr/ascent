@@ -296,6 +296,9 @@
 				RelativePath="..\..\src\shared\Threading\LockedQueue.h">
 			</File>
 			<File
+				RelativePath="..\..\src\shared\Threading\Mutex.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\shared\Threading\Mutex.h">
 			</File>
 			<File

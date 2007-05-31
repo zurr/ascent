@@ -25,6 +25,8 @@ class EventableObjectHolder;
   */
 
 typedef set<TimedEvent*> EventList;
+typedef multimap<uint32, TimedEvent*> EventMap;
+
 #define EVENT_REMOVAL_FLAG_ALL 0xFFFFFFFF
 
 class SERVER_DECL EventableObject
@@ -48,9 +50,6 @@ public:
 
 	inline bool event_HasEvents() { return m_events.size() > 0 ? true : false; }
 	void event_AddEvent(TimedEvent * ptr);
-	void event_UpdateActiveStatus();
-	bool event_UpdateEvents(uint32 diff);
-	void event_SetActive(bool value);
 	void event_Relocate();
 	
 	// this func needs to be implemented by all eventable classes. use it to retreive the instance
@@ -60,12 +59,11 @@ public:
 
 protected:
 
-	Mutex eventListLock;
-	EventList m_events;
-	EventableObjectHolder * m_eventHolder;
-	EventableObjectHolder * m_lastHolder;
-	uint32 m_active;
+	int32 m_event_Instanceid;
 	bool m_isOwnInstance;
+	Mutex m_lock;
+	EventMap m_events;
+	EventableObjectHolder * m_holder;
 	
 };
 
@@ -89,20 +87,15 @@ public:
 
 	void Update(uint32 time_difference);
 
+	void AddEvent(TimedEvent * ev);
 	void AddObject(EventableObject * obj);
-	void RemoveObject(EventableObject * obj);
+
 	inline uint32 GetInstanceID() { return mInstanceId; }
-	bool deletedObject;
 
 protected:
 	int32 mInstanceId;
-	//set<EventableObject*> myObjects;
-	//set<EventableObject*> removalList;
-
-	Mutex setLock;
-	EventableObjectSet myObjects;
-	RMutex iteratorLock;
-	EventableObjectSet::iterator current;
+	Mutex m_lock;
+	EventList m_events;
 };
 
 #endif

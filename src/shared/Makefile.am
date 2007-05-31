@@ -22,7 +22,8 @@ libshared_a_SOURCES = \
     WinThreading.h \
     WorldPacket.h \
     crc32.cpp \
-    crc32.h
+    crc32.h \
+    Threading/Mutex.cpp
 
 libauth_a_SOURCES = \
     Auth/BigNumber.cpp \

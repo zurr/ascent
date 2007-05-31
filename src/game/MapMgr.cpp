@@ -85,13 +85,6 @@ MapMgr::~MapMgr()
 	}
 
 	sLog.outString("	Instance %d deleted (MapId: %u)" , m_instanceID, _mapId);
-	sLog.outString("	Closing Map Threads...");
-	
-	m_eventHolder = 0;
-	m_lastHolder = 0;
-	event_SetActive(false);
-
-	sLog.outString("	Waiting for threads to exit...");
 	sLog.outString("	Instance closed successfully.");
 
 	free(m_GOStorage);

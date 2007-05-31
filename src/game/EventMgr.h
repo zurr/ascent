@@ -172,7 +172,7 @@ enum EventTypes
 struct TimedEvent
 {
 	TimedEvent(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat) : 
-		obj(object), cb(callback), eventFlags(flags), msTime(time), currTime(time), repeats(repeat), deleted(false) {}
+		obj(object), cb(callback), eventFlags(flags), msTime(time), currTime(time), repeats(repeat), deleted(false), ref(0) {}
 		
 	void *obj;
 	CallbackBase *cb;
@@ -181,6 +181,11 @@ struct TimedEvent
 	time_t currTime;
 	uint32 repeats;
 	bool deleted;
+	int instanceId;
+	int ref;
+
+	inline void DecRef() { --ref; if(ref <= 0) delete this; }
+	inline void IncRef() { ++ref; }
 };
 
 class EventMgr;
