@@ -182,8 +182,27 @@ struct TimedEvent
 	uint32 repeats;
 	bool deleted;
 	int instanceId;
-	int ref;
+	volatile long ref;
 
+#ifdef WIN32
+	inline void DecRef()
+	{
+		InterlockedDecrement(&ref);
+		if(ref <= 0)
+		{
+			delete cb;
+			delete this;
+		}
+	}
+
+	inline void IncRef() { InterlockedIncrement(&ref); }
+#else
+
+	/* espire: if anyone knows how to do the equivilent of InterlockedIncrement/Decrement on linux feel free
+	   to change this, I couldn't find the atomic functions anymore though :*( */
+
+	inline void IncRef() { ++ref; }
+    
 	inline void DecRef()
 	{
 		--ref;
@@ -193,8 +212,8 @@ struct TimedEvent
 			 delete this;
 		}
 	}
+#endif
 
-	inline void IncRef() { ++ref; }
 };
 
 class EventMgr;
