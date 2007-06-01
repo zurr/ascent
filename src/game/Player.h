@@ -878,11 +878,8 @@ public:
 	void LooseRage();
 	PvPArea * currentPVPArea;
 	uint32 SoulStone;
-	uint32 wtf1[500];
 	map<uint32, WeaponModifier> damagedone;
-	uint32 wtf2[500];
 	map<uint32, WeaponModifier> tocritchance;
-	uint32 wtf3[500];
 	uint32 Seal;
 	uint32 judgespell;
 	bool cannibalize;
