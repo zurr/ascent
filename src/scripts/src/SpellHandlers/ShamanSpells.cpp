@@ -36,7 +36,6 @@ bool RockbiterWeapon(uint32 i, Spell* pSpell)
     case 8:
         enchantment_entry = 3042;
         break;
-    }
     case 9:
         enchantment_entry = 3018;
         break;
