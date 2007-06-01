@@ -320,9 +320,18 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
 	{
 		WorldPacket data(SMSG_EMOTE, 28 + namelen);
 
-		data << (uint32)em->textid;
-		data << (uint64)GetPlayer()->GetGUID();
-		GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
+        switch(em->textid)
+        {
+            case EMOTE_STATE_SLEEP:
+            case EMOTE_STATE_SIT:
+            case EMOTE_STATE_KNEEL:
+                break;
+            default:
+				data << (uint32)em->textid;
+				data << (uint64)GetPlayer()->GetGUID();
+				GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
+                break;
+        }
 
 		data.Initialize(SMSG_TEXT_EMOTE);
 		data << (uint64)GetPlayer()->GetGUID();
@@ -336,4 +345,5 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
 		GetPlayer()->SendMessageToSet(&data, true);
 	}
 }
+
 

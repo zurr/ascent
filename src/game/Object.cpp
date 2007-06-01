@@ -1378,6 +1378,9 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			//End Duel
 			static_cast<Player*>(this)->EndDuel(DUEL_WINNER_KNOCKOUT);
 
+			// surrender emote
+			pVictim->Emote(EMOTE_ONESHOT_BEG);			// Animation
+
 			return;		  
 		}
 	}
