@@ -448,7 +448,7 @@ public:
 	//Quest stuff
 	bool HasQuests() 
 	{
-		for(int i = 0; i < 20; ++i)
+		for(int i = 0; i < 25; ++i)
 		{
 			if(m_questlog[i] != 0)
 				return true;
