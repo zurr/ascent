@@ -1308,6 +1308,8 @@ void Spell::AddTime(uint32 type)
 			    if(m_caster->GetTypeId() == TYPEID_UNIT)
 				    u_caster->GetAIInterface()->AddStopTime(delay);
 		    }
+			//in case cast is delayed, make sure we do not exit combat 
+			else sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL);
 	    }
 	    else if(m_spellInfo->ChannelInterruptFlags != 48140)
 	    {		
