@@ -18,8 +18,19 @@
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
+#define BANNER "Antrix/Win32-2.1.0-%u :: Logon Server                        www.emupedia.com"
+#else
+#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
+#define PLATFORM_TEXT "Linux"
+#define BANNER "Antrix/Linux-2.1.0-%u :: Logon Server                        www.emupedia.com"
+#elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
+#define PLATFORM_TEXT "FreeBSD"
+#define BANNER "Antrix/FreeBSD-2.1.0-%u :: Logon Server                      www.emupedia.com"
 #else
 #define PLATFORM_TEXT "Unix"
+#define BANNER "Antrix/Unix-2.1.0-%u :: Logon Server                         www.emupedia.com"
+#endif
+#include <sched.h>
 #endif
 
 // Database impl
@@ -104,12 +115,19 @@ bool startdb()
 void LogonServer::Run()
 {
 	sLog.Init();
-	sLog.outString("===============================================================================");
-	sLog.outString("Antrix :: Logon Server (running under %s)", PLATFORM_TEXT);
-	sLog.outString("Compatibility is tested with 2.1.0. Revision %u.", g_getRevision());
-	sLog.outString("===============================================================================");
+	sLog.outString("==============================================================================");
+	sLog.outString(BANNER, g_getRevision());
+	sLog.outString("");
+	sLog.outString("Copyright (c) 2007 Antrix Team. This software is under the QPL license, for");
+	sLog.outString("more information look under the COPYING file in this distribution.");
+	sLog.outString("");
+	sLog.outString("If you downloaded this from anywhere else, (e.g. project silvermoon) they are");
+	sLog.outString("NOTHING BUT thiefs and should be boycotted. You have been warned!");
+	sLog.outString("==============================================================================");
+	sLog.outString("");
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
 	sLog.outString("");
+	sLog.outString("Initializing Random Number Generators...");
 
 	sLog.outColor(TNORMAL, "Loading Config Files...\n");
 #ifdef WIN32
