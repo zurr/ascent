@@ -4013,9 +4013,8 @@ The crit constant is class and level dependent and for a level 60 character (pat
 	map<uint32, WeaponModifier>::iterator i = tocritchance.begin();
 	Item*it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 	float b=0;
-	for(;i!=tocritchance.end();)
+	for(;i!=tocritchance.end();++i)
 	{
-        ++i;
         //-1 = any weapon
 		if((i->second.wclass==-1) || (it && (1 << it->GetProto()->SubClass & i->second.subclass)))
 		{
