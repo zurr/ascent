@@ -44,7 +44,7 @@ OSNAME=`uname -s`
 case "$OSNAME" in
 	FreeBSD*)
 		dnl FreeBSD Owns !
-		AC_MSG_RESULT(FreeBSD)
+		AC_MSG_RESULT(FreeBSD Owns your hd)
 		FREEBSD=yes
 	;;
 	Linux*)
