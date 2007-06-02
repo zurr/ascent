@@ -123,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm150"
+				AdditionalOptions="/Zm200"
 				Optimization="3"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\lua\src;..\..\src\luabind;..\..\src\script;..\..\dep\src\gm"
@@ -892,6 +892,26 @@
 			</File>
 			<File
 				RelativePath="..\..\src\game\MapScriptInterface.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptEngine.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptEngine.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptFunctions.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptFunctions.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptFunctionTable.cpp"
 				>
 			</File>
 			<File
