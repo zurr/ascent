@@ -11,10 +11,11 @@ antrix_SOURCES = \
     CConsole.cpp \
     CConsole.h
 
-antrix_LDADD = -lgame -ldatabase -lconfig -lauth -lshared -lzlib -lnetwork
+antrix_LDADD = -lgame -ldatabase -lconfig -lauth -lshared -lzlib -lnetwork -lgmscript
 
 antrix_LDFLAGS = -L$(srcdir)/../shared \
                -L$(srcdir)/../game \
                -L$(srcdir)/../../dep/src/zlib \
+               -L$(srcdir)/../../dep/src/gm \
                -Wl,-export-dynamic
 #               @DLL_EXPORT@

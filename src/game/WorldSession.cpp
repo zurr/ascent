@@ -194,7 +194,7 @@ void WorldSession::LogoutPlayer(bool Save)
 	{
 		if(_player->m_currentLoot && _player->IsInWorld())
 		{
-			Object * obj = _player->GetMapMgr()->GetObject(_player->m_currentLoot);
+			Object * obj = _player->GetMapMgr()->_GetObject(_player->m_currentLoot);
 			if(obj)
 			{
 				switch(obj->GetTypeId())

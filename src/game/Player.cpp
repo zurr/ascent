@@ -7290,3 +7290,16 @@ Unit *Player::PolyTarget()
 		return NULL;
 	return GetMapMgr()->GetUnit(polytarget);
 }
+
+void Player::SendAreaTriggerMessage(const char * message, ...)
+{
+	va_list ap;
+	va_start(ap, message);
+	char msg[500];
+	vsprintf(msg, message, ap);
+	va_end(ap);
+
+	WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 6 + strlen(msg));
+	data << (uint32)0 << msg << (uint8)0x00;
+	m_session->SendPacket(&data);
+}

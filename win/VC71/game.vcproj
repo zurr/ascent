@@ -25,7 +25,7 @@
 				AdditionalOptions="/Zm150"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\logonserver"
+				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\logonserver;..\..\dep\src\gm"
 				PreprocessorDefinitions="WIN32,_DEBUG,_LIB;INTEL_COMPILER"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -88,7 +88,7 @@
 				WholeProgramOptimization="FALSE"
 				OptimizeForProcessor="0"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\lua\src;..\..\src\luabind;..\..\src\script"
+				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\lua\src;..\..\src\luabind;..\..\src\script;..\..\dep\src\gm"
 				PreprocessorDefinitions="WIN32,NDEBUG,_LIB;INTEL_COMPILER"
 				StringPooling="TRUE"
 				MinimalRebuild="FALSE"
@@ -558,6 +558,21 @@
 			</File>
 			<File
 				RelativePath="..\..\src\game\MapScriptInterface.h">
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptEngine.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptEngine.h">
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptFunctions.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptFunctions.h">
+			</File>
+			<File
+				RelativePath="..\..\src\scriptengine\ScriptFunctionTable.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\game\ScriptMgr.cpp">

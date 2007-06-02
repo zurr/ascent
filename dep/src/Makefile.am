@@ -1,1 +1,1 @@
-SUBDIRS = zlib
+SUBDIRS = zlib gm

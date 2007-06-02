@@ -1079,7 +1079,7 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
 	}
 }
 
-Object* MapMgr::GetObject(const uint64 & guid)
+Object* MapMgr::_GetObject(const uint64 & guid)
 {
 	switch (((uint32*)&guid)[1])
 	{

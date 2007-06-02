@@ -195,6 +195,7 @@ AC_CONFIG_FILES([
    dep/Makefile
    dep/src/Makefile
    dep/src/zlib/Makefile
+   dep/src/gm/Makefile
 ])
 
 AC_OUTPUT

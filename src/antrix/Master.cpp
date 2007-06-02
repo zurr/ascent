@@ -18,6 +18,7 @@
 #include "../game/WorldSocket.h"
 #include "../game/LogonCommClient.h"
 #include "../game/LogonCommHandler.h"
+#include "../scriptengine/ScriptEngine.h"
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
@@ -94,6 +95,9 @@ struct Addr
 
 bool Master::Run()
 {
+	ScriptSystem = new ScriptEngine;
+	ScriptSystem->Reload();
+
 	// Startup banner
 	sLog.Init();
 	sLog.outString("==============================================================================");

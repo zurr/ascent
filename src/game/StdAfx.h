@@ -126,4 +126,7 @@
 #include "../antrix/MainServerDefines.h"
 #include "WorldRunnable.h"
 
+#include "../scriptengine/ScriptEngine.h"
+#include "../scriptengine/ScriptFunctions.h"
+
 #endif

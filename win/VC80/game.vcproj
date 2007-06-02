@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="game"
 	ProjectGUID="{1DC6C4DA-A028-41F3-877D-D5400C594F88}"
 	RootNamespace="game"
@@ -44,7 +44,7 @@
 				AdditionalOptions="/Zm200"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\logonserver"
+				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\logonserver;..\..\dep\src\gm"
 				PreprocessorDefinitions="WIN32,_DEBUG,_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -126,7 +126,7 @@
 				AdditionalOptions="/Zm150"
 				Optimization="3"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\lua\src;..\..\src\luabind;..\..\src\script"
+				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\src\lua\src;..\..\src\luabind;..\..\src\script;..\..\dep\src\gm"
 				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -959,22 +959,6 @@
 			Name="Threading"
 			>
 			<File
-				RelativePath="..\..\src\game\ThreadMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\ThreadMgr.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\WorldRunnable.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\game\WorldRunnable.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\game\CThreads.cpp"
 				>
 				<FileConfiguration
@@ -1012,6 +996,22 @@
 			</File>
 			<File
 				RelativePath="..\..\src\game\CThreads.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\ThreadMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\ThreadMgr.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\WorldRunnable.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\WorldRunnable.h"
 				>
 			</File>
 		</Filter>

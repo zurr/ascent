@@ -1098,6 +1098,9 @@ public:
 	Unit *PolyTarget();
 	void  SetPolyTarget(uint64 newtarget) { polytarget = newtarget; }
 	uint32 m_speedChangeCounter;
+
+	void SendAreaTriggerMessage(const char * message, ...);
+
 protected:
 	uint32 iActivePet;
 	void _SetCreateBits(UpdateMask *updateMask, Player *target) const;

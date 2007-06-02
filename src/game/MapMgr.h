@@ -184,7 +184,7 @@ public:
 // Lookup Wrappers
 ///////////////////////////////////
 	Unit * GetUnit(const uint64 & guid);
-	Object * GetObject(const uint64 & guid);
+	Object * _GetObject(const uint64 & guid);
 
 	void run();
 	void Do();

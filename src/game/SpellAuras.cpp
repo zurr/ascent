@@ -309,7 +309,7 @@ Object * Aura::GetCaster()
 	if(m_casterGuid == m_target->GetGUID())
 		return m_target;
 	if(m_target->GetMapMgr())
-		return m_target->GetMapMgr()->GetObject(m_casterGuid);
+		return m_target->GetMapMgr()->_GetObject(m_casterGuid);
 	else
 		return 0;
 }
