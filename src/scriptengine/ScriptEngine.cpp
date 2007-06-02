@@ -277,7 +277,7 @@ bool ScriptEngine::OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint3
 		return false;
 
 	ScriptMap::iterator itr = m_unitMap.find(pCreature->GetEntry());
-	if(itr == m_questMap.end())
+	if(itr == m_unitMap.end())
 		return false;
 
 	map<uint32, gmFunctionObject*>::iterator it2 = itr->second.find(Event);
@@ -311,7 +311,7 @@ bool ScriptEngine::OnGameObjectEvent(GameObject * pGameObject, Player * pUser, u
 		return false;
 
 	ScriptMap::iterator itr = m_gameObjectMap.find(pGameObject->GetEntry());
-	if(itr == m_questMap.end())
+	if(itr == m_gameObjectMap.end())
 		return false;
 
 	map<uint32, gmFunctionObject*>::iterator it2 = itr->second.find(Event);
