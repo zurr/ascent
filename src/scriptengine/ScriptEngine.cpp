@@ -109,7 +109,7 @@ void ScriptEngine::Reload()
 #else
 	/* compile scripts */
 	struct dirent ** list;
-	int filecount = scandir(PREFIX "/lib/", &list, 0, 0);
+	int filecount = scandir("scripts/", &list, 0, 0);
 	if(!filecount || !list)
 		return;
 	
