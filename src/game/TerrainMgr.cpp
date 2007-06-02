@@ -77,6 +77,7 @@ bool TerrainMgr::LoadTerrainHeader()
 
 	if((uint32)FileDescriptor == -1 || FileDescriptor == 0)
 	{
+		sLog.outError("Could not load map file header for %s.", File);
 		return false;
 	}
 
