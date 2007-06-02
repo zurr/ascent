@@ -48,6 +48,14 @@ int GM_CDECL Player_SendAreaTriggerMessage(gmThread * a_thread);
 int GM_CDECL Player_GetClass(gmThread * a_thread);
 int GM_CDECL Player_GetRace(gmThread * a_thread);
 int GM_CDECL Player_Teleport(gmThread * a_thread);
+int GM_CDECL Player_HasFinishedQuest(gmThread * a_thread);
+int GM_CDECL Player_GetReputationRank(gmThread * a_thread);
+int GM_CDECL Player_GetReputationValue(gmThread * a_thread);
+int GM_CDECL Player_IsGroupLeader(gmThread * a_thread);
+int GM_CDECL Player_LearnSpell(gmThread * a_thread);
+int GM_CDECL Player_RemoveSpell(gmThread * a_thread);
+int GM_CDECL Player_AddItem(gmThread * a_thread);
+int GM_CDECL Player_RemoveItem(gmThread * a_thread);
 
 /* AreaTrigger Functions */
 int GM_CDECL AreaTrigger_GetEntry(gmThread * a_thread);
@@ -56,5 +64,7 @@ int GM_CDECL AreaTrigger_GetEntry(gmThread * a_thread);
 int GM_CDECL Unit_Despawn(gmThread * a_thread);
 int GM_CDECL Unit_SendChatMessage(gmThread * a_thread);
 int GM_CDECL Unit_Emote(gmThread * a_thread);
+int GM_CDECL Unit_CastSpell(gmThread * a_thread);
+int GM_CDECL Unit_CastSpellOnTarget(gmThread * a_thread);
 
 #endif

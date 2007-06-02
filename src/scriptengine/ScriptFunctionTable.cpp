@@ -32,6 +32,20 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetClass",							Player_GetClass					},
 		{ "GetRace",							Player_GetRace					},
 		{ "Teleport",							Player_Teleport					},
+		{ "GetStanding",						Player_GetReputationValue		},
+		{ "GetStandingRank",					Player_GetReputationRank		},
+		{ "HasFinishedQuest",					Player_HasFinishedQuest			},
+		{ "LearnSpell",							Player_LearnSpell				},
+		{ "UnlearnSpell",						Player_RemoveSpell				},
+		{ "AddItem",							Player_AddItem					},
+		{ "RemoveItem",							Player_RemoveItem				},
+
+		// Imported Unit Functions
+		{ "Emote",								Unit_Emote						},
+		{ "SendChatMessage",					Unit_SendChatMessage			},
+		{ "Despawn",							Unit_Despawn					},
+		{ "CastSpell",							Unit_CastSpell					},
+		{ "CastSpellOnTarget",					Unit_CastSpellOnTarget			},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -43,6 +57,8 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "Emote",								Unit_Emote						},
 		{ "SendChatMessage",					Unit_SendChatMessage			},
 		{ "Despawn",							Unit_Despawn					},
+		{ "CastSpell",							Unit_CastSpell					},
+		{ "CastSpellOnTarget",					Unit_CastSpellOnTarget			},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));

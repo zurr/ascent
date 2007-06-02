@@ -115,6 +115,51 @@ int Player_BroadcastMessage(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Player_GetReputationRank(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(faction, 0);
+
+	a_thread->PushInt(GetThisPointer<Player>(a_thread)->GetStandingRank(faction));
+    return GM_OK;
+}
+
+int Player_GetReputationValue(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(faction, 0);
+
+	a_thread->PushInt(GetThisPointer<Player>(a_thread)->GetStanding(faction));
+	return GM_OK;
+}
+
+int Player_HasFinishedQuest(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(questid, 0);
+
+	Player *p = GetThisPointer<Player>(a_thread);
+	if(p->HasFinishedQuest(questid))
+		a_thread->PushInt(1);
+	else
+		a_thread->PushInt(0);
+
+	return GM_OK;
+}
+
+int Player_IsGroupLeader(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+
+	Player * p = GetThisPointer<Player>(a_thread);
+	if(p->InGroup() && p->IsGroupLeader())
+		a_thread->PushInt(1);
+	else
+		a_thread->PushInt(0);
+
+	return GM_OK;
+}
+
 /* Areatrigger events */
 int AreaTrigger_GetEntry(gmThread * a_thread)
 {
@@ -160,3 +205,97 @@ int Unit_SendChatMessage(gmThread * a_thread)
 	pUnit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
 	return GM_OK;
 }
+
+int Unit_CastSpell(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(spellid, 0);
+
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	pUnit->CastSpell(pUnit, sSpellStore.LookupEntry(spellid), true);
+	return GM_OK;
+}
+
+int Player_AddItem(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(itemid, 0);
+	GM_CHECK_INT_PARAM(count, 0);
+
+	Player * pPlayer = GetThisPointer<Player>(a_thread);
+	ItemPrototype * proto = objmgr.GetItemPrototype(itemid);
+	if(!proto)
+		return GM_EXCEPTION;
+
+	if(pPlayer->GetItemInterface()->CanReceiveItem(proto, count))
+	{
+		int acount;
+		int bcount;
+		if(proto->MaxCount && proto->MaxCount <= count)
+		{
+			acount = 1;
+			bcount = count;
+		}
+		else
+		{
+			acount = count;
+			bcount = 0;
+		}
+
+		for(int i = 0; i < acount; ++i)
+		{
+			Item * pItem = objmgr.CreateItem(itemid, pPlayer);
+			if(!pPlayer->GetItemInterface()->AddItemToFreeSlot(pItem))
+			{
+				delete pItem;
+				break;
+			}
+		}
+	}
+
+	return GM_OK;
+}
+
+int Player_RemoveItem(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(itemid, 0);
+	GM_CHECK_INT_PARAM(count, 1);
+
+	Player * pPlayer = GetThisPointer<Player>(a_thread);
+	pPlayer->GetItemInterface()->RemoveItemAmt(itemid, count);
+	return GM_OK;
+}
+
+int Player_LearnSpell(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(spellid, 0);
+
+	GetThisPointer<Player>(a_thread)->addSpell(spellid);
+	return GM_OK;
+}
+
+int Player_RemoveSpell(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(spellid, 0);
+
+	GetThisPointer<Player>(a_thread)->removeSpell(spellid, false, false, 0);
+	return GM_OK;
+}
+
+int Unit_CastSpellOnTarget(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(spellid, 0);
+	
+	Unit * pTarget = (Unit*)a_thread->ParamUser_NoCheckTypeOrParam(1);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	
+	SpellEntry * pSpellEntry = sSpellStore.LookupEntry(spellid);
+
+	pThis->CastSpell(pTarget, pSpellEntry, true);
+	return GM_OK;
+}
+
