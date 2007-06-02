@@ -41,6 +41,12 @@ int ScriptEngine_RegisterAreaTriggerEvent(gmThread * a_thread)
 
 int ScriptEngine_RegisterGameObjectEvent(gmThread * a_thread)
 {
+	GM_CHECK_NUM_PARAMS(3);
+	GM_CHECK_INT_PARAM(entry, 0);
+	GM_CHECK_INT_PARAM(event, 1);
+	GM_CHECK_FUNCTION_PARAM(func, 2);
+
+	GetThisPointer<ScriptEngine>(a_thread)->AddGameObjectEvent(entry, event, func);
 	return GM_OK;
 }
 
@@ -51,6 +57,12 @@ int ScriptEngine_RegisterSpellEvent(gmThread * a_thread)
 
 int ScriptEngine_RegisterUnitEvent(gmThread * a_thread)
 {
+	GM_CHECK_NUM_PARAMS(3);
+	GM_CHECK_INT_PARAM(entry, 0);
+	GM_CHECK_INT_PARAM(event, 1);
+	GM_CHECK_FUNCTION_PARAM(func, 2);
+
+	GetThisPointer<ScriptEngine>(a_thread)->AddCreatureEvent(entry, event, func);
 	return GM_OK;
 }
 
