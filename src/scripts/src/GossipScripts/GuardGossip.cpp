@@ -1124,7 +1124,7 @@ public:
         Menu->AddItem(0, "Auction House", 1);
         Menu->AddItem(0, "The Bank", 2);
 		Menu->AddItem(0, "Bat Handler", 3);
-        Menu->AddItem(0, "Gulid Master", 4);
+        Menu->AddItem(0, "Guild Master", 4);
         Menu->AddItem(0, "The Inn", 5);
         Menu->AddItem(0, "Mailbox", 6);    
         Menu->AddItem(0, "Stable Master", 7);
@@ -1408,7 +1408,7 @@ public:
         Menu->AddItem(0, "Auction House", 1);
         Menu->AddItem(0, "The Bank", 2);
         Menu->AddItem(0, "Hippogryph Master", 3);
-		Menu->AddItem(0, "Gulid Master", 4);
+		Menu->AddItem(0, "Guild Master", 4);
         Menu->AddItem(0, "The Inn", 5);    
         Menu->AddItem(0, "Mailbox", 6);
         Menu->AddItem(0, "Stable Master", 7);
@@ -3581,6 +3581,7 @@ void SetupGuardGossip(ScriptMgr * mgr)
 	// To do:
 	//	- Add (eventually) missing guards which should use one of those guard menus.
 	//	- Check all scripts + add guard text to DB and connect them with correct scripts.
+
 
 
 
