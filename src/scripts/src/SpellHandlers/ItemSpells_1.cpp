@@ -98,6 +98,12 @@ bool HolyShock(uint32 i, Spell *pSpell)
         case 20930:
             spellid = 25902;
             break;
+        case 27174:
+            spellid = 27176;
+            break;
+        case 33072:
+            spellid = 33073;
+            break;
         }
         spInfo = sSpellStore.LookupEntry(spellid); // if its a enemy
     } else {
@@ -112,6 +118,12 @@ bool HolyShock(uint32 i, Spell *pSpell)
             break;
         case 20930:
             spellid = 25903;
+            break;
+        case 27174:
+            spellid = 27175;
+            break;
+        case 33072:
+            spellid = 33074;
             break;
         }
         spInfo = sSpellStore.LookupEntry(spellid); // if its a ally
@@ -287,9 +299,11 @@ bool DeviateFish(uint32 i, Spell * pSpell)
 
 void SetupItemSpells_1(ScriptMgr * mgr)
 {
-    mgr->register_dummy_spell(20473, &HolyShock);       // Holy Shock
-    mgr->register_dummy_spell(20939, &HolyShock);       // Holy Shock
-    mgr->register_dummy_spell(20930, &HolyShock);       // Holy Shock
+    mgr->register_dummy_spell(20473, &HolyShock);       // Holy Shock rank 1
+    mgr->register_dummy_spell(20939, &HolyShock);       // Holy Shock rank 2
+    mgr->register_dummy_spell(20930, &HolyShock);       // Holy Shock rank 3
+    mgr->register_dummy_spell(27174, &HolyShock);       // Holy Shock rank 4
+    mgr->register_dummy_spell(33072, &HolyShock);       // Holy Shock rank 5
     mgr->register_dummy_spell(23453, &GnomishTransporter);       // Gnomish Transporter
     mgr->register_dummy_spell(16589, &NoggenFoggerElixr);       // Noggenfogger
     mgr->register_dummy_spell(4130, &BanishExile);        // Banish Exile
