@@ -112,9 +112,9 @@ void ScriptEngine::Reload()
 	/* compile scripts */
 	struct dirent ** list;
 	int filecount = scandir("scripts/", &list, 0, 0);
-	if(!filecount || !list)
+	if(!filecount || !list || filecount < 0)
 		return;
-	
+
 	char * ext;
 	while(filecount--)
 	{

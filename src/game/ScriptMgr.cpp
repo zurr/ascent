@@ -93,7 +93,7 @@ void ScriptMgr::LoadScripts()
 	int filecount = scandir(PREFIX "/lib/", &list, 0, 0);
 	uint32 count = 0;
 
-	if(!filecount || !list)
+	if(!filecount || !list || filecount < 0)
 		sLog.outError("  No external scripts found! Server will continue to function with limited functionality.");
 	else
 	{
