@@ -79,6 +79,9 @@ int Player_Teleport(gmThread * a_thread)
 	GM_CHECK_FLOAT_PARAM(posY, 2);
 	GM_CHECK_FLOAT_PARAM(posZ, 3);
 
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	GetThisPointer<Player>(a_thread)->SafeTeleport(mapId, 0, posX, posY, posZ, 0);
 	return GM_OK;
 }
@@ -86,6 +89,9 @@ int Player_Teleport(gmThread * a_thread)
 int Player_GetLevel(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	a_thread->PushInt((int)GetThisPointer<Player>(a_thread)->getLevel());
 	return GM_OK;
 }
@@ -93,6 +99,9 @@ int Player_GetLevel(gmThread * a_thread)
 int Player_GetClass(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	a_thread->PushInt((int)GetThisPointer<Player>(a_thread)->getClass());
 	return GM_OK;
 }
@@ -100,6 +109,9 @@ int Player_GetClass(gmThread * a_thread)
 int Player_GetRace(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	a_thread->PushInt((int)GetThisPointer<Player>(a_thread)->getRace());
 	return GM_OK;
 }
@@ -108,6 +120,9 @@ int Player_SendAreaTriggerMessage(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
 	GM_CHECK_STRING_PARAM(message, 0);
+
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
 
 	GetThisPointer<Player>(a_thread)->SendAreaTriggerMessage(message);
 	return GM_OK;
@@ -118,6 +133,9 @@ int Player_BroadcastMessage(gmThread * a_thread)
 	GM_CHECK_NUM_PARAMS(1);
 	GM_CHECK_STRING_PARAM(message, 1);
 
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	GetThisPointer<Player>(a_thread)->BroadcastMessage(message);
 	return GM_OK;
 }
@@ -126,6 +144,8 @@ int Player_GetReputationRank(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
 	GM_CHECK_INT_PARAM(faction, 0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
 
 	a_thread->PushInt(GetThisPointer<Player>(a_thread)->GetStandingRank(faction));
     return GM_OK;
@@ -135,6 +155,8 @@ int Player_GetReputationValue(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
 	GM_CHECK_INT_PARAM(faction, 0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
 
 	a_thread->PushInt(GetThisPointer<Player>(a_thread)->GetStanding(faction));
 	return GM_OK;
@@ -144,6 +166,8 @@ int Player_HasFinishedQuest(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
 	GM_CHECK_INT_PARAM(questid, 0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
 
 	Player *p = GetThisPointer<Player>(a_thread);
 	if(p->HasFinishedQuest(questid))
@@ -157,6 +181,8 @@ int Player_HasFinishedQuest(gmThread * a_thread)
 int Player_IsGroupLeader(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
 
 	Player * p = GetThisPointer<Player>(a_thread);
 	if(p->InGroup() && p->IsGroupLeader())
@@ -230,6 +256,9 @@ int Player_AddItem(gmThread * a_thread)
 	GM_CHECK_INT_PARAM(count, 0);
 
 	Player * pPlayer = GetThisPointer<Player>(a_thread);
+	if(pPlayer->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	ItemPrototype * proto = objmgr.GetItemPrototype(itemid);
 	if(!proto)
 		return GM_EXCEPTION;
@@ -270,6 +299,9 @@ int Player_RemoveItem(gmThread * a_thread)
 	GM_CHECK_INT_PARAM(count, 1);
 
 	Player * pPlayer = GetThisPointer<Player>(a_thread);
+	if(pPlayer->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	pPlayer->GetItemInterface()->RemoveItemAmt(itemid, count);
 	return GM_OK;
 }
@@ -279,6 +311,9 @@ int Player_LearnSpell(gmThread * a_thread)
 	GM_CHECK_NUM_PARAMS(1);
 	GM_CHECK_INT_PARAM(spellid, 0);
 
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
+
 	GetThisPointer<Player>(a_thread)->addSpell(spellid);
 	return GM_OK;
 }
@@ -287,6 +322,8 @@ int Player_RemoveSpell(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
 	GM_CHECK_INT_PARAM(spellid, 0);
+	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+		return GM_EXCEPTION;
 
 	GetThisPointer<Player>(a_thread)->removeSpell(spellid, false, false, 0);
 	return GM_OK;

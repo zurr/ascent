@@ -286,7 +286,7 @@ bool ScriptEngine::OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint3
 
 	m_lock.Acquire();
 	SetVariable(0, pCreature, m_unitType);
-	SetVariable(1, pAttacker, m_unitType);
+	SetVariable(1, pAttacker, m_playerType);
 
 	DoGMCall(it2->second, 1);
 	m_lock.Release();
