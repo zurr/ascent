@@ -12,7 +12,8 @@
 #ifndef _GMCONFIG_P_H_
 #define _GMCONFIG_P_H_
 
-#include <malloc.h>  // alloca
+//#include <malloc.h>  // alloca
+#include <stdlib.h>
 #include <new>
 #include <cassert>
 #include <string.h>
