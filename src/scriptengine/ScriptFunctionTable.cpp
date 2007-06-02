@@ -124,4 +124,8 @@ void ScriptEngine::SetScriptEngineFunctionTable()
 	};
 
 	m_machine->RegisterTypeLibrary(m_scriptEngineType, table, sizeof(table) / sizeof(table[0]));
+
+	// Register Normal Functions
+	m_machine->RegisterLibraryFunction("Rand", GM_RAND, 0, 0);
 }
+

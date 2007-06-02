@@ -357,3 +357,14 @@ int GameObject_Despawn(gmThread * a_thread)
 	pThis->Despawn(timer);
 	return GM_OK;
 }
+
+int GM_RAND(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_FLOAT_OR_INT_PARAM(chance, 0);
+	if(Rand(chance))
+		a_thread->PushInt(1);
+	else
+		a_thread->PushInt(0);
+	return GM_OK;
+}
