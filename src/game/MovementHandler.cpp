@@ -402,7 +402,7 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 //	uint8 wtype  = _player->m_mapMgr->GetWaterType(movement_info.x, movement_info.y);
 	float wlevel = _player->m_mapMgr->GetWaterHeight(movement_info.x, movement_info.y);
 
-	if((movement_info.z - 2) > wlevel)
+	if((movement_info.z - 2) > wlevel && (movement_info.flags & 0x200000))
 	{
 		// underwater, w000t!
 		if(_player->m_MountSpellId)
