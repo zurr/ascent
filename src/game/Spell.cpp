@@ -2238,7 +2238,7 @@ int8 Spell::CanCast(bool rangetolerate)
 
 			if(rangetolerate)
 				maxr *= 1.33f;		
-			if(!IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),target, maxr*maxr))
+			if(!IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),target, (maxr*maxr+2)))
 				return SPELL_FAILED_OUT_OF_RANGE;
 		
 			if(p_caster)
@@ -2304,7 +2304,7 @@ int8 Spell::CanCast(bool rangetolerate)
 	if(m_targets.m_targetMask==TARGET_FLAG_DEST_LOCATION)
 	{
 		maxr = GetMaxRange (sSpellRange.LookupEntry(m_spellInfo->rangeIndex));
-		if(!IsInrange(m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,m_caster, maxr*maxr))
+		if(!IsInrange(m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,m_caster, (maxr*maxr+2)))
 			return SPELL_FAILED_OUT_OF_RANGE;
 	}
 
