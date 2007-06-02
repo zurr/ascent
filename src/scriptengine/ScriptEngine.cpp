@@ -168,10 +168,12 @@ void ScriptEngine::ExecuteScriptFile(const char * filename)
 
 void ScriptEngine::DumpErrors()
 {
+	sLog.outString("Dumping errors from script action: ");
 	const char * message;
 	bool first = true;
 	while(message = m_machine->GetLog().GetEntry(first))
 		printf("  %s", message);
+	sLog.outString("End of error dump.");
 }
 
 void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount)
@@ -185,6 +187,7 @@ void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount)
 			call.AddParam(m_variables[1+i]);
 
 		call.End();
+		DumpErrors();
 	}
 	else
 	{
@@ -223,12 +226,12 @@ bool ScriptEngine::OnActivateAreaTrigger(AreaTrigger * at, Player * plr)
 	{
 		call.AddParam(m_variables[1]);
 		call.End();
-        
+
+		DumpErrors();
 		int res;
 		if(!call.GetReturnedInt(res))
 		{
 			printf("Call failed.");
-			DumpErrors();
 			m_lock.Release();
 			return true;
 		}
