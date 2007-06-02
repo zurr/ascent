@@ -346,6 +346,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "reloadaccounts", 'z', &ChatHandler::HandleReloadAccountsCommand, "Reloads accounts on logon server.", NULL, 0, 0, 0 },
 		{ "lookupitem", 'l', &ChatHandler::HandleLookupItemCommand, "Looks up item string x.", NULL, 0, 0, 0 },
 		{ "lookupcreature", 'l', &ChatHandler::HandleLookupCreatureCommand, "Looks up item string x.", NULL, 0, 0, 0 },
+		{ "reloadscripts", 'w', &ChatHandler::HandleReloadScriptsCommand, "Reloads GM Scripts", NULL, 0, 0, 0 },
 		{ NULL,		  0, NULL,										 "",							   NULL, 0, 0  }
 	};
 

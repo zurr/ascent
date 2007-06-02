@@ -59,6 +59,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "Despawn",							Unit_Despawn					},
 		{ "CastSpell",							Unit_CastSpell					},
 		{ "CastSpellOnTarget",					Unit_CastSpellOnTarget			},
+		{ "TimedEmote",							Unit_TimedEmote					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));

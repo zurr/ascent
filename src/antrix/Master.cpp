@@ -95,9 +95,6 @@ struct Addr
 
 bool Master::Run()
 {
-	ScriptSystem = new ScriptEngine;
-	ScriptSystem->Reload();
-
 	// Startup banner
 	sLog.Init();
 	sLog.outString("==============================================================================");
@@ -164,6 +161,9 @@ bool Master::Run()
 	}
 
 	sLog.outString("");
+
+	ScriptSystem = new ScriptEngine;
+	ScriptSystem->Reload();
 
 	loglevel = (uint8)Config.MainConfig.GetIntDefault("LogLevel", DEFAULT_LOG_LEVEL);
 	string host = Config.MainConfig.GetStringDefault("Host", DEFAULT_HOST);

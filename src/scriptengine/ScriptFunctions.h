@@ -66,5 +66,6 @@ int GM_CDECL Unit_SendChatMessage(gmThread * a_thread);
 int GM_CDECL Unit_Emote(gmThread * a_thread);
 int GM_CDECL Unit_CastSpell(gmThread * a_thread);
 int GM_CDECL Unit_CastSpellOnTarget(gmThread * a_thread);
+int GM_CDECL Unit_TimedEmote(gmThread * a_thread);
 
 #endif

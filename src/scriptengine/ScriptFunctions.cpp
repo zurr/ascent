@@ -299,3 +299,17 @@ int Unit_CastSpellOnTarget(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Unit_TimedEmote(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(emoteid, 0);
+	GM_CHECK_INT_PARAM(timer, 1);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(timer)
+		pThis->EventAddEmote((EmoteType)emoteid, timer);
+	else
+		pThis->SetUInt32Value(UNIT_NPC_EMOTESTATE, emoteid);
+
+	return GM_OK;
+}

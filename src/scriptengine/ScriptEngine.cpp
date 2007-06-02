@@ -91,6 +91,8 @@ void ScriptEngine::Reload()
 		m_machine->AddCPPOwnedGMObject(m_userObjects[i]);
 	}
 
+	sLog.outString("Compiling GameMonkey Scripts...");
+
 #ifdef WIN32
 	/* compile the scripts */
 	WIN32_FIND_DATA fd;
@@ -99,7 +101,7 @@ void ScriptEngine::Reload()
 	{
 		do 
 		{
-			string fname = "scripts\\";
+			string fname = "scripts/";
 			fname += fd.cFileName;
 
 			ExecuteScriptFile(fname.c_str());
@@ -126,6 +128,8 @@ void ScriptEngine::Reload()
 	}
 	free(list);
 #endif
+
+	printf("\nScripts compiled.\n\n");
 }
 
 void ScriptEngine::ExecuteScriptFile(const char * filename)
@@ -150,7 +154,9 @@ void ScriptEngine::ExecuteScriptFile(const char * filename)
 	m_variables[0].SetUser(m_userObjects[0]);
 
 	int threadid;
+	printf("  %s: ", strstr(filename, "/")+1);
 	int no_errors = m_machine->ExecuteString(data, &threadid, true, filename, &m_variables[0]);
+	printf("%u errors.\n", no_errors);
 	if(no_errors)
 	{
 		printf("Errors occured while compiling %s.\n", filename);
