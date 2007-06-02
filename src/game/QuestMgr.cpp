@@ -690,6 +690,8 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 
 	BuildQuestComplete(plr, qst);
 	CALL_QUESTSCRIPT_EVENT(qle, OnQuestComplete)(plr);
+
+	ScriptSystem->OnQuestEvent(qst, ((Creature*)qst_giver), plr, QUEST_EVENT_ON_COMPLETE);
 	qle->Finish();
 
 	if(IsQuestRepeatable(qst))
@@ -786,7 +788,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 		if(!plr->HasSpell(qst->reward_spell))
 		{
 			// "Teaching" effect
-			WorldPacket data(SMSG_SPELL_START);
+			WorldPacket data(SMSG_SPELL_START, 200);
 			data << qst_giver->GetNewGUID() << qst_giver->GetNewGUID();
 			data << uint32(7763);
 			data << uint16(0);

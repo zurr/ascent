@@ -326,6 +326,8 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 
 	if(qst->count_required_item || qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)	// gameobject quests deactivate
 		GetPlayer()->UpdateNearbyGameObjects();
+
+	ScriptSystem->OnQuestEvent(qst, ((Creature*)qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
 	
 	sLog.outDebug("WORLD: Added new QLE.");
 }

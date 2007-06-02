@@ -40,6 +40,7 @@ int GM_CDECL ScriptEngine_RegisterGameObjectEvent(gmThread * a_thread);
 int GM_CDECL ScriptEngine_RegisterSpellEvent(gmThread * a_thread);
 int GM_CDECL ScriptEngine_RegisterAreaTriggerEvent(gmThread * a_thread);
 int GM_CDECL ScriptEngine_RegisterPlayerEvent(gmThread * a_thread);
+int GM_CDECL ScriptEngine_RegisterQuestEvent(gmThread * a_thread);
 
 /* Player Functions */
 int GM_CDECL Player_BroadcastMessage(gmThread * a_thread);
@@ -50,5 +51,10 @@ int GM_CDECL Player_Teleport(gmThread * a_thread);
 
 /* AreaTrigger Functions */
 int GM_CDECL AreaTrigger_GetEntry(gmThread * a_thread);
+
+/* Unit Functions */
+int GM_CDECL Unit_Despawn(gmThread * a_thread);
+int GM_CDECL Unit_SendChatMessage(gmThread * a_thread);
+int GM_CDECL Unit_Emote(gmThread * a_thread);
 
 #endif

@@ -40,10 +40,12 @@ void ScriptEngine::SetPlayerFunctionTable()
 void ScriptEngine::SetUnitFunctionTable()
 {
 	static gmFunctionEntry table[] = {
-		{ "test", 0 },
+		{ "Emote",								Unit_Emote						},
+		{ "SendChatMessage",					Unit_SendChatMessage			},
+		{ "Despawn",							Unit_Despawn					},
 	};
 
-	//m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
+	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
 }
 
 void ScriptEngine::SetQuestFunctionTable()
@@ -98,6 +100,7 @@ void ScriptEngine::SetScriptEngineFunctionTable()
 		{ "RegisterGameObjectEvent",			ScriptEngine_RegisterGameObjectEvent },
 		{ "RegisterPlayerEvent",				ScriptEngine_RegisterPlayerEvent },
 		{ "RegisterAreaTriggerEvent",			ScriptEngine_RegisterAreaTriggerEvent },
+		{ "RegisterQuestEvent",					ScriptEngine_RegisterQuestEvent	},
 	};
 
 	m_machine->RegisterTypeLibrary(m_scriptEngineType, table, sizeof(table) / sizeof(table[0]));

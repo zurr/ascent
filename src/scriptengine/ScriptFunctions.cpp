@@ -59,6 +59,17 @@ int ScriptEngine_RegisterPlayerEvent(gmThread * a_thread)
 	return GM_OK;
 }
 
+int ScriptEngine_RegisterQuestEvent(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(3);
+	GM_CHECK_INT_PARAM(entry, 0);
+	GM_CHECK_INT_PARAM(event, 1);
+	GM_CHECK_FUNCTION_PARAM(func, 2);
+
+	GetThisPointer<ScriptEngine>(a_thread)->AddQuestEvent(entry, event, func);
+	return GM_OK;
+}
+
 // Player Functions
 int Player_Teleport(gmThread * a_thread)
 {
@@ -104,6 +115,7 @@ int Player_BroadcastMessage(gmThread * a_thread)
 	return GM_OK;
 }
 
+/* Areatrigger events */
 int AreaTrigger_GetEntry(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
@@ -111,3 +123,40 @@ int AreaTrigger_GetEntry(gmThread * a_thread)
 	return GM_OK;
 }
 
+
+/* Unit events */
+int Unit_Despawn(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(delay, 0);
+	GM_CHECK_INT_PARAM(respawntime, 1);
+
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	if(pUnit->GetTypeId() != TYPEID_UNIT)
+		return GM_EXCEPTION;
+
+	Creature * pCreature = ((Creature*)pUnit);
+	pCreature->Despawn(delay, respawntime);
+
+	return GM_OK;
+}
+
+int Unit_Emote(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(emote, 0);
+
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	pUnit->Emote((EmoteType)emote);
+	return GM_OK;
+}
+
+int Unit_SendChatMessage(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_STRING_PARAM(msg, 0);
+
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	pUnit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
+	return GM_OK;
+}

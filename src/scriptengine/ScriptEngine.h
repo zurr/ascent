@@ -29,6 +29,23 @@
 #ifndef SCRIPTENGINE_H
 #define SCRIPTENGINE_H
 
+/** Forward Declarations
+ */
+class Creature;
+class Unit;
+class Player;
+struct Quest;
+struct AreaTrigger;
+
+/** Quest Events
+ */
+enum QuestEvents
+{
+	QUEST_EVENT_ON_COMPLETE		= 1,
+	QUEST_EVENT_ON_ACCEPT		= 2,
+	QUEST_EVENT_COUNT,
+};
+
 /** @class ScriptEngine
  * Provides an interface for creatures to interface with serverside scripts. This class is created
  * once per instance.
@@ -87,6 +104,7 @@ public:
 	/** Function pointer setting/adding public functions
 	 */
 	inline void AddAreaTriggerEvent(uint32 Entry, gmFunctionObject * func) { m_areaTriggerMap[Entry] = func; }
+	inline void AddQuestEvent(uint32 Entry, uint32 Type, gmFunctionObject * func) { m_questMap[Entry].insert( make_pair( Type, func ) ); }
 
 	/** Constructor - does nothing but nulls out variables
 	 */
@@ -114,7 +132,16 @@ public:
 
 	/** Sets up a gm call with the specified number of arguments
 	 */
-	void DoGMCall(gmFunctionObject * obj, gmUserObject * thisObj, ...);
+	void DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount);
+
+	/** Sets up a userobject and variable to this type and pointer.
+	 */
+	inline void SetVariable(uint32 Index, void * Pointer, gmType Type)
+	{
+		m_userObjects[Index]->m_userType = Type;
+		m_userObjects[Index]->m_user = Pointer;
+		m_variables[Index].SetUser(m_userObjects[Index]);
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,6 +149,10 @@ public:
 	/** Looks up script for areatrigger id x and executes it, return value of true if you can activate it.
 	 */
 	bool OnActivateAreaTrigger(AreaTrigger * at, Player * plr);
+	
+	/** Looks up a script on quest event and executes it.
+	 */
+	bool OnQuestEvent(Quest * quest, Creature * pQuestGiver, Player * plr, uint32 Event);
 };
 
 /* gonna make one global scriptengine for testing */

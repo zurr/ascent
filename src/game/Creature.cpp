@@ -880,3 +880,15 @@ void Creature::SummonExpire()
 	SafeDelete();//delete creature totaly.
 }
 
+void Creature::Despawn(uint32 delay, uint32 respawntime)
+{
+	if(delay)
+	{
+		sEventMgr.AddEvent(this, &Creature::Despawn, (uint32)0, respawntime, EVENT_CREATURE_RESPAWN, delay, 1);
+		return;
+	}
+
+	RemoveFromWorld(false);
+	if(respawntime)
+		sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, respawntime, 1);
+}

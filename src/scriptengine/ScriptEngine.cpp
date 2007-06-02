@@ -156,6 +156,8 @@ void ScriptEngine::ExecuteScriptFile(const char * filename)
 		printf("Errors occured while compiling %s.\n", filename);
 		DumpErrors();
 	}
+
+	delete [] data;
 }
 
 void ScriptEngine::DumpErrors()
@@ -164,6 +166,25 @@ void ScriptEngine::DumpErrors()
 	bool first = true;
 	while(message = m_machine->GetLog().GetEntry(first))
 		printf("  %s", message);
+}
+
+void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount)
+{
+	ASSERT(obj->GetType() == GM_FUNCTION);
+
+	gmCall call;
+	if(call.BeginFunction(m_machine, obj, m_variables[0], false))
+	{
+		for(int i = 0; i < ArgumentCount; ++i)
+			call.AddParam(m_variables[1+i]);
+
+		call.End();
+	}
+	else
+	{
+		printf("Could not find function!");
+		DumpErrors();
+	}
 }
 
 bool ScriptEngine::OnActivateAreaTrigger(AreaTrigger * at, Player * plr)
@@ -218,3 +239,22 @@ bool ScriptEngine::OnActivateAreaTrigger(AreaTrigger * at, Player * plr)
 	}
 }
 
+bool ScriptEngine::OnQuestEvent(Quest * quest, Creature * pQuestGiver, Player * plr, uint32 Event)
+{
+	ScriptMap::iterator itr = m_questMap.find(quest->id);
+	if(itr == m_questMap.end())
+		return false;
+
+	map<uint32, gmFunctionObject*>::iterator it2 = itr->second.find(Event);
+	if(it2 == itr->second.end() )
+		return false;
+
+	m_lock.Acquire();
+	SetVariable(0, quest, m_questType);
+	SetVariable(1, pQuestGiver, m_unitType);
+	SetVariable(2, plr, m_playerType);
+
+	DoGMCall(it2->second, 2);
+	m_lock.Release();
+	return true;
+}
