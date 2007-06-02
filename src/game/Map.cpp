@@ -240,7 +240,6 @@ void Map::BuildXMLStats(char * m_file)
 
 void Map::LoadSpawns(bool reload)
 {
-
 	//uint32 st=getMSTime();
 	CreatureSpawnCount = 0;
 	if(reload)//perform cleanup
@@ -264,8 +263,8 @@ void Map::LoadSpawns(bool reload)
 		do{
 			Field * fields = result->Fetch();
 			CreatureSpawn * cspawn = new CreatureSpawn;
-			cspawn->form = NULL;
 			cspawn->id = fields[0].GetUInt32();
+			cspawn->form = FormationMgr::getSingleton().GetFormation(cspawn->id);
 			cspawn->entry = fields[1].GetUInt32();
 			cspawn->x = fields[3].GetFloat();
 			cspawn->y = fields[4].GetFloat();

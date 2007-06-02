@@ -19,10 +19,13 @@
 #include "StdAfx.h"
 
 initialiseSingleton( WorldCreator );
+initialiseSingleton( FormationMgr );
 //initialiseSingleton( InstanceSavingManagement );
 
 WorldCreator::WorldCreator(TaskList * tl)
 {
+	new FormationMgr;
+
 	// Create all non-instance type maps.
 	QueryResult *result;
 	m_InstanceHigh = 0;
@@ -614,4 +617,29 @@ void WorldCreator::BuildXMLStats(char * m_file)
 		itr->second->BuildXMLStats(m_file);
 	}
 	_busy.Release();
+}
+
+FormationMgr::FormationMgr()
+{
+	QueryResult * res = sDatabase.Query("SELECT * FROM creature_formations");
+	if(res)
+	{
+		Formation *f ;
+		do 
+		{
+			f = new Formation;
+			f->fol = res->Fetch()[1].GetUInt32();
+			f->ang = res->Fetch()[2].GetFloat();
+			f->dist = res->Fetch()[3].GetFloat();
+			m_formations[res->Fetch()[0].GetUInt32()] = f;
+		} while(res->NextRow());
+		delete res;
+	}
+}
+
+FormationMgr::~FormationMgr()
+{
+	FormationMap::iterator itr;
+	for(itr = m_formations.begin(); itr != m_formations.end(); ++itr)
+		delete itr->second;
 }

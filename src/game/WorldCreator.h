@@ -59,6 +59,20 @@ class Battleground;
 // first = instance id
 typedef std::map<uint32, std::map<uint32, std::pair<Map*, Battleground*> > > BattlegroundInstanceMap;
 
+class SERVER_DECL FormationMgr : public Singleton < FormationMgr >
+{
+	map<uint32, Formation*> m_formations;
+public:
+	typedef std::map<uint32, Formation*> FormationMap;
+    FormationMgr();
+	~FormationMgr();
+
+	Formation * GetFormation(uint32 sqlid)
+	{
+		FormationMap::iterator itr = m_formations.find(sqlid);
+		return (itr == m_formations.end()) ? 0 : itr->second;
+	}
+};
 class SERVER_DECL WorldCreator :  public Singleton < WorldCreator >
 {
 public:
