@@ -504,19 +504,14 @@ void Master::_UnhookSignals()
 
 #ifdef WIN32
 
+Mutex m_crashedMutex;
+
 // Crash Handler
 void OnCrash(bool Terminate)
 {
 	sLog.outString("Advanced crash handler initialized.");
-	if(crashed)
-	{
-		sLog.outString("Another thread is already dead. Waiting...");
-		while(1)
-		{
-			Sleep(5000);
-		}
-	}
-	crashed = true;
+	if(!m_crashedMutex.AttemptAcquire())
+		TerminateProcess(GetCurrentProcess(), 0);
 
 	try
 	{
