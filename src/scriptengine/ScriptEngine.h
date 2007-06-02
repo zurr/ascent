@@ -46,6 +46,29 @@ enum QuestEvents
 	QUEST_EVENT_COUNT,
 };
 
+/** Creature Events
+ */
+enum CreatureEvents
+{
+	CREATURE_EVENT_ON_ENTER_COMBAT		= 1,
+	CREATURE_EVENT_ON_LEAVE_COMBAT		= 2,
+	CREATURE_EVENT_ON_KILLED_TARGET		= 3,
+	CREATURE_EVENT_ON_DIED				= 4,
+	CREATURE_EVENT_AI_TICK				= 5,
+	CREATURE_EVENT_ON_SPAWN				= 6,
+	CREATURE_EVENT_ON_GOSSIP_TALK		= 7,
+	CREATURE_EVENT_COUNT,
+};
+
+/** GameObject Events
+ */
+enum GameObjectEvents
+{
+	GAMEOBJECT_EVENT_ON_SPAWN			= 1,
+	GAMEOBJECT_EVENT_ON_USE				= 2,
+	GAMEOBJECT_EVENT_COUNT,
+};
+
 /** @class ScriptEngine
  * Provides an interface for creatures to interface with serverside scripts. This class is created
  * once per instance.
@@ -105,6 +128,8 @@ public:
 	 */
 	inline void AddAreaTriggerEvent(uint32 Entry, gmFunctionObject * func) { m_areaTriggerMap[Entry] = func; }
 	inline void AddQuestEvent(uint32 Entry, uint32 Type, gmFunctionObject * func) { m_questMap[Entry].insert( make_pair( Type, func ) ); }
+	inline void AddCreatureEvent(uint32 Entry, uint32 Type, gmFunctionObject * func) { m_unitMap[Entry].insert( make_pair( Type, func ) ); }
+	inline void AddGameObjectEvent(uint32 Entry, uint32 Type, gmFunctionObject * func) { m_gameObjectMap[Entry].insert( make_pair( Type, func ) ); }
 
 	/** Constructor - does nothing but nulls out variables
 	 */
@@ -153,6 +178,15 @@ public:
 	/** Looks up a script on quest event and executes it.
 	 */
 	bool OnQuestEvent(Quest * quest, Creature * pQuestGiver, Player * plr, uint32 Event);
+
+	/** Looks up a script on creature event and executes it.
+	 */
+	bool OnCreatureEvent(Creature * pCreature, gmFunctionObject * pointer);
+	bool OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint32 Event);
+
+	/** Looks up a script on a gameobject and executes it.
+	 */
+	bool OnGameObjectEvent(GameObject * pGameObject, Player * pUser, uint32 Event);
 };
 
 /* gonna make one global scriptengine for testing */

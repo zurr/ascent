@@ -586,3 +586,9 @@ void GameObject::CallScriptUpdate()
 	myScript->AIUpdate();
 }
 
+void GameObject::OnPushToWorld()
+{
+	Object::OnPushToWorld();
+	/* script */
+	ScriptSystem->OnGameObjectEvent(this, 0, GAMEOBJECT_EVENT_ON_SPAWN);
+}

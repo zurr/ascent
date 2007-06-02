@@ -45,6 +45,7 @@ int GM_CDECL ScriptEngine_RegisterQuestEvent(gmThread * a_thread);
 /* Player Functions */
 int GM_CDECL Player_BroadcastMessage(gmThread * a_thread);
 int GM_CDECL Player_SendAreaTriggerMessage(gmThread * a_thread);
+int GM_CDECL Player_GetLevel(gmThread * a_thread);
 int GM_CDECL Player_GetClass(gmThread * a_thread);
 int GM_CDECL Player_GetRace(gmThread * a_thread);
 int GM_CDECL Player_Teleport(gmThread * a_thread);
@@ -67,5 +68,10 @@ int GM_CDECL Unit_Emote(gmThread * a_thread);
 int GM_CDECL Unit_CastSpell(gmThread * a_thread);
 int GM_CDECL Unit_CastSpellOnTarget(gmThread * a_thread);
 int GM_CDECL Unit_TimedEmote(gmThread * a_thread);
+int GM_CDECL Unit_RegisterTimer(gmThread * a_thread);
+int GM_CDECL Unit_DeregisterTimer(gmThread * a_thread);
+
+/* GameObject Functions */
+int GM_CDECL GameObject_Despawn(gmThread * a_thread);
 
 #endif

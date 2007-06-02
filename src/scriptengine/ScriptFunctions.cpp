@@ -83,6 +83,13 @@ int Player_Teleport(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Player_GetLevel(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	a_thread->PushInt((int)GetThisPointer<Player>(a_thread)->getLevel());
+	return GM_OK;
+}
+
 int Player_GetClass(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
@@ -311,5 +318,42 @@ int Unit_TimedEmote(gmThread * a_thread)
 	else
 		pThis->SetUInt32Value(UNIT_NPC_EMOTESTATE, emoteid);
 
+	return GM_OK;
+}
+
+int Unit_RegisterTimer(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(3);
+	GM_CHECK_INT_PARAM(delay, 0);
+	GM_CHECK_FUNCTION_PARAM(func, 1);
+	GM_CHECK_INT_PARAM(repeats, 2);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() != TYPEID_UNIT)
+		return GM_EXCEPTION;
+
+	sEventMgr.AddEvent(((Creature*)pThis), &Creature::TriggerScriptEvent, ((void*)func), EVENT_SCRIPT_UPDATE_EVENT, delay, repeats);
+	return GM_OK;
+}
+
+int Unit_DeregisterTimer(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() != TYPEID_UNIT)
+		return GM_EXCEPTION;
+
+	sEventMgr.RemoveEvents(((Creature*)pThis), EVENT_SCRIPT_UPDATE_EVENT);
+	return GM_OK;
+}
+
+int GameObject_Despawn(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(timer, 0);
+
+	GameObject * pThis = GetThisPointer<GameObject>(a_thread);
+	pThis->Despawn(timer);
 	return GM_OK;
 }

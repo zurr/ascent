@@ -29,6 +29,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 	static gmFunctionEntry table[] = {
 		{ "BroadcastMessage",					Player_BroadcastMessage			},
 		{ "SendAreaTriggerMessage",				Player_SendAreaTriggerMessage	},
+		{ "GetLevel",							Player_GetLevel					},
 		{ "GetClass",							Player_GetClass					},
 		{ "GetRace",							Player_GetRace					},
 		{ "Teleport",							Player_Teleport					},
@@ -60,6 +61,8 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "CastSpell",							Unit_CastSpell					},
 		{ "CastSpellOnTarget",					Unit_CastSpellOnTarget			},
 		{ "TimedEmote",							Unit_TimedEmote					},
+		{ "RegisterTimer",						Unit_RegisterTimer				},
+		{ "DeregisterTimer",					Unit_DeregisterTimer			},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -77,10 +80,10 @@ void ScriptEngine::SetQuestFunctionTable()
 void ScriptEngine::SetGameObjectFunctionTable()
 {
 	static gmFunctionEntry table[] = {
-		{ "test", 0 },
+		{ "Despawn",							GameObject_Despawn				},
 	};
 
-	//m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
+	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));
 }
 
 void ScriptEngine::SetSpellFunctionTable()

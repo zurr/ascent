@@ -250,6 +250,9 @@ bool ScriptEngine::OnActivateAreaTrigger(AreaTrigger * at, Player * plr)
 
 bool ScriptEngine::OnQuestEvent(Quest * quest, Creature * pQuestGiver, Player * plr, uint32 Event)
 {
+	if(!m_questMap.size())
+		return false;
+
 	ScriptMap::iterator itr = m_questMap.find(quest->id);
 	if(itr == m_questMap.end())
 		return false;
@@ -264,6 +267,62 @@ bool ScriptEngine::OnQuestEvent(Quest * quest, Creature * pQuestGiver, Player * 
 	SetVariable(2, plr, m_playerType);
 
 	DoGMCall(it2->second, 2);
+	m_lock.Release();
+	return true;
+}
+
+bool ScriptEngine::OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint32 Event)
+{
+	if(!m_unitMap.size())
+		return false;
+
+	ScriptMap::iterator itr = m_unitMap.find(pCreature->GetEntry());
+	if(itr == m_questMap.end())
+		return false;
+
+	map<uint32, gmFunctionObject*>::iterator it2 = itr->second.find(Event);
+	if(it2 == itr->second.end() )
+		return false;
+
+	m_lock.Acquire();
+	SetVariable(0, pCreature, m_unitType);
+	SetVariable(1, pAttacker, m_unitType);
+
+	DoGMCall(it2->second, 1);
+	m_lock.Release();
+	return true;
+}
+
+bool ScriptEngine::OnCreatureEvent(Creature * pCreature, gmFunctionObject * pointer)
+{
+	if(!m_unitMap.size())
+		return false;
+
+	m_lock.Acquire();
+	SetVariable(0, pCreature, m_unitType);
+	DoGMCall(pointer, 0);
+	m_lock.Release();
+	return true;
+}
+
+bool ScriptEngine::OnGameObjectEvent(GameObject * pGameObject, Player * pUser, uint32 Event)
+{
+	if(!m_gameObjectMap.size())
+		return false;
+
+	ScriptMap::iterator itr = m_gameObjectMap.find(pGameObject->GetEntry());
+	if(itr == m_questMap.end())
+		return false;
+
+	map<uint32, gmFunctionObject*>::iterator it2 = itr->second.find(Event);
+	if(it2 == itr->second.end() )
+		return false;
+
+	m_lock.Acquire();
+	SetVariable(0, pGameObject, m_gameObjectType);
+	SetVariable(1, pUser, m_playerType);
+
+	DoGMCall(it2->second, 1);
 	m_lock.Release();
 	return true;
 }

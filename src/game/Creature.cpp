@@ -871,6 +871,9 @@ void Creature::OnPushToWorld()
 	}
 	LoadScript();
 	Unit::OnPushToWorld();
+
+	/* script */
+	ScriptSystem->OnCreatureEvent(this, 0, CREATURE_EVENT_ON_SPAWN);
 }
 
 // this is used for guardians. They are non respawnable creatures linked to a player
@@ -891,4 +894,9 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 	RemoveFromWorld(false);
 	if(respawntime)
 		sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, respawntime, 1);
+}
+
+void Creature::TriggerScriptEvent(void * func)
+{
+	ScriptSystem->OnCreatureEvent(this, (gmFunctionObject*)func);
 }
