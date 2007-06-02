@@ -25,6 +25,10 @@
 #include "StdAfx.h"
 ScriptEngine * ScriptSystem;
 
+#ifndef WIN32
+#include <dirent.h>
+#endif
+
 ScriptEngine::ScriptEngine()
 {
 	m_playerType = m_unitType = m_gameObjectType = m_questType = m_spellType = m_auraType = m_areaTriggerType = m_scriptEngineType = -1;
@@ -86,6 +90,8 @@ void ScriptEngine::Reload()
 		m_userObjects[i] = m_machine->AllocUserObject(this, m_scriptEngineType);
 		m_machine->AddCPPOwnedGMObject(m_userObjects[i]);
 	}
+
+#ifdef WIN32
 	/* compile the scripts */
 	WIN32_FIND_DATA fd;
 	HANDLE f = FindFirstFile("scripts\\*.gm", &fd);
@@ -100,6 +106,26 @@ void ScriptEngine::Reload()
 		} while(FindNextFile(f, &fd));
 		FindClose(f);
 	}
+#else
+	/* compile scripts */
+	struct dirent ** list;
+	int filecount = scandir(PREFIX "/lib/", &list, 0, 0);
+	if(!filecount || !list)
+		return;
+	
+	char * ext;
+	while(filecount--)
+	{
+		ext = strrchr(list[filecount]->d_name, '.');
+		if(ext != NULL && !strcmp(ext, ".gm"))
+		{
+			string full_path = "scripts/" + string(list[filecount]->d_name);
+			ExecuteScriptFile(full_path.c_str());
+		}
+		free(list[filecount]);
+	}
+	free(list);
+#endif
 }
 
 void ScriptEngine::ExecuteScriptFile(const char * filename)

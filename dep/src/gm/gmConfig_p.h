@@ -8,6 +8,9 @@
   See Copyright Notice in gmMachine.h
 
 */
+#ifndef WIN32
+#include "gmConfig_p_gcc.h"
+#else
 
 #ifndef _GMCONFIG_P_H_
 #define _GMCONFIG_P_H_
@@ -132,3 +135,4 @@ typedef unsigned int gmuptr; // machine pointer size as int
 #endif //GM_CRT_DEBUG
 
 #endif // _GMCONFIG_P_H_
+#endif

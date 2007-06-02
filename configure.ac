@@ -145,9 +145,9 @@ AC_CHECK_HEADERS( \
  ,[],[AC_MSG_ERROR([Missing required header])])
 
 #CPPFLAGS=$CPPFLAGS_SAVE
-CPPFLAGS="-g"
-CFLAGS="-g"
-CXXFLAGS="-g"
+CPPFLAGS=""
+CFLAGS=""
+CXXFLAGS=""
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

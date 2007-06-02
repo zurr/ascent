@@ -13,7 +13,6 @@ gmCodeGenHooks.cpp \
 gmCodeTree.cpp \
 gmCrc.cpp \
 gmDebug.cpp \
-gmDebugger.cpp \
 gmFunctionObject.cpp \
 gmGCRoot.cpp \
 gmGCRootUtil.cpp \
@@ -37,7 +36,6 @@ gmStream.cpp \
 gmStreamBuffer.cpp \
 gmStringLib.cpp \
 gmStringObject.cpp \
-gmSystemLib.cpp \
 gmTableObject.cpp \
 gmThread.cpp \
 gmUserObject.cpp \

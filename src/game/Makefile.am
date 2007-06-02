@@ -1,9 +1,14 @@
-INCLUDES += -I$(srcdir) -I$(srcdir)/../../dep/include -I$(srcdir)/../shared
+INCLUDES += -I$(srcdir) -I$(srcdir)/../../dep/include -I$(srcdir)/../shared -I$(srcdir)/../../dep/src/gm
 INCLUDES += -I$(srcdir)/../logonserver
 
 noinst_LIBRARIES = libgame.a
 
 libgame_a_SOURCES = \
+    ../scriptengine/ScriptEngine.cpp \
+    ../scriptengine/ScriptEngine.h \
+    ../scriptengine/ScriptFunctions.cpp \
+    ../scriptengine/ScriptFunctions.h \
+    ../scriptengine/ScriptFunctionTable.cpp \
     AddonMgr.cpp \
     AddonMgr.h \
     AIInterface.cpp \
