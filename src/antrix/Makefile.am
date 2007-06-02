@@ -1,5 +1,5 @@
 
-INCLUDES += -I$(srcdir) -I$(srcdir)/../../dep/include -I$(srcdir)/../shared
+INCLUDES += -I$(srcdir) -I$(srcdir)/../../dep/include -I$(srcdir)/../shared -I$(srcdir)/../../dep/src/gm
 INCLUDES += -I$(srcdir)/../game
 
 bin_PROGRAMS = antrix
