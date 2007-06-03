@@ -844,7 +844,7 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 	{
 		if(!(bagguid>>32))//buy to bakcpack
 		{
-			if(slot > INVENTORY_SLOT_ITEM_END)
+			if(slot > INVENTORY_SLOT_ITEM_END || slot < INVENTORY_SLOT_ITEM_START)
 			{
 				//hackers!
 				_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
