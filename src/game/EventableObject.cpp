@@ -36,6 +36,7 @@ EventableObject::EventableObject()
 	//m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
 
 	m_holder = 0;
+	m_event_Instanceid = -1;
 }
 
 void EventableObject::event_AddEvent(TimedEvent * ptr)

@@ -103,7 +103,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			{
 				pGroup->SendPacketToAll(data);
 			}
-			sLog.outString("[party] %s: %s", _player->GetName(), msg.c_str());
+			//sLog.outString("[party] %s: %s", _player->GetName(), msg.c_str());
 			delete data;
 		} break;
 	case CHAT_MSG_GUILD:
@@ -235,7 +235,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(chn) 
 				chn->Say(GetPlayer(),msg.c_str());
 
-			sLog.outString("[%s] %s: %s", channel.c_str(), _player->GetName(), msg.c_str());
+			//sLog.outString("[%s] %s: %s", channel.c_str(), _player->GetName(), msg.c_str());
 
 		} break;
 	case CHAT_MSG_AFK:

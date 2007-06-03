@@ -29,6 +29,7 @@ World::World()
 	m_StartTime = 0;
 	eventholder = new EventableObjectHolder(-1);
 	m_holder = eventholder;
+	m_event_Instanceid = eventholder->GetInstanceID();
 
 	mQueueUpdateInterval = 10000;
 	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("SendBuildOnJoin", false);
