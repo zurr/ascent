@@ -263,6 +263,7 @@ void WorldSession::HandleCancelChannellingOpcode( WorldPacket& recvPacket)
 void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
 {
 	//sLog.outString("Recieved CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
-	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
+	//on original we automatically enter combat when creature got close to us
+//	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
 	GetPlayer()->m_onAutoShot = false;
 }
