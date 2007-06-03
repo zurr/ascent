@@ -24,7 +24,7 @@ class EventableObjectHolder;
   * receiving the call from the instance thread / WorldRunnable thread.
   */
 
-typedef set<TimedEvent*> EventList;
+typedef list<TimedEvent*> EventList;
 typedef multimap<uint32, TimedEvent*> EventMap;
 
 #define EVENT_REMOVAL_FLAG_ALL 0xFFFFFFFF
@@ -97,7 +97,7 @@ protected:
 	EventList m_events;
 
 	Mutex m_insertPoolLock;
-	typedef deque<TimedEvent*> InsertableQueue;
+	typedef list<TimedEvent*> InsertableQueue;
 	InsertableQueue m_insertPool;
 };
 

@@ -3757,17 +3757,29 @@ void Spell::SpellEffectDummyMelee(uint32 i) // Normalized Weapon damage +
 		return;
 
 	// fix double attack on backstab etc.
-	if(m_spellInfo->Effect[1] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
+	/*if(m_spellInfo->Effect[1] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
 	{
 		// rogue ambush etc
-		add_damage = damage * (m_spellInfo->EffectBasePoints[1]+1)/100;
+		add_damage = damage * (m_spellInfo->EffectBasePoints[1]+1);
+		if(!add_damage)
+			add_damage = damage * 1.5;
 		return;
 	}
 	else if(m_spellInfo->Effect[2] = SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
 	{
-		add_damage = damage * (m_spellInfo->EffectBasePoints[2]+1)/100;
+		add_damage = damage * (m_spellInfo->EffectBasePoints[2]+1);
+
+		if(!add_damage)
+			add_damage = damage * 1.5;
+
 		return;
-	}		
+	}		*/
+
+	if(m_spellInfo->Effect[0] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE || m_spellInfo->Effect[1] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
+	{
+		add_damage = damage * 1.5;
+		return;
+	}
    
 	u_caster->Strike(unitTarget,GetType() == SPELL_TYPE_RANGED ? SPELL_TYPE_RANGED:0,m_spellInfo,damage,0,0);
 

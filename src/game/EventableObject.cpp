@@ -31,13 +31,23 @@ EventableObject::~EventableObject()
 
 EventableObject::EventableObject()
 {
-	m_event_Instanceid = event_GetInstanceID();
-	m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
+	/* commented, these will be allocated when the first event is added. */
+	//m_event_Instanceid = event_GetInstanceID();
+	//m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
+
+	m_holder = 0;
 }
 
 void EventableObject::event_AddEvent(TimedEvent * ptr)
 {
 	m_lock.Acquire();
+
+	if(!m_holder)
+	{
+		m_event_Instanceid = event_GetInstanceID();
+		m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
+	}
+
 	ptr->IncRef();
 	ptr->instanceId = m_event_Instanceid;
 	m_events.insert( EventMap::value_type( ptr->eventFlags, ptr ) );
@@ -170,13 +180,17 @@ void EventableObjectHolder::Update(uint32 time_difference)
 
 	/* Insert any pending objects in the insert pool. */
 	m_insertPoolLock.Acquire();
-	InsertableQueue::iterator iqi = m_insertPool.begin();
-	while(iqi != m_insertPool.end())
+	InsertableQueue::iterator iqi;
+	InsertableQueue::iterator iq2 = m_insertPool.begin();
+	while(iq2 != m_insertPool.end())
 	{
+		iqi = iq2++;
 		if((*iqi)->deleted || (*iqi)->instanceId != mInstanceId)
 			(*iqi)->DecRef();
 		else
-			m_events.insert( *iqi );
+			m_events.push_back( (*iqi) );
+
+		m_insertPool.erase(iqi);
 	}
 	m_insertPoolLock.Release();
 
@@ -269,7 +283,7 @@ void EventableObjectHolder::AddEvent(TimedEvent * ev)
 	// m_lock NEEDS TO BE A RECURSIVE MUTEX
 	m_lock.Acquire();
 	ev->IncRef();
-	m_events.insert( ev );
+	m_events.push_back( ev );
 	m_lock.Release();
 }
 
@@ -308,7 +322,7 @@ void EventableObjectHolder::AddObject(EventableObject * obj)
 
 		itr->second->IncRef();
 		itr->second->instanceId = mInstanceId;
-		m_events.insert( itr->second );
+		m_events.push_back( itr->second );
 	}
 
 	m_lock.Release();
