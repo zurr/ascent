@@ -822,6 +822,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
 				if (item->GetUInt32Value(ITEM_FIELD_STACK_COUNT) > amt)
 				{
 					item->SetCount(item->GetUInt32Value(ITEM_FIELD_STACK_COUNT) - amt);
+					item->m_isDirty = true;
 					return amt;
 				}
 				else if (item->GetUInt32Value(ITEM_FIELD_STACK_COUNT)== amt)
@@ -860,6 +861,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
 						if (item2->GetUInt32Value(ITEM_FIELD_STACK_COUNT) > amt)
 						{
 							item2->SetCount(item2->GetUInt32Value(ITEM_FIELD_STACK_COUNT) - amt);
+							item2->m_isDirty = true;
 							return amt;
 						}
 						else if (item2->GetUInt32Value(ITEM_FIELD_STACK_COUNT)== amt)
@@ -896,6 +898,7 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
 				if (item->GetUInt32Value(ITEM_FIELD_STACK_COUNT) > amt)
 				{
 					item->SetCount(item->GetUInt32Value(ITEM_FIELD_STACK_COUNT) - amt);
+					item->m_isDirty = true;
 					return amt;
 				}
 				else if (item->GetUInt32Value(ITEM_FIELD_STACK_COUNT)== amt)
@@ -2489,6 +2492,7 @@ void ItemInterface::ReduceItemDurability()
 		   if(pItem->GetUInt32Value(ITEM_FIELD_DURABILITY) && pItem->GetUInt32Value(ITEM_FIELD_MAXDURABILITY))
 		   {
 			   pItem->SetUInt32Value(ITEM_FIELD_DURABILITY, (pItem->GetUInt32Value(ITEM_FIELD_DURABILITY)-1));
+			   pItem->m_isDirty = true;
 			   //check final durabiity
 			   if(!pItem->GetUInt32Value(ITEM_FIELD_DURABILITY)) //no dur left
 			   {

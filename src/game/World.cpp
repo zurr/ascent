@@ -1363,25 +1363,5 @@ void TaskList::waitForThreadsToExit()
 
 void World::DeleteObject(Object * obj)
 {
-	switch(obj->GetTypeId())
-	{
-	case TYPEID_PLAYER:
-		delete ((Player*)obj);
-		break;
-		
-	case TYPEID_CORPSE:
-		delete ((Corpse*)obj);
-		break;
-
-	case TYPEID_UNIT:
-		if(obj->GetGUIDHigh() == HIGHGUID_PET)
-			delete ((Pet*)obj);
-		else
-			delete ((Creature*)obj);
-		break;
-
-	case TYPEID_GAMEOBJECT:
-		delete ((GameObject*)obj);
-		break;
-	}
+	delete obj;
 }

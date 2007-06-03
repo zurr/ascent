@@ -1083,12 +1083,14 @@ void Spell::cast(bool check)
 					{
 						i_caster->SetUInt32Value(ITEM_FIELD_SPELL_CHARGES, proto->SpellCharges[0] );
 						i_caster->ModUInt32Value(ITEM_FIELD_STACK_COUNT,-1);
+						i_caster->m_isDirty = true;
 						//i_caster->Update();
 					}
 				}
 				else
 				{
 					i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,-1);
+					i_caster->m_isDirty = true;
 				}
 			}
 			else if(proto->Class == ITEM_CLASS_QUEST )
@@ -1100,6 +1102,7 @@ void Spell::cast(bool check)
 					if(cha)
 					{
 						i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,1);
+						i_caster->m_isDirty = true;
 						//i_caster->Update ();
 					}
 
@@ -2705,6 +2708,7 @@ void Spell::CreateItem(uint32 itemId)
 		WorldPacket data;
 		p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, 1, itemId ,0,0xFF,1,0xFFFFFFFF);
 		p_caster->SendMessageToSet(&data, true);
+		newItem->m_isDirty = true;
 
 	} 
 	else 
@@ -2713,6 +2717,7 @@ void Spell::CreateItem(uint32 itemId)
 		WorldPacket data;
 		p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, 1, itemId ,0,0xFF,1,0xFFFFFFFF);
 		p_caster->SendMessageToSet(&data, true);
+		add->m_isDirty = true;
 	}
 }
 

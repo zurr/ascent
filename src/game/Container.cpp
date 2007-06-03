@@ -164,6 +164,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 	if(m_Slot[DstSlot] &&  m_Slot[SrcSlot]&&m_Slot[DstSlot]->GetEntry()==m_Slot[SrcSlot]->GetEntry() && m_Slot[DstSlot]->GetProto()->MaxCount>1)
 	{
 		uint32 total=m_Slot[SrcSlot]->GetUInt32Value(ITEM_FIELD_STACK_COUNT)+m_Slot[DstSlot]->GetUInt32Value(ITEM_FIELD_STACK_COUNT);
+		m_Slot[DstSlot]->m_isDirty = m_Slot[SrcSlot]->m_isDirty = true;
 		if(total<=m_Slot[DstSlot]->GetProto()->MaxCount)
 		{
 			m_Slot[DstSlot]->ModUInt32Value(ITEM_FIELD_STACK_COUNT,m_Slot[SrcSlot]->GetUInt32Value(ITEM_FIELD_STACK_COUNT));
@@ -193,6 +194,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 	if( m_Slot[DstSlot])
 	{
 		SetUInt64Value(CONTAINER_FIELD_SLOT_1  + (DstSlot*2),  m_Slot[DstSlot]->GetGUID()  );
+		m_Slot[DstSlot]->m_isDirty = true;
 	}
 	else
 	{
@@ -202,6 +204,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 	if( m_Slot[SrcSlot])
 	{
 		SetUInt64Value(CONTAINER_FIELD_SLOT_1  + (SrcSlot*2), m_Slot[SrcSlot]->GetGUID() );
+		m_Slot[SrcSlot]->m_isDirty = true;
 	}
 	else
 	{

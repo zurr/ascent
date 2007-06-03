@@ -434,6 +434,7 @@ void Item::SetOwner(Player *owner)
 int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Perm /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */,uint32 Slot_)
 {
 	int32 Slot;
+	m_isDirty = true;
   
 
 
@@ -528,6 +529,7 @@ void Item::RemoveEnchantment(uint32 EnchantmentSlot)
 	if(itr == Enchantments.end())
 		return;
 
+	m_isDirty = true;
 	uint32 Slot = itr->first;
 	if(itr->second.BonusApplied)
 		ApplyEnchantmentBonus(EnchantmentSlot, REMOVE);

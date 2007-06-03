@@ -116,6 +116,7 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 	else 
 	{	
 		add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + amt);
+		add->m_isDirty = true;
 		if (it->Class == 12)		// Quest item
 			sQuestMgr.OnPlayerItemPickup(GetPlayer(),add);
 	}

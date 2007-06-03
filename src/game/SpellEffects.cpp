@@ -1332,6 +1332,7 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 				uint32 item_count_filled;
 				item_count_filled = 20 - add->GetUInt32Value(ITEM_FIELD_STACK_COUNT);
 				add->SetCount(20);
+				add->m_isDirty = true;
 
 				slotresult = p_caster->GetItemInterface()->FindFreeInventorySlot(m_itemProto);
 				if(!slotresult.Result)
@@ -1349,7 +1350,10 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
                 }
 			}
 			else
+			{
 				add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + item_count);
+				add->m_isDirty = true;
+			}
 
 			WorldPacket data(88);
 			p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, item_count, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);

@@ -3543,6 +3543,7 @@ void Player::DeathDurabilityLoss(double percent)
 				}
 
 				GetItemInterface()->GetInventoryItem(i)->SetUInt32Value(ITEM_FIELD_DURABILITY,(uint32)pNewDurability);
+				GetItemInterface()->GetInventoryItem(i)->m_isDirty = true;
 			}
 		}
 	}

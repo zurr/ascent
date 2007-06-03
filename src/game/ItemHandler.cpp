@@ -44,6 +44,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 				{
 					i1->ModUInt32Value(ITEM_FIELD_STACK_COUNT, -c);
 					i2->ModUInt32Value(ITEM_FIELD_STACK_COUNT, +c);
+					i1->m_isDirty = i2->m_isDirty = true;
 				}
 				else
 				{
@@ -69,6 +70,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 
 			i2=objmgr.CreateItem(i1->GetEntry(),_player);
 			i2->SetUInt32Value(ITEM_FIELD_STACK_COUNT,c);
+			i1->m_isDirty = true;
 
 			result = _player->GetItemInterface()->SafeAddItem(i2,DstInvSlot,DstSlot);
 			if(!result)
@@ -249,6 +251,7 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 			if(total<=DstItem->GetProto()->MaxCount)
 			{
 				DstItem->ModUInt32Value(ITEM_FIELD_STACK_COUNT,SrcItem->GetUInt32Value(ITEM_FIELD_STACK_COUNT));
+				DstItem->m_isDirty = true;
 				bool result = _player->GetItemInterface()->SafeFullRemoveItemFromSlot(SrcInvSlot,SrcSlot);
 				if(!result)
 				{
@@ -267,6 +270,8 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 					int32 delta=DstItem->GetProto()->MaxCount-DstItem->GetUInt32Value(ITEM_FIELD_STACK_COUNT);
 					DstItem->SetUInt32Value(ITEM_FIELD_STACK_COUNT,DstItem->GetProto()->MaxCount);
 					SrcItem->ModUInt32Value(ITEM_FIELD_STACK_COUNT,-delta);
+					SrcItem->m_isDirty = true;
+					DstItem->m_isDirty = true;
 					return;
 				}
 			}
@@ -704,6 +709,7 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 		else
 		{
 			add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + amount);
+			add->m_isDirty = true;
 		}
 
 		data.Initialize( SMSG_BUY_ITEM );
@@ -792,6 +798,7 @@ void WorldSession::HandleSellItemOpcode( WorldPacket & recv_data )
 	if(quantity < stackcount)
 	{
 		item->SetCount(stackcount - quantity);
+		item->m_isDirty = true;
 	}
 	else
 	{
@@ -1111,6 +1118,7 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 	else
 	{
 		add->ModUInt32Value(ITEM_FIELD_STACK_COUNT, amount);
+		add->m_isDirty = true;
 	}
 
 	 BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, amount, itemid, 0);
@@ -1632,4 +1640,5 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket &recvPacket)
 		}
 	}
 
+	TargetItem->m_isDirty = true;
 }
