@@ -1630,6 +1630,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
 	sp->o = plr->GetOrientation();
 	sp->x = plr->GetPositionX();
 	sp->y = plr->GetPositionY();
+	sp->respawnNpcLink = 0;
     pCreature->Load(sp, NULL, NULL);
 
 	Pet *old_tame = plr->GetSummon();
@@ -2325,6 +2326,7 @@ bool ChatHandler::HandleCreatureSpawnCommand(const char *args, WorldSession *m_s
 	sp->factionid = proto->Faction;
 	sp->bytes=0;
 	sp->bytes2=0;
+	sp->respawnNpcLink = 0;
 
 
 	Creature * p = m_session->GetPlayer()->GetMapMgr()->CreateCreature();

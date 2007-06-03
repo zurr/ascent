@@ -2132,6 +2132,7 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 		sp->factionid = u_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE);
 		sp->bytes=0;
 		sp->bytes2=0;
+		sp->respawnNpcLink = 0;
 		Creature * p = u_caster->GetMapMgr()->CreateCreature();
 		ASSERT(p);
 		p->m_isPet = true;
