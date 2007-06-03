@@ -95,6 +95,10 @@ protected:
 	int32 mInstanceId;
 	Mutex m_lock;
 	EventList m_events;
+
+	Mutex m_insertPoolLock;
+	typedef deque<TimedEvent*> InsertableQueue;
+	InsertableQueue m_insertPool;
 };
 
 #endif

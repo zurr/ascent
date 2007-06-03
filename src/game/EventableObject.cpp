@@ -166,7 +166,21 @@ EventableObjectHolder::~EventableObjectHolder()
 
 void EventableObjectHolder::Update(uint32 time_difference)
 {
-	m_lock.Acquire();
+	m_lock.Acquire();			// <<<<
+
+	/* Insert any pending objects in the insert pool. */
+	m_insertPoolLock.Acquire();
+	InsertableQueue::iterator iqi = m_insertPool.begin();
+	while(iqi != m_insertPool.end())
+	{
+		if((*iqi)->deleted || (*iqi)->instanceId != mInstanceId)
+			(*iqi)->DecRef();
+		else
+			m_events.insert( *iqi );
+	}
+	m_insertPoolLock.Release();
+
+	/* Now we can proceed normally. */
 	EventList::iterator itr = m_events.begin();
 	EventList::iterator it2;
 	TimedEvent * ev;
@@ -262,7 +276,29 @@ void EventableObjectHolder::AddEvent(TimedEvent * ev)
 void EventableObjectHolder::AddObject(EventableObject * obj)
 {
 	// transfer all of this objects events into our holder
-	m_lock.Acquire();
+	if(!m_lock.AttemptAcquire())
+	{
+		// The other thread is obviously occupied. We have to use an insert pool here, otherwise
+		// if 2 threads relocate at once we'll hit a deadlock situation.
+		m_insertPoolLock.Acquire();
+		
+		for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
+		{
+			// ignore deleted events
+			if(itr->second->deleted)
+				continue;
+
+			itr->second->IncRef();
+			itr->second->instanceId = mInstanceId;
+			m_insertPool.push_back(itr->second);
+		}
+
+		// Release the insert pool.
+		m_insertPoolLock.Release();
+
+		// Ignore the rest of this stuff
+		return;
+	}
 
 	for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
 	{
