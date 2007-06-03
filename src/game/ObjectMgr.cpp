@@ -975,15 +975,16 @@ void ObjectMgr::LoadGMTickets()
 
 void ObjectMgr::SaveGMTicket(uint64 guid)
 {
-	std::stringstream ss1;
-	std::stringstream ss2;
-	ss1 << "DELETE FROM gm_tickets WHERE guid = " << guid << ";";
-	sDatabase.Execute(ss1.str( ).c_str( ));
 	GM_Ticket* ticket = GetGMTicket(guid);
 	if(!ticket)
 	{
 		return;
 	}
+
+	std::stringstream ss1;
+	std::stringstream ss2;
+	ss1 << "DELETE FROM gm_tickets WHERE guid = " << guid << ";";
+	sDatabase.Execute(ss1.str( ).c_str( ));
 
 	ss2 << "INSERT INTO gm_tickets (guid, name, level, type, posX, posY, posZ, message, timestamp) VALUES(";
 	ss2 << ticket->guid << ", '";

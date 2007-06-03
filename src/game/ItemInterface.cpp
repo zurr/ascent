@@ -182,6 +182,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 	ASSERT(slot < MAX_INVENTORY_SLOT);
 	ASSERT(ContainerSlot < MAX_INVENTORY_SLOT);
 	ASSERT(item != NULL);
+	item->m_isDirty = true;
 
 	if(item->GetProto())
 	{
@@ -313,6 +314,8 @@ Item *ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int8 
 		if (pItem == NULL) { return NULL; }
 
 		m_pItems[slot] = NULL;
+		pItem->m_isDirty = true;
+
 		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (slot*2), 0 );
 
 		if ( slot < EQUIPMENT_SLOT_END )
@@ -459,6 +462,8 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int8 slot)
 		if (pItem == NULL) { return false; }
 
 		m_pItems[slot] = NULL;
+		pItem->m_isDirty = true;
+
 		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (slot*2), 0 );
 
 		if ( slot < EQUIPMENT_SLOT_END )
@@ -2044,6 +2049,10 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
 	m_pItems[srcslot] = DstItem;
 	m_pItems[dstslot] = SrcItem;
+	if(DstItem)
+		DstItem->m_isDirty = true;
+	if(SrcItem)
+		SrcItem->m_isDirty = true;
 
 	if(m_pItems[dstslot])
 	{
@@ -2211,6 +2220,7 @@ void ItemInterface::mLoadItemsFromDatabase()
 
 				}
 				SafeAddItem(item, containerslot, slot);
+				item->m_isDirty = false;
 			}
 		}
 		while( result->NextRow() );

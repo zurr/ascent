@@ -135,6 +135,8 @@ bool Container::AddItem(int8 slot, Item *item)
 		return false;
 
 	m_Slot[slot] = item;
+	item->m_isDirty = true;
+
 	item->SetUInt64Value(ITEM_FIELD_CONTAINED, GetGUID());
 	item->SetOwner(m_owner);
 
@@ -261,6 +263,8 @@ bool Container::AddItemToFreeSlot(Item *pItem)
 		if(!m_Slot[slot])
 		{
 			m_Slot[slot] = pItem;
+			pItem->m_isDirty = true;
+
 			pItem->SetUInt64Value(ITEM_FIELD_CONTAINED, GetGUID());
 			pItem->SetOwner(m_owner);
 

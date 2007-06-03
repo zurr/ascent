@@ -39,6 +39,7 @@ Item::Item(uint32 high,uint32 low)
 	m_owner = NULL;
 	loot = NULL;
 	locked = false;
+	m_isDirty = true;
 }
 
 Item::~Item()
@@ -189,6 +190,9 @@ void Item::ApplyRandomProperties()
 
 void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave)
 {
+	if(!m_isDirty && !firstsave)
+		return;
+
 	std::stringstream ss;
 
 	ss << "REPLACE INTO playeritems VALUES(";
@@ -241,6 +245,8 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave)
 		sDatabase.WaitExecute(ss.str().c_str());
 	else
 		sDatabase.Execute( ss.str().c_str());
+
+	m_isDirty = false;
 }
 
 

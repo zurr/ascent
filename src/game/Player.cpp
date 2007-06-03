@@ -1334,11 +1334,11 @@ void Player::smsg_InitialSpells()
 void Player::_SaveItemCooldown()
 {
 	if(CooldownCheat) return;
-	sDatabase.Execute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", GetGUIDLow() );
-
 	// if we have nothing to save why save?
 	if (m_itemcooldown.size() == 0)
 		return;
+
+	sDatabase.Execute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", GetGUIDLow() );
 
 	std::stringstream query;
 	query << "INSERT INTO playercooldownitems (OwnerGuid, ItemEntry, SpellID, SpellCategory, CooldownTimeStamp, Cooldown) VALUES ";
@@ -1371,11 +1371,11 @@ void Player::_SaveItemCooldown()
 void Player::_SaveSpellCoolDownSecurity()
 {
 	if(CooldownCheat) return;
-	sDatabase.Execute("DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u", GetGUIDLow() );
-
 	// if we have nothing to save, then why save?
 	if (SpellCooldownMap.size() == 0)
 		return;
+
+	sDatabase.Execute("DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u", GetGUIDLow() );
 
 	SpellCooldownHolderMap::iterator itr, it2, itrend;
 
@@ -3901,7 +3901,10 @@ void Player::_LoadTutorials()
 void Player::_SaveTutorials()
 {
 	if(tutorialsDirty)
+	{
 		sDatabase.Execute("REPLACE INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u')", GetGUIDLow(), m_Tutorials[0], m_Tutorials[1], m_Tutorials[2], m_Tutorials[3], m_Tutorials[4], m_Tutorials[5], m_Tutorials[6], m_Tutorials[7]);
+		tutorialsDirty = false;
+	}
 }
 
 uint32 Player::GetTutorialInt(uint32 intId )

@@ -146,6 +146,7 @@ public:
 
 	Loot *loot;
 	bool locked;
+	bool m_isDirty;
 
 	EnchantmentInstance * GetEnchantment(uint32 slot);
 	bool IsGemRelated(EnchantEntry * Enchantment);
