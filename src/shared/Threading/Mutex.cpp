@@ -41,6 +41,7 @@ Mutex::~Mutex() { pthread_mutex_destroy(&mutex); }
 
 void Mutex::Acquire() { pthread_mutex_lock(&mutex); }
 void Mutex::Release() { pthread_mutex_unlock(&mutex); }
-bool Mutex::AttemptAcquire() { pthread_mutex_trylock(&mutex); }
+bool Mutex::AttemptAcquire() { return (pthread_mutex_trylock(&mutex) == 0); }
+
 
 #endif
