@@ -4992,7 +4992,7 @@ bool Player::CanShootRangedWeapon(uint32 spellid, Unit *target, bool autoshot)
 			data << uint32(75);
 		else 
 			data << uint32(spellid);
-		data << uint8(2) << fail;		// we want to send a cast result for AUTOSHOT, as thats what the client sees as being cast.
+		data << fail ;		// we want to send a cast result for AUTOSHOT, as thats what the client sees as being cast.
 		GetSession()->SendPacket(&data);
 		return false;
 	}
@@ -5008,6 +5008,7 @@ void Player::EventRepeatSpell()
 
 	if(!target || !this->CanShootRangedWeapon(m_AutoShotSpell->Id, target, true))
 	{
+		m_AutoShotAttackTimer = m_AutoShotDuration; //avoid flooding client with error mesages
 		return;
 	}
 	else
