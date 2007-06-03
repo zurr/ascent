@@ -1792,6 +1792,8 @@ void Aura::SpellAuraModStun(bool apply)
 	if(!m_target)
 		return;
 
+	if(m_spellProto->Id == 38554)		// Eye of gilrock
+		return;
    
 	if(apply)
 	{ 
@@ -4931,6 +4933,10 @@ void Aura::SpellAuraModHaste(bool apply)
 
 void Aura::SpellAuraForceReaction(bool apply)
 {
+	// hackfix for spectacles
+	if(m_spellProto->EffectApplyAuraName[0] == SPELL_AURA_MOD_INVISIBILITY_DETECTION)
+		return;
+
 	if (apply)
 	{
 		//SetCasterFaction(m_target->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
