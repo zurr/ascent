@@ -572,7 +572,7 @@ void GameObject::Expire()
 	if(IsInWorld())
 		RemoveFromWorld();
 
-	delete this;
+	sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_DELETE_TIMER, 1000, 1);
 }
 
 void GameObject::Deactivate()

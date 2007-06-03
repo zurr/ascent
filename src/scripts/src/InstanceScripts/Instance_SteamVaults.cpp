@@ -1018,7 +1018,7 @@ void SetupSteamVaults(ScriptMgr * mgr)
 {
     mgr->register_creature_script(CN_COILFANG_ORACLE, &COILFANGORACLEAI::Create);
     mgr->register_creature_script(CN_COILFANG_ENGINEER, &COILFANGENGINEERAI::Create);
-	mgr->register_creature_script(CN_Coilfang_sorceress, &CoilfangsorceressAI::Create);
+	//mgr->register_creature_script(CN_Coilfang_sorceress, &CoilfangsorceressAI::Create);
     mgr->register_creature_script(CN_COILFANG_WARRIOR, &COILFANGWARRIORAI::Create);
 	mgr->register_creature_script(CN_COILFANG_SIREN, &COILFANGSIRENAI::Create);
 	mgr->register_creature_script(CN_HYDROMANCER_THESPIA, &HYDROMANCERTHESPIAAI::Create);

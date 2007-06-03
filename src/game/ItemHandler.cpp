@@ -1354,6 +1354,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 					{
 					   _player->ModUInt32Value( PLAYER_FIELD_COINAGE , -(int32)dDurability );
 					   _player->GetItemInterface()->GetInventoryItem(i)->SetDurabilityToMax();
+					   _player->GetItemInterface()->GetInventoryItem(i)->m_isDirty = true;
 
 					   /*if (cDurability <= 0)
 						   _player->ApplyItemMods(_player->GetItemInterface()->GetInventoryItem(i), i, true);*/
@@ -1380,6 +1381,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 				{
 					_player->ModUInt32Value( PLAYER_FIELD_COINAGE , -(int32)dDurability );
 					item->SetDurabilityToMax();
+					item->m_isDirty = true;
 					
 					if(cDurability <= 0)
 					_player->ApplyItemMods(item, _player->GetItemInterface()->GetInventorySlotByGuid(itemguid), true);
