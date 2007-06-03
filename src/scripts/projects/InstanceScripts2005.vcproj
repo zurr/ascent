@@ -227,6 +227,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_SteamVaults.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_ZulGurub.cpp"
 				>
 			</File>

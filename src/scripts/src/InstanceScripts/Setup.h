@@ -9,6 +9,7 @@ void SetupZulGurub(ScriptMgr * mgr);
 void SetupBotanica(ScriptMgr * mgr);
 void SetupBlackwingLair(ScriptMgr * mgr);
 void SetupNaxxramas(ScriptMgr * mgr);
+void SetupSteamVaults(ScriptMgr * mgr);
 
 struct SP_AI_Spell{
 	SpellEntry *info; // spell info

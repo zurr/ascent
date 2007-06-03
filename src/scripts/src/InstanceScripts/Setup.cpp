@@ -16,6 +16,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupBlackwingLair(mgr);
 	SetupNaxxramas(mgr);
 	SetupOnyxiaAI(mgr);
+	SetupSteamVaults(mgr);
 }
 
 #ifdef WIN32
