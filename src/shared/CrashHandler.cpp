@@ -244,9 +244,9 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry &en
 			sprintf(buffer, "%s!%s Line %u\n", p, entry.name, entry.lineNumber);
 		//OnOutput(buffer);
 
-		if(p)
+		/*if(p)
 			OnOutput(p);
-		else
+		else*/
 			OnOutput(buffer);
 	}
 }

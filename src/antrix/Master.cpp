@@ -102,9 +102,6 @@ bool Master::Run()
 	sLog.outString("");
 	sLog.outString("Copyright (c) 2007 Antrix Team. This software is under the QPL license, for");
 	sLog.outString("more information look under the COPYING file in this distribution.");
-	sLog.outString("");
-	sLog.outString("If you downloaded this from anywhere else, (e.g. project silvermoon) they are");
-	sLog.outString("NOTHING BUT thiefs and should be boycotted. You have been warned!");
 	sLog.outString("==============================================================================");
 	sLog.outString("");
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
