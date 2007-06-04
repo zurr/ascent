@@ -2825,6 +2825,18 @@ void Aura::SpellAuraModShapeshift(bool apply)
 					modelId = 15375;
 			}
 		}break;
+	case FORM_SWIFT: //not tested yet, right now going on trust
+		{// druid
+			freeMovements = true;
+			spellId = 40121; //Swift Form Passive
+			if(apply)
+			{
+				if(m_target->getRace() == RACE_NIGHTELF)//NE
+					modelId = 21243;
+				else //TAUREN
+					modelId = 21244;
+			}
+		}break;
 	}
 
 	if (apply)
