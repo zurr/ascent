@@ -106,7 +106,7 @@ char *ext;
 				SCRIPT_MODULE mod = dlopen(full_path.c_str(), RTLD_NOW);
 				printf("  %s : 0x%08X : ", list[filecount]->d_name, mod);
 				if(mod == 0)
-					printf("error!\n");
+					printf("error! [%s]\n", dlerror());
 				else
 				{
 					// find version import
