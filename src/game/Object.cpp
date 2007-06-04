@@ -160,14 +160,18 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer *data, Player *target)
 	updateMask.SetCount( m_valuesCount );
 	_SetCreateBits( &updateMask, target );
 
-	//very hacky thing to do, but execute spell is not triggered by client unless we send health in %
-	uint32 old_health=GetUInt32Value(UNIT_FIELD_HEALTH);
-	uint32 prc_heath=GetUInt32Value(UNIT_FIELD_MAXHEALTH)*100/(old_health+1);//watch the division by 0 error !
-//	SetUInt32Value(UNIT_FIELD_HEALTH,prc_heath);
-	m_uint32Values[UNIT_FIELD_HEALTH] = prc_heath; //another hack to not trigger value update unless it changed since last time 
-	// this will cache automatically if needed
-	_BuildValuesUpdate( data, &updateMask, target );
-	m_uint32Values[UNIT_FIELD_HEALTH] = old_health; //another hack to not trigger value update unless it changed since last time 
+	if(GetTypeId() == TYPEID_UNIT || GetTypeId() == TYPEID_PLAYER)
+	{
+		//very hacky thing to do, but execute spell is not triggered by client unless we send health in %
+		uint32 old_health=GetUInt32Value(UNIT_FIELD_HEALTH);
+		uint32 prc_health=GetUInt32Value(UNIT_FIELD_MAXHEALTH)*100/(old_health+1);//watch the division by 0 error !
+	//	SetUInt32Value(UNIT_FIELD_HEALTH,prc_heath);
+		m_uint32Values[UNIT_FIELD_HEALTH] = prc_health; //another hack to not trigger value update unless it changed since last time 
+		// this will cache automatically if needed
+		_BuildValuesUpdate( data, &updateMask, target );
+		m_uint32Values[UNIT_FIELD_HEALTH] = old_health; //another hack to not trigger value update unless it changed since last time 
+	}
+	else _BuildValuesUpdate( data, &updateMask, target );
 
 	// update count: 1 ;)
 	return 1;

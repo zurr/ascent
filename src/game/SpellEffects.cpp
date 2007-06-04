@@ -1230,7 +1230,7 @@ void Spell::SpellEffectWeapondamageNoschool(uint32 i) // Weapon damage + (no Sch
 	if(!unitTarget ||!u_caster)
 		return;
 
-	u_caster->Strike(unitTarget,GetType() == SPELL_TYPE_RANGED ? SPELL_TYPE_RANGED:0,m_spellInfo,damage,0,0);
+	u_caster->Strike(unitTarget,GetType() == SPELL_TYPE_RANGED ? SPELL_TYPE_RANGED:SPELL_TYPE_MELEE,m_spellInfo,damage,0,0);
 }
 
 void Spell::SpellEffectAddExtraAttacks(uint32 i) // Add Extra Attacks
