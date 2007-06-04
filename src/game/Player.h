@@ -30,7 +30,6 @@ struct LevelInfo;
 #define PLAYER_NORMAL_RUN_SPEED 7.0
 #define PLAYER_NORMAL_SWIM_SPEED 4.722222
 #define PLAYER_NORMAL_FLIGHT_SPEED 7.0
-#define PLAYER_LEVEL_CAP 70
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 //====================================================================
 //  Inventory

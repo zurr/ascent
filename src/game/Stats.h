@@ -105,6 +105,8 @@ return xp;*/
 inline uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {
 
+//	const uint32 grayLevel[sWorld.LevelCap+1] = {0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,13,14,15,16,17,18,19,20,21,22,22,23,24,25,26,27,28,29,30,31,31,32,33,34,35,35,36,37,38,39,39,40,41,42,43,43,44,45,46,47,47,48,49,50,51,51,52,53,54,55,55};
+#define PLAYER_LEVEL_CAP 70
 	const uint32 grayLevel[PLAYER_LEVEL_CAP+1] = {0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,13,14,15,16,17,18,19,20,21,22,22,23,24,25,26,27,28,29,30,31,31,32,33,34,35,35,36,37,38,39,39,40,41,42,43,43,44,45,46,47,47,48,49,50,51,51,52,53,54,55,55};
 	if(AttackerLvl + 5 <= VictimLvl) 
 	{
@@ -137,15 +139,16 @@ inline uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 			}
 			else 
 			{
-				if(AttackerLvl > PLAYER_LEVEL_CAP)
+				if(AttackerLvl > sWorld.LevelCap)
 					return 1;//gm
-				if(VictimLvl <= grayLevel[AttackerLvl])
+				if(AttackerLvl<PLAYER_LEVEL_CAP && VictimLvl <= grayLevel[AttackerLvl])
 					return 0;
 				else
 					return 1;
 			}
 		}
 	}
+#undef PLAYER_LEVEL_CAP
 }
 
 inline uint32 CalculateXpToGive(Unit *pVictim, Unit *pAttacker)
@@ -163,7 +166,7 @@ inline uint32 CalculateXpToGive(Unit *pVictim, Unit *pAttacker)
 		if(victimI->Type == CRITTER)
 			return 0;
 	
-	if(pAttacker->getLevel() >= PLAYER_LEVEL_CAP)
+	if(pAttacker->getLevel() >= sWorld.LevelCap)
 		return 0;
 	uint32 VictimLvl = pVictim->GetUInt32Value(UNIT_FIELD_LEVEL);
 	uint32 AttackerLvl = pAttacker->GetUInt32Value(UNIT_FIELD_LEVEL);

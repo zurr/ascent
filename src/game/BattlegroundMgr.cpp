@@ -224,7 +224,7 @@ void BattlegroundMgr::CreateWSGBattleground()
 	HStartLoc[3] = 3.141593f;
 
 	LevMin = 1;
-	LevMax = PLAYER_LEVEL_CAP;
+	LevMax = sWorld.LevelCap;
 	//sLog.outString("Creating battleground %s, %d-%d", bg_Name.c_str(), LevMin, LevMax);
 	CreateBattleground(MaxPlayersPerTeam, LevMin, LevMax, bg_Name, MapId, AStartLoc[0], AStartLoc[1], AStartLoc[2], AStartLoc[3], HStartLoc[0], HStartLoc[1], HStartLoc[2], HStartLoc[3]);
 }
@@ -254,7 +254,7 @@ void BattlegroundMgr::CreateABBattleground()
 	AStartLoc[3] = 3.802896f;
 
 	LevMin = 1;
-	LevMax = PLAYER_LEVEL_CAP;
+	LevMax = sWorld.LevelCap;
 	//sLog.outString("Creating battleground %s, %d-%d", bg_Name.c_str(), LevMin, LevMax);
 	CreateBattleground(MaxPlayersPerTeam, LevMin, LevMax, bg_Name, MapId, AStartLoc[0], AStartLoc[1], AStartLoc[2], AStartLoc[3], HStartLoc[0], HStartLoc[1], HStartLoc[2], HStartLoc[3]);
 	
@@ -285,7 +285,7 @@ void BattlegroundMgr::CreateAVBattleground()
 	AStartLoc[3] = 3.089727f;
 
 	LevMin = 50;
-	LevMax = PLAYER_LEVEL_CAP;
+	LevMax = sWorld.LevelCap;
 	//sLog.outString("Creating battleground %s, %d-%d", bg_Name.c_str(), LevMin, LevMax);
 	CreateBattleground(MaxPlayersPerTeam, LevMin, LevMax, bg_Name, MapId, AStartLoc[0], AStartLoc[1], AStartLoc[2], AStartLoc[3], HStartLoc[0], HStartLoc[1], HStartLoc[2], HStartLoc[3]);
 
@@ -316,7 +316,7 @@ void BattlegroundMgr::CreateArena()
 	AStartLoc[3] = 0;
 
 	LevMin = 1;
-	LevMax = PLAYER_LEVEL_CAP;
+	LevMax = sWorld.LevelCap;
 	CreateBattleground(MaxPlayersPerTeam, LevMin, LevMax, bg_Name, MapId, AStartLoc[0], AStartLoc[1], AStartLoc[2], AStartLoc[3], HStartLoc[0], HStartLoc[1], HStartLoc[2], HStartLoc[3]);
 
 }

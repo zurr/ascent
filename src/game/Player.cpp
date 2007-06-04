@@ -1150,7 +1150,7 @@ void Player::GiveXP(uint32 xp, const uint64 &guid, bool allowbonus)
 	if ( xp < 1 )
 		return;
 	if(!GetSession()->CanUseCommand('p'))
-		if(getLevel() >= PLAYER_LEVEL_CAP)
+		if(getLevel() >= sWorld.LevelCap)
 			return;
 
 	if(m_restState == RESTSTATE_RESTED && allowbonus)
@@ -4194,7 +4194,7 @@ void Player::UpdateStats()
 
 void Player::AddRestXP(uint32 amount)
 {
-	if(GetUInt32Value(UNIT_FIELD_LEVEL) >= PLAYER_LEVEL_CAP)		// Save CPU, don't waste time on this if you're >= 60
+	if(GetUInt32Value(UNIT_FIELD_LEVEL) >= sWorld.LevelCap)		// Save CPU, don't waste time on this if you're >= 60
 		return;
 	m_restAmount += amount;
 	SetUInt32Value(PLAYER_REST_STATE_EXPERIENCE, (m_restAmount*0.5));
@@ -4203,7 +4203,7 @@ void Player::AddRestXP(uint32 amount)
 
 uint32 Player::SubtractRestXP(uint32 amount)
 {
-	if(GetUInt32Value(UNIT_FIELD_LEVEL) >= PLAYER_LEVEL_CAP)		// Save CPU, don't waste time on this if you're >= 70
+	if(GetUInt32Value(UNIT_FIELD_LEVEL) >= sWorld.LevelCap)		// Save CPU, don't waste time on this if you're >= 70
 		return 0;
 	uint32 amt = amount;
 	int32 tmp = m_restAmount - amount;
@@ -4241,7 +4241,7 @@ uint32 Player::CalculateRestXP(uint32 seconds)
 
 void Player::EventPlayerRest()
 {
-	if(GetUInt32Value(UNIT_FIELD_LEVEL) >= PLAYER_LEVEL_CAP)		// Save CPU, don't waste time on this if you're >= 70
+	if(GetUInt32Value(UNIT_FIELD_LEVEL) >= sWorld.LevelCap)		// Save CPU, don't waste time on this if you're >= 70
 	{
 		EventMgr::getSingleton().RemoveEvents(this, EVENT_PLAYER_REST);
 		return;
@@ -4256,7 +4256,7 @@ void Player::EventPlayerRest()
 
 void Player::UpdateRestState()
 {
-	if(m_restAmount && GetUInt32Value(UNIT_FIELD_LEVEL) < PLAYER_LEVEL_CAP)
+	if(m_restAmount && GetUInt32Value(UNIT_FIELD_LEVEL) < sWorld.LevelCap)
 		m_restState = RESTSTATE_RESTED;
 	else
 		m_restState = RESTSTATE_NORMAL;
@@ -4277,7 +4277,7 @@ void Player::ApplyPlayerRestState(bool apply)
 		UpdateRestState();
 		m_lastRestUpdate = (uint32)time(NULL);
 
-		if(GetUInt32Value(UNIT_FIELD_LEVEL) >= PLAYER_LEVEL_CAP)		// Save CPU, don't waste time on this if you're >= 70
+		if(GetUInt32Value(UNIT_FIELD_LEVEL) >= sWorld.LevelCap)		// Save CPU, don't waste time on this if you're >= 70
 			return;
 		sEventMgr.AddEvent(this, &Player::EventPlayerRest, EVENT_PLAYER_REST, (uint32)60000, 0);
 	}
@@ -4490,7 +4490,7 @@ bool Player::CanSee(Object* obj)
 					{
 						if (val < INVISIBILTY_FLAG_TOTAL)
 						{
-							float r = GetInvisibiltyDetection(static_cast<INVISIBILTY_FLAG>(val))/PLAYER_LEVEL_CAP;
+							float r = GetInvisibiltyDetection(static_cast<INVISIBILTY_FLAG>(val))/sWorld.LevelCap;
 							if (GetDistance2dSq (obj) < r * r) 
 								return true;
 							else
@@ -4513,7 +4513,7 @@ bool Player::CanSee(Object* obj)
 							return this->GetSubGroup()->HasMember(owner);		
 						else
 						{
-							float r = GetInvisibiltyDetection(static_cast<GameObject*>(obj)->invisibilityFlag)/PLAYER_LEVEL_CAP;
+							float r = GetInvisibiltyDetection(static_cast<GameObject*>(obj)->invisibilityFlag)/sWorld.LevelCap;
 							if (GetDistance2dSq (obj) < r * r) 
 								return true;
 							else
