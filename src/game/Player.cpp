@@ -317,6 +317,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_comboPoints = 0;
 
 	polytarget				= 0;
+	chat_disabled_until		= 0;
 }
 
 
@@ -7328,3 +7329,16 @@ void Player::SendAreaTriggerMessage(const char * message, ...)
 	data << (uint32)0 << msg << (uint8)0x00;
 	m_session->SendPacket(&data);
 }
+
+void Player::Set_Mute_on_player(uint32 until)
+{
+	chat_disabled_until = until;
+	if(!sEventMgr.HasEvent(this,EVENT_MUTE_PLAYER))
+		sEventMgr.AddEvent(this,&Player::Remove_Mute_on_player,EVENT_MUTE_PLAYER,chat_disabled_until,1);
+}
+
+void Player::Remove_Mute_on_player()
+{
+	chat_disabled_until = 0;
+}
+

@@ -1099,6 +1099,9 @@ public:
 	uint32 m_speedChangeCounter;
 
 	void SendAreaTriggerMessage(const char * message, ...);
+	void Set_Mute_on_player(uint32 until);
+	void Remove_Mute_on_player();
+	uint32 HasMuteOnPlayer(){return chat_disabled_until;};
 
 protected:
 	uint32 iActivePet;
@@ -1252,5 +1255,6 @@ protected:
 	uint32 _fields[PLAYER_END];
 	void JumpToEndTaxiNode(TaxiPath * path);
 	uint64	polytarget;//temp variable that stores our poly target to be able to remove it when polymorphing others 
+	uint32	chat_disabled_until;//force player to be silent. Yeah i'm pissed of on noobs
 };
 #endif
