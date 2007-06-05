@@ -661,6 +661,9 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 	int32 stuff;
 	Item* add ;
 	bool result;
+	uint8 error;
+
+	sLog.outDetail( "WORLD: Recieved CMSG_BUYBACK_ITEM" );
 
 	recv_data >> guid >> stuff;
 	stuff -= 74;
@@ -695,6 +698,12 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 			data << uint32(itemid);
 			data << uint8(2); //not enough money
 			SendPacket( &data );
+			return;
+		}
+		// Check for item uniqueness
+		if (error = _player->GetItemInterface()->CanReceiveItem(it->GetProto(), amount))
+		{
+			_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
 			return;
 		}
 		_player->ModUInt32Value( PLAYER_FIELD_COINAGE , -cost);
