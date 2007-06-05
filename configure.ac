@@ -29,8 +29,8 @@ AH_TEMPLATE([USE_KQUEUE], [Define if you want to use the kqueue socket engine mo
 AH_TEMPLATE([HAVE_DARWIN], [Define if you have MacOSX Darwin, to include the correct headers for kevent])
 
 # Default prefix
-AC_PREFIX_DEFAULT(.)
-test "$prefix" = "NONE" && prefix='.'
+AC_PREFIX_DEFAULT(`pwd`)
+test "$prefix" = "NONE" && prefix=`pwd`
 test "$sysconfdir" = "\${prefix}/etc" && sysconfdir='../etc'
 test "$scriptdir" = "" && scriptdir='../lib'
 
