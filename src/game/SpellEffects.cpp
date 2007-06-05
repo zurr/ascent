@@ -2106,6 +2106,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 
 void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 {
+	/*
 //    SpellEffectSummonDemon(i);
 	//these are not pets. Just some creatures that will fight on your side. 
 	//They follow you and attack your target but you cannot command them
@@ -2122,13 +2123,14 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 	{
 		//this sucks, there is no function to create from template and i'm not sure if i missed any fields
 		CreatureSpawn * sp = new CreatureSpawn;
+		float m_fallowAngle=-(M_PI/2*i);
 		sp->displayid = info->DisplayID;
 		sp->entry = cr_entry;
 		sp->form = 0;
 		sp->id = objmgr.GenerateCreatureSpawnID();
 		sp->movetype = 0;
-		sp->x = u_caster->GetPositionX();
-		sp->y = u_caster->GetPositionY();
+        sp->x = u_caster->GetPositionX()+(3*(cosf(m_fallowAngle+u_caster->GetOrientation())));
+        sp->y = u_caster->GetPositionY()+(3*(sinf(m_fallowAngle+u_caster->GetOrientation())));
 		sp->z = u_caster->GetPositionZ();
 		sp->o = u_caster->GetOrientation();
 		sp->emote_state =0;
@@ -2136,41 +2138,29 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 		sp->factionid = u_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE);
 		sp->bytes=0;
 		sp->bytes2=0;
-		sp->respawnNpcLink = 0;
 		Creature * p = u_caster->GetMapMgr()->CreateCreature();
 		ASSERT(p);
-		p->m_isPet = true;
         p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
         p->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_caster->GetGUID());
         p->SetZoneId(m_caster->GetZoneId());
-		p->Load(sp,NULL, NULL);
+		p->Load(sp);
 		p->PushToWorld(u_caster->GetMapMgr());
 
-		//now to get a position to place creatures around caster.
-/*		float direction = i*3.14f/2; //logic ofcourse
-		float sv = sin(direction);
-		float cv = cos(direction);
-		float ox = 3.0f;
-		float oy = 0;
-		float nx = ox * cv - oy * sv;
-		float ny = oy * cv + ox * sv;
-		uint32 x = u_caster->GetMapMgr()->GetPosX(u_caster->GetPositionX())+ nx;
-		uint32 y = u_caster->GetMapMgr()->GetPosX(u_caster->GetPositionY())+ ny;*/
-		uint32 x = u_caster->GetMapMgr()->GetPosX(u_caster->GetPositionX());
-		uint32 y = u_caster->GetMapMgr()->GetPosX(u_caster->GetPositionY());
-
 		// Add spawn to map
-		u_caster->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x,y)->CreatureSpawns.insert(sp);
+        uint32 cellx=((_maxX-sp->x)/_cellSize);
+        uint32 celly=((_maxY-sp->y)/_cellSize);
+		u_caster->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx,celly)->CreatureSpawns.insert(sp);
 
 		//set target to follow
-        p->GetAIInterface()->Init(p,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
+        p->GetAIInterface()->Init(p,AITYPE_GUARDIAN_DEFEND,MOVEMENTTYPE_NONE,u_caster);
         p->GetAIInterface()->SetUnitToFollow(u_caster);
-        p->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2*i));
+        p->GetAIInterface()->SetUnitToFollowAngle(m_fallowAngle);
         p->GetAIInterface()->SetFollowDistance(3.0f);
 
 		//make sure they will be desumonized (roxor)
 		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1);
 	}
+	*/
 }
 
 void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
