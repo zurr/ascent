@@ -159,20 +159,8 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer *data, Player *target)
 	UpdateMask updateMask;
 	updateMask.SetCount( m_valuesCount );
 	_SetCreateBits( &updateMask, target );
-
-	if(GetTypeId() == TYPEID_UNIT || GetTypeId() == TYPEID_PLAYER)
-	{
-		//very hacky thing to do, but execute spell is not triggered by client unless we send health in %
-		uint32 old_health=GetUInt32Value(UNIT_FIELD_HEALTH);
-		uint32 prc_health=GetUInt32Value(UNIT_FIELD_MAXHEALTH)*100/(old_health+1);//watch the division by 0 error !
-	//	SetUInt32Value(UNIT_FIELD_HEALTH,prc_heath);
-		m_uint32Values[UNIT_FIELD_HEALTH] = prc_health; //another hack to not trigger value update unless it changed since last time 
-		// this will cache automatically if needed
-		_BuildValuesUpdate( data, &updateMask, target );
-		m_uint32Values[UNIT_FIELD_HEALTH] = old_health; //another hack to not trigger value update unless it changed since last time 
-	}
-	else _BuildValuesUpdate( data, &updateMask, target );
-
+	// this will cache automatically if needed
+	_BuildValuesUpdate( data, &updateMask, target );
 	// update count: 1 ;)
 	return 1;
 }
@@ -524,11 +512,32 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 
 	*data << (uint8)bc;
 	data->append( updateMask->GetMask(), bc*4 );
-	  
-	for( uint32 index = 0; index < values_count; index ++ )
+/*
+	//uncomment this if you need creature health in %
+	if(GetTypeId() == TYPEID_UNIT)
 	{
-		if( updateMask->GetBit( index ) )
-			*data << m_uint32Values[ index ];
+		//very hacky thing to do, but execute spell is not triggered by client unless we send health in %
+		uint32 old_health=GetUInt32Value(UNIT_FIELD_HEALTH);
+		uint32 prc_health=100*old_health/GetUInt32Value(UNIT_FIELD_MAXHEALTH);
+		uint32 old_max_health=GetUInt32Value(UNIT_FIELD_MAXHEALTH);
+		m_uint32Values[UNIT_FIELD_HEALTH] = prc_health; //another hack to not trigger value update unless it changed since last time 
+		SetUInt32Value(UNIT_FIELD_MAXHEALTH,100);
+		for( uint32 index = 0; index < values_count; index ++ )
+		{
+			if( updateMask->GetBit( index ) )
+				*data << m_uint32Values[ index ];
+		}
+		// do not trigger update just because of our hack
+		m_uint32Values[UNIT_FIELD_HEALTH] = old_health; 
+		m_uint32Values[UNIT_FIELD_MAXHEALTH] = old_max_health; 
+	}
+	else*/
+	{
+		for( uint32 index = 0; index < values_count; index ++ )
+		{
+			if( updateMask->GetBit( index ) )
+				*data << m_uint32Values[ index ];
+		}
 	}
 
 	if(reset)
