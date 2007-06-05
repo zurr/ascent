@@ -2782,7 +2782,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
 		} break;
 	case FORM_GHOSTWOLF:
 		{
-			modelId = 1236;
+//			modelId = 1236;
+			modelId = 4613;
 		} break;  
 	case FORM_DEFENSIVESTANCE:
 		{

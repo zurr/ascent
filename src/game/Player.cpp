@@ -1395,6 +1395,7 @@ void Player::_SaveSpellCoolDownSecurity()
 	uint32 SpellID;
 	uint32 TimeStamp;
 	uint32 ts = now();
+	uint8	hascooldowns=0;
 	for (itr = SpellCooldownMap.begin(); itr != SpellCooldownMap.end();)
 	{
 		if(itr != SpellCooldownMap.begin())
@@ -1419,9 +1420,11 @@ void Player::_SaveSpellCoolDownSecurity()
 		}
 #endif
 		query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
+		hascooldowns=1;
 		++itr;
 	}
-	sDatabase.Execute( query.str().c_str( ) );
+	if(hascooldowns)
+		sDatabase.Execute( query.str().c_str( ) );
 }
 
 void Player::_SavePet()
