@@ -16,11 +16,14 @@
 #define __LOGON_COMM_CLIENT_H
 
 #include "../logonserver/LogonOpcodes.h"
+#include <RC4Engine.h>
 
 class LogonCommClientSocket : public Socket
 {
 	uint16 remaining;
 	uint16 opcode;
+	RC4Engine _sendCrypto;
+	RC4Engine _recvCrypto;
 public:
 	LogonCommClientSocket(SOCKET fd);
 	~LogonCommClientSocket();
@@ -29,6 +32,8 @@ public:
 	void SendPacket(WorldPacket * data);
 	void HandlePacket(WorldPacket & recvData);
 	void SendPing();
+	void SendChallenge();
+	void HandleAuthResponse(WorldPacket & recvData);
 
 	void HandleRegister(WorldPacket & recvData);
 	void HandlePong(WorldPacket & recvData);
@@ -42,7 +47,12 @@ public:
 	uint32 pingseq;
 	uint32 _id;
 	bool gotpong;
+	uint32 authenticated;
+	uint32 seed;
+	bool use_crypto;
 };
+
+void SimpleCrypt(int len, char * buffer, uint32 key);
 
 #endif
 

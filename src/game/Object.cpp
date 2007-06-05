@@ -159,8 +159,10 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer *data, Player *target)
 	UpdateMask updateMask;
 	updateMask.SetCount( m_valuesCount );
 	_SetCreateBits( &updateMask, target );
+
 	// this will cache automatically if needed
 	_BuildValuesUpdate( data, &updateMask, target );
+
 	// update count: 1 ;)
 	return 1;
 }
@@ -512,31 +514,31 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 
 	*data << (uint8)bc;
 	data->append( updateMask->GetMask(), bc*4 );
-/*
-	//uncomment this if you need creature health in %
-	if(GetTypeId() == TYPEID_UNIT)
+	  
+	for( uint32 index = 0; index < values_count; index ++ )
 	{
-		//very hacky thing to do, but execute spell is not triggered by client unless we send health in %
-		uint32 old_health=GetUInt32Value(UNIT_FIELD_HEALTH);
-		uint32 prc_health=100*old_health/GetUInt32Value(UNIT_FIELD_MAXHEALTH);
-		uint32 old_max_health=GetUInt32Value(UNIT_FIELD_MAXHEALTH);
-		m_uint32Values[UNIT_FIELD_HEALTH] = prc_health; //another hack to not trigger value update unless it changed since last time 
-		SetUInt32Value(UNIT_FIELD_MAXHEALTH,100);
-		for( uint32 index = 0; index < values_count; index ++ )
+		if( updateMask->GetBit( index ) )
 		{
-			if( updateMask->GetBit( index ) )
+			switch(index)
+			{
+			case UNIT_FIELD_MAXHEALTH:
+			case UNIT_FIELD_HEALTH:
+				{
+					if(target == this)
+						*data << m_uint32Values[index];
+					else
+					{
+						uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
+						if(pct == 0 && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
+							pct = 1;
+						*data << pct;						
+					}
+				}
+				break;
+
+			default:
 				*data << m_uint32Values[ index ];
-		}
-		// do not trigger update just because of our hack
-		m_uint32Values[UNIT_FIELD_HEALTH] = old_health; 
-		m_uint32Values[UNIT_FIELD_MAXHEALTH] = old_max_health; 
-	}
-	else*/
-	{
-		for( uint32 index = 0; index < values_count; index ++ )
-		{
-			if( updateMask->GetBit( index ) )
-				*data << m_uint32Values[ index ];
+			}
 		}
 	}
 

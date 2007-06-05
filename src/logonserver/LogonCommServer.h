@@ -15,11 +15,19 @@
 #ifndef __LOGON_COMM_SERVER_H
 #define __LOGON_COMM_SERVER_H
 
+#include <RC4Engine.h>
+
 class LogonCommServerSocket : public Socket
 {
 	uint16 remaining;
 	uint16 opcode;
+	uint32 seed;
+	RC4Engine sendCrypto;
+	RC4Engine recvCrypto;
 public:
+	uint32 authenticated;
+	bool use_crypto;
+
 	LogonCommServerSocket(SOCKET fd);
 	~LogonCommServerSocket();
 
@@ -33,10 +41,13 @@ public:
 	void HandleSessionRequest(WorldPacket & recvData);
 	void HandleSQLExecute(WorldPacket & recvData);
 	void HandleReloadAccounts(WorldPacket & recvData);
+	void HandleAuthChallenge(WorldPacket & recvData);
 
 	uint32 last_ping;
 	bool removed;
 	set<uint32> server_ids;
 };
+
+void SimpleCrypt(int len, char * buffer, uint32 key);
 
 #endif

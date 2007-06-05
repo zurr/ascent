@@ -855,6 +855,156 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	return true;
 }
 
+
+void Creature::Load(CreatureProto * proto_, float x, float y, float z)
+{
+	proto = proto_;
+
+	creature_info = objmgr.GetCreatureName(proto->Id);
+	if(!creature_info)
+		return;
+
+	//Set fields
+	SetUInt32Value(OBJECT_FIELD_ENTRY,proto->Id);
+	SetFloatValue(OBJECT_FIELD_SCALE_X,proto->Scale);
+
+	SetUInt32Value(UNIT_FIELD_HEALTH, proto->Health);
+	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, proto->Health);
+	SetUInt32Value(UNIT_FIELD_MAXHEALTH, proto->Health);
+
+	SetUInt32Value(UNIT_FIELD_POWER1,proto->Mana);
+	SetUInt32Value(UNIT_FIELD_MAXPOWER1,proto->Mana);
+	SetUInt32Value(UNIT_FIELD_BASE_MANA,proto->Mana);
+
+	SetUInt32Value(UNIT_FIELD_DISPLAYID,creature_info->DisplayID);
+	SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID,creature_info->DisplayID);
+
+	SetUInt32Value(UNIT_FIELD_LEVEL, proto->Level);
+	for(uint32 i = 0; i < 7; ++i)
+		SetUInt32Value(UNIT_FIELD_RESISTANCES+i,proto->Resistances[i]);
+
+	SetUInt32Value(UNIT_FIELD_BASEATTACKTIME,proto->AttackTime);
+	SetFloatValue(UNIT_FIELD_MINDAMAGE, proto->MinDamage);
+	SetFloatValue(UNIT_FIELD_MAXDAMAGE, proto->MaxDamage);
+
+	SetUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,proto->RangedAttackTime);
+	SetFloatValue(UNIT_FIELD_MINRANGEDDAMAGE,proto->RangedMinDamage);
+	SetFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE,proto->RangedMaxDamage);
+
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, proto->Item1SlotDisplay);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY_01, proto->Item2SlotDisplay);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY_02, proto->Item3SlotDisplay);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, proto->Item1Info1);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO_01, proto->Item1Info2);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO_02, proto->Item2Info1);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO_03, proto->Item2Info2);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO_04, proto->Item3Info1);
+	SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO_05, proto->Item3Info2);
+
+	SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, proto->Faction);
+	SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, proto->BoundingRadius);
+	SetFloatValue(UNIT_FIELD_COMBATREACH, proto->CombatReach);
+	original_emotestate = 0;
+	// set position
+
+	m_position.ChangeCoords( x, y, z, 0 );
+	m_spawnLocation.ChangeCoords(x, y, z, 0);
+
+	m_faction = sFactionTmpStore.LookupEntry(proto->Faction);
+
+	if(m_faction)
+	{
+		m_factionDBC = sFactionStore.LookupEntry(m_faction->Faction);
+	}
+	//SETUP NPC FLAGS
+	SetUInt32Value(UNIT_NPC_FLAGS,proto->NPCFLags);
+
+	if ( HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR ) )
+		m_SellItems = objmgr.GetVendorList(GetEntry());
+
+	if ( HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER ) )
+		_LoadQuests();
+
+	if ( HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TAXIVENDOR) )
+		m_TaxiNode = sTaxiMgr.GetNearestTaxiNode( m_position.x, m_position.y, m_position.z, GetMapId() );
+
+	if ( HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP) && _gossipScript == 0 )
+		SetGossipScript( sScriptMgr.GetGossipScript( GetEntry() ) );
+
+	if ( HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER) )
+		mTrainer = objmgr.GetTrainer(GetEntry());
+
+	if ( HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER ) )
+		auctionHouse = sAuctionMgr.GetAuctionHouse(GetEntry());
+
+	//load resistances
+	for(uint32 x=0;x<7;x++)
+		BaseResistance[x]=GetUInt32Value(UNIT_FIELD_RESISTANCES+x);
+	for(uint32 x=0;x<5;x++)
+		BaseStats[x]=GetUInt32Value(UNIT_FIELD_STAT0+x);
+
+	BaseDamage[0]=GetFloatValue(UNIT_FIELD_MINDAMAGE);
+	BaseDamage[1]=GetFloatValue(UNIT_FIELD_MAXDAMAGE);
+	BaseOffhandDamage[0]=GetFloatValue(UNIT_FIELD_MINOFFHANDDAMAGE);
+	BaseOffhandDamage[1]=GetFloatValue(UNIT_FIELD_MAXOFFHANDDAMAGE);
+	BaseRangedDamage[0]=GetFloatValue(UNIT_FIELD_MINRANGEDDAMAGE);
+	BaseRangedDamage[1]=GetFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE);
+
+	SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);   // better set this one
+
+	////////////AI
+
+	// kek
+	for(list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
+	{
+		AI_Spell * sp = new AI_Spell;
+		memcpy(sp, (*itr), sizeof(AI_Spell));
+		m_aiInterface->addSpellToList(sp);
+	}
+	m_aiInterface->m_canCallForHelp = proto->m_canCallForHelp;
+	m_aiInterface->m_CallForHelpHealth = proto->m_callForHelpHealth;
+	m_aiInterface->m_canFlee = proto->m_canFlee;
+	m_aiInterface->m_FleeHealth = proto->m_fleeHealth;
+	m_aiInterface->m_FleeDuration = proto->m_fleeDuration;
+
+	//these fields are always 0 in db
+	GetAIInterface()->setMoveType(0);
+	GetAIInterface()->setMoveRunFlag(0);
+
+	// load formation data
+	m_aiInterface->m_formationLinkSqlId = 0;
+	m_aiInterface->m_formationFollowDistance = 0;
+	m_aiInterface->m_formationFollowAngle = 0;
+
+	//////////////AI
+
+	myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
+
+
+	// PLACE FOR DIRTY FIX BASTARDS
+	// HACK! set call for help on civ health @ 100%
+	if(creature_info->Civilian >= 1)
+		m_aiInterface->m_CallForHelpHealth = 100;
+
+	//HACK!
+	if(m_uint32Values[UNIT_FIELD_DISPLAYID] == 17743 ||
+		m_uint32Values[UNIT_FIELD_DISPLAYID] == 20242 ||
+		m_uint32Values[UNIT_FIELD_DISPLAYID] == 15435 ||
+		(creature_info->Family == UNIT_TYPE_MISC))
+	{
+		m_useAI = false;
+	}
+
+	/* more hacks! */
+	if(proto->Mana != 0)
+		SetPowerType(POWER_TYPE_MANA);
+	else
+		SetPowerType(0);
+
+	has_combat_text = objmgr.HasMonsterSay(GetEntry(), MONSTER_SAY_EVENT_ENTER_COMBAT);
+	has_waypoint_text = objmgr.HasMonsterSay(GetEntry(), MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
+}
+
 void Creature::OnPushToWorld()
 {
 	if(proto)

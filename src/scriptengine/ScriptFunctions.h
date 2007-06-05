@@ -70,6 +70,7 @@ int GM_CDECL Unit_CastSpellOnTarget(gmThread * a_thread);
 int GM_CDECL Unit_TimedEmote(gmThread * a_thread);
 int GM_CDECL Unit_RegisterTimer(gmThread * a_thread);
 int GM_CDECL Unit_DeregisterTimer(gmThread * a_thread);
+int GM_CDECL Unit_SpawnMonster(gmThread * a_thread);
 
 /* GameObject Functions */
 int GM_CDECL GameObject_Despawn(gmThread * a_thread);

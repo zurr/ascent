@@ -19,19 +19,23 @@ enum RealmListOpcodes
 {
 	// Initialization of server/client connection...
 	RCMSG_REGISTER_REALM			= 1,
-	RSMSG_REALM_REGISTERED		  = 2,
+	RSMSG_REALM_REGISTERED			= 2,
 
 	// Upon client connect (for WS)
-	RCMSG_REQUEST_SESSION		   = 3,
+	RCMSG_REQUEST_SESSION			= 3,
 	RSMSG_SESSION_RESULT			= 4,
 
 	// Ping/Pong
-	RCMSG_PING					  = 5,
-	RSMSG_PONG					  = 6,
+	RCMSG_PING						= 5,
+	RSMSG_PONG						= 6,
 
 	// SQL Query Execute
 	RCMSG_SQL_EXECUTE				= 7,
 	RCMSG_RELOAD_ACCOUNTS			= 8,
+
+	// Authentication
+	RCMSG_AUTH_CHALLENGE			= 9,
+	RSMSG_AUTH_RESPONSE				= 10,
 };
 
 #endif

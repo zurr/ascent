@@ -48,10 +48,6 @@ LogonCommClientSocket * LogonCommHandler::ConnectToLogon(string Address, uint32 
 		return 0;
 	}
 	
-
-	// Send the initial ping
-	conn->SendPing();
-
 	return conn;
 }
 
@@ -102,7 +98,34 @@ void LogonCommHandler::Connect(LogonServer * server)
 		return;
 	}
 	sLog.outColor(TGREEN, " ok!\n");
-	sLog.outColor(TNORMAL, "	   >> registering realms... ");
+	sLog.outColor(TNORMAL, "        >> authenticating...\n");
+	sLog.outColor(TNORMAL, "        >> ");
+	uint32 tt = time(NULL) + 10;
+	conn->SendChallenge();
+	sLog.outColor(TNORMAL, "        >> result:");
+	while(!conn->authenticated)
+	{
+		if(time(NULL) >= tt)
+		{
+			sLog.outColor(TYELLOW, " timeout.\n");
+			return;
+		}
+
+		Sleep(50);
+	}
+
+	if(conn->authenticated != 1)
+	{
+		sLog.outColor(TRED, " failure.\n");
+		return;
+	}
+	else
+		sLog.outColor(TGREEN, " ok!\n");
+
+	// Send the initial ping
+	conn->SendPing();
+
+	sLog.outColor(TNORMAL, "        >> registering realms... ");
 	conn->_id = server->ID;
 
 	RequestAddition(conn);
@@ -127,7 +150,7 @@ void LogonCommHandler::Connect(LogonServer * server)
 	// Wait for all realms to register
 	Sleep(200);
 
-	sLog.outColor(TNORMAL, "\n	   >> ping test: ");
+	sLog.outColor(TNORMAL, "\n        >> ping test: ");
 	sLog.outColor(TYELLOW, "%ums", conn->latency);
 	sLog.outColor(TNORMAL, "\n");
 }
@@ -249,8 +272,7 @@ void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
 	char query[1024];
 	vsprintf(query, str, ap);
 	va_end(ap);
-	WorldPacket data(RCMSG_SQL_EXECUTE, strlen(query)+ 17);
-	data.append(sql_passhash, 16);
+	WorldPacket data(RCMSG_SQL_EXECUTE, strlen(query)+1);
 	data << query;
 	
 	// Send request packet to server.
@@ -265,9 +287,7 @@ void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
 
 void LogonCommHandler::LogonDatabaseReloadAccounts()
 {
-	WorldPacket data(RCMSG_RELOAD_ACCOUNTS, 16);
-	data.append(sql_passhash, 16);
-
+	WorldPacket data(RCMSG_RELOAD_ACCOUNTS, 1);
 	map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
 	if(logons.size() == 0 || itr->second == 0)
 	{

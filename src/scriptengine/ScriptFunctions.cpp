@@ -397,6 +397,30 @@ int Unit_DeregisterTimer(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Unit_SpawnMonster(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(4);
+	GM_CHECK_INT_PARAM(entry, 0);
+	GM_CHECK_FLOAT_PARAM(posX, 1);
+	GM_CHECK_FLOAT_PARAM(posY, 2);
+	GM_CHECK_FLOAT_PARAM(posZ, 3);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	CreatureProto * p = objmgr.GetCreatureProto(entry);
+	if(!p)
+		return GM_EXCEPTION;
+
+	Creature * pCreature = pThis->GetMapMgr()->CreateCreature();
+	pCreature->spawnid = 0;
+	pCreature->m_spawn = 0;
+	pCreature->Load(p, posX, posY, posZ);
+	pCreature->SetMapId(pThis->GetMapId());
+	pCreature->SetInstanceID(pThis->GetInstanceID());
+	pCreature->PushToWorld(pThis->GetMapMgr());
+
+	return GM_OK;
+}
+
 int GameObject_Despawn(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);

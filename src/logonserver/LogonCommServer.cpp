@@ -27,6 +27,9 @@ LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 4096, 4096)
 	remaining = opcode = 0;
 	sInfoCore.AddServerSocket(this);
 	removed = false;
+
+	use_crypto = false;
+	authenticated = 0;
 }
 
 LogonCommServerSocket::~LogonCommServerSocket()
@@ -59,6 +62,16 @@ void LogonCommServerSocket::OnRead()
 			// read header
 			Read(2, (uint8*)&opcode);
 			Read(2, (uint8*)&remaining);
+
+			if(use_crypto)
+			{
+				// decrypt the packet
+				recvCrypto.Process((unsigned char*)&opcode, (unsigned char*)&opcode, 2);
+				recvCrypto.Process((unsigned char*)&remaining, (unsigned char*)&remaining, 2);
+			}
+
+			/* reverse byte order */
+			remaining = ntohs(remaining);
 		}
 
 		// do we have a full packet?
@@ -70,6 +83,9 @@ void LogonCommServerSocket::OnRead()
 		buff.resize(remaining);
 		Read(remaining, (uint8*)buff.contents());
 
+		if(use_crypto)
+			recvCrypto.Process((unsigned char*)buff.contents(), (unsigned char*)buff.contents(), remaining);
+
 		// handle the packet
 		HandlePacket(buff);
 
@@ -80,6 +96,13 @@ void LogonCommServerSocket::OnRead()
 
 void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 {
+	if(authenticated == 0 && recvData.GetOpcode() != RCMSG_AUTH_CHALLENGE)
+	{
+		// invalid
+		Disconnect();
+		return;
+	}
+
 	switch(recvData.GetOpcode())
 	{
 	case RCMSG_REGISTER_REALM:
@@ -100,6 +123,10 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 
 	case RCMSG_RELOAD_ACCOUNTS:
 		HandleReloadAccounts(recvData);
+		break;
+
+	case RCMSG_AUTH_CHALLENGE:
+		HandleAuthChallenge(recvData);
 		break;
 
 	default:
@@ -160,8 +187,6 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 	}
 	
 	SendPacket(&data);
-
-	printf("Sessionkey sent for account %s, err %u\n", account_name.c_str(), error);
 }
 
 void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
@@ -181,11 +206,20 @@ void LogonCommServerSocket::SendPacket(WorldPacket * data)
 
 	logonpacket header;
 	header.opcode = data->GetOpcode();
-	header.size   = data->size();
+	header.size   = ntohs(data->size());
+
+	if(use_crypto)
+		sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 4);
 
 	BurstSend((uint8*)&header, 4);
+
 	if(data->size() > 0)
+	{
+		if(use_crypto)
+			sendCrypto.Process((unsigned char*)data->contents(), (unsigned char*)data->contents(), data->size());
+
 		BurstSend(data->contents(), data->size());
+	}
 
 	BurstPush();
 	BurstEnd();		 //  >> Unlock
@@ -193,40 +227,67 @@ void LogonCommServerSocket::SendPacket(WorldPacket * data)
 
 void LogonCommServerSocket::HandleSQLExecute(WorldPacket & recvData)
 {
-	uint8 key[20];
 	string Query;
-	recvData.read(key, 20);
 	recvData >> Query;
-
-	if(memcmp(key, LogonServer::getSingleton().sql_hash, 20))
-	{
-		sLog.outString("Invalid SQL execute attempted from %s, query was %s", this->GetRemoteIP().c_str(), Query.c_str());
-		
-		// Kill the socket off, we don't want to keep bad people around.
-		Disconnect();
-
-		// Might wanna add an IP ban after this.. meh :/
-		return;
-	}
-	
 	sLogonSQL->Execute(Query.c_str());
 }
 
 void LogonCommServerSocket::HandleReloadAccounts(WorldPacket & recvData)
 {
-	uint8 key[20];
-	recvData.read(key, 20);
-
-	if(memcmp(key, LogonServer::getSingleton().sql_hash, 20))
-	{
-		sLog.outString("Invalid account reload attempted from %s.", this->GetRemoteIP().c_str());
-
-		// Kill the socket off, we don't want to keep bad people around.
-		Disconnect();
-
-		// Might wanna add an IP ban after this.. meh :/
-		return;
-	}
-
 	sAccountMgr.ReloadAccounts(true);
+}
+
+void SimpleCrypt(int len, char * buffer, uint32 key)
+{
+	char * k = (char*)&key;
+	for(int i = 0; i < len; ++i)
+	{
+		buffer[i] = buffer[i] ^ k[i % 4];
+	}
+}
+
+void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
+{
+	unsigned char encrypted_key[20];
+	uint8 result = 1;
+	recvData >> seed;
+	recvData.read(encrypted_key, 20);
+
+	SimpleCrypt(20, (char*)encrypted_key, seed);
+
+	// check if we have the correct password
+	if(memcmp(encrypted_key, LogonServer::getSingleton().sql_hash, 20))
+		result = 0;
+
+	sLog.outString("Authentication request from %s, result %s.", GetRemoteIP().c_str(), result ? "OK" : "FAIL");
+
+	// use the supplied encrypted key to build the rc4 keys
+	Sha1Hash enc_key;
+	enc_key.UpdateData((const uint8*)&seed, 4);
+	enc_key.UpdateData(encrypted_key, 20);
+	enc_key.Finalize();
+
+	unsigned char k[20];
+	memcpy(k, enc_key.GetDigest(), 20);
+	ReverseBytes(k, 20);
+	SimpleCrypt(20, (char*)k, seed);
+
+	printf("Key: ");
+	for(int i = 0; i < 20; ++i)
+		printf("%.2X", k[i]);
+	printf("\n");
+
+	recvCrypto.Setup(k, 20);
+	sendCrypto.Setup(k, 20);	
+
+	/* packets are encrypted from now on */
+	use_crypto = true;
+
+	/* send the response packet */
+	WorldPacket data(RSMSG_AUTH_RESPONSE, 1);
+	data << result;
+	SendPacket(&data);
+
+	/* set our general var */
+	authenticated = result;
 }

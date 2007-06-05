@@ -47,6 +47,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "Despawn",							Unit_Despawn					},
 		{ "CastSpell",							Unit_CastSpell					},
 		{ "CastSpellOnTarget",					Unit_CastSpellOnTarget			},
+		{ "SpawnMonster",						Unit_SpawnMonster				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -63,6 +64,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "TimedEmote",							Unit_TimedEmote					},
 		{ "RegisterTimer",						Unit_RegisterTimer				},
 		{ "DeregisterTimer",					Unit_DeregisterTimer			},
+		{ "SpawnMonster",						Unit_SpawnMonster				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
