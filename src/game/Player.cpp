@@ -1266,6 +1266,15 @@ void Player::GiveXP(uint32 xp, const uint64 &guid, bool allowbonus)
 		UpdateStats();
 		//UpdateChances();
 		
+		// Set next level conditions
+		SetUInt32Value(PLAYER_NEXT_LEVEL_XP, lvlinfo->XPToNextLevel);
+
+		// Set stats
+		for(uint32 i = 0; i < 5; ++i)
+		{
+			BaseStats[i] = lvlinfo->Stat[i];
+			CalcStat(i);
+		}
 		//set full hp and mana
 		SetUInt32Value(UNIT_FIELD_HEALTH,GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 		SetUInt32Value(UNIT_FIELD_POWER1,GetUInt32Value(UNIT_FIELD_MAXPOWER1));
@@ -1401,6 +1410,14 @@ void Player::_SaveSpellCoolDownSecurity()
 			SpellCooldownMap.erase(it2);
 			continue;
 		}
+#ifdef _DEBUG
+		SpellEntry *spellInfo = sSpellStore.LookupEntry( SpellID );
+		if(ts + spellInfo->RecoveryTime>TimeStamp)
+		{
+			sLog.outDebug("Warning : Something is not as should. Couldown time exceedes maximum\n");
+			continue;//something went wrong, timestamp is bigger then max timestamp ?
+		}
+#endif
 		query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
 		++itr;
 	}
@@ -4333,7 +4350,7 @@ void Player::AddCooldown(uint32 cat, uint32 tm)
 {
 	if(CooldownCheat) return;
 	map<uint32, uint32>::iterator itr = SpellCooldownMap.find(cat);
-	uint32 mstime = getMSTime();
+	uint32 mstime = now();
 	if(itr != SpellCooldownMap.end())
 	{
 		itr->second = mstime + tm;
