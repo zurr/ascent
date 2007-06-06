@@ -113,7 +113,7 @@ bool Master::Run()
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
 	sLog.outString("");
 	sLog.outString("Initializing File Loggers...");
-	Crash_Log = new TextLogger(FormatOutputString("logs", "CrashLog", true).c_str(), true);
+	Crash_Log = new TextLogger(FormatOutputString("logs", "CrashLog", true).c_str(), false);
     
 	sLog.outString("Initializing Random Number Generators...");
 	uint32 seed = time(NULL);
