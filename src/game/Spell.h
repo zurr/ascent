@@ -990,6 +990,36 @@ enum MECHANICS
 	MECHANIC_DAZED
 };
 
+typedef enum {
+   EFF_TARGET_NONE						= 0,
+   EFF_TARGET_SELF						= 1,
+   EFF_TARGET_PET						= 5,
+   EFF_TARGET_SINGLE_ENEMY				= 6,
+   EFF_TARGET_ALL_ENEMY_IN_AREA         = 15,
+   EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT	= 16,
+   EFF_TARGET_ALL_PARTY_AROUND_CASTER   = 20,
+   EFF_TARGET_SINGLE_FRIEND				= 21,
+   EFF_TARGET_ALL_ENEMIES_AROUND_CASTER = 22,
+   EFF_TARGET_GAMEOBJECT				= 23,
+   EFF_TARGET_IN_FRONT_OF_CASTER        = 24,
+   EFF_TARGET_DUEL						= 25,//Dont know the real name!!!
+   EFF_TARGET_GAMEOBJECT_ITEM           = 26,
+   EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED = 28,
+   EFF_TARGET_MINION					= 32,
+   EFF_TARGET_SINGLE_PARTY              = 35,
+   EFF_TARGET_ALL_PARTY					= 37,
+   EFF_TARGET_SELF_FISHING              = 39,
+   EFF_TARGET_TOTEM_EARTH               = 41,
+   EFF_TARGET_TOTEM_WATER               = 42,
+   EFF_TARGET_TOTEM_AIR					= 43,
+   EFF_TARGET_TOTEM_FIRE				= 44,
+   EFF_TARGET_CHAIN						= 45,
+   EFF_TARGET_DYNAMIC_OBJECT            = 47,//not sure exactly where is used
+   EFF_TARGET_CURRENT_SELECTION         = 53,
+   EFF_TARGET_PARTY_MEMBER		        = 57,
+   EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS  = 61,
+} SpellEffectTarget;
+
 typedef std::vector<uint64> TargetsList;
 typedef void(Spell::*pSpellEffect)(uint32 i);
 
@@ -1015,6 +1045,14 @@ public:
 
 	// Fills the targets at the area of effect
 	void FillAllTargetsInArea(TargetsList *tmpMap,float srcx,float srcy,float srcz, float range);
+	// Fills the targets at the area of effect. We suppose we already inited this spell and know the details
+	void FillAllTargetsInArea(float srcx,float srcy,float srcz,uint32 ind);
+	//get single Enemy as target
+	uint64 GetSinglePossibleEnemy(uint32 ind=0);
+	//get single Enemy as target
+	uint64 GetSinglePossibleFriend(uint32 ind=0);
+	//generate possible target list for a spell. Use as last resort since it is not acurate
+	void GenerateTargets(SpellCastTargets *store_buff);
 	// Fills the target map of the spell packet
 	void FillTargetMap(uint32);
 	// See if we hit the target or can it resist (evade/immune/resist on spellgo)
@@ -1241,6 +1279,12 @@ public:
 		return ( r<=square_r);
 	}
 	 
+	inline bool IsInrange(Object * o1,Object * o2,float square_r)
+	{
+		return IsInrange(o1->GetPositionX(),o1->GetPositionY(),o1->GetPositionZ(),
+			o2->GetPositionX(),o2->GetPositionY(),o2->GetPositionZ(),square_r);
+	}
+
 	std::vector<uint64> UniqueTargets;
 	std::vector<uint64> MissedTargets;
 

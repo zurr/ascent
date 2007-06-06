@@ -538,8 +538,9 @@ void AIInterface::Update(uint32 p_time)
 		if(p_time >= m_totemspelltimer)
 		{
 			// these will *almost always* be AoE, so no need to find a target here.
-			SpellCastTargets targets(m_Unit->GetGUID());
+			SpellCastTargets targets(0);
 			Spell * pSpell = new Spell(m_Unit, totemspell, true, 0);
+//			m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
 			pSpell->prepare(&targets);
 
 			// need proper cooldown time!
