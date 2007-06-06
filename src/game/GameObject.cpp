@@ -46,7 +46,6 @@ GameObject::GameObject(uint32 high, uint32 low)
 	m_quests = NULL;
 	pInfo = NULL;
 	myScript = NULL;
-	original_state = original_flags = 0;
 	spawnid = 0;
 	m_spawn = 0;
 	loot.gold = 0;
@@ -188,8 +187,11 @@ void GameObject::Despawn(uint32 time)
 	loot.items.clear();
 
 	//This is for go get deleted while looting
-	SetUInt32Value(GAMEOBJECT_STATE, original_state);
-	SetUInt32Value(GAMEOBJECT_FLAGS, original_flags);
+	if(m_spawn)
+	{
+		SetUInt32Value(GAMEOBJECT_STATE, m_spawn->state);
+		SetUInt32Value(GAMEOBJECT_FLAGS, m_spawn->flags);
+	}
 
 	WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
 	data << GetGUID();
@@ -398,9 +400,6 @@ bool GameObject::Load(GOSpawn *spawn)
 	InitAI();
 
 	_LoadQuests();
-	original_flags = m_uint32Values[GAMEOBJECT_FLAGS];
-	original_state = m_uint32Values[GAMEOBJECT_STATE];
-
 	return true;
 }
 

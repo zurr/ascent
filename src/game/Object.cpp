@@ -93,23 +93,23 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer *data, Player *target)
 		// items + containers: 0x8
 	case TYPEID_ITEM:
 	case TYPEID_CONTAINER:
-		flags = 0x8;
+		flags = 0x18;
 		break;
 		
 		// player/unit: 0x68 (except self)
 	case TYPEID_UNIT:
-		flags = 0x68;
+		flags = 0x70;
 		break;
 
 	case TYPEID_PLAYER:
-		flags = 0x60;
+		flags = 0x70;
 		break;
 
 		// gameobject/dynamicobject
 	case TYPEID_GAMEOBJECT:
 	case TYPEID_DYNAMICOBJECT:
 	case TYPEID_CORPSE:
-		flags = 0x48;
+		flags = 0x58;
 		break;
 
 		// anyone else can get fucked and die!
@@ -367,8 +367,14 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2,
 
 	if(flags & 0x8)
 	{
-		*data << GetGUIDHigh();
+		/* burlex: i don't think this data really matters.. but I'm just gonna use these, since it may help us with
+		   debugging later on */
+		*data << GetInstanceID();
+		if(flags & 0x10)
+			*data << GetEntry();
 	}
+	else if(flags & 0x10)
+		*data << GetEntry();
 
 	if(flags & 0x2)
 	{

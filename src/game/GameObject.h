@@ -200,7 +200,6 @@ public:
 
 	inline bool HasAI() { return spell != 0; }
 	GOSpawn * m_spawn;
-
 	void OnPushToWorld();
 
 protected:
@@ -209,8 +208,6 @@ protected:
 	GameObjectInfo *pInfo;
 	GameObjectAIScript * myScript;
 	uint32 _fields[GAMEOBJECT_END];
-	uint32 original_state;
-	uint32 original_flags;
 
 };
 
