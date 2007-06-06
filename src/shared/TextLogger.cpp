@@ -57,7 +57,11 @@ void TextLogger::Push(const char * str)
 	if(m_writeLock)		// data is pending already
 		return;
 
+#ifdef WIN32
 	InterlockedIncrement(&m_writeLock);
+#else
+	m_writeLock++;
+#endif
 	TextLogger::Thread->AddPendingLogger(this);
 }
 
@@ -136,3 +140,4 @@ void TextLoggerThread::run()
 
 	// set will get cleared in destructor (happens at end of thread)
 }
+
