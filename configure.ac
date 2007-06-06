@@ -96,6 +96,26 @@ else
 	AC_SUBST(LIB_EXPORT)
 fi
 
+# THIS IS UGLY!
+CPPFLAGS=""
+CFLAGS=""
+CXXFLAGS=""
+
+AC_ARG_ENABLE(gcov,
+     AC_HELP_STRING([--enable-gcov],[enable codecovering])],
+     [ if test "x$enable_gcov" = "xyes" ; then
+           CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage"
+       fi
+     ],
+)
+
+AC_ARG_ENABLE(debug,
+     AC_HELP_STRING([--enable-debug],[enable debug])],
+     [ if test "x$enable_gcov" = "xyes" ; then
+           CXXFLAGS="$CXXFLAGS -g"
+       fi
+     ],
+)
 AC_ARG_ENABLE(profiling,
      AC_HELP_STRING([--enable-profiling],[build for profiling using gprof.])],
      [ if test "x$enable_profiling" = "xyes" ; then
@@ -145,9 +165,7 @@ AC_CHECK_HEADERS( \
  ,[],[AC_MSG_ERROR([Missing required header])])
 
 #CPPFLAGS=$CPPFLAGS_SAVE
-CPPFLAGS=""
-CFLAGS=""
-CXXFLAGS=""
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
