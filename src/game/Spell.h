@@ -1073,9 +1073,9 @@ public:
 	// Fills the targets at the area of effect. We suppose we already inited this spell and know the details
 	void FillAllTargetsInArea(float srcx,float srcy,float srcz,uint32 ind);
 	//get single Enemy as target
-	uint64 GetSinglePossibleEnemy(uint32 ind=0);
+	uint64 GetSinglePossibleEnemy(float prange=0);
 	//get single Enemy as target
-	uint64 GetSinglePossibleFriend(uint32 ind=0);
+	uint64 GetSinglePossibleFriend(float prange=0);
 	//generate possible target list for a spell. Use as last resort since it is not acurate
 	void GenerateTargets(SpellCastTargets *store_buff);
 	// Fills the target map of the spell packet
