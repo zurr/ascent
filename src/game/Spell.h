@@ -848,6 +848,31 @@ enum SpellTypes
 	SPELL_TYPE_WARLOCK_CURSES		= 131072,
 };
 
+inline bool IsInrange(float x1,float y1, float z1, Object * o,float square_r)
+{
+	float r = o->GetDistanceSq(x1, y1, z1);
+	return ( r<=square_r);	
+}
+
+inline bool IsInrange(float x1,float y1, float z1,float x2,float y2, float z2,float square_r)
+{
+	float t;
+	float r;
+	t=x1-x2;
+	r=t*t;
+	t=y1-y2;
+	r+=t*t;
+	t=z1-z2;
+	r+=t*t;
+	return ( r<=square_r);
+}
+	
+inline bool IsInrange(Object * o1,Object * o2,float square_r)
+{
+	return IsInrange(o1->GetPositionX(),o1->GetPositionY(),o1->GetPositionZ(),
+		o2->GetPositionX(),o2->GetPositionY(),o2->GetPositionZ(),square_r);
+}
+
 class SpellCastTargets
 {
 public:
@@ -1258,31 +1283,6 @@ public:
 		if(m_spellInfo->Spell_Dmg_Type ==2)
 			return 0;
 		else return 2;
-	}
-
-	inline bool IsInrange(float x1,float y1, float z1, Object * o,float square_r)
-	{
-		float r = o->GetDistanceSq(x1, y1, z1);
-		return ( r<=square_r);	
-	}
-	
-	inline bool IsInrange(float x1,float y1, float z1,float x2,float y2, float z2,float square_r)
-	{
-		float t;
-		float r;
-		t=x1-x2;
-		r=t*t;
-		t=y1-y2;
-		r+=t*t;
-		t=z1-z2;
-		r+=t*t;
-		return ( r<=square_r);
-	}
-	 
-	inline bool IsInrange(Object * o1,Object * o2,float square_r)
-	{
-		return IsInrange(o1->GetPositionX(),o1->GetPositionY(),o1->GetPositionZ(),
-			o2->GetPositionX(),o2->GetPositionY(),o2->GetPositionZ(),square_r);
 	}
 
 	std::vector<uint64> UniqueTargets;

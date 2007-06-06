@@ -537,10 +537,31 @@ void AIInterface::Update(uint32 p_time)
 		assert(m_DefaultSpell != 0 && totemspell != 0);
 		if(p_time >= m_totemspelltimer)
 		{
+/*			Spell * pSpell = new Spell(m_Unit, totemspell, true, 0);
+			SpellCastTargets targets(0);
+			if(!m_nextTarget ||
+				(m_nextTarget && 
+					(!m_Unit->GetMapMgr()->GetUnit(m_nextTarget->GetGUID()) || 
+					!m_nextTarget->isAlive() ||
+					!IsInrange(m_Unit,m_nextTarget,pSpell->GetRadius(0)))))
+			{
+				//something happend to our target, pick another one
+				pSpell->GenerateTargets(&targets);
+				if(targets.m_targetMask & TARGET_FLAG_UNIT)
+					m_nextTarget = m_Unit->GetMapMgr()->GetUnit(targets.m_unitTarget);
+				else m_nextTarget=NULL;//sorry but could not find a target
+			}
+			if(m_nextTarget)
+			{
+				SpellCastTargets targets(m_nextTarget->GetGUID());
+				pSpell->prepare(&targets);
+				// need proper cooldown time!
+				m_totemspelltimer = m_totemspelltime;
+			}
+			else delete pSpell;*/
 			// these will *almost always* be AoE, so no need to find a target here.
 			SpellCastTargets targets(m_Unit->GetGUID());
 			Spell * pSpell = new Spell(m_Unit, totemspell, true, 0);
-//			m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
 			pSpell->prepare(&targets);
 
 			// need proper cooldown time!

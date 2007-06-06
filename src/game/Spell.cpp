@@ -390,192 +390,200 @@ bool Spell::DidHit(uint64 target)
 }
 //generate possible target list for a spell. Use as last resort since it is not acurate
 //this function makes a rough estimation for possible target !
+//!!!disabled parts that were not tested !!
 void Spell::GenerateTargets(SpellCastTargets *store_buff)
 {
-	/*
+/*	
 	uint32 cur;
 	for(uint32 i=0;i<3;i++)
-	for(uint32 j=0;j<2;j++)
-	{
-		if(j==0)
-			cur = m_spellInfo->EffectImplicitTargetA[i];
-		else // if(j==1)
-			cur = m_spellInfo->EffectImplicitTargetB[i];		
-		switch(cur)
+		for(uint32 j=0;j<2;j++)
 		{
-		case EFF_TARGET_NONE:{
-			//this is bad for us :(
-			   }break;
-		case EFF_TARGET_SELF:{
-				if(m_caster->IsUnit())
-					store_buff->m_unitTarget = m_caster->GetGUID();
-			   }break;		
-			// need more research
-		case 4:{ // dono related to "Wandering Plague", "Spirit Steal", "Contagion of Rot", "Retching Plague" and "Copy of Wandering Plague"
-			   }break;			
-		case EFF_TARGET_PET:{// Target: Pet
-				if(p_caster && p_caster->GetSummon())
-					store_buff->m_unitTarget = p_caster->GetSummon()->GetGUID();
-			   }break;
-		case EFF_TARGET_SINGLE_ENEMY:// Single Target Enemy
-		case 77:					// grep: i think this fits
-		case 8: // related to Chess Move (DND), Firecrackers, Spotlight, aedm, Spice Mortar
-		case EFF_TARGET_ALL_ENEMY_IN_AREA: // All Enemies in Area of Effect (TEST)
-		case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT: // All Enemies in Area of Effect instant (e.g. Flamestrike)
-		case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
-		case EFF_TARGET_IN_FRONT_OF_CASTER:
-		case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:// All Enemies in Area of Effect(Blizzard/Rain of Fire/volley) channeled
-		case 31:// related to scripted effects
-		case 53:// Target Area by Players CurrentSelection()
-		case 54:// Targets in Front of the Caster
+			if(j==0)
+				cur = m_spellInfo->EffectImplicitTargetA[i];
+			else // if(j==1)
+				cur = m_spellInfo->EffectImplicitTargetB[i];		
+			switch(cur)
 			{
-				if(p_caster)
-					store_buff->m_unitTarget = p_caster->GetSelection();
-				else if(u_caster)
-				{
-					if(u_caster->getAttackTarget())
-						store_buff->m_unitTarget = u_caster->getAttackTarget();
-					//try to get most hated or an agroed creature
-				}
-				else store_buff->m_unitTarget=GetSinglePossibleEnemy(i);			
-			}break;
-			// spells like 17278:Cannon Fire and 21117:Summon Son of Flame A
-		case 17: // A single target at a xyz location or the target is a possition xyz
-		case 18:// Land under caster.Maybe not correct
-			{
-				store_buff->m_srcX=m_caster->GetPositionX();
-				store_buff->m_srcY=m_caster->GetPositionY();
-				store_buff->m_srcZ=m_caster->GetPositionZ();
-				store_buff->m_targetMask |= TARGET_FLAG_SOURCE_LOCATION;
-			}break;
-		case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
-			{// All Party Members around the Caster in given range NOT RAID!			
-				Player *p=p_caster;
-				if(!p)
-				{
-					if(((Creature*)u_caster)->IsTotem())
-						p=(Player*)((Creature*)u_caster)->GetTotemOwner();
-				}
-				float r= GetRadius(i);
-				r*=r;
-				if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
-				{
-					store_buff->m_unitTarget = m_caster->GetGUID();
-					break;
-				}
-				if(SubGroup* subgroup = p->GetSubGroup())
-					for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
+				case EFF_TARGET_NONE:{
+					//this is bad for us :(
+					}break;
+				case EFF_TARGET_SELF:{
+						if(m_caster->IsUnit())
+							store_buff->m_unitTarget = m_caster->GetGUID();
+					}break;		
+					// need more research
+				case 4:{ // dono related to "Wandering Plague", "Spirit Steal", "Contagion of Rot", "Retching Plague" and "Copy of Wandering Plague"
+					}break;			
+				case EFF_TARGET_PET:{// Target: Pet
+						if(p_caster && p_caster->GetSummon())
+							store_buff->m_unitTarget = p_caster->GetSummon()->GetGUID();
+					}break;
+				case EFF_TARGET_SINGLE_ENEMY:// Single Target Enemy
+				case 77:					// grep: i think this fits
+				case 8: // related to Chess Move (DND), Firecrackers, Spotlight, aedm, Spice Mortar
+				case EFF_TARGET_ALL_ENEMY_IN_AREA: // All Enemies in Area of Effect (TEST)
+				case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT: // All Enemies in Area of Effect instant (e.g. Flamestrike)
+				case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
+				case EFF_TARGET_IN_FRONT_OF_CASTER:
+				case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:// All Enemies in Area of Effect(Blizzard/Rain of Fire/volley) channeled
+				case 31:// related to scripted effects
+				case 53:// Target Area by Players CurrentSelection()
+				case 54:// Targets in Front of the Caster
 					{
-						if(m_caster == (*itr)) 
-							continue;
-						if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
+						if(p_caster)
+							store_buff->m_unitTarget = p_caster->GetSelection();
+						else if(u_caster)
 						{
-							store_buff->m_unitTarget = (*itr)->GetGUID();
+							if(u_caster->getAttackTarget())
+								store_buff->m_unitTarget = u_caster->getAttackTarget();
+							//try to get most hated or an agroed creature
+						}
+						else store_buff->m_unitTarget=GetSinglePossibleEnemy(i);			
+					}break;
+					// spells like 17278:Cannon Fire and 21117:Summon Son of Flame A
+				case 17: // A single target at a xyz location or the target is a possition xyz
+				case 18:// Land under caster.Maybe not correct
+					{
+						store_buff->m_srcX=m_caster->GetPositionX();
+						store_buff->m_srcY=m_caster->GetPositionY();
+						store_buff->m_srcZ=m_caster->GetPositionZ();
+						store_buff->m_targetMask |= TARGET_FLAG_SOURCE_LOCATION;
+					}break;
+				case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
+					{// All Party Members around the Caster in given range NOT RAID!			
+						Player *p=p_caster;
+						if(!p)
+						{
+							if(((Creature*)u_caster)->IsTotem())
+								p=(Player*)((Creature*)u_caster)->GetTotemOwner();
+						}
+						float r= GetRadius(i);
+						r*=r;
+						if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
+						{
+							store_buff->m_unitTarget = m_caster->GetGUID();
 							break;
 						}
-					}
-			}break;
-		case EFF_TARGET_SINGLE_FRIEND:
-		case 45:// Chain,!!only for healing!! for chain lightning =6 
-		case 57:// Targeted Party Member
-			{// Single Target Friend
-				if(p_caster)
-				{
-					if(isFriendly(p_caster,p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection())))
-						store_buff->m_unitTarget = p_caster->GetSelection();
-					else store_buff->m_unitTarget = p_caster->GetGUID();
-				}
-				else if(u_caster)
-				{
-					if(u_caster->GetUInt64Value(UNIT_FIELD_CREATEDBY))
-						store_buff->m_unitTarget = u_caster->GetUInt64Value(UNIT_FIELD_CREATEDBY);
-					else store_buff->m_unitTarget = u_caster->GetGUID();
-				}
-				else store_buff->m_unitTarget=GetSinglePossibleFriend(i);			
-			}break;
-		case EFF_TARGET_GAMEOBJECT:
-			{
-				if(p_caster && p_caster->GetSelection())
-					store_buff->m_unitTarget = p_caster->GetSelection();
-			}break;
-		case EFF_TARGET_DUEL: 
-			{// Single Target Friend Used in Duel
-				if(p_caster && p_caster->DuelingWith && p_caster->DuelingWith->isAlive() && IsInrange(p_caster,p_caster->DuelingWith,GetRadius(i)))
-					store_buff->m_unitTarget = p_caster->GetSelection();
-			 }break;
-		case EFF_TARGET_GAMEOBJECT_ITEM:{// Gameobject/Item Target
-				//shit
-			}break;
-		case 27:{ // target is owner of pet
-			// please correct this if not correct does the caster variablen need a Pet caster variable?
-				if(u_caster && u_caster->IsPet())
-					store_buff->m_unitTarget = ((Pet*)u_caster)->GetPetOwner()->GetGUID();
-			}break;
-		case EFF_TARGET_MINION:{// Minion Target
-				if(m_caster->GetUInt64Value(UNIT_FIELD_SUMMON) == 0)
-					store_buff->m_unitTarget = m_caster->GetGUID();
-				else store_buff->m_unitTarget = m_caster->GetUInt64Value(UNIT_FIELD_SUMMON);
-			}break;
-		case 33://Party members of totem, inside given range
-		case EFF_TARGET_SINGLE_PARTY:// Single Target Party Member
-		case EFF_TARGET_ALL_PARTY: // all Members of the targets party
-			{
-				Player *p=NULL;
-				if(p_caster)
-						p=p_caster;
-				else if(u_caster && u_caster->GetTypeId()==TYPEID_UNIT && ((Creature*)u_caster)->IsTotem())
-						Player*p=(Player*) ((Creature*)u_caster)->GetTotemOwner();
-				if(p_caster)
-				{
-					float r =GetRadius(i);
-					r*=r;
-					if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
-					{
-						store_buff->m_unitTarget = p->GetGUID();
-						break;
-					}
-					if( p->GetSubGroup())
-						for(GroupMembersSet::iterator itr = p->GetSubGroup()->GetGroupMembersBegin(); itr != p->GetSubGroup()->GetGroupMembersEnd(); ++itr)
-						{
-							if(p == (*itr)) 
-								continue;
-							if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
+						if(SubGroup* subgroup = p->GetSubGroup())
+							for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 							{
-								store_buff->m_unitTarget = (*itr)->GetGUID();
+								if(m_caster == (*itr)) 
+									continue;
+								if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
+								{
+									store_buff->m_unitTarget = (*itr)->GetGUID();
+									break;
+								}
+							}
+					}break;
+				case EFF_TARGET_SINGLE_FRIEND:
+				case 45:// Chain,!!only for healing!! for chain lightning =6 
+				case 57:// Targeted Party Member
+					{// Single Target Friend
+						if(p_caster)
+						{
+							if(isFriendly(p_caster,p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection())))
+								store_buff->m_unitTarget = p_caster->GetSelection();
+							else store_buff->m_unitTarget = p_caster->GetGUID();
+						}
+						else if(u_caster)
+						{
+							if(u_caster->GetUInt64Value(UNIT_FIELD_CREATEDBY))
+								store_buff->m_unitTarget = u_caster->GetUInt64Value(UNIT_FIELD_CREATEDBY);
+							else store_buff->m_unitTarget = u_caster->GetGUID();
+						}
+						else store_buff->m_unitTarget=GetSinglePossibleFriend(i);			
+					}break;
+				case EFF_TARGET_GAMEOBJECT:
+					{
+						if(p_caster && p_caster->GetSelection())
+							store_buff->m_unitTarget = p_caster->GetSelection();
+					}break;
+				case EFF_TARGET_DUEL: 
+					{// Single Target Friend Used in Duel
+						if(p_caster && p_caster->DuelingWith && p_caster->DuelingWith->isAlive() && IsInrange(p_caster,p_caster->DuelingWith,GetRadius(i)))
+							store_buff->m_unitTarget = p_caster->GetSelection();
+					}break;
+				case EFF_TARGET_GAMEOBJECT_ITEM:{// Gameobject/Item Target
+						//shit
+					}break;
+				case 27:{ // target is owner of pet
+					// please correct this if not correct does the caster variablen need a Pet caster variable?
+						if(u_caster && u_caster->IsPet())
+							store_buff->m_unitTarget = ((Pet*)u_caster)->GetPetOwner()->GetGUID();
+					}break;
+				case EFF_TARGET_MINION:{// Minion Target
+						if(m_caster->GetUInt64Value(UNIT_FIELD_SUMMON) == 0)
+							store_buff->m_unitTarget = m_caster->GetGUID();
+						else store_buff->m_unitTarget = m_caster->GetUInt64Value(UNIT_FIELD_SUMMON);
+					}break;
+				case 33://Party members of totem, inside given range
+				case EFF_TARGET_SINGLE_PARTY:// Single Target Party Member
+				case EFF_TARGET_ALL_PARTY: // all Members of the targets party
+					{
+						Player *p=NULL;
+						if(p_caster)
+								p=p_caster;
+						else if(u_caster && u_caster->GetTypeId()==TYPEID_UNIT && ((Creature*)u_caster)->IsTotem())
+								Player*p=(Player*) ((Creature*)u_caster)->GetTotemOwner();
+						if(p_caster)
+						{
+							float r =GetRadius(i);
+							r*=r;
+							if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
+							{
+								store_buff->m_unitTarget = p->GetGUID();
 								break;
 							}
+							if( p->GetSubGroup())
+								for(GroupMembersSet::iterator itr = p->GetSubGroup()->GetGroupMembersBegin(); itr != p->GetSubGroup()->GetGroupMembersEnd(); ++itr)
+								{
+									if(p == (*itr)) 
+										continue;
+									if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
+									{
+										store_buff->m_unitTarget = (*itr)->GetGUID();
+										break;
+									}
+								}
 						}
-				}
-			}break;
-		case 38:{//Dummy Target
-			//have no idea
-			}break;
-		case EFF_TARGET_SELF_FISHING://Fishing
-		case 46://Unknown Summon Atal'ai Skeleton
-		case 47:// Portal
-		case 52:	// Lightwells, etc
-			{
-				store_buff->m_unitTarget = m_caster->GetGUID();
-			}break;
-		case 40://Activate Object target(probably based on focus)
-		case EFF_TARGET_TOTEM_EARTH:
-		case EFF_TARGET_TOTEM_WATER:
-		case EFF_TARGET_TOTEM_AIR:
-		case EFF_TARGET_TOTEM_FIRE:// Totem
-			{
-				if(p_caster)
-				{
-					uint32 slot = m_spellInfo->Effect[i] - SPELL_EFFECT_SUMMON_TOTEM_SLOT1;
-					if(p_caster->m_TotemSlots[slot] != 0)
-						store_buff->m_unitTarget = p_caster->m_TotemSlots[slot]->GetGUID();
-				}
-			}break;
-		case 61:{ // targets with the same group/raid and the same class
-			//shit again
-		}
-	}
-}*/
-}
+					}break;
+				case 38:{//Dummy Target
+					//have no idea
+					}break;
+				case EFF_TARGET_SELF_FISHING://Fishing
+				case 46://Unknown Summon Atal'ai Skeleton
+				case 47:// Portal
+				case 52:	// Lightwells, etc
+					{
+						store_buff->m_unitTarget = m_caster->GetGUID();
+					}break;
+				case 40://Activate Object target(probably based on focus)
+				case EFF_TARGET_TOTEM_EARTH:
+				case EFF_TARGET_TOTEM_WATER:
+				case EFF_TARGET_TOTEM_AIR:
+				case EFF_TARGET_TOTEM_FIRE:// Totem
+					{
+						if(p_caster)
+						{
+							uint32 slot = m_spellInfo->Effect[i] - SPELL_EFFECT_SUMMON_TOTEM_SLOT1;
+							if(p_caster->m_TotemSlots[slot] != 0)
+								store_buff->m_unitTarget = p_caster->m_TotemSlots[slot]->GetGUID();
+						}
+					}break;
+				case 61:{ // targets with the same group/raid and the same class
+					//shit again
+				}break;
+			}//end switch
+		}//end for
+	if(store_buff->m_unitTarget)
+		store_buff->m_targetMask |= TARGET_FLAG_UNIT;
+	if(store_buff->m_srcX)
+		store_buff->m_targetMask |= TARGET_FLAG_SOURCE_LOCATION;
+	if(store_buff->m_destX)
+		store_buff->m_targetMask |= TARGET_FLAG_DEST_LOCATION;
+/**/
+}//end function
 
 void Spell::FillTargetMap(uint32 i)
 {
