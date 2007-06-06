@@ -480,6 +480,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\shared\TextLogger.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\TextLogger.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\shared\Timer.h"
 				>
 			</File>

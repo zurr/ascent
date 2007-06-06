@@ -54,6 +54,11 @@ volatile bool Master::m_stopEvent = false;
 // Database defines.
 Database* Database_Main;
 
+// mainserv defines
+TextLogger * Crash_Log;
+SessionLogWriter * GMCommand_Log;
+SessionLogWriter * Anticheat_Log;
+
 void Master::_OnSignal(int s)
 {
 	switch (s)
@@ -96,7 +101,8 @@ struct Addr
 bool Master::Run()
 {
 	// Startup banner
-	sLog.Init();
+	launch_thread(new TextLoggerThread);
+	sLog.Init(-1, 3);
 	sLog.outString("==============================================================================");
 	sLog.outString(BANNER, g_getRevision());
 	sLog.outString("");
@@ -106,6 +112,9 @@ bool Master::Run()
 	sLog.outString("");
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
 	sLog.outString("");
+	sLog.outString("Initializing File Loggers...");
+	Crash_Log = new TextLogger(FormatOutputString("logs", "CrashLog", true).c_str(), true);
+    
 	sLog.outString("Initializing Random Number Generators...");
 	uint32 seed = time(NULL);
 	new MTRand(seed);
@@ -162,7 +171,9 @@ bool Master::Run()
 	ScriptSystem = new ScriptEngine;
 	ScriptSystem->Reload();
 
-	loglevel = (uint8)Config.MainConfig.GetIntDefault("LogLevel", DEFAULT_LOG_LEVEL);
+	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel.Screen", 1));
+	sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel.File", -1));
+
 	string host = Config.MainConfig.GetStringDefault("Host", DEFAULT_HOST);
 
 	new EventMgr;
@@ -223,21 +234,15 @@ bool Master::Run()
 	sScriptMgr.LoadScripts();
 
 	// open cheat log file
-	if(Config.MainConfig.GetBoolDefault("LogCheaters", false))
-	{
-		string filename = Config.MainConfig.GetStringDefault("CheatLogFile", "cheaters.log");
-		Anticheat_Log::getSingleton().init(filename.c_str());
-		sLog.outString("Opening cheat log file at `%s`.", filename.c_str());
-	}
+	Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", false).c_str(), false);
+	GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", false).c_str(), false);
 
-	// open gm log file
+	if(Config.MainConfig.GetBoolDefault("LogCheaters", false))
+		Anticheat_Log->Open();
+
 	if(Config.MainConfig.GetBoolDefault("LogGMCommands", false))
-	{
-		string filename = Config.MainConfig.GetStringDefault("GMLogFile", "gmcommand.log");
-		GMCommand_Log::getSingleton().init(filename.c_str());
-		sLog.outString("Opening gm command log file at `%s`.", filename.c_str());
-	}
-	
+		GMCommand_Log->Open();
+
 	sLog.outString("Threading system initialized, currently %u threads are active.", sThreadMgr.GetThreadCount());	
 
 	LoadingTime = getMSTime() - LoadingTime;
@@ -391,9 +396,8 @@ bool Master::Run()
 
 	sLog.outString("\nServer shutdown completed successfully.\n");
 
-	sLog.CloseFile();
-	Anticheat_Log::getSingleton().close();
-	GMCommand_Log::getSingleton().close();
+	// close the logs
+	TextLogger::Thread->Die();
 
 #ifdef WIN32
 	WSACleanup();

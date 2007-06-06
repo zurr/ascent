@@ -17,8 +17,8 @@
 
 #include "Common.h"
 #include "Singleton.h"
+#include "TextLogger.h"
 
-extern uint8 loglevel;
 class WorldPacket;
 class WorldSession;
 
@@ -50,73 +50,56 @@ public:
   void outDetail( const char * str, ... );
   void outDebug( const char * str, ... );
   void outMenu( const char * str, ... );
-  void InitFile( const char * filename);
-  FILE *outfile;
-  bool screenenabled;
-  bool fileenabled;
+
   void fLogText(const char *text);
   void SetLogging(bool enabled);
-  void Init();
-  void CloseFile();
+  
+  void Init(int32 fileLogLevel, int32 screenLogLevel);
+  void SetFileLoggingLevel(int32 level);
+  void SetScreenLoggingLevel(int32 level);
 
   void outColor(uint32 colorcode, const char * str, ...);
-
+  TextLogger * fileLogger;
+  
 #ifdef WIN32
   HANDLE stdout_handle, stderr_handle;
 #endif
+  int32 m_fileLogLevel;
+  int32 m_screenLogLevel;
 };
 
-class Anticheat_Log : public Singleton<Anticheat_Log>
+class SessionLogWriter : public TextLogger
 {
 public:
-	Anticheat_Log();
-	~Anticheat_Log();
+	SessionLogWriter(const char * filename, bool open) : TextLogger(filename, open) {}
 
-	void init(const char* filename);
 	void write(const char* format, ...);
 	void writefromsession(WorldSession* session, const char* format, ...);
-	void close();
-
-protected:
-	FILE * out;
-	Mutex MUTEX;
 };
 
-class GMCommand_Log : public Singleton<GMCommand_Log>
-{
-public:
-	GMCommand_Log();
-	~GMCommand_Log();
-
-	void init(const char* filename);
-	void write(const char* format, ...);
-	void writefromsession(WorldSession* session, const char* format, ...);
-	void close();
-
-protected:
-	FILE * out;
-	Mutex MUTEX;
-};
-
-SERVER_DECL void script_errorlog(const char* str, ...);
-SERVER_DECL void script_debuglog(const char* str, ...);
+extern SessionLogWriter * Anticheat_Log;
+extern SessionLogWriter * GMCommand_Log;
 
 #define sLog Log::getSingleton()
-#define sCheatLog Anticheat_Log::getSingleton()
-#define sGMLog GMCommand_Log::getSingleton()
+#define sCheatLog (*Anticheat_Log)
+#define sGMLog (*GMCommand_Log)
 
-class WorldLog : public Singleton<WorldLog> 
+class WorldLog : public Singleton<WorldLog>
 {
 public:
 	WorldLog();
 	~WorldLog();
+
 	void LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction);
+	void Enable();
+	void Disable();
 private:
 	Mutex mutex;
 	bool bEnabled;
-	FILE *fout;
+	TextLogger * log;
 };
 
 #define sWorldLog WorldLog::getSingleton()
+
 #endif
 

@@ -19,8 +19,6 @@
 
 createFileSingleton( Log );
 initialiseSingleton( WorldLog );
-createFileSingleton(Anticheat_Log);
-createFileSingleton(GMCommand_Log);
 
 #ifndef WIN32
 static char* colorstrings[TBLUE+1] = {
@@ -35,185 +33,134 @@ static char* colorstrings[TBLUE+1] = {
 };
 #endif
 
-void script_debuglog(const char* str, ...)
+void Log::outString( const char * str, ... )
 {
-	if(loglevel < 2) return;
-	if(!str)
+	if(m_fileLogLevel < 0 && m_screenLogLevel < 0)
 		return;
-	va_list l;
-	va_start(l, str);
-	// yellow
-#ifdef WIN32
-	SetConsoleTextAttribute(sLog.stdout_handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-#endif
-	fprintf(stdout, "[script] ");
-	vfprintf(stdout, str, l);
-	fprintf(stdout, "\n");
-#ifdef WIN32
-	SetConsoleTextAttribute(sLog.stdout_handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-#endif
-	va_end(l);
-}
 
-void script_errorlog(const char* str, ...)
-{
-	if(loglevel < 2) return;
-	if(!str)
-		return;
-	va_list l;
-	va_start(l, str);
-	// yellow
-#ifdef WIN32
-	SetConsoleTextAttribute(sLog.stderr_handle, FOREGROUND_RED | FOREGROUND_INTENSITY);
-#endif
-	fprintf(stderr, "[script] ");
-	vfprintf(stderr, str, l);
-	fprintf(stderr, "\n");
-#ifdef WIN32
-	SetConsoleTextAttribute(sLog.stderr_handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-#endif
-	va_end(l);
-}
-
-void Log::outString( const char * str, ... ) {
-	if( !str ) return;
 	va_list ap;
 	va_start(ap, str);
-	if(fileenabled)
+	
+	if(m_fileLogLevel >= 0)
+		fileLogger->AddLineSFormat(true, str, ap);
+
+	if(m_screenLogLevel >= 0)
 	{
-		vfprintf(outfile,str,ap);
-		fprintf(outfile,"\n");
-	}
-	if(screenenabled)
-	{
-		vprintf(str, ap );	
-		printf( "\n" );
-		fflush(stdout);
+		vprintf(str, ap);
+		putc('\n', stdout);
 	}
 
 	va_end(ap);
 }
 
-void Log::outError( const char * err, ... ) {
-	if( !err || loglevel < 1) return;
+void Log::outError( const char * err, ... )
+{
+	if(m_fileLogLevel < 1 && m_screenLogLevel < 1)
+		return;
+
 	va_list ap;
 	va_start(ap, err);
-	if(fileenabled)
-	{
-		vfprintf(outfile,err,ap);
-		fprintf(outfile,"\n");
-	}
-	if(screenenabled)
+
+	if(m_fileLogLevel >= 1)
+		fileLogger->AddLineSFormat(true, err, ap);
+
+	if(m_screenLogLevel >= 1)
 	{
 #ifdef WIN32
 		SetConsoleTextAttribute(stderr_handle, FOREGROUND_RED | FOREGROUND_INTENSITY);
 #else
-	printf(colorstrings[TRED]);
+		puts(colorstrings[TRED]);
 #endif
-		vfprintf( stderr, err, ap );
-		fprintf( stderr, "\n" );
-		fflush(stderr);
+		vfprintf(stderr, err, ap);
+		putc('\n', stderr);
 #ifdef WIN32
 		SetConsoleTextAttribute(stderr_handle, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
 #else
-	printf(colorstrings[TNORMAL]);
+		puts(colorstrings[TNORMAL]);
 #endif
 	}
+
 	va_end(ap);
 }
 
-void Log::outBasic( const char * str, ... ) {
-	if( !str || loglevel < 1) return;
+void Log::outBasic( const char * str, ... )
+{
+	if(m_fileLogLevel < 1 && m_screenLogLevel < 1)
+		return;
+
 	va_list ap;
 	va_start(ap, str);
-	if(fileenabled)
+
+	if(m_fileLogLevel >= 1)
+		fileLogger->AddLineSFormat(true, str, ap);
+
+	if(m_screenLogLevel >= 1)
 	{
-		vfprintf(outfile,str,ap);
-		fprintf(outfile,"\n");
+		vprintf(str, ap);
+		putc('\n', stdout);
 	}
-	if(screenenabled) {
-		vprintf( str, ap );
-		printf( "\n" );
-		fflush(stdout);
-	}
+
 	va_end(ap);
 }
 
-void Log::outDetail( const char * str, ... ) {
-	if( !str || loglevel < 2) return;
+void Log::outDetail( const char * str, ... )
+{
+	if(m_fileLogLevel < 2 && m_screenLogLevel < 2)
+		return;
+
 	va_list ap;
 	va_start(ap, str);
-	if(fileenabled)
+
+	if(m_fileLogLevel >= 2)
+		fileLogger->AddLineSFormat(true, str, ap);
+
+	if(m_screenLogLevel >= 2)
 	{
-		vfprintf(outfile,str,ap);
-		fprintf(outfile,"\n");
+		vprintf(str, ap);
+		putc('\n', stdout);
 	}
-	if(screenenabled) {
-		vprintf( str, ap );
-		printf( "\n" );
-		fflush(stdout);
-	}
+
 	va_end(ap);
 }
 
-void Log::outDebug( const char * str, ... ) {
-	if( !str || loglevel < 3) return;
+void Log::outDebug( const char * str, ... )
+{
+	if(m_fileLogLevel < 3 && m_screenLogLevel < 3)
+		return;
+
 	va_list ap;
 	va_start(ap, str);
-	if(fileenabled)
+
+	if(m_fileLogLevel >= 3)
+		fileLogger->AddLineSFormat(true, str, ap);
+
+	if(m_screenLogLevel >= 3)
 	{
-		vfprintf(outfile,str,ap);
-		fprintf(outfile,"\n");
+		vprintf(str, ap);
+		putc('\n', stdout);
 	}
-	if(screenenabled) {
-		vprintf( str, ap );
-		printf( "\n" );
-		fflush(stdout);
-	}
+
 	va_end(ap);
 }
 
-void Log::outMenu( const char * str, ... ) {
-	if( !str ) return;
+void Log::outMenu( const char * str, ... )
+{
 	va_list ap;
 	va_start(ap, str);
-	if(fileenabled)
-	{
-		vfprintf(outfile,str,ap);
-		fprintf(outfile,"\n");
-	}
-	if(screenenabled)
-		vprintf( str, ap );
-
+	vprintf( str, ap );
 	va_end(ap);
 	fflush(stdout);
 }
 
-void Log::CloseFile()
+void Log::Init(int32 fileLogLevel, int32 screenLogLevel)
 {
-	if(fileenabled)
-		fclose(outfile);
-}
+	m_screenLogLevel = screenLogLevel;
+	m_fileLogLevel = fileLogLevel;
+	fileLogger = new TextLogger(FormatOutputString("logs", "ServerLog", true).c_str(), false);
 
-void Log::InitFile(const char *filename)
-{
-	outfile = fopen(filename,"at");
-	if(!outfile)
-		fileenabled = false;
-	else
-		fileenabled = true;
-}
+	if(m_fileLogLevel >= 0)
+		fileLogger->Open();
 
-void Log::SetLogging(bool enabled)
-{
-	screenenabled = enabled;
-}
-
-void Log::Init()
-{
-	screenenabled = true;
-	fileenabled = false;
-	loglevel = 1;
 	// get error handle
 #ifdef WIN32
 	stderr_handle = GetStdHandle(STD_ERROR_HANDLE);
@@ -221,121 +168,80 @@ void Log::Init()
 #endif
 }
 
+void Log::SetScreenLoggingLevel(int32 level)
+{
+	m_screenLogLevel = level;
+}
+
+void Log::SetFileLoggingLevel(int32 level)
+{
+	if(level < 0)
+	{
+		if(fileLogger->IsOpen())
+			fileLogger->Close();
+	}
+	else
+	{
+		if(!fileLogger->IsOpen())
+			fileLogger->Open();
+	}
+	m_fileLogLevel = level;
+}
+
+void SessionLogWriter::write(const char* format, ...)
+{
+	if(!IsOpen())
+		return;
+
+	va_list ap;
+	va_start(ap, format);
+	char out[32768];
+
+	time_t t = time(NULL);
+	tm* aTm = localtime(&t);
+	sprintf(out, "[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
+	int l = strlen(out);
+	vsnprintf(&out[l], 32768 - l, format, ap);
+
+	AddLine(out);
+	va_end(ap);
+}
+
 WorldLog::WorldLog()
 {
+	log = new TextLogger(FormatOutputString("logs", "WorldLog", true).c_str(), false);
+	bEnabled = false;
+
 	if (Config.MainConfig.GetBoolDefault("LogWorld", false))
 	{
 		sLog.outString("  Enabling packetlog output to \"world.log\"");
-		fout = fopen("world.log", "w");
-		bEnabled = true;
+		Enable();
 	} else {
-		fout = NULL;
-		bEnabled = false;
+		Disable();
 	}
+}
+
+void WorldLog::Enable()
+{
+	if(bEnabled)
+		return;
+
+	bEnabled = true;
+	log->Open();
+}
+
+void WorldLog::Disable()
+{
+	if(!bEnabled)
+		return;
+
+	bEnabled = false;
+	log->Close();
 }
 
 WorldLog::~WorldLog()
 {
-	if(fout)
-	{
-		fclose(fout);
-	}
-}
 
-Anticheat_Log::Anticheat_Log()
-{
-	out = 0;
-}
-
-Anticheat_Log::~Anticheat_Log()
-{
-	close();
-}
-
-void Anticheat_Log::init(const char* filename)
-{
-	out = fopen(filename, "a");
-	write("new anti cheat log opened");
-}
-
-void Anticheat_Log::write(const char* format, ...)
-{
-	if(!out) return;
-
-	va_list ap;
-	va_start(ap, format);
-	MUTEX.Acquire();
-	
-	// write timestamp to log
-	time_t t = time(NULL);
-	tm* aTm = localtime(&t);
-	fprintf(out,"[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
-
-	// write out text
-	vfprintf(out, format, ap);
-	fprintf(out, "\n");
-	fflush(out);
-
-	// finish up
-	MUTEX.Release();
-	va_end(ap);
-}
-
-void Anticheat_Log::close()
-{
-	if(out)
-	{
-		fclose(out);
-		out = 0;
-	}
-}
-
-GMCommand_Log::GMCommand_Log()
-{
-	out = 0;
-}
-
-GMCommand_Log::~GMCommand_Log()
-{
-	close();
-}
-
-void GMCommand_Log::init(const char* filename)
-{
-	out = fopen(filename, "a");
-	write("new gm command log opened");
-}
-
-void GMCommand_Log::write(const char* format, ...)
-{
-	if(!out) return;
-
-	va_list ap;
-	va_start(ap, format);
-	MUTEX.Acquire();
-
-	// write timestamp to log
-	time_t t = time(NULL);
-	tm* aTm = localtime(&t);
-	fprintf(out,"[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
-
-	// write out text
-	vfprintf(out, format, ap);
-	fprintf(out, "\n");
-	fflush(out);
-
-	// finish up
-	MUTEX.Release();
-	va_end(ap);
-}
-
-void GMCommand_Log::close()
-{
-	if(out)
-	{
-		fclose(out);
-		out = 0;
-	}
 }
 
 void Log::outColor(uint32 colorcode, const char * str, ...)

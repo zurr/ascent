@@ -179,6 +179,11 @@ using std::hash_set;
 #define HM_NAMESPACE stdext
 using stdext::hash_map;
 using stdext::hash_set;
+
+// hacky stuff for vc++
+#define snprintf _snprintf
+#define vsnprintf _vsnprintf
+
 #elif COMPILER == COMPILER_INTEL
 #define HM_NAMESPACE std
 using std::hash_map;

@@ -23,6 +23,8 @@ libshared_a_SOURCES = \
     WorldPacket.h \
     crc32.cpp \
     crc32.h \
+    TextLogger.h \
+    TextLogger.cpp \
     Threading/Mutex.cpp
 
 libauth_a_SOURCES = \

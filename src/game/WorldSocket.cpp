@@ -344,92 +344,91 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 		uint16 lenght = len;
 		unsigned int count = 0;
 
-		fprintf(fout, "{%s} Packet: (0x%04X) %s PacketSize = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
+		log->AddFormat("{%s} Packet: (0x%04X) %s PacketSize = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
 			LookupName(opcode, g_worldOpcodeNames), lenght);
-		fprintf(fout, "|------------------------------------------------|----------------|\n");
-		fprintf(fout, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
-		fprintf(fout, "|------------------------------------------------|----------------|\n");
+		log->Add("|------------------------------------------------|----------------|\n");
+		log->Add("|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
+		log->Add("|------------------------------------------------|----------------|\n");
 
 		if(lenght > 0)
 		{
-			fprintf(fout, "|");
+			log->Add("|");
 			for (count = 0 ; count < lenght ; count++)
 			{
 				if (countpos == 16)
 				{
 					countpos = 0;
 
-					fprintf(fout,"|");
+					log->Add("|");
 
 					for (unsigned int a = count-16; a < count;a++)
 					{
 						if ((data[a] < 32) || (data[a] > 126))
-							fprintf(fout,".");
+							log->Add(".");
 						else
-							fprintf(fout,"%c",data[a]);
+							log->AddFormat("%c",data[a]);
 					}
 
-					fprintf(fout,"|\n");
+					log->Add("|\n");
 
 					line++;
-					fprintf(fout,"|");
+					log->Add("|");
 				}
 
-				fprintf(fout,"%02X ",data[count]);
+				log->AddFormat("%02X ",data[count]);
 
 				//FIX TO PARSE PACKETS WITH LENGHT < OR = TO 16 BYTES.
 				if (count+1 == lenght && lenght <= 16)
 				{
 					for (unsigned int b = countpos+1; b < 16;b++)
-						fprintf(fout,"   ");
+						log->Add("   ");
 
-					fprintf(fout,"|");
+					log->Add("|");
 
 					for (unsigned int a = 0; a < lenght;a++)
 					{
 						if ((data[a] < 32) || (data[a] > 126))
-							fprintf(fout,".");
+							log->Add(".");
 						else
-							fprintf(fout,"%c",data[a]);
+							log->AddFormat("%c",data[a]);
 					}
 
 					for (unsigned int c = count; c < 15;c++)
-					fprintf(fout," ");
+					log->Add(" ");
 
-					fprintf(fout,"|\n");
+					log->Add("|\n");
 				}
 
 				//FIX TO PARSE THE LAST LINE OF THE PACKETS WHEN THE LENGHT IS > 16 AND ITS IN THE LAST LINE.
 				if (count+1 == lenght && lenght > 16)
 				{
 					for (unsigned int b = countpos+1; b < 16;b++)
-						fprintf(fout,"   ");
+						log->Add("   ");
 
-					fprintf(fout,"|");
+					log->Add("|");
 
 					unsigned short print = 0;
 
 					for (unsigned int a = line * 16 - 16; a < lenght;a++)
 					{
 						if ((data[a] < 32) || (data[a] > 126))
-							fprintf(fout,".");
+							log->Add(".");
 						else
-							fprintf(fout,"%c",data[a]);
+							log->AddFormat("%c",data[a]);
 
 						print++;
 					}
 
 					for (unsigned int c = print; c < 16;c++)
-					fprintf(fout," ");
+					log->Add(" ");
 
-					fprintf(fout,"|\n");
+					log->Add("|\n");
 				}
 
 				countpos++;
 			}
 		}
-		fprintf(fout, "-------------------------------------------------------------------\n\n");
-		fflush(fout);
+		log->Add("-------------------------------------------------------------------\n\n");
 		mutex.Release();
 	}
 }

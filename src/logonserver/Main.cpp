@@ -15,6 +15,7 @@
 #include "LogonStdAfx.h"
 #include <signal.h>
 #include "../shared/svn_revision.h"
+#include <TextLogger.h>
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
@@ -35,11 +36,11 @@
 
 // Database impl
 Database * sLogonSQL;
-uint8 loglevel = 3;
 initialiseSingleton(LogonServer);
 bool mrunning = true;
 Mutex _authSocketLock;
 set<AuthSocket*> _authSockets;
+TextLogger * Crash_Log;
 
 /*** Signal Handler ***/
 void _OnSignal(int s)
@@ -97,7 +98,7 @@ bool startdb()
 		return false;
 	}
 
-	loglevel = (uint8)Config.MainConfig.GetIntDefault("LogLevel", 0);
+	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", 0));
 	sLogonSQL = CreateDatabaseInterface((DatabaseType)ltype);
 
 	// Initialize it
@@ -114,7 +115,10 @@ bool startdb()
 
 void LogonServer::Run()
 {
-	sLog.Init();
+	launch_thread(new TextLoggerThread);
+	sLog.Init(-1, 3);
+	Crash_Log = new TextLogger(FormatOutputString("logs", "logonCrashLog", true).c_str(), false);
+	
 	sLog.outString("==============================================================================");
 	sLog.outString(BANNER, g_getRevision());
 	sLog.outString("");

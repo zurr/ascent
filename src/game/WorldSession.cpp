@@ -838,59 +838,27 @@ void WorldSession::CHECK_PACKET_SIZE(WorldPacket& data, uint32 size)
 	}
 }
 
-void Anticheat_Log::writefromsession(WorldSession* session, const char* format, ...)
+void SessionLogWriter::writefromsession(WorldSession* session, const char* format, ...)
 {
-	if(!out) return;
+	if(!IsOpen())
+		return;
 
 	va_list ap;
 	va_start(ap, format);
+	char out[32768];
 
-	// write timestamp to log
 	time_t t = time(NULL);
 	tm* aTm = localtime(&t);
-	MUTEX.Acquire();
+	sprintf(out, "[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
+	int l = strlen(out);
 
-	fprintf(out,"[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
-
-	// write out session info
-	fprintf(out, "Account %u [%s], IP %s, Player %s :: ", session->GetAccountId(), session->GetAccountName().c_str(),
+	snprintf(&out[l], 32768 - l, "Account %u [%s], IP %s, Player %s :: ", session->GetAccountId(), session->GetAccountName().c_str(),
 		session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP", 
 		session->GetPlayer() ? session->GetPlayer()->GetName() : "nologin");
 
-	// write out text
-	vfprintf(out, format, ap);
-	fprintf(out, "\n");
- //   fflush(out); DP MN
+	l = strlen(out);
+	vsnprintf(&out[l], 32768 - l, format, ap);
 
-	// finish up
-	MUTEX.Release();
-	va_end(ap);
-}
-
-void GMCommand_Log::writefromsession(WorldSession* session, const char* format, ...)
-{
-	if(!out) return;
-
-	va_list ap;
-	va_start(ap, format);
-	MUTEX.Acquire();
-
-	// write timestamp to log
-	time_t t = time(NULL);
-	tm* aTm = localtime(&t);
-	fprintf(out,"[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
-
-	// write out session info
-	fprintf(out, "Account %u [%s], IP %s, Player %s :: ", session->GetAccountId(), session->GetAccountName().c_str(),
-		session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP", 
-		session->GetPlayer() ? session->GetPlayer()->GetName() : "nologin");
-
-	// write out text
-	vfprintf(out, format, ap);
-	fprintf(out, "\n");
-	fflush(out);
-
-	// finish up
-	MUTEX.Release();
+	AddLine(out);
 	va_end(ap);
 }

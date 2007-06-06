@@ -24,12 +24,14 @@
 #  pragma warning( disable : 4311 )
 
 #include "CrashHandler.h"
+#include "TextLogger.h"
 #include <stdio.h>
 #include <time.h>
 #include <windows.h>
 #include <tchar.h>
 
 bool ON_CRASH_BREAK_DEBUGGER;
+extern TextLogger * Crash_Log;
 
 void StartCrashHandler()
 {
@@ -144,6 +146,15 @@ static const TCHAR *GetExceptionDescription(DWORD ExceptionCode)
 	return _T("an Unknown exception type");
 }
 
+void echo(const char * format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	vprintf(format, ap);
+	Crash_Log->AddSFormat(false, format, ap);
+	va_end(ap);
+}
+
 void PrintCrashInformation(PEXCEPTION_POINTERS except)
 {
 	SYSTEM_INFO si;
@@ -176,19 +187,19 @@ void PrintCrashInformation(PEXCEPTION_POINTERS except)
 	else
 		strcpy(winver, "Unknown Windows");
 
-	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-	printf("Server has crashed. Reason was:\n");
-	printf("   %s at 0x%08X\n", GetExceptionDescription(except->ExceptionRecord->ExceptionCode),
+	echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+	echo("Server has crashed. Reason was:\n");
+	echo("   %s at 0x%08X\n", GetExceptionDescription(except->ExceptionRecord->ExceptionCode),
 		(unsigned long)except->ExceptionRecord->ExceptionAddress);
-	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-	printf("System Information:\n");
-	printf("   Running as: %s on %s Build %u\n", username, winver, ver.dwBuildNumber);
-	printf("   Running on %u processors (type %u)\n", si.dwNumberOfProcessors, si.dwProcessorType);
-	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-	printf("Call Stack: \n");
+	echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+	echo("System Information:\n");
+	echo("   Running as: %s on %s Build %u\n", username, winver, ver.dwBuildNumber);
+	echo("   Running on %u processors (type %u)\n", si.dwNumberOfProcessors, si.dwProcessorType);
+	echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+	echo("Call Stack: \n");
 	CStackWalker sw;
 	sw.ShowCallstack();
-	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+	echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
 }
 
 void CStackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName)
@@ -253,7 +264,8 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry &en
 
 void CStackWalker::OnOutput(LPCSTR szText)
 {
-	printf("	%s", szText);
+	printf("   %s", szText);
+	Crash_Log->AddFormat("   %s", szText);
 }
 
 

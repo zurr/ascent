@@ -484,7 +484,7 @@ void GossipScript::GossipSelectOption(Creature* pCreature, Player* Plr, uint32 I
 		}break;
 
 	default:
-		script_errorlog("Unknown IntId %u on entry %u", IntId, pCreature->GetEntry());
+		sLog.outError("Unknown IntId %u on entry %u", IntId, pCreature->GetEntry());
 		break;
 	}	
 }
