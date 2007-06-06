@@ -12,7 +12,7 @@ public:
 
 void InnkeeperGossip::GossipHello(Creature* pCreature, Player* Plr, bool AutoSend)
 {
-    script_debuglog("Gossip-Innkeepers.cpp : Hello by %s", Plr->GetName());
+    sLog.outDetail("Gossip-Innkeepers.cpp : Hello by %s", Plr->GetName());
     GossipMenu *Menu;
     uint32 TextID = 820;
     // Hello (First) Menu.
@@ -32,7 +32,7 @@ void InnkeeperGossip::GossipHello(Creature* pCreature, Player* Plr, bool AutoSen
 
 void InnkeeperGossip::GossipSelectOption(Creature* pCreature, Player* Plr, uint32 Id, uint32 IntId)
 {
-    script_debuglog("Gossip-Innkeepers.cpp : Select option %u by %s", IntId, Plr->GetName());
+    sLog.outDebug("Gossip-Innkeepers.cpp : Select option %u by %s", IntId, Plr->GetName());
     switch(IntId)
     {
     case 1:     // VENDOR

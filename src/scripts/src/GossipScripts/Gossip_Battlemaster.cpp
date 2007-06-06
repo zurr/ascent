@@ -7,7 +7,7 @@ public:
     ADD_GOSSIP_FACTORY_FUNCTION(WarsongGulchBattlemaster);
     void GossipHello(Creature * pCreature, Player * plr, bool AutoSend)
     {
-        script_debuglog("Gossip-Battlemaster.cpp : WSG Hello by %s", plr->GetName());
+        sLog.outDetail("Gossip-Battlemaster.cpp : WSG Hello by %s", plr->GetName());
 
         GossipMenu *Menu;
         uint32 Team = plr->GetTeam();
@@ -68,7 +68,7 @@ public:
 
     void GossipHello(Creature * pCreature, Player * plr, bool AutoSend)
     {
-        script_debuglog("Gossip-Battlemaster.cpp : AB Hello by %s", plr->GetName());
+        sLog.outDetail("Gossip-Battlemaster.cpp : AB Hello by %s", plr->GetName());
 
         GossipMenu *Menu;
         uint32 Team = plr->GetTeam();
@@ -128,7 +128,7 @@ public:
     ADD_GOSSIP_FACTORY_FUNCTION(AlteracValleyBattlemaster);
     void GossipHello(Creature * pCreature, Player * plr, bool AutoSend)
     {
-        script_debuglog("Gossip-Battlemaster.cpp : AV Hello by %s", plr->GetName());
+        sLog.outDetail("Gossip-Battlemaster.cpp : AV Hello by %s", plr->GetName());
 
         GossipMenu *Menu;
         uint32 Team = plr->GetTeam();
