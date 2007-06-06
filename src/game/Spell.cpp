@@ -631,22 +631,13 @@ void Spell::FillTargetMap(uint32 i)
 		case 6:// Single Target Enemy
 		case 77:					// grep: i think this fits
 			{
-printf("spell is trying to find a target 1\n");
-				if(!m_targets.m_unitTarget)
-					m_targets.m_unitTarget=GetSinglePossibleEnemy(0);
 				if(m_spellInfo->TargetCreatureType  && GUID_HIPART(m_targets.m_unitTarget)==HIGHGUID_UNIT)
-				{
-printf("spell is trying to find a target 1\n");
-				
-
+				{		
 					Creature *cr=m_caster->GetMapMgr()->GetCreature( m_targets.m_unitTarget);
 					if(!cr)break;
-printf("spell is trying to find a target 1\n");
-				
 				
 					if(!(1<<(cr->GetCreatureName()->Type-1) & m_spellInfo->TargetCreatureType))
 					break;
-printf("spell is trying to find a target 1\n");
 				}
 				if(DidHit(m_targets.m_unitTarget))
 					SafeAddTarget(tmpMap,m_targets.m_unitTarget);
