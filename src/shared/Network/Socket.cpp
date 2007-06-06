@@ -161,7 +161,8 @@ void Socket::RemoveWriteBufferBytes(uint32 size, bool lock)
 		m_writeByteCount = 0;
 	else
 	{
-		memcpy(m_writeBuffer, &m_writeBuffer[size], m_writeByteCount - size);
+		//memcpy(m_writeBuffer, &m_writeBuffer[size], m_writeByteCount - size);
+		memmove(m_writeBuffer, &m_writeBuffer[size], m_writeByteCount - size);
 		m_writeByteCount -= size;
 	}
 

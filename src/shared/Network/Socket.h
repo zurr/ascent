@@ -136,14 +136,23 @@ public:
 	// Atomic wrapper functions for increasing read/write locks
 	inline void IncSendLock() { InterlockedIncrement(&m_writeLock); }
 	inline void DecSendLock() { InterlockedDecrement(&m_writeLock); }
-	inline bool AcquireSendLock() { return (InterlockedCompareExchange(&m_writeLock, 1, 0) == 0); }
+	inline bool AcquireSendLock()
+	{
+		if(m_writeLock)
+			return false;
+		else
+		{
+			IncSendLock();
+			return true;
+		}
+	}
 
 private:
 	// Completion port socket is assigned to
 	HANDLE m_completionPort;
 	
 	// Write lock, stops multiple write events from being posted.
-	long m_writeLock;
+	volatile long m_writeLock;
 	
 	// Assigns the socket to his completion port.
 	void AssignToCompletionPort();

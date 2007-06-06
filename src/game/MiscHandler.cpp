@@ -459,7 +459,7 @@ void WorldSession::HandleWhoOpcode( WorldPacket & recv_data )
 	objmgr._playerslock.AcquireReadLock();
 	iend=objmgr._players.end();
 	itr=objmgr._players.begin();
-	while(itr !=iend)
+	while(itr !=iend && sent_count < 50)
 	{
 		plr = itr->second;
 		++itr;
@@ -543,10 +543,7 @@ void WorldSession::HandleWhoOpcode( WorldPacket & recv_data )
 	objmgr._playerslock.ReleaseReadLock();
 	data.wpos(0);
 	data << sent_count;
-	if(sent_count > 49)
-		data << total_count;
-	else
-		data << sent_count;
+	data << sent_count;
 
 	SendPacket(&data);
 
