@@ -42,7 +42,7 @@ class WorldSession;
 
 #endif
 
-class Log : public Singleton< Log > {
+class SERVER_DECL Log : public Singleton< Log > {
 public:
   void outString( const char * str, ... );
   void outError( const char * err, ... );
