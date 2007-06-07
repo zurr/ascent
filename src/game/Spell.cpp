@@ -1186,7 +1186,7 @@ void Spell::prepare(SpellCastTargets * targets)
 		
 		if(!i_caster)
 		{
-			if(p_caster && m_timer > 0)
+			if(p_caster && m_timer > 0 && !m_triggeredSpell)
 				p_caster->setAttackTimer(m_timer + 1000, false);
 		}
 	}
