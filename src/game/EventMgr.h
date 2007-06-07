@@ -281,9 +281,9 @@ public:
 		obj->event_RemoveEvents(type);
 	}
 
-	template <class Class> void ModifyEventTimeLeft(Class *obj, uint32 type, uint32 time)
+	template <class Class> void ModifyEventTimeLeft(Class *obj, uint32 type, uint32 time,bool unconditioned=true)
 	{
-		obj->event_ModifyTimeLeft(type, time);
+		obj->event_ModifyTimeLeft(type, time,unconditioned);
 	}
 
 	template <class Class> void ModifyEventTime(Class *obj, uint32 type, uint32 time)

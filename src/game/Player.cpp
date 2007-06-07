@@ -803,6 +803,7 @@ void Player::_EventAttack(bool offhand)
 {
 	if (m_currentSpell)
 	{
+		m_currentSpell->cancel();
 		setAttackTimer(500, offhand);
 		return;
 	}
@@ -819,8 +820,6 @@ void Player::_EventAttack(bool offhand)
 		EventAttackStop();
 		return;
 	}
-
-	sEventMgr.ModifyEventTimeLeft(this,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL);
 
 	if (!canReachWithAttack(pVictim))
 	{

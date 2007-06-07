@@ -37,7 +37,7 @@ class SERVER_DECL EventableObject
 protected:
 	void event_RemoveEvents();
 	void event_RemoveEvents(uint32 EventType);
-	void event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft);
+	void event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,bool unconditioned=false);
 	void event_ModifyTime(uint32 EventType, uint32 Time);
 	void event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time);
 	bool event_HasEvent(uint32 EventType);

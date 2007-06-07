@@ -97,7 +97,7 @@ void EventableObject::event_RemoveEvents()
 	event_RemoveEvents(EVENT_REMOVAL_FLAG_ALL);
 }
 
-void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft)
+void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,bool unconditioned)
 {
 	m_lock.Acquire();
 
@@ -106,7 +106,9 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft)
 	{
 		do 
 		{
-			itr->second->currTime = (TimeLeft > itr->second->msTime) ? itr->second->msTime : TimeLeft;
+			if(unconditioned)
+				itr->second->currTime = TimeLeft;
+			else itr->second->currTime = (TimeLeft > itr->second->msTime) ? itr->second->msTime : TimeLeft;
 			++itr;
 		} while(itr != m_events.upper_bound(EventType));
 	}

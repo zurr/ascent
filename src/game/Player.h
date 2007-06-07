@@ -735,6 +735,22 @@ public:
 	{
 		return GetByte(UNIT_FIELD_BYTES_1,2);
 	}
+	inline void setAttackTimer(int32 time, bool offhand)
+	{
+		if(!time)
+			time = offhand ? m_uint32Values[UNIT_FIELD_BASEATTACKTIME_01] : m_uint32Values[UNIT_FIELD_BASEATTACKTIME];
+
+		time += (time*modAttackTimeIncreasePCT)/100;
+
+		if(offhand)
+			m_attackTimer_1 = getMSTime() + time;
+		else
+			m_attackTimer = getMSTime() + time;
+		//do not exit combat just because we are trying to delay attack (for whatever reason, like spellcasting)
+		if(!sEventMgr.HasEvent(this,EVENT_ATTACK_TIMEOUT)) //do not add excesive attack events 
+			sEventMgr.AddEvent(this,&Player::EventAttackStop,EVENT_ATTACK_TIMEOUT,time+PLAYER_ATTACK_TIMEOUT_INTERVAL,1); //attack timeout on no attack after 5 seconds
+		else sEventMgr.ModifyEventTimeLeft(this,EVENT_ATTACK_TIMEOUT,time+PLAYER_ATTACK_TIMEOUT_INTERVAL,true);
+	}
 	
 	std::set<uint32> m_SSSPecificSpells;
 	void SetShapeShift(uint8 ss);
