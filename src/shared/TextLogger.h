@@ -318,7 +318,7 @@ public:
 	{
 		m_running = false;
 		m_condition.BeginSynchronized();
-		if(!loggers.size())
+		if(!updatePendingLoggers.HasItems())
 		{
 			// we have no pending data to be written.
 			// signal the thread to wake up, otherwise its gonna be waiting indefinitely.
