@@ -832,6 +832,7 @@ void Object::SetUInt32Value( const uint32 index, const uint32 value )
 		}
 	}
 }
+/*
 //must be in %
 void Object::ModPUInt32Value(const uint32 index, const int32 value, bool apply )
 {
@@ -852,6 +853,13 @@ void Object::ModPUInt32Value(const uint32 index, const int32 value, bool apply )
 			m_objectUpdated = true;
 		}
 	}
+}
+*/
+uint32 Object::GetModPUInt32Value(const uint32 index, const int32 value)
+{
+	ASSERT( index < m_valuesCount );
+	int32 basevalue = (int32)m_uint32Values[ index ];
+	return ((basevalue*value)/100);
 }
 
 void Object::ModUInt32Value(const uint32 index, const int32 value )

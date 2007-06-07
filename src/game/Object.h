@@ -201,7 +201,8 @@ public:
 	void __fastcall ModFloatValue(const uint32 index, const float value );
 	void ModPFloatValue(const uint32 index, const float value, bool apply);
 	void __fastcall ModUInt32Value(const uint32 index, const int32 value);
-	void ModPUInt32Value(const uint32 index, const int32 value, bool apply);
+//	void ModPUInt32Value(const uint32 index, const int32 value, bool apply);
+	uint32 GetModPUInt32Value(const uint32 index, const int32 value);
 
 	//! Set uint32 property
 	void SetByte(uint32 index, uint32 index1,uint8 value);

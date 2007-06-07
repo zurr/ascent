@@ -239,6 +239,8 @@ struct Modifier
 
 	///needed for per level effect
 	int32 realamount;
+	//need this to store % values or they cannot be reverted corectly (i think :D )
+	signed int fixed_amount[7];
 };
 
 

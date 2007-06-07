@@ -356,6 +356,8 @@ Aura::Aura(SpellEntry *proto, int32 duration,Object* caster, Unit *target)
 
 	m_castedItemId = 0;
 	m_visualSlot = 0xFF;
+
+//	fixed_amount = 0;//used only por percent values to be able to recover value correctly.No need to init this if we are not using it
 }
 
 void Aura::Remove()
@@ -1734,9 +1736,21 @@ void Aura::SpellAuraModAttackSpeed(bool apply)
 	}
 	else
 	{
-		m_target->ModPUInt32Value(UNIT_FIELD_BASEATTACKTIME,mod->m_amount,!apply);
-		m_target->ModPUInt32Value(UNIT_FIELD_BASEATTACKTIME_01,mod->m_amount,!apply);
-		m_target->ModPUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,mod->m_amount,!apply);
+		if(apply)
+		{
+			mod->fixed_amount[0] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME,mod->m_amount);
+			mod->fixed_amount[1] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME,mod->m_amount);
+			mod->fixed_amount[2] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME,mod->m_amount);
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME,mod->fixed_amount[0]);
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME_01,mod->fixed_amount[1]);
+			m_target->ModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,mod->fixed_amount[2]);
+		}
+		else
+		{
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME,-mod->fixed_amount[0]);
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME_01,-mod->fixed_amount[1]);
+			m_target->ModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,-mod->fixed_amount[2]);
+		}
 	}
 	 
 }
@@ -4841,13 +4855,23 @@ void Aura::SpellAuraModIncreaseEnergyPerc(bool apply)
 	SetPositive();
 	uint32 maxField = UNIT_FIELD_MAXPOWER1 + m_target->GetPowerType();
 
-	m_target->ModPUInt32Value(maxField, mod->m_amount, apply);
+	if(apply)
+	{
+		mod->fixed_amount[0] = m_target->GetModPUInt32Value(maxField,mod->m_amount);
+		m_target->ModUInt32Value(maxField,mod->fixed_amount[0]);
+	}
+	else m_target->ModUInt32Value(maxField,-mod->fixed_amount[0]);
 }
 
 void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
 {
 	SetPositive();
-	m_target->ModPUInt32Value(UNIT_FIELD_MAXHEALTH, mod->m_amount,apply);
+	if(apply)
+	{
+		mod->fixed_amount[0] = m_target->GetModPUInt32Value(UNIT_FIELD_MAXHEALTH,mod->m_amount);
+		m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH,mod->fixed_amount[0]);
+	}
+	else m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH,-mod->fixed_amount[0]);
 }
 
 void Aura::SpellAuraModManaRegInterrupt(bool apply)
@@ -4939,8 +4963,18 @@ void Aura::SpellAuraModHaste(bool apply)
 	}
 	else
 	{
-		m_target->ModPUInt32Value(UNIT_FIELD_BASEATTACKTIME, mod->m_amount,!apply);
-		m_target->ModPUInt32Value(UNIT_FIELD_BASEATTACKTIME_01, mod->m_amount,!apply);
+		if(apply)
+		{
+			mod->fixed_amount[0] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME,mod->m_amount);
+			mod->fixed_amount[1] = m_target->GetModPUInt32Value(UNIT_FIELD_BASEATTACKTIME_01,mod->m_amount);
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME,mod->fixed_amount[0]);
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME_01,mod->fixed_amount[1]);
+		}
+		else
+		{
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME,-mod->fixed_amount[0]);
+			m_target->ModUInt32Value(UNIT_FIELD_BASEATTACKTIME_01,-mod->fixed_amount[1]);
+		}
 	}
 }
 
@@ -4981,7 +5015,12 @@ void Aura::SpellAuraModRangedHaste(bool apply)
 	}
 	else
 	{
-		m_target->ModPUInt32Value(UNIT_FIELD_RANGEDATTACKTIME, mod->m_amount,!apply);
+		if(apply)
+		{
+			mod->fixed_amount[0] = m_target->GetModPUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,mod->m_amount);
+			m_target->ModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,mod->fixed_amount[0]);
+		}
+		else m_target->ModUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,-mod->fixed_amount[0]);
 	}
 }
 
