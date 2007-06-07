@@ -4859,8 +4859,15 @@ void Aura::SpellAuraModIncreaseEnergyPerc(bool apply)
 	{
 		mod->fixed_amount[0] = m_target->GetModPUInt32Value(maxField,mod->m_amount);
 		m_target->ModUInt32Value(maxField,mod->fixed_amount[0]);
+		if(m_target->IsPlayer())
+			((Player*)m_target)->SetManaFromSpell(((Player*)m_target)->GetManaFromSpell() + mod->fixed_amount[0]); 
 	}
-	else m_target->ModUInt32Value(maxField,-mod->fixed_amount[0]);
+	else
+	{
+		m_target->ModUInt32Value(maxField,-mod->fixed_amount[0]);
+		if(m_target->IsPlayer())
+			((Player*)m_target)->SetManaFromSpell(((Player*)m_target)->GetManaFromSpell() + mod->fixed_amount[0]); 
+	}
 }
 
 void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
@@ -4870,8 +4877,15 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
 	{
 		mod->fixed_amount[0] = m_target->GetModPUInt32Value(UNIT_FIELD_MAXHEALTH,mod->m_amount);
 		m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH,mod->fixed_amount[0]);
+		if(m_target->IsPlayer())
+			((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() + mod->fixed_amount[0]); 
 	}
-	else m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH,-mod->fixed_amount[0]);
+	else
+	{
+		m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH,-mod->fixed_amount[0]);
+		if(m_target->IsPlayer())
+			((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() - mod->fixed_amount[0]); 
+	}
 }
 
 void Aura::SpellAuraModManaRegInterrupt(bool apply)
