@@ -23,7 +23,7 @@
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
 WorldSession::WorldSession(uint32 id, string Name, WorldSocket *sock) : _accountId(id), _socket(sock), _accountName(Name),
-_player(0), _logoutTime(0), _loggingOut(false), permissions(NULL), permissioncount(0), instanceId(0)
+_player(0), _logoutTime(0), _loggingOut(false), permissions(NULL), permissioncount(0), instanceId(0), packetThrottleCount(0), packetThrottleTimeout(0)
 {
 	memset(movement_packet, 0, sizeof(movement_packet));
 	m_currMsTime = getMSTime();
@@ -54,11 +54,11 @@ WorldSession::~WorldSession()
 
 	WorldPacket *packet;
 
-	while(_recvQueue.size())
-	{
-		packet = _recvQueue.next();
+	while(packet = _recvQueue.Pop())
 		delete packet;
-	}
+
+	while(packet = _throttledQueue.Pop())
+		delete packet;
 
 	for(uint32 x=0;x<8;x++)
 	{
@@ -102,15 +102,8 @@ int WorldSession::Update(uint32 InstanceID)
 		return 1;
 	}
 
-	while (_recvQueue.size())
+	while (packet = _recvQueue.Pop())
 	{
-		if(InstanceID != instanceId)
-		{
-			// If we hit this -> means a packet has changed our map.
-			return 2;
-		}
-
-		packet = _recvQueue.next();
 		ASSERT(packet);
 
 		if(packet->GetOpcode() >= NUM_MSG_TYPES)
@@ -139,6 +132,12 @@ int WorldSession::Update(uint32 InstanceID)
 		}
 
 		delete packet;
+
+		if(InstanceID != instanceId)
+		{
+			// If we hit this -> means a packet has changed our map.
+			return 2;
+		}
 	}
 
 	if(InstanceID != instanceId)
@@ -180,6 +179,7 @@ int WorldSession::Update(uint32 InstanceID)
 	}
 
 	// 0 - OK!
+	UpdateThrottledPackets();
 	return 0;
 }
 
@@ -861,4 +861,47 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
 
 	AddLine(out);
 	va_end(ap);
+}
+
+bool WorldSession::SendThrottledPacket(WorldPacket * packet, bool allocated)
+{
+	if(World::UNIXTIME < packetThrottleTimeout)
+	{
+		if(allocated)
+			_throttledQueue.Push(packet);
+		else
+			_throttledQueue.Push(new WorldPacket(*packet));
+
+		return false;
+	}
+
+	if(++packetThrottleCount > 15)
+	{
+		// 2 second delay between throttles
+		packetThrottleTimeout = World::UNIXTIME + 3;
+	}
+
+	SendPacket(packet);
+	return true;
+}
+
+void WorldSession::UpdateThrottledPackets()
+{
+	if(packetThrottleTimeout)
+	{
+		if(World::UNIXTIME < packetThrottleTimeout)
+			return;
+		else
+		{
+			packetThrottleCount = 0;
+			packetThrottleTimeout = 0;
+		}
+	}
+
+	WorldPacket * pck;
+	while(pck = _throttledQueue.Pop())
+	{
+		SendPacket(pck);
+		delete pck;
+	}
 }

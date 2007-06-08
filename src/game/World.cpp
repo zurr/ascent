@@ -15,6 +15,7 @@
 #include "StdAfx.h"
 
 initialiseSingleton( World );
+time_t World::UNIXTIME = time(NULL);
 
 World::World()
 {
@@ -837,6 +838,9 @@ void World::Update(time_t diff)
 	eventholder->Update(diff);
 	sAuctionMgr.Update();
 	_UpdateGameTime();
+
+	/* since time() is an expensive system call, we only update it once per server loop */
+	World::UNIXTIME = time(NULL);
 }
 
 

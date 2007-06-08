@@ -252,6 +252,8 @@ public:
 	bool bEncounterInProgress;
 	time_t InactiveMoveTime;
     uint32 iInstanceMode;
+	bool thread_is_alive;
+	bool delete_pending;
 
 protected:
 

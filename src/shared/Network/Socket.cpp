@@ -147,7 +147,7 @@ void Socket::RemoveReadBufferBytes(uint32 size, bool lock)
 
 void Socket::RemoveWriteBufferBytes(uint32 size, bool lock)
 {
-	if(lock)
+	/*if(lock)*/
 		m_writeMutex.Acquire();
 
 	if(m_writeByteCount < size)
@@ -166,7 +166,7 @@ void Socket::RemoveWriteBufferBytes(uint32 size, bool lock)
 		m_writeByteCount -= size;
 	}
 
-	if(lock)
+	/*if(lock)*/
 		m_writeMutex.Release();
 }
 

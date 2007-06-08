@@ -165,6 +165,9 @@ public:
 			_socket->OutPacket(opcode, 0, NULL);
 	}
 
+	bool SendThrottledPacket(WorldPacket * packet, bool allocated);
+	void UpdateThrottledPackets();
+
 	uint32 m_currMsTime;
 	uint32 m_lastPing;
 
@@ -229,7 +232,7 @@ public:
 
 	inline void QueuePacket(WorldPacket* packet)
 	{
-		_recvQueue.add(packet);
+		_recvQueue.Push(packet);
 	}
 	
 	void OutPacket(uint16 opcode, uint16 len, const void* data)
@@ -616,13 +619,6 @@ public:
 	void SendTabardHelp(Creature* pCreature);
 	void SendAuctionList(Creature* pCreature);
 	void SendSpiritHealerRequest(Creature* pCreature);
-	__inline WorldPacket * GetFirstPacketInQueue(bool remove = false)
-	{
-		if(remove)
-			return _recvQueue.next();
-		else
-			return _recvQueue.get_first_element();
-	}
 
 private:
 	friend class Player;
@@ -644,7 +640,8 @@ private:
 
 	AccountDataEntry sAccountData[8];
 
-	LockedQueue<WorldPacket*> _recvQueue;
+	FastQueue<WorldPacket*, Mutex> _recvQueue;
+	FastQueue<WorldPacket*, Mutex> _throttledQueue;
 	char *permissions;
 	int permissioncount;
 
@@ -652,9 +649,11 @@ private:
 	uint32 _latency;
 	uint32 client_build;
 	uint32 instanceId;
-
 public:
 	static void InitPacketHandlerTable();
+
+	time_t packetThrottleTimeout;
+	uint32 packetThrottleCount;
 };
 
 typedef std::set<WorldSession*> SessionSet;

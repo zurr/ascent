@@ -113,10 +113,14 @@ void Creature::Update( uint32 p_time )
 void Creature::SafeDelete()
 {
 	sEventMgr.RemoveEvents(this);
-	sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_CREATURE_SAFE_DELETE, 1000, 1);
+	//sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_CREATURE_SAFE_DELETE, 1000, 1);
+	sEventMgr.AddEvent(this, &Creature::DeleteMe, EVENT_CREATURE_SAFE_DELETE, 1000, 1);
 }
 
-
+void Creature::DeleteMe()
+{
+	delete this;
+}
 
 void Creature::OnRemoveCorpse()
 {

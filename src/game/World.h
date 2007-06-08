@@ -482,6 +482,8 @@ public:
 	inline MapInfoMap::iterator GetMapInfoBegin() { return m_mapinfo.begin(); }
 	inline MapInfoMap::iterator GetMapInfoEnd() { return m_mapinfo.end(); }
 
+	static time_t UNIXTIME;
+
 protected:
 	MapInfoMap m_mapinfo;
 	Mutex SessionsMutex;//FOR GLOBAL !

@@ -403,6 +403,8 @@ public:
 	bool has_waypoint_text;
 	bool has_combat_text;
 
+	void DeleteMe();
+
 protected:
 	CreatureAIScript *_myScriptClass;
 	GossipScript *_gossipScript;

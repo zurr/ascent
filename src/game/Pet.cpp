@@ -496,7 +496,8 @@ void Pet::PetSafeDelete()
 		RemoveFromWorld(false);
 	}
 
-	sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_CREATURE_SAFE_DELETE, 1000, 1);
+	//sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_CREATURE_SAFE_DELETE, 1000, 1);
+	Creature::SafeDelete();
 }
 
 void Pet::DelayedRemove(bool bTime, bool bDeath)

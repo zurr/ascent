@@ -63,11 +63,21 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 
 	m_holder = &eventHolder;
 	m_event_Instanceid = eventHolder.GetInstanceID();
+	thread_is_alive = true;
 }
 
 
 MapMgr::~MapMgr()
 {
+	if(thread_is_alive)
+	{
+		sLog.outString("possible crash! instance deletion while thread is alive! oh noes!");
+		Crash_Log->AddLine("possible crash! instance deletion while thread is alive! oh noes!");
+#ifdef WIN32
+		CStackWalker ws;
+		ws.ShowCallstack();
+#endif
+	}
 	_shutdown=true;
 	sEventMgr.RemoveEvents(this);
 	delete ScriptInterface;
@@ -1023,6 +1033,13 @@ void MapMgr::Do()
 		}
 	}
 
+	if(delete_pending)
+	{
+		thread_is_alive = false;
+		GetBaseMap()->DestroyMapMgrInstance(GetInstanceID());
+		return;
+	}
+
 	///////////////////////////////
 	// Instance Soft Reset
 	/////////////
@@ -1033,6 +1050,7 @@ void MapMgr::Do()
 	if(m_battleground)
 	{
 		uint32 ID = m_battleground->GetID();
+		thread_is_alive = false;
 		sBattlegroundMgr.RemoveBattleground(ID);
 		sWorldCreator.DestroyBattlegroundInstance(GetMapId(), GetInstanceID());
 		return;
@@ -1042,12 +1060,14 @@ void MapMgr::Do()
 	if(RaidExpireTime && t >= RaidExpireTime)
 	{
 		sInstanceSavingManager.RemoveSavedInstance(GetMapId(),GetInstanceID(),true);
+		thread_is_alive = false;
 		sWorldCreator.InstanceHardReset(this);
 	}
 	else
 	{
 		if(ExpiryTime && t >= ExpiryTime)
 		{
+			thread_is_alive = false;
 			sWorldCreator.InstanceSoftReset(this);
 		}
 
