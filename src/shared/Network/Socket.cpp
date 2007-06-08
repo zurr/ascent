@@ -38,6 +38,11 @@ Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_read
 	m_writeLock = 0;
 	sSocketMgr.AddSocket(this);
 #endif
+
+#ifdef CONFIG_USE_IOCP
+	m_writeLock = 0;
+	sSocketMgr.AddSocket(this);
+#endif
 }
 
 Socket::~Socket()
@@ -207,6 +212,10 @@ void Socket::Delete()
 
 	if(m_connected) Disconnect();
 	sSocketGarbageCollector.QueueSocket(this);
+
+#ifdef CONFIG_USE_IOCP
+	sSocketMgr.RemoveSocket(this);
+#endif
 }
 
 void Socket::Read(uint32 size, uint8 * buffer)

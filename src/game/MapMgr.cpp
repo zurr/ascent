@@ -64,6 +64,7 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 	m_holder = &eventHolder;
 	m_event_Instanceid = eventHolder.GetInstanceID();
 	thread_is_alive = true;
+	delete_pending = false;
 }
 
 
