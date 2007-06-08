@@ -38,7 +38,13 @@ ScriptEngine::ScriptEngine()
 ScriptEngine::~ScriptEngine()
 {
 	if(m_machine)
-		delete m_machine;
+	{
+		//for(uint32 i = 0; i < 10; ++i)
+			//m_machine->DestructDeleteObject(m_userObjects[i]);
+		m_machine->GetGC()->DestructAll();
+		
+		//delete m_machine;
+	}
 }
 
 void ScriptEngine::Reload()

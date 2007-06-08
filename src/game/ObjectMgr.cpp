@@ -199,6 +199,23 @@ ObjectMgr::~ObjectMgr()
 
 	for(HM_NAMESPACE::hash_map<uint32, PlayerInfo*>::iterator itr = m_playersinfo.begin(); itr != m_playersinfo.end(); ++itr)
 		delete itr->second;
+
+	sLog.outString("Deleting npc_monstersay...");
+	for(uint32 i = 0 ; i < NUM_MONSTER_SAY_EVENTS ; ++i)
+	{
+		NpcMonsterSay * p;
+		for(MonsterSayMap::iterator itr = mMonsterSays[i].begin(); itr != mMonsterSays[i].end(); ++itr)
+		{
+			p = itr->second;
+			for(uint32 j = 0; j < p->TextCount; ++j)
+				free((char*)p->Texts[j]);
+			delete [] p->Texts;
+			free((char*)p->MonsterName);
+			delete p;
+		}
+
+		mMonsterSays[i].clear();
+	}
 }
 
 //

@@ -32,6 +32,7 @@ TextLogger::TextLogger(const char * filename, bool open)
 	m_isOpen = false;
 	m_writeLock = 0;
 	m_filename = strnew(filename, false);
+	m_file = 0;
 	TextLogger::Thread->AddLogger(this);
 	if(!open)
 		return;

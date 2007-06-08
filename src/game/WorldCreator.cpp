@@ -58,6 +58,8 @@ WorldCreator::~WorldCreator()
 	{
 		delete it->second;
 	}
+
+	delete FormationMgr::getSingletonPtr();
 }
 
 Map* WorldCreator::_CreateMap(uint32 mapid)

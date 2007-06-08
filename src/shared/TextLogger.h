@@ -193,7 +193,8 @@ public:
 
 		// close the file
 		m_isOpen = false;
-		fclose(m_file);
+		if(m_file)
+			fclose(m_file);
 		delete [] m_filename;
 	}
 

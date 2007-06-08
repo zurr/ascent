@@ -1033,6 +1033,8 @@ void MapMgr::Do()
 		}
 	}
 
+	sThreadMgr.RemoveThread(this);
+
 	if(delete_pending)
 	{
 		thread_is_alive = false;
@@ -1045,7 +1047,6 @@ void MapMgr::Do()
 	/////////////
 	// make sure this executes in the correct context. otherwise,
 	// with per-thread heap management we're gonna have issues.
-	sThreadMgr.RemoveThread(this);
 
 	if(m_battleground)
 	{

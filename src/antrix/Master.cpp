@@ -347,8 +347,6 @@ bool Master::Run()
 	sSocketMgr.CloseAll();
 	sLog.outString("All client sockets closed.\n");
 
-	delete LogonCommHandler::getSingletonPtr();
-
 	// begin server shutdown
 	time_t st = time(NULL);
 	sLog.outString("Server shutdown initiated at %s", ctime(&st));
@@ -393,6 +391,13 @@ bool Master::Run()
 
 	sLog.outString("Terminating MySQL connections...\n");
 	_StopDB();
+
+	sLog.outString("Deleting Network Subsystem...");
+	delete SocketMgr::getSingletonPtr();
+	delete SocketGarbageCollector::getSingletonPtr();
+
+	sLog.outString("Deleting Script Engine...");
+	delete ScriptSystem;
 
 	sLog.outString("\nServer shutdown completed successfully.\n");
 
