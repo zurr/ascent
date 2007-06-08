@@ -338,7 +338,7 @@ void gmMachine::ResetAndFreeMemory()
   GM_ASSERT(m_memStackFrames.GetMemUsed() == 0);
   m_memStackFrames.ResetAndFreeMemory();
 
-  GM_ASSERT(m_fixedSet.GetMemUsed() == 0);
+  //GM_ASSERT(m_fixedSet.GetMemUsed() == 0);
   m_fixedSet.ResetAndFreeMemory();
 
   m_debug = false;

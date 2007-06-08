@@ -43,7 +43,7 @@ ScriptEngine::~ScriptEngine()
 			//m_machine->DestructDeleteObject(m_userObjects[i]);
 		m_machine->GetGC()->DestructAll();
 		
-		//delete m_machine;
+		delete m_machine;
 	}
 }
 

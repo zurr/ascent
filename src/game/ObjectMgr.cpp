@@ -216,6 +216,26 @@ ObjectMgr::~ObjectMgr()
 
 		mMonsterSays[i].clear();
 	}
+
+	sLog.outString("Deleting Charters...");
+	for(HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr =  m_charters.begin(); itr != m_charters.end(); ++itr)
+	{
+		delete itr->second;
+	}
+
+	sLog.outString("Deleting reputation tables...");
+	for(HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr = this->m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
+	{
+		ReputationModifier * mod = itr->second;
+		mod->mods.clear();
+		delete mod;
+	}
+	for(HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr = this->m_reputation_faction.begin(); itr != m_reputation_faction.end(); ++itr)
+	{
+		ReputationModifier * mod = itr->second;
+		mod->mods.clear();
+		delete mod;
+	}
 }
 
 //
