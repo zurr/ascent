@@ -17,6 +17,9 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupNaxxramas(mgr);
 	SetupOnyxiaAI(mgr);
 	SetupSteamVaults(mgr);
+	SetupTheEye(mgr);
+	SetupManaTombs(mgr);
+	SetupAuchenaiCrypts(mgr);
 }
 
 #ifdef WIN32

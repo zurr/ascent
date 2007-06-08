@@ -1,3 +1,4 @@
+#include <string>
 #ifndef INSTANCE_SCRIPTS_SETUP_H
 #define INSTANCE_SCRIPTS_SETUP_H
 
@@ -10,6 +11,9 @@ void SetupBotanica(ScriptMgr * mgr);
 void SetupBlackwingLair(ScriptMgr * mgr);
 void SetupNaxxramas(ScriptMgr * mgr);
 void SetupSteamVaults(ScriptMgr * mgr);
+void SetupTheEye(ScriptMgr * mgr);
+void SetupManaTombs(ScriptMgr * mgr);
+void SetupAuchenaiCrypts(ScriptMgr * mgr);
 
 struct SP_AI_Spell{
 	SpellEntry *info; // spell info
@@ -17,6 +21,8 @@ struct SP_AI_Spell{
 	bool instant; // does it is instant or not?
 	float perctrigger; // % of the cast of this spell in a total of 100% of the attacks
 	int attackstoptimer; // stop the creature from attacking
+	int soundid; // sound id in DBC
+	std::string speech; // text displaied when spell was casted
 };
 
 enum
@@ -26,6 +32,7 @@ enum
 	TARGET_ATTACKING,
 	TARGET_DESTINATION,
 	TARGET_SOURCE,
+
 	//.....add
 };
 

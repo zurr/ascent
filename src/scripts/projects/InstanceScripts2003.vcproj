@@ -134,6 +134,9 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_AuchenaiCrypts.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_BlackwingLair.cpp">
 			</File>
 			<File
@@ -141,6 +144,9 @@
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_Deadmines.cpp">
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Instance_ManaTombs.cpp">
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_MoltenCore.cpp">
@@ -153,6 +159,9 @@
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_SteamVaults.cpp">
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Instance_TheEye.cpp">
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_ZulGurub.cpp">
