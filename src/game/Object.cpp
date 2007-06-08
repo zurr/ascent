@@ -530,7 +530,7 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 			case UNIT_FIELD_MAXHEALTH:
 			case UNIT_FIELD_HEALTH:
 				{
-					if(target == this)
+					if(target == this || m_valuesCount < UNIT_END)
 						*data << m_uint32Values[index];
 					else
 					{

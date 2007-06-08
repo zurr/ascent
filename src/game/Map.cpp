@@ -202,6 +202,7 @@ void Map::DestroyMapMgrInstance(uint32 instanceId)
 #endif
 		it->second->delete_pending = true;
 		it->second->SetThreadState(THREADSTATE_TERMINATE);
+		return;
 	}
 
 	delete it->second;
