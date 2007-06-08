@@ -203,6 +203,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_AuchenaiCrypts.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_BlackwingLair.cpp"
 				>
 			</File>
@@ -215,6 +219,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_ManaTombs.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_MoltenCore.cpp"
 				>
 			</File>
@@ -223,11 +231,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_SethekkHalls.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_ShadowfangKeep.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_SteamVaults.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Instance_TheEye.cpp"
 				>
 			</File>
 			<File
