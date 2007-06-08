@@ -152,6 +152,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(EXARCHMALADAARAI);
     EXARCHMALADAARAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
+		SUMMON_AVATAR_OF_THE_MARTYR_LIMITER = 0;
 		nrspells = 4;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
@@ -189,6 +190,7 @@ public:
 
     void OnCombatStart(Unit* mTarget)
     {
+		SUMMON_AVATAR_OF_THE_MARTYR_LIMITER = 1;
 		int RandomSpeach;
 		sRand.randInt(1000);
 		RandomSpeach=rand()%3;
@@ -214,7 +216,7 @@ public:
     {
 		if (_unit->GetHealthPct() > 0)	// Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
 		{
-				int RandomSpeach;
+			int RandomSpeach;
 			sRand.randInt(1000);
 			RandomSpeach=rand()%2;
 			switch (RandomSpeach)
@@ -248,12 +250,14 @@ public:
 	   delete[] m_spellcheck;
 	   spells = NULL;
 	   m_spellcheck = NULL;
+	   SUMMON_AVATAR_OF_THE_MARTYR_LIMITER = 0;
     }
 
     void AIUpdate()
     {
-		if (_unit->GetHealthPct() == 15)
+		if (_unit->GetHealthPct() <= 15 && SUMMON_AVATAR_OF_THE_MARTYR_LIMITER == 0)
 		{
+			SUMMON_AVATAR_OF_THE_MARTYR_LIMITER = 1; // Added to prevent situations when Health bar jumps from 16 to 14% and spell is never casted
 			_unit->CastSpell(_unit, spells[2].info, spells[2].instant);
 			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise my fallen brothers! Take form and fight!");
 			_unit->PlaySoundToSet(10512);
@@ -311,6 +315,7 @@ public:
     }
 protected:
 
+	int SUMMON_AVATAR_OF_THE_MARTYR_LIMITER;
     bool *m_spellcheck;
     SP_AI_Spell *spells;
 	int nrspells;

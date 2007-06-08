@@ -167,6 +167,9 @@
 				RelativePath="..\src\InstanceScripts\Instance_TheEye.cpp">
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_TheSlavePens.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_ZulGurub.cpp">
 			</File>
 			<File
