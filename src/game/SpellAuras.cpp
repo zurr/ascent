@@ -1298,7 +1298,7 @@ void Aura::SpellAuraDummy(bool apply)
 			{
 				//this is a pasive spell, theoretically you cannot remove it unless you unlearn it
 				if(apply)
-					 ((Player*)m_target)->SoulStone = 21196;
+					 ((Player*)m_target)->SoulStone = 21169;
 				else ((Player*)m_target)->SoulStone = 0;
 			}
 		}break;

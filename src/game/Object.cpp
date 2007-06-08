@@ -1515,8 +1515,8 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 				SpellEntry * sp=sSpellStore.LookupEntry(20608);
 				if(((Player*)pVictim)->CanCastDueToCooldown(sp))
 				{
-					((Player*)pVictim)->SoulStone = 21196; //this is actual reincarnate spell ;)
-					pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,((Player*)pVictim)->SoulStone);	
+					((Player*)pVictim)->SoulStone = 21169; //this is actual reincarnate spell ;)
+					pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,21169);	
 				}
 			}
 			pVictim->SetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID , 0);
