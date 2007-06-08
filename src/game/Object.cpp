@@ -1499,6 +1499,26 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		{
 			if(((Player*)pVictim)->SoulStone)
 				pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,((Player*)pVictim)->SoulStone);
+			//check to not overuse reincarnation (cooldown)
+			else if(((Player*)pVictim)->SoulStone==21196)
+			{
+				SpellEntry * sp=sSpellStore.LookupEntry(20608);
+				if(((Player*)pVictim)->CanCastDueToCooldown(sp))
+				{
+					((Player*)pVictim)->SoulStone = 0;
+					pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,0);	
+				}
+			}
+			//check if we have by any chance if we have reincarnation pasive spell
+			else if(((Player*)pVictim)->HasSpell(20608))
+			{
+				SpellEntry * sp=sSpellStore.LookupEntry(20608);
+				if(((Player*)pVictim)->CanCastDueToCooldown(sp))
+				{
+					((Player*)pVictim)->SoulStone = 21196; //this is actual reincarnate spell ;)
+					pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,((Player*)pVictim)->SoulStone);	
+				}
+			}
 			pVictim->SetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID , 0);
 			if(pVictim->HasFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT ))
 				pVictim->RemoveFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT );

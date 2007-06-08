@@ -1292,6 +1292,16 @@ void Aura::SpellAuraDummy(bool apply)
 			else
 				((Player*)m_target)->m_lifetapbonus=0;
 		}break;
+	case 20608: //shaman reincarnation
+		{
+			if(m_target->IsPlayer())
+			{
+				//this is a pasive spell, theoretically you cannot remove it unless you unlearn it
+				if(apply)
+					 ((Player*)m_target)->SoulStone = 21196;
+				else ((Player*)m_target)->SoulStone = 0;
+			}
+		}break;
 	case 20707://Soulstone Resurrecton
 		if(apply)
 			((Player*)m_target)->SoulStone = 3026;
