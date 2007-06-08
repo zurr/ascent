@@ -812,10 +812,20 @@ void Aura::SpellAuraBindSight(bool apply)
 {
 	SetPositive();
 	// MindVision
-	Unit *caster = GetUnitCaster();
-	if(!caster || !m_target) return;
-	
-	caster->SetUInt64Value(PLAYER_FARSIGHT, (apply ? m_target->GetGUID() : 0));
+	if(apply)
+	{
+		Unit *caster = GetUnitCaster();
+		if(!caster || !caster->IsPlayer())
+			return;
+		caster->SetUInt64Value(PLAYER_FARSIGHT, m_target->GetGUID());
+	}
+	else
+	{
+		Unit *caster = GetUnitCaster();
+		if(!caster || !caster->IsPlayer())
+			return;
+		caster->SetUInt64Value(PLAYER_FARSIGHT, 0 );
+	}
 }
 
 void Aura::SpellAuraModPossess(bool apply)
