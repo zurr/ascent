@@ -1374,11 +1374,11 @@ void Spell::SpellEffectWeapon(uint32 i)
 
 	switch(this->m_spellInfo->Id)
 	{
-	case 201:   // two-handed swords
-		skill = SKILL_2H_SWORDS;
-		break;
-	case 202:   // one-handed swords
+	case 201:    // one-handed swords
 		skill = SKILL_SWORDS;
+		break;
+	case 202:   // two-handed swords
+		skill = SKILL_2H_SWORDS;
 		break;
 	case 199:   // two-handed maces
 		skill = SKILL_2H_MACES;
