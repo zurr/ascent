@@ -155,6 +155,9 @@
 				RelativePath="..\src\InstanceScripts\Instance_Naxxramas.cpp">
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_SethekkHalls.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_ShadowfangKeep.cpp">
 			</File>
 			<File
