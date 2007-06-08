@@ -1398,8 +1398,7 @@ void WorldSession::HandleSelfResurrectOpcode(WorldPacket& recv_data)
 		tgt.m_unitTarget=_player->GetGUID();
 		s->prepare(&tgt);
 		_player->SoulStone=0;
-		_player->SetUInt32Value(PLAYER_SELF_RES_SPELL,0);
-	
+		_player->SetUInt32Value(PLAYER_SELF_RES_SPELL,0);	
 	}//else we got a cheater
 }
 

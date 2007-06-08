@@ -3244,6 +3244,9 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
 
 	playerTarget->ResurrectPlayer();
 	playerTarget->SetMovement(MOVE_UNROOT, 1);
+	//we defently want to add cooldown to this spell: shaman reincarnation,donno about others
+	if(m_spellInfo->Id==21169)
+		AddCooldown();
 }
 
 void Spell::SpellEffectSkinning(uint32 i)
