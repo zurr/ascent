@@ -372,7 +372,9 @@ Player::~Player ( )
 
 	for(ReputationMap::iterator itr = m_reputation.begin(); itr != m_reputation.end(); ++itr)
 		delete itr->second;
+	m_objectTypeId = TYPE_UNUSED;
 }
+
 inline uint32 GetSpellForLanguage(uint32 SkillID)
 {
 	switch(SkillID)
@@ -1066,7 +1068,8 @@ void Player::EventDeath()
 	if (m_onTaxi)
 		sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
 
-	//Todo: respawn
+	if(!sEventMgr.HasEvent(this,EVENT_PLAYER_FORECED_RESURECT)) //Should never be true 
+		sEventMgr.AddEvent(this,&Player::RepopRequestedPlayer,EVENT_PLAYER_FORECED_RESURECT,PLAYER_FORCED_RESURECT_INTERVAL,1); //in case he forgets to release spirit (afk or something)
 }
 
 void Player::BuildEnumData( WorldPacket * p_data )
@@ -3374,6 +3377,7 @@ void Player::ResurrectPlayer()
 		_Relocate(p->GetMapMgr()->GetMapId(), p->GetPosition(),false,false);
 	}
 	SetMovement(MOVE_LAND_WALK, 1);
+	sEventMgr.RemoveEvents(this,EVENT_PLAYER_FORECED_RESURECT); //in case somebody resurected us before this event happened
 }
 
 void Player::KillPlayer()

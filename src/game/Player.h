@@ -383,6 +383,7 @@ enum DUEL_WINNER
 	DUEL_WINNER_RETREAT,
 };
 #define PLAYER_ATTACK_TIMEOUT_INTERVAL	5000
+#define PLAYER_FORCED_RESURECT_INTERVAL	360000 // 1000*60*6= 6 minutes 
 //====================================================================
 //  Player
 //  Class that holds every created character on the server.

@@ -167,6 +167,7 @@ enum EventTypes
 	EVENT_ATTACK_TIMEOUT,		//Zack 2007 05 05: if no action is taken then combat should be exited after 5 seconds.
 	EVENT_SUMMON_EXPIRE,		//Zack 2007 05 28: similar to pet expire but we can have multiple guardians
 	EVENT_MUTE_PLAYER,			//Zack 2007 06 05: player gains his voice back
+	EVENT_PLAYER_FORECED_RESURECT,		//Zack 2007 06 08: After player not pushing release spirit for 6 minutes while dead
 
 };
 
