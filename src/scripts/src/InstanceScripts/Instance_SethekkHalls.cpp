@@ -23,10 +23,12 @@
 #define CHAIN_LIGHTNING
 
 // Summons
+/*
 #define // Fire Elemental
 #define // Frost Elemental
 #define // Arcane Elemental
 #define // Shadow Elemental
+*/
 
 class DARKWEAVERSYTHAI : public CreatureAIScript
 {
@@ -34,7 +36,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(DARKWEAVERSYTHAI);
     DARKWEAVERSYTHAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 1;
+		nrspells = 0;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
@@ -42,11 +44,11 @@ public:
 			m_spellcheck[i] = false;
 
 		} 
-        spells[0].info = sSpellStore.LookupEntry();
+        /*spells[0].info = sSpellStore.LookupEntry();
 		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
 		spells[0].perctrigger = 0.0f;
-		spells[0].attackstoptimer = 1000;
+		spells[0].attackstoptimer = 1000;*/
 
     }
     
@@ -147,18 +149,20 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(TALONKINGIKISSAI);
     TALONKINGIKISSAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 1;
+		nrspells = 0;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
 		}
-        spells[0].info = sSpellStore.LookupEntry();
+        /*
+		spells[0].info = sSpellStore.LookupEntry();
 		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
 		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
+		*/
 
 	} 
 
@@ -245,7 +249,7 @@ protected:
 
 // AnzuAI
 
-void SetupManaTombs(ScriptMgr * mgr)
+void SetupSethekkHalls(ScriptMgr * mgr)
 {
     mgr->register_creature_script(CN_DARKWEAVER_SYTH, &DARKWEAVERSYTHAI::Create);
     mgr->register_creature_script(CN_TALON_KING_IKISS, &TALONKINGIKISSAI::Create);

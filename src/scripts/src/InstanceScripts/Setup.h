@@ -14,6 +14,7 @@ void SetupSteamVaults(ScriptMgr * mgr);
 void SetupTheEye(ScriptMgr * mgr);
 void SetupManaTombs(ScriptMgr * mgr);
 void SetupAuchenaiCrypts(ScriptMgr * mgr);
+void SetupSethekkHalls(ScriptMgr * mgr);
 
 struct SP_AI_Spell{
 	SpellEntry *info; // spell info

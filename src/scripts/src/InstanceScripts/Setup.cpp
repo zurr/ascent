@@ -20,6 +20,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupTheEye(mgr);
 	SetupManaTombs(mgr);
 	SetupAuchenaiCrypts(mgr);
+	SetupSethekkHalls(mgr);
 }
 
 #ifdef WIN32
