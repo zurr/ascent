@@ -3228,13 +3228,16 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
 	if(playerTarget->isAlive())
 		return;
 	uint32 mana;
-	uint32 health=m_spellInfo->EffectMiscValue[i];//amount
-	uint32 class_=p_caster->getClass();
+	uint32 health=damage*unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)/100;
+	uint32 class_=unitTarget->getClass();
 
 	if(class_==WARRIOR||class_==ROGUE)
 		mana=0;
 	else 
-		mana=-damage;	 
+	{
+		uint32 powerindex=UNIT_FIELD_MAXPOWER1+unitTarget->GetPowerType();
+		mana=damage*unitTarget->GetUInt32Value(powerindex)/100;	 
+	}
 	
 	playerTarget->m_resurrectHealth = health;
 	playerTarget->m_resurrectMana = mana;
