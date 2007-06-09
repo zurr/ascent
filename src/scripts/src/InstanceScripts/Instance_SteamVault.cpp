@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 /************************************************************************/
-/* Instance_SteamVaults.cpp Script		                                    */
+/* Instance_SteamVault.cpp Script		                                    */
 /************************************************************************/
 
 // Coilfang Engineer AI
@@ -1737,7 +1737,7 @@ protected:
 	int nrspells;
 };
 
-void SetupSteamVaults(ScriptMgr * mgr)
+void SetupSteamVault(ScriptMgr * mgr)
 {
     mgr->register_creature_script(CN_COILFANG_ORACLE, &COILFANGORACLEAI::Create);
     mgr->register_creature_script(CN_COILFANG_ENGINEER, &COILFANGENGINEERAI::Create);

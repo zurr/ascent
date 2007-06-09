@@ -161,7 +161,7 @@
 				RelativePath="..\src\InstanceScripts\Instance_ShadowfangKeep.cpp">
 			</File>
 			<File
-				RelativePath="..\src\InstanceScripts\Instance_SteamVaults.cpp">
+				RelativePath="..\src\InstanceScripts\Instance_SteamVault.cpp">
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_TheEye.cpp">
