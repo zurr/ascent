@@ -170,10 +170,16 @@
 				RelativePath="..\src\InstanceScripts\Instance_TheSlavePens.cpp">
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_TheUnderbog.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_ZulGurub.cpp">
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\OnyxiaAI.cpp">
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Raid_GrullsLair.cpp">
 			</File>
 		</Filter>
 	</Files>

@@ -22,6 +22,8 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupAuchenaiCrypts(mgr);
 	SetupSethekkHalls(mgr);
 	SetupTheSlavePens(mgr);
+	SetupTheUnderbog(mgr);
+	SetupGruulsLair(mgr);
 }
 
 #ifdef WIN32

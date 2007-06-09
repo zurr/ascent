@@ -736,6 +736,9 @@ protected:
 #define CORRUPTION 30938
 #define IMMOLATE 38806 // Not sure to any id/spell, because of lack of information source
 #define UNSTABLE_AFFLICTION 35183 // if it casts this spell it can also be: 34439, 30938
+#define SUMMON_ETHEREAL_WRAITH 32316 // added, but still more core support needed
+// On WoWWiki is description that Spellbinder summons are Mana Wraiths, but there is no
+// spell connected with such creature.
 
 class ETHEREALSPELLBINDERAI : public CreatureAIScript
 {
@@ -743,7 +746,7 @@ public:
 	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALSPELLBINDERAI);
     ETHEREALSPELLBINDERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 3;
+		nrspells = 4;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
@@ -769,6 +772,11 @@ public:
 		spells[2].perctrigger = 7.0f;
 		spells[2].attackstoptimer = 1000;
 
+		spells[2].info = sSpellStore.LookupEntry(SUMMON_ETHEREAL_WRAITH);
+		spells[2].targettype = TARGET_SELF;  // ?
+		spells[2].instant = true;
+		spells[2].perctrigger = 5.0f;
+		spells[2].attackstoptimer = 1000;
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -841,6 +849,105 @@ protected:
 	int nrspells;
 };
 
+
+// Ethereal Wraith AI
+
+#define CN_ETHEREAL_WRAITH 18394
+
+#define SHADOW_BOLT_VOLLEY 36736 // no idea if this is correct spell, but description seems to match with this what should be used
+								 // maybe normal shadow bolt like those: 29927, 30055 should be used
+
+class ETHEREALWRAITHAI : public CreatureAIScript
+{
+public:
+	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALWRAITHAI);
+    ETHEREALWRAITHAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 1;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+
+		spells[0].info = sSpellStore.LookupEntry(SHADOW_BOLT_VOLLEY);
+		spells[0].targettype = TARGET_VARIOUS; // Haven't tested on groups, but should work correctly.
+		spells[0].instant = false;
+		spells[0].perctrigger = 15.0f;
+		spells[0].attackstoptimer = 1000;
+
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+        RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+        SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+        }
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
 
 
 /*****************************/
@@ -1143,7 +1250,8 @@ protected:
 #define FROSTBOLT 40429 // Also can be: 40430 or 32370
 #define FROST_NOVA 29849 // Also worth to try: 30094
 #define BLINK 36109 // 36109 - forward 20yard, 36718 - 5yard, behind target, 29883 - random target // still doesn't tp boss
-// TO DO: Beacons must spawn after each 10 sec support units (find way to add 
+#define SUMMON_ETEREAL_BECON 32371 // probably lack of core support for this, but I will add it anyway
+// TO DO: Becons must spawn after each 10 sec support units (find way to add 
 // them to friend list too). Still don't know how they exactly work.
 
 class NEXUSPRINCESHAFFARAI : public CreatureAIScript
@@ -1152,7 +1260,8 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(NEXUSPRINCESHAFFARAI);
     NEXUSPRINCESHAFFARAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 4;
+		SUMMON_ETEREAL_BECON_Cooldown = 10;
+		nrspells = 5;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
@@ -1183,10 +1292,17 @@ public:
 		spells[3].instant = true;				
 		spells[3].perctrigger = 2.0f;
 		spells[3].attackstoptimer = 1000;
+
+		spells[4].info = sSpellStore.LookupEntry(SUMMON_ETEREAL_BECON);
+		spells[4].targettype = TARGET_SELF; // can't check it now 
+		spells[4].instant = true;				
+		spells[4].perctrigger = 0.0f;
+		spells[4].attackstoptimer = 1000;
     }
     
     void OnCombatStart(Unit* mTarget)
     {
+		SUMMON_ETEREAL_BECON_Cooldown = 10;
 		int RandomSpeach;
 		sRand.randInt(1000);
 		RandomSpeach=rand()%3;
@@ -1231,6 +1347,7 @@ public:
 
     void OnCombatStop(Unit *mTarget)
     {
+		SUMMON_ETEREAL_BECON_Cooldown = 10;
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->SetAIState(STATE_IDLE);
         RemoveAIUpdateEvent();
@@ -1238,6 +1355,7 @@ public:
 
     void OnDied(Unit * mKiller)
     {
+		SUMMON_ETEREAL_BECON_Cooldown = 10;
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I must omit you. Very well."); // I don't think it's correct.
         _unit->PlaySoundToSet(10546);
        RemoveAIUpdateEvent();
@@ -1249,6 +1367,14 @@ public:
 
     void AIUpdate()
     {
+		SUMMON_ETEREAL_BECON_Cooldown--;
+		if (!SUMMON_ETEREAL_BECON_Cooldown)
+		{
+			_unit->CastSpell(_unit, spells[4].info, spells[4].instant);	// I will add it as a loop someday ;)
+			_unit->CastSpell(_unit, spells[4].info, spells[4].instant);
+			_unit->CastSpell(_unit, spells[4].info, spells[4].instant);
+			SUMMON_ETEREAL_BECON_Cooldown = 10;
+		}
 		float val = sRand.rand(100.0f);
         SpellCast(val);
     }
@@ -1298,6 +1424,7 @@ public:
     }
 protected:
 
+	int SUMMON_ETEREAL_BECON_Cooldown;
     bool *m_spellcheck;
     SP_AI_Spell *spells;
 	int nrspells;
@@ -1310,6 +1437,7 @@ void SetupManaTombs(ScriptMgr * mgr)
 	mgr->register_creature_script(CN_ETHEREAL_SPELLBINDER, &ETHEREALSPELLBINDERAI::Create);
 	mgr->register_creature_script(CN_ETHEREAL_THEURGIST, &ETHEREALTHEURGISTAI::Create);
 	mgr->register_creature_script(CN_ETHEREAL_SORCERER, &ETHEREALSORCERERAI::Create);
+	mgr->register_creature_script(CN_ETHEREAL_WRAITH, &ETHEREALWRAITHAI::Create);
 	mgr->register_creature_script(CN_NEXUS_STALKER, &NEXUSSTALKERAI::Create);
 	mgr->register_creature_script(CN_NEXUS_TERROR, &NEXUSTERRORAI::Create);
 	mgr->register_creature_script(CN_MANA_LEECH, &MANALEECHAI::Create);

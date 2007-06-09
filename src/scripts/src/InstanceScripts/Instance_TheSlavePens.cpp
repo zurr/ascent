@@ -792,7 +792,6 @@ public:
     
     void OnCombatStart(Unit* mTarget)
     {
-		Timer = 0;
 		int RandomSpeach;
 		sRand.randInt(1000);
 		RandomSpeach=rand()%3;
@@ -904,7 +903,6 @@ public:
     }
 protected:
 
-	int Timer;
     bool *m_spellcheck;
     SP_AI_Spell *spells;
 	int nrspells;
