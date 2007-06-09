@@ -42,9 +42,7 @@ Spells
 Elemental:
 Light Shield - Works but it sometimes triggers the damage without losing a charge
 Earthbind Totem - It works vs other faction but not vs your own, and vs mobs when it stacks with any other cripple effect a shaman has it makes the mob warp towards you at a very high speed (Usefull to control mobs still, BTW ;) )
-Magma Totem -Doesn't work
 Purge - Works well enough, in some cases it removes things it shouldent (Palidins bubble) and on some things it doesn't work at all (Priests Divine Spirit)
-Fire Nova Totem - Doesn't work
 Searing Totem -Doesn't work
 
 Enhancement:
