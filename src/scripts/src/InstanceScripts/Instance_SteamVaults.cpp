@@ -1572,11 +1572,10 @@ protected:
 #define CN_WARLORD_KALITRESH 17798
 
 #define IMPALE 24049 // 1 target Correct spell id? Maybe 34451 or ... correct
-//#define HEAD_CRACK 16172 // Disabled
+#define HEAD_CRACK 16172
 #define WARLORDS_RAGE 36453
 #define SPELL_REFLECTION 33961
 // eventually more spells to add , nop that's it
-// Head Crack spell is disabled, because there is no info this spell is used by warlord
 
 class WARLORDKALITRESHAI : public CreatureAIScript
 {
@@ -1584,7 +1583,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(WARLORDKALITRESHAI);
     WARLORDKALITRESHAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 3;
+		nrspells = 4;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
@@ -1597,25 +1596,25 @@ public:
 		spells[0].perctrigger = 20.0f;
 		spells[0].attackstoptimer = 1000;
 
-		/*spells[1].info = sSpellStore.LookupEntry(HEAD_CRACK);
+		spells[1].info = sSpellStore.LookupEntry(HEAD_CRACK);
 		spells[1].targettype = TARGET_ATTACKING;
 		spells[1].instant = false;
 		spells[1].perctrigger = 10.0f;
-		spells[1].attackstoptimer = 2000;*/
+		spells[1].attackstoptimer = 2000;
 
-		spells[1].info = sSpellStore.LookupEntry(WARLORDS_RAGE);
-		spells[1].targettype = TARGET_SELF;
-		spells[1].instant = true;
-		spells[1].perctrigger = 2.0f;
-		spells[1].attackstoptimer = 1000;
-		spells[1].soundid = 10391;
-		spells[1].speech = "This is not nearly over!";
-
-		spells[2].info = sSpellStore.LookupEntry(SPELL_REFLECTION);
+		spells[2].info = sSpellStore.LookupEntry(WARLORDS_RAGE);
 		spells[2].targettype = TARGET_SELF;
 		spells[2].instant = true;
-		spells[2].perctrigger = 8.0f;
+		spells[2].perctrigger = 2.0f;
 		spells[2].attackstoptimer = 1000;
+		spells[2].soundid = 10391;
+		spells[2].speech = "This is not nearly over!";
+
+		spells[3].info = sSpellStore.LookupEntry(SPELL_REFLECTION);
+		spells[3].targettype = TARGET_SELF;
+		spells[3].instant = true;
+		spells[3].perctrigger = 8.0f;
+		spells[3].attackstoptimer = 1000;
 
 	} 
 

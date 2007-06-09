@@ -157,8 +157,8 @@ public:
 		GrowthCooldown--;
 		if(!GrowthCooldown)//_unit->getAttackTarget())
         {
-		_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-		GrowthCooldown=30;
+			_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
+			GrowthCooldown=30;
 		}
 		float val = sRand.rand(100.0f);
         SpellCast(val);
