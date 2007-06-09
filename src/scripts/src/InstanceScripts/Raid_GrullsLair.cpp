@@ -727,6 +727,7 @@ protected:
 #define ARCINGSMASH		38761
 #define MIGHTYBLOW		33230
 #define WHIRLWIND		33239
+// Add enrage + additional sounds
 
 class HighKingMaulgarAI : public CreatureAIScript
 {
@@ -763,6 +764,8 @@ public:
 	}
 	void OnCombatStart(Unit* mTarget)
     {
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "<missing_word> on a real power in Outland!");
+		_unit->PlaySoundToSet(11367);
         RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
     }
 
@@ -775,12 +778,39 @@ public:
 
 	void OnDied(Unit * mKiller)
     {
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Grull will crash you!");
+		_unit->PlaySoundToSet(11376);
        RemoveAIUpdateEvent();
 	   delete[] spells;
 	   delete[] m_spellcheck;
 	   spells = NULL;
 	   m_spellcheck = NULL;
     }
+
+	void OnTargetDied(Unit* mTarget)
+	{
+		if (_unit->GetHealthPct() > 0)	// Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
+		{
+			int RandomSpeach;
+			sRand.randInt(1000);
+			RandomSpeach=rand()%3;
+			switch (RandomSpeach)
+			{
+			case 0:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You're not so tough after all!");
+				_unit->PlaySoundToSet(11373);
+				break;
+			case 1:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Whahaha!"); // more accurate?
+				_unit->PlaySoundToSet(11374);
+				break;
+			case 2:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Maulgar is king!");
+				_unit->PlaySoundToSet(11375);
+				break;
+			}
+		}
+	}
 
 	void AIUpdate()
     {
