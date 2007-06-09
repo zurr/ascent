@@ -28,6 +28,9 @@
 // Note: Maybe we should add additional spell description option to
 // define next spells.
 
+// TO DO: Find out what rest of sounds are for and add feature to random choose between
+// several spell sounds.
+
 class GruulsTheDragonkillerAI : public CreatureAIScript
 {
 public:
@@ -72,6 +75,10 @@ public:
 		spells[4].instant = false;
 		spells[4].perctrigger = 7.0f;
 		spells[4].attackstoptimer = 2000;
+		spells[4].speech = "Scary!"; // has 2 sounds for one spell :O
+		spells[4].soundid = 11357;
+		//spells[4].speech = ""No escape!; // has 2 sounds for one spell :O
+		//spells[4].soundid = 11356;
 
 		spells[5].info = sSpellStore.LookupEntry(SHATTER);
 		spells[5].targettype = TARGET_VARIOUS;
@@ -95,11 +102,34 @@ public:
     
     void OnCombatStart(Unit* mTarget)
     {
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Come and die!");
+		_unit->PlaySoundToSet(10355);
 		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
     }
 
 	void OnTargetDied(Unit* mTarget)
     {
+		if (_unit->GetHealthPct() > 0)	// Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
+		{
+			int RandomSpeach;
+			sRand.randInt(1000);
+			RandomSpeach=rand()%3;
+			switch (RandomSpeach)
+			{
+			case 0:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No more!");
+				_unit->PlaySoundToSet(10360);
+				break;
+			case 1:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Unworthy!");
+				_unit->PlaySoundToSet(10361);
+				break;
+			case 2:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Die!");
+				_unit->PlaySoundToSet(10362);
+				break;
+			}
+		}
     }
 
     void OnCombatStop(Unit *mTarget)
@@ -112,6 +142,8 @@ public:
 
     void OnDied(Unit * mKiller)
     {
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Wraaaa!"); // more correct please ? :P
+		_unit->PlaySoundToSet(10363);
        RemoveAIUpdateEvent();
        GrowthCooldown = 30;
 	   delete[] spells;
