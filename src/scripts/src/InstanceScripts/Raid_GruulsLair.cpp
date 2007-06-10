@@ -855,9 +855,6 @@ public:
 						_unit->PlaySoundToSet(spells[i].soundid); 
 					}
 
-                  	m_spellcheck[i] = false;
-					return;
-
 					m_spellcheck[i] = false;
 					return;
 				}
