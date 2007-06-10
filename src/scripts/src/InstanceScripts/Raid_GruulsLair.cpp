@@ -727,7 +727,7 @@ protected:
 #define ARCINGSMASH		38761
 #define MIGHTYBLOW		33230
 #define WHIRLWIND		33239
-// Add enrage + additional sounds
+#define ENRAGE			34970 // no idea about id, can be also: 34970, 37023 and others as nowhere is told which Enrage it should be
 
 class HighKingMaulgarAI : public CreatureAIScript
 {
@@ -735,7 +735,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(HighKingMaulgarAI);
     HighKingMaulgarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 3;
+		nrspells = 4;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
@@ -761,6 +761,14 @@ public:
 		spells[2].instant = true;
 		spells[2].perctrigger = 9.0f;
 		spells[2].attackstoptimer = 1000;
+
+		spells[3].info = sSpellStore.LookupEntry(ENRAGE);
+		spells[3].targettype = TARGET_SELF;
+		spells[3].instant = true;
+		spells[3].perctrigger = 5.0f;
+		spells[3].attackstoptimer = 1000;
+		spells[3].speech = "You will not defeat the hand of Gruul!";
+		spells[3].soundid = 11368;
 	}
 	void OnCombatStart(Unit* mTarget)
     {
@@ -840,6 +848,16 @@ public:
 						case TARGET_DESTINATION:
 							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
 					}
+
+					if (spells[i].speech != "")
+					{
+						_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+						_unit->PlaySoundToSet(spells[i].soundid); 
+					}
+
+                  	m_spellcheck[i] = false;
+					return;
+
 					m_spellcheck[i] = false;
 					return;
 				}
@@ -951,8 +969,9 @@ public:
     void OnCombatStart(Unit* mTarget)
     {
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Come and die!");
-		_unit->PlaySoundToSet(10355);
+		_unit->PlaySoundToSet(11355);
 		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+		_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
     }
 
 	void OnTargetDied(Unit* mTarget)
@@ -966,15 +985,15 @@ public:
 			{
 			case 0:
 				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No more!");
-				_unit->PlaySoundToSet(10360);
+				_unit->PlaySoundToSet(11360);
 				break;
 			case 1:
 				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Unworthy!");
-				_unit->PlaySoundToSet(10361);
+				_unit->PlaySoundToSet(11361);
 				break;
 			case 2:
 				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Die!");
-				_unit->PlaySoundToSet(10362);
+				_unit->PlaySoundToSet(11362);
 				break;
 			}
 		}
@@ -991,7 +1010,7 @@ public:
     void OnDied(Unit * mKiller)
     {
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Wraaaa!"); // more correct please ? :P
-		_unit->PlaySoundToSet(10363);
+		_unit->PlaySoundToSet(11363);
        RemoveAIUpdateEvent();
        GrowthCooldown = 30;
 	   delete[] spells;

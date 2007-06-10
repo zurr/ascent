@@ -987,13 +987,13 @@ public:
 		spells[1].targettype = TARGET_ATTACKING; // needs target checking
 		spells[1].instant = true;
 		spells[1].perctrigger = 15.0f;
-		spells[1].attackstoptimer = 3000;
+		spells[1].attackstoptimer = 1000;
 
 		spells[2].info = sSpellStore.LookupEntry(EXECUTE);
 		spells[2].targettype = TARGET_ATTACKING; // target checking needed
 		spells[2].instant = true;
 		spells[2].perctrigger = 10.0f;
-		spells[2].attackstoptimer = 3000;
+		spells[2].attackstoptimer = 1000;
     }
     
     void OnCombatStart(Unit* mTarget)

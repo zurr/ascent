@@ -15,7 +15,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupBotanica(mgr);
 	SetupBlackwingLair(mgr);
 	SetupNaxxramas(mgr);
-	SetupOnyxiaAI(mgr);
+	SetupOnyxiasLair(mgr);
 	SetupSteamVault(mgr);
 	SetupTheEye(mgr);
 	SetupManaTombs(mgr);

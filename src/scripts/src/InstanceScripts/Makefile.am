@@ -6,7 +6,8 @@ AM_CXXFLAGS = -DSCRIPTLIB
 
 lib_LTLIBRARIES = libInstanceScripts.la
 
-libInstanceScripts_la_SOURCES = Instance_Deadmines.cpp Instance_MoltenCore.cpp Instance_ShadowfangKeep.cpp \
-Instance_BlackwingLair.cpp Instance_Botanica.cpp Instance_ZulGurub.cpp Instance_Naxxramas.cpp OnyxiaAI.cpp Instance_SteamVault.cpp \
-Instance_AuchenaiCrypts.cpp Instance_SethekkHalls.cpp Instance_TheEye.cpp Instance_ManaTombs.cpp Instance_TheSlavePens.cpp Setup.cpp \
-Instance_TheUnderbog.cpp Raid_GruulsLair.cpp
+libInstanceScripts_la_SOURCES = Raid_BlackwingLair.cpp Raid_GruulsLair.cpp Raid_MoltenCore.cpp Raid_Naxxramas.cpp \
+Raid_OnyxiasLair.cpp Raid_TheEye.cpp Raid_ZulGurub.cpp \
+Instance_AuchenaiCrypts.cpp Instance_Botanica.cpp Instance_Deadmines.cpp Instance_ManaTombs.cpp Instance_SethekkHalls.cpp \
+Instance_ShadowfangKeep.cpp  Instance_SteamVault.cpp Instance_TheSlavePens.cpp Instance_TheUnderbog.cpp \
+Setup.cpp

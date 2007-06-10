@@ -207,10 +207,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\InstanceScripts\Instance_BlackwingLair.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\src\InstanceScripts\Instance_Botanica.cpp"
 				>
 			</File>
@@ -220,14 +216,6 @@
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_ManaTombs.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_MoltenCore.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_Naxxramas.cpp"
 				>
 			</File>
 			<File
@@ -243,10 +231,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheEye.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\src\InstanceScripts\Instance_TheSlavePens.cpp"
 				>
 			</File>
@@ -255,15 +239,31 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\InstanceScripts\Instance_ZulGurub.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\OnyxiaAI.cpp"
+				RelativePath="..\src\InstanceScripts\Raid_BlackwingLair.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Raid_GruulsLair.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Raid_MoltenCore.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Raid_Naxxramas.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Raid_OnyxiasLair.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Raid_TheEye.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Raid_ZulGurub.cpp"
 				>
 			</File>
 		</Filter>
