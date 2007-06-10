@@ -179,7 +179,7 @@ int WorldSession::Update(uint32 InstanceID)
 	}
 
 	// 0 - OK!
-	UpdateThrottledPackets();
+	/*UpdateThrottledPackets();*/
 	return 0;
 }
 

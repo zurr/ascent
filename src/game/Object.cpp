@@ -530,14 +530,32 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 			case UNIT_FIELD_MAXHEALTH:
 			case UNIT_FIELD_HEALTH:
 				{
-					if(target == this || m_valuesCount < UNIT_END)
+					if(m_valuesCount < UNIT_END)
 						*data << m_uint32Values[index];
 					else
 					{
-						uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
-						if(pct == 0 && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
-							pct = 1;
-						*data << pct;						
+						switch(m_objectTypeId)
+						{
+						case TYPEID_PLAYER:
+							*data << m_uint32Values[index];
+							break;
+
+						case TYPEID_UNIT:
+							{
+								if(IsPet())
+								{
+									*data << m_uint32Values[index];
+									break;
+								}
+								else
+								{
+									uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
+									if(pct == 0 && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
+										pct = 1;
+									*data << pct;	
+								}
+							}
+						}
 					}
 				}
 				break;
