@@ -191,6 +191,7 @@ bool EventableObject::event_HasEvent(uint32 EventType)
 				ret = true;
 				break;
 			}
+			++itr;
 		} while(itr != m_events.upper_bound(EventType));
 	}
 
@@ -267,8 +268,8 @@ void EventableObjectHolder::Update(uint32 time_difference)
 				// Event expired :>
 				
 				/* remove the event from the object */
-				obj = (EventableObject*)ev->obj;
-				obj->event_RemoveByPointer(ev);
+				/*obj = (EventableObject*)ev->obj;
+				obj->event_RemoveByPointer(ev);*/
 
 				/* remove the event from here */
 				ev->deleted = true;
