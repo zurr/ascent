@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 /************************************************************************/
-/* Instance_MoltenCore.cpp Script                                       */
+/* Raid_MoltenCore.cpp Script                                       */
 /************************************************************************/
 
 #define CN_FIREWALKER 11666

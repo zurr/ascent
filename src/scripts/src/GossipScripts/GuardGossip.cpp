@@ -213,7 +213,7 @@ public:
 
         case 22: //Warrior
             {
-                Plr->Gossip_SendPOI(-8624.54, 402.61, 6, 6, 0, "Stormwind Barracks");
+                Plr->Gossip_SendPOI(-8714.14, 334.96, 6, 6, 0, "Stormwind Barracks");
                 SendQuickMenu(901);
             }break;
 

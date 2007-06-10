@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 /************************************************************************/
-/* Instance_BlackwingLair.cpp Script                                    */
+/* Raid_BlackwingLair.cpp Script                                    */
 /************************************************************************/
 
 // --- Death Talon Pack ---
