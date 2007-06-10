@@ -58,6 +58,31 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 	m_holder->AddEvent(ptr);
 }
 
+void EventableObject::event_RemoveByPointer(TimedEvent * ev)
+{
+	m_lock.Acquire();
+	EventMap::iterator itr = m_events.find(ev->eventFlags);
+	EventMap::iterator it2;
+	if(itr != m_events.end())
+	{
+		do 
+		{
+			it2 = itr++;
+
+			if(it2->second == ev)
+			{
+				it2->second->deleted = true;
+				it2->second->DecRef();
+				m_events.erase(it2);
+				m_lock.Release();
+				return;
+			}
+
+		} while(itr != m_events.upper_bound(ev->eventFlags));
+	}
+	m_lock.Release();
+}
+
 void EventableObject::event_RemoveEvents(uint32 EventType)
 {
 	m_lock.Acquire();
@@ -153,9 +178,22 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 
 bool EventableObject::event_HasEvent(uint32 EventType)
 {
-	bool ret;
+	bool ret = false;
 	m_lock.Acquire();
-	ret = m_events.find(EventType) == m_events.end() ? false : true;
+	//ret = m_events.find(EventType) == m_events.end() ? false : true;
+	EventMap::iterator itr = m_events.find(EventType);
+	if(itr != m_events.end())
+	{
+		do 
+		{
+			if(!itr->second->deleted)
+			{
+				ret = true;
+				break;
+			}
+		} while(itr != m_events.upper_bound(EventType));
+	}
+
 	m_lock.Release();
 	return ret;
 }
@@ -201,6 +239,7 @@ void EventableObjectHolder::Update(uint32 time_difference)
 	EventList::iterator itr = m_events.begin();
 	EventList::iterator it2;
 	TimedEvent * ev;
+	EventableObject * obj;
 
 	while(itr != m_events.end())
 	{
@@ -226,9 +265,16 @@ void EventableObjectHolder::Update(uint32 time_difference)
             if(ev->repeats && --ev->repeats == 0)
 			{
 				// Event expired :>
+				
+				/* remove the event from the object */
+				obj = (EventableObject*)ev->obj;
+				obj->event_RemoveByPointer(ev);
+
+				/* remove the event from here */
 				ev->deleted = true;
 				ev->DecRef();
 				m_events.erase(it2);
+
 				continue;
 			}
 
@@ -298,12 +344,18 @@ void EventableObjectHolder::AddObject(EventableObject * obj)
 		// The other thread is obviously occupied. We have to use an insert pool here, otherwise
 		// if 2 threads relocate at once we'll hit a deadlock situation.
 		m_insertPoolLock.Acquire();
-		
+		EventMap::iterator it2;
+
 		for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
 		{
-			// ignore deleted events
+			// ignore deleted events (shouldn't be any in here, actually)
 			if(itr->second->deleted)
+			{
+				/*it2 = itr++;
+				itr->second->DecRef();
+				obj->m_events.erase(it2);*/
 				continue;
+			}
 
 			itr->second->IncRef();
 			itr->second->instanceId = mInstanceId;
