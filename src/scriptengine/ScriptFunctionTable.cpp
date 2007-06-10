@@ -65,6 +65,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "RegisterTimer",						Unit_RegisterTimer				},
 		{ "DeregisterTimer",					Unit_DeregisterTimer			},
 		{ "SpawnMonster",						Unit_SpawnMonster				},
+		{ "SetStandState",						Unit_SetStandState				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -130,4 +131,5 @@ void ScriptEngine::SetScriptEngineFunctionTable()
 	// Register Normal Functions
 	m_machine->RegisterLibraryFunction("Rand", GM_RAND, 0, 0);
 }
+
 

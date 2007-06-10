@@ -260,7 +260,16 @@ int Unit_CastSpell(gmThread * a_thread)
 	pUnit->CastSpell(pUnit, sSpellStore.LookupEntry(spellid), true);
 	return GM_OK;
 }
+int Unit_SetStandState(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(stateid, 0);
 
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	pUnit->SetStandState(stateid);
+
+	return GM_OK;
+}
 int Player_AddItem(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(2);
@@ -420,7 +429,6 @@ int Unit_SpawnMonster(gmThread * a_thread)
 
 	return GM_OK;
 }
-
 int GameObject_Despawn(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);

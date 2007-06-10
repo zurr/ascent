@@ -1059,7 +1059,7 @@ void QuestMgr::LoadSQLQuests()
 			}
 
 			qst->is_repeatable = data[i].GetUInt32(); ++i;
-			qst->reward_xp_as_money = sQuestMgr.GenerateQuestXP(NULL, qst);
+			/*qst->reward_xp_as_money = sQuestMgr.GenerateQuestXP(NULL, qst);*/
 			ASSERT(i == pResult->GetFieldCount());
 			AddQuest(qst);
 		} while(pResult->NextRow());
@@ -1190,12 +1190,27 @@ void QuestMgr::_RemoveChar(char *c, std::string *str)
 	}	
 }
 
-uint32 QuestMgr::GenerateQuestXP(Player *pl, Quest *qst)
-{
-	// Taken from ludmilla, and modified a little..
+uint32 QuestMgr::GenerateQuestXP(Player *plr, Quest *qst)	
+{	
 	if(qst->is_repeatable)
-		return 0;
-
+		return 0;	
+	{	
+  if( plr->getLevel() <= qst->max_level +  5 )
+      return qst->reward_xp;	
+  if( plr->getLevel() == qst->max_level +  6 )
+      return (qst->reward_xp * 0.8);
+  if( plr->getLevel() == qst->max_level +  7 )
+      return (qst->reward_xp * 0.6);
+  if( plr->getLevel() == qst->max_level +  8 )
+      return (qst->reward_xp * 0.4);
+  if( plr->getLevel() == qst->max_level +  9 )
+      return (qst->reward_xp * 0.2);
+		     
+  else
+      return 0;
+   }   
+}
+/*
 #define XP_INC 50
 #define XP_DEC 10
 #define XP_INC100 15
@@ -1226,8 +1241,8 @@ uint32 QuestMgr::GenerateQuestXP(Player *pl, Quest *qst)
 		return 1;
 
 	mmx *= sWorld.getRate(RATE_QUESTXP);
-	return (int)mmx;
-}
+	return (int)mmx;*/
+
 
 void QuestMgr::SendQuestInvalid(INVALID_REASON reason, Player *plyr)
 {
