@@ -282,6 +282,7 @@ bool ChatHandler::HandleInfoCommand(const char* args, WorldSession *m_session)
 	GreenSystemMessage(m_session, "Current Players: |r%d (%d GMs, %d queued)", clientsNum, gm,  0);
 	GreenSystemMessage(m_session, "Thread Count: |r%u", sThreadMgr.GetThreadCount());
 	GreenSystemMessage(m_session, "Average Latency: |r%.3fms", (float)((float)avg / (float)count));
+	GreenSystemMessage(m_session, "SQL Query Cache Size: |r%u queries delayed", ((MySQLDatabase*)Database_Main)->GetQueueSize());
 
 	return true;
 }

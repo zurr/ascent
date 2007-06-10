@@ -5,7 +5,7 @@
 
 class Database;
 
-extern Database* Database_Main;
+SERVER_DECL extern Database* Database_Main;
 extern TextLogger * Crash_Log;
 
 #define sDatabase (*Database_Main)

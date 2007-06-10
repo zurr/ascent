@@ -25,6 +25,15 @@ public:
 	inline FQueue() : cond(&lock) {first=last=NULL;size=0;}
 	volatile unsigned int size;
 
+	uint32 get_size()
+	{
+		uint32 ret;
+		cond.BeginSynchronized();
+		ret = size;
+		cond.EndSynchronized();
+		return ret;
+	}
+
 	void push(T &item)
 	{
 		h*p=new h;

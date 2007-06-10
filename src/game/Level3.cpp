@@ -2603,3 +2603,53 @@ bool ChatHandler::HandleReloadScriptsCommand(const char * args, WorldSession * m
 	ScriptSystem->Reload();
 	return true;
 }
+
+bool ChatHandler::HandleGORotate(const char * args, WorldSession * m_session)
+{
+	GameObject *go = m_session->GetPlayer()->m_GM_SelectedGO;
+	if( !go )
+	{
+		RedSystemMessage(m_session, "No selected GameObject...");
+		return true;
+	}
+
+	float deg = atof(args);
+	if(deg == 0.0f)
+		return false;
+
+	// Convert the argument to radians
+	float rad = deg * (M_PI / 180.0f);
+
+	// let's try rotation_0
+	go->ModFloatValue(GAMEOBJECT_ROTATION, rad);
+	go->ModFloatValue(GAMEOBJECT_ROTATION_01, rad);
+	go->ModFloatValue(GAMEOBJECT_ROTATION_02, rad);
+	go->ModFloatValue(GAMEOBJECT_ROTATION_03, rad);
+	go->SaveToDB();
+
+	// despawn and respawn
+	go->Despawn(1000);
+	return true;
+}
+
+bool ChatHandler::HandleGOMove(const char * args, WorldSession * m_session)
+{
+	// move the go to player's coordinates
+	GameObject *go = m_session->GetPlayer()->m_GM_SelectedGO;
+	if( !go )
+	{
+		RedSystemMessage(m_session, "No selected GameObject...");
+		return true;
+	}
+
+	go->RemoveFromWorld();
+	go->SetPosition(m_session->GetPlayer()->GetPosition());
+	go->SetFloatValue(GAMEOBJECT_POS_X, m_session->GetPlayer()->GetPositionX());
+	go->SetFloatValue(GAMEOBJECT_POS_Y, m_session->GetPlayer()->GetPositionY());
+	go->SetFloatValue(GAMEOBJECT_POS_Z, m_session->GetPlayer()->GetPositionZ());
+	go->SetFloatValue(GAMEOBJECT_FACING, m_session->GetPlayer()->GetOrientation());
+	go->SaveToDB();
+	go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+	return true;
+}
+

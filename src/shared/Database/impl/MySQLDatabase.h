@@ -50,6 +50,7 @@ public:
 
 	inline string GetHostName() { return mHostname; }
 	inline string GetDatabaseName() { return mDatabaseName; }
+	inline uint32 GetQueueSize() { return queries_queue.get_size(); }
 
 protected:
 

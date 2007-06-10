@@ -52,7 +52,7 @@ bool crashed = false;
 volatile bool Master::m_stopEvent = false;
 
 // Database defines.
-Database* Database_Main;
+SERVER_DECL Database* Database_Main;
 
 // mainserv defines
 TextLogger * Crash_Log;

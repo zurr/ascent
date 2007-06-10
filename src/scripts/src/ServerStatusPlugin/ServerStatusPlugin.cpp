@@ -262,6 +262,7 @@ void StatDumper::DumpStats()
         fprintf(f, "    <horde>%u</horde>\n", sWorld.HordePlayers);
         fprintf(f, "    <acceptedconns>%u</acceptedconns>\n", sWorld.mAcceptedConnections);
         fprintf(f, "    <peakcount>%u</peakcount>\n", sWorld.PeakSessionCount);
+		fprintf(f, "    <querysize>%u</querysize>\n", ((MySQLDatabase*)Database_Main)->GetQueueSize());
     }
     fprintf(f, "  </status>\n");
     Player * plr;

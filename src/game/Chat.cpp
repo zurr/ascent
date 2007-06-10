@@ -141,6 +141,8 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "animprogress",'o', &ChatHandler::HandleGOAnimProgress, "Sets anim progress",				   NULL, 0, 0, 0 },
 		{ "export",	  'o', &ChatHandler::HandleGOExport,   "Exports the current GO selected",		  NULL, 0, 0, 0 },
 		{ "statelink",   'o', &ChatHandler::HandleGoStateLinkCommand, ".statelink sqlentry, Links a GO state to a Npc", NULL, 0, 0, 0},
+		{ "move", 'g', &ChatHandler::HandleGOMove, "Moves gameobject to player xyz", NULL, 0, 0, 0 },
+		{ "rotate", 'g', &ChatHandler::HandleGORotate, "Rotates gameobject x degrees", NULL, 0, 0, 0 },
 		{ NULL,			2, NULL,						   "",										 NULL, 0, 0  }
 	};
 

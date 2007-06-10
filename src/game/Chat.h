@@ -231,6 +231,8 @@ protected:
 	bool HandleGOInfo(const char *args, WorldSession *m_session);
 	bool HandleGOEnable(const char *args, WorldSession *m_session);
 	bool HandleGOActivate(const char* args, WorldSession *m_session);
+	bool HandleGORotate(const char * args, WorldSession * m_session);
+	bool HandleGOMove(const char * args, WorldSession * m_session);
 	bool HandleAddAIAgentCommand(const char* args, WorldSession *m_session);
 	bool HandleDelAIAgentCommand(const char* args, WorldSession *m_session);
 	bool HandleListAIAgentCommand(const char* args, WorldSession *m_session);
