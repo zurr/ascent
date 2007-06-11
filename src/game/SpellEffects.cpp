@@ -35,13 +35,13 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectWeapondamageNoschool,//SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL - 17
 		&Spell::SpellEffectResurrect,//SPELL_EFFECT_RESURRECT - 18
 		&Spell::SpellEffectAddExtraAttacks,//SPELL_EFFECT_ADD_EXTRA_ATTACKS - 19
-		&Spell::SpellEffectNULL,//SPELL_EFFECT_DODGE - 20
+		&Spell::SpellEffectDodge,//SPELL_EFFECT_DODGE - 20
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_EVADE - 21
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_PARRY - 22
-		&Spell::SpellEffectNULL,//SPELL_EFFECT_BLOCK - 23
+		&Spell::SpellEffectBlock,//SPELL_EFFECT_BLOCK - 23
 		&Spell::SpellEffectCreateItem,//SPELL_EFFECT_CREATE_ITEM - 24
 		&Spell::SpellEffectWeapon,//SPELL_EFFECT_WEAPON - 25
-		&Spell::SpellEffectNULL,//SPELL_EFFECT_DEFENSE - 26
+		&Spell::SpellEffectDefense,//SPELL_EFFECT_DEFENSE - 26
 		&Spell::SpellEffectPersistentAA,//SPELL_EFFECT_PERSISTENT_AREA_AURA - 27
 		&Spell::SpellEffectSummon,//SPELL_EFFECT_SUMMON - 28
 		&Spell::SpellEffectLeap,//SPELL_EFFECT_LEAP - 29
@@ -52,7 +52,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectTranformItem,//SPELL_EFFECT_TRANSFORM_ITEM - 34
 		&Spell::SpellEffectApplyAA,//SPELL_EFFECT_APPLY_AREA_AURA - 35
 		&Spell::SpellEffectLearnSpell,//SPELL_EFFECT_LEARN_SPELL - 36
-		&Spell::SpellEffectNULL,//SPELL_EFFECT_SPELL_DEFENSE - 37
+		&Spell::SpellEffectSpellDefense,//SPELL_EFFECT_SPELL_DEFENSE - 37
 		&Spell::SpellEffectDispel,//SPELL_EFFECT_DISPEL - 38
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_LANGUAGE - 39
 		&Spell::SpellEffectDualWield,//SPELL_EFFECT_DUAL_WIELD - 40
@@ -1240,6 +1240,23 @@ void Spell::SpellEffectAddExtraAttacks(uint32 i) // Add Extra Attacks
 	u_caster->m_extraattacks = damage;		
 }
 
+void Spell::SpellEffectDodge(uint32 i)
+{
+	//i think this actually enbles the skill to be able to dodge melee+ranged attacks
+	//value is static and sets value directly which will be modified by other factors
+	//this is only basic value and will be overwiten elsewhere !!!
+//	if(unitTarget->IsPlayer())
+//		unitTarget->SetFloatValue(PLAYER_DODGE_PERCENTAGE,damage);
+}
+
+void Spell::SpellEffectBlock(uint32 i)
+{
+	//i think this actually enbles the skill to be able to block melee+ranged attacks
+	//value is static and sets value directly which will be modified by other factors
+//	if(unitTarget->IsPlayer())
+//		unitTarget->SetFloatValue(PLAYER_BLOCK_PERCENTAGE,damage);
+}
+
 void Spell::SpellEffectCreateItem(uint32 i) // Create item 
 {
 	Item* newItem;
@@ -1380,6 +1397,9 @@ void Spell::SpellEffectWeapon(uint32 i)
 	case 202:   // two-handed swords
 		skill = SKILL_2H_SWORDS;
 		break;
+	case 203:   // Unarmed
+		skill = SKILL_UNARMED;
+		break;
 	case 199:   // two-handed maces
 		skill = SKILL_2H_MACES;
 		break;
@@ -1450,6 +1470,15 @@ void Spell::SpellEffectWeapon(uint32 i)
 		{
 		}
 	}
+}
+
+void Spell::SpellEffectDefense(uint32 i)
+{
+	//i think this actually enbles the skill to be able to use defense
+	//value is static and sets value directly which will be modified by other factors
+	//this is only basic value and will be overwiten elsewhere !!!
+//	if(unitTarget->IsPlayer())
+//		unitTarget->SetFloatValue(UNIT_FIELD_RESISTANCES,damage);
 }
 
 void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
@@ -1997,6 +2026,11 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
 
 	// if we got here... try via pet spells..
 	SpellEffectLearnPetSpell(i);
+}
+
+void Spell::SpellEffectSpellDefense(uint32 i)
+{
+	//used to enable this ability. We use it all the time ...
 }
 
 void Spell::SpellEffectLearnPetSpell(uint32 i)

@@ -1155,6 +1155,8 @@ public:
 	void SpellEffectWeapondamageNoschool(uint32 i);
 	void SpellEffectResurrect(uint32 i);
 	void SpellEffectAddExtraAttacks(uint32 i);
+	void SpellEffectDodge(uint32 i);
+	void SpellEffectBlock(uint32 i);
 	void SpellEffectCreateItem(uint32 i);
 	void SpellEffectPersistentAA(uint32 i);
 	void SpellEffectSummon(uint32 i);
@@ -1165,6 +1167,7 @@ public:
 	void SpellEffectOpenLock(uint32 i);
 	void SpellEffectApplyAA(uint32 i);
 	void SpellEffectLearnSpell(uint32 i);
+	void SpellEffectSpellDefense(uint32 i);
 	void SpellEffectDispel(uint32 i);
 	void SpellEffectSummonWild(uint32 i);
 	void SpellEffectSummonGuardian(uint32 i);
@@ -1220,6 +1223,7 @@ public:
 	void SpellEffectSelfResurrect(uint32 i);
 	void SpellEffectDisenchant(uint32 i);
 	void SpellEffectWeapon(uint32 i);
+	void SpellEffectDefense(uint32 i);
 	void SpellEffectDualWield(uint32 i);
 	void SpellEffectSkinPlayerCorpse(uint32 i);
 	void SpellEffectResurrectNew(uint32 i);

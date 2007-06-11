@@ -5124,7 +5124,26 @@ void Aura::SpellAuraResistPushback(bool apply)
 
 void Aura::SpellAuraModShieldBlockPCT(bool apply)
 {
-	m_target->ModFloatValue(PLAYER_BLOCK_PERCENTAGE, apply ? mod->m_amount : -mod->m_amount);
+	//old = this is wrong since we will overwrite it at first state recalc
+//	m_target->ModFloatValue(PLAYER_BLOCK_PERCENTAGE, apply ? mod->m_amount : -mod->m_amount);
+	//new
+	if (m_target->GetTypeId() == TYPEID_PLAYER)
+	{
+		int32 amt;
+		if(apply)
+		{
+			amt = mod->m_amount;
+			if(amt>0)
+				SetPositive();
+			else 
+				SetNegative();
+		}
+		else 
+			amt = -mod->m_amount;
+
+		static_cast<Player*>(m_target)->SetBlockFromSpellPCT(static_cast<Player*>(m_target)->GetBlockFromSpellPCT() + amt );
+		static_cast<Player*>(m_target)->UpdateChances();
+	}
 }
 
 void Aura::SpellAuraTrackStealthed(bool apply)
