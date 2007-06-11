@@ -2450,6 +2450,12 @@ int8 Spell::CanCast(bool rangetolerate)
 					if (target->GetEntry()!= 2762) // target needs to be a Thundering Exile
 						return SPELL_FAILED_BAD_TARGETS;
 				}
+				if (m_spellInfo->Id == 38177) //Blackwhelp Net
+				{
+					// should only affect Wyrmcult Blackwhelps
+					if(target->GetEntry()!= 21387)
+						return SPELL_FAILED_BAD_TARGETS;
+				}
 
 				// original spell check code
 				/*if(!(GetType() == SPELL_TYPE_MAGIC && !(m_spellInfo->Attributes & 0x10000)))
@@ -3486,6 +3492,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
 
