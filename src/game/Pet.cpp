@@ -1045,7 +1045,7 @@ void Pet::ApplySummonLevelAbilities()
 
 	double pet_str = base_str + pet_level * mod_str;
 	double pet_agi = base_agi + pet_level * mod_agi;
-	double pet_sta = base_sta + pet_level * mod_str + pet_sta_bonus;
+	double pet_sta = base_sta + pet_level * mod_sta + pet_sta_bonus;
 	double pet_int = base_int + pet_level * mod_int + pet_int_bonus;
 	double pet_spr = base_spr + pet_level * mod_spr;
 	double pet_pwr = base_pwr + pet_level * mod_pwr;
