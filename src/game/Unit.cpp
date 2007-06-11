@@ -1177,16 +1177,18 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		if(hit_status & HITSTATUS_HITANIMATION)//really hit
 		{
 			std::list<DamageShield>::iterator i;
-			   for(i = pVictim->m_damageShields.begin();i != pVictim->m_damageShields.end();i++)	  // Deal Damage to Attacker
+			std::list<DamageShield>::iterator i2;
+			   for(i = pVictim->m_damageShields.begin();i != pVictim->m_damageShields.end();)	  // Deal Damage to Attacker
 			{
+				i2 = i++;
 				data.Initialize(SMSG_SPELLDAMAGESHIELD);
 				data << pVictim->GetGUID();
 				data << this->GetGUID();
-				data << (*i).m_damage;
-				data << (*i).m_school;
+				data << (*i2).m_damage;
+				data << (*i2).m_school;
 				SendMessageToSet(&data,true);
 
-				pVictim->DealDamage(this,(*i).m_damage,0,0,(*i).m_spellId);
+				pVictim->DealDamage(this,(*i2).m_damage,0,0,(*i2).m_spellId);
 			}
 		}
 	}

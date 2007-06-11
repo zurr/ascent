@@ -387,16 +387,20 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 	if(pUnit->m_factionDBC->RepListId < 0)
 		return;
 
+	int team = GetTeam();
 	ReputationModifier * modifier = objmgr.GetReputationModifier(pUnit->GetEntry(), pUnit->m_factionDBC->ID);
 	if(modifier != 0)
 	{
 		// Apply this data.
 		for(vector<ReputationMod>::iterator itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
 		{
+			if(!(*itr).faction[team])
+				continue;
+
 			// meh.. its weird I know :P but the random number generator doesn't accept negative values.
-			bool is_negative = ((*itr).delta_max < 0);
-			int32 minv = abs((*itr).delta_min);
-			int32 maxv = abs((*itr).delta_max);
+			bool is_negative = ((*itr).delta_max[team] < 0);
+			int32 minv = abs((*itr).delta_min[team]);
+			int32 maxv = abs((*itr).delta_max[team]);
 			int32 diff = maxv - minv;
 			int32 change = sRand.randInt(diff) + minv;
 			if(is_negative)
@@ -404,7 +408,7 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 
 			// Apply global rep rate.
 			change = int32((float(change) * sWorld.getRate(RATE_KILLREPUTATION)));
-			ModStanding((*itr).faction, change);
+			ModStanding((*itr).faction[team], change);
 		}
 	}
 	else
