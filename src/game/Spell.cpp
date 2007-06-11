@@ -2425,6 +2425,11 @@ int8 Spell::CanCast(bool rangetolerate)
 					// do not allow the spell to be cast
 					return SPELL_FAILED_SPELL_UNAVAILABLE;
 				}break;
+			case 38554: //Absorb Eye of Grillok
+				{
+					// do not allow spell to be cast
+					return SPELL_FAILED_SPELL_UNAVAILABLE;
+				}
 			}
 			
 			if(target != u_caster && !m_caster->IsPet())
@@ -3481,5 +3486,6 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
