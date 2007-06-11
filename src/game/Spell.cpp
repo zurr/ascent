@@ -49,7 +49,7 @@ void SpellCastTargets::read ( WorldPacket & data,uint64 caster )
 		m_unitTarget = guid.GetOldGuid();
 	}
 
-	if(m_targetMask & TARGET_FLAG_ITEM)
+	if(m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
 	{
 		data >> guid;
 		m_itemTarget = guid.GetOldGuid();
@@ -86,7 +86,7 @@ void SpellCastTargets::write ( WorldPacket& data)
 	if(m_targetMask & TARGET_FLAG_OBJECT)
 		data << newunit;
 
-	if(m_targetMask & TARGET_FLAG_ITEM)
+	if(m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
 		data << newitem;
 
 	if(m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
@@ -2198,9 +2198,16 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 				unitTarget = m_caster->GetMapMgr()->GetPet(guid);
 				break;
 			case HIGHGUID_PLAYER:
-				unitTarget =  m_caster->GetMapMgr()->GetPlayer(guid);
-				playerTarget = static_cast<Player*>(unitTarget);
-				break;
+				{
+					// hackety hack
+					if(m_targets.m_itemTarget == guid && m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+						itemTarget = p_caster->getTradeTarget()->getTradeItem(guid);
+					else
+					{
+						unitTarget =  m_caster->GetMapMgr()->GetPlayer(guid);
+						playerTarget = static_cast<Player*>(unitTarget);
+					}
+				}break;
 			case HIGHGUID_ITEM:
 				itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
 				break;
@@ -2771,14 +2778,14 @@ int8 Spell::CheckItems()
 		if(m_spellInfo->Totem[i] != 0)
 		{
 			if(!p_caster->GetItemInterface()->GetItemCount(m_spellInfo->Totem[i]))
-				SPELL_FAILED_ITEM_NOT_FOUND;
+				return int8(SPELL_FAILED_ITEM_NOT_FOUND);
 		}
 	}
 	
 	if(m_targets.m_itemTarget)
 	{
 		Item *it=((Player*)m_caster)->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
-		//FIXME: we can enchant items not only in player inventory
+		//FIXME: we can enchant items not only in player inventory <- should be fine now - fishbait
 		if(it)
 		{			
 			ItemPrototype *proto=it->GetProto();
@@ -2804,7 +2811,24 @@ int8 Spell::CheckItems()
 			}
 		}
 		else 
-			return int8(SPELL_FAILED_ITEM_NOT_FOUND);
+		{
+			for(uint32 j=0; j < 3; j++)
+			{
+				switch (m_spellInfo->Effect[j])
+				{
+				case SPELL_EFFECT_ENCHANT_ITEM:
+				case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
+					if(!m_targets.m_itemTarget)
+						return int8(SPELL_FAILED_ITEM_NOT_FOUND);
+					break;
+				case SPELL_EFFECT_ENCHANT_HELD_ITEM:
+					break;
+				default:
+					return int8(SPELL_FAILED_ITEM_NOT_FOUND);
+					break;
+				}
+			}			
+		}
 	}
 	return int8(-1);
 }
@@ -3457,4 +3481,5 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 

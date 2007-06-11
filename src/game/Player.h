@@ -1119,7 +1119,11 @@ public:
 	void Set_Mute_on_player(uint32 until);
 	void Remove_Mute_on_player();
 	uint32 HasMuteOnPlayer(){return chat_disabled_until;};
-
+        
+	// Trade Target
+	Player *getTradeTarget() {return mTradeTarget;};
+	Item *getTradeItem(uint32 slot) {return mTradeItems[slot];};
+        
 protected:
 	uint32 iActivePet;
 	void _SetCreateBits(UpdateMask *updateMask, Player *target) const;
