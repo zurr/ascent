@@ -3180,6 +3180,7 @@ void Aura::SpellAuraModBlockPerc(bool apply)
 		static_cast<Player*>(m_target)->UpdateChances();
 	}
 }
+
 void Aura::SpellAuraModCritPerc(bool apply)
 {
 	if (m_target->IsPlayer())
@@ -3909,6 +3910,8 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
 		//126 == melee,
 		//127 == evrything
 		//else - schools
+		/*
+		//this is somehow wrong since fixed value will be owerwritten by other values
 		if(GetSpellProto()->EquippedItemClass==-1)//does not depend on weapon
 		{
 			for(uint32 x=0;x<7;x++)
@@ -3919,7 +3922,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
 				}
 			}
 		}else
-
+		*/
 		//if(mod->m_miscValue&1 || mod->m_miscValue == 126)
 		{
 			if(apply)
@@ -3927,6 +3930,9 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
 				WeaponModifier md;
 				md.value = mod->m_amount;
 				md.wclass = GetSpellProto()->EquippedItemClass;
+				//in case i'm wrong you will still not be able to attack with consumables i guess :P :D
+				if(md.wclass==0)
+					md.wclass=-1;//shoot me if i'm wrong but i found values that are 0 and should effect all weapons
 				md.subclass = GetSpellProto()->EquippedItemSubClass;
 				static_cast<Player*>(m_target)->damagedone.insert(make_pair(GetSpellId(), md));
 			}
