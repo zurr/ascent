@@ -3228,23 +3228,38 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
 	if(playerTarget->isAlive())
 		return;
 	uint32 mana;
-	uint32 health=damage*unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)/100;
+	uint32 health;
 	uint32 class_=unitTarget->getClass();
+	
+	switch(m_spellInfo->Id)
+	{
+	case 3026:
+	case 20758:
+	case 20759:
+	case 20760:
+	case 20761:
+		{
+			health = m_spellInfo->EffectMiscValue[i];
+			mana = -damage;
+		}break;
+	default:
+		{
+			if(damage < 0) return;
+			health = uint32(damage/100*unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+			mana = uint32(damage/100*unitTarget->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
+		}break;
 
 	if(class_==WARRIOR||class_==ROGUE)
 		mana=0;
-	else 
-	{
-		uint32 powerindex=UNIT_FIELD_MAXPOWER1+unitTarget->GetPowerType();
-		mana=damage*unitTarget->GetUInt32Value(powerindex)/100;	 
-	}
 	
 	playerTarget->m_resurrectHealth = health;
 	playerTarget->m_resurrectMana = mana;
 
 	playerTarget->ResurrectPlayer();
 	playerTarget->SetMovement(MOVE_UNROOT, 1);
-	//we defently want to add cooldown to this spell: shaman reincarnation,donno about others
+
+	playerTarget->SetUInt32Value(PLAYER_SELF_RES_SPELL, 0);
+
 	if(m_spellInfo->Id==21169)
 		AddCooldown();
 }

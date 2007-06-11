@@ -1390,16 +1390,15 @@ void WorldSession::HandleMeetingStoneLeaveOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleSelfResurrectOpcode(WorldPacket& recv_data)
 {
-	if(_player->SoulStone)
+	uint32 self_res_spell = _player->GetUInt32Value(PLAYER_SELF_RES_SPELL);
+	if(self_res_spell)
 	{
-		SpellEntry * sp=sSpellStore.LookupEntry(_player->SoulStone);
+		SpellEntry * sp=sSpellStore.LookupEntry(self_res_spell);
 		Spell *s=new Spell(_player,sp,true,NULL);
 		SpellCastTargets tgt;
 		tgt.m_unitTarget=_player->GetGUID();
-		s->prepare(&tgt);
-		_player->SoulStone=0;
-		_player->SetUInt32Value(PLAYER_SELF_RES_SPELL,0);	
-	}//else we got a cheater
+		s->prepare(&tgt);	
+	}
 }
 
 void WorldSession::HandleRandomRollOpcode(WorldPacket &recv_data)

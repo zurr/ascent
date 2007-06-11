@@ -35,6 +35,7 @@ Player::Player ( uint32 high, uint32 low )
 	info					= NULL;				 // Playercreate info
 	bSafeFall			   = false;
 	SoulStone			   = 0;
+	bReincarnation			= false;
 	Seal					= 0;
 	judgespell			  = 0;
 	m_session			   = 0;
@@ -7344,4 +7345,5 @@ void Player::Remove_Mute_on_player()
 {
 	chat_disabled_until = 0;
 }
+
 

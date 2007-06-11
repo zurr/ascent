@@ -894,6 +894,9 @@ public:
 	void LooseRage();
 	PvPArea * currentPVPArea;
 	uint32 SoulStone;
+
+	bool bReincarnation;
+
 	map<uint32, WeaponModifier> damagedone;
 	map<uint32, WeaponModifier> tocritchance;
 	uint32 Seal;

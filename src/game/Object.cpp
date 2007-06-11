@@ -1515,28 +1515,21 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		pVictim->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
 		if(pVictim->IsPlayer())
 		{
-			if(((Player*)pVictim)->SoulStone && ((Player*)pVictim)->SoulStone!=21169)
-				pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,((Player*)pVictim)->SoulStone);
-			//check to not overuse reincarnation (cooldown)
-			//check if we have by any chance if we have reincarnation pasive spell
-			else if(((Player*)pVictim)->SoulStone==21169 || ((Player*)pVictim)->HasSpell(20608))
+			uint32 self_res_spell = ((Player*)pVictim)->SoulStone;
+			((Player*)pVictim)->SoulStone =  0;
+
+			if(!self_res_spell && ((Player*)pVictim)->bReincarnation)
 			{
-				SpellEntry * sp=sSpellStore.LookupEntry(21169);
-				if(((Player*)pVictim)->CanCastDueToCooldown(sp))
+				SpellEntry *m_reincarnSpellInfo = sSpellStore.LookupEntry(20608);
+				if(((Player*)pVictim)->CanCastDueToCooldown(m_reincarnSpellInfo))
 				{
-					//we are actually looking for "ankh=17030"
-					if (((Player*)pVictim)->GetItemInterface()->GetItemCount(17030) >= 1)
-					{
-						((Player*)pVictim)->SoulStone = 21169; //this is actual reincarnate spell ;)
-						pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,21169);	
-					}
-					else //make sure we did not enable resurection elsewhere 
-					{
-						((Player*)pVictim)->SoulStone = 0; //this is actual reincarnate spell ;)
-						pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL,0);	
-					}
+					uint32 ankh_count = ((Player*)pVictim)->GetItemInterface()->GetItemCount(17030);
+					if(ankh_count)
+						self_res_spell = 21169;
 				}
 			}
+			pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL, self_res_spell);
+
 			pVictim->SetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID , 0);
 			if(pVictim->HasFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT ))
 				pVictim->RemoveFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT );
