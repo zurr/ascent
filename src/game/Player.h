@@ -894,6 +894,8 @@ public:
 	void LooseRage();
 	PvPArea * currentPVPArea;
 	uint32 SoulStone;
+	uint32 SoulStoneReciever;
+	void removeSoulStone();
 
 	bool bReincarnation;
 

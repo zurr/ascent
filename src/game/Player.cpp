@@ -35,6 +35,7 @@ Player::Player ( uint32 high, uint32 low )
 	info					= NULL;				 // Playercreate info
 	bSafeFall			   = false;
 	SoulStone			   = 0;
+	SoulStoneReciever		= 0;
 	bReincarnation			= false;
 	Seal					= 0;
 	judgespell			  = 0;
@@ -7346,4 +7347,34 @@ void Player::Remove_Mute_on_player()
 	chat_disabled_until = 0;
 }
 
+void Player::removeSoulStone()
+{
+	if(!this->SoulStone) return;
+	uint32 sSoulStone = 0;
+	switch(this->SoulStone)
+	{
+	case 3026:
+		{
+			sSoulStone = 20707;
+		}break;
+	case 20758:
+		{
+			sSoulStone = 20762;
+		}break;
+	case 20759:
+		{
+			sSoulStone = 20763;
+		}break;
+	case 20760:
+		{
+			sSoulStone = 20764;
+		}break;
+	case 20761:
+		{
+			sSoulStone = 20765;
+		}break;
+	}
+	this->RemoveAura(sSoulStone);
+	this->SoulStone = this->SoulStoneReciever = 0; //just incase
+}
 

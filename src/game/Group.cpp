@@ -166,6 +166,13 @@ void Group::Update()
 		sg1 = m_SubGroups[i];
 		for(itr1 = sg1->GetGroupMembersBegin(); itr1!=sg1->GetGroupMembersEnd(); ++itr1)
 		{
+			/*          Check for Soulstone Caster            */
+			/*          SoulStone effect removed if           */
+			/* the giver and reciever are not in party / raid */
+			bool removeSoulStone = true;
+			uint32 SoulStoneGiver = (*itr1)->SoulStoneReciever;
+			if(!SoulStoneGiver || (*itr1)->GetGUID() == SoulStoneGiver) removeSoulStone = false;
+
 			data.Initialize(SMSG_GROUP_LIST);
 			data << uint8(m_GroupType);	//0=party,1=raid
 			data << uint8(0);   // unk
@@ -180,6 +187,9 @@ void Group::Update()
 				{
 					if((*itr1) != (*itr2))
 					{
+						/*check the reciever id against all group members*/
+						if((*itr2)->GetGUID() == SoulStoneGiver) removeSoulStone = false;
+
 						data << (*itr2)->GetName() << (*itr2)->GetGUID();
 						data << uint8(1);								  // online/offline flag maybe?
 						/*if(m_GroupType == GROUP_TYPE_RAID && (*itr2) == sg2->m_SubGroupLeader)
@@ -205,6 +215,11 @@ void Group::Update()
 			data << uint64(0);	  // new in 2.0.3, dunno what it is*/
 			
 			(*itr1)->GetSession()->SendPacket(&data);
+
+			/* remove Soulstone Aura if the caster and recipient */
+			/*        are not in the same group any more         */
+			if(removeSoulStone)
+				(*itr1)->removeSoulStone();
 		}		
 	}
 }
@@ -243,6 +258,9 @@ void SubGroup::Disband(bool bRemoveGroup)
 			(*itr)->SetGroup(NULL);
 			m_Parent->SendNullUpdate((*itr));
 		}
+		/* remove SoulStones if caster and reciever are not the same player */
+		if((*itr)->SoulStoneReciever && (*itr)->SoulStoneReciever!=(*itr)->GetGUID())
+			(*itr)->removeSoulStone();
 	}
 
 	m_Parent->m_SubGroups[m_Id] = NULL;
@@ -495,4 +513,5 @@ void Group::LoadFromDB(Field *fields)
 		std::string memberguids = fields[7+i].GetString();
 	}
 }
+
 

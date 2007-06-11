@@ -1301,33 +1301,48 @@ void Aura::SpellAuraDummy(bool apply)
 		}break;
 	case 20707://Soulstone Resurrecton
 		if(apply)
+		{
 			((Player*)m_target)->SoulStone = 3026;
+			((Player*)m_target)->SoulStoneReciever = GetUnitCaster()->GetGUID();
+		}
 		else if(m_target->isAlive())
-			((Player*)m_target)->SoulStone = 0;
+			((Player*)m_target)->SoulStone = ((Player*)m_target)->SoulStoneReciever = 0;
 		break;
 	case 20762:
 		if(apply)
+		{
 			((Player*)m_target)->SoulStone = 20758;
+			((Player*)m_target)->SoulStoneReciever = GetUnitCaster()->GetGUID();
+		}
 		else if(m_target->isAlive())
-			((Player*)m_target)->SoulStone = 0;
+			((Player*)m_target)->SoulStone = ((Player*)m_target)->SoulStoneReciever = 0;
 		break;
 	case 20763:
 		if(apply)
+		{
 			((Player*)m_target)->SoulStone = 20759;
+			((Player*)m_target)->SoulStoneReciever = GetUnitCaster()->GetGUID();
+		}
 		else if(m_target->isAlive())
-			((Player*)m_target)->SoulStone = 0;
+			((Player*)m_target)->SoulStone = ((Player*)m_target)->SoulStoneReciever = 0;
 		break;
 	case 20764:
 		if(apply)
+		{
 			((Player*)m_target)->SoulStone = 20760;
+			((Player*)m_target)->SoulStoneReciever = GetUnitCaster()->GetGUID();
+		}
 		else if(m_target->isAlive())
-			((Player*)m_target)->SoulStone = 0;
+			((Player*)m_target)->SoulStone = ((Player*)m_target)->SoulStoneReciever = 0;
 		break;
 	case 20765:
 		if(apply)
+		{
 			((Player*)m_target)->SoulStone = 20761;
+			((Player*)m_target)->SoulStoneReciever = GetUnitCaster()->GetGUID();
+		}
 		else if(m_target->isAlive())
-			((Player*)m_target)->SoulStone = 0;
+			((Player*)m_target)->SoulStone = ((Player*)m_target)->SoulStoneReciever = 0;
 		break;
 	//case 20154://Soulstone Resurrecton
 	//case 20287:

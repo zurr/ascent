@@ -1516,7 +1516,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		if(pVictim->IsPlayer())
 		{
 			uint32 self_res_spell = ((Player*)pVictim)->SoulStone;
-			((Player*)pVictim)->SoulStone =  0;
+			((Player*)pVictim)->SoulStone = ((Player*)pVictim)->SoulStoneReciever = 0;
 
 			if(!self_res_spell && ((Player*)pVictim)->bReincarnation)
 			{
