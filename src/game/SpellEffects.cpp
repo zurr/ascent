@@ -3248,6 +3248,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
 			health = uint32(damage/100*unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 			mana = uint32(damage/100*unitTarget->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
 		}break;
+        }
 
 	if(class_==WARRIOR||class_==ROGUE)
 		mana=0;
