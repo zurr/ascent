@@ -18,6 +18,7 @@ void SetupSethekkHalls(ScriptMgr * mgr);
 void SetupTheSlavePens(ScriptMgr * mgr);
 void SetupTheUnderbog(ScriptMgr * mgr);
 void SetupGruulsLair(ScriptMgr * mgr);
+void SetupBattleOfMountHyjal(ScriptMgr * mgr);
 
 struct SP_AI_Spell{
 	SpellEntry *info; // spell info

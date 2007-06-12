@@ -164,6 +164,9 @@
 				RelativePath="..\src\InstanceScripts\Raid_BlackwingLair.cpp">
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Raid_CoT_BattleOfMountHyjal.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Raid_GruulsLair.cpp">
 			</File>
 			<File
