@@ -73,7 +73,7 @@ GameObject::~GameObject()
 
 bool GameObject::CreateFromProto(uint32 entry,uint32 mapid, float x, float y, float z, float ang)
 {
-	pInfo= objmgr.GetGameObjectName_(entry);
+	pInfo= GameObjectNameStorage.LookupEntry(entry);
 	if(!pInfo)return false;
 
 	Object::_Create( mapid, x, y, z, ang );
@@ -321,7 +321,7 @@ void GameObject::InitAI()
 		uint32 new_entry = pInfo->sound2;
 		if(!new_entry)
 			return;
-		pInfo = objmgr.GetGameObjectName_( new_entry );
+		pInfo = GameObjectNameStorage.LookupEntry( new_entry );
 		if(!pInfo)
 			return;
 		spellid = pInfo->sound3;

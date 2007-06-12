@@ -252,8 +252,10 @@ void BasicTaskExecutor::run()
 	cb->execute();
 }
 
+void LoadTest();
 void World::SetInitialWorldSettings()
 {
+	LoadTest();
 	sDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
    
 	reqGmClient = Config.MainConfig.GetBoolDefault("reqGmClient", false);
@@ -397,11 +399,11 @@ void World::SetInitialWorldSettings()
 	TaskList tl;
 	MAKE_TASK(ObjectMgr, LoadPlayerCreateInfo);
 	MAKE_TASK(ObjectMgr, LoadPlayersInfo);
-	MAKE_TASK(ObjectMgr, LoadItemPrototypes);
+/*	MAKE_TASK(ObjectMgr, LoadItemPrototypes);
 	MAKE_TASK(ObjectMgr, LoadItemPages);
 	MAKE_TASK(ObjectMgr, LoadCreatureNames);
 	MAKE_TASK(ObjectMgr, LoadGameObjectNames);
-	MAKE_TASK(ObjectMgr, LoadCreatureProtos);
+	MAKE_TASK(ObjectMgr, LoadCreatureProtos);*/
 	MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
 	MAKE_TASK(ObjectMgr, LoadTrainers);
 	MAKE_TASK(ObjectMgr, LoadTotemSpells);

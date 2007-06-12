@@ -45,7 +45,7 @@ struct GameObjectInfo
 	uint32 ID;
 	uint32 Type;
 	uint32 DisplayID;
-	std::string Name;
+	char * Name;
 	uint32 SpellFocus;
 	uint32 sound1;
 	uint32 sound2;

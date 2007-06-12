@@ -786,7 +786,7 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
 	unk4 = atol(strtok(NULL, " "));
 
 	// lookup item
-//	ItemPrototype *proto = objmgr.GetItemPrototype(itemid);
+//	ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(itemid);
 
 	WorldPacket data;
 	data.SetOpcode(SMSG_ITEM_PUSH_RESULT);

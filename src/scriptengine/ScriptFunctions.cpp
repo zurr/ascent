@@ -280,7 +280,7 @@ int Player_AddItem(gmThread * a_thread)
 	if(pPlayer->GetTypeId() != TYPEID_PLAYER)
 		return GM_EXCEPTION;
 
-	ItemPrototype * proto = objmgr.GetItemPrototype(itemid);
+	ItemPrototype * proto = ItemPrototypeStorage.LookupEntry(itemid);
 	if(!proto)
 		return GM_EXCEPTION;
 
@@ -415,7 +415,7 @@ int Unit_SpawnMonster(gmThread * a_thread)
 	GM_CHECK_FLOAT_PARAM(posZ, 3);
 
 	Unit * pThis = GetThisPointer<Unit>(a_thread);
-	CreatureProto * p = objmgr.GetCreatureProto(entry);
+	CreatureProto * p = CreatureProtoStorage.LookupEntry(entry);
 	if(!p)
 		return GM_EXCEPTION;
 

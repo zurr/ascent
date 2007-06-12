@@ -132,7 +132,7 @@ void ItemInterface::m_DestroyForPlayer()
 Item *ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int8 slot)
 {
 	Item *pItem;
-	ItemPrototype *pProto = objmgr.GetItemPrototype(ItemId);
+	ItemPrototype *pProto = ItemPrototypeStorage.LookupEntry(ItemId);
 	if(!pProto) { return NULL; }
 
 	if(pProto->InventoryType == INVTYPE_BAG)
@@ -197,7 +197,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 				
 				// send message to player
 				sChatHandler.BlueSystemMessageToPlr(m_pOwner, "A duplicated item, `%s` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
-					item->GetProto()->Name1.c_str());
+					item->GetProto()->Name);
 				if(result.Result == true)
 				{
 					// Found a new slot for that item.
@@ -2206,7 +2206,7 @@ void ItemInterface::mLoadItemsFromDatabase()
 
 			containerslot = fields[10].GetInt8();
 			slot = fields[11].GetInt8();
-			proto = objmgr.GetItemPrototype(fields[2].GetUInt32());
+			proto = ItemPrototypeStorage.LookupEntry(fields[2].GetUInt32());
 
 			if(proto)
 			{

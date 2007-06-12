@@ -230,7 +230,7 @@ void QuestMgr::BuildOfferReward(WorldPacket *data, Quest* qst, Object* qst_giver
 		{
 			*data << qst->reward_choiceitem[i];
 			*data << qst->reward_choiceitemcount[i];
-			it = objmgr.GetItemPrototype(qst->reward_choiceitem[i]);
+			it = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[i]);
 			*data << (it ? it->DisplayInfoID : uint32(0));
 		}
 	}
@@ -242,7 +242,7 @@ void QuestMgr::BuildOfferReward(WorldPacket *data, Quest* qst, Object* qst_giver
 		{
 			*data << qst->reward_item[i];
 			*data << qst->reward_itemcount[i];
-			it = objmgr.GetItemPrototype(qst->reward_item[i]);
+			it = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
 			*data << (it ? it->DisplayInfoID : uint32(0));
 		}
 	}
@@ -274,7 +274,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket *data, Quest* qst, Object* qst_give
 
 	for(i = 0; i < 6; ++i)
 	{
-		ip = objmgr.GetItemPrototype(qst->reward_choiceitem[i]);
+		ip = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[i]);
 		if(!qst->reward_choiceitem[i]) continue;
 
 		*data << qst->reward_choiceitem[i];
@@ -289,7 +289,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket *data, Quest* qst, Object* qst_give
 
 	for(i = 0; i < 4; ++i)
 	{
-		ip = objmgr.GetItemPrototype(qst->reward_item[i]);
+		ip = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
 		if(!qst->reward_item[i]) continue;
 
 		*data << qst->reward_item[i];
@@ -349,7 +349,7 @@ void QuestMgr::BuildRequestItems(WorldPacket *data, Quest* qst, Object* qst_give
 		{
 			*data << qst->required_item[i];
 			*data << qst->required_itemcount[i];
-			it = objmgr.GetItemPrototype(qst->required_item[i]);
+			it = ItemPrototypeStorage.LookupEntry(qst->required_item[i]);
 			*data << (it ? it->DisplayInfoID : uint32(0));
 		}
 	}
@@ -392,7 +392,7 @@ void QuestMgr::BuildQuestComplete(Player*plr, Quest* qst)
 		data << qst->reward_itemcount[i];
 		if(qst->reward_item[i])
 		{ 
-			ip = objmgr.GetItemPrototype(qst->reward_item[i]);
+			ip = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
 			   data << ((ip != NULL) ? ip->DisplayInfoID : uint32(0));
 		}
 		else
@@ -742,7 +742,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 	{
 		if(qst->reward_item[i])
 		{
-			ItemPrototype *proto = objmgr.GetItemPrototype(qst->reward_item[i]);
+			ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
 			if(!proto)
 			{
 				sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -759,7 +759,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 	// Choice Rewards
 	if(qst->reward_choiceitem[reward_slot])
 	{
-		ItemPrototype *proto = objmgr.GetItemPrototype(qst->reward_choiceitem[reward_slot]);
+		ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[reward_slot]);
 		if(!proto)
 		{
 			sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
@@ -980,8 +980,8 @@ void QuestMgr::LoadSQLQuests()
 				if(qst->required_mob[k])
 				{
 					qst->count_required_mob++;
-					GameObjectInfo *go_info = objmgr.GetGameObjectName_(qst->required_mob[k]);
-					CreatureInfo   *c_info  = objmgr.GetCreatureName(qst->required_mob[k]);
+					GameObjectInfo *go_info = GameObjectNameStorage.LookupEntry(qst->required_mob[k]);
+					CreatureInfo   *c_info  = CreatureNameStorage.LookupEntry(qst->required_mob[k]);
 					if(go_info && (go_info->Type == 10 || qst->quest_flags == 10 || !c_info))
 						qst->required_mobtype[k] = QUEST_MOB_TYPE_GAMEOBJECT;
 					else
@@ -1479,7 +1479,7 @@ bool QuestMgr::CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot)
     {
         if(qst->reward_item[i])
         {
-            ItemPrototype *proto = objmgr.GetItemPrototype(qst->reward_item[i]);
+            ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
             if(!proto)
                 sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
             else if(plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
@@ -1490,7 +1490,7 @@ bool QuestMgr::CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot)
     // Choice Rewards
     if(qst->reward_choiceitem[reward_slot])
     {
-        ItemPrototype *proto = objmgr.GetItemPrototype(qst->reward_choiceitem[reward_slot]);
+        ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[reward_slot]);
         if(!proto)
             sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
         else if(plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))

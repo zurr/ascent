@@ -308,7 +308,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 	m_Owner = owner;
 	m_OwnerGuid = m_Owner->GetGUID();
 	mPi = pi;
-	creature_info = objmgr.GetCreatureName(mPi->entry);
+	creature_info = CreatureNameStorage.LookupEntry(mPi->entry);
 
 	Create(pi->name.c_str(), owner->GetMapId(), owner->GetPositionX() + 2 , owner->GetPositionY() +2, owner->GetPositionZ(), owner->GetOrientation());
 
@@ -361,7 +361,7 @@ void Pet::InitializeMe(bool first)
 	GetAIInterface()->SetUnitToFollow(m_Owner);
 	GetAIInterface()->SetFollowDistance(3.0f);
 
-	SetCreatureName(objmgr.GetCreatureName(GetEntry()));
+	SetCreatureName(CreatureNameStorage.LookupEntry(GetEntry()));
 	m_Owner->SetSummon(this);
 	m_Owner->SetUInt64Value(UNIT_FIELD_SUMMON, this->GetGUID());
 	SetUInt32Value(UNIT_FIELD_PETNUMBER, GetGUIDLow());
@@ -799,7 +799,7 @@ void Pet::ApplySummonLevelAbilities()
 
 	if(stat_index < 0)
 	{
-		sLog.outError("PETSTAT: No stat index found for entry %u, `%s`!", GetEntry(), creature_info->Name.c_str());
+		sLog.outError("PETSTAT: No stat index found for entry %u, `%s`!", GetEntry(), creature_info->Name);
 		return;
 	}
 

@@ -17,7 +17,7 @@
 uint32 GetGOReqSkill(GameObject * gameObjTarget)  
 {
 	if(gameObjTarget->GetEntry()==180215)return 300;
-	GameObjectInfo*gi= objmgr.GetGameObjectName_(gameObjTarget->GetEntry());
+	GameObjectInfo*gi= GameObjectNameStorage.LookupEntry(gameObjTarget->GetEntry());
 	if(!gi)
 	{
 		sLog.outError("Unknown go entry=%u",gameObjTarget->GetEntry());

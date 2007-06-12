@@ -48,18 +48,6 @@ ObjectMgr::~ObjectMgr()
 	}
 	mItemSets.clear();
 
-	sLog.outString("	Deleting CreatureNames...");
-	for( CreatureNameMap::iterator i = mCreatureNames.begin( ); i != mCreatureNames.end( ); ++ i ) {
-		delete i->second;
-	}
-	mCreatureNames.clear();
-
-	sLog.outString("	Deleting ItemPrototypes...");
-	for( ItemPrototypeMap::iterator i = mItemPrototypes.begin( ); i != mItemPrototypes.end( ); ++ i ) {
-		delete i->second;
-	}
-	mItemPrototypes.clear( );
-
 	sLog.outString("	Deleting CreateInfo...");
 	for( PlayerCreateInfoMap::iterator i = mPlayerCreateInfo.begin( ); i != mPlayerCreateInfo.end( ); ++ i ) {
 		delete i->second;
@@ -81,11 +69,6 @@ ObjectMgr::~ObjectMgr()
 		delete i->second;
 	}
 
-	sLog.outString("	Deleting GameObjectNames...");
-	for( GameObjectNameMap::iterator i = mGameObjectNames.begin( ); i != mGameObjectNames.end( ); ++ i ) {
-		delete i->second;
-	}
-
 	sLog.outString("	Deleting PvPAreas...");
 	for( PvPAreaMap::iterator i = mPvPAreas.begin( ); i != mPvPAreas.end( ); ++ i ) {
 		delete i->second;
@@ -96,10 +79,6 @@ ObjectMgr::~ObjectMgr()
 	{
 		delete i->second;
 	}
-
-	sLog.outString("	Deleting Item Pages...");
-	for(ItemPageMap::iterator itr = mItemPages.begin(); itr != mItemPages.end(); ++itr)
-		delete itr->second;
 
 	sLog.outString("	Deleting AI Threat Spells...");
 	for( std::list<ThreatToSpellId*>::iterator i = threatToSpells.begin( ); i != threatToSpells.end( ); ++ i ) 
@@ -181,14 +160,15 @@ ObjectMgr::~ObjectMgr()
 		delete [] m_transporters;
 	}
 
-	sLog.outString("Deleting Prototypes/Waypoints/AISpells...");
+	/*BURSTORAGEREWRITEFIX*/
+	/*sLog.outString("Deleting Prototypes/Waypoints/AISpells...");
 	for(HM_NAMESPACE::hash_map<uint32, CreatureProto*>::iterator itr = m_creatureproto.begin(); itr != m_creatureproto.end(); ++itr)
 	{
 		CreatureProto * p = itr->second;
 		for(list<AI_Spell*>::iterator i = p->spells.begin(); i != p->spells.end(); ++i)
 			delete (*i);
 		delete p;
-	}
+	}*/
 
 	for(HM_NAMESPACE::hash_map<uint32, WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
 	{
@@ -307,19 +287,6 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo *pn)
 	playernamelock.ReleaseWriteLock();
 }
 
-//
-// Creature names
-//
-CreatureInfo *ObjectMgr::GetCreatureName(uint32 id)
-{
-	CreatureNameMap::const_iterator itr = mCreatureNames.find( id );
-	if( itr != mCreatureNames.end( ) )
-		return itr->second;
-
-	//returning unknown creature if no data found
-	return NULL;	
-}
-
 void ObjectMgr::LoadSpellSkills()
 {
 	sLog.outString("  Loading Spell Skills...");
@@ -378,42 +345,6 @@ void ObjectMgr::LoadPlayersInfo()
 	LoadGuilds();
 }
 
-void ObjectMgr::LoadCreatureNames()
-{
-	CreatureInfo *cn;
-	QueryResult *result = sDatabase.Query( "SELECT * FROM creature_names" );
-	sLog.outString("  Loading Creature Names...");
-	if(result)
-	{
-		do
-		{
-			Field *fields = result->Fetch();
-
-			cn = new CreatureInfo;
-			cn->Id = fields[0].GetUInt32();
-			cn->Name = fields[1].GetString();
-			cn->SubName = fields[2].GetString();
-			cn->Flags1 = fields[3].GetUInt32();
-			cn->Type = fields[4].GetUInt32();
-			cn->Family = fields[5].GetUInt32();
-			cn->Rank = fields[6].GetUInt32();
-			cn->Unknown1 = fields[7].GetUInt32();
-			cn->SpellDataID = fields[8].GetUInt32();
-			cn->DisplayID = fields[9].GetUInt32();
-			cn->unk2=fields[10].GetFloat();
-			cn->unk3=fields[11].GetFloat();
-			cn->Civilian = fields[12].GetUInt8();
-			cn->Leader = fields[13].GetUInt8();
-
-			cn->lowercase_name = cn->Name;
-			transform(cn->lowercase_name.begin(), cn->lowercase_name.end(), cn->lowercase_name.begin(), towlower);
-
-			mCreatureNames[cn->Id] = cn;
-		} while( result->NextRow() );
-		delete result;
-	}
-}
-
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(std::string &name)
 {
 	HM_NAMESPACE::hash_map<uint32,PlayerInfo*>::const_iterator i;
@@ -428,140 +359,6 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(std::string &name)
 		}
 	playernamelock.ReleaseReadLock();
 	return rv;
-}
-
-void ObjectMgr::LoadItemPrototypes()
-{
-	sLog.outString("  Loading Item Prototypes...");
-	QueryResult *result = sDatabase.Query( "SELECT * FROM items" );
-	if( !result )
-		return;
-	ItemPrototype *pItemPrototype;
-	int i;
- 
-	do
-	{
-		Field *fields = result->Fetch();
-
-		pItemPrototype = new ItemPrototype;
-
-		pItemPrototype->ItemId = fields[0].GetUInt32();
-		pItemPrototype->Class = fields[1].GetUInt32();
-		pItemPrototype->SubClass = fields[2].GetUInt32();
-		pItemPrototype->unknown_bc = fields[3].GetUInt32();
-		pItemPrototype->Name1 = fields[4].GetString();
-		pItemPrototype->Name2 = fields[5].GetString();
-		pItemPrototype->Name3 = fields[6].GetString();
-		pItemPrototype->Name4 = fields[7].GetString();
-		pItemPrototype->DisplayInfoID = fields[8].GetUInt32();
-		pItemPrototype->Quality = fields[9].GetUInt32();
-		pItemPrototype->Flags = fields[10].GetUInt32();
-		pItemPrototype->BuyPrice = fields[11].GetUInt32();
-		pItemPrototype->SellPrice = fields[12].GetUInt32();
-		pItemPrototype->InventoryType = fields[13].GetUInt32();
-		pItemPrototype->AllowableClass = fields[14].GetUInt32();
-		pItemPrototype->AllowableRace = fields[15].GetUInt32();
-		pItemPrototype->ItemLevel = fields[16].GetUInt32();
-		pItemPrototype->RequiredLevel = fields[17].GetUInt32();
-		pItemPrototype->RequiredSkill = fields[18].GetUInt32();
-		pItemPrototype->RequiredSkillRank = fields[19].GetUInt32();
-		pItemPrototype->RequiredSkillSubRank = fields[20].GetUInt32();
-		pItemPrototype->RequiredPlayerRank1 = fields[21].GetUInt32();
-		pItemPrototype->RequiredPlayerRank2 = fields[22].GetUInt32();
-		pItemPrototype->RequiredFaction = fields[23].GetUInt32();
-		pItemPrototype->RequiredFactionStanding = fields[24].GetUInt32();
-		pItemPrototype->Unique = fields[25].GetUInt32();
-		pItemPrototype->MaxCount = fields[26].GetUInt32();
-		pItemPrototype->ContainerSlots = fields[27].GetUInt32();
-		for(i = 0; i < 20; i+=2)
-		{
-			pItemPrototype->ItemStatType[i/2] = fields[28 + i].GetUInt32();
-			pItemPrototype->ItemStatValue[i/2] = fields[29 + i].GetUInt32();
-		}
-		for(i = 0; i < 15; i+=3)
-		{
- 
-			pItemPrototype->DamageMin[i/3] = fields[48 + i].GetFloat();
-			pItemPrototype->DamageMax[i/3] = fields[49 + i].GetFloat();
-			pItemPrototype->DamageType[i/3] = fields[50 + i].GetUInt32();
-		}
-		pItemPrototype->Armor = fields[63].GetUInt32();
-		pItemPrototype->HolyRes = fields[64].GetUInt32();
-		pItemPrototype->FireRes = fields[65].GetUInt32();
-		pItemPrototype->NatureRes = fields[66].GetUInt32();
-		pItemPrototype->FrostRes = fields[67].GetUInt32();
-		pItemPrototype->ShadowRes = fields[68].GetUInt32();
-		pItemPrototype->ArcaneRes = fields[69].GetUInt32();
-		pItemPrototype->Delay = fields[70].GetUInt32();
-		pItemPrototype->AmmoType = fields[71].GetUInt32();
-		
-		pItemPrototype->Range = fields[72].GetFloat();
-	   
-		for(i = 0; i < 30; i+=6)
-		{
-			pItemPrototype->SpellId[i/6] = fields[73+i].GetUInt32();
-			pItemPrototype->SpellTrigger[i/6] = fields[74+i].GetUInt32();
-			pItemPrototype->SpellCharges[i/6] = fields[75+i].GetUInt32();
-			pItemPrototype->SpellCooldown[i/6] = fields[76+i].GetUInt32();
-			pItemPrototype->SpellCategory[i/6] = fields[77+i].GetUInt32();
-			pItemPrototype->SpellCategoryCooldown[i/6] = fields[78+i].GetUInt32();
-		}
-		pItemPrototype->Bonding = fields[103].GetUInt32();
-		pItemPrototype->Description = fields[104].GetString();
-		pItemPrototype->PageId = fields[105].GetUInt32();
-		pItemPrototype->PageLanguage = fields[106].GetUInt32();
-		pItemPrototype->PageMaterial = fields[107].GetUInt32();
-		pItemPrototype->QuestId = fields[108].GetUInt32();
-		pItemPrototype->LockId = fields[109].GetUInt32();
-		pItemPrototype->LockMaterial = fields[110].GetUInt32();
-		pItemPrototype->Field108 = fields[111].GetUInt32();
-		pItemPrototype->RandomPropId = fields[112].GetUInt32();
-		pItemPrototype->RandomPropId_2 = fields[113].GetUInt32();
-		pItemPrototype->Block = fields[114].GetUInt32();
-		pItemPrototype->ItemSet = fields[115].GetUInt32();
-		pItemPrototype->MaxDurability = fields[116].GetUInt32();
-		pItemPrototype->ZoneNameID = fields[117].GetUInt32();
-		pItemPrototype->Field114 = fields[118].GetUInt32();
-		pItemPrototype->BagFamily = fields[119].GetUInt32();
-		pItemPrototype->ToolCategory = fields[120].GetUInt32();
-
-		pItemPrototype->Sockets[0].SocketColor = fields[121].GetUInt32();
-		pItemPrototype->Sockets[0].Unk = fields[122].GetUInt32();
-		pItemPrototype->Sockets[1].SocketColor = fields[123].GetUInt32();
-		pItemPrototype->Sockets[1].Unk = fields[124].GetUInt32();
-		pItemPrototype->Sockets[2].SocketColor = fields[125].GetUInt32();
-		pItemPrototype->Sockets[2].Unk = fields[126].GetUInt32();
-
-		pItemPrototype->SocketBonus = fields[127].GetUInt32();
-		pItemPrototype->GemProperties = fields[128].GetUInt32();
-		pItemPrototype->ItemExtendedCost = fields[129].GetUInt32();
-		pItemPrototype->DisenchantReqSkill = fields[130].GetUInt32();
-		pItemPrototype->ArmorDamageModifier = fields[131].GetUInt32();
-
-		// item sets
-		if(pItemPrototype->ItemSet > 0)
-		{
-			ItemSetContentMap::iterator itr = mItemSets.find(pItemPrototype->ItemSet);
-			std::list<ItemPrototype*>* l;
-			if(itr == mItemSets.end())
-			{
-				l = new std::list<ItemPrototype*>;				
-				mItemSets.insert( ItemSetContentMap::value_type( pItemPrototype->ItemSet, l) );
-			} else {
-				l = itr->second;
-			}
-			l->push_back(pItemPrototype);
-		}
-
-
-		// lowercase name, used for searches
-		pItemPrototype->lowercase_name = pItemPrototype->Name1;
-		for(uint32 j = 0; j < pItemPrototype->lowercase_name.length(); ++j)
-			pItemPrototype->lowercase_name[j] = tolower(pItemPrototype->lowercase_name[j]);
-
-		mItemPrototypes[pItemPrototype->ItemId] = pItemPrototype;
-	} while( result->NextRow() );
-	delete result;
 }
 
 void ObjectMgr::LoadPlayerCreateInfo()
@@ -1107,62 +904,6 @@ uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
 	return ret;
 }
 
-GameObjectInfo *ObjectMgr::GetGameObjectName_(uint32 ID)
-{
-	GameObjectNameMap::const_iterator itr = mGameObjectNames.find( ID );
-	if( itr != mGameObjectNames.end( ) )
-		return itr->second;
-	return 0;
-}
-
-void ObjectMgr::LoadGameObjectNames()
-{
-	sLog.outString("  Loading GameObject Names...");
-	GameObjectInfo *gon;
-	QueryResult *result = sDatabase.Query( "SELECT * FROM gameobject_names" );
-	if(result)
-	{
-		do
-		{
-			Field *fields = result->Fetch();
-
-			gon = new GameObjectInfo;
-
-			gon->ID = fields[0].GetUInt32();
-			gon->Type =  fields[1].GetUInt32();
-			gon->DisplayID =  fields[2].GetUInt32();
-			gon->Name =  fields[3].GetString();
-			gon->SpellFocus =  fields[4].GetUInt32();
-			gon->sound1 =  fields[5].GetUInt32();
-			gon->sound2 = fields[6].GetUInt32();
-			gon->sound3 = fields[7].GetUInt32();
-			gon->sound4 =  fields[8].GetUInt32();
-			gon->sound5 =  fields[9].GetUInt32();
-			gon->sound6 =  fields[10].GetUInt32();
-			gon->sound7 =   fields[11].GetUInt32();
-			gon->sound8 =  fields[12].GetUInt32();
-			gon->sound9 =  fields[13].GetUInt32();
-			gon->Unknown1 =  fields[14].GetUInt32();
-			gon->Unknown2 =  fields[15].GetUInt32();
-			gon->Unknown3 =  fields[16].GetUInt32();
-			gon->Unknown4 =  fields[17].GetUInt32();
-			gon->Unknown5 =  fields[18].GetUInt32();
-			gon->Unknown6 =  fields[19].GetUInt32();
-			gon->Unknown7 =  fields[20].GetUInt32();
-			gon->Unknown8 =  fields[21].GetUInt32();
-			gon->Unknown9 =  fields[22].GetUInt32();
-			gon->Unknown10 =  fields[23].GetUInt32();
-			gon->Unknown11 =  fields[24].GetUInt32();
-			gon->Unknown12 =  fields[25].GetUInt32();
-			gon->Unknown13 =  fields[26].GetUInt32();
-			gon->Unknown14 =  fields[27].GetUInt32();
-		  
-			mGameObjectNames[gon->ID] = gon;
-		} while( result->NextRow() );
-		delete result;
-	}
-}
-
 void ObjectMgr::ProcessGameobjectQuests()
 {
 	/*if(!mGameObjectNames.size())
@@ -1257,7 +998,7 @@ void ObjectMgr::ProcessGameobjectQuests()
 		do 
 		{
 			Field * fields = result->Fetch();
-			gon = GetGameObjectName_(fields[0].GetUInt32());
+			gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
 			qst = sQuestMgr.FindQuest(fields[1].GetUInt32());
 			if(gon && qst)
 				gon->itemMap[qst].insert( make_pair( fields[2].GetUInt32(), fields[3].GetUInt32() ) );			
@@ -1272,7 +1013,7 @@ void ObjectMgr::ProcessGameobjectQuests()
 		do 
 		{
 			Field * fields = result2->Fetch();
-			gon = GetGameObjectName_(fields[0].GetUInt32());
+			gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
 			qst = sQuestMgr.FindQuest(fields[1].GetUInt32());
 			if(gon && qst)
 				gon->goMap.insert( make_pair( qst, fields[2].GetUInt32() ) );
@@ -1356,14 +1097,6 @@ Player* ObjectMgr::GetPlayer(uint32 guid)
 	_playerslock.ReleaseReadLock();
 
 	return rv;
-}
-
-ItemPrototype* ObjectMgr::GetItemPrototype(uint32 id)
-{
-	ItemPrototypeMap::iterator i =mItemPrototypes.find(id);
-	if(i!=mItemPrototypes.end())
-		return i->second;
-	return NULL;
 }
 
 PlayerCreateInfo* ObjectMgr::GetPlayerCreateInfo(uint8 race, uint8 class_) const
@@ -1648,32 +1381,9 @@ FishingZoneEntry* ObjectMgr::GetFishingZone(uint32 zoneid)
 	return mFishingZones[zoneid];
 }
 
-void ObjectMgr::LoadItemPages()
-{
-	sLog.outString("  Loading Item Pages...");
-	QueryResult *result = sDatabase.Query("SELECT * FROM itempages");
-	if(!result)
-	{
-		sLog.outString("  Query failed: SELECT * FROM itempages");
-		return;
-	}
-//	uint32 total = (uint32)result->GetRowCount();
-//	int num = 0;
-	ItemPage *page = NULL;
-	do 
-	{
-		Field *fields = result->Fetch();
-		page = new ItemPage;
-		page->text = fields[1].GetString();
-		page->next_page = fields[2].GetUInt32();
-		mItemPages[fields[0].GetUInt32()] = page;
-	} while(result->NextRow());
-	delete result;
-}
-
 Item * ObjectMgr::CreateItem(uint32 entry,Player * owner)
 {
-	ItemPrototype * proto = GetItemPrototype(entry);
+	ItemPrototype * proto = ItemPrototypeStorage.LookupEntry(entry);
 	if(proto == 0) return 0;
 
 	if(proto->InventoryType == INVTYPE_BAG)
@@ -1699,7 +1409,7 @@ Item * ObjectMgr::LoadItem(uint64 guid)
 
 	if(result)
 	{
-		ItemPrototype * pProto = GetItemPrototype(result->Fetch()[2].GetUInt32());
+		ItemPrototype * pProto = ItemPrototypeStorage.LookupEntry(result->Fetch()[2].GetUInt32());
 		if(pProto->InventoryType == INVTYPE_BAG)
 		{
 			Container * pContainer = new Container(HIGHGUID_CONTAINER,guid);
@@ -2447,11 +2157,11 @@ void ObjectMgr::LoadTrainers()
 
 bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)
 {
-	CreatureInfo *ci = objmgr.GetCreatureName(entry);
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(entry);
 	if(ci)
 	{
 		const char* RankName = sSpellStore.LookupString(pSpell->Rank);
-		if(strstr(ci->SubName.c_str(),"Journeyman"))
+		if(strstr(ci->SubName,"Journeyman"))
 		{
 			if(!stricmp(RankName, "Journeyman"))
 				return true;
@@ -2464,7 +2174,7 @@ bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)
 			else
 				return true;
 		}
-		else if(strstr(ci->SubName.c_str(),"Expert"))
+		else if(strstr(ci->SubName,"Expert"))
 		{
 			if(!stricmp(RankName, "Journeyman"))
 				return true;
@@ -2477,7 +2187,7 @@ bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)
 			else
 				return true;
 		}
-		else if(strstr(ci->SubName.c_str(),"Artisan"))
+		else if(strstr(ci->SubName,"Artisan"))
 		{
 			if(!stricmp(RankName, "Journeyman"))
 				return true;
@@ -2509,233 +2219,16 @@ Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 void ObjectMgr::ReloadTables()
 {
 	sWorld.SendWorldText("Reloading CreatureNames...");
-	ReloadCreatureNames();
+	CreatureNameStorage.Reload();
 
 	sWorld.SendWorldText("Reloading Items...");
-	ReloadItems();
+	ItemPrototypeStorage.Reload();
 
 	sWorld.SendWorldText("Reloading Quests...");
-	ReloadQuests();
+	//QuestStorage.Reload();
 
 	sWorld.SendWorldText("Reloading Gameobject Names...");
-	ReloadGameObjects();
-}
-
-void ObjectMgr::ReloadCreatureNames()
-{
-	QueryResult * QR = sDatabase.Query("SELECT * FROM creature_names");
-	if(QR)
-	{
-		uint32 ID;
-		CreatureInfo* cn;
-		CreatureNameMap::iterator it;
-		do 
-		{
-			Field * fields = QR->Fetch();
-			ID = fields[0].GetUInt32();
-
-			it = mCreatureNames.find(ID);
-			if(it == mCreatureNames.end())
-				cn = new CreatureInfo;
-			else
-				cn = it->second;
-
-			cn->Id = ID;
-			cn->Name = fields[1].GetString();
-			cn->SubName = fields[2].GetString();
-			cn->Flags1 = fields[3].GetUInt32();
-			cn->Type = fields[4].GetUInt32();
-			cn->Family = fields[5].GetUInt32();
-			cn->Rank = fields[6].GetUInt32();
-			cn->Unknown1 = fields[7].GetUInt32();
-			cn->SpellDataID = fields[8].GetUInt32();
-			cn->DisplayID = fields[9].GetUInt32();
-			cn->Civilian = fields[10].GetUInt8();
-			cn->Leader = fields[11].GetUInt8();
-
-			if(it == mCreatureNames.end())
-				mCreatureNames.insert( CreatureNameMap::value_type( ID, cn ) );
-
-		} while(QR->NextRow());
-		delete QR;
-	}
-	sLog.outString("%u creature names reloaded.", mCreatureNames.size());
-}
-
-void ObjectMgr::ReloadItems()
-{
-	QueryResult * QR = sDatabase.Query("SELECT * FROM items");
-	if(QR)
-	{
-		uint32 ID;
-		uint32 i;
-		ItemPrototype* pItemPrototype;
-		ItemPrototypeMap::iterator it;
-		do 
-		{
-			Field * fields = QR->Fetch();
-			ID = fields[0].GetUInt32();
-
-			it = mItemPrototypes.find(ID);
-			if(it == mItemPrototypes.end())
-				pItemPrototype = new ItemPrototype;
-			else
-				pItemPrototype = it->second;
-
-			pItemPrototype->ItemId = fields[0].GetUInt32();
-			pItemPrototype->Class = fields[1].GetUInt32();
-			pItemPrototype->SubClass = fields[2].GetUInt32();
-			pItemPrototype->Name1 = fields[3].GetString();
-			pItemPrototype->Name2 = fields[4].GetString();
-			pItemPrototype->Name3 = fields[5].GetString();
-			pItemPrototype->Name4 = fields[6].GetString();
-			pItemPrototype->DisplayInfoID = fields[7].GetUInt32();
-			pItemPrototype->Quality = fields[8].GetUInt32();
-			pItemPrototype->Flags = fields[9].GetUInt32();
-			pItemPrototype->BuyPrice = fields[10].GetUInt32();
-			pItemPrototype->SellPrice = fields[11].GetUInt32();
-			pItemPrototype->InventoryType = fields[12].GetUInt32();
-			pItemPrototype->AllowableClass = fields[13].GetUInt32();
-			pItemPrototype->AllowableRace = fields[14].GetUInt32();
-			pItemPrototype->ItemLevel = fields[15].GetUInt32();
-			pItemPrototype->RequiredLevel = fields[16].GetUInt32();
-			pItemPrototype->RequiredSkill = fields[17].GetUInt32();
-			pItemPrototype->RequiredSkillRank = fields[18].GetUInt32();
-			pItemPrototype->RequiredSkillSubRank = fields[19].GetUInt32();
-			pItemPrototype->RequiredPlayerRank1 = fields[20].GetUInt32();
-			pItemPrototype->RequiredPlayerRank2 = fields[21].GetUInt32();
-			pItemPrototype->RequiredFaction = fields[22].GetUInt32();
-			pItemPrototype->RequiredFactionStanding = fields[23].GetUInt32();
-			pItemPrototype->Unique = fields[24].GetUInt32();
-			pItemPrototype->MaxCount = fields[25].GetUInt32();
-			pItemPrototype->ContainerSlots = fields[26].GetUInt32();
-			for(i = 0; i < 20; i+=2)
-			{
-				pItemPrototype->ItemStatType[i/2] = fields[27 + i].GetUInt32();
-				pItemPrototype->ItemStatValue[i/2] = fields[28 + i].GetUInt32();
-			}
-			for(i = 0; i < 15; i+=3)
-			{
-				// Stupid items.sql
-				//  int *a=(int *)malloc(sizeof(int)); *a=fields[48 + i].GetUInt32();
-				//int *b=(int *)malloc(sizeof(int)); *b=fields[49 + i].GetUInt32();
-
-				pItemPrototype->DamageMin[i/3] = fields[47 + i].GetFloat();
-				pItemPrototype->DamageMax[i/3] = fields[48 + i].GetFloat();
-				/*
-				*/		   
-				//pItemPrototype->DamageMin[i/3] = fields[46 + +i].GetFloat();
-				//pItemPrototype->DamageMax[i/3] = fields[47 +i].GetFloat();
-				pItemPrototype->DamageType[i/3] = fields[49 + i].GetUInt32();
-				//			free(a);free(b);
-			}
-			pItemPrototype->Armor = fields[62].GetUInt32();
-			pItemPrototype->HolyRes = fields[63].GetUInt32();
-			pItemPrototype->FireRes = fields[64].GetUInt32();
-			pItemPrototype->NatureRes = fields[65].GetUInt32();
-			pItemPrototype->FrostRes = fields[66].GetUInt32();
-			pItemPrototype->ShadowRes = fields[67].GetUInt32();
-			pItemPrototype->ArcaneRes = fields[68].GetUInt32();
-			pItemPrototype->Delay = fields[69].GetUInt32();
-			pItemPrototype->AmmoType = fields[70].GetUInt32();
-
-			pItemPrototype->Range = fields[71].GetFloat();
-
-			for(i = 0; i < 30; i+=6)
-			{
-				pItemPrototype->SpellId[i/6] = fields[72+i].GetUInt32();
-				pItemPrototype->SpellTrigger[i/6] = fields[73+i].GetUInt32();
-				pItemPrototype->SpellCharges[i/6] = fields[74+i].GetUInt32();
-				pItemPrototype->SpellCooldown[i/6] = fields[75+i].GetUInt32();
-				pItemPrototype->SpellCategory[i/6] = fields[76+i].GetUInt32();
-				pItemPrototype->SpellCategoryCooldown[i/6] = fields[77+i].GetUInt32();
-			}
-			pItemPrototype->Bonding = fields[102].GetUInt32();
-			pItemPrototype->Description = fields[103].GetString();
-			pItemPrototype->PageId = fields[104].GetUInt32();
-			pItemPrototype->PageLanguage = fields[105].GetUInt32();
-			pItemPrototype->PageMaterial = fields[106].GetUInt32();
-			pItemPrototype->QuestId = fields[107].GetUInt32();
-			pItemPrototype->LockId = fields[108].GetUInt32();
-			pItemPrototype->LockMaterial = fields[109].GetUInt32();
-			pItemPrototype->Field108 = fields[110].GetUInt32();
-			pItemPrototype->RandomPropId = fields[111].GetUInt32();
-			pItemPrototype->Block = fields[112].GetUInt32();
-			pItemPrototype->ItemSet = fields[113].GetUInt32();
-			pItemPrototype->MaxDurability = fields[114].GetUInt32();
-			pItemPrototype->ZoneNameID = fields[115].GetUInt32();
-			pItemPrototype->Field114 = fields[116].GetUInt32();
-			pItemPrototype->BagFamily = fields[117].GetUInt32();
-
-			if(it == mItemPrototypes.end())
-				mItemPrototypes.insert( ItemPrototypeMap::value_type( ID, pItemPrototype ) );
-
-		} while(QR->NextRow());
-		delete QR;
-	}
-	sLog.outString("%u items reloaded.", mItemPrototypes.size());
-}
-
-void ObjectMgr::ReloadQuests()
-{
-
-}
-
-void ObjectMgr::ReloadGameObjects()
-{
-	QueryResult * QR = sDatabase.Query("SELECT * FROM gameobject_names");
-	if(QR)
-	{
-		uint32 ID;
-		GameObjectInfo* gon;
-		GameObjectNameMap::iterator it;
-		do 
-		{
-			Field * fields = QR->Fetch();
-			ID = fields[0].GetUInt32();
-
-			it = mGameObjectNames.find(ID);
-			if(it == mGameObjectNames.end())
-				gon = new GameObjectInfo;
-			else
-				gon = it->second;
-
-			gon->ID = fields[0].GetUInt32();
-			gon->Type =  fields[1].GetUInt32();
-			gon->DisplayID =  fields[2].GetUInt32();
-			gon->Name =  fields[3].GetString();
-			gon->SpellFocus =  fields[4].GetUInt32();
-			gon->sound1 =  fields[5].GetUInt32();
-			gon->sound2 = fields[6].GetUInt32();
-			gon->sound3 = fields[7].GetUInt32();
-			gon->sound4 =  fields[8].GetUInt32();
-			gon->sound5 =  fields[9].GetUInt32();
-			gon->sound6 =  fields[10].GetUInt32();
-			gon->sound7 =   fields[11].GetUInt32();
-			gon->sound8 =  fields[12].GetUInt32();
-			gon->sound9 =  fields[13].GetUInt32();
-			gon->Unknown1 =  fields[14].GetUInt32();
-			gon->Unknown2 =  fields[15].GetUInt32();
-			gon->Unknown3 =  fields[16].GetUInt32();
-			gon->Unknown4 =  fields[17].GetUInt32();
-			gon->Unknown5 =  fields[18].GetUInt32();
-			gon->Unknown6 =  fields[19].GetUInt32();
-			gon->Unknown7 =  fields[20].GetUInt32();
-			gon->Unknown8 =  fields[21].GetUInt32();
-			gon->Unknown9 =  fields[22].GetUInt32();
-			gon->Unknown10 =  fields[23].GetUInt32();
-			gon->Unknown11 =  fields[24].GetUInt32();
-			gon->Unknown12 =  fields[25].GetUInt32();
-			gon->Unknown13 =  fields[26].GetUInt32();
-			gon->Unknown14 =  fields[27].GetUInt32();
-
-			if(it == mGameObjectNames.end())
-				mGameObjectNames.insert( GameObjectNameMap::value_type( ID, gon ) );
-
-		} while(QR->NextRow());
-		delete QR;
-	}
-	sLog.outString("%u gameobject names reloaded.", mGameObjectNames.size());
+	GameObjectNameStorage.Reload();
 }
 
 void ObjectMgr::GenerateLevelUpInfo()
@@ -3137,147 +2630,6 @@ void ObjectMgr::SetCreatureBySqlId(uint32 Sql_Id, Creature * pCreature)
 			mCreatureSqlIds.erase(itr);
 	}
 	CreatureSqlIdMapMutex.Release();
-}
-
-void ObjectMgr::LoadCreatureProtos()
-{
-	CreatureProto *cn;
-	QueryResult *result = sDatabase.Query("SELECT * FROM creature_proto");
-	if(!result)return;
-	do{
-		cn = new CreatureProto;
-#define get_next_field (*fields++)
-
-		Field *fields = result->Fetch();
-		cn->Id = get_next_field.GetUInt32();
-
-		cn->Level = get_next_field.GetUInt32();
-		cn->Faction = get_next_field.GetUInt32();
-		cn->Health = get_next_field.GetUInt32();
-		cn->Mana = get_next_field.GetUInt32();
-		cn->Scale = get_next_field.GetFloat();
-		cn->NPCFLags = get_next_field.GetUInt32();
-
-		cn->AttackTime = get_next_field.GetUInt32();
-		cn->MinDamage = get_next_field.GetFloat();
-		cn->MaxDamage = get_next_field.GetFloat();
-
-		cn->RangedAttackTime = get_next_field.GetUInt32();
-		cn->RangedMinDamage = get_next_field.GetFloat();
-		cn->RangedMaxDamage = get_next_field.GetFloat();
-
-		cn->MountedDisplayID = get_next_field.GetUInt32();
-
-		cn->Item1SlotDisplay = get_next_field.GetUInt32();
-		cn->Item1Info1 = get_next_field.GetUInt32();
-		cn->Item1Info2 = get_next_field.GetUInt32();
-		cn->Item2SlotDisplay = get_next_field.GetUInt32();
-		cn->Item2Info1  = get_next_field.GetUInt32();
-		cn->Item2Info2 = get_next_field.GetUInt32();
-		cn->Item3SlotDisplay = get_next_field.GetUInt32();
-		cn->Item3Info1 = get_next_field.GetUInt32();
-		cn->Item3Info2 = get_next_field.GetUInt32();
-
-		cn->RespawnTime = get_next_field.GetUInt32();
-		for(uint32 k = 0; k < 7; ++k)
-			cn->Resistances[k] = get_next_field.GetUInt32();
-		cn->CombatReach = get_next_field.GetFloat();
-		cn->BoundingRadius = get_next_field.GetFloat();
-		cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
-		cn->m_fleeHealth = 0.0f;
-		cn->m_fleeDuration = 0.0f;
-
-		string auras = get_next_field.GetString();
-		vector<string> aurs = StrSplit(auras, " ");
-		for(vector<string>::iterator itr = aurs.begin(); itr != aurs.end(); ++itr)
-		{
-			uint32 id = atol((*itr).c_str());
-			if(id)
-				cn->start_auras.insert( id );
-		}
-        cn->boss = get_next_field.GetUInt32();
-
-		if(!cn->Health)
-			cn->Health = 1;
-
-		m_creatureproto[cn->Id]=cn;
-	} while( result->NextRow() );
-	delete result;
-
-	// Load AI Agents
-	result = sDatabase.Query( "SELECT * FROM ai_agents" );
-
-	if( !result )
-		return;
-
-	AI_Spell *sp;
-	uint32 entry;
-
-	do
-	{
-		Field *fields = result->Fetch();
-		entry = fields[0].GetUInt32();
-		HM_NAMESPACE::hash_map<uint32, CreatureProto*>::iterator itr = this->m_creatureproto.find(entry);
-		if(itr == m_creatureproto.end())
-			continue;
-		cn = itr->second;
-
-		sp = new AI_Spell;
-		sp->entryId = fields[0].GetUInt32();
-		sp->agent = fields[1].GetUInt16();
-		sp->procEvent = fields[2].GetUInt32();
-		sp->procChance = fields[3].GetUInt32();
-		sp->procCount = fields[4].GetUInt32();
-		sp->spellId = fields[5].GetUInt32();
-		sp->spellType = fields[6].GetUInt32();;
-		sp->spelltargetType = fields[7].GetUInt32();
-		sp->spellCooldown = fields[8].GetUInt32();
-		sp->floatMisc1 = fields[9].GetFloat();
-		sp->Misc2 = fields[10].GetUInt32();
-		sp->spellCooldownTimer = 0;
-		sp->procCounter = 0;
-		sp->minrange = GetMinRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
-		sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
-
-		if(sp->agent == AGENT_RANGED)
-		{
-			cn->m_canRangedAttack = true;
-			delete sp;
-		}
-		else if(sp->agent == AGENT_FLEE)
-		{
-			cn->m_canFlee = true;
-			if(sp->floatMisc1)
-				cn->m_canFlee = sp->floatMisc1;
-			else
-				cn->m_fleeHealth = 0.2f;
-
-			if(sp->Misc2)
-				cn->m_fleeDuration = sp->Misc2;
-			else
-				cn->m_fleeDuration = 10000;
-
-			delete sp;
-		}
-		else if(sp->agent == AGENT_CALLFORHELP)
-		{
-			cn->m_canCallForHelp = true;
-			if(sp->floatMisc1)
-				cn->m_callForHelpHealth = 0.2f;
-			delete sp;
-		}
-		else
-		{
-			cn->spells.push_back(sp);
-		}
-	} while( result->NextRow() );
-
-	delete result;
-}
-
-CreatureProto * ObjectMgr::GetCreatureProto(uint32 id)
-{
-	return m_creatureproto[id];
 }
 
 void ObjectMgr::LoadCreatureWaypoints()

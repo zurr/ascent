@@ -188,7 +188,7 @@ bool ChatHandler::HandleDeleteCommand(const char* args, WorldSession *m_session)
 		return true;
 	}
 	sGMLog.writefromsession(m_session, "used npc delete, sqlid %u, creature %s, pos %f %f %f",
-		unit->GetSQL_id(), unit->GetCreatureName()->Name.c_str(), unit->GetPositionX(), unit->GetPositionY(),
+		unit->GetSQL_id(), unit->GetCreatureName()->Name, unit->GetPositionX(), unit->GetPositionY(),
 		unit->GetPositionZ());
 	if(unit->m_spawn == 0)
 		return false;
@@ -243,7 +243,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession *m_session)
 	if (pamount)
 		amount = atoi(pamount);
 
-	ItemPrototype* tmpItem = objmgr.GetItemPrototype(item);
+	ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(item);
 
 	std::stringstream sstext;
 	if(tmpItem)
@@ -254,7 +254,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession *m_session)
 
 		pCreature->AddVendorItem(item, amount);
 
-		sstext << "Item '" << item << "' '" << tmpItem->Name1 << "' Added to list" << '\0';
+		sstext << "Item '" << item << "' '" << tmpItem->Name << "' Added to list" << '\0';
 	}
 	else
 	{
@@ -299,10 +299,10 @@ bool ChatHandler::HandleItemRemoveCommand(const char* args, WorldSession *m_sess
 		sDatabase.Execute( ss.str().c_str() );
 
 		pCreature->RemoveVendorItem(itemguid);
-		ItemPrototype* tmpItem = objmgr.GetItemPrototype(itemguid);
+		ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(itemguid);
 		if(tmpItem)
 		{
-			sstext << "Item '" << itemguid << "' '" << tmpItem->Name1 << "' Deleted from list" << '\0';
+			sstext << "Item '" << itemguid << "' '" << tmpItem->Name << "' Deleted from list" << '\0';
 		}
 		else
 		{
@@ -658,7 +658,7 @@ bool ChatHandler::HandleGOSelect(const char *args, WorldSession *m_session)
 	m_session->GetPlayer()->m_GM_SelectedGO = GObj;
 
 	GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.",
-		objmgr.GetGameObjectName_(GObj->GetEntry())->Name.c_str(), m_session->GetPlayer()->CalcDistance(GObj));
+		GameObjectNameStorage.LookupEntry(GObj->GetEntry())->Name, m_session->GetPlayer()->CalcDistance(GObj));
 
 	return true;
 }
@@ -721,7 +721,7 @@ bool ChatHandler::HandleGOSpawn(const char *args, WorldSession *m_session)
 	if (pSave)
 		Save = atoi(pSave);
 
-	GameObjectInfo* goi = objmgr.GetGameObjectName_(EntryID);
+	GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(EntryID);
 	if(!goi)
 	{
 		sstext << "GameObject Info '" << EntryID << "' Not Found" << '\0';
@@ -840,7 +840,7 @@ bool ChatHandler::HandleGOInfo(const char *args, WorldSession *m_session)
 		<< "\n"
 		<< MSG_COLOR_GREEN << "Distance: " << MSG_COLOR_LIGHTBLUE << GObj->CalcDistance((Object*)m_session->GetPlayer());
 
-	GOInfo = objmgr.GetGameObjectName_(GObj->GetEntry());
+	GOInfo = GameObjectNameStorage.LookupEntry(GObj->GetEntry());
 	if( !GOInfo )
 	{
 		RedSystemMessage(m_session, "This GameObject doesn't have template, you won't be able to get some informations nor to spawn a GO with this entry.");

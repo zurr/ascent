@@ -75,7 +75,7 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 		return;
 	} 
 	itemid = pLoot->items.at(lootSlot).item.itemid;
-	ItemPrototype* it = objmgr.GetItemPrototype(itemid);
+	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 
 	if(error = _player->GetItemInterface()->CanReceiveItem(it, 1))
 	{
@@ -319,7 +319,7 @@ void WorldSession::HandleLootReleaseOpcode( WorldPacket & recv_data )
 			for(std::vector<__LootItem>::iterator i=pCreature->loot.items.begin();i!=pCreature->loot.items.end();i++)
 			if(i->iItemsCount)
 			{
-				ItemPrototype *proto=objmgr.GetItemPrototype(i->item.itemid);
+				ItemPrototype *proto=ItemPrototypeStorage.LookupEntry(i->item.itemid);
 				if(proto->Class != 12)
 				return;
 				if(_player->HasQuestForItem(i->item.itemid))
@@ -1040,7 +1040,7 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket & recv_data)
  /*   uint32 old_ammoid = GetPlayer()->GetUInt32Value(PLAYER_AMMO_ID);
 	if(old_ammoid)
 	{
-		ItemPrototype * old_proto=objmgr.GetItemPrototype(ammoId);
+		ItemPrototype * old_proto=ItemPrototypeStorage.LookupEntry(ammoId);
 		if(old_proto)
 		{
 			_player->BaseRangedDamage[0] -= old_proto->DamageMin[0];
@@ -1492,7 +1492,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 		return;
 	} 
 	itemid = pLoot->items.at(slotid).item.itemid;
-	ItemPrototype* it = objmgr.GetItemPrototype(itemid);
+	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 
 	if(error = player->GetItemInterface()->CanReceiveItem(it, 1))
 	{

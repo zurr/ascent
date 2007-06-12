@@ -549,7 +549,7 @@ void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 	sLog.outDetail( "WORLD: Recvd CMSG_ITEM_QUERY_SINGLE for item id %d, guid 0x%.8X 0x%.8X",
 		itemid, guidlow, guidhigh );
 
-	ItemPrototype *itemProto = objmgr.GetItemPrototype(itemid);
+	ItemPrototype *itemProto = ItemPrototypeStorage.LookupEntry(itemid);
 	if(!itemProto)
 	{
 		sLog.outError( "WORLD: Unknown item id 0x%.8X", itemid );
@@ -557,12 +557,12 @@ void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 	} 
 
 	//WorldPacket * data = new WorldPacket(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600 + itemProto->Name1.length() + itemProto->Description.length() );
-	WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600 + itemProto->Name1.length() + itemProto->Description.length() );
+	WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600 + strlen(itemProto->Name) + strlen(itemProto->Description) );
 	data << itemProto->ItemId;
 	data << itemProto->Class;
 	data << itemProto->SubClass;
 	data << itemProto->unknown_bc;
-	data << itemProto->Name1.c_str();
+	data << itemProto->Name;
 	data << uint8(0) << uint8(0) << uint8(0); // name 2,3,4
 	data << itemProto->DisplayInfoID;
 	data << itemProto->Quality;
@@ -614,7 +614,7 @@ void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 		data << itemProto->SpellCategoryCooldown[i];
 	}
 	data << itemProto->Bonding;
-	data << itemProto->Description.c_str();
+	data << itemProto->Description;
 	data << itemProto->PageId;
 	data << itemProto->PageLanguage;
 	data << itemProto->PageMaterial;
@@ -928,7 +928,7 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 		return;
 	}
 
-	ItemPrototype *it = objmgr.GetItemPrototype(itemid);
+	ItemPrototype *it = ItemPrototypeStorage.LookupEntry(itemid);
 	if(!it) return;
 
 	if(error = _player->GetItemInterface()->CanReceiveItem(it, amount))
@@ -1069,7 +1069,7 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 		return;
 	}
 
-	ItemPrototype *it = objmgr.GetItemPrototype(itemid);
+	ItemPrototype *it = ItemPrototypeStorage.LookupEntry(itemid);
 	if(!it) 
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
@@ -1167,7 +1167,7 @@ void WorldSession::SendInventoryList(Creature* unit)
 {
 	if(!unit->HasItems())
 	{
-		sChatHandler.BlueSystemMessageToPlr(_player, "No sell template found. Report this to devs: %d (%s)", unit->GetEntry(), unit->GetCreatureName()->Name.c_str());
+		sChatHandler.BlueSystemMessageToPlr(_player, "No sell template found. Report this to devs: %d (%s)", unit->GetEntry(), unit->GetCreatureName()->Name);
 		return;
 	}
 
@@ -1184,7 +1184,7 @@ void WorldSession::SendInventoryList(Creature* unit)
 	{
 		if(itr->itemid)
 		{
-			if(curItem = objmgr.GetItemPrototype(itr->itemid))
+			if(curItem = ItemPrototypeStorage.LookupEntry(itr->itemid))
 			{
 				data << (counter + 1);
 				data << curItem->ItemId;
@@ -1598,7 +1598,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket &recvPacket)
 		if(EI)
 		{
 			FilledSlots++;
-			ItemPrototype * ip = objmgr.GetItemPrototype(EI->Enchantment->GemEntry);
+			ItemPrototype * ip = ItemPrototypeStorage.LookupEntry(EI->Enchantment->GemEntry);
 			if(!ip)
 				gp = 0;
 			else

@@ -203,7 +203,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 			itemcount = result->Fetch()[1].GetUInt32();
 			charges = result->Fetch()[2].GetUInt32();
 			durability = result->Fetch()[3].GetUInt32();
-			ItemPrototype * it = objmgr.GetItemPrototype(itementry);
+			ItemPrototype * it = ItemPrototypeStorage.LookupEntry(itementry);
 			maxdurability = it ? it->MaxDurability : durability;
 
 			delete result;
@@ -549,7 +549,7 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data )
 
 			// might as well send them a message
 			ChatHandler::getSingleton().SystemMessageToPlr(sender, "%s pays you %u copper for your %s (via cash on delivery).", 
-				_player->GetName(), message->cod, item->GetProto()->Name1.c_str());
+				_player->GetName(), message->cod, item->GetProto()->Name);
 		}
 		else
 		{
@@ -691,7 +691,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket & recv_data )
 		return;
 	}
 
-	ItemPrototype * proto = objmgr.GetItemPrototype(8383);
+	ItemPrototype * proto = ItemPrototypeStorage.LookupEntry(8383);
 	MailMessage * message = m->GetMessage(message_id);
 	if(message == 0 || !proto)
 	{

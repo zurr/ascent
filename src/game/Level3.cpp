@@ -151,7 +151,7 @@ bool ChatHandler::HandleAddSpiritCommand(const char* args, WorldSession *m_sessi
 
 		pCreature = new Creature();
 
-		pCreature->Create(objmgr.GenerateLowGuid(HIGHGUID_UNIT), objmgr.GetCreatureName(name)->Name.c_str(), fields[5].GetUInt16(),
+		pCreature->Create(objmgr.GenerateLowGuid(HIGHGUID_UNIT), CreatureNameStorage.LookupEntry(name)->Name.c_str(), fields[5].GetUInt16(),
 			fields[0].GetFloat(), fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat());
 
 		pCreature->SetZoneId( fields[6].GetUInt16() );
@@ -256,7 +256,7 @@ bool ChatHandler::HandleAddSpiritCommand(const char* args, WorldSession *m_sessi
 		float x = g->x + 2;
 		float y = g->y - 2;		// move it a little..
 				
-		pCreature->Create(objmgr.GetCreatureName(SPIRITHEALER_NAMEID)->Name.c_str(), g->mapid, x, y, g->z, 3.14);
+		pCreature->Create(CreatureNameStorage.LookupEntry(SPIRITHEALER_NAMEID)->Name, g->mapid, x, y, g->z, 3.14);
 		pCreature->SetUInt32Value( OBJECT_FIELD_ENTRY, SPIRITHEALER_NAMEID );
 		pCreature->SetFloatValue(OBJECT_FIELD_SCALE_X, 1.0f);
 		pCreature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 5233);
@@ -377,7 +377,7 @@ bool ChatHandler::HandleAddWeaponCommand(const char* args, WorldSession *m_sessi
 	uint32 ItemID = atoi(pItemID);
 	uint32 SlotID = atoi(pSlotID);
 
-	ItemPrototype* tmpItem = objmgr.GetItemPrototype(ItemID);
+	ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(ItemID);
 
 	bool added = false;
 	std::stringstream sstext;
@@ -404,7 +404,7 @@ bool ChatHandler::HandleAddWeaponCommand(const char* args, WorldSession *m_sessi
 		}
 		if(added)
 		{
-			sstext << "Item '" << ItemID << "' '" << tmpItem->Name1 << "' Added to Slot " << SlotID << '\0';
+			sstext << "Item '" << ItemID << "' '" << tmpItem->Name << "' Added to Slot " << SlotID << '\0';
 		}
 	}
 	else
@@ -790,7 +790,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char *args, WorldSession *m_session
 	Creature *crt = getSelectedCreature(m_session);
 	if(!crt) return false;
 	if(crt->GetCreatureName())
-		BlueSystemMessage(m_session, "Showing creature info for %s", crt->GetCreatureName()->Name.c_str());
+		BlueSystemMessage(m_session, "Showing creature info for %s", crt->GetCreatureName()->Name);
 	sprintf(msg,"GUID: %d\nFaction: %d\nNPCFlags: %d\nDisplayID: %d", guid, crt->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE), crt->GetUInt32Value(UNIT_NPC_FLAGS), crt->GetUInt32Value(UNIT_FIELD_DISPLAYID));
 	SystemMessage(m_session, msg);
 	if(crt->m_faction)
@@ -1244,7 +1244,7 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
 			delete itm;
 			return true;
 		} else {
-			SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1.c_str(), (*itr)->ItemId);
+			SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name, (*itr)->ItemId);
 		}
 	}
 	GreenSystemMessage(m_session, "Added set to inventory complete. Time: %u ms", getMSTime() - start);
@@ -1501,7 +1501,7 @@ bool ChatHandler::HandleSpawnSpiritGuideCommand(const char* args, WorldSession *
 	if(faction > 1)
 		faction = 1;
 
-	CreatureInfo * pInfo = objmgr.GetCreatureName(13116 + faction);
+	CreatureInfo * pInfo = CreatureNameStorage.LookupEntry(13116 + faction);
 	if(pInfo == 0)
 	{
 		RedSystemMessage(m_session, "Could not find entry in object manager.");
@@ -1513,7 +1513,7 @@ bool ChatHandler::HandleSpawnSpiritGuideCommand(const char* args, WorldSession *
 		return true;
 
 	Player * plr = m_session->GetPlayer();
-	pCreature->Create(pInfo->Name.c_str(), plr->GetMapId(), plr->GetPositionX(), plr->GetPositionY(),
+	pCreature->Create(pInfo->Name, plr->GetMapId(), plr->GetPositionX(), plr->GetPositionY(),
 		plr->GetPositionZ(), plr->GetOrientation());
 	
 	pCreature->SetInstanceID(plr->GetInstanceID());
@@ -1605,8 +1605,8 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
 	uint32 Entry = atol(args);
 	if(!Entry)
 		return false;
-	CreatureProto * pTemplate = objmgr.GetCreatureProto(Entry);
-	CreatureInfo * pCreatureInfo = objmgr.GetCreatureName(Entry);
+	CreatureProto * pTemplate = CreatureProtoStorage.LookupEntry(Entry);
+	CreatureInfo * pCreatureInfo = CreatureNameStorage.LookupEntry(Entry);
 	if(!pTemplate || !pCreatureInfo)
 	{
 		RedSystemMessage(m_session, "Invalid creature spawn template: %u", Entry);
@@ -2012,7 +2012,7 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession * m_sess
 	}
 
 	trans->SetPeriod(np);
-	BlueSystemMessage(m_session, "Period of %s set to %u.", trans->GetInfo()->Name.c_str(), np);
+	BlueSystemMessage(m_session, "Period of %s set to %u.", trans->GetInfo()->Name, np);
 	return true;
 }
 
@@ -2023,7 +2023,7 @@ bool ChatHandler::HandleFormationLink1Command(const char* args, WorldSession * m
 	if(pCreature == 0) return true;
 
 	m_session->GetPlayer()->linkTarget = pCreature;
-	BlueSystemMessage(m_session, "Linkup \"master\" set to %s.", pCreature->GetCreatureName()->Name.c_str());
+	BlueSystemMessage(m_session, "Linkup \"master\" set to %s.", pCreature->GetCreatureName()->Name);
 	return true;
 }
 
@@ -2056,8 +2056,8 @@ bool ChatHandler::HandleFormationLink2Command(const char* args, WorldSession * m
 	sDatabase.Execute("INSERT INTO creature_formations VALUES(%u, %u, '%f', '%f')", 
 		slave->GetSQL_id(), slave->GetAIInterface()->m_formationLinkSqlId, ang, dist);
 
-	BlueSystemMessage(m_session, "%s linked up to %s with a distance of %f at %f radians.", slave->GetCreatureName()->Name.c_str(), 
-		((Creature*)m_session->GetPlayer()->linkTarget)->GetCreatureName()->Name.c_str(), dist, ang);
+	BlueSystemMessage(m_session, "%s linked up to %s with a distance of %f at %f radians.", slave->GetCreatureName()->Name, 
+		((Creature*)m_session->GetPlayer()->linkTarget)->GetCreatureName()->Name, dist, ang);
 
 	return true;
 }
@@ -2303,8 +2303,8 @@ bool ChatHandler::HandleCreatureSpawnCommand(const char *args, WorldSession *m_s
 	if(entry == 0)
 		return false;
 
-	CreatureProto * proto = objmgr.GetCreatureProto(entry);
-	CreatureInfo * info = objmgr.GetCreatureName(entry);
+	CreatureProto * proto = CreatureProtoStorage.LookupEntry(entry);
+	CreatureInfo * info = CreatureNameStorage.LookupEntry(entry);
 	if(proto == 0 || info == 0)
 	{
 		RedSystemMessage(m_session, "Invalid entry id.");
@@ -2342,7 +2342,7 @@ bool ChatHandler::HandleCreatureSpawnCommand(const char *args, WorldSession *m_s
 		x,
 		y)->CreatureSpawns.insert(sp);
 
-	BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", info->Name.c_str(), 
+	BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", info->Name, 
 		entry, sp->x, sp->y, sp->z, m_session->GetPlayer()->GetMapId());
 
 	// Save it to the database.
@@ -2523,20 +2523,19 @@ bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_se
 		return true;
 	}
 
-	ObjectMgr::ItemPrototypeMap::iterator itr = objmgr.BeginItemPrototype();
-	ObjectMgr::ItemPrototypeMap::iterator eitr = objmgr.EndItemPrototype();
+	StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
 
 	BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
 	uint32 t = getMSTime();
 	ItemPrototype * it;
 	uint32 count = 0;
-	for(; itr != eitr; ++itr)
+	while(!itr->AtEnd())
 	{
-		it = itr->second;
+		it = itr->Get();
 		if(FindXinYString(x, it->lowercase_name))
 		{
 			// Print out the name in a cool highlighted fashion
-			SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
+			SendHighlightedName(m_session, string(it->Name), it->lowercase_name, x, it->ItemId, true);
 			++count;
 			if(count == 25)
 			{
@@ -2544,7 +2543,11 @@ bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_se
 				break;
 			}
 		}
+		
+		if(!itr->Inc())
+			break;
 	}
+	itr->Destruct();
 
 	BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
 	return true;
@@ -2562,20 +2565,19 @@ bool ChatHandler::HandleLookupCreatureCommand(const char * args, WorldSession * 
 		return true;
 	}
 
-	ObjectMgr::CreatureNameMap::iterator itr = objmgr.BeginCreatureInfo();
-	ObjectMgr::CreatureNameMap::iterator eitr = objmgr.EndCreatureInfo();
+	StorageContainerIterator<CreatureInfo> * itr = CreatureNameStorage.MakeIterator();
 
 	GreenSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
 	uint32 t = getMSTime();
 	CreatureInfo * i;
 	uint32 count = 0;
-	for(; itr != eitr; ++itr)
+	while(!itr->AtEnd())
 	{
-		i = itr->second;
+		i = itr->Get();
 		if(FindXinYString(x, i->lowercase_name))
 		{
 			// Print out the name in a cool highlighted fashion
-			SendHighlightedName(m_session, i->Name, i->lowercase_name, x, i->Id, false);
+			SendHighlightedName(m_session, string(i->Name), i->lowercase_name, x, i->Id, false);
 
 			++count;
 			if(count == 25)
@@ -2584,7 +2586,10 @@ bool ChatHandler::HandleLookupCreatureCommand(const char * args, WorldSession * 
 				break;
 			}
 		}
+		if(!itr->Inc())
+			break;
 	}
+	itr->Destruct();
 
 	GreenSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
 	return true;

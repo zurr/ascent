@@ -675,6 +675,12 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath="..\..\src\game\ObjectStorage.cpp">
+		</File>
+		<File
+			RelativePath="..\..\src\game\ObjectStorage.h">
+		</File>
+		<File
 			RelativePath="..\..\src\game\StdAfx.cpp">
 			<FileConfiguration
 				Name="Debug|Win32">

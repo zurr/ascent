@@ -348,7 +348,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
 void WorldSession::BuildItemPushResult(WorldPacket *data, uint64 guid, uint32 type, uint32 count, uint32 itemid, uint32 randomprop, uint8 unk, uint32 unk2, uint32 unk3, uint32 count_have)
 {
-    ItemPrototype *proto = objmgr.GetItemPrototype(itemid);
+    ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(itemid);
     if(!proto) return;
 
     data->Initialize(SMSG_ITEM_PUSH_RESULT);

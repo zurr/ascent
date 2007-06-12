@@ -31,8 +31,8 @@ struct CreatureItem
 struct CreatureInfo
 {
 	uint32 Id;
-	std::string Name;
-	std::string SubName;
+	char * Name;
+	char * SubName;
 	uint32 Flags1;
 	uint32 Type;
 	uint32 Family;
@@ -40,11 +40,11 @@ struct CreatureInfo
 	uint32 Unknown1;
 	uint32 SpellDataID;
 	uint32 DisplayID;
-	uint8  Civilian;
-	uint8  Leader;
 	float unk2;
 	float unk3;
-	
+	uint8  Civilian;
+	uint8  Leader;
+
 	std::string lowercase_name;
 };
 
@@ -77,9 +77,8 @@ struct CreatureProto
 	uint32 Resistances[7];
 	float CombatReach;
 	float BoundingRadius;
-	set<uint32> start_auras;
-	list<AI_Spell*> spells;
-    uint32 boss;
+	char * aura_string;
+	uint32 boss;
 
 	/* AI Stuff */
 	bool m_canRangedAttack;
@@ -88,6 +87,9 @@ struct CreatureProto
 	uint32 m_fleeDuration;
 	bool m_canCallForHelp;
 	float m_callForHelpHealth;
+
+	set<uint32> start_auras;
+	list<AI_Spell*> spells;
 };
 
 struct Formation{

@@ -1134,7 +1134,7 @@ void Player::BuildEnumData( WorldPacket * p_data )
 		
 		if(result)
 		{
-			info = objmgr.GetCreatureName(result->Fetch()[0].GetUInt32());
+			info = CreatureNameStorage.LookupEntry(result->Fetch()[0].GetUInt32());
 			delete result;
 		}
 	}
@@ -4847,7 +4847,7 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 		if (iter->iItemsCount == 0)
 			continue;
 
-		ItemPrototype* itemProto =objmgr.GetItemPrototype(iter->item.itemid);
+		ItemPrototype* itemProto =ItemPrototypeStorage.LookupEntry(iter->item.itemid);
 		if (!itemProto || (itemProto->Class == ITEM_CLASS_QUEST && !HasQuestForItem(iter->item.itemid)))		   
 			continue;
 
@@ -7259,7 +7259,7 @@ void Player::CalcDamage()
 				
 				if(GetUInt32Value(PLAYER_AMMO_ID))
 				{
-					ItemPrototype * xproto=objmgr.GetItemPrototype(GetUInt32Value(PLAYER_AMMO_ID));
+					ItemPrototype * xproto=ItemPrototypeStorage.LookupEntry(GetUInt32Value(PLAYER_AMMO_ID));
 					if(xproto)
 					{
 						bonus+=((xproto->DamageMin[0]+xproto->DamageMax[0])*it->GetProto()->Delay)/2000.0;

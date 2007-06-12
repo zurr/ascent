@@ -177,7 +177,7 @@ void LootMgr::LoadLootTables(const char * szTableName,LootStore * LootTable)
 				//Omit items that are not in db to prevent future bugs
 				//uint32 itemid=(*itr2).itemid;
 				itemid = (*itr2).first;
-				proto=objmgr.GetItemPrototype(itemid);
+				proto=ItemPrototypeStorage.LookupEntry(itemid);
 				if(!proto)
 				{
 					list.items[ind].item.itemid=0;
@@ -224,7 +224,7 @@ void LootMgr::PushLoot(StoreLootList *list,Loot * loot)
 	for(uint32 x =0; x<list->count;x++)
 	if(list->items[x].item.itemid)// this check is needed until loot DB is fixed
 	{
-		ItemPrototype *itemproto = objmgr.GetItemPrototype(list->items[x].item.itemid);
+		ItemPrototype *itemproto = ItemPrototypeStorage.LookupEntry(list->items[x].item.itemid);
 		if(Rand(list->items[x].chance * sWorld.getRate(RATE_DROP)) )//|| itemproto->Class == ITEM_CLASS_QUEST)
 		{
 			for(i = 0; i < loot->items.size(); ++i)
@@ -323,7 +323,7 @@ void LootMgr::FillProfessionLoot(LootStore * store,Loot * loot,uint32 loot_id)
 	{
 		if(list->items[x].item.itemid)// this check is needed until loot DB is fixed
 		{
-//			ItemPrototype *itemproto = objmgr.GetItemPrototype(list->items[x].item.itemid);
+//			ItemPrototype *itemproto = ItemPrototypeStorage.LookupEntry(list->items[x].item.itemid);
 			if(Rand(list->items[x].chance))// || itemproto->Class == ITEM_CLASS_QUEST)
 			{
 				__LootItem itm;

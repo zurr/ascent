@@ -81,10 +81,10 @@ void WorldSession::HandleCreatureQueryOpcode( WorldPacket & recv_data )
 	}
 	else
 	{
-		ci = objmgr.GetCreatureName(entry);
+		ci = CreatureNameStorage.LookupEntry(entry);
 		if(ci == NULL)
 			return;
-		sLog.outDetail("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name.c_str());
+		sLog.outDetail("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name);
 
 		data << (uint32)entry;
 		data << ci->Name;
@@ -124,7 +124,7 @@ void WorldSession::HandleGameObjectQueryOpcode( WorldPacket & recv_data )
 
 	sLog.outDetail("WORLD: CMSG_GAMEOBJECT_QUERY '%u'", entryID);
 
-	goinfo = objmgr.GetGameObjectName_(entryID);
+	goinfo = GameObjectNameStorage.LookupEntry(entryID);
 	if(goinfo == 0)
 		return;
 
@@ -224,7 +224,7 @@ void WorldSession::HandlePageTextQueryOpcode( WorldPacket & recv_data )
 	ItemPage* page = NULL;
 	while(pageid)
 	{
-		page = objmgr.GetItemPage(pageid);
+		//page = ItemPageStorage.LookupEntry(pageid);
 		if(page == NULL) 
 			break;
 		data << pageid;
@@ -244,10 +244,10 @@ void WorldSession::HandleItemNameQueryOpcode( WorldPacket & recv_data )
 	uint32 itemid;
 	recv_data >> itemid;
 	reply << itemid;
-	ItemPrototype *proto=objmgr.GetItemPrototype(itemid);
+	ItemPrototype *proto=ItemPrototypeStorage.LookupEntry(itemid);
 	if(!proto)
 		reply << "Unknown Item";
 	else
-		reply << proto->Name1;
+		reply << proto->Name;
 	SendPacket(&reply);	
 }

@@ -237,9 +237,6 @@ public:
 	typedef HM_NAMESPACE::hash_map<uint32, CorpseData*> CorpseCollectorMap;
 	typedef HM_NAMESPACE::hash_map<uint32, GraveyardTeleport*> GraveyardMap;
 	typedef HM_NAMESPACE::hash_map<uint32, PlayerInfo*> PlayerNameMap;
-	typedef HM_NAMESPACE::hash_map<uint32, CreatureInfo*> CreatureNameMap;
-	typedef HM_NAMESPACE::hash_map<uint32, GameObjectInfo*> GameObjectNameMap;
-	typedef HM_NAMESPACE::hash_map<uint32, ItemPrototype*> ItemPrototypeMap;
 	typedef HM_NAMESPACE::hash_map<uint32, PlayerCreateInfo*> PlayerCreateInfoMap;
 	typedef HM_NAMESPACE::hash_map<uint32, Guild*> GuildMap;
 	typedef HM_NAMESPACE::hash_map<uint32, TeleportCoords*> TeleportMap;
@@ -247,7 +244,6 @@ public:
 	typedef HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*> VendorMap;
 	typedef HM_NAMESPACE::hash_map<uint32, PvPArea*> PvPAreaMap;
 	typedef HM_NAMESPACE::hash_map<uint32, FishingZoneEntry*> FishingZoneMap;
-	typedef HM_NAMESPACE::hash_map<uint32, ItemPage*> ItemPageMap;
 	typedef HM_NAMESPACE::hash_map<uint32, SpellExtraInfo*> SpellExtraInfoMap;
 	typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
 	
@@ -299,12 +295,6 @@ public:
 	PlayerInfo *GetPlayerInfo(uint32 guid );
 	PlayerInfo *GetPlayerInfoByName(std::string & name);
 	void DeletePlayerInfo(uint32 guid);
-
-	// creature names
-	CreatureInfo *GetCreatureName( uint32 id );
-
-	// item prototypes
-	ItemPrototype* GetItemPrototype(uint32 id);
 	PlayerCreateInfo* GetPlayerCreateInfo(uint8 race, uint8 class_) const;
 
 	// DK:Guild
@@ -345,9 +335,6 @@ public:
 	void remGMTicket(uint64 guid);
 	GM_Ticket* GetGMTicket(uint64 guid);
 
-	//GameObject names
-	GameObjectInfo *GetGameObjectName_(uint32 ID);
-
 	skilllinespell* GetSpellSkill(uint32 id);
 
 	//PVP
@@ -371,14 +358,7 @@ public:
 
 	std::list<ItemPrototype*>* GetListForItemSet(uint32 setid);
 
-  
-	inline ItemPage* GetItemPage(uint32 id)
-	{
-		ItemPageMap::iterator itr = mItemPages.find(id);
-		return (itr != mItemPages.end()) ? itr->second : NULL;
-	}
-
-	Creature * GetCreatureBySqlId(uint32 Sql_Id);
+  	Creature * GetCreatureBySqlId(uint32 Sql_Id);
 	void SetCreatureBySqlId(uint32 Sql_Id, Creature * pCreature);
 
 	Pet * CreatePet();
@@ -399,10 +379,6 @@ public:
 
 	void LoadQuests();
 	void LoadPlayersInfo();
-	void LoadCreatureNames();
-	void LoadGameObjectNames();
-	void SaveCreatureNames();
-	void LoadItemPrototypes();
 	void LoadPlayerCreateInfo();
 	void LoadGuilds();
 	Corpse* LoadCorpse(uint32 guid);
@@ -419,7 +395,6 @@ public:
 	void LoadTotemSpells();
 	void LoadAIThreatToSpellId();
 	void LoadFishingZones();
-	void LoadItemPages();
 	void LoadReputationModifierTable(const char * tablename, HM_NAMESPACE::hash_map<uint32, ReputationModifier*> * dmap);
 	void LoadReputationModifiers();
 	ReputationModifier * GetReputationModifier(uint32 entry_id, uint32 faction_id);
@@ -435,15 +410,10 @@ public:
 	bool AddTrainerSpell(uint32 entry, SpellEntry *pSpell);
 	void LoadTrainers();
 	Trainer* GetTrainer(uint32 Entry);
-	void LoadCreatureProtos();
-	
+
+	void LoadExtraItemStuff();
 	void CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, uint32 TextID, Player* Plr); 
 	void ReloadTables();
-
-	void ReloadCreatureNames();
-	void ReloadItems();
-	void ReloadQuests();
-	void ReloadGameObjects();
 
 	LevelInfo * GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
 	void GenerateLevelUpInfo();
@@ -452,7 +422,6 @@ public:
 	uint32 GetPetSpellCooldown(uint32 SpellId);
 	void LoadPetSpellCooldowns();
 	void LoadSpellFixes();
-	CreatureProto*GetCreatureProto(uint32);
 	WayPointMap * GetWayPointMap(uint32 spawnid);
 	void LoadSpellOverride();
 
@@ -482,11 +451,6 @@ public:
 	Charter * GetCharterByName(string &charter_name);
 	Charter * GetCharterByItemGuid(uint64 guid);
 
-	inline ItemPrototypeMap::iterator BeginItemPrototype() { return mItemPrototypes.begin(); }
-	inline ItemPrototypeMap::iterator EndItemPrototype() { return mItemPrototypes.end(); }
-
-	inline CreatureNameMap::iterator BeginCreatureInfo() { return mCreatureNames.begin(); }
-	inline CreatureNameMap::iterator EndCreatureInfo() { return mCreatureNames.end(); }
 
 	typedef HM_NAMESPACE::hash_map<uint32, NpcMonsterSay*> MonsterSayMap;
 	MonsterSayMap mMonsterSays[NUM_MONSTER_SAY_EVENTS];
@@ -513,7 +477,6 @@ protected:
 
 	Transporter ** m_transporters;
 	uint32 TransportersCount;
-	HM_NAMESPACE::hash_map<uint32,CreatureProto*> m_creatureproto;
 	HM_NAMESPACE::hash_map<uint32,PlayerInfo*> m_playersinfo;
 	
 	HM_NAMESPACE::hash_map<uint32,WayPointMap*> m_waypoints;//stored by spawnid
@@ -529,15 +492,6 @@ protected:
 
 	// Group List
 	GroupSet			mGroupSet;
-
-	// Map of all item types in the game
-	ItemPrototypeMap	mItemPrototypes;
-
-	// map entry to a creature name
-	CreatureNameMap	 mCreatureNames;
-
-	//Map entry to a gameobject query name
-	GameObjectNameMap   mGameObjectNames;
 
 	// Map of all starting infos needed for player creation
 	PlayerCreateInfoMap mPlayerCreateInfo;
@@ -565,7 +519,6 @@ protected:
 
 	// cached fishing zones
 	FishingZoneMap		 mFishingZones;
-	ItemPageMap			mItemPages;
 
 	//Corpse Collector
 	CorpseCollectorMap mCorpseCollector;

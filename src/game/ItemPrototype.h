@@ -364,10 +364,7 @@ struct ItemPrototype
 	uint32 Class;
 	uint32 SubClass;
 	uint32 unknown_bc;
-	std::string Name1;
-	std::string Name2;
-	std::string Name3;
-	std::string Name4;
+	char * Name;
 	uint32 DisplayInfoID;
 	uint32 Quality;
 	uint32 Flags;
@@ -410,7 +407,7 @@ struct ItemPrototype
 	uint32 SpellCategory[5];
 	uint32 SpellCategoryCooldown[5];
 	uint32 Bonding;
-	std::string Description;
+	char * Description;
 	uint32 PageId;
 	uint32 PageLanguage;
 	uint32 PageMaterial;

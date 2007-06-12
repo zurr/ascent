@@ -218,10 +218,10 @@ bool ChatHandler::HandleAddInvItemCommand(const char *args, WorldSession *m_sess
 	Player *chr = getSelectedChar(m_session);
 	if (chr == NULL) return true;
 	
-	ItemPrototype* it = objmgr.GetItemPrototype(itemid);
+	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 	if(it)
 	{
-		sGMLog.writefromsession(m_session, "used add item command, item id %u [%s] to %s", it->ItemId, it->Name1.c_str(), chr->GetName());
+		sGMLog.writefromsession(m_session, "used add item command, item id %u [%s] to %s", it->ItemId, it->Name, chr->GetName());
 		Item *item;
 		item = objmgr.CreateItem( itemid, chr);
 		item->SetUInt32Value(ITEM_FIELD_STACK_COUNT, ((count > it->MaxCount) ? it->MaxCount : count));
@@ -234,9 +234,9 @@ bool ChatHandler::HandleAddInvItemCommand(const char *args, WorldSession *m_sess
 		}
 
 		char messagetext[128];
-		sprintf(messagetext, "Adding item %d (%s) to %s's inventory.",it->ItemId,it->Name1.c_str(), chr->GetName());
+		sprintf(messagetext, "Adding item %d (%s) to %s's inventory.",it->ItemId,it->Name, chr->GetName());
 		SystemMessage(m_session, messagetext);
-		sprintf(messagetext, "%s added item %d (%s) to your inventory.", m_session->GetPlayer()->GetName(), itemid, it->Name1.c_str());
+		sprintf(messagetext, "%s added item %d (%s) to your inventory.", m_session->GetPlayer()->GetName(), itemid, it->Name);
 		SystemMessageToPlr(chr,  messagetext);
 
 		return true;

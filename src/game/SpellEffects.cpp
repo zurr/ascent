@@ -666,12 +666,12 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				u_caster->summonPet = NULL;
 			}			
 			
-			CreatureInfo *ci = objmgr.GetCreatureName(entry);
+			CreatureInfo *ci = CreatureNameStorage.LookupEntry(entry);
 			if(ci)
 			{
 				Creature* NewSummon = m_caster->GetMapMgr()->CreateCreature();
 				// Create
-				NewSummon->Create( ci->Name.c_str(), m_caster->GetMapId(), 
+				NewSummon->Create( ci->Name, m_caster->GetMapId(), 
 					m_caster->GetPositionX()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionY()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionZ(), m_caster->GetOrientation());
 
 				NewSummon->SetInstanceID(m_caster->GetInstanceID());
@@ -1269,7 +1269,7 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 	for(int j=0; j<3; j++) // now create the Items
 	{
 		ItemPrototype *m_itemProto;
-		m_itemProto = objmgr.GetItemPrototype( m_spellInfo->EffectSpellGroupRelation[j] );
+		m_itemProto = ItemPrototypeStorage.LookupEntry( m_spellInfo->EffectSpellGroupRelation[j] );
 		if (!m_itemProto)
 			 continue;
 
@@ -1572,13 +1572,13 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 		u_caster->summonPet = NULL;
 	}					
   
-	CreatureInfo *ci = objmgr.GetCreatureName(m_spellInfo->EffectMiscValue[i]);
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(ci)
 	{
 		Creature* NewSummon = m_caster->GetMapMgr()->CreateCreature();
 		NewSummon->SetInstanceID(m_caster->GetInstanceID());
 		// Create
-		NewSummon->Create( ci->Name.c_str(), m_caster->GetMapId(), 
+		NewSummon->Create( ci->Name, m_caster->GetMapId(), 
 			m_caster->GetPositionX()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionY()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionZ(), m_caster->GetOrientation());
 
 		// Fields
@@ -1779,7 +1779,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 			}
 			else if(gameObjTarget)
 			{
-				GameObjectInfo *info = objmgr.GetGameObjectName_(gameObjTarget->GetEntry());
+				GameObjectInfo *info = GameObjectNameStorage.LookupEntry(gameObjTarget->GetEntry());
 				if(!info || gameObjTarget->GetUInt32Value(GAMEOBJECT_STATE) == 1) return;
 				Lock *lock = sLockStore.LookupEntry( info->SpellFocus );
 				if(!lock) return;
@@ -2146,8 +2146,8 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 	//They follow you and attack your target but you cannot command them
 	//number of creatures is actualy dmg (the usual formula), sometimes =3 sometimes =1
 	uint32 cr_entry=m_spellInfo->EffectMiscValue[i];
-	CreatureProto * proto = objmgr.GetCreatureProto(cr_entry);
-	CreatureInfo * info = objmgr.GetCreatureName(cr_entry);
+	CreatureProto * proto = CreatureProtoStorage.LookupEntry(cr_entry);
+	CreatureInfo * info = CreatureNameStorage.LookupEntry(cr_entry);
 	if(proto == 0 || info == 0)
 	{
 		sLog.outDetail("Missing summon creature template %u",cr_entry);
@@ -2404,7 +2404,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
 	{//portal, lightwell
 		posx=px;
 		posy=py;		
-		GameObjectInfo * goI = objmgr.getSingleton().GetGameObjectName_(entry);
+		GameObjectInfo * goI = GameObjectNameStorage.LookupEntry(entry);
 		if(!goI)
 		{
 			if(p_caster)
@@ -2531,7 +2531,7 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
 	if(old)
 		old->Dismiss(false);		
 	
-	CreatureInfo *ci = objmgr.GetCreatureName(m_spellInfo->EffectMiscValue[i]);
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(ci)
 	{
 		Pet *summon = objmgr.CreatePet();
@@ -2696,7 +2696,7 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
 	if(!p_caster)
 		return;
 	
-	CreatureInfo *ci = objmgr.GetCreatureName(14495);   // 14501
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(14495);   // 14501
 	if( ci)
 	{
 		Creature* InvisibleSummon = p_caster->GetMapMgr()->CreateCreature();
@@ -2713,7 +2713,7 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
 		if(z == 0)
 			z = m_targets.m_srcZ;
 
-		InvisibleSummon->Create(ci->Name.c_str(), m_caster->GetMapId(), 
+		InvisibleSummon->Create(ci->Name, m_caster->GetMapId(), 
 			x, y, z, m_caster->GetOrientation());
 
 		// Fields
@@ -2768,13 +2768,13 @@ void Spell::SpellEffectSummonPossessed(uint32 i) // eye of kilrog
 	*/
 
 
-	CreatureInfo *ci = objmgr.GetCreatureName(m_spellInfo->EffectMiscValue[i]);
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if( ci)
 	{
 		Creature* NewSummon = m_caster->GetMapMgr()->CreateCreature();
 		// Create
 		NewSummon->SetInstanceID(m_caster->GetInstanceID());
-		NewSummon->Create( ci->Name.c_str(), m_caster->GetMapId(), 
+		NewSummon->Create( ci->Name, m_caster->GetMapId(), 
 			m_caster->GetPositionX()+(3*(cos((M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionY()+(3*(cos((M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionZ(), m_caster->GetOrientation());
 
 		// Fields
@@ -3167,7 +3167,7 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 
 	uint32 entry = m_spellInfo->EffectMiscValue[i];
 
-	CreatureInfo* ci = objmgr.GetCreatureName(entry);
+	CreatureInfo* ci = CreatureNameStorage.LookupEntry(entry);
 	if(!ci) return;
 
 	// Obtain the spell we will be casting.
@@ -3180,7 +3180,7 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 	pTotem->SetTotemOwner(p_caster);
 	pTotem->SetTotemSlot(slot);
 
-	pTotem->Create(ci->Name.c_str(), p_caster->GetMapId(), p_caster->GetPositionX(), p_caster->GetPositionY(),
+	pTotem->Create(ci->Name, p_caster->GetMapId(), p_caster->GetPositionX(), p_caster->GetPositionY(),
 		p_caster->GetPositionZ(), p_caster->GetOrientation());
 
 	// Set up the creature.
@@ -3397,13 +3397,13 @@ void Spell::SpellEffectSummonCritter(uint32 i)
 		return;
 	}					
   
-	CreatureInfo *ci = objmgr.GetCreatureName(m_spellInfo->EffectMiscValue[i]);
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(ci)
 	{
 		Creature* NewSummon = m_caster->GetMapMgr()->CreateCreature();
 		// Create
 		NewSummon->SetInstanceID(m_caster->GetInstanceID());
-		NewSummon->Create( ci->Name.c_str(), m_caster->GetMapId(), 
+		NewSummon->Create( ci->Name, m_caster->GetMapId(), 
 			m_caster->GetPositionX()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionY()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionZ(), m_caster->GetOrientation());
 
 		// Fields
@@ -3673,7 +3673,7 @@ void Spell::SpellEffectSummonDemon(uint32 i)
 		pPet->Dismiss(false);
 	}
    
-	CreatureInfo *ci = objmgr.GetCreatureName(m_spellInfo->EffectMiscValue[i]);
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(ci)
 	{
 		pPet = objmgr.CreatePet();

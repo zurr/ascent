@@ -329,7 +329,7 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
 			Creature * p = static_cast<Creature*>(pUnit);
 			if(p->GetCreatureName())
 			{
-				name = p->GetCreatureName()->Name.c_str();
+				name = p->GetCreatureName()->Name;
 				namelen = strlen(name) + 1;
 			}
 			else

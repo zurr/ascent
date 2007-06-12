@@ -70,7 +70,7 @@ void Item::Create( uint32 itemid, Player *owner )
 	SetUInt64Value( ITEM_FIELD_CONTAINED, owner->GetGUID() );
 	SetUInt32Value( ITEM_FIELD_STACK_COUNT, 1 );
 
-	m_itemProto = objmgr.GetItemPrototype( itemid );
+	m_itemProto = ItemPrototypeStorage.LookupEntry( itemid );
 	ASSERT(m_itemProto);
 	 
 	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES , m_itemProto->SpellCharges[0] );
@@ -93,7 +93,7 @@ void Item::Create( uint32 itemid, Player *owner )
 void Item::LoadFromDB(	Field *fields, Player * plr, bool light)
 {
 	uint32 itemid=fields[2].GetUInt32();
-	m_itemProto = objmgr.GetItemPrototype( itemid );
+	m_itemProto = ItemPrototypeStorage.LookupEntry( itemid );
 	ASSERT(m_itemProto);
 	
 	if(m_itemProto->LockId > 1)
@@ -389,7 +389,7 @@ uint32 GetBuyPriceForItem(ItemPrototype *proto, uint32 count, uint32 vendorcount
 
 uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 {
-	if(ItemPrototype *proto = objmgr.GetItemPrototype(itemid))
+	if(ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(itemid))
 		return GetSellPriceForItem(proto, count);
 	else
 		return 1;
@@ -397,7 +397,7 @@ uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 
 uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, uint32 vendorcount)
 {
-	if(ItemPrototype *proto = objmgr.GetItemPrototype(itemid))
+	if(ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(itemid))
 		return GetBuyPriceForItem(proto, count, vendorcount);
 	else
 		return 1;

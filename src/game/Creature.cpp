@@ -376,7 +376,7 @@ void Creature::AddToWorld()
 		_setFaction();
 
 	if(creature_info == 0)
-		creature_info = objmgr.GetCreatureName(GetEntry());
+		creature_info = CreatureNameStorage.LookupEntry(GetEntry());
 
 	if(creature_info == 0) return;
 	
@@ -682,10 +682,10 @@ WayPoint * Creature::CreateWaypointStruct()
 bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 {
 	m_spawn = spawn;
-	proto = objmgr.GetCreatureProto(spawn->entry);
+	proto = CreatureProtoStorage.LookupEntry(spawn->entry);
 	if(!proto)
 		return false;
-	creature_info = objmgr.GetCreatureName(spawn->entry);
+	creature_info = CreatureNameStorage.LookupEntry(spawn->entry);
 	if(!creature_info)
 		return false;
 	
@@ -864,7 +864,7 @@ void Creature::Load(CreatureProto * proto_, float x, float y, float z)
 {
 	proto = proto_;
 
-	creature_info = objmgr.GetCreatureName(proto->Id);
+	creature_info = CreatureNameStorage.LookupEntry(proto->Id);
 	if(!creature_info)
 		return;
 

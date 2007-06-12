@@ -1417,7 +1417,7 @@ void Battleground::SpawnSpiritGuide(float x, float y, float z, float o, uint32 h
 	if(horde > 1)
 		horde = 1;
 
-	CreatureInfo * pInfo = objmgr.GetCreatureName(13116 + horde);
+	CreatureInfo * pInfo = CreatureNameStorage.LookupEntry(13116 + horde);
 	if(pInfo == 0)
 	{
 		return;
@@ -1425,7 +1425,7 @@ void Battleground::SpawnSpiritGuide(float x, float y, float z, float o, uint32 h
 
 	Creature * pCreature = m_MapMgr->CreateCreature();
 	
-	pCreature->Create(pInfo->Name.c_str(), GetMapId(), x, y, z, o);
+	pCreature->Create(pInfo->Name, GetMapId(), x, y, z, o);
 
 	pCreature->SetInstanceID(GetInstanceID());
 	pCreature->SetUInt32Value(OBJECT_FIELD_ENTRY, 13116 + horde);

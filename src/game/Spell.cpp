@@ -1817,7 +1817,7 @@ void Spell::SendSpellStart()
 			}break;
 		default:
 			{
-				ip = objmgr.GetItemPrototype(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+				ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
 			}break;
 		}
 		
@@ -1913,7 +1913,7 @@ void Spell::SendSpellGo()
 			}break;
 		default:
 			{
-				ip = objmgr.GetItemPrototype(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+				ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
 				// removing taken care of in RemoveItems()
 			}break;
 		}
@@ -2689,7 +2689,7 @@ int8 Spell::CanCast(bool rangetolerate)
 					p_caster->GetPositionZ(),(*itr),maxr*maxr))
 					continue;
 				GameObjectInfo *info = ((GameObject*)(*itr))->GetInfo();
-			//	objmgr.GetGameObjectName_((*itr)->GetEntry());
+			//	GameObjectNameStorage.LookupEntry((*itr)->GetEntry());
 				if(!info)
 					continue;
 				if(info->SpellFocus == m_spellInfo->RequiresSpellFocus)
@@ -3038,7 +3038,7 @@ void Spell::CreateItem(uint32 itemId)
 		return;
 
 	 ItemPrototype *m_itemProto;
-	 m_itemProto = objmgr.GetItemPrototype(itemId);
+	 m_itemProto = ItemPrototypeStorage.LookupEntry(itemId);
 	 if (!m_itemProto)
 		 return;
 

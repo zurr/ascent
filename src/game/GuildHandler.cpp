@@ -933,7 +933,7 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 		return;
 	}
 
-	ItemPrototype * ip = objmgr.GetItemPrototype(ITEM_ENTRY_GUILD_CHARTER);
+	ItemPrototype * ip = ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER);
 	assert(ip);
 	SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
 	if(res.Result == 0)
@@ -942,7 +942,7 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 		return;
 	}
 
-	if(error = _player->GetItemInterface()->CanReceiveItem(objmgr.GetItemPrototype(ITEM_ENTRY_GUILD_CHARTER),1))
+	if(error = _player->GetItemInterface()->CanReceiveItem(ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER),1))
     {
         _player->GetItemInterface()->BuildInventoryChangeError(NULL,NULL,error);
     }

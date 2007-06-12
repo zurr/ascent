@@ -400,6 +400,9 @@
 		<File
 			RelativePath="..\..\src\shared\Common.h">
 		</File>
+		<File
+			RelativePath="..\..\src\shared\Storage.h">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

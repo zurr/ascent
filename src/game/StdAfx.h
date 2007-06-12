@@ -129,4 +129,7 @@
 #include "../scriptengine/ScriptEngine.h"
 #include "../scriptengine/ScriptFunctions.h"
 
+#include "../shared/Storage.h"
+#include "ObjectStorage.h"
+
 #endif

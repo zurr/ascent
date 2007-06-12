@@ -1728,11 +1728,11 @@ void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 	const char *UnitName = "";
 	CreatureInfo *ci;
 
-	ci = objmgr.GetCreatureName(GetEntry());
+	ci = CreatureNameStorage.LookupEntry(GetEntry());
 	if(!ci)
 		return;
 
-	UnitName = ci->Name.c_str();
+	UnitName = ci->Name;
 	UnitNameLength = strlen((char*)UnitName) + 1;
 	MessageLength = strlen((char*)msg) + 1;
 

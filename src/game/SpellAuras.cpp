@@ -3303,7 +3303,7 @@ void Aura::SpellAuraModSpellHitChance(bool apply)
 void Aura::SpellAuraTransform(bool apply)
 {
 	uint32 displayId = 0;
-	CreatureInfo* ci = objmgr.GetCreatureName(mod->m_miscValue);
+	CreatureInfo* ci = CreatureNameStorage.LookupEntry(mod->m_miscValue);
 	if(ci)
 		displayId = ci->DisplayID;
 	if(m_target->IsPlayer() &&  static_cast<Player*>(m_target)->m_MountSpellId)
@@ -3866,7 +3866,7 @@ void Aura::SpellAuraMounted(bool apply)
  
 		SetPositive();
 		m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
-		CreatureInfo* ci = objmgr.GetCreatureName(mod->m_miscValue);
+		CreatureInfo* ci = CreatureNameStorage.LookupEntry(mod->m_miscValue);
 		if(!ci)
 			return;
 		uint32 displayId = ci->DisplayID;
@@ -4097,7 +4097,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
 				
 					uint32 itemid = GetSpellProto()->EffectSpellGroupRelation[mod->i];
 
-					ItemPrototype *proto = objmgr.GetItemPrototype(itemid);
+					ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(itemid);
 					if(pCaster->GetItemInterface()->CalculateFreeSlots(proto) > 0)
 					{
 						Item *item = objmgr.CreateItem(itemid,pCaster);
