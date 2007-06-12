@@ -43,7 +43,6 @@ enum TYPE {
 	TYPE_CORPSE		 = 128,
 	TYPE_AIGROUP		= 256,
 	TYPE_AREATRIGGER	= 512,
-	TYPE_UNUSED			= 1024,//used to signal invalid reference (object dealocated but someone is still using it)
 };
 
 enum TYPEID {
@@ -56,7 +55,8 @@ enum TYPEID {
 	TYPEID_DYNAMICOBJECT = 6,
 	TYPEID_CORPSE		= 7,
 	TYPEID_AIGROUP	   = 8,
-	TYPEID_AREATRIGGER   = 9
+	TYPEID_AREATRIGGER   = 9,
+	TYPEID_UNUSED			= 10,//used to signal invalid reference (object dealocated but someone is still using it)
 };
 
 enum OBJECT_UPDATE_TYPE {

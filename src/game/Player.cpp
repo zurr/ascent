@@ -374,7 +374,7 @@ Player::~Player ( )
 
 	for(ReputationMap::iterator itr = m_reputation.begin(); itr != m_reputation.end(); ++itr)
 		delete itr->second;
-	m_objectTypeId = TYPE_UNUSED;
+	m_objectTypeId = TYPEID_UNUSED;
 }
 
 inline uint32 GetSpellForLanguage(uint32 SkillID)
@@ -1432,15 +1432,15 @@ void Player::_SaveSpellCoolDownSecurity()
 			SpellCooldownMap.erase(it2);
 			continue;
 		}
-#ifdef _DEBUG
 		SpellEntry *spellInfo = sSpellStore.LookupEntry( SpellID );
-		if(ts + spellInfo->RecoveryTime>TimeStamp)
+		//this is only an aproximation to exact recovery time
+		if(ts + spellInfo->RecoveryTime<TimeStamp)//something went wrong, timestamp is bigger then max timestamp ?
 		{
-			sLog.outDebug("Warning : Something is not as should. Couldown time exceedes maximum\n");
-			continue;//something went wrong, timestamp is bigger then max timestamp ?
+			sLog.outDebug("Warning : Something is not as should. Couldown time exceedes maximum (diff=%u)\n",TimeStamp-(ts + spellInfo->RecoveryTime));
+			query << "(" << GetGUIDLow() << "," << SpellID << "," << ts + spellInfo->RecoveryTime << ")";
 		}
-#endif
-		query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
+		else
+			query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
 		hascooldowns=1;
 		++itr;
 	}
