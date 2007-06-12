@@ -453,6 +453,9 @@ public:
 
 	uint32 compression_threshold;
 
+	void	SetKickAFKPlayerTime(uint32 idletimer){m_KickAFKPlayers=idletimer;}
+	uint32	GetKickAFKPlayerTime(){return m_KickAFKPlayers;}
+
 protected:
 	// update Stuff, FIXME: use diff
 	time_t _UpdateGameTime()
@@ -510,6 +513,8 @@ protected:
 
 	QueueSet mQueuedSessions;
 	SessionSet mExtendedSessions;
+
+	uint32	m_KickAFKPlayers;//don't lag the server if you are useless anyway :P
 };
 
 #define sWorld World::getSingleton()

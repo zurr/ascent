@@ -264,12 +264,18 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			GetPlayer()->SetAFKReason(reason);
 			/* WorldPacket *data, WorldSession* session, uint32 type, uint32 language, const char *channelName, const char *message*/
 			if(GetPlayer()->HasFlag(PLAYER_FLAGS, 0x02))
+			{
 				GetPlayer()->RemoveFlag(PLAYER_FLAGS, 0x02);
+				if(sWorld.GetKickAFKPlayerTime())
+					sEventMgr.RemoveEvents(GetPlayer(),EVENT_PLAYER_SOFT_DISCONNECT);
+			}
 			else
 			{
 				GetPlayer()->SetFlag(PLAYER_FLAGS, 0x02);
 				data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(),_player->GetGUID());
 				GetPlayer()->SendMessageToSet(data, false);
+				if(sWorld.GetKickAFKPlayerTime())
+					sEventMgr.AddEvent(GetPlayer(),&Player::SoftDisconnect,EVENT_PLAYER_SOFT_DISCONNECT,sWorld.GetKickAFKPlayerTime(),1);
 				delete data;
 			}			
 		} break;

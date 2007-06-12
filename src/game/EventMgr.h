@@ -168,6 +168,7 @@ enum EventTypes
 	EVENT_SUMMON_EXPIRE,		//Zack 2007 05 28: similar to pet expire but we can have multiple guardians
 	EVENT_MUTE_PLAYER,			//Zack 2007 06 05: player gains his voice back
 	EVENT_PLAYER_FORECED_RESURECT,		//Zack 2007 06 08: After player not pushing release spirit for 6 minutes while dead
+	EVENT_PLAYER_SOFT_DISCONNECT,		//Zack 2007 06 12: Kick AFK players to not eat resources
 
 };
 

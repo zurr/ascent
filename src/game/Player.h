@@ -922,6 +922,7 @@ public:
 	void _EventCharmAttack();
 	void _Kick();
 	void Kick(uint32 delay = 0);
+	void SoftDisconnect();
 	uint32 m_KickDelay;
 	Creature * m_CurrentCharm;
 	Transporter * m_CurrentTransporter;

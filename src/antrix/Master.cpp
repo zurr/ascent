@@ -183,6 +183,7 @@ bool Master::Run()
 	sWorld.SetMotd(Config.MainConfig.GetStringDefault("Motd", "Antrix Default MOTD").c_str());
 	sWorld.SetUpdateDistance( Config.MainConfig.GetFloatDefault("PlrUpdateDistance", 79.1f) );
 	sWorld.mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Network.QueueUpdateInterval", 5000);
+	sWorld.SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("KickAFKPlayers", 0));//kick players if AFK for a while.Disabled by default
 
 	// Initialize Opcode Table
 	WorldSession::InitPacketHandlerTable();

@@ -1432,15 +1432,7 @@ void Player::_SaveSpellCoolDownSecurity()
 			SpellCooldownMap.erase(it2);
 			continue;
 		}
-		SpellEntry *spellInfo = sSpellStore.LookupEntry( SpellID );
-		//this is only an aproximation to exact recovery time
-		if(ts + spellInfo->RecoveryTime<TimeStamp)//something went wrong, timestamp is bigger then max timestamp ?
-		{
-			sLog.outDebug("Warning : Something is not as should. Couldown time exceedes maximum (diff=%u)\n",TimeStamp-(ts + spellInfo->RecoveryTime));
-			query << "(" << GetGUIDLow() << "," << SpellID << "," << ts + spellInfo->RecoveryTime << ")";
-		}
-		else
-			query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
+		query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
 		hascooldowns=1;
 		++itr;
 	}
@@ -1591,15 +1583,18 @@ void Player::_LoadSpellCoolDownSecurity()
 			uint32 SpellID			  = fields[1].GetUInt32();
 			uint32 Timestamp			= fields[2].GetUInt32();
 			uint32 DiffTimestamp		= Timestamp - now();
+			SpellEntry		*spellInfo = sSpellStore.LookupEntry( SpellID );
 			
-			//if timestamp overflow or diff time is larger than 7 days
-			if (now() > Timestamp || (now() < Timestamp && DiffTimestamp > Timestamp)) 
-			{
-				sDatabase.WaitExecute( "DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u AND SpellID = %u", GetGUIDLow(), SpellID );
-			}
-			else // only add spells to list that still have cooldown
+			if (now() + spellInfo->RecoveryTime > Timestamp && // cooldown did not expired somehow (not taking into care cooldown modifiers!)
+				now() < Timestamp + spellInfo->RecoveryTime )  // cooldown does not starts in future (not taking into care cooldown modifiers!)
 			{
 				AddCooldown(SpellID,DiffTimestamp);
+			}
+//			if (now() > Timestamp || (now() < Timestamp && DiffTimestamp > Timestamp)) 
+			else // only add spells to list that still have cooldown
+			{
+				//if timestamp overflow or diff time is larger than 7 days
+				sDatabase.WaitExecute( "DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u AND SpellID = %u", GetGUIDLow(), SpellID );
 			}
 		}
 		while( result->NextRow() );
@@ -7394,4 +7389,10 @@ void Player::removeSoulStone()
 	this->SoulStone = this->SoulStoneReciever = 0; //just incase
 }
 
+void Player::SoftDisconnect()
+{
+      sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
+      GetSession()->LogoutPlayer(true);
+	  GetSession()->Disconnect();
+}
 
