@@ -2405,6 +2405,15 @@ int8 Spell::CanCast(bool rangetolerate)
 	 
 		if(target)
 		{
+			// disallow spell casting in sanctuary zones
+			if(p_caster && target->IsPlayer())
+			{
+				AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
+				AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)target)->GetAreaID());
+				if(atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
+					return SPELL_FAILED_NOT_HERE;
+			}
+
 			if(m_spellInfo->EffectApplyAuraName[0]==2)//mind control
 			if(m_spellInfo->EffectBasePoints[0])//got level req;
 				if(target->getLevel() > m_spellInfo->EffectBasePoints[0])
@@ -3492,6 +3501,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
 

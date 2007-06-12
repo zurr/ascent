@@ -825,6 +825,22 @@ void Player::_EventAttack(bool offhand)
 		return;
 	}
 
+	// disallow attacking players in sanctuary zones
+	if(pVictim->IsPlayer())
+	{
+		AreaTable * at = sAreaStore.LookupEntry(this->GetAreaID());
+		AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)pVictim)->GetAreaID());
+		if(at->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
+		{
+			if(m_AttackMsgTimer != 3)
+			{
+				m_session->OutPacket(SMSG_ATTACKSWING_CANT_ATTACK);
+				m_AttackMsgTimer = 3;
+			}
+			setAttackTimer(300, offhand);
+		}
+	}
+
 	if (!canReachWithAttack(pVictim))
 	{
 		if(m_AttackMsgTimer != 1)
@@ -7377,4 +7393,5 @@ void Player::removeSoulStone()
 	this->RemoveAura(sSoulStone);
 	this->SoulStone = this->SoulStoneReciever = 0; //just incase
 }
+
 
