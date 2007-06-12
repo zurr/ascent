@@ -369,7 +369,7 @@ void QuestMgr::BuildQuestComplete(Player*plr, Quest* qst)
 		xp = 0;
 	}else
 	{
-		xp = GenerateQuestXP(plr,qst);
+		xp = GenerateQuestXP(plr,qst) * sWorld.getRate(RATE_QUESTXP);
 		plr->GiveXP(xp, 0, false);
 	}
   
