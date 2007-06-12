@@ -46,11 +46,7 @@ public:
 
 	/** Returns an iterator currently referencing the start of the container
 	 */
-	StorageContainerIterator<T> * MakeIterator()
-	{
-		ArrayStorageIterator<T> * i = new ArrayStorageIterator<T>(this);
-		return i;
-	}
+	StorageContainerIterator<T> * MakeIterator();
 
 	/** Creates the array with specified maximum
 	 */
@@ -150,21 +146,17 @@ template<class T>
 class HashMapStorageContainer
 {
 public:
-	HM_NAMESPACE::hash_map<uint32, T*> _map;
+	typename HM_NAMESPACE::hash_map<uint32, T*> _map;
 
 	/** Returns an iterator currently referencing the start of the container
 	 */
-	StorageContainerIterator<T> * MakeIterator()
-	{
-		HashMapStorageIterator<T> * i = new HashMapStorageIterator<T>(this);
-		return i;
-	}
+	StorageContainerIterator<T> * MakeIterator();
 
 	/** Frees the container array and all elements inside it
 	 */
 	~HashMapStorageContainer()
 	{
-		for(HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.begin(); itr != _map.end(); ++itr)
+		for(typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.begin(); itr != _map.end(); ++itr)
 			delete itr->second;
 	}
 
@@ -196,7 +188,7 @@ public:
 	 */
 	bool DeallocateEntry(uint32 Entry)
 	{
-		HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.find(Entry);
+		typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.find(Entry);
 		if(itr == _map.end())
 			return false;
 
@@ -208,7 +200,7 @@ public:
 
 	T * LookupEntry(uint32 Entry)
 	{
-		HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.find(Entry);
+		typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.find(Entry);
 		if(itr == _map.end())
 			return reinterpret_cast<T*>(0);
 		return itr->second;
@@ -219,7 +211,7 @@ public:
 	 */
 	bool SetEntry(uint32 Entry, T * Pointer)
 	{
-		HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.find(Entry);
+		typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.find(Entry);
 		if(itr == _map.end())
 		{
 			_map.insert( make_pair( Entry, Pointer ) );
@@ -242,105 +234,6 @@ public:
 	}
 };
 
-template<class T>
-class ArrayStorageIterator : public StorageContainerIterator<T>
-{
-	ArrayStorageContainer<T> * Source;
-	uint32 MyIndex;
-public:
-
-	/** Increments the iterator
-	 */
-	bool Inc()
-	{
-		GetNextElement();
-		if(Pointer != 0)
-			return true;
-		else
-			return false;
-	}
-
-	/** Frees the memory occupied by this iterator
-	 */
-	void Destruct()
-	{
-		delete this;
-	}
-
-	/** Constructor
-	 */
-	ArrayStorageIterator(ArrayStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S), MyIndex(0)
-	{
-		GetNextElement();
-	}
-
-	/** Sets the next element pointer, or to 0 if we reached the end
-	 */
-	void GetNextElement()
-	{
-		while(MyIndex < Source->_max)
-		{
-			if(Source->_array[MyIndex] != 0)
-			{
-				Set(Source->_array[MyIndex]);
-				++MyIndex;
-				return;
-			}
-			++MyIndex;
-		}
-		// reached the end of the array
-		Set(reinterpret_cast<T*>(0));
-	}
-};
-
-template<class T>
-class HashMapStorageIterator : public StorageContainerIterator<T>
-{
-	HashMapStorageContainer<T> * Source;
-	typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr;
-public:
-
-	/** Constructor
-	 */
-	HashMapStorageIterator(HashMapStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S)
-	{
-		itr = S->_map.begin();
-		if(itr == S->_map.end())
-			Set(0);
-		else
-			Set(itr->second);
-	}
-
-	/** Gets the next element, or if we reached the end sets it to 0
-	 */
-	void GetNextElement()
-	{
-		++itr;
-		if(itr == Source->_map.end())
-			Set(0);
-		else
-			Set(itr->second);
-	}
-
-	/** Returns true if we're not at the end, otherwise false.
-	 */
-	bool Inc()
-	{
-		GetNextElement();
-		if(Pointer != 0)
-			return true;
-		else
-			return false;
-	}
-
-	/** Frees the memory occupied by this iterator
-	 */
-	void Destruct()
-	{
-		delete this;
-	}
-};
-
 template<class T, class StorageType>
 class Storage
 {
@@ -357,10 +250,7 @@ public:
 
 	/** Makes an iterator, w00t!
 	 */
-	StorageContainerIterator<T> * MakeIterator()
-	{
-		return _storage.MakeIterator();
-	}
+	StorageContainerIterator<T> * MakeIterator();
 
 	/** Calls the storage container lookup function.
 	 */
@@ -371,7 +261,7 @@ public:
 
 	/** Reloads the content in this container.
 	 */
-    virtual void Reload() = 0;
+    	virtual void Reload() = 0;
 
 	/** Loads the container using the specified name and format string
 	 */
@@ -431,6 +321,121 @@ public:
 	}
 };
 
+
+template<class T>
+class ArrayStorageIterator : public StorageContainerIterator<T>
+{
+	ArrayStorageContainer<T> * Source;
+	uint32 MyIndex;
+public:
+
+	/** Increments the iterator
+	 */
+	bool Inc()
+	{
+		GetNextElement();
+		if(StorageContainerIterator<T>::Pointer != 0)
+			return true;
+		else
+			return false;
+	}
+
+	/** Frees the memory occupied by this iterator
+	 */
+	void Destruct()
+	{
+		delete this;
+	}
+
+	/** Constructor
+	 */
+	ArrayStorageIterator(ArrayStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S), MyIndex(0)
+	{
+		GetNextElement();
+	}
+
+	/** Sets the next element pointer, or to 0 if we reached the end
+	 */
+	void GetNextElement()
+	{
+		while(MyIndex < Source->_max)
+		{
+			if(Source->_array[MyIndex] != 0)
+			{
+				StorageContainerIterator<T>::Set(Source->_array[MyIndex]);
+				++MyIndex;
+				return;
+			}
+			++MyIndex;
+		}
+		// reached the end of the array
+		StorageContainerIterator<T>::Set(reinterpret_cast<T*>(0));
+	}
+};
+
+template<class T>
+class HashMapStorageIterator : public StorageContainerIterator<T>
+{
+	HashMapStorageContainer<T> * Source;
+	typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr;
+public:
+
+	/** Constructor
+	 */
+	HashMapStorageIterator(HashMapStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S)
+	{
+		itr = S->_map.begin();
+		if(itr == S->_map.end())
+			StorageContainerIterator<T>::Set(0);
+		else
+			StorageContainerIterator<T>::Set(itr->second);
+	}
+
+	/** Gets the next element, or if we reached the end sets it to 0
+	 */
+	void GetNextElement()
+	{
+		++itr;
+		if(itr == Source->_map.end())
+			StorageContainerIterator<T>::Set(0);
+		else
+			StorageContainerIterator<T>::Set(itr->second);
+	}
+
+	/** Returns true if we're not at the end, otherwise false.
+	 */
+	bool Inc()
+	{
+		GetNextElement();
+		if(StorageContainerIterator<T>::Pointer != 0)
+			return true;
+		else
+			return false;
+	}
+
+	/** Frees the memory occupied by this iterator
+	 */
+	void Destruct()
+	{
+		delete this;
+	}
+};
+
+template<class T>
+StorageContainerIterator<T> * HashMapStorageContainer<T>::MakeIterator()
+{
+	HashMapStorageIterator<T> * i = new HashMapStorageIterator<T>(this);
+	return i;
+}
+
+template<class T>
+StorageContainerIterator<T> * ArrayStorageContainer<T>::MakeIterator()
+{
+	ArrayStorageIterator<T> * i = new ArrayStorageIterator<T>(this);
+	return i;
+}
+
+
 template<class T, class StorageType>
 class SQLStorage : public Storage<T, StorageType>
 {
@@ -442,7 +447,7 @@ public:
 	 */
 	inline void LoadBlock(Field * fields, T * Allocated)
 	{
-		char * p = _formatString;
+		char * p = Storage<T, StorageType>::_formatString;
 		char * structpointer = (char*)Allocated;
 		Field * f = fields;
 		for(; *p != 0; ++p, ++f)
@@ -503,7 +508,7 @@ public:
 		if(!Max)
 			return;
 
-		_storage.Setup(Max);
+		Storage<T, StorageType>::_storage.Setup(Max);
 
 		int cols = strlen(FormatString);
 		result = sDatabase.Query("SELECT * FROM %s", IndexName);
@@ -521,7 +526,7 @@ public:
 		do 
 		{
 			Entry = fields[0].GetUInt32();
-			Allocated = _storage.AllocateEntry(Entry);
+			Allocated = Storage<T, StorageType>::_storage.AllocateEntry(Entry);
 			LoadBlock(fields, Allocated);
 		} while(result->NextRow());
 		delete result;
@@ -531,7 +536,7 @@ public:
 	 */
 	void Reload()
 	{
-		QueryResult * result = sDatabase.Query("SELECT MAX(entry) FROM %s", _indexName);
+		QueryResult * result = sDatabase.Query("SELECT MAX(entry) FROM %s", Storage<T, StorageType>::_indexName);
 		if(result == 0)
 			return;
 
@@ -540,15 +545,15 @@ public:
 		if(!Max)
 			return;
 
-		_storage.Resetup(Max);
+		Storage<T, StorageType>::_storage.Resetup(Max);
 
-		int cols = strlen(_formatString);
-		result = sDatabase.Query("SELECT * FROM %s", _indexName);
+		int cols = strlen(Storage<T, StorageType>::_formatString);
+		result = sDatabase.Query("SELECT * FROM %s", Storage<T, StorageType>::_indexName);
 		Field * fields = result->Fetch();
 
 		if(result->GetFieldCount() != cols)
 		{
-			printf("Invalid format in %s (%u/%u).", _indexName, cols, result->GetFieldCount());
+			printf("Invalid format in %s (%u/%u).", Storage<T, StorageType>::_indexName, cols, result->GetFieldCount());
 			delete result;
 			return;
 		}
@@ -558,7 +563,7 @@ public:
 		do 
 		{
 			Entry = fields[0].GetUInt32();
-			Allocated = _storage.LookupEntryAllocate(Entry);
+			Allocated = Storage<T, StorageType>::_storage.LookupEntryAllocate(Entry);
 			LoadBlock(fields, Allocated);
 		} while(result->NextRow());
 		delete result;

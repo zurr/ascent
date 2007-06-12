@@ -25,7 +25,8 @@ libshared_a_SOURCES = \
     crc32.h \
     TextLogger.h \
     TextLogger.cpp \
-    Threading/Mutex.cpp
+    Threading/Mutex.cpp \
+    Storage.h
 
 libauth_a_SOURCES = \
     Auth/BigNumber.cpp \
