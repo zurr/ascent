@@ -188,8 +188,6 @@ Unit::Unit()
 	pLastSpell = 0;
 	m_flyspeedModifier = 0;
 	bInvincible = false;
-	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
-	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
 }
 
 Unit::~Unit()

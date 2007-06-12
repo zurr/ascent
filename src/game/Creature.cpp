@@ -83,6 +83,8 @@ Creature::Creature(uint32 high, uint32 low)
 	spawnid = 0;
 	auctionHouse = 0;
 	has_waypoint_text = has_combat_text = false;
+	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
+	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
 }
 
 

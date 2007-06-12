@@ -320,6 +320,8 @@ Player::Player ( uint32 high, uint32 low )
 
 	polytarget				= 0;
 	chat_disabled_until		= 0;
+	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
+	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
 }
 
 
