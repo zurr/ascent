@@ -619,12 +619,18 @@ public:
 
 	int32 GetAP()
 	{
-		return	(GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS));
+		int32 temp=(GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS))*GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER);
+		if(temp>=0)
+			return temp;
+		return	0;
 	}
 		
 	int32 GetRAP()
 	{
-		return	(GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS));
+		int32 temp=(GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS))*GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER);
+		if(temp>=0)
+			return temp;
+		return	0;
 	}
 
 	void CastSpell(Unit* Target, uint32 SpellID, bool triggered);

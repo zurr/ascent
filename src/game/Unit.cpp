@@ -188,6 +188,8 @@ Unit::Unit()
 	pLastSpell = 0;
 	m_flyspeedModifier = 0;
 	bInvincible = false;
+	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
+	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
 }
 
 Unit::~Unit()
@@ -2049,7 +2051,7 @@ void Unit::CalcDamage()
 	float delta;
 	float mult;
 	
-		float ap_bonus = ((int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS))/14000.0;
+	float ap_bonus = GetAP()/14000.0;
 
 		float bonus = ap_bonus*GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
 	

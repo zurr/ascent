@@ -611,8 +611,7 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 
 			if(spellgroup)
 			{
-				int32 apall = pAttacker->GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+
-				(int32)pAttacker->GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
+				int32 apall = pAttacker->GetAP();
 
 				int32 apb=0;
 				SM_FIValue(pAttacker->SM_PAPBonus,&apb,spellgroup);
@@ -623,8 +622,7 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 		{
 			wspeed = (float)pAttacker->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
 
-			int32 apall = pAttacker->GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+
-				(int32)pAttacker->GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
+			int32 apall = pAttacker->GetAP();
 
 			ap += apall;			
 		}

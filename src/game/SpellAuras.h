@@ -466,6 +466,7 @@ public:
 	void SpellAuraNoPVPCredit(bool apply);
 	void SpellAuraModHealthRegInCombat(bool apply);
 	void SpellAuraPowerBurn(bool apply);
+	void SpellAuraModPAttackPower(bool apply);
 	void SpellAuraIncreaseDamageTypePCT(bool apply);
 	void SpellAuraIncreaseCricticalTypePCT(bool apply);
 	void SpellAuraIncreasePartySpeed(bool apply);

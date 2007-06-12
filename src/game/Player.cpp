@@ -7133,7 +7133,7 @@ void Player::CalcDamage()
 	float r;
 	int ss = GetShapeShift();
 /////////////////MAIN HAND
-		float ap_bonus = ((int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS))/14000.0;
+		float ap_bonus = GetAP()/14000.0;
 		delta = GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS)-GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG);
 		if(IsInFeralForm())
 		{

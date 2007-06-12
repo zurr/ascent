@@ -181,7 +181,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//missing = 163 //Apply Aura: Mod Crit Damage Bonus (Physical)
 		&Aura::SpellAuraNULL,//missing = 164 //used //test spell
 		&Aura::SpellAuraNULL,//missing = 165
-		&Aura::SpellAuraNULL,//missing = 166 //used //Apply Aura: Mod Attack Power % // http://www.thottbot.com/?sp=30803
+		&Aura::SpellAuraModPAttackPower,//missing = 166 //used //Apply Aura: Mod Attack Power % // http://www.thottbot.com/?sp=30803
 		&Aura::SpellAuraNULL,//missing = 167
 		&Aura::SpellAuraIncreaseDamageTypePCT,//missing = 168 //used //Apply Aura: Increase Damage % *type* //http://www.thottbot.com/?sp=24991
 		&Aura::SpellAuraIncreaseCricticalTypePCT,//missing = 169 //used //Apply Aura: Increase Critical % *type* //http://www.thottbot.com/?sp=24293
@@ -4546,21 +4546,22 @@ void Aura::SpellAuraAddPctMod(bool apply)
 	case SMT_DUMMY:
 		SendModifierLog(&m_target->SM_PDummy,val,AffectedGroups,mod->m_miscValue,true);
 		break;
-
+/*
+	//disabled until clarification : i think power SMT_ATTACK_POWER_BONUS=12 in 2.1 client 
 	case SMT_ATTACK_POWER_BONUS:
 		SendModifierLog(&m_target->SM_PAPBonus,val,AffectedGroups,mod->m_miscValue,true); 
 		break;
-
+*/
 	case SMT_COOLDOWN_DECREASE:
 		SendModifierLog(&m_target->SM_PCooldownTime, val, AffectedGroups,mod->m_miscValue,true);
 		break;
 
-	case SMT_BLOCK:
+/*	case SMT_BLOCK:
 	case SMT_TREAT_REDUCED:
 
 	case SMT_TRIGGER:
 	case SMT_TIME:
-		break;
+		break;*/
 	default://unknown Modifier type
 		sLog.outError(
 			"Unknown spell modifier type %u in spell %u.<<--report this line to the developer\n",
@@ -5317,6 +5318,21 @@ void Aura::SpellAuraWaterBreathing(bool apply)
 
 	   static_cast<Player*>(m_target)->m_bUnlimitedBreath=apply;
    }
+}
+
+void Aura::SpellAuraModPAttackPower(bool apply)
+{
+	//!!probably there is a flag or something that will signal if randeg or melee attack power !!! (still missing)
+	if(m_target->IsPlayer())
+	{
+		if(apply)
+		{
+			mod->m_amount /= 100; //value is in percent
+			m_target->ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,mod->m_amount);
+		}
+		else
+			m_target->ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,-mod->m_amount);
+	}
 }
 
 void Aura::SpellAuraIncreaseDamageTypePCT(bool apply)
