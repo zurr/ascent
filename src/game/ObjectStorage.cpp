@@ -1,18 +1,40 @@
+/****************************************************************************
+ *
+ * Object Storage Format Strings / Instantiation
+ * Copyright (c) 2007 Burlex, Antrix Team
+ *
+ * This file may be distributed under the terms of the Q Public License
+ * as defined by Trolltech ASA of Norway and appearing in the file
+ * COPYING included in the packaging of this file.
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
 #include "StdAfx.h"
 
+/** Table formats converted to strings
+ */
 const char * gItemPrototypeFormat						= "uuuusxxxuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuffuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuu";
-const char * gCreatureNameFormat							= "ussuuuuuuuffcc";
+const char * gCreatureNameFormat						= "ussuuuuuuuffcc";
 const char * gGameObjectNameFormat						= "uuusuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gCreatureProtoFormat						= "uuuuufuuffuffuuuuuuuuuuuuuuuuuuffsu";
 const char * gAreaTriggerFormat							= "uuuusffffuu";
-const char * gItemPageFormat								= "usu";
+const char * gItemPageFormat							= "usu";
 const char * gNpcTextFormat								= "u";
 const char * gQuestFormat								= "u";
 
+/** SQLStorage symbols
+ */
 SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >			ItemPrototypeStorage;
 SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >			CreatureNameStorage;
 SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >		GameObjectNameStorage;
 SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >			CreatureProtoStorage;
+SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >				AreaTriggerStorage;
+SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >					ItemPageStorage;
+SQLStorage<Quest, HashMapStorageContainer<Quest> >							QuestStorage;
+SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStoage;
 
 void LoadExtraCreatureProtoStuff()
 {
@@ -145,6 +167,20 @@ void ObjectMgr::LoadExtraItemStuff()
 	}
 
 	itr->Destruct();
+}
+
+#define make_task(storage, itype, storagetype, tablename, format) tl.AddTask( \
+	new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
+    (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format) )
+
+void FillTaskList(TaskList & tl)
+{
+	make_task(ItemPrototypeStorage, ItemPrototype, ArrayStorageContainer, "items", gItemPrototypeFormat);
+	make_task(CreatureNameStorage, CreatureInfo, HashMapStorageContainer, "creature_names", gCreatureNameFormat);
+	make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
+	make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
+	make_task(AreaTriggerStorage, AreaTrigger, HashMapStorageContainer, "areatriggers", gAreaTriggerFormat);
+	make_task(ItemPageStorage, ItemPage, HashMapStorageContainer, "itempages", gItemPageFormat);
 }
 
 void LoadTest()

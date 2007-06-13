@@ -253,9 +253,10 @@ void BasicTaskExecutor::run()
 }
 
 void LoadTest();
+void FillTaskList(TaskList & tl);
+
 void World::SetInitialWorldSettings()
 {
-	LoadTest();
 	sDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
    
 	reqGmClient = Config.MainConfig.GetBoolDefault("reqGmClient", false);
@@ -399,6 +400,7 @@ void World::SetInitialWorldSettings()
 	TaskList tl;
 	MAKE_TASK(ObjectMgr, LoadPlayerCreateInfo);
 	MAKE_TASK(ObjectMgr, LoadPlayersInfo);
+	FillTaskList(tl);
 /*	MAKE_TASK(ObjectMgr, LoadItemPrototypes);
 	MAKE_TASK(ObjectMgr, LoadItemPages);
 	MAKE_TASK(ObjectMgr, LoadCreatureNames);

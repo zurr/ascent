@@ -493,13 +493,12 @@ public:
 	{
 		Storage<T, StorageType>::Load(IndexName, FormatString);
 		QueryResult * result = sDatabase.Query("SELECT MAX(entry) FROM %s", IndexName);
-		if(result == 0)
-			return;
-
-		uint32 Max = result->Fetch()[0].GetUInt32() + 1;
-		delete result;
-		if(!Max)
-			return;
+		uint32 Max = 999999;
+		if(result)
+		{
+			Max = result->Fetch()[0].GetUInt32() + 1;
+			delete result;
+		}
 
 		Storage<T, StorageType>::_storage.Setup(Max);
 
@@ -520,6 +519,9 @@ public:
 		{
 			Entry = fields[0].GetUInt32();
 			Allocated = Storage<T, StorageType>::_storage.AllocateEntry(Entry);
+			if(!Allocated)
+				continue;
+
 			LoadBlock(fields, Allocated);
 		} while(result->NextRow());
 		delete result;
