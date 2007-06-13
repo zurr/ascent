@@ -1451,12 +1451,17 @@ bool ChatHandler::HandleLandCommand(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleDBReloadCommand(const char* args, WorldSession* m_session)
 {
 	char str[200];
+	if(!*args || strlen(args) < 3)
+		return false;
+
 	uint32 mstime = getMSTime();
-	sprintf(str, "%sA database reload was initiated by %s. The server may experience some lag while this occurs.",
-		MSG_COLOR_LIGHTRED, m_session->GetPlayer()->GetName());
+	sprintf(str, "%s%s initiated server-side reload of table `%s`. The server may experience some lag while this occurs.",
+		MSG_COLOR_LIGHTRED, m_session->GetPlayer()->GetName(), args);
 	sWorld.SendWorldText(str, 0);
-	objmgr.ReloadTables();
-	sprintf(str, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, getMSTime() - mstime);
+	if(!Storage_ReloadTable(args))
+		sprintf(str, "%sDatabase reload failed.", MSG_COLOR_LIGHTRED);
+	else
+		sprintf(str, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, getMSTime() - mstime);
 	sWorld.SendWorldText(str, 0);
 	return true;
 }

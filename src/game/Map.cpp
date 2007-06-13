@@ -62,6 +62,7 @@ Map::~Map()
 	for(std::map<uint32, MapMgr*>::iterator it = _instances.begin();
 		it != _instances.end(); ++it)
 	{
+		it->second->_shutdown = true;
 		delete it->second;
 	}
 	delete _terrain;

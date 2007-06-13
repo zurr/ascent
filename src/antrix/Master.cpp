@@ -395,7 +395,6 @@ bool Master::Run()
 
 	sLog.outString("Deleting Network Subsystem...");
 	delete SocketMgr::getSingletonPtr();
-	delete SocketGarbageCollector::getSingletonPtr();
 
 	sLog.outString("Deleting Script Engine...");
 	delete ScriptSystem;

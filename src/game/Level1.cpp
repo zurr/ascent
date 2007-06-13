@@ -570,7 +570,7 @@ bool ChatHandler::HandleTriggerCommand(const char* args, WorldSession* m_session
 	if(valcount == 1)
 		instance_id = 0;
 
-	AreaTrigger *pTrigger = sWorld.GetAreaTrigger(trigger_id);
+	AreaTrigger *pTrigger = AreaTriggerStorage.LookupEntry(trigger_id);
 	if(trigger_id == 0 || pTrigger == NULL)
 	{
 		RedSystemMessage(m_session, "Could not find trigger %s", (args == NULL ? "NULL" : args));

@@ -22,7 +22,7 @@ void CConsoleThread::run()
 	delete_after_use = false;
 	char i = 0;
 	char cmd[96];
-    running = true;
+    bool running = true;
 	sCConsole.running_link = &running;	
 
 	while (ThreadState != THREADSTATE_TERMINATE && running)
@@ -40,7 +40,7 @@ void CConsoleThread::run()
 		// Read in single line from "stdin"
 		fgets(cmd, 80, stdin);
 
-		if(ThreadState == THREADSTATE_TERMINATE)
+		if(!running || ThreadState == THREADSTATE_TERMINATE)
 			return;
 
 		for( i = 0 ; i < 80 || cmd[i] != '\0' ; i++ )
@@ -184,6 +184,7 @@ void CConsole::ProcessHelp(char *command)
 CConsoleThread::CConsoleThread() : CThread()
 {
 	ThreadType = THREADTYPE_CONSOLEINTERFACE;
+	delete_after_use = false;
 }
 
 void CConsole::TranslateThreads(char* str)
@@ -194,7 +195,7 @@ void CConsole::TranslateThreads(char* str)
 
 CConsoleThread::~CConsoleThread()
 {
-    running = false;
+
 }
 
 void CConsole::ObjectStats(char *str)

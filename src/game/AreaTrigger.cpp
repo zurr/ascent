@@ -27,7 +27,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 	sLog.outDebug("AreaTrigger: %u", id);
 
 	WorldPacket data(80);
-	AreaTrigger * pAreaTrigger = sWorld.GetAreaTrigger(id);
+	AreaTrigger * pAreaTrigger = AreaTriggerStorage.LookupEntry(id);
 
 	// Search quest log, find any exploration quests
 	sQuestMgr.OnPlayerExploreArea(GetPlayer(),id);
@@ -220,61 +220,5 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 		}
 	default:break;
 	}
-}
-
-void World::LoadAreaTriggerInformation()
-{
-	sLog.outString("  Loading Area Triggers...");
-	QueryResult *result = NULL;
-//	uint32 MaxID = 0;
-	AreaTrigger *pAT = NULL;
-
-	result = sDatabase.Query("SELECT * FROM areatriggers");
-
-	if(result==NULL)
-	{
-		sLog.outString("  Query failed.");
-		return;
-	}
-
-	do
-	{
-		Field *fields = result->Fetch();
-		pAT = new AreaTrigger;
-
-		pAT->AreaTriggerID = fields[0].GetUInt32();
-		pAT->Type = (uint8)fields[1].GetUInt32();
-		pAT->Mapid = fields[2].GetUInt32();
-		pAT->PendingScreen = fields[3].GetUInt32();
-		pAT->Name= fields[4].GetString();
-		pAT->x = fields[5].GetFloat();
-		pAT->y = fields[6].GetFloat();
-		pAT->z = fields[7].GetFloat();
-		pAT->o = fields[8].GetFloat();
-		if(result->GetFieldCount() > 9) // bur: crash fix for lazy bastards who dont update their db >.>
-		{
-			pAT->required_honor_rank = fields[9].GetUInt32();
-			pAT->required_level = fields[10].GetUInt32();
-		}
-
-		AddAreaTrigger(pAT);
-	} while( result->NextRow() );
-	delete result;
-}
-
-AreaTrigger *World::GetAreaTrigger(uint32 id)
-{
-	AreaTriggerMap::iterator iter=m_AreaTrigger.find(id);
-	if(iter!= m_AreaTrigger.end())
-		return iter->second;
-	else
-		return NULL;
-}
-void World::AddAreaTrigger(AreaTrigger *pArea)
-{
-	ASSERT( pArea->AreaTriggerID );
-	ASSERT( m_AreaTrigger.find(pArea->AreaTriggerID) == m_AreaTrigger.end() );
-
-	m_AreaTrigger[pArea->AreaTriggerID] = pArea;
 }
 

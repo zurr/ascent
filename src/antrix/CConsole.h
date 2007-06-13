@@ -11,8 +11,6 @@ public:
 	CConsoleThread();
 	~CConsoleThread();
 	void run();
-protected:
-    bool running;
 };
 
 class CConsole :  public Singleton < CConsole >

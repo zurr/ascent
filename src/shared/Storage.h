@@ -354,6 +354,9 @@ protected:
 	char * _formatString;
 public:
 	
+	inline char * GetIndexName() { return _indexName; }
+	inline char * GetFormatString() { return _formatString; }
+
 	/** False constructor to fool compiler
 	 */
 	Storage() {}
@@ -389,9 +392,6 @@ public:
 	 */
 	virtual void Cleanup()
 	{
-		free(_indexName);
-		free(_formatString);
-
         StorageContainerIterator<T> * itr = _storage.MakeIterator();
 		while(!itr->AtEnd())
 		{
@@ -400,6 +400,9 @@ public:
 				break;
 		}
 		itr->Destruct();
+
+		free(_indexName);
+		free(_formatString);
 	}
 
 	/** Frees any string elements inside blocks. 
@@ -413,7 +416,7 @@ public:
 			switch(*p)
 			{
 			case 's':		// string is the only one we have to actually do anything for here
-				free((void*)*structpointer);
+				free((void*)(*(uint32*)structpointer));
 				structpointer += sizeof(char*);
 				break;
 

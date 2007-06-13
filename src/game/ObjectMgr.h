@@ -412,8 +412,8 @@ public:
 	Trainer* GetTrainer(uint32 Entry);
 
 	void LoadExtraItemStuff();
+	void LoadExtraCreatureProtoStuff();
 	void CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, uint32 TextID, Player* Plr); 
-	void ReloadTables();
 
 	LevelInfo * GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
 	void GenerateLevelUpInfo();

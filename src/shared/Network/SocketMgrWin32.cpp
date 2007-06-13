@@ -112,6 +112,8 @@ void SocketMgr::CloseAll()
 	for(list<Socket*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
 		(*itr)->Delete();
 
+	delete SocketGarbageCollector::getSingletonPtr();
+
 	uint32 size;
 	do
 	{

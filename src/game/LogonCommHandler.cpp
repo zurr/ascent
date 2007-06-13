@@ -44,7 +44,8 @@ LogonCommClientSocket * LogonCommHandler::ConnectToLogon(string Address, uint32 
 	LogonCommClientSocket * conn = new LogonCommClientSocket(0);
 	if(!conn->Connect(Address.c_str(), Port))
 	{
-		delete conn;
+		//delete conn;
+		conn->Delete();
 		return 0;
 	}
 	

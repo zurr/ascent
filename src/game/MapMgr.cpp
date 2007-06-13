@@ -70,7 +70,7 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 
 MapMgr::~MapMgr()
 {
-	if(thread_is_alive)
+	if(thread_is_alive && !_shutdown)
 	{
 		sLog.outString("possible crash! instance deletion while thread is alive! oh noes!");
 		Crash_Log->AddLine("possible crash! instance deletion while thread is alive! oh noes!");

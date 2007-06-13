@@ -2216,21 +2216,6 @@ Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 	return iter->second;
 }
 
-void ObjectMgr::ReloadTables()
-{
-	sWorld.SendWorldText("Reloading CreatureNames...");
-	CreatureNameStorage.Reload();
-
-	sWorld.SendWorldText("Reloading Items...");
-	ItemPrototypeStorage.Reload();
-
-	sWorld.SendWorldText("Reloading Quests...");
-	//QuestStorage.Reload();
-
-	sWorld.SendWorldText("Reloading Gameobject Names...");
-	GameObjectNameStorage.Reload();
-}
-
 void ObjectMgr::GenerateLevelUpInfo()
 {
 	// Generate levelup information for each class.

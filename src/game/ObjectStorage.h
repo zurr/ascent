@@ -24,6 +24,10 @@ extern SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >					ItemPageStor
 extern SQLStorage<Quest, HashMapStorageContainer<Quest> >						QuestStorage;
 extern SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStoage;
 
+void Storage_FillTaskList(TaskList & tl);
+void Storage_Cleanup();
+bool Storage_ReloadTable(const char * TableName);
+
 #endif
 
 

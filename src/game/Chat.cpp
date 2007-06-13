@@ -318,7 +318,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "createinstance",'m', &ChatHandler::HandleCreateInstanceCommand,"Creates instance on map <map>",  NULL, 0, 0, 0 },
 		{ "goinstance",	'm', &ChatHandler::HandleGoInstanceCommand,	"Joins instance <instance> <x> <y> <z> <optional mapid>", NULL, 0, 0, 0 },
 		{ "exitinstance",  'm', &ChatHandler::HandleExitInstanceCommand,  "Exits current instance, return to entry point.", NULL, 0, 0, 0 },
-		{ "dbreload",	  'm', &ChatHandler::HandleDBReloadCommand,	  "Reloads some of the database tables", NULL, 0, 0, 0 },
+		{ "reloadtable",	  'm', &ChatHandler::HandleDBReloadCommand,	  "Reloads some of the database tables", NULL, 0, 0, 0 },
 		{ "spawnspiritguide",'m', &ChatHandler::HandleSpawnSpiritGuideCommand, "Spawns a spirit guide (params: 1 = horde, 0 = alliance", NULL, 0, 0, 0 },
 		{ "servershutdown", 'z', &ChatHandler::HandleShutdownCommand, "Initiates server shutdown in <x> seconds.", NULL, 0, 0, 0 },
 		{ "serverrestart", 'z', &ChatHandler::HandleShutdownRestartCommand, "Initiates server restart in <x> seconds.", NULL, 0, 0, 0 },

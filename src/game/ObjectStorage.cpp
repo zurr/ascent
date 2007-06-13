@@ -36,7 +36,7 @@ SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >					ItemPageStorage;
 SQLStorage<Quest, HashMapStorageContainer<Quest> >							QuestStorage;
 SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStoage;
 
-void LoadExtraCreatureProtoStuff()
+void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
 	StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
 	CreatureProto * cn;
@@ -173,7 +173,7 @@ void ObjectMgr::LoadExtraItemStuff()
 	new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
     (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format) )
 
-void FillTaskList(TaskList & tl)
+void Storage_FillTaskList(TaskList & tl)
 {
 	make_task(ItemPrototypeStorage, ItemPrototype, ArrayStorageContainer, "items", gItemPrototypeFormat);
 	make_task(CreatureNameStorage, CreatureInfo, HashMapStorageContainer, "creature_names", gCreatureNameFormat);
@@ -183,15 +183,46 @@ void FillTaskList(TaskList & tl)
 	make_task(ItemPageStorage, ItemPage, HashMapStorageContainer, "itempages", gItemPageFormat);
 }
 
-void LoadTest()
+void Storage_Cleanup()
 {
-	ItemPrototypeStorage.Load("items", gItemPrototypeFormat);
-	//objmgr.LoadExtraItemStuff();
+	{
+		StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
+		CreatureProto * p;
+		while(!itr->AtEnd())
+		{
+			p = itr->Get();
+			for(list<AI_Spell*>::iterator it = p->spells.begin(); it != p->spells.end(); ++it)
+				delete (*it);
+			p->spells.clear();
+			p->start_auras.clear();
+			if(!itr->Inc())
+				break;
+		}
+		itr->Destruct();
+	}
+	ItemPrototypeStorage.Cleanup();
+	CreatureNameStorage.Cleanup();
+	GameObjectNameStorage.Cleanup();
+	CreatureProtoStorage.Cleanup();
+	AreaTriggerStorage.Cleanup();
+	ItemPageStorage.Cleanup();
+}
 
-	CreatureNameStorage.Load("creature_names", gCreatureNameFormat);
-	
-	CreatureProtoStorage.Load("creature_proto", gCreatureProtoFormat);
-	LoadExtraCreatureProtoStuff();
-
-	GameObjectNameStorage.Load("gameobject_names", gGameObjectNameFormat);
+bool Storage_ReloadTable(const char * TableName)
+{
+	if(!stricmp(TableName, "items"))					// Items
+		ItemPrototypeStorage.Reload();
+	else if(!stricmp(TableName, "creature_proto"))		// Creature Proto
+		CreatureProtoStorage.Reload();
+	else if(!stricmp(TableName, "creature_names"))		// Creature Names
+		CreatureNameStorage.Reload();
+	else if(!stricmp(TableName, "gameobject_names"))	// GO Names
+		GameObjectNameStorage.Reload();
+	else if(!stricmp(TableName, "areatriggers"))		// Areatriggers
+		AreaTriggerStorage.Reload();
+	else if(!stricmp(TableName, "itempages"))			// Item Pages
+		ItemPageStorage.Reload();
+	else
+		return false;
+	return true;
 }

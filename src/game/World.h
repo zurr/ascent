@@ -398,11 +398,6 @@ public:
 	typedef std::map< uint32, uint32> SpellPricesMap;
 	SpellPricesMap mPrices;
 
-	// area trigger
-	void LoadAreaTriggerInformation();
-	void AddAreaTrigger(AreaTrigger *pArea);
-	AreaTrigger *GetAreaTrigger(uint32 id);
-
 	//world map information
 	void LoadMapInformation();
 	void AddMapInformation(MapInfo *mapinfo);

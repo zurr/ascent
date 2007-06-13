@@ -152,6 +152,8 @@ World::~World()
 	delete TalentStore::getSingletonPtr();
 	
 	sLog.outString("  DBC files unloaded.\n");
+
+	Storage_Cleanup();
 }
 
 
@@ -251,9 +253,6 @@ void BasicTaskExecutor::run()
 	// Execute the task in our new context.
 	cb->execute();
 }
-
-void LoadTest();
-void FillTaskList(TaskList & tl);
 
 void World::SetInitialWorldSettings()
 {
@@ -400,12 +399,7 @@ void World::SetInitialWorldSettings()
 	TaskList tl;
 	MAKE_TASK(ObjectMgr, LoadPlayerCreateInfo);
 	MAKE_TASK(ObjectMgr, LoadPlayersInfo);
-	FillTaskList(tl);
-/*	MAKE_TASK(ObjectMgr, LoadItemPrototypes);
-	MAKE_TASK(ObjectMgr, LoadItemPages);
-	MAKE_TASK(ObjectMgr, LoadCreatureNames);
-	MAKE_TASK(ObjectMgr, LoadGameObjectNames);
-	MAKE_TASK(ObjectMgr, LoadCreatureProtos);*/
+	Storage_FillTaskList(tl);
 	MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
 	MAKE_TASK(ObjectMgr, LoadTrainers);
 	MAKE_TASK(ObjectMgr, LoadTotemSpells);
@@ -419,7 +413,6 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);
 	MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
 	MAKE_TASK(ObjectMgr, LoadPvPAreas);
-	MAKE_TASK(World, LoadAreaTriggerInformation);
 	MAKE_TASK(World, LoadMapInformation);
 	MAKE_TASK(ObjectMgr, LoadFishingZones);
 	MAKE_TASK(ObjectMgr, LoadTeleportCoords);
@@ -432,6 +425,9 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(QuestMgr, LoadSQLQuests);
 	MAKE_TASK(ObjectMgr, LoadReputationModifiers);
 	MAKE_TASK(ObjectMgr, LoadMonsterSay);
+
+	MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
+	MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
 
 #undef MAKE_TASK
 
