@@ -1372,6 +1372,7 @@ void Player::_SaveItemCooldown()
 
 	sDatabase.Execute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", GetGUIDLow() );
 
+	uint32 entrys_to_insert=0;
 	std::stringstream query;
 	query << "INSERT INTO playercooldownitems (OwnerGuid, ItemEntry, SpellID, SpellCategory, CooldownTimeStamp, Cooldown) VALUES ";
 
@@ -1391,13 +1392,18 @@ void Player::_SaveItemCooldown()
 			}
 			continue;
 		}
+		if(entrys_to_insert>0)
+			query << ",";
 		query << "("<< GetGUIDLow() << "," << (*itr)->ItemEntry << "," << (*itr)->SpellID << "," << (*itr)->SpellCategory
 			<< "," << (*itr)->CooldownTimeStamp << "," << (*itr)->Cooldown << ")";
 		++itr;
-		if(itr!=itrend)
-			query << ",";
+		entrys_to_insert++;
+//		if(itr!=itrend)
+//			query << ",";
 	}
-	sDatabase.Execute( query.str().c_str() );
+	//only execute if we have entrys to insert
+	if(entrys_to_insert)
+		sDatabase.Execute( query.str().c_str() );
 }
 
 void Player::_SaveSpellCoolDownSecurity()
