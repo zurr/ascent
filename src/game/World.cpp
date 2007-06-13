@@ -774,9 +774,6 @@ void World::SetInitialWorldSettings()
 		}
 
 		sp->procFlags=pr;
-		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
-		if(sp->procCharges==0)
-			sp->procCharges=-1;
 		//sp->dummy=result;
 	}
 

@@ -117,6 +117,14 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 
 		if(objA->HasFlag(PLAYER_FLAGS,PLAYER_FLAG_FREE_FOR_ALL_PVP) && objB->HasFlag(PLAYER_FLAGS,PLAYER_FLAG_FREE_FOR_ALL_PVP))
 			return true;		// can hurt each other in FFA pvp
+		//do not let people attack each other in sancuary
+		if(static_cast<Player *>(objA)->GetTeam()!=static_cast<Player *>(objB)->GetTeam())
+		{
+			AreaTable * atCaster = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
+			AreaTable * atTarget = sAreaStore.LookupEntry(static_cast<Player *>(objB)->GetAreaID());
+			if(atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
+				return false;
+		}
 	}
 
 	if(objA->m_faction == objB->m_faction)  // same faction can't kill each other unless in ffa pvp/duel

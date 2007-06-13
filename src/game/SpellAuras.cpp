@@ -3037,6 +3037,9 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		pts.procChance = GetSpellProto()->procChance;
 		pts.procFlags = GetSpellProto()->procFlags;
 		pts.procCharges = GetSpellProto()->procCharges;
+		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
+		if(pts.procCharges==0)
+			pts.procCharges=-1;
 		pts.deleted = false;
 		m_target->m_procSpells.push_front(pts);
 	}
