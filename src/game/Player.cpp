@@ -2950,13 +2950,13 @@ void Player::RemoveFromWorld()
 
 
 // TODO: perhaps item should just have a list of mods, that will simplify code
-void Player::_ApplyItemMods(Item *item, int8 slot,bool apply)
+void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 {
 	ASSERT(item);
 	ItemPrototype *proto = item->GetProto();
 
 	//fast check to skip mod applying if the item doesnt meat the requirements.
-	if(!item->GetUInt32Value(ITEM_FIELD_DURABILITY) && item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) && apply)
+	if(item->GetUInt32Value(ITEM_FIELD_DURABILITY)==0 && item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) && justdrokedown==false)
 	{
 		return;
 	}
@@ -3587,7 +3587,7 @@ void Player::DeathDurabilityLoss(double percent)
 
 				if(pNewDurability <= 0) 
 				{ 
-					ApplyItemMods(GetItemInterface()->GetInventoryItem(i), i, false);
+					ApplyItemMods(GetItemInterface()->GetInventoryItem(i), i, false, true);
 				}
 
 				GetItemInterface()->GetInventoryItem(i)->SetUInt32Value(ITEM_FIELD_DURABILITY,(uint32)pNewDurability);

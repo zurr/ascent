@@ -2496,7 +2496,7 @@ void ItemInterface::ReduceItemDurability()
 			   //check final durabiity
 			   if(!pItem->GetUInt32Value(ITEM_FIELD_DURABILITY)) //no dur left
 			   {
-					this->GetOwner()->ApplyItemMods(pItem,slot,false);
+					this->GetOwner()->ApplyItemMods(pItem,slot,false,true);
 			   }
 		   }
 	   }

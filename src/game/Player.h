@@ -615,7 +615,7 @@ public:
 	// Items
 	//Item Interface
 	inline ItemInterface* GetItemInterface() { return m_ItemInterface; } // Player Inventory Item storage
-	inline void ApplyItemMods(Item *item, int8 slot, bool apply) {  _ApplyItemMods(item, slot, apply); }
+	inline void ApplyItemMods(Item *item, int8 slot, bool apply,bool justdrokedown=false) {  _ApplyItemMods(item, slot, apply,justdrokedown); }
 	// looting
 	inline const uint64& GetLootGUID() const { return m_lootGuid; }
 	void SetLootGUID(const uint64 &guid) { m_lootGuid = guid; }
@@ -1160,7 +1160,7 @@ protected:
 	void _LoadItemCooldown();
 	void _SaveSpellCoolDownSecurity();
 	void _LoadSpellCoolDownSecurity();
-	void _ApplyItemMods(Item *item, int8 slot,bool apply);
+	void _ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown=false);
    
 	void _EventAttack(bool offhand);
 	void _EventExploration();

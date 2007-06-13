@@ -1359,18 +1359,18 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 				// maxdurability - currentdurability
 				// it its 0 no durabiliti needs to be set
 				uint32 dDurability = _player->GetItemInterface()->GetInventoryItem(i)->GetDurabilityMax() - _player->GetItemInterface()->GetInventoryItem(i)->GetDurability();
-//				uint32 cDurability = _player->GetItemInterface()->GetInventoryItem(i)->GetDurability();
 				if (dDurability)
 				{
 					// the amount of durability that is needed to be added is the amount of money to be payed
 					if (dDurability <= _player->GetUInt32Value(PLAYER_FIELD_COINAGE))
 					{
+						int32 cDurability = _player->GetItemInterface()->GetInventoryItem(i)->GetDurability();
 					   _player->ModUInt32Value( PLAYER_FIELD_COINAGE , -(int32)dDurability );
 					   _player->GetItemInterface()->GetInventoryItem(i)->SetDurabilityToMax();
 					   _player->GetItemInterface()->GetInventoryItem(i)->m_isDirty = true;
-
-					   /*if (cDurability <= 0)
-						   _player->ApplyItemMods(_player->GetItemInterface()->GetInventoryItem(i), i, true);*/
+			
+						if (cDurability <= 0)
+						   _player->ApplyItemMods(_player->GetItemInterface()->GetInventoryItem(i), i, true);
 					}
 					else
 					{
@@ -1385,19 +1385,20 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 		if(item)
 		{
 			uint32 dDurability = item->GetDurabilityMax() - item->GetDurability();
-			uint32 cDurability = item->GetDurability();
 
 			if (dDurability)
 			{
 				// the amount of durability that is needed to be added is the amount of money to be payed
 				if (dDurability <= _player->GetUInt32Value(PLAYER_FIELD_COINAGE))
 				{
+					int32 cDurability = item->GetDurability();
 					_player->ModUInt32Value( PLAYER_FIELD_COINAGE , -(int32)dDurability );
 					item->SetDurabilityToMax();
 					item->m_isDirty = true;
 					
+					
 					if(cDurability <= 0)
-					_player->ApplyItemMods(item, _player->GetItemInterface()->GetInventorySlotByGuid(itemguid), true);
+						_player->ApplyItemMods(item, _player->GetItemInterface()->GetInventorySlotByGuid(itemguid), true);
 				}
 				else
 				{
