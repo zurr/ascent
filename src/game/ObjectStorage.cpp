@@ -234,6 +234,7 @@ void Storage_Cleanup()
 
 bool Storage_ReloadTable(const char * TableName)
 {
+	// bur: mah god this is ugly :P
 	if(!stricmp(TableName, "items"))					// Items
 		ItemPrototypeStorage.Reload();
 	else if(!stricmp(TableName, "creature_proto"))		// Creature Proto
@@ -252,6 +253,14 @@ bool Storage_ReloadTable(const char * TableName)
 		QuestStorage.Reload();
 	else if(!stricmp(TableName, "npc_text"))			// NPC Text Storage
 		NpcTextStorage.Reload();
+	else if(!stricmp(TableName, "pvpareas"))			// PvP Areas
+		PvPAreaStorage.Reload();
+	else if(!stricmp(TableName, "fishing"))				// Fishing Zones
+		FishingZoneStorage.Reload();
+	else if(!stricmp(TableName, "teleport_coords"))		// Teleport coords
+		TeleportCoordStorage.Reload();
+	else if(!stricmp(TableName, "graveyards"))			// Graveyards
+		TeleportCoordStorage.Reload();
 	else
 		return false;
 	return true;
