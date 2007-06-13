@@ -25,6 +25,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupTheUnderbog(mgr);
 	SetupGruulsLair(mgr);
 	SetupBattleOfMountHyjal(mgr);
+	SetupShadowLabyrinth(mgr);
 }
 
 #ifdef WIN32
