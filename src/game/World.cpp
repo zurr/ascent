@@ -418,12 +418,8 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
 	MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);
 	MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
-	MAKE_TASK(ObjectMgr, LoadPvPAreas);
 	MAKE_TASK(World, LoadMapInformation);
-	MAKE_TASK(ObjectMgr, LoadFishingZones);
-	MAKE_TASK(ObjectMgr, LoadTeleportCoords);
 	MAKE_TASK(ObjectMgr, LoadGuildCharters);
-	MAKE_TASK(ObjectMgr, LoadGraveyards);
 	MAKE_TASK(ObjectMgr, LoadGMTickets);
 	MAKE_TASK(SocialMgr, LoadFromDB);
 	MAKE_TASK(AddonMgr, LoadFromDB);

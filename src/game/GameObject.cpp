@@ -429,7 +429,7 @@ void GameObject::UseFishingNode(Player *player)
 	
 	uint32 zone=sAreaStore.LookupEntry(GetMapMgr()->GetAreaID(GetPositionX(),GetPositionY()))->ZoneId;
 
-	FishingZoneEntry *entry = objmgr.GetFishingZone(zone);
+	FishingZoneEntry *entry = FishingZoneStorage.LookupEntry(zone);
 	if(entry == NULL)
 	{
 		sLog.outError("ERROR: Fishing zone information for zone %d not found!", zone);

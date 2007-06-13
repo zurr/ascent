@@ -169,7 +169,6 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "run",		 'n', &ChatHandler::HandleRunCommand,		   "",							   NULL, 0, 0, 0},
 		{ "addweapon",   'n', &ChatHandler::HandleAddWeaponCommand,	 "",							   NULL, 0, 0, 0},
 		{ "allowmove",   'n', &ChatHandler::HandleAllowMovementCommand, "",							   NULL, 0, 0, 0},
-		{ "addgrave",	'n', &ChatHandler::HandleAddGraveCommand,	  "",							   NULL, 0, 0, 0},
 		{ "addspirit",   'n', &ChatHandler::HandleAddSpiritCommand,	 "",							   NULL, 0, 0, 0},
 		{ "faction",	 'n', &ChatHandler::HandleNPCFactionCommand,	"",								  NULL, 0, 0, 0},
 		{ "delete",	  'n', &ChatHandler::HandleDeleteCommand,		"Deletes mob from db and world.", NULL, 0, 0, 0},

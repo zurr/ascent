@@ -25,18 +25,26 @@ const char * gItemPageFormat							= "usu";
 const char * gNpcTextFormat								= "u";
 const char * gQuestFormat								= "uuuuuuuuuuuuuuuuuussssssssssuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gSpellExtraFormat							= "uuuu";
+const char * gGraveyardFormat							= "uffffuuuux";
+const char * gTeleportCoordFormat						= "uxufffx";
+const char * gPvPAreaFormat								= "ush";
+const char * gFishingFormat								= "uuu";
 
 /** SQLStorage symbols
  */
-SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >			ItemPrototypeStorage;
-SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >			CreatureNameStorage;
-SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >		GameObjectNameStorage;
-SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >			CreatureProtoStorage;
-SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >				AreaTriggerStorage;
-SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >					ItemPageStorage;
-SQLStorage<Quest, HashMapStorageContainer<Quest> >							QuestStorage;
-SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStorage;
-SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >		SpellExtraStorage;
+SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >				ItemPrototypeStorage;
+SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >				CreatureNameStorage;
+SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >			GameObjectNameStorage;
+SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >				CreatureProtoStorage;
+SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >					AreaTriggerStorage;
+SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >						ItemPageStorage;
+SQLStorage<Quest, HashMapStorageContainer<Quest> >								QuestStorage;
+SQLStorage<GossipText, HashMapStorageContainer<GossipText> >					NpcTextStorage;
+SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >			SpellExtraStorage;
+SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >		GraveyardStorage;
+SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >			TeleportCoordStorage;
+SQLStorage<PvPArea, HashMapStorageContainer<PvPArea> >							PvPAreaStorage;
+SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
@@ -185,6 +193,10 @@ void Storage_FillTaskList(TaskList & tl)
 	make_task(ItemPageStorage, ItemPage, HashMapStorageContainer, "itempages", gItemPageFormat);
 	make_task(QuestStorage, Quest, HashMapStorageContainer, "quests", gQuestFormat);
 	make_task(SpellExtraStorage, SpellExtraInfo, HashMapStorageContainer, "spellextra", gSpellExtraFormat);
+	make_task(GraveyardStorage, GraveyardTeleport, HashMapStorageContainer, "graveyards", gGraveyardFormat);
+	make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
+	make_task(PvPAreaStorage, PvPArea, HashMapStorageContainer, "pvpareas", gPvPAreaFormat);
+	make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
 }
 
 void Storage_Cleanup()

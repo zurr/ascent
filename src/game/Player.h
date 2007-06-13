@@ -93,7 +93,7 @@ enum PvPAreaStatus
 };
 struct PvPArea {
 	uint32 AreaId;
-	std::string AreaName;
+	char * AreaName;
 	uint16 PvPType;
 	bool HomeFor(Player* plr);
 };

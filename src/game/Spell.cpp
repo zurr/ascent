@@ -3011,7 +3011,7 @@ void Spell::HandleTeleport(uint32 id, Unit* Target)
 		x = fields[4].GetUInt32();
 		y = fields[5].GetUInt32();
 		z = fields[6].GetUInt32();*/
-		TeleportCoords* TC = objmgr.GetTeleportCoords(id);
+		TeleportCoords* TC = TeleportCoordStorage.LookupEntry(id);
 		if(!TC)
 			return;
 		 

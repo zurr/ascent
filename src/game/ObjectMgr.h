@@ -72,6 +72,7 @@ struct TrainerSpellOverride
 
 struct FishingZoneEntry
 {
+	uint32 ZoneID;
 	uint32 MinSkill;
 	uint32 MaxSkill;
 };
@@ -235,16 +236,11 @@ public:
 	typedef HM_NAMESPACE::hash_map<uint64, Item*> ItemMap;
 	typedef HM_NAMESPACE::hash_map<uint32, GossipText*> GossipTextMap;
 	typedef HM_NAMESPACE::hash_map<uint32, CorpseData*> CorpseCollectorMap;
-	typedef HM_NAMESPACE::hash_map<uint32, GraveyardTeleport*> GraveyardMap;
 	typedef HM_NAMESPACE::hash_map<uint32, PlayerInfo*> PlayerNameMap;
 	typedef HM_NAMESPACE::hash_map<uint32, PlayerCreateInfo*> PlayerCreateInfoMap;
 	typedef HM_NAMESPACE::hash_map<uint32, Guild*> GuildMap;
-	typedef HM_NAMESPACE::hash_map<uint32, TeleportCoords*> TeleportMap;
 	typedef HM_NAMESPACE::hash_map<uint32, skilllinespell*> SLMap;
 	typedef HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*> VendorMap;
-	typedef HM_NAMESPACE::hash_map<uint32, PvPArea*> PvPAreaMap;
-	typedef HM_NAMESPACE::hash_map<uint32, FishingZoneEntry*> FishingZoneMap;
-	typedef HM_NAMESPACE::hash_map<uint32, SpellExtraInfo*> SpellExtraInfoMap;
 	typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
 	
 	typedef HM_NAMESPACE::hash_map<uint32, Trainer*> TrainerMap;
@@ -315,25 +311,12 @@ public:
 	GossipText *GetGossipText(uint32 ID);
 	uint32 GetGossipTextForNpc(uint32 ID);
 
-	//Death stuff
-	void AddGraveyard(GraveyardTeleport *pgrave);
-	inline GraveyardMap::iterator GetGraveyardListBegin() { return mGraveyards.begin(); }
-	inline GraveyardMap::iterator GetGraveyardListEnd() { return mGraveyards.end(); }
-
-	//Teleport Stuff
-	void AddTeleportCoords(TeleportCoords* TC);
-	TeleportCoords* GetTeleportCoords(uint32 id) const;
-
 	// Gm Tickets
 	void AddGMTicket(GM_Ticket *ticket);
 	void remGMTicket(uint64 guid);
 	GM_Ticket* GetGMTicket(uint64 guid);
 
 	skilllinespell* GetSpellSkill(uint32 id);
-
-	//PVP
-	void AddPvPArea(PvPArea* pvparea);
-	PvPArea* GetPvPArea(uint32 AreaId);
 
 	//Vendors
 	std::vector<CreatureItem> *GetVendorList(uint32 entry);
@@ -344,11 +327,6 @@ public:
 
 	// AI Threat by SpellId
 	int32 GetAIThreatToSpellId(uint32 spellId);
-
-	// Fishing
-	FishingZoneEntry* GetFishingZone(uint32 zoneid);
-	inline uint32 GetFishingZoneMinSkill(uint32 zoneid) { return GetFishingZone(zoneid)->MinSkill; };
-	inline uint32 GetFishingZoneMaxSkill(uint32 zoneid) { return GetFishingZone(zoneid)->MaxSkill; };
 
 	std::list<ItemPrototype*>* GetListForItemSet(uint32 setid);
 
@@ -377,18 +355,14 @@ public:
 	void LoadGuilds();
 	Corpse* LoadCorpse(uint32 guid);
 	void LoadGossipText();
-	void LoadGraveyards();
-	void LoadTeleportCoords();
 	void LoadGMTickets();
 	void SaveGMTicket(uint64 guid);
 	void LoadAuctions();
 	void LoadAuctionItems();
 	void LoadSpellSkills();
-	void LoadPvPAreas();
 	void LoadVendors();
 	void LoadTotemSpells();
 	void LoadAIThreatToSpellId();
-	void LoadFishingZones();
 	void LoadReputationModifierTable(const char * tablename, HM_NAMESPACE::hash_map<uint32, ReputationModifier*> * dmap);
 	void LoadReputationModifiers();
 	ReputationModifier * GetReputationModifier(uint32 entry_id, uint32 faction_id);
@@ -500,19 +474,7 @@ protected:
 	GossipTextMap	   mGossipText;
 	NpcToGossipTextMap  mNpcToGossipText;
 
-	// Death Stuff
-	GraveyardMap		mGraveyards;
-
-	// Teleport Stuff
-	TeleportMap			mTeleports;
-
 	SLMap				mSpellSkills;
-
-	//PVP Stuff
-	PvPAreaMap			mPvPAreas;
-
-	// cached fishing zones
-	FishingZoneMap		 mFishingZones;
 
 	//Corpse Collector
 	CorpseCollectorMap mCorpseCollector;

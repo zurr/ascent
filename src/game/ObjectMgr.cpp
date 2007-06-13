@@ -64,16 +64,6 @@ ObjectMgr::~ObjectMgr()
 		delete i->second;
 	}
 
-	sLog.outString("	Deleting Graveyards...");
-	for( GraveyardMap::iterator i = mGraveyards.begin( ); i != mGraveyards.end( ); ++ i ) {
-		delete i->second;
-	}
-
-	sLog.outString("	Deleting PvPAreas...");
-	for( PvPAreaMap::iterator i = mPvPAreas.begin( ); i != mPvPAreas.end( ); ++ i ) {
-		delete i->second;
-	}
-
 	sLog.outString("	Deleting Vendors...");
 	for( VendorMap::iterator i = mVendors.begin( ); i != mVendors.end( ); ++ i ) 
 	{
@@ -91,16 +81,6 @@ ObjectMgr::~ObjectMgr()
 	sLog.outString("	Deleting Spell Override Map...");
 	for(OverrideIdMap::iterator i = mOverrideIdMap.begin(); i != mOverrideIdMap.end(); ++i)
 	{
-		delete i->second;
-	}
- 
-	sLog.outString("	Deleting Teleport Coords...");
-	for( TeleportMap::iterator i = mTeleports.begin( ); i != mTeleports.end( ); ++ i ) {
-		delete i->second;
-	}
-
-	sLog.outString("	Deleting Fishing Zones...");
-	for( FishingZoneMap::iterator i = mFishingZones.begin( ); i != mFishingZones.end( ); ++ i ) {
 		delete i->second;
 	}
 
@@ -676,71 +656,6 @@ void ObjectMgr::LoadGossipText()
 	}
 }
 
-void ObjectMgr::AddGraveyard(GraveyardTeleport *pgrave)
-{
-	ASSERT( pgrave );
-	ASSERT( mGraveyards.find(pgrave->ID) == mGraveyards.end() );
-	mGraveyards[pgrave->ID] = pgrave;
-}
-
-void ObjectMgr::LoadGraveyards()
-{
-	sLog.outString("  Loading Graveyards...");
-	GraveyardTeleport *pgrave;
-	QueryResult *result = sDatabase.Query( "SELECT * FROM graveyards" );
-	if( !result )
-	{
-		sLog.outString("  Query failed: SELECT * FROM graveyards");
-		return;
-	}
-
-	do
-	{
-		Field *fields = result->Fetch();
-		pgrave = new GraveyardTeleport;
-		pgrave->ID = fields[0].GetUInt32();
-		pgrave->X = fields[1].GetFloat();
-		pgrave->Y = fields[2].GetFloat();
-		pgrave->Z = fields[3].GetFloat();
-		pgrave->O = fields[4].GetFloat();
-		pgrave->ZoneId = fields[5].GetUInt32();
-		pgrave->AdjacentZoneId = fields[6].GetUInt32();
-		pgrave->MapId = fields[7].GetUInt32();
-		pgrave->FactionID = fields[8].GetUInt32();
-
-		AddGraveyard(pgrave);
-
-	}while( result->NextRow() );
-	delete result;
-}
-
-void ObjectMgr::LoadTeleportCoords()
-{
-	sLog.outString("  Loading Teleport Coords...");
-	TeleportCoords *tc = NULL;
-	QueryResult *result = sDatabase.Query( "SELECT * FROM teleport_coords" );
-	if( !result )
-	{
-		sLog.outString("  Query failed: SELECT * FROM teleport_coords");
-		return;
-	}
-
-	do
-	{
-		Field *fields = result->Fetch();
-		tc = new TeleportCoords;
-		tc->id = fields[0].GetUInt32();
-		tc->mapId = fields[2].GetUInt32();
-		tc->x = fields[3].GetFloat();
-		tc->y = fields[4].GetFloat();
-		tc->z = fields[5].GetFloat();
-
-		AddTeleportCoords(tc);
-
-	}while( result->NextRow() );
-	delete result;
-}
-
 void ObjectMgr::LoadGMTickets()
 {
 	QueryResult *result = sDatabase.Query( "SELECT * FROM gm_tickets" );
@@ -987,34 +902,6 @@ void ObjectMgr::ProcessGameobjectQuests()
 	}
 }
 
-void ObjectMgr::LoadPvPAreas()
-{
-	sLog.outString("  Loading PvP Areas...");
-	QueryResult *result = sDatabase.Query( "SELECT * FROM pvpareas" );
-
-	if(!result)
-	{
-		sLog.outString("  Query failed: SELECT * FROM pvpareas");
-		return;
-	}
-
-	PvPArea *pPvPArea;
-	do
-	{
-		Field *fields = result->Fetch();
-
-		pPvPArea = new PvPArea;
-
-		pPvPArea->AreaId = fields[0].GetUInt32();
-		pPvPArea->AreaName = fields[1].GetString();
-		pPvPArea->PvPType = fields[2].GetUInt16();
-
-		AddPvPArea(pPvPArea);
-	}while( result->NextRow() );
-
-	delete result;
-}
-
 Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
 {
 	Player * rv = NULL;
@@ -1129,19 +1016,6 @@ Guild* ObjectMgr::GetGuildByGuildName(std::string guildName)
 	return NULL;
 }
 
-void ObjectMgr::AddTeleportCoords(TeleportCoords* TC)
-{
-	ASSERT( TC );
-	mTeleports[TC->id] = TC;  
-}
-
-TeleportCoords* ObjectMgr::GetTeleportCoords(uint32 id) const
-{
-	TeleportMap::const_iterator itr = mTeleports.find( id );
-	if( itr != mTeleports.end( ) )
-		return itr->second;
-	return NULL;
-}
 
 void ObjectMgr::AddGMTicket(GM_Ticket *ticket)
 {
@@ -1179,23 +1053,6 @@ GM_Ticket* ObjectMgr::GetGMTicket(uint64 guid)
 		{
 			return (*i);
 		}
-	}
-	return NULL;
-}
-
-void ObjectMgr::AddPvPArea(PvPArea* pvparea)
-{
-	ASSERT( pvparea );
-	mPvPAreas[pvparea->AreaId] = pvparea;
-}
-
-PvPArea* ObjectMgr::GetPvPArea(uint32 AreaId)
-{
-	PvPAreaMap::const_iterator itr;
-	for (itr = mPvPAreas.begin();itr != mPvPAreas.end(); itr++)
-	{
-		if( itr->second->AreaId == AreaId )
-			return itr->second;
 	}
 	return NULL;
 }
@@ -1310,39 +1167,6 @@ int32 ObjectMgr::GetAIThreatToSpellId(uint32 spellId)
 		}
 	}
 	return 0;
-}
-
-void ObjectMgr::LoadFishingZones()
-{
-	sLog.outString("  Loading Fishing Zones...");
-	QueryResult *result = sDatabase.Query("SELECT * FROM fishing");
-	if(!result)
-	{
-		sLog.outError("Query failed: SELECT * FROM fishing");
-		return;
-	}
-//	uint32 total =(uint32) result->GetRowCount();
-//	int num =0;
-
-	FishingZoneEntry *entry = NULL;
-
-	do 
-	{
-		Field *fields = result->Fetch();
-		entry = new FishingZoneEntry;
-		entry->MinSkill = fields[1].GetUInt32();
-		entry->MaxSkill = fields[2].GetUInt32();
-		uint32 id = fields[0].GetUInt32();
-
-		mFishingZones[id] = entry;  // Add to hashmap
-	} while(result->NextRow());
-
-	delete result;  // now.. a memleak at the very start of server load would be baaaad :P
-}
-
-FishingZoneEntry* ObjectMgr::GetFishingZone(uint32 zoneid)
-{
-	return mFishingZones[zoneid];
 }
 
 Item * ObjectMgr::CreateItem(uint32 entry,Player * owner)

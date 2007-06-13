@@ -3601,7 +3601,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 {   
 	bool first = true;
 	//float closestX = 0, closestY = 0, closestZ = 0, closestO = 0;
-	ObjectMgr::GraveyardMap::const_iterator itr;
+	StorageContainerIterator<GraveyardTeleport> * itr;
 
 	Battleground * bg = GetCurrentBattleground();
 	LocationVector src(ox, oy, oz);
@@ -3622,9 +3622,10 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 
 		uint32 mzone = ( at->ZoneId ? at->ZoneId : at->AreaId);
 
-		for (itr = objmgr.GetGraveyardListBegin(); itr != objmgr.GetGraveyardListEnd(); itr++)
+		itr = GraveyardStorage.MakeIterator();
+		while(!itr->AtEnd())
 		{
-			GraveyardTeleport *pGrave = itr->second;
+			GraveyardTeleport *pGrave = itr->Get();
 			if((pGrave->MapId == mapid && pGrave->ZoneId == mzone && pGrave->FactionID == GetTeam() || pGrave->MapId == mapid && pGrave->ZoneId == mzone && pGrave->FactionID == 3)
 				|| (pGrave->MapId == mapid && pGrave->AdjacentZoneId == mzone && pGrave->FactionID == GetTeam() || pGrave->MapId == mapid && pGrave->AdjacentZoneId == mzone && pGrave->FactionID == 3))
 			{
@@ -3637,7 +3638,11 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 					dest = temp;
 				}
 			}
+
+			if(!itr->Inc())
+				break;
 		}
+		itr->Destruct();
 	}
 
 	if(dest.x != 0 && dest.y != 0 && dest.z != 0)
@@ -6580,7 +6585,7 @@ void Player::UpdatePvPArea()
 {
 	PvPArea * oldArea = currentPVPArea;
 
-	currentPVPArea = ObjectMgr::getSingleton().GetPvPArea(m_AreaID);
+	currentPVPArea = PvPAreaStorage.LookupEntry(m_AreaID);
 	if(currentPVPArea == oldArea ||
 		currentPVPArea == 0 || !currentPVPArea->AreaId)
 	{

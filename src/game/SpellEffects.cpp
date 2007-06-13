@@ -2371,7 +2371,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
 		//FIX me: this should be loaded/cached
 		uint32 zone=sAreaStore.LookupEntry(map->GetAreaID(posx,posy))->ZoneId;
 		uint32 minskill;
-		FishingZoneEntry *fishentry = objmgr.GetFishingZone(zone);
+		FishingZoneEntry *fishentry = FishingZoneStorage.LookupEntry(zone);
 		if (!fishentry)
 			return;
 		

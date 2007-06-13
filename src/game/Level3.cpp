@@ -442,45 +442,6 @@ bool ChatHandler::HandleMorphCommand(const char* args, WorldSession *m_session)
 	return true;
 }
 
-
-bool ChatHandler::HandleAddGraveCommand(const char* args, WorldSession *m_session)
-{
-	QueryResult *result;
-	std::stringstream ss;
-	GraveyardTeleport *pGrave;
-
-	ss.rdbuf()->str("");
-	pGrave = new GraveyardTeleport;
-
-	result = sDatabase.Query( "SELECT MAX(ID) FROM graveyards" );
-	if( result )
-	{
-		pGrave->ID = result->Fetch()[0].GetUInt32()+1;
-
-		delete result;
-	}
-	pGrave->X = m_session->GetPlayer()->GetPositionX();
-	pGrave->Y = m_session->GetPlayer()->GetPositionY();
-	pGrave->Z = m_session->GetPlayer()->GetPositionZ();
-	pGrave->O = m_session->GetPlayer()->GetOrientation();
-	pGrave->ZoneId = m_session->GetPlayer()->GetZoneId();
-	pGrave->MapId = m_session->GetPlayer()->GetMapId();
-	pGrave->FactionID = 0;
-
-	ss << "INSERT INTO graveyards ( X, Y, Z, O, zoneId, mapId) VALUES ("
-		<< pGrave->X << ", "
-		<< pGrave->Y << ", "
-		<< pGrave->Z << ", "
-		<< pGrave->O<< ", "
-		<< pGrave->ZoneId << ", "
-		<< pGrave->MapId << ")";
-
-	sDatabase.Execute( ss.str( ).c_str( ) );
-
-	objmgr.AddGraveyard(pGrave);
-	return true;
-}
-
 bool ChatHandler::HandleExploreCheatCommand(const char* args, WorldSession *m_session)
 {
 	if (!*args)

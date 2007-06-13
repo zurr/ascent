@@ -10,9 +10,9 @@ struct GraveyardTeleport
     float Y;
     float Z;
     float O;
-    uint32 MapId;
     uint32 ZoneId;
-    uint32 AdjacentZoneId;
+	uint32 AdjacentZoneId;
+	uint32 MapId;
     uint32 FactionID;
 };
 
