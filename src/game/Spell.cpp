@@ -2391,6 +2391,13 @@ int8 Spell::CanCast(bool rangetolerate)
 {
 	float maxr = 0;
 	Unit *target = NULL;
+	//do not cast AOE spells in sanctuarys
+	if(m_targets.m_srcX || m_targets.m_destX)
+	{
+		AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
+		if(atCaster->AreaFlags & 0x800)
+			return SPELL_FAILED_NOT_HERE;
+	}
 	if(m_targets.m_unitTarget)
 	{
 		if(p_caster)
@@ -2406,7 +2413,7 @@ int8 Spell::CanCast(bool rangetolerate)
 		if(target)
 		{
 			// disallow spell casting in sanctuary zones
-			if(p_caster && target->IsPlayer())
+			if(p_caster && target->IsPlayer() && p_caster!=target && !isFriendly(p_caster,target))
 			{
 				AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
 				AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)target)->GetAreaID());
