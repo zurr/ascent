@@ -329,7 +329,7 @@ public:
 	inline std::set<Player*>::iterator GetInRangePlayerSetEnd() { return m_inRangePlayers.end(); }
 	inline std::set<Player*> * GetInRangePlayerSet() { return &m_inRangePlayers; };
 
-	void __fastcall SendMessageToSet(WorldPacket *data, bool self);
+	void __fastcall SendMessageToSet(WorldPacket *data, bool self,bool myteam_only=false);
 	inline void SendMessageToSet(StackBufferBase * data, bool self) { OutPacketToSet(data->GetOpcode(), data->GetSize(), data->GetBufferPointer(), self); }
 	void OutPacketToSet(uint16 Opcode, uint16 Len, const void * Data, bool self);
 

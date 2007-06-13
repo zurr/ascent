@@ -67,7 +67,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 				data = sChatHandler.FillMessageData( CHAT_MSG_EMOTE, GetPlayer()->m_modlanguage,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 			else	
 				data = sChatHandler.FillMessageData( CHAT_MSG_EMOTE, CanUseCommand('c') ? LANG_UNIVERSAL : lang,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
-			GetPlayer()->SendMessageToSet( data, true );
+			GetPlayer()->SendMessageToSet( data, true ,true );
 
 			sLog.outString("[emote] %s: %s", _player->GetName(), msg.c_str());
 			delete data;

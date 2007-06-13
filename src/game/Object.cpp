@@ -696,7 +696,7 @@ void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void * Data, bool s
 	}
 }
 
-inline void Object::SendMessageToSet(WorldPacket *data, bool bToSelf)
+inline void Object::SendMessageToSet(WorldPacket *data, bool bToSelf,bool myteam_only)
 {
 	if(bToSelf && m_objectTypeId == TYPEID_PLAYER)
 	{
@@ -711,21 +711,46 @@ inline void Object::SendMessageToSet(WorldPacket *data, bool bToSelf)
 	bool gminvis = (m_objectTypeId == TYPEID_PLAYER ? ((Player*)this)->m_isGmInvisible : false);
 	//Zehamster: Splitting into if/else allows us to avoid testing "gminvis==true" at each loop...
 	//		   saving cpu cycles. Chat messages will be sent to everybody even if player is invisible.
-	if(gminvis && data->GetOpcode()!=SMSG_MESSAGECHAT)
+	if(myteam_only)
 	{
-		for(; itr != it_end; ++itr)
+		uint32 myteam=static_cast<Player*>(this)->GetTeam();
+		if(gminvis && data->GetOpcode()!=SMSG_MESSAGECHAT)
 		{
-			ASSERT((*itr)->GetSession());
-			if((*itr)->GetSession()->GetPermissionCount() > 0)
-				(*itr)->GetSession()->SendPacket(data);
+			for(; itr != it_end; ++itr)
+			{
+				ASSERT((*itr)->GetSession());
+				if((*itr)->GetSession()->GetPermissionCount() > 0 && (*itr)->GetTeam()==myteam)
+					(*itr)->GetSession()->SendPacket(data);
+			}
+		}
+		else
+		{
+			for(; itr != it_end; ++itr)
+			{
+				ASSERT((*itr)->GetSession());
+				if((*itr)->GetTeam()==myteam)
+					(*itr)->GetSession()->SendPacket(data);
+			}
 		}
 	}
 	else
 	{
-		for(; itr != it_end; ++itr)
+		if(gminvis && data->GetOpcode()!=SMSG_MESSAGECHAT)
 		{
-			ASSERT((*itr)->GetSession());
-			(*itr)->GetSession()->SendPacket(data);
+			for(; itr != it_end; ++itr)
+			{
+				ASSERT((*itr)->GetSession());
+				if((*itr)->GetSession()->GetPermissionCount() > 0)
+					(*itr)->GetSession()->SendPacket(data);
+			}
+		}
+		else
+		{
+			for(; itr != it_end; ++itr)
+			{
+				ASSERT((*itr)->GetSession());
+				(*itr)->GetSession()->SendPacket(data);
+			}
 		}
 	}
 }

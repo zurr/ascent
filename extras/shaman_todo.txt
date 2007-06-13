@@ -4,7 +4,6 @@ Talents
 Elemental:
 
 Enhancement:
-Ancestral Knowledge - works, but untill you logout - need confirmation should increase your max mana by 1/2/3/4/5%
 Guardian Totems - Not working.
 Thundering Strikes - Works.
 Enhancing Totems - Not working.
