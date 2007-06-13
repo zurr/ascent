@@ -172,7 +172,7 @@ enum EventTypes
 
 };
 
-struct TimedEvent
+struct SERVER_DECL TimedEvent
 {
 	TimedEvent(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat) : 
 		obj(object), cb(callback), eventFlags(flags), msTime(time), currTime(time), repeats(repeat), deleted(false), ref(0) {}
@@ -186,6 +186,8 @@ struct TimedEvent
 	bool deleted;
 	int instanceId;
 	volatile long ref;
+
+	static TimedEvent * Allocate(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat);
 
 #ifdef WIN32
 	inline void DecRef()
