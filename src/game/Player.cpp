@@ -3330,6 +3330,8 @@ void Player::RepopRequestedPlayer()
 {
 	MapInfo * pMapinfo;
 
+	sEventMgr.RemoveEvents(this,EVENT_PLAYER_FORECED_RESURECT); //in case somebody resurected us before this event happened
+
 	// Set death state to corpse, that way players will lose visibility
 	setDeathState(CORPSE);
 	
@@ -3370,6 +3372,7 @@ void Player::RepopRequestedPlayer()
 
 void Player::ResurrectPlayer()
 {
+	sEventMgr.RemoveEvents(this,EVENT_PLAYER_FORECED_RESURECT); //in case somebody resurected us before this event happened
 	if(m_resurrectHealth)
 		SetUInt32Value(UNIT_FIELD_HEALTH, min(m_resurrectHealth, m_uint32Values[UNIT_FIELD_MAXHEALTH]));
 	if(m_resurrectMana)
@@ -3398,7 +3401,6 @@ void Player::ResurrectPlayer()
 		_Relocate(p->GetMapMgr()->GetMapId(), p->GetPosition(),false,false);
 	}
 	SetMovement(MOVE_LAND_WALK, 1);
-	sEventMgr.RemoveEvents(this,EVENT_PLAYER_FORECED_RESURECT); //in case somebody resurected us before this event happened
 }
 
 void Player::KillPlayer()
