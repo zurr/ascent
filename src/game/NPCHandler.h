@@ -54,9 +54,9 @@ enum TrainerType
 
 struct GossipText_Text
 {
-	std::string Text[2];
-	uint32 Lang;
 	float Prob;
+	char * Text[2];
+	uint32 Lang;
 	uint32 Emote[6];
 };
 

@@ -234,7 +234,6 @@ public:
 	// other objects
 	typedef std::set< Group * > GroupSet;
 	typedef HM_NAMESPACE::hash_map<uint64, Item*> ItemMap;
-	typedef HM_NAMESPACE::hash_map<uint32, GossipText*> GossipTextMap;
 	typedef HM_NAMESPACE::hash_map<uint32, CorpseData*> CorpseCollectorMap;
 	typedef HM_NAMESPACE::hash_map<uint32, PlayerInfo*> PlayerNameMap;
 	typedef HM_NAMESPACE::hash_map<uint32, PlayerCreateInfo*> PlayerCreateInfoMap;
@@ -306,9 +305,7 @@ public:
 	void AddCorpse(Corpse*);
 	void RemoveCorpse(Corpse*);
 	Corpse * GetCorpse(uint32 corpseguid);
-	//Gossip Stuff
-	void AddGossipText(GossipText *pGText);
-	GossipText *GetGossipText(uint32 ID);
+
 	uint32 GetGossipTextForNpc(uint32 ID);
 
 	// Gm Tickets
@@ -354,7 +351,6 @@ public:
 	void LoadPlayerCreateInfo();
 	void LoadGuilds();
 	Corpse* LoadCorpse(uint32 guid);
-	void LoadGossipText();
 	void LoadGMTickets();
 	void SaveGMTicket(uint64 guid);
 	void LoadAuctions();
@@ -471,7 +467,6 @@ protected:
 	VendorMap mVendors;
 
 	// Maps for Gossip stuff
-	GossipTextMap	   mGossipText;
 	NpcToGossipTextMap  mNpcToGossipText;
 
 	SLMap				mSpellSkills;

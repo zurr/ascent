@@ -413,7 +413,6 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, LoadSpellSkills);
 	MAKE_TASK(ObjectMgr, LoadSpellFixes);
 	MAKE_TASK(ObjectMgr, LoadSpellOverride);
-	MAKE_TASK(ObjectMgr, LoadGossipText);
 	MAKE_TASK(ObjectMgr, LoadVendors);
 	MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
 	MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);

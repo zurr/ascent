@@ -460,7 +460,7 @@ void WorldSession::HandleNpcTextQueryOpcode( WorldPacket & recv_data )
 	recv_data >> targetGuid;
 	GetPlayer()->SetUInt64Value(UNIT_FIELD_TARGET, targetGuid);
 
-	pGossip = objmgr.GetGossipText(textID);
+	pGossip = NpcTextStorage.LookupEntry(textID);
 
 	data.Initialize( SMSG_NPC_TEXT_UPDATE );
 	data << textID;
@@ -470,11 +470,11 @@ void WorldSession::HandleNpcTextQueryOpcode( WorldPacket & recv_data )
 		data << float(1.0f);		// Unknown
 		for(uint32 i=0;i<8;i++)
 		{
-			if(pGossip->Texts[i].Text[0].size() < 2)
+			if(pGossip->Texts[i].Text[0][0])
 				data << pGossip->Texts[i].Text[1];
 			else
 				data << pGossip->Texts[i].Text[0];
-			if(pGossip->Texts[i].Text[1].size() < 2)
+			if(pGossip->Texts[i].Text[1][1])
 				data << pGossip->Texts[i].Text[0];
 			else
 				data << pGossip->Texts[i].Text[1];

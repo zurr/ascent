@@ -59,11 +59,6 @@ ObjectMgr::~ObjectMgr()
 		delete i->second;
 	}
 
-	sLog.outString("	Deleting NPC Texts...");
-	for( GossipTextMap::iterator i = mGossipText.begin( ); i != mGossipText.end( ); ++ i ) {
-		delete i->second;
-	}
-
 	sLog.outString("	Deleting Vendors...");
 	for( VendorMap::iterator i = mVendors.begin( ); i != mVendors.end( ); ++ i ) 
 	{
@@ -586,76 +581,6 @@ void ObjectMgr::DelinkPlayerCorpses(Player *pOwner)
 	CorpseAddEventDespawn(c);
 }
 
-void ObjectMgr::AddGossipText(GossipText *pGText)
-{
-	ASSERT( pGText->ID );
-	ASSERT( mGossipText.find(pGText->ID) == mGossipText.end() );
-	mGossipText[pGText->ID] = pGText;
-}
-
-GossipText *ObjectMgr::GetGossipText(uint32 ID)
-{
-	GossipTextMap::const_iterator itr;
-	for (itr = mGossipText.begin(); itr != mGossipText.end(); itr++)
-	{
-		if(itr->second->ID == ID)
-			return itr->second;
-	}
-	return NULL;
-}
-
-void ObjectMgr::LoadGossipText()
-{
-	sLog.outString("  Loading NPC Texts...");
-	GossipText *pGText;
-
-	QueryResult *result = sDatabase.Query( "SELECT * FROM npc_text" );
-	if(!result)
-	{
-		sLog.outString("  Query failed: SELECT * FROM npc_text");
-		return;
-	}
-
-	do
-	{
-		Field *fields = result->Fetch();
-		pGText = new GossipText;
-		uint32 index = 0;
-		pGText->ID = fields[index].GetUInt32();						 index++;
-			   
-		for(uint32 i=0;i<8;i++)
-		{
-			pGText->Texts[i].Prob = fields[index].GetFloat();		   index++;
-			pGText->Texts[i].Text[0] = fields[index].GetString();	   index++;
-			pGText->Texts[i].Text[1] = fields[index].GetString();	   index++;
-			pGText->Texts[i].Lang = fields[index].GetUInt32();		  index++;
-			for(uint32 e=0;e<6;e++)
-			{
-				pGText->Texts[i].Emote[e] = fields[index].GetUInt32();  index++;
-			}
-		}
-		AddGossipText(pGText);
-
-	}while( result->NextRow() );
-
-	delete result;
-
-	result = sDatabase.Query("SELECT * FROM npc_gossip_textid");
-	if(result)
-	{
-		uint32 entry, text;
-		do 
-		{
-			entry = result->Fetch()[0].GetUInt32();
-			text  = result->Fetch()[1].GetUInt32();
-
-			mNpcToGossipText[entry] = text;
-
-		} while(result->NextRow());
-		delete result;
-	}
-}
-
 void ObjectMgr::LoadGMTickets()
 {
 	QueryResult *result = sDatabase.Query( "SELECT * FROM gm_tickets" );
@@ -899,6 +824,21 @@ void ObjectMgr::ProcessGameobjectQuests()
 
 		} while(result2->NextRow());
 		delete result2;
+	}
+
+	result = sDatabase.Query("SELECT * FROM npc_gossip_textid");
+	if(result)
+	{
+		uint32 entry, text;
+		do 
+		{
+			entry = result->Fetch()[0].GetUInt32();
+			text  = result->Fetch()[1].GetUInt32();
+
+			mNpcToGossipText[entry] = text;
+
+		} while(result->NextRow());
+		delete result;
 	}
 }
 

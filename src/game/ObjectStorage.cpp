@@ -22,7 +22,7 @@ const char * gGameObjectNameFormat						= "uuusuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gCreatureProtoFormat						= "uuuuufuuffuffuuuuuuuuuuuuuuuuuuffsu";
 const char * gAreaTriggerFormat							= "uuuusffffuu";
 const char * gItemPageFormat							= "usu";
-const char * gNpcTextFormat								= "u";
+const char * gNpcTextFormat								= "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
 const char * gQuestFormat								= "uuuuuuuuuuuuuuuuuussssssssssuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gSpellExtraFormat							= "uuuu";
 const char * gGraveyardFormat							= "uffffuuuux";
@@ -197,6 +197,7 @@ void Storage_FillTaskList(TaskList & tl)
 	make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
 	make_task(PvPAreaStorage, PvPArea, HashMapStorageContainer, "pvpareas", gPvPAreaFormat);
 	make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
+	make_task(NpcTextStorage, GossipText, HashMapStorageContainer, "npc_text", gNpcTextFormat);
 }
 
 void Storage_Cleanup()
@@ -222,6 +223,13 @@ void Storage_Cleanup()
 	CreatureProtoStorage.Cleanup();
 	AreaTriggerStorage.Cleanup();
 	ItemPageStorage.Cleanup();
+	QuestStorage.Cleanup();
+	SpellExtraStorage.Cleanup();
+	GraveyardStorage.Cleanup();
+	TeleportCoordStorage.Cleanup();
+	PvPAreaStorage.Cleanup();
+	FishingZoneStorage.Cleanup();
+	NpcTextStorage.Cleanup();
 }
 
 bool Storage_ReloadTable(const char * TableName)

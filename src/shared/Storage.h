@@ -140,6 +140,20 @@ public:
 			ret = AllocateEntry(Entry);
 		return ret;
 	}
+
+	/** Deletes all entries in the container.
+	 */
+	void Clear()
+	{
+		for(int i = 0; i < _max; ++i)
+		{
+			if(_array[i] != 0)
+			{
+				delete _array[i];
+			}
+			_array[i] = 0;
+		}
+	}
 };
 
 template<class T>
@@ -231,6 +245,16 @@ public:
 		if(!ret)
 			ret = AllocateEntry(Entry);
 		return ret;
+	}
+
+	/** Deletes all entries in the container.
+	 */
+	void Clear()
+	{
+		typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.begin();
+		for(; itr != _map.end(); ++itr)
+			delete itr->second;
+		_map.clear();
 	}
 };
 
@@ -392,6 +416,7 @@ public:
 	 */
 	virtual void Cleanup()
 	{
+		printf("Deleting database cache of `%s`...\n", _indexName);
         StorageContainerIterator<T> * itr = _storage.MakeIterator();
 		while(!itr->AtEnd())
 		{
@@ -401,6 +426,7 @@ public:
 		}
 		itr->Destruct();
 
+		_storage.Clear();
 		free(_indexName);
 		free(_formatString);
 	}
@@ -500,6 +526,7 @@ public:
 	 */
 	void Load(const char * IndexName, const char * FormatString)
 	{
+		printf("Loading database cache from `%s`...\n", IndexName);
 		Storage<T, StorageType>::Load(IndexName, FormatString);
 		QueryResult * result = sDatabase.Query("SELECT MAX(entry) FROM %s", IndexName);
 		uint32 Max = 999999;
@@ -540,6 +567,7 @@ public:
 	 */
 	void Reload()
 	{
+		printf("Reloading database cache from `%s`...\n", Storage<T, StorageType>::_indexName);
 		QueryResult * result = sDatabase.Query("SELECT MAX(entry) FROM %s", Storage<T, StorageType>::_indexName);
 		if(result == 0)
 			return;

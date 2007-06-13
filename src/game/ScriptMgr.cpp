@@ -309,7 +309,7 @@ void GossipScript::GossipHello(Creature* pCreature, Player* Plr, bool AutoSend)
 	uint32 Text = objmgr.GetGossipTextForNpc(pCreature->GetEntry());
 	if(Text != 0)
 	{
-		GossipText * text = objmgr.GetGossipText(Text);
+		GossipText * text = NpcTextStorage.LookupEntry(Text);
 		if(text != 0)
 			TextID = Text;
 	}
