@@ -22,7 +22,8 @@ extern SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >		Creat
 extern SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >			AreaTriggerStorage;
 extern SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >					ItemPageStorage;
 extern SQLStorage<Quest, HashMapStorageContainer<Quest> >						QuestStorage;
-extern SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStoage;
+extern SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStorage;
+extern SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >		SpellExtraStorage;
 
 void Storage_FillTaskList(TaskList & tl);
 void Storage_Cleanup();

@@ -274,12 +274,6 @@ public:
 	Item * CreateItem(uint32 entry,Player * owner);
 	Item * LoadItem(uint64 guid);
   
-	void LoadSpellExtraData();
-	SpellExtraInfo* GetSpellExtraData(uint32 id);
-
-	//map entry extra data for each spellid
-	SpellExtraInfoMap mExtraSpellData;
-
 	// Groups
 	Group * GetGroupByLeader(Player *pPlayer);
 	Group * GetGroupById(uint32 id);

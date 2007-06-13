@@ -33,23 +33,6 @@ public:
 
 	~QuestMgr();
 
-	void AddQuest(Quest* quest)
-	{
-		m_quests[quest->id] = quest;
-	}
-
-	Quest* FindQuest(uint32 questid)
-	{
-		HM_NAMESPACE::hash_map<uint32, Quest*>::iterator itr = m_quests.find(questid);
-		if(itr == m_quests.end())
-			return NULL;
-		else
-			return itr->second;
-	}
-
-	// Quest Loading
-	void LoadSQLQuests();
-
 	uint32 PlayerMeetsReqs(Player* plr, Quest* qst);
 
 	uint32 CalcStatus(Object* quest_giver, Player* plr);
@@ -121,13 +104,9 @@ public:
 
 		return -1;
 	}
-
-	inline HM_NAMESPACE::hash_map<uint32, Quest*>::iterator Begin() { return m_quests.begin(); }
-	inline HM_NAMESPACE::hash_map<uint32, Quest*>::iterator End() { return m_quests.end(); }
+	void LoadExtraQuestStuff();
 
 private:
-
-	HM_NAMESPACE::hash_map<uint32, Quest*> m_quests;
 
 	HM_NAMESPACE::hash_map<uint32, list<QuestRelation *>* > m_npc_quests;
 	HM_NAMESPACE::hash_map<uint32, list<QuestRelation *>* > m_obj_quests;

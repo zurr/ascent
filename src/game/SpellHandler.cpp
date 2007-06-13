@@ -41,7 +41,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 	if(itemProto->QuestId)
 	{
 		// Item Starter
-		Quest *qst = sQuestMgr.FindQuest(itemProto->QuestId);
+		Quest *qst = QuestStorage.LookupEntry(itemProto->QuestId);
 		if(!qst) 
 			return;
 		sQuestMgr.BuildQuestDetails(&data, qst, tmpItem, 0);

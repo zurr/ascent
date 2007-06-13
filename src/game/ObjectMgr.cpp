@@ -131,11 +131,6 @@ ObjectMgr::~ObjectMgr()
 		i->second.clear();
 	}
 
-	for(SpellExtraInfoMap::iterator i = mExtraSpellData.begin(); i != mExtraSpellData.end(); ++i)
-	{
-		delete i->second;
-	}
-
 	for( LevelInfoMap::iterator i = mLevelInfo.begin(); i != mLevelInfo.end(); ++i)
 	{
 		LevelMap * l = i->second;
@@ -540,37 +535,6 @@ void ObjectMgr::LoadGuilds()
 	}while( result->NextRow() );
 
 	delete result;
-}
-
-void ObjectMgr::LoadSpellExtraData()
-{
-	SpellExtraInfo *spelldata;
-	QueryResult *result = sDatabase.Query( "SELECT * FROM spellextra" );
-	if(result)
-	{
-		do
-		{
-			Field *fields = result->Fetch();
-
-			spelldata = new SpellExtraInfo;
-			spelldata->Id = fields[0].GetUInt32();
-			spelldata->specialtype = fields[1].GetUInt32();
-			spelldata->enchantableslots = fields[2].GetUInt32();
-			spelldata->ExtraFlags = fields[3].GetUInt32();
-
-			mExtraSpellData[spelldata->Id] = spelldata;
-		} while( result->NextRow() );
-		delete result;
-	}
-}
-
-SpellExtraInfo* ObjectMgr::GetSpellExtraData(uint32 id)
-{
-	SpellExtraInfoMap::iterator i = mExtraSpellData.find(id);
-	if(i!=mExtraSpellData.end())
-		return i->second;
-	else
-		return NULL;
 }
 
 Corpse* ObjectMgr::LoadCorpse(uint32 guid)
@@ -999,7 +963,7 @@ void ObjectMgr::ProcessGameobjectQuests()
 		{
 			Field * fields = result->Fetch();
 			gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
-			qst = sQuestMgr.FindQuest(fields[1].GetUInt32());
+			qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
 			if(gon && qst)
 				gon->itemMap[qst].insert( make_pair( fields[2].GetUInt32(), fields[3].GetUInt32() ) );			
 
@@ -1014,7 +978,7 @@ void ObjectMgr::ProcessGameobjectQuests()
 		{
 			Field * fields = result2->Fetch();
 			gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
-			qst = sQuestMgr.FindQuest(fields[1].GetUInt32());
+			qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
 			if(gon && qst)
 				gon->goMap.insert( make_pair( qst, fields[2].GetUInt32() ) );
 

@@ -2748,7 +2748,7 @@ void Player::_LoadQuestLogEntry()
 		{
 			fields = result->Fetch();
 			questid = fields[2].GetUInt32();
-			quest = sQuestMgr.FindQuest(questid);
+			quest = QuestStorage.LookupEntry(questid);
 			slot = fields[3].GetUInt32();
 			ASSERT(slot != -1);
 			

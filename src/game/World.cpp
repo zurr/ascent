@@ -400,10 +400,16 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, LoadPlayerCreateInfo);
 	MAKE_TASK(ObjectMgr, LoadPlayersInfo);
 	Storage_FillTaskList(tl);
+
+	// spawn worker threads (2 * number of cpus)
+	tl.spawn();
+
+	/* storage stuff has to be loaded first */
+	tl.wait();
+
 	MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
 	MAKE_TASK(ObjectMgr, LoadTrainers);
 	MAKE_TASK(ObjectMgr, LoadTotemSpells);
-	MAKE_TASK(ObjectMgr, LoadSpellExtraData);
 	MAKE_TASK(ObjectMgr, LoadSpellSkills);
 	MAKE_TASK(ObjectMgr, LoadSpellFixes);
 	MAKE_TASK(ObjectMgr, LoadSpellOverride);
@@ -422,17 +428,14 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(SocialMgr, LoadFromDB);
 	MAKE_TASK(AddonMgr, LoadFromDB);
 	MAKE_TASK(ObjectMgr, SetHighestGuids);
-	MAKE_TASK(QuestMgr, LoadSQLQuests);
 	MAKE_TASK(ObjectMgr, LoadReputationModifiers);
 	MAKE_TASK(ObjectMgr, LoadMonsterSay);
 
 	MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
 	MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
+	MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
 
 #undef MAKE_TASK
-
-	// spawn worker threads (2 * number of cpus)
-	tl.spawn();
 
 	// wait for all loading to complete.
 	tl.wait();

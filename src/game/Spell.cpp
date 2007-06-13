@@ -2500,7 +2500,7 @@ int8 Spell::CanCast(bool rangetolerate)
 				{   // our spell is not a ranged spell
 
 					// get spell extra data
-					SpellExtraInfo* SpellExtra = objmgr.GetSpellExtraData(m_spellInfo->Id);
+					SpellExtraInfo* SpellExtra = SpellExtraStorage.LookupEntry(m_spellInfo->Id);
 
 					if(SpellExtra)
 					{

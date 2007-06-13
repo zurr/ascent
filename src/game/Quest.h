@@ -108,58 +108,56 @@ struct Quest
 	uint32 srcitem;
 	uint32 srcitemcount;
 
-	string title;
-	string details;
-	string objectives;
-	string completiontext;
-	string incompletetext;
-	string endtext;
+	char * title;
+	char * details;
+	char * objectives;
+	char * completiontext;
+	char * incompletetext;
+	char * endtext;
 
-	string objectivetexts[4];
+	char * objectivetexts[4];
 
 	uint32 required_item[4];
 	uint32 required_itemcount[4];
-	uint32 count_required_item;
 
 	uint32 required_mob[4];
-	uint32 required_mobtype[4];
 	uint32 required_mobcount[4];
-	uint32 count_required_mob;
 
 	uint32 reward_choiceitem[6];
 	uint32 reward_choiceitemcount[6];
-	uint32 count_reward_choiceitem;
 
 	uint32 reward_item[4];
 	uint32 reward_itemcount[4];
-	uint32 count_reward_item;
 
 	uint32 reward_repfaction[2];
 	uint32 reward_repvalue[2];
 
 	uint32 reward_money;
-	uint32 reward_xp_as_money;
-	uint32 effect_on_player;
 	uint32 reward_xp;
 	uint32 reward_spell;
-
+	uint32 effect_on_player;
+	
 	uint32 point_mapid;
 	uint32 point_x;
 	uint32 point_y;
 	uint32 point_opt;
 
 	uint32 required_money;
-
-	uint32 required_quests[4];
 	uint32 required_triggers[4];
-	uint32 count_requiredquests;
-	uint32 count_requiredtriggers;
-
+	uint32 required_quests[4];
 	uint32 receive_items[4];
 	uint32 receive_itemcount[4];
-	uint32 count_receiveitems;
-
 	int is_repeatable;
+
+	uint32 count_required_mob;
+	uint32 count_requiredquests;
+	uint32 count_requiredtriggers;
+	uint32 count_receiveitems;
+	uint32 count_reward_choiceitem;
+	uint32 count_required_item;
+	uint32 required_mobtype[4];
+	uint32 count_reward_item;
+	uint32 reward_xp_as_money;
 };
 
 enum QUEST_MOB_TYPES

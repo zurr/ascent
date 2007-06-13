@@ -1319,7 +1319,7 @@ void Unit::RemoveBySpecialType(uint32 id, uint64 caster)
 	{
 		if(m_auras[x])
 		{
-			SpellExtraInfo* aur = objmgr.GetSpellExtraData(m_auras[x]->GetSpellId());
+			SpellExtraInfo* aur = SpellExtraStorage.LookupEntry(m_auras[x]->GetSpellId());
 			if(aur)
 			{
 				int type = aur->specialtype;

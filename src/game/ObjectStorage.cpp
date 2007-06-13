@@ -23,7 +23,8 @@ const char * gCreatureProtoFormat						= "uuuuufuuffuffuuuuuuuuuuuuuuuuuuffsu";
 const char * gAreaTriggerFormat							= "uuuusffffuu";
 const char * gItemPageFormat							= "usu";
 const char * gNpcTextFormat								= "u";
-const char * gQuestFormat								= "u";
+const char * gQuestFormat								= "uuuuuuuuuuuuuuuuuussssssssssuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
+const char * gSpellExtraFormat							= "uuuu";
 
 /** SQLStorage symbols
  */
@@ -34,7 +35,8 @@ SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >			CreaturePro
 SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >				AreaTriggerStorage;
 SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >					ItemPageStorage;
 SQLStorage<Quest, HashMapStorageContainer<Quest> >							QuestStorage;
-SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStoage;
+SQLStorage<GossipText, HashMapStorageContainer<GossipText> >				NpcTextStorage;
+SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >		SpellExtraStorage;
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
@@ -181,6 +183,8 @@ void Storage_FillTaskList(TaskList & tl)
 	make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
 	make_task(AreaTriggerStorage, AreaTrigger, HashMapStorageContainer, "areatriggers", gAreaTriggerFormat);
 	make_task(ItemPageStorage, ItemPage, HashMapStorageContainer, "itempages", gItemPageFormat);
+	make_task(QuestStorage, Quest, HashMapStorageContainer, "quests", gQuestFormat);
+	make_task(SpellExtraStorage, SpellExtraInfo, HashMapStorageContainer, "spellextra", gSpellExtraFormat);
 }
 
 void Storage_Cleanup()
@@ -222,6 +226,12 @@ bool Storage_ReloadTable(const char * TableName)
 		AreaTriggerStorage.Reload();
 	else if(!stricmp(TableName, "itempages"))			// Item Pages
 		ItemPageStorage.Reload();
+	else if(!stricmp(TableName, "spellextra"))			// Spell Extra Info
+		SpellExtraStorage.Reload();
+	else if(!stricmp(TableName, "quests"))				// Quests
+		QuestStorage.Reload();
+	else if(!stricmp(TableName, "npc_text"))			// NPC Text Storage
+		NpcTextStorage.Reload();
 	else
 		return false;
 	return true;

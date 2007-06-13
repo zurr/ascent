@@ -91,7 +91,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode( WorldPacket & recv_data )
 	Object *qst_giver = NULL;
 
 	bool bValid = false;
-	Quest* qst = sQuestMgr.FindQuest(quest_id);
+	Quest* qst = QuestStorage.LookupEntry(quest_id);
 	
 	if (!qst)
 	{
@@ -198,7 +198,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 		bValid = quest_giver->isQuestGiver();
 		hasquest = quest_giver->HasQuest(quest_id, 1);
 		if(bValid)
-			qst = sQuestMgr.FindQuest(quest_id);
+			qst = QuestStorage.LookupEntry(quest_id);
 	} 
 	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
@@ -209,7 +209,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 			return;
 		bValid = quest_giver->isQuestGiver();
 		if(bValid)
-			qst = sQuestMgr.FindQuest(quest_id);
+			qst = QuestStorage.LookupEntry(quest_id);
 	} 
 	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_ITEM)
 	{
@@ -219,7 +219,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 		else
 			return;
 		bValid = true;
-		qst = sQuestMgr.FindQuest(quest_id);
+		qst = QuestStorage.LookupEntry(quest_id);
 	}
 	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_PLAYER)
 	{
@@ -229,7 +229,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 		else
 			return;
 		bValid = true;
-		qst = sQuestMgr.FindQuest(quest_id);
+		qst = QuestStorage.LookupEntry(quest_id);
 	}
 
 	if (!qst_giver)
@@ -384,7 +384,7 @@ void WorldSession::HandleQuestQueryOpcode( WorldPacket & recv_data )
 
 	recv_data >> quest_id;
 
-	Quest *qst = sQuestMgr.FindQuest(quest_id);
+	Quest *qst = QuestStorage.LookupEntry(quest_id);
 
 	if (!qst)
 	{
@@ -430,8 +430,8 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 			if(!qst)
 				qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_START);
 
-			if(!qst) 
-				sQuestMgr.FindQuest(quest_id);
+			/*if(!qst) 
+				qst = QuestStorage.LookupEntry(quest_id);*/
 			if(!qst)
 			{
 				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
@@ -451,7 +451,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 		if(bValid)
 		{
 			qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
-			if(!qst) sQuestMgr.FindQuest(quest_id);
+			/*if(!qst) sQuestMgr.FindQuest(quest_id);*/
 			if(!qst)
 			{
 				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
@@ -511,8 +511,8 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 		if(bValid)
 		{
 			qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_START);
-			if(!qst) 
-				sQuestMgr.FindQuest(quest_id);
+			/*if(!qst) 
+				sQuestMgr.FindQuest(quest_id);*/
 			if(!qst)
 			{
 				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
@@ -532,7 +532,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 		if(bValid)
 		{
 			qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_START);
-			if(!qst) sQuestMgr.FindQuest(quest_id);
+			/*if(!qst) sQuestMgr.FindQuest(quest_id);*/
 			if(!qst)
 			{
 				sLog.outError("WARNING: Cannot complete quest, as it doesnt exist.");
@@ -589,7 +589,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 			return;
 		bValid = quest_giver->isQuestGiver();
 		if(bValid)
-			qst = sQuestMgr.FindQuest(quest_id);
+			qst = QuestStorage.LookupEntry(quest_id);
 	} 
 	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
@@ -600,7 +600,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 			return;
 		bValid = quest_giver->isQuestGiver();
 		if(bValid)
-			qst = sQuestMgr.FindQuest(quest_id);
+			qst = QuestStorage.LookupEntry(quest_id);
 	}
 
 	if (!qst_giver)
@@ -669,7 +669,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 
 	sLog.outDetail( "WORLD: Received CMSG_PUSHQUESTTOPARTY quest = %u", questid );
 
-	Quest *pQuest = sQuestMgr.FindQuest(questid);
+	Quest *pQuest = QuestStorage.LookupEntry(questid);
 	if(pQuest)
 	{
 		Group *pGroup = _player->GetGroup();

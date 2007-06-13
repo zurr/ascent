@@ -330,7 +330,7 @@ void QuestMgr::BuildRequestItems(WorldPacket *data, Quest* qst, Object* qst_give
 	else if(qst_giver->GetTypeId() == TYPEID_UNIT)
 		type = ((Creature*)qst_giver)->GetQuestRelation(qst->id);*/
 	
-	*data << (qst->incompletetext.length() ? qst->incompletetext : qst->details);
+	*data << (qst->incompletetext[0] ? qst->incompletetext : qst->details);
 	
 	*data << uint32(0);
 	*data << uint32(1);				 // Emote count
@@ -899,274 +899,7 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, Quest *qst, uint8 ty
 	}
 }
 
-//////////////////////////////////
-//		Quest Loading		 //
-//////////////////////////////////
-void QuestMgr::LoadSQLQuests()
-{
-	// find LUA engine
 
-	sLog.outString("  Loading Quests...");
-	// pull quests first
-	QueryResult *pResult = sDatabase.Query("SELECT * FROM quests");
-	Quest *qst = NULL;
-
-	int total;
-	int pos;
-
-	if(pResult)
-	{
-		total = pResult->GetRowCount();
-		pos = 0;
-		do 
-		{
-			Field *data = pResult->Fetch();
-			uint32 i = 0;
-			uint32 k = 0;
-			qst = new Quest;
-			qst->count_required_item = 0;
-			qst->count_reward_choiceitem = 0;
-			qst->count_reward_item = 0;
-			qst->count_required_mob = 0;
-			qst->count_requiredtriggers = 0;
-			qst->count_requiredquests = 0;
-			qst->count_receiveitems = 0;
-			//memset(qst, 0, sizeof(Quest));
-
-			qst->id = data[i].GetUInt32();					  ++i;
-			qst->zone_id = data[i].GetUInt32();				 ++i;
-			qst->quest_sort = data[i].GetUInt32();			  ++i;
-			qst->quest_flags = data[i].GetUInt32();			 ++i;
-			qst->min_level = data[i].GetUInt32();			   ++i;
-			qst->max_level = data[i].GetUInt32();			   ++i;
-			qst->type = data[i].GetUInt32();					++i;
-			qst->required_races = data[i].GetUInt32();		  ++i;
-			qst->required_class = data[i].GetUInt32();		  ++i;
-			qst->required_tradeskill = data[i].GetUInt32();	 ++i;
-			qst->required_rep_faction = data[i].GetUInt32();	++i;
-			qst->required_rep_value = data[i].GetUInt32();	  ++i;
-			qst->time = data[i].GetUInt32();					++i;
-			qst->special_flags = data[i].GetUInt32();		   ++i;
-			qst->previous_quest_id = data[i].GetUInt32();	   ++i;
-			qst->next_quest_id = data[i].GetUInt32();		   ++i;
-			qst->srcitem = data[i].GetUInt32();				 ++i;
-			qst->srcitemcount = data[i].GetUInt32();			++i;
-			qst->title = data[i].GetString();				   ++i;
-			qst->details = data[i].GetString();				 ++i;
-			qst->objectives = data[i].GetString();			  ++i;
-			qst->completiontext = data[i].GetString();		  ++i;
-			qst->incompletetext = data[i].GetString();		  ++i;
-			qst->endtext = data[i].GetString();				 ++i;
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->objectivetexts[k] = data[i].GetString();   ++i;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->required_item[k] = data[i].GetUInt32();   ++i;
-				if(qst->required_item[k]) qst->count_required_item++;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->required_itemcount[k] = data[i].GetUInt32();   ++i;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->required_mob[k] = data[i].GetUInt32(); ++i;
-				if(qst->required_mob[k])
-				{
-					qst->count_required_mob++;
-					GameObjectInfo *go_info = GameObjectNameStorage.LookupEntry(qst->required_mob[k]);
-					CreatureInfo   *c_info  = CreatureNameStorage.LookupEntry(qst->required_mob[k]);
-					if(go_info && (go_info->Type == 10 || qst->quest_flags == 10 || !c_info))
-						qst->required_mobtype[k] = QUEST_MOB_TYPE_GAMEOBJECT;
-					else
-						qst->required_mobtype[k] = QUEST_MOB_TYPE_CREATURE;
-				}
-				else qst->required_mobtype[k] = 0;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->required_mobcount[k] = data[i].GetUInt32();   ++i;
-			}
-
-			for(k = 0; k < 6; ++k)
-			{
-				qst->reward_choiceitem[k] = data[i].GetUInt32();   ++i;
-				if(qst->reward_choiceitem[k]) qst->count_reward_choiceitem++;
-			}
-
-			for(k = 0; k < 6; ++k)
-			{
-				qst->reward_choiceitemcount[k] = data[i].GetUInt32();   ++i;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->reward_item[k] = data[i].GetUInt32();   ++i;
-				if(qst->reward_item[k]) qst->count_reward_item++;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->reward_itemcount[k] = data[i].GetUInt32();   ++i;
-			}
-
-			qst->reward_repfaction[0] = data[i].GetUInt32();   ++i;
-			qst->reward_repfaction[1] = data[i].GetUInt32();   ++i;
-
-			qst->reward_repvalue[0] = data[i].GetUInt32();   ++i;
-			qst->reward_repvalue[1] = data[i].GetUInt32();   ++i;
-
-			qst->reward_money = data[i].GetUInt32();   ++i;
-			qst->reward_xp = data[i].GetUInt32();   ++i;
-			qst->reward_spell = data[i].GetUInt32();   ++i;
-			qst->effect_on_player = data[i].GetUInt32();   ++i;
-
-			qst->point_mapid = data[i].GetUInt32(); ++i;
-			qst->point_x = data[i].GetUInt32(); ++i;
-			qst->point_y = data[i].GetUInt32(); ++i;
-			qst->point_opt = data[i].GetUInt32(); ++i;
-
-			qst->required_money = data[i].GetUInt32(); ++i;
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->required_triggers[k] = data[i].GetUInt32();   ++i;
-				if(qst->required_triggers[k]) qst->count_requiredtriggers++;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->required_quests[k] = data[i].GetUInt32();   ++i;
-				if(qst->required_triggers[k]) qst->count_requiredquests++;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->receive_items[k] = data[i].GetUInt32();   ++i;
-				if(qst->receive_items[k]) qst->count_receiveitems++;
-			}
-
-			for(k = 0; k < 4; ++k)
-			{
-				qst->receive_itemcount[k] = data[i].GetUInt32();   ++i;
-			}
-
-			qst->is_repeatable = data[i].GetUInt32(); ++i;
-			/*qst->reward_xp_as_money = sQuestMgr.GenerateQuestXP(NULL, qst);*/
-			ASSERT(i == pResult->GetFieldCount());
-			AddQuest(qst);
-		} while(pResult->NextRow());
-		delete pResult;
-	}
-
-	// load creature starters
-	HM_NAMESPACE::hash_map<uint32, Quest*>::iterator itr;
-	uint32 creature, quest;
-
-	pResult = sDatabase.Query("SELECT * FROM creature_quest_starter");
-	pos = 0;
-	if(pResult)
-	{
-		total = pResult->GetRowCount();
-		do 
-		{
-			Field *data = pResult->Fetch();
-			creature = data[0].GetUInt32();
-			quest = data[1].GetUInt32();
-
-			itr = m_quests.find(quest);
-			if(itr == m_quests.end())
-			{
-				//printf("Tried to add starter to npc %d for non-existant quest %d.\n", creature, quest);
-			}
-			else 
-			{
-				_AddQuest<Creature>(creature, itr->second, 1);  // 1 = starter
-			}
-		} while(pResult->NextRow());
-		delete pResult;
-	}
-	
-	pResult = sDatabase.Query("SELECT * FROM creature_quest_finisher");
-	pos = 0;
-	if(pResult)
-	{
-		total = pResult->GetRowCount();
-		do 
-		{
-			Field *data = pResult->Fetch();
-			creature = data[0].GetUInt32();
-			quest = data[1].GetUInt32();
-
-			itr = m_quests.find(quest);
-			if(itr == m_quests.end())
-			{
-				//printf("Tried to add finisher to npc %d for non-existant quest %d.\n", creature, quest);
-			} 
-			else 
-			{
-				_AddQuest<Creature>(creature, itr->second, 2);  // 1 = starter
-			}
-		} while(pResult->NextRow());
-		delete pResult;
-	}
-
-	pResult = sDatabase.Query("SELECT * FROM gameobject_quest_starter");
-	pos = 0;
-	if(pResult)
-	{
-		total = pResult->GetRowCount();
-		do 
-		{
-			Field *data = pResult->Fetch();
-			creature = data[0].GetUInt32();
-			quest = data[1].GetUInt32();
-
-			itr = m_quests.find(quest);
-			if(itr == m_quests.end())
-			{
-				//printf("Tried to add starter to go %d for non-existant quest %d.\n", creature, quest);
-			} 
-			else
-			{
-				_AddQuest<GameObject>(creature, itr->second, 1);  // 1 = starter
-			}
-		} while(pResult->NextRow());
-		delete pResult;
-	}
-
-	pResult = sDatabase.Query("SELECT * FROM gameobject_quest_finisher");
-	pos = 0;
-	if(pResult)
-	{
-		total = pResult->GetRowCount();
-		do 
-		{
-			Field *data = pResult->Fetch();
-			creature = data[0].GetUInt32();
-			quest = data[1].GetUInt32();
-
-			itr = m_quests.find(quest);
-			if(itr == m_quests.end())
-			{
-				//printf("Tried to add finisher to go %d for non-existant quest %d.\n", creature, quest);
-			} 
-			else 
-			{
-				_AddQuest<GameObject>(creature, itr->second, 2);  // 2 = finish
-			}
-		} while(pResult->NextRow());
-		delete pResult;
-	}
-	objmgr.ProcessGameobjectQuests();
-}
 
 void QuestMgr::_CleanLine(std::string *str) 
 {
@@ -1307,17 +1040,25 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
 	// Find the quest that has that item
 	uint32 QuestID = 0;
 	uint32 i;
-	for(HM_NAMESPACE::hash_map<uint32, Quest*>::iterator itr=m_quests.begin();itr!=m_quests.end();++itr)
+	StorageContainerIterator<Quest> * itr = QuestStorage.MakeIterator();
+	while(!itr->AtEnd())
 	{
-		Quest *qst = itr->second;
+		Quest *qst = itr->Get();
 		for(i = 0; i < 4; ++i)
+		{
 			if(qst->required_item[i] == Item_Entry)
 			{
 				QuestID = qst->id;
 				m_ObjectLootQuestList[GO_Entry] = QuestID;
+				itr->Destruct();
 				return;
 			}
+		}
+		if(!itr->Inc())
+			break;
 	}
+	itr->Destruct();
+
 	//sLog.outError("WARNING: No coresponding quest was found for quest item %d", Item_Entry);
 }
 
@@ -1419,13 +1160,6 @@ QuestMgr::~QuestMgr()
 	HM_NAMESPACE::hash_map<uint32, list<QuestRelation *>* >::iterator itr2;
 	list<QuestRelation*>::iterator itr3;
 
-	// clear quests
-	for(itr1 = m_quests.begin(); itr1 != m_quests.end(); ++itr1)
-	{
-		delete itr1->second;
-	}
-	m_quests.clear();
-
 	// clear relations
 	for(itr2 = m_obj_quests.begin(); itr2 != m_obj_quests.end(); ++itr2)
 	{
@@ -1497,4 +1231,162 @@ bool QuestMgr::CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot)
 			return false;
     }
 	return true;
+}
+
+void QuestMgr::LoadExtraQuestStuff()
+{
+	StorageContainerIterator<Quest> * it = QuestStorage.MakeIterator();
+	Quest * qst;
+	while(!it->AtEnd())
+	{
+		qst = it->Get();
+
+		// 0 them out
+		qst->count_required_item = qst->count_required_mob = qst->count_requiredtriggers = qst->count_receiveitems =
+			qst->count_reward_item = qst->count_reward_choiceitem = qst->count_required_item = qst->reward_xp_as_money = 0;
+
+		qst->required_mobtype[0] = qst->required_mobtype[1] = qst->required_mobtype[2] = qst->required_mobtype[3] = 0;
+
+		for(int i = 0 ; i < 4; ++i)
+		{
+			if(qst->required_mob[i])
+			{
+				GameObjectInfo *go_info = GameObjectNameStorage.LookupEntry(qst->required_mob[i]);
+				CreatureInfo   *c_info  = CreatureNameStorage.LookupEntry(qst->required_mob[i]);
+				if(go_info && (go_info->Type == 10 || qst->quest_flags == 10 || !c_info))
+					qst->required_mobtype[i] = QUEST_MOB_TYPE_GAMEOBJECT;
+				else
+					qst->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
+
+				qst->count_required_mob++;
+			}
+
+			if(qst->required_item[i])
+				qst->count_required_item++;
+
+			if(qst->reward_item[i])
+				qst->count_reward_item++;
+
+			if(qst->required_triggers[i])
+				qst->count_requiredtriggers++;
+
+			if(qst->receive_items[i])
+				qst->count_receiveitems++;
+
+			if(qst->required_quests[i])
+				qst->count_requiredquests++;
+		}
+
+		for(int i = 0; i < 6; ++i)
+		{
+			if(qst->reward_choiceitem[i])
+				qst->count_reward_choiceitem++;
+		}
+
+		if(!it->Inc())
+			break;
+	}
+
+	it->Destruct();
+
+	// load creature starters
+	uint32 creature, quest;
+
+	QueryResult * pResult = sDatabase.Query("SELECT * FROM creature_quest_starter");
+	uint32 pos = 0;
+	uint32 total;
+	if(pResult)
+	{
+		total = pResult->GetRowCount();
+		do 
+		{
+			Field *data = pResult->Fetch();
+			creature = data[0].GetUInt32();
+			quest = data[1].GetUInt32();
+
+			qst = QuestStorage.LookupEntry(quest);
+			if(!qst)
+			{
+				//printf("Tried to add starter to npc %d for non-existant quest %d.\n", creature, quest);
+			}
+			else 
+			{
+				_AddQuest<Creature>(creature, qst, 1);  // 1 = starter
+			}
+		} while(pResult->NextRow());
+		delete pResult;
+	}
+
+	pResult = sDatabase.Query("SELECT * FROM creature_quest_finisher");
+	pos = 0;
+	if(pResult)
+	{
+		total = pResult->GetRowCount();
+		do 
+		{
+			Field *data = pResult->Fetch();
+			creature = data[0].GetUInt32();
+			quest = data[1].GetUInt32();
+
+			qst = QuestStorage.LookupEntry(quest);
+			if(!qst)
+			{
+				//printf("Tried to add finisher to npc %d for non-existant quest %d.\n", creature, quest);
+			} 
+			else 
+			{
+				_AddQuest<Creature>(creature, qst, 2);  // 1 = starter
+			}
+		} while(pResult->NextRow());
+		delete pResult;
+	}
+
+	pResult = sDatabase.Query("SELECT * FROM gameobject_quest_starter");
+	pos = 0;
+	if(pResult)
+	{
+		total = pResult->GetRowCount();
+		do 
+		{
+			Field *data = pResult->Fetch();
+			creature = data[0].GetUInt32();
+			quest = data[1].GetUInt32();
+
+			qst = QuestStorage.LookupEntry(quest);
+			if(!qst)
+			{
+				//printf("Tried to add starter to go %d for non-existant quest %d.\n", creature, quest);
+			} 
+			else
+			{
+				_AddQuest<GameObject>(creature, qst, 1);  // 1 = starter
+			}
+		} while(pResult->NextRow());
+		delete pResult;
+	}
+
+	pResult = sDatabase.Query("SELECT * FROM gameobject_quest_finisher");
+	pos = 0;
+	if(pResult)
+	{
+		total = pResult->GetRowCount();
+		do 
+		{
+			Field *data = pResult->Fetch();
+			creature = data[0].GetUInt32();
+			quest = data[1].GetUInt32();
+
+			qst = QuestStorage.LookupEntry(quest);
+			if(!qst)
+			{
+				//printf("Tried to add finisher to go %d for non-existant quest %d.\n", creature, quest);
+			} 
+			else 
+			{
+				_AddQuest<GameObject>(creature, qst, 2);  // 2 = finish
+			}
+		} while(pResult->NextRow());
+		delete pResult;
+	}
+	objmgr.ProcessGameobjectQuests();
 }
