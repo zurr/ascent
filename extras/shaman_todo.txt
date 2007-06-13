@@ -5,15 +5,9 @@ Elemental:
 
 Enhancement:
 Guardian Totems - Not working.
-Thundering Strikes - Works.
 Enhancing Totems - Not working.
-Two-Handed Axes and Maces - Works. But remains after re-spec.
-Flurry - Works.
-Toughness - Works untill you logout. gives you additionly 2/4/6/8/10% value on your armor from your items
 Improved Weapon Totems - Not tested.
 Elemental Weapons - Not working.
-Mental Quickness - Not tested.
-Weapon Mastery - Works.
 Stormstrike - It doesn't give the debuff effect, or correct damage, it also never crits NO SHAMAN SHOULD BE USING THIS IN PVP, IT PERMENANTLY BUGS PLAYERS/MOBS TO DO INSANE DAMAGE WHEN YOU USE IT ON THEM UNTILL THEY RELOG! (THATS RIGHT THEY GET THE DMG BONUS)
 Unleashed Rage - Doesnt work. should increase your party members attack power, based on your melee crits
 Shamanistic Rage - Doesnt work. should give you a chance to restore 15% of your attack-power into mana

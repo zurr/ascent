@@ -828,7 +828,8 @@ void Player::_EventAttack(bool offhand)
 	}
 
 	// disallow attacking players in sanctuary zones
-	if(pVictim->IsPlayer())
+	//maybe later check if we are in pvp (sorry but i have no idea how these should work :( )
+	if(pVictim->IsPlayer() && GetTeam()!=static_cast<Player*>(pVictim)->GetTeam())
 	{
 		AreaTable * at = sAreaStore.LookupEntry(this->GetAreaID());
 		AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)pVictim)->GetAreaID());

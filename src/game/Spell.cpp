@@ -2413,7 +2413,8 @@ int8 Spell::CanCast(bool rangetolerate)
 		if(target)
 		{
 			// disallow spell casting in sanctuary zones
-			if(p_caster && target->IsPlayer() && p_caster!=target && !isFriendly(p_caster,target))
+			//maybe later check if we are in pvp (sorry but i have no idea how these should work :( )
+			if(p_caster && target->IsPlayer() && p_caster!=target && p_caster->GetTeam()!=static_cast<Player*>(target)->GetTeam())
 			{
 				AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
 				AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)target)->GetAreaID());
