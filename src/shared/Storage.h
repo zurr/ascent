@@ -21,7 +21,7 @@ public:
 
 	/** Are we at the end of the storage container?
 	 */
-	inline bool AtEnd() { return (Pointer != 0); }
+	inline bool AtEnd() { return (Pointer == 0); }
 
 	/** Virtual function to increment to the next element
 	 */
@@ -36,6 +36,57 @@ template<class T>
 class ArrayStorageContainer
 {
 public:
+	template<class T>
+	class ArrayStorageIterator : public StorageContainerIterator<T>
+	{
+		ArrayStorageContainer<T> * Source;
+		uint32 MyIndex;
+	public:
+
+		/** Increments the iterator
+		*/
+		bool Inc()
+		{
+			GetNextElement();
+			if(StorageContainerIterator<T>::Pointer != 0)
+				return true;
+			else
+				return false;
+		}
+
+		/** Frees the memory occupied by this iterator
+		*/
+		void Destruct()
+		{
+			delete this;
+		}
+
+		/** Constructor
+		*/
+		ArrayStorageIterator(ArrayStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S), MyIndex(0)
+		{
+			GetNextElement();
+		}
+
+		/** Sets the next element pointer, or to 0 if we reached the end
+		*/
+		void GetNextElement()
+		{
+			while(MyIndex < Source->_max)
+			{
+				if(Source->_array[MyIndex] != 0)
+				{
+					StorageContainerIterator<T>::Set(Source->_array[MyIndex]);
+					++MyIndex;
+					return;
+				}
+				++MyIndex;
+			}
+			// reached the end of the array
+			StorageContainerIterator<T>::Set(reinterpret_cast<T*>(0));
+		}
+	};
+
 	/** This is where the magic happens :P
 	 */
 	T ** _array;
@@ -46,7 +97,10 @@ public:
 
 	/** Returns an iterator currently referencing the start of the container
 	 */
-	StorageContainerIterator<T> * MakeIterator();
+	StorageContainerIterator<T> * MakeIterator()
+	{
+		return new ArrayStorageIterator<T>(this);
+	}
 
 	/** Creates the array with specified maximum
 	 */
@@ -146,11 +200,62 @@ template<class T>
 class HashMapStorageContainer
 {
 public:
+	template<class T>
+	class HashMapStorageIterator : public StorageContainerIterator<T>
+	{
+		HashMapStorageContainer<T> * Source;
+		typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr;
+	public:
+
+		/** Constructor
+		*/
+		HashMapStorageIterator(HashMapStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S)
+		{
+			itr = S->_map.begin();
+			if(itr == S->_map.end())
+				StorageContainerIterator<T>::Set(0);
+			else
+				StorageContainerIterator<T>::Set(itr->second);
+		}
+
+		/** Gets the next element, or if we reached the end sets it to 0
+		*/
+		void GetNextElement()
+		{
+			++itr;
+			if(itr == Source->_map.end())
+				StorageContainerIterator<T>::Set(0);
+			else
+				StorageContainerIterator<T>::Set(itr->second);
+		}
+
+		/** Returns true if we're not at the end, otherwise false.
+		*/
+		bool Inc()
+		{
+			GetNextElement();
+			if(StorageContainerIterator<T>::Pointer != 0)
+				return true;
+			else
+				return false;
+		}
+
+		/** Frees the memory occupied by this iterator
+		*/
+		void Destruct()
+		{
+			delete this;
+		}
+	};
+
 	typename HM_NAMESPACE::hash_map<uint32, T*> _map;
 
 	/** Returns an iterator currently referencing the start of the container
 	 */
-	StorageContainerIterator<T> * MakeIterator();
+	StorageContainerIterator<T> * MakeIterator()
+	{
+		return new HashMapStorageIterator<T>(this);
+	}
 
 	/** Frees the container array and all elements inside it
 	 */
@@ -250,7 +355,10 @@ public:
 
 	/** Makes an iterator, w00t!
 	 */
-	StorageContainerIterator<T> * MakeIterator();
+	StorageContainerIterator<T> * MakeIterator()
+	{
+		return _storage.MakeIterator();
+	}
 
 	/** Calls the storage container lookup function.
 	 */
@@ -321,121 +429,6 @@ public:
 	}
 };
 
-
-template<class T>
-class ArrayStorageIterator : public StorageContainerIterator<T>
-{
-	ArrayStorageContainer<T> * Source;
-	uint32 MyIndex;
-public:
-
-	/** Increments the iterator
-	 */
-	bool Inc()
-	{
-		GetNextElement();
-		if(StorageContainerIterator<T>::Pointer != 0)
-			return true;
-		else
-			return false;
-	}
-
-	/** Frees the memory occupied by this iterator
-	 */
-	void Destruct()
-	{
-		delete this;
-	}
-
-	/** Constructor
-	 */
-	ArrayStorageIterator(ArrayStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S), MyIndex(0)
-	{
-		GetNextElement();
-	}
-
-	/** Sets the next element pointer, or to 0 if we reached the end
-	 */
-	void GetNextElement()
-	{
-		while(MyIndex < Source->_max)
-		{
-			if(Source->_array[MyIndex] != 0)
-			{
-				StorageContainerIterator<T>::Set(Source->_array[MyIndex]);
-				++MyIndex;
-				return;
-			}
-			++MyIndex;
-		}
-		// reached the end of the array
-		StorageContainerIterator<T>::Set(reinterpret_cast<T*>(0));
-	}
-};
-
-template<class T>
-class HashMapStorageIterator : public StorageContainerIterator<T>
-{
-	HashMapStorageContainer<T> * Source;
-	typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr;
-public:
-
-	/** Constructor
-	 */
-	HashMapStorageIterator(HashMapStorageContainer<T> * S) : StorageContainerIterator<T>(), Source(S)
-	{
-		itr = S->_map.begin();
-		if(itr == S->_map.end())
-			StorageContainerIterator<T>::Set(0);
-		else
-			StorageContainerIterator<T>::Set(itr->second);
-	}
-
-	/** Gets the next element, or if we reached the end sets it to 0
-	 */
-	void GetNextElement()
-	{
-		++itr;
-		if(itr == Source->_map.end())
-			StorageContainerIterator<T>::Set(0);
-		else
-			StorageContainerIterator<T>::Set(itr->second);
-	}
-
-	/** Returns true if we're not at the end, otherwise false.
-	 */
-	bool Inc()
-	{
-		GetNextElement();
-		if(StorageContainerIterator<T>::Pointer != 0)
-			return true;
-		else
-			return false;
-	}
-
-	/** Frees the memory occupied by this iterator
-	 */
-	void Destruct()
-	{
-		delete this;
-	}
-};
-
-template<class T>
-StorageContainerIterator<T> * HashMapStorageContainer<T>::MakeIterator()
-{
-	HashMapStorageIterator<T> * i = new HashMapStorageIterator<T>(this);
-	return i;
-}
-
-template<class T>
-StorageContainerIterator<T> * ArrayStorageContainer<T>::MakeIterator()
-{
-	ArrayStorageIterator<T> * i = new ArrayStorageIterator<T>(this);
-	return i;
-}
-
-
 template<class T, class StorageType>
 class SQLStorage : public Storage<T, StorageType>
 {
@@ -503,7 +496,7 @@ public:
 		if(result == 0)
 			return;
 
-		uint32 Max = result->Fetch()[0].GetUInt32();
+		uint32 Max = result->Fetch()[0].GetUInt32() + 1;
 		delete result;
 		if(!Max)
 			return;

@@ -150,7 +150,7 @@ void ObjectMgr::LoadExtraItemStuff()
 void LoadTest()
 {
 	ItemPrototypeStorage.Load("items", gItemPrototypeFormat);
-	objmgr.LoadExtraItemStuff();
+	//objmgr.LoadExtraItemStuff();
 
 	CreatureNameStorage.Load("creature_names", gCreatureNameFormat);
 	
