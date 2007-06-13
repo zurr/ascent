@@ -2487,7 +2487,7 @@ bool ChatHandler::HandleSetStandingCommand(const char * args, WorldSession * m_s
 	return true;
 }
 
-void SendHighlightedName(WorldSession * m_session, string& fullname, string& lowercase_name, string& highlight, uint32 id, bool item)
+void SendHighlightedName(WorldSession * m_session, char* full_name, string& lowercase_name, string& highlight, uint32 id, bool item)
 {
 	char message[500];
 	char start[50];
@@ -2496,6 +2496,7 @@ void SendHighlightedName(WorldSession * m_session, string& fullname, string& low
 	sprintf(start, "%s %u: %s", item ? "Item" : "Creature", id, MSG_COLOR_WHITE);
 
 	string::size_type hlen = highlight.length();
+	string fullname = string(full_name);
 	string::size_type offset = lowercase_name.find(highlight);
 	string::size_type remaining = fullname.size() - offset - hlen;
 	strcat(message, start);
@@ -2535,7 +2536,7 @@ bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_se
 		if(FindXinYString(x, it->lowercase_name))
 		{
 			// Print out the name in a cool highlighted fashion
-			SendHighlightedName(m_session, string(it->Name), it->lowercase_name, x, it->ItemId, true);
+			SendHighlightedName(m_session, it->Name, it->lowercase_name, x, it->ItemId, true);
 			++count;
 			if(count == 25)
 			{
@@ -2577,7 +2578,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char * args, WorldSession * 
 		if(FindXinYString(x, i->lowercase_name))
 		{
 			// Print out the name in a cool highlighted fashion
-			SendHighlightedName(m_session, string(i->Name), i->lowercase_name, x, i->Id, false);
+			SendHighlightedName(m_session, i->Name, i->lowercase_name, x, i->Id, false);
 
 			++count;
 			if(count == 25)
