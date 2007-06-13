@@ -7394,7 +7394,8 @@ void Player::removeSoulStone()
 void Player::SoftDisconnect()
 {
       sEventMgr.RemoveEvents(this, EVENT_PLAYER_SOFT_DISCONNECT);
-      GetSession()->LogoutPlayer(true);
-	  GetSession()->Disconnect();
+	  WorldSession *session=GetSession();
+      session->LogoutPlayer(true);
+	  session->Disconnect();
 }
 

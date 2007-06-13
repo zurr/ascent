@@ -760,7 +760,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_SPELL_CRIT_HIT_VICTIM;
 					if(strstr(desc,"after being struck by a melee or ranged critical hit"))
 						pr|=PROC_ON_CRIT_HIT_VICTIM;
-					if(strstr(desc,"on a critical hit"))
+//					if(strstr(desc,"on a critical hit"))
+					if(strstr(desc,"critical hit"))
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(desc,"strikes the caster"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
@@ -779,6 +780,9 @@ void World::SetInitialWorldSettings()
 		}
 
 		sp->procFlags=pr;
+		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
+		if(sp->procCharges==0)
+			sp->procCharges=-1;
 		//sp->dummy=result;
 	}
 

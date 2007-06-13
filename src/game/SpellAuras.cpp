@@ -3037,21 +3037,6 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		pts.procChance = GetSpellProto()->procChance;
 		pts.procFlags = GetSpellProto()->procFlags;
 		pts.procCharges = GetSpellProto()->procCharges;
-
-		if(pts.procCharges==0)
-			pts.procCharges=-1;
-		//caught this for shaman-"unleashed rage" talent
-		if(pts.procFlags==0)
-		{
-			//procflags are 20 and they should be PROC_ON_CRIT_ATTACK
-			if(pts.origId>=30803 && pts.origId<=30807)
-				pts.procFlags=PROC_ON_CRIT_ATTACK;
-			else
-			{
-				SpellEntry *sp=sSpellStore.LookupEntry(pts.spellId);
-				pts.procFlags = sp->procFlags;
-			}
-		}
 		pts.deleted = false;
 		m_target->m_procSpells.push_front(pts);
 	}
