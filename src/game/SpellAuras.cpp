@@ -4539,6 +4539,7 @@ void Aura::SpellAuraAddPctMod(bool apply)
 		break;
 
 	case SMT_EFFECT_BONUS:
+	case SMT_EFFECT:
 		SendModifierLog(&m_target->SM_PEffectBonus,val,AffectedGroups,mod->m_miscValue,true);
 		break;
 
@@ -4550,7 +4551,7 @@ void Aura::SpellAuraAddPctMod(bool apply)
 		SendModifierLog(&m_target->SM_PDummy,val,AffectedGroups,mod->m_miscValue,true);
 		break;
 /*
-	//disabled until clarification : i think power SMT_ATTACK_POWER_BONUS=12 in 2.1 client 
+	//disabled until clarification
 	case SMT_ATTACK_POWER_BONUS:
 		SendModifierLog(&m_target->SM_PAPBonus,val,AffectedGroups,mod->m_miscValue,true); 
 		break;
@@ -4558,6 +4559,21 @@ void Aura::SpellAuraAddPctMod(bool apply)
 	case SMT_COOLDOWN_DECREASE:
 		SendModifierLog(&m_target->SM_PCooldownTime, val, AffectedGroups,mod->m_miscValue,true);
 		break;
+
+		//there are 2 spells in 2.1.1 that will only need attack power bonus
+	case SMT_ATTACK_POWER_AND_DMG_BONUS:
+		{
+			if(GetSpellId()==36563 || GetSpellId()==37186)
+			{
+				SendModifierLog(&m_target->SM_PDamageBonus,val,AffectedGroups,mod->m_miscValue,true);
+			}
+			else
+			{
+				//these are seal of crusader spells
+				SendModifierLog(&m_target->SM_PDamageBonus,val,AffectedGroups,mod->m_miscValue,true);
+				SendModifierLog(&m_target->SM_PAPBonus,val,AffectedGroups,mod->m_miscValue,true); 
+			}
+		}break;
 
 /*	case SMT_BLOCK:
 	case SMT_TREAT_REDUCED:
@@ -5489,11 +5505,11 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 	case SMT_DAMAGE_DONE:
 		SendModifierLog(&m_target->SM_FDamageBonus,val,AffectedGroups,mod->m_miscValue);
 		break;
-
+/*
 	case SMT_SPEED:
 		SendModifierLog(&m_target->SM_FSpeedMod,val,AffectedGroups,mod->m_miscValue);
 		break;
-
+*/
 	case SMT_DUMMY:
 		SendModifierLog(&m_target->SM_FDummy,val,AffectedGroups,mod->m_miscValue);
 		break;
@@ -5511,10 +5527,10 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 		SendModifierLog(&m_target->SM_FCooldownTime, val, AffectedGroups,mod->m_miscValue);
 		break;
 
-	case SMT_TREAT_REDUCED:
+/*	case SMT_TREAT_REDUCED:
 	case SMT_BLOCK:
 	case SMT_TRIGGER:
-	case SMT_TIME:
+	case SMT_TIME:*/
 		break;
 	default://unknown Modifier type
 		sLog.outError(

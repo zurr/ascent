@@ -1683,6 +1683,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
 			}
 		}
 	}
+
 	uint32 POWER_TYPE=UNIT_FIELD_POWER1+m_spellInfo->EffectMiscValue[i];
 
 	uint32 curEnergy = (uint32)unitTarget->GetUInt32Value(POWER_TYPE);

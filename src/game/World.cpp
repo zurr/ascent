@@ -702,7 +702,7 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK;
 					if(strstr(desc,"when struck in combat"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
-					if(strstr(desc,"on a successful melee attack"))
+					if(strstr(desc,"successful melee attack"))
 						pr|=PROC_ON_MELEE_ATTACK;
 					if(strstr(desc,"chance per attack"))
 						pr|=PROC_ON_MELEE_ATTACK;
@@ -776,6 +776,10 @@ void World::SetInitialWorldSettings()
 		sp->procFlags=pr;
 		//sp->dummy=result;
 	}
+	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
+	SpellEntry * parentsp = sSpellStore.LookupEntry(30824);
+	SpellEntry * triggersp = sSpellStore.LookupEntry(30823);
+	triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
 
 	//fix for Predatory Strikes
 	uint32 mm=(1<<(FORM_BEAR-1))|(1<<(FORM_DIREBEAR-1))|(1<<(FORM_MOONKIN-1))|(1<<(FORM_CAT-1));

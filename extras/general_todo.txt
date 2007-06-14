@@ -1,0 +1,12 @@
+SMT_TREAT_REDUCED - this is not used anywhere. Threat formulas are kinda rough estimations ...
+SMT_DUMMY - work on this
+SMT_CAST_TIME - does not depend on charges, add this ability
+SMT_COOLDOWN_DECREASE - make sure it's handled by server too
+SMT_RESIST - not used. There is only 1 spell what is veryrarely used
+SMT_TRIGGER - check if this is used
+SMT_EFFECT_BONUS - check if it is used 
+SMT_RESIST_DISPEL - check if it is used
+
+[12:31] <Preved> if PoM + Pyroblast > Correct
+[12:32] <Preved> if PoM + Flamestrike > unlimited instant flamestrike
+[ presence of mind - sets flamestrike to cast unlimited instant spells

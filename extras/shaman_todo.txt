@@ -9,15 +9,9 @@ Enhancing Totems - Not working.
 Improved Weapon Totems - Not tested.
 Elemental Weapons - Not working.
 Stormstrike - It doesn't give the debuff effect, or correct damage, it also never crits NO SHAMAN SHOULD BE USING THIS IN PVP, IT PERMENANTLY BUGS PLAYERS/MOBS TO DO INSANE DAMAGE WHEN YOU USE IT ON THEM UNTILL THEY RELOG! (THATS RIGHT THEY GET THE DMG BONUS)
-Unleashed Rage - Doesnt work. should increase your party members attack power, based on your melee crits
 Shamanistic Rage - Doesnt work. should give you a chance to restore 15% of your attack-power into mana
 Dual Wield Specialization - Can't tell.
 Dual Wield - Works, but when you unlearn your talents, you still got dual wield.
-Shield Specialization - Works.
-Improved Ghost Wolf - Works.
-Improved Lightning Shield - Works.
-Anticipation - Works.
-Spirit Weapons - Works. (Although Parry might be bugged)
 
 Restoration:
 Ancestral Healing - Doesn't work
