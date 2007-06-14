@@ -544,7 +544,7 @@ public:
 
 		if(result->GetFieldCount() != cols)
 		{
-			printf("Invalid format in %s (%u/%u).", IndexName, cols, result->GetFieldCount());
+			printf("Invalid format in %s (%u/%u).\n", IndexName, cols, result->GetFieldCount());
 			delete result;
 			return;
 		}
