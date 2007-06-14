@@ -12,8 +12,6 @@ Misery; should make shadow word: pain, mind flay, and vampiric touch increase ta
 
 Focused Mind; should reduce mana cost of mind blast, mind control, and mind flay by 15%; does not work at all (I think).
 
-Vampiric Touch; should cause all party members and self to gain mana equal to 5% of all shadow damage you deal to target; the DOT works, but it does not recover mana.
-
 Disciple:
 
 Talent : Inner Focus
@@ -22,6 +20,6 @@ What it does : Instant / 3min cooldown / When activated , reduces the mana cost 
 
 Spells:
 
-	Psychic Scream - the target runs waaay to far out of range and warps around. In duels it is unusable for it is resisted or, the enemy is screamed but can still move about as normal.
+	Psychic Scream - may need the break chance fixed
 
 	Mind Control - When used on anyone besides an NPC, the mind controlled victim is unusable.

@@ -9,7 +9,7 @@ Enhancing Totems - Not working.
 Improved Weapon Totems - Not tested.
 Elemental Weapons - Not working.
 Stormstrike - It doesn't give the debuff effect, or correct damage, it also never crits NO SHAMAN SHOULD BE USING THIS IN PVP, IT PERMENANTLY BUGS PLAYERS/MOBS TO DO INSANE DAMAGE WHEN YOU USE IT ON THEM UNTILL THEY RELOG! (THATS RIGHT THEY GET THE DMG BONUS)
-Shamanistic Rage - Doesnt work. should give you a chance to restore 15% of your attack-power into mana
+Shamanistic Rage - fixed ?
 Dual Wield Specialization - Can't tell.
 Dual Wield - Works, but when you unlearn your talents, you still got dual wield.
 
@@ -28,14 +28,13 @@ Spells
 
 Elemental:
 Light Shield - Works but it sometimes triggers the damage without losing a charge
-Earthbind Totem - It works vs other faction but not vs your own, and vs mobs when it stacks with any other cripple effect a shaman has it makes the mob warp towards you at a very high speed (Usefull to control mobs still, BTW ;) )
+Earthbind Totem - It works vs other faction but not vs your own (fixed?), and vs mobs when it stacks with any other cripple effect a shaman has it makes the mob warp towards you at a very high speed (Usefull to control mobs still, BTW ;) )
 Purge - Works well enough, in some cases it removes things it shouldent (Palidins bubble) and on some things it doesn't work at all (Priests Divine Spirit)
 
 Enhancement:
 Stoneclaw Totem - Doesn't work
 Flametongue Weapon - Doesn't work
 Rockbiter Weapon (Rank 2+) - Doesn't work
-Frostbrand Weapon - Procs on every hit (Probably shouldent be fixed untill other weapons work for the shaman at least)
 Windfury Totem (Rank 4+) - Doesn't work
 Winfury Weapon - Doesn't work
 Far Sight - Creates small taurens that lag the server, although it does work decently enough, (It also detects invis units, again, not sure if this is normal)

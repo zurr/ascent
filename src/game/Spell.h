@@ -116,7 +116,7 @@ enum SPELL_MODIFIER_TYPE
 	//SMT_CAST_TIME2	  =21,// this one looks like cast time...
 	SMT_DAMAGE_DONE_PERIODIC=22,// damage done by ability by x% // GOOD but i think is not % so TODO CHECK!
 	SMT_UNKNOWN23=23,//increase the target's spell damage and healing by an amount equal to $s1% of their total Spirit." , this one is used with the 12 effect needs some decode
-	SMT_PENALTY		 =24,// Your Arcane Missiles spell gains an additional [N]% of your bonus spell damage effects // GOOD //this has nothing to do with arcane missile :)
+	SMT_PENALTY		 =24,// This is a modifer for the amount of +spell damage applied to the spell group, ill be implementing it soon (fishbait) (it should really have a better name ;) ) // GOOD
 	// 25 dont exist spells with it
 	// 26 is obsolete stuff
 	SMT_EFFECT_BONUS	=27,// mana lost cost per point of damage taken for mana shield,Health or Mana gained from Drain Life and Drain Mana increased by x%.

@@ -236,11 +236,15 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 		atA = sAreaStore.LookupEntry(static_cast<Pet *>(objA)->GetPetOwner()->GetAreaID());
 	else if (objA->IsPlayer())
 		atA = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
+	else
+		atA = NULL;
 
 	if(objB->IsPet())
 		atB = sAreaStore.LookupEntry(static_cast<Pet *>(objA)->GetPetOwner()->GetAreaID());
 	else if (objB->IsPlayer())
 		atB = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
+	else
+		atB = NULL;
 
 	// We have the area codes
 	// We know they arent dueling

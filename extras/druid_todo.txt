@@ -4,7 +4,7 @@ Skills
 Faerie Fire - doesnt work
 Tranquility - doesnt work
 Nature Grasp - doesnt work
-Entangling Roots - Dmg Over time release's the target.... should not
+Entangling Roots - may need break chance changed to be damage dependant
 Shared - does only the plus dmg not the 225% dmg from normal atack (I think this skill its eazy fixable becoz Rogue skills like this work)
 Revange - same as shared
 Mangle - same as shared (about the effect i dont know)
