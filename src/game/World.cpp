@@ -767,7 +767,7 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM|PROC_ON_RANGED_ATTACK_VICTIM;				
 					if(strstr(desc, "a chance to deal additional"))
 						pr|=PROC_ON_MELEE_ATTACK;
-					if(strstr(desc, "gives your"))
+					if(strstr(desc, "gives your") && !strstr(desc, "melee"))
 						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 				}
 				//dirty fix to remove auras that should expire on event and they are not
@@ -781,9 +781,10 @@ void World::SetInitialWorldSettings()
 		//sp->dummy=result;
 	}
 	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
-	SpellEntry * parentsp = sSpellStore.LookupEntry(30824);
-	SpellEntry * triggersp = sSpellStore.LookupEntry(30823);
-	triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
+	SpellEntry * parentsp = sSpellStore.LookupEntry(30823);
+	SpellEntry * triggersp = sSpellStore.LookupEntry(30824);
+	if(parentsp && triggersp) 
+		triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
 
 	//fix for Predatory Strikes
 	uint32 mm=(1<<(FORM_BEAR-1))|(1<<(FORM_DIREBEAR-1))|(1<<(FORM_MOONKIN-1))|(1<<(FORM_CAT-1));
