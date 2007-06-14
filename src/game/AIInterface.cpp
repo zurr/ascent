@@ -550,9 +550,11 @@ void AIInterface::Update(uint32 p_time)
 				//something happend to our target, pick another one
 				pSpell->GenerateTargets(&targets);
 				if(targets.m_targetMask & TARGET_FLAG_UNIT)
+				{
 					m_nextTarget = m_Unit->GetMapMgr()->GetUnit(targets.m_unitTarget);
 					// used to determine when the totem should stop affecting the target
 					b_isAttackableOld = isAttackable(m_Unit, m_nextTarget);
+				}
 				else m_nextTarget=NULL;//sorry but could not find a target
 			}
 			if(m_nextTarget)
