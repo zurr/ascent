@@ -106,6 +106,38 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 
 	if(objB->GetTypeId() == TYPEID_CORPSE)
 		return false;
+	
+	// Players in fiegn death flags can't be attacked
+	if(objA->IsPlayer())
+		if(objA->HasFlag(UNIT_FIELD_FLAGS_2, 0x00000001))
+			return false;
+	if(objB->IsPlayer())
+		if(objB->HasFlag(UNIT_FIELD_FLAGS_2, 0x00000001))
+			return false;
+
+	// Checks for untouchable, unattackable
+	if(objA->IsUnit())
+	{
+		if(objA->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT))
+			return false;
+		if(objA->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT_2))
+			return false;
+		if(objA->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_NO_SELECT))
+			return false;
+		if(objA->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_MAKE_CHAR_UNTOUCHABLE))
+			return false;
+	}
+	if(objB->IsUnit())
+	{
+		if(objB->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT))
+			return false;
+		if(objB->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT_2))
+			return false;
+		if(objB->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_NO_SELECT))
+			return false;
+		if(objB->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_MAKE_CHAR_UNTOUCHABLE))
+			return false;
+	}
 
 	if(objA->IsPlayer() && objB->IsPlayer())
 	{
