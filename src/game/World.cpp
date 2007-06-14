@@ -770,6 +770,10 @@ void World::SetInitialWorldSettings()
 					if(strstr(desc, "gives your"))
 						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 				}
+				//dirty fix to remove auras that should expire on event and they are not
+//				else if((aura == SpellAuraAddFlatModifier || aura == SpellAuraAddPctMod) && sp->procCharges)
+				else if((aura == 107 || aura == 108) && sp->procCharges==1)
+					sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
 			}			
 		}
 
