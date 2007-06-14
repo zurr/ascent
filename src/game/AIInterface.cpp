@@ -553,7 +553,8 @@ void AIInterface::Update(uint32 p_time)
 				{
 					m_nextTarget = m_Unit->GetMapMgr()->GetUnit(targets.m_unitTarget);
 					// used to determine when the totem should stop affecting the target
-					b_isAttackableOld = isAttackable(m_Unit, m_nextTarget);
+					if(m_nextTarget)
+						b_isAttackableOld = isAttackable(m_Unit, m_nextTarget);
 				}
 				else m_nextTarget=NULL;//sorry but could not find a target
 			}
