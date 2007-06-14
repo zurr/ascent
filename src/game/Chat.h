@@ -105,8 +105,33 @@ public:
 	uint16			 ValueType;	// 0 = nothing, 1 = uint, 2 = float
 };
 
+class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
+{
+	ChatCommand * _modifyCommandTable;
+	ChatCommand * _debugCommandTable;
+	ChatCommand * _waypointCommandTable;
+	ChatCommand * _GMTicketCommandTable;
+	ChatCommand * _GameObjectCommandTable;
+	ChatCommand * _BattlegroundCommandTable;
+	ChatCommand * _NPCCommandTable;
+	ChatCommand * _CheatCommandTable;
+	ChatCommand * _honorCommandTable;
+	ChatCommand * _petCommandTable;
+	ChatCommand * _recallCommandTable;
+	ChatCommand * _commandTable;
+
+	ChatCommand * GetSubCommandTable(const char * name);
+public:
+	void Init();
+	void Dealloc();
+	void Load();
+	void Override(const char * command, const char * level);
+	inline ChatCommand * Get() { return _commandTable; }
+};
+
 class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 {
+	friend class CommandTableStorage;
 public:
 	ChatHandler();
 	~ChatHandler();

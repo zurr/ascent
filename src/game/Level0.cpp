@@ -62,7 +62,7 @@ bool ChatHandler::HandleHelpCommand(const char* args, WorldSession *m_session)
 	if(!cmd)
 		return false;
 
-	if(!ShowHelpForCommand(m_session, getCommandTable(), cmd))
+	if(!ShowHelpForCommand(m_session, CommandTableStorage::getSingleton().Get(), cmd))
 	{
 		RedSystemMessage(m_session, "Sorry, no help was found for this command, or that command does not exist.");
 	}
@@ -73,7 +73,7 @@ bool ChatHandler::HandleHelpCommand(const char* args, WorldSession *m_session)
 
 bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession *m_session)
 {
-	ChatCommand *table = getCommandTable();
+	ChatCommand *table = CommandTableStorage::getSingleton().Get();
 	WorldPacket data;
 
 	std::string output;

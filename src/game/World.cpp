@@ -435,6 +435,8 @@ void World::SetInitialWorldSettings()
 	// wait for all loading to complete.
 	tl.wait();
 
+	CommandTableStorage::getSingleton().Load();
+
 	sLog.outString("");
 	sLog.outString("Database loaded in %ums.", getMSTime() - start_time);
 	sLog.outString("");

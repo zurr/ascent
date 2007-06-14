@@ -15,25 +15,154 @@
 #include "StdAfx.h"
 
 createFileSingleton( ChatHandler );
-
-
-ChatHandler::ChatHandler()
-{
-
-}
-
-ChatHandler::~ChatHandler()
-{
-
-}
+initialiseSingleton(CommandTableStorage);
 
 ChatCommand * ChatHandler::getCommandTable()
 {
-	// Ignatich
-	// TODO: change default security levels?
+	ASSERT(false);
+	return 0;
+}
 
-//	static bool first_call = true;
+ChatCommand * CommandTableStorage::GetSubCommandTable(const char * name)
+{
+	if(!strcmp(name, "modify"))
+		return _modifyCommandTable;
+	else if(!strcmp(name, "debug"))
+		return _debugCommandTable;
+	else if(!strcmp(name, "waypoint"))
+		return _waypointCommandTable;
+	else if(!strcmp(name, "gmTicket"))
+		return _GMTicketCommandTable;
+	else if(!strcmp(name, "gobject"))
+		return _GameObjectCommandTable;
+	else if(!strcmp(name, "battleground"))
+		return _BattlegroundCommandTable;
+	else if(!strcmp(name, "npc"))
+		return _NPCCommandTable;
+	else if(!strcmp(name, "cheat"))
+		return _CheatCommandTable;
+	else if(!strcmp(name, "pet"))
+		return _petCommandTable;
+	else if(!strcmp(name, "recall"))
+		return _recallCommandTable;
+	else if(!strcmp(name, "honor"))
+		return _honorCommandTable;
+	return 0;
+}
 
+#define dupe_command_table(ct, dt) this->dt = (ChatCommand*)allocate_and_copy(sizeof(ct)/* / sizeof(ct[0])*/, ct)
+inline void* allocate_and_copy(uint32 len, void * pointer)
+{
+	void * data = (void*)malloc(len);
+	memcpy(data, pointer, len);
+	return data;
+}
+
+void CommandTableStorage::Load()
+{
+	QueryResult * result = sDatabase.Query("SELECT * FROM command_overrides");
+	if(!result) return;
+
+	do 
+	{
+		const char * name = result->Fetch()[0].GetString();
+		const char * level = result->Fetch()[1].GetString();
+		Override(name, level);
+	} while(result->NextRow());
+	delete result;
+}
+
+void CommandTableStorage::Override(const char * command, const char * level)
+{
+	ASSERT(level[0] != '\0');
+	char * cmd = strdup(command);
+
+	// find the command we're talking about
+	char * sp = strchr(cmd, ' ');
+	const char * command_name = cmd;
+	const char * subcommand_name = 0;
+
+	if(sp != 0)
+	{
+		// we're dealing with a subcommand.
+		*sp = 0;
+		subcommand_name = sp + 1;
+	}
+
+	int len1 = strlen(command_name);
+	int len2 = subcommand_name ? strlen(subcommand_name) : 0;
+
+	// look for the command.
+	ChatCommand * p = &_commandTable[0];
+	while(p->Name != 0)
+	{
+		if(!strnicmp(p->Name, command_name, len1))
+		{
+			// this is the one we wanna modify
+			if(!subcommand_name)
+			{
+				// no subcommand, we can change it.
+				p->CommandGroup = level[0];
+				printf("Changing command level of command `%s` to %c.\n", p->Name, level[0]);
+			}
+			else
+			{
+				// assume this is a subcommand, loop the second set.
+				ChatCommand * p2 = p->ChildCommands;
+				if(!p2)
+				{
+					printf("Invalid command specified for override: %s\n", command_name);
+				}
+				else
+				{
+					while(p2->Name != 0)
+					{
+						if(!strnicmp(p2->Name, subcommand_name, len2))
+						{
+							// change the level
+							p2->CommandGroup = level[0];
+							printf("Changing command level of command `%s`:`%s` to %c.\n", p->Name, p2->Name, level[0]);
+							break;
+						}
+						p2++;
+					}
+					if(p2->Name == 0)
+					{
+						printf("Invalid subcommand referenced: `%s` under `%s`.\n", subcommand_name, p->Name);
+						break;
+					}
+				}
+			}
+			break;
+		}
+		++p;
+	}
+
+	if(p->Name == 0)
+	{
+		printf("Invalid command referenced: `%s`\n", command_name);
+	}
+
+	free(cmd);
+}
+
+void CommandTableStorage::Dealloc()
+{
+	free( _modifyCommandTable );
+	free( _debugCommandTable );
+	free( _waypointCommandTable );
+	free( _GMTicketCommandTable );
+	free( _GameObjectCommandTable );
+	free( _BattlegroundCommandTable );
+	free( _NPCCommandTable );
+	free( _CheatCommandTable );
+	free( _petCommandTable );
+	free( _recallCommandTable );
+	free( _honorCommandTable );
+}
+
+void CommandTableStorage::Init()
+{
 	static ChatCommand modifyCommandTable[] =
 	{
 		{ "hp",		 'm', NULL,	"Health Points/HP",	NULL, UNIT_FIELD_HEALTH,	UNIT_FIELD_MAXHEALTH, 1 },
@@ -65,6 +194,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "emotestate",'m', NULL,	 "NPC Emote State",	 NULL, UNIT_NPC_EMOTESTATE, 0, 1 },
 		{ NULL,		  0, NULL,	 "",					NULL, 0, 0  }
 	};
+	dupe_command_table(modifyCommandTable, _modifyCommandTable);
 
 	static ChatCommand debugCommandTable[] =
 	{
@@ -100,6 +230,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "setvalue",	'd', &ChatHandler::HandleModifyValueCommand,   "",							   NULL, 0, 0, 0},
 		{ NULL,		   0, NULL,									  "",							   NULL, 0, 0  }
 	};
+	dupe_command_table(debugCommandTable, _debugCommandTable);
 
 	static ChatCommand waypointCommandTable[] =
 	{
@@ -120,6 +251,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "deleteall",	 'w', &ChatHandler::HandleDeleteWaypoints,	  "Delete all waypoints",			  NULL, 0, 0, 0},
 		{ NULL,			0, NULL,									 "",							   NULL, 0, 0  }
 	};
+	dupe_command_table(waypointCommandTable, _waypointCommandTable);
 
 	static ChatCommand GMTicketCommandTable[] =
 	{
@@ -128,6 +260,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "delId",	   'g', &ChatHandler::HandleGMTicketDelByIdCommand, "Deletes GM Ticket by ID",	  NULL, 0, 0, 0},
 		{ NULL,			2, NULL,									   "",							 NULL, 0, 0  }
 	};
+	dupe_command_table(GMTicketCommandTable, _GMTicketCommandTable);
 
 	static ChatCommand GameObjectCommandTable[] =
 	{
@@ -145,6 +278,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "rotate", 'g', &ChatHandler::HandleGORotate, "Rotates gameobject x degrees", NULL, 0, 0, 0 },
 		{ NULL,			2, NULL,						   "",										 NULL, 0, 0  }
 	};
+	dupe_command_table(GameObjectCommandTable, _GameObjectCommandTable);
 
 	static ChatCommand BattlegroundCommandTable[] = 
 	{
@@ -159,6 +293,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "leave",	   'e', &ChatHandler::HandleBattlegroundExitCommand, "Leaves the current battleground.", NULL, 0, 0, 0 },
 		{ NULL,			2, NULL,									 "",									NULL, 0, 0  }
 	};
+	dupe_command_table(BattlegroundCommandTable, _BattlegroundCommandTable);
 
 	static ChatCommand NPCCommandTable[] =
 	{
@@ -187,6 +322,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "spawnlink", 'n', &ChatHandler::HandleNpcSpawnLinkCommand, ".spawnlink sqlentry", NULL, 0, 0, 0 },
 		{ NULL,		  2, NULL,						   "",										   NULL, 0, 0  }
 	};
+	dupe_command_table(NPCCommandTable, _NPCCommandTable);
 
 	static ChatCommand CheatCommandTable[] =
 	{
@@ -203,6 +339,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "stack",	  'm', &ChatHandler::HandleStackCheatCommand, "Enables aura stacking cheat.", NULL, 0, 0, 0 },
 		{ NULL,		   0, NULL,							"",									   NULL, 0, 0, 0 },
 	};
+	dupe_command_table(CheatCommandTable, _CheatCommandTable);
 
 	static ChatCommand honorCommandTable[] =
 	{
@@ -215,6 +352,7 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "pvpcredit", 'm', &ChatHandler::HandlePVPCreditCommand, "Sends PVP credit packet, with specified rank and points", NULL,0,0,0},
 		{ NULL,0,NULL,"",NULL,0,0,0},
 	};
+	dupe_command_table(honorCommandTable, _honorCommandTable);
 
 	static ChatCommand petCommandTable[] = 
 	{
@@ -225,24 +363,26 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "removespell",'m',&ChatHandler::HandleRemovePetSpellCommand, "Removes pet spell <spell>.", NULL, 0, 0, 0 },
 		{ NULL,0,NULL,"",NULL,0,0,0},
 	};
+	dupe_command_table(petCommandTable, _petCommandTable);
 
 	static ChatCommand recallCommandTable[] =
 	{
-		 { "list",		'q', &ChatHandler::HandleRecallListCommand,	   "List recall locations",		  NULL, 0, 0, 0},
-		 { "port",		'q', &ChatHandler::HandleRecallGoCommand,		 "Port to recalled location",	  NULL, 0, 0, 0},
-		 { "add",		 'q', &ChatHandler::HandleRecallAddCommand,		"Add recall location",			NULL, 0, 0, 0},
-		 { "del",		 'q', &ChatHandler::HandleRecallDelCommand,		"Remove a recall location",	   NULL, 0, 0, 0},
-		 { "portplayer", 'm', &ChatHandler::HandleRecallPortPlayerCommand, "recall ports player", NULL, 0, 0, 0 },
-		 { NULL,		   0,  NULL,										"",							   NULL, 0, 0, 0},
+		{ "list",		'q', &ChatHandler::HandleRecallListCommand,	   "List recall locations",		  NULL, 0, 0, 0},
+		{ "port",		'q', &ChatHandler::HandleRecallGoCommand,		 "Port to recalled location",	  NULL, 0, 0, 0},
+		{ "add",		 'q', &ChatHandler::HandleRecallAddCommand,		"Add recall location",			NULL, 0, 0, 0},
+		{ "del",		 'q', &ChatHandler::HandleRecallDelCommand,		"Remove a recall location",	   NULL, 0, 0, 0},
+		{ "portplayer", 'm', &ChatHandler::HandleRecallPortPlayerCommand, "recall ports player", NULL, 0, 0, 0 },
+		{ NULL,		   0,  NULL,										"",							   NULL, 0, 0, 0},
 	};
-	
+	dupe_command_table(recallCommandTable, _recallCommandTable);
+
 	static ChatCommand commandTable[] = {
 		{ "commands",	1, &ChatHandler::HandleCommandsCommand,		"Shows Commands",				 NULL, 0, 0, 0},
 		{ "help",		1, &ChatHandler::HandleHelpCommand,			"Shows help for command",		 NULL, 0, 0, 0},
 
 		{ "announce",	'u', &ChatHandler::HandleAnnounceCommand,	  "Sends Msg To All",			   NULL, 0, 0, 0},
 		{ "wannounce",   'u', &ChatHandler::HandleWAnnounceCommand,	 "Sends Widescreen Msg To All",	NULL, 0, 0, 0},
-		
+
 		{ "appear",	  'v', &ChatHandler::HandleAppearCommand,		"Teleports to x's position.",	 NULL, 0, 0, 0},
 		{ "summon",	  'v', &ChatHandler::HandleSummonCommand,		"Summons x to your position",	 NULL, 0, 0, 0},
 		{ "banchar",	 'b', &ChatHandler::HandleBanCharacterCommand,  "Bans character x with or without reason",			  NULL, 0, 0, 0},
@@ -257,29 +397,29 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "demorph",	 'm', &ChatHandler::HandleDeMorphCommand,	   "Demorphs from morphed model.",   NULL, 0, 0, 0},
 		{ "mount",	   'm', &ChatHandler::HandleMountCommand,		 "Mounts into modelid x.",		 NULL, 0, 0, 0},
 		{ "dismount",	  1, &ChatHandler::HandleDismountCommand,	  "Dismounts.",					 NULL, 0, 0, 0},
-		
+
 		{ "gm",		  'p', &ChatHandler::HandleGMListCommand,		"Shows active GM's",			  NULL, 0, 0, 0},
 		{ "gmoff",	   't', &ChatHandler::HandleGMOffCommand,		 "Sets GM tag off",				NULL, 0, 0, 0},
 		{ "gmon",		't', &ChatHandler::HandleGMOnCommand,		  "Sets GM tag on",				 NULL, 0, 0, 0},
-		
+
 		{ "gps",		 'p', &ChatHandler::HandleGPSCommand,		   "Shows Position",				 NULL, 0, 0, 0},
 		{ "info",		'p', &ChatHandler::HandleInfoCommand,		  "Server info",					NULL, 0, 0, 0},
-		
+
 		{ "worldport",   'v', &ChatHandler::HandleWorldPortCommand,	 "",							   NULL, 0, 0, 0},
 
 		{ "save",		's', &ChatHandler::HandleSaveCommand,		  "Save's your character",		  NULL, 0, 0, 0},
 		{ "saveall",	 's', &ChatHandler::HandleSaveAllCommand,	   "Save's all playing characters",  NULL, 0, 0, 0},
 		{ "security",	'z', &ChatHandler::HandleSecurityCommand,	  "",							   NULL, 0, 0, 0},
 		{ "start",	   'm', &ChatHandler::HandleStartCommand,		 "Teleport's you to a starting location",							   NULL, 0, 0, 0},
-		
+
 		{ "levelup",	 'm', &ChatHandler::HandleLevelUpCommand,	   "",							   NULL, 0, 0, 0},
 		{ "additem",	 'm', &ChatHandler::HandleAddInvItemCommand,	"",							   NULL, 0, 0, 0},
 		{ "removeitem",  'm', &ChatHandler::HandleRemoveItemCommand,	"Removes item %u count %u.", NULL, 0, 0, 0 },
 		{ "createguild", 'l', &ChatHandler::CreateGuildCommand,		 "",							   NULL, 0, 0, 0},
-	   
+
 		{ "invincible",  'j', &ChatHandler::HandleInvincibleCommand,	".invincible - Toggles INVINCIBILITY (mobs won't attack you)", NULL, 0, 0, 0},
 		{ "invisible",   'i', &ChatHandler::HandleInvisibleCommand,	 ".invisible - Toggles INVINCIBILITY and INVISIBILITY (mobs won't attack you and nobody can see you, but they can see your chat messages)", NULL, 0, 0, 0},
-		
+
 		{ "resetreputation", 'n',&ChatHandler::HandleResetReputationCommand, ".resetreputation - Resets reputation to start levels. (use on characters that were made before reputation fixes.)", NULL, 0, 0, 0},
 		{ "resetlevel",  'n', &ChatHandler::HandleResetLevelCommand,	".resetlevel - Resets all stats to level 1 of targeted player. DANGEROUS.", NULL, 0, 0, 0 },
 		{ "resetspells", 'n', &ChatHandler::HandleResetSpellsCommand,   ".resetspells - Resets all spells to starting spells of targeted player. DANGEROUS.", NULL, 0, 0, 0 },
@@ -351,8 +491,33 @@ ChatCommand * ChatHandler::getCommandTable()
 		{ "silentplayer", 't', &ChatHandler::HandleSilentPlayerCommand, "Player cannot chat for x minutes <duration> (default 5 minutes)", NULL, 0, 0, 0 },
 		{ NULL,		  0, NULL,										 "",							   NULL, 0, 0  }
 	};
+	dupe_command_table(commandTable, _commandTable);
 
-	return commandTable;
+	/* set the correct pointers */
+	ChatCommand * p = &_commandTable[0];
+	while(p->Name != 0)
+	{
+		if(p->ChildCommands != 0)
+		{
+			// Set the correct pointer.
+			ChatCommand * np = GetSubCommandTable(p->Name);
+			ASSERT(np);
+			p->ChildCommands = np;
+		}
+		++p;
+	}
+}
+
+ChatHandler::ChatHandler()
+{
+	new CommandTableStorage;
+	CommandTableStorage::getSingleton().Init();
+}
+
+ChatHandler::~ChatHandler()
+{
+	CommandTableStorage::getSingleton().Dealloc();
+	delete CommandTableStorage::getSingletonPtr();
 }
 
 bool ChatHandler::hasStringAbbr(const char* s1, const char* s2)
@@ -480,7 +645,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession *session)
 
 	text++;
 
-	if(!ExecuteCommandInTable(getCommandTable(), text, session))
+	if(!ExecuteCommandInTable(CommandTableStorage::getSingleton().Get(), text, session))
 	{
 		SystemMessage(session, "There is no such command, or you do not have access to it.");
 	}
