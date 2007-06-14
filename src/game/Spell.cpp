@@ -2412,7 +2412,7 @@ int8 Spell::CanCast(bool rangetolerate)
 				AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
 				AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)target)->GetAreaID());
 				if(atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
-					return SPELL_FAILED_TARGET_NOT_IN_SANCTUARY;
+					return SPELL_FAILED_NOT_HERE;
 			}
 
 			if(m_spellInfo->EffectApplyAuraName[0]==2)//mind control
@@ -3502,6 +3502,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
 

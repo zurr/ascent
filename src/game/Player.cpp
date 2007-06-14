@@ -6411,6 +6411,14 @@ void Player::EndDuel(uint8 WinCondition)
 
 	EventAttackStop();
 	DuelingWith->EventAttackStop();
+	
+	// Call off pet
+	if(this->GetSummon())
+	{
+		this->GetSummon()->setAttackTarget(NULL);
+		this->GetSummon()->GetAIInterface()->SetUnitToFollow(this);
+		this->GetSummon()->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, this->GetSummon(), 0);
+	}
 
 	// removing auras that kills players after if low HP
 	RemoveNegativeAuras();
@@ -7413,5 +7421,6 @@ void Player::SoftDisconnect()
       session->LogoutPlayer(true);
 	  session->Disconnect();
 }
+
 
 

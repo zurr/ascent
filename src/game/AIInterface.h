@@ -327,6 +327,8 @@ public:
 	void WipeReferences();
 	WayPointMap *m_waypoints;
 	inline void SetPetOwner(Unit * owner) { m_PetOwner = owner; }
+
+	bool b_isAttackableOld; //used for determining when a totem is to stop affected the m_nextTarget
    
 private:
 	bool m_AllowedToEnterCombat;

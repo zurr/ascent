@@ -65,13 +65,24 @@ inline bool isHostile(Object* objA, Object* objB)// B is hostile for A?
 	// on the opposite team we'll already know :p
 
 	if(hostile && 
-		( objA->IsPlayer() || objA->IsPet() || ( !objA->IsPlayer() && static_cast<Creature *>(objA)->IsTotem() && static_cast<Creature *>(objA)->GetTotemOwner()->IsPvPFlagged() ) ) && objB->IsPlayer())
+		( objA->IsPlayer() || objA->IsPet() || ( objA->IsUnit() && !objA->IsPlayer() && static_cast<Creature *>(objA)->IsTotem() && static_cast<Creature *>(objA)->GetTotemOwner()->IsPvPFlagged() ) ) )
 	{
-		// Check PvP Flags.
-		if(static_cast<Player*>(objB)->IsPvPFlagged())
-			return true;
-		else
-			return false;
+		if(objB->IsPlayer())
+		{
+			// Check PvP Flags.
+			if(static_cast<Player*>(objB)->IsPvPFlagged())
+				return true;
+			else
+				return false;
+		}
+		if(objB->IsPet())
+		{
+			// Check PvP Flags.
+			if(static_cast<Pet*>(objB)->GetPetOwner()->IsPvPFlagged())
+				return true;
+			else
+				return false;
+		}
 	}
 
 	// Reputation System Checks
