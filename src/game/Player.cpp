@@ -828,8 +828,8 @@ void Player::_EventAttack(bool offhand)
 	}
 
 	// disallow attacking players in sanctuary zones
-	//maybe later check if we are in pvp (sorry but i have no idea how these should work :( )
-	if(pVictim->IsPlayer() && GetTeam()!=static_cast<Player*>(pVictim)->GetTeam())
+	// allow attacks in duels
+	if(pVictim->IsPlayer() && this->DuelingWith != (Player*)pVictim)
 	{
 		AreaTable * at = sAreaStore.LookupEntry(this->GetAreaID());
 		AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)pVictim)->GetAreaID());
@@ -841,6 +841,7 @@ void Player::_EventAttack(bool offhand)
 				m_AttackMsgTimer = 3;
 			}
 			setAttackTimer(300, offhand);
+			return;
 		}
 	}
 
@@ -7412,4 +7413,5 @@ void Player::SoftDisconnect()
       session->LogoutPlayer(true);
 	  session->Disconnect();
 }
+
 

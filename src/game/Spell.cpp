@@ -2406,13 +2406,13 @@ int8 Spell::CanCast(bool rangetolerate)
 		if(target)
 		{
 			// disallow spell casting in sanctuary zones
-			//maybe later check if we are in pvp (sorry but i have no idea how these should work :( )
-			if(p_caster && target->IsPlayer() && p_caster!=target && p_caster->GetTeam()!=static_cast<Player*>(target)->GetTeam())
+			// allow attacks in duels
+			if(p_caster && target->IsPlayer() && p_caster->DuelingWith != target && !isFriendly(p_caster, target))
 			{
 				AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
 				AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)target)->GetAreaID());
 				if(atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
-					return SPELL_FAILED_NOT_HERE;
+					return SPELL_FAILED_TARGET_NOT_IN_SANCTUARY;
 			}
 
 			if(m_spellInfo->EffectApplyAuraName[0]==2)//mind control
@@ -3502,6 +3502,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
 

@@ -117,14 +117,94 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 
 		if(objA->HasFlag(PLAYER_FLAGS,PLAYER_FLAG_FREE_FOR_ALL_PVP) && objB->HasFlag(PLAYER_FLAGS,PLAYER_FLAG_FREE_FOR_ALL_PVP))
 			return true;		// can hurt each other in FFA pvp
-		//do not let people attack each other in sancuary
-		if(static_cast<Player *>(objA)->GetTeam()!=static_cast<Player *>(objB)->GetTeam())
+	}
+	
+	// handle for pets in duel
+	if(objA->IsPet())
+	{
+		if(objB->IsPlayer())
+			if(
+				static_cast<Pet *>(objA)->GetPetOwner()->DuelingWith == static_cast<Player *>(objB) && 
+				static_cast<Pet *>(objA)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
+				)
+				return true;
+		if(objB->IsPet())
+			if(static_cast<Pet *>(objA)->GetPetOwner()->DuelingWith == static_cast<Pet *>(objB)->GetPetOwner() && 
+				static_cast<Pet *>(objA)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
+				)
+				return true;
+	}
+	if(objB->IsPet())
+	{
+		if(objA->IsPlayer())
+			if(
+				static_cast<Pet *>(objB)->GetPetOwner()->DuelingWith == static_cast<Player *>(objA) && 
+				static_cast<Pet *>(objB)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
+				)
+				return true;
+		if(objA->IsPet())
+			if(static_cast<Pet *>(objB)->GetPetOwner()->DuelingWith == static_cast<Pet *>(objA)->GetPetOwner() && 
+				static_cast<Pet *>(objB)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
+				)
+				return true;
+	}
+
+	// handle for totems
+	if(objA->IsUnit() && !objA->IsPlayer()) // must be creature
+	{
+		if(static_cast<Creature *>(objA)->IsTotem())
 		{
-			AreaTable * atCaster = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
-			AreaTable * atTarget = sAreaStore.LookupEntry(static_cast<Player *>(objB)->GetAreaID());
-			if(atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
-				return false;
+			if(objB->IsPlayer())
+				if(
+					static_cast<Creature *>(objA)->GetTotemOwner()->DuelingWith == static_cast<Player *>(objB) && 
+					static_cast<Creature *>(objA)->GetTotemOwner()->GetDuelState() == DUEL_STATE_STARTED
+					)
+					return true;
+			if(objB->IsPet())
+				if(static_cast<Creature *>(objA)->GetTotemOwner()->DuelingWith == static_cast<Pet *>(objB)->GetPetOwner() && 
+					static_cast<Creature *>(objA)->GetTotemOwner()->GetDuelState() == DUEL_STATE_STARTED
+					)
+					return true;
 		}
+	}
+	if(objB->IsUnit() && !objB->IsPlayer()) // must be creature
+	{
+		if(static_cast<Creature *>(objB)->IsTotem())
+		{
+			if(objA->IsPlayer())
+				if(
+					static_cast<Creature *>(objB)->GetTotemOwner()->DuelingWith == static_cast<Player *>(objA) && 
+					static_cast<Creature *>(objB)->GetTotemOwner()->GetDuelState() == DUEL_STATE_STARTED
+					)
+					return true;
+			if(objA->IsPet())
+				if(static_cast<Creature *>(objB)->GetTotemOwner()->DuelingWith == static_cast<Pet *>(objA)->GetPetOwner() && 
+					static_cast<Creature *>(objB)->GetTotemOwner()->GetDuelState() == DUEL_STATE_STARTED
+					)
+					return true;
+		}
+	}
+
+	// do not let people attack each other in sancuary
+	// Dueling is already catered for
+	AreaTable *atA;
+	AreaTable *atB;
+	if(objA->IsPet())
+		atA = sAreaStore.LookupEntry(static_cast<Pet *>(objA)->GetPetOwner()->GetAreaID());
+	else if (objA->IsPlayer())
+		atA = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
+
+	if(objB->IsPet())
+		atB = sAreaStore.LookupEntry(static_cast<Pet *>(objA)->GetPetOwner()->GetAreaID());
+	else if (objB->IsPlayer())
+		atB = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
+
+	// We have the area codes
+	// We know they arent dueling
+	if (atA && atB)
+	{
+		if(atA->AreaFlags & 0x800 || atB->AreaFlags & 0x800)
+			return false;
 	}
 
 	if(objA->m_faction == objB->m_faction)  // same faction can't kill each other unless in ffa pvp/duel
