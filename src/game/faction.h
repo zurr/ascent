@@ -240,9 +240,9 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 		atA = NULL;
 
 	if(objB->IsPet())
-		atB = sAreaStore.LookupEntry(static_cast<Pet *>(objA)->GetPetOwner()->GetAreaID());
+		atB = sAreaStore.LookupEntry(static_cast<Pet *>(objB)->GetPetOwner()->GetAreaID());
 	else if (objB->IsPlayer())
-		atB = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
+		atB = sAreaStore.LookupEntry(static_cast<Player *>(objB)->GetAreaID());
 	else
 		atB = NULL;
 
