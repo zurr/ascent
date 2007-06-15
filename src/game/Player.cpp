@@ -1243,7 +1243,7 @@ void Player::GiveXP(uint32 xp, const uint64 &guid, bool allowbonus)
 		++level;
 		li = objmgr.GetLevelInfo(getRace(), getClass(), level);
 		newxp -= nextlevelxp;
-		nextlevelxp = lvlinfo->XPToNextLevel;
+		nextlevelxp = li->XPToNextLevel;
 		levelup = true;
 
 		if(level > 9)
