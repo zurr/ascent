@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 /************************************************************************/
-/* Raid_GruulsLair.cpp Script										*/
+/* Raid_GruulsLair.cpp Script											*/
 /************************************************************************/
 // Lair BruteAI
 #define CN_LAIR_BRUTE 19389

@@ -20,6 +20,8 @@ void SetupTheUnderbog(ScriptMgr * mgr);
 void SetupGruulsLair(ScriptMgr * mgr);
 void SetupBattleOfMountHyjal(ScriptMgr * mgr);
 void SetupShadowLabyrinth(ScriptMgr * mgr);
+void SetupBloodFurnace(ScriptMgr * mgr);
+void SetupScholomance(ScriptMgr * mgr);
 
 struct SP_AI_Spell{
 	SpellEntry *info; // spell info

@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_BloodFurnace.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_Botanica.cpp"
 				>
 			</File>
@@ -216,6 +220,10 @@
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Instance_ManaTombs.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\InstanceScripts\Instance_Scholomance.cpp"
 				>
 			</File>
 			<File
