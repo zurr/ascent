@@ -1082,7 +1082,7 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 		return;
 	}
 
-   if(error = _player->GetItemInterface()->CanAffordItem(it,amount*it->amount))
+   if(error = _player->GetItemInterface()->CanAffordItem(it,amount*item.amount))
    {
       SendBuyFailed(srcguid, itemid, error);
       return;

@@ -258,7 +258,7 @@ void InstanceSavingManagement::LoadSavedInstances()
 
 	if(result==NULL)
 	{
-		sLog.outString("  Query failed.");
+		sLog.outString("Saved Instances: None");
 		return;
 	}
 
