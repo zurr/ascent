@@ -2689,16 +2689,9 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
    
 	if(m_target->IsPlayer())
 	{
-		if(m_spellProto->Id == 12976) //last stand
-		{// recalculate the amount of hp that was added
-			amt -= (GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3 / 1.3);
-		}
 		static_cast<Player*>(m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() + amt);
 		static_cast<Player*>(m_target)->UpdateStats();
-		if(m_spellProto->Id == 12976))// Last Stand
-			static_cast<Player*>(m_target)->EventFieldUpdateExpire(12975, amt);
-		if(m_spellProto->Id == 23782)// Gift of Life
-			static_cast<Player*>(m_target)->EventFieldUpdateExpire(23725, amt);
+                static_cast<Player*>(m_target)->EventFieldUpdateExpire(m_spellProto->Id);
 	}
 	else
 		 m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, amt);
