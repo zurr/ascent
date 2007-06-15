@@ -5354,6 +5354,7 @@ void Aura::SpellAuraModPAttackPower(bool apply)
 		}
 		else
 			m_target->ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,-mod->m_amount);
+		m_target->CalcDamage();
 	}
 }
 

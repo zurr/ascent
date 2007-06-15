@@ -778,7 +778,8 @@ void World::SetInitialWorldSettings()
 					sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
 			}			
 		}
-
+		if(sp->Id==16164)
+			sp->procFlags=PROC_ON_SPELL_CRIT_HIT_VICTIM;
 		sp->procFlags=pr;
 		//sp->dummy=result;
 	}
