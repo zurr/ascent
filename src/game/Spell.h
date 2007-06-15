@@ -958,6 +958,7 @@ enum ShapeshiftForm
 	FORM_FLIGHT		   = 29,
 	FORM_STEALTH		  = 30,
 	FORM_MOONKIN		  = 31,
+	FORM_SPIRITOFREDEMPTION	= 32,
 };
 
 enum DISPEL_TYPE

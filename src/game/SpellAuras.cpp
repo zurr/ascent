@@ -2880,6 +2880,9 @@ void Aura::SpellAuraModShapeshift(bool apply)
 					modelId = 21244;
 			}
 		}break;
+	case FORM_SPIRITOFREDEMPTION:
+		{
+		}break;
 	}
 
 	if (apply)
