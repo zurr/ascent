@@ -51,11 +51,11 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 	SpellCastTargets targets(recvPacket, _player->GetGUID());
 	for(int x = 0; x < 5; x++)
 	{
-		if(itemProto->SpellTrigger[x] == USE)
+		if(itemProto->Spells[x].Trigger == USE)
 		{
-			if(itemProto->SpellId[x])
+			if(itemProto->Spells[x].Id)
 			{
-				spellId = itemProto->SpellId[x];
+				spellId = itemProto->Spells[x].Id;
 				break;
 			}
 		}
@@ -89,22 +89,22 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 	   
 		for(uint32 i = 0; i < 5; i++)
 		{
-			if(itemProto->SpellId[i])
+			if(itemProto->Spells[i].Id)
 			{
-				if(itemProto->SpellTrigger[i] == USE)
+				if(itemProto->Spells[i].Trigger == USE)
 				{
 					item->ItemEntry = itemProto->ItemId;
 					item->SpellID = spellId;
-					item->SpellCategory = itemProto->SpellCategory[i];
-					if(itemProto->SpellCategory[i])
+					item->SpellCategory = itemProto->Spells[i].Category;
+					if(itemProto->Spells[i].Category)
 					{
-						item->Cooldown = itemProto->SpellCategoryCooldown[i];
-						item->CooldownTimeStamp = now() + itemProto->SpellCategoryCooldown[i];
+						item->Cooldown = itemProto->Spells[i].CategoryCooldown;
+						item->CooldownTimeStamp = now() + itemProto->Spells[i].CategoryCooldown;
 					}
 					else
 					{
-						item->Cooldown = itemProto->SpellCooldown[i];
-						item->CooldownTimeStamp = now() + itemProto->SpellCooldown[i];
+						item->Cooldown = itemProto->Spells[i].Cooldown;
+						item->CooldownTimeStamp = now() + itemProto->Spells[i].Cooldown;
 					}
 				}
 			}

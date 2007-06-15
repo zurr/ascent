@@ -586,14 +586,14 @@ void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 	data << itemProto->ContainerSlots;
 	for(i = 0; i < 10; i++)
 	{
-		data << itemProto->ItemStatType[i];
-		data << itemProto->ItemStatValue[i];
+		data << itemProto->Stats[i].Type;
+		data << itemProto->Stats[i].Value;
 	}
 	for(i = 0; i < 5; i++)
 	{
-		data << itemProto->DamageMin[i];
-		data << itemProto->DamageMax[i];
-		data << itemProto->DamageType[i];
+		data << itemProto->Damage[i].Min;
+		data << itemProto->Damage[i].Max;
+		data << itemProto->Damage[i].Type;
 	}
 	data << itemProto->Armor;
 	data << itemProto->HolyRes;
@@ -606,12 +606,12 @@ void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 	data << itemProto->AmmoType;
 	data << itemProto->Range;
 	for(i = 0; i < 5; i++) {
-		data << itemProto->SpellId[i];
-		data << itemProto->SpellTrigger[i];
-		data << itemProto->SpellCharges[i];
-		data << itemProto->SpellCooldown[i];
-		data << itemProto->SpellCategory[i];
-		data << itemProto->SpellCategoryCooldown[i];
+		data << itemProto->Spells[i].Id;
+		data << itemProto->Spells[i].Trigger;
+		data << itemProto->Spells[i].Charges;
+		data << itemProto->Spells[i].Cooldown;
+		data << itemProto->Spells[i].Category;
+		data << itemProto->Spells[i].CategoryCooldown;
 	}
 	data << itemProto->Bonding;
 	data << itemProto->Description;

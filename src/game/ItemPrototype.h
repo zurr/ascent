@@ -358,6 +358,30 @@ struct SocketInfo {
 	uint32 SocketColor;
 	uint32 Unk;
 };
+
+struct ItemSpell
+{
+	uint32 Id;
+	uint32 Trigger;
+	int32 Charges;
+	int32 Cooldown;
+	uint32 Category;
+	int32 CategoryCooldown;
+};
+
+struct ItemDamage
+{
+	float Min;
+	float Max;
+	uint32 Type;
+};
+
+struct ItemStat
+{
+	uint32 Type;
+	int32 Value;
+};
+
 struct ItemPrototype
 {
 	uint32 ItemId;
@@ -385,11 +409,8 @@ struct ItemPrototype
 	uint32 Unique;
 	uint32 MaxCount;
 	uint32 ContainerSlots;
-	uint32 ItemStatType[10];
-	uint32 ItemStatValue[10];
-	float DamageMin[5];
-	float DamageMax[5];
-	uint32 DamageType[5];
+	ItemStat Stats[10];
+	ItemDamage Damage[5];
 	uint32 Armor;
 	uint32 HolyRes;
 	uint32 FireRes;
@@ -400,12 +421,7 @@ struct ItemPrototype
 	uint32 Delay;
 	uint32 AmmoType;
 	float  Range;
-	uint32 SpellId[5];
-	uint32 SpellTrigger[5];
-	uint32 SpellCharges[5];
-	uint32 SpellCooldown[5];
-	uint32 SpellCategory[5];
-	uint32 SpellCategoryCooldown[5];
+	ItemSpell Spells[5];
 	uint32 Bonding;
 	char * Description;
 	uint32 PageId;

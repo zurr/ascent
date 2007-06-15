@@ -73,11 +73,11 @@ void Item::Create( uint32 itemid, Player *owner )
 	m_itemProto = ItemPrototypeStorage.LookupEntry( itemid );
 	ASSERT(m_itemProto);
 	 
-	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES , m_itemProto->SpellCharges[0] );
-	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_01 , m_itemProto->SpellCharges[1] );
-	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_02 , m_itemProto->SpellCharges[2] );
-	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_03 , m_itemProto->SpellCharges[3] );
-	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_04 , m_itemProto->SpellCharges[4] );
+	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES , m_itemProto->Spells[0].Charges );
+	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_01 , m_itemProto->Spells[1].Charges );
+	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_02 , m_itemProto->Spells[2].Charges );
+	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_03 , m_itemProto->Spells[3].Charges );
+	SetUInt32Value( ITEM_FIELD_SPELL_CHARGES_04 , m_itemProto->Spells[4].Charges );
 
 
 	SetUInt32Value( ITEM_FIELD_MAXDURABILITY, m_itemProto->MaxDurability);
@@ -108,7 +108,7 @@ void Item::LoadFromDB(	Field *fields, Player * plr, bool light)
 	SetUInt32Value( ITEM_FIELD_CREATOR, fields[3].GetUInt32() );
 	SetUInt32Value( ITEM_FIELD_STACK_COUNT,  fields[4].GetUInt32());
 	for(uint32 x=0;x<5;x++)
-	if(m_itemProto->SpellId[x])
+	if(m_itemProto->Spells[x].Id)
 	{
 		SetUInt32Value( ITEM_FIELD_SPELL_CHARGES+x , fields[5].GetUInt32() );
 		break;

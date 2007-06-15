@@ -534,8 +534,8 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 
 	if(it)
 	{
-		min_damage -= it->GetProto()->DamageMin[0];
-		max_damage -= it->GetProto()->DamageMax[0];
+		min_damage -= it->GetProto()->Damage[0].Min;
+		max_damage -= it->GetProto()->Damage[0].Max;
 	}
 
 	float ap = 0;

@@ -78,7 +78,7 @@ public:
 	inline uint32 GetChargesLeft()
 	{
 		for(uint32 x=0;x<5;x++)
-			if(m_itemProto->SpellId[x])
+			if(m_itemProto->Spells[x].Id)
 				return GetUInt32Value(ITEM_FIELD_SPELL_CHARGES+x);
 
 		return 0;

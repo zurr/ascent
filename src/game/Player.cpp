@@ -3113,31 +3113,31 @@ void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 	// Stats
 	for (int i = 0; i < 10; i++)
 	{
-		int32 val = proto->ItemStatValue[i];
+		int32 val = proto->Stats[i].Value;
 		if(val == 0) continue;
-		ModifyBonuses(proto->ItemStatType[i],apply?val:-val);
+		ModifyBonuses(proto->Stats[i].Type,apply?val:-val);
 	}
 	
 
-	if(proto->DamageMin[0])
+	if(proto->Damage[0].Min)
 	{
 		if( proto->InventoryType == INVTYPE_RANGED || proto->InventoryType == INVTYPE_RANGEDRIGHT || 
 			proto->InventoryType == INVTYPE_THROWN )	
 		{	
-			BaseRangedDamage[0]+=apply ? proto->DamageMin[0] : -proto->DamageMin[0];
-			BaseRangedDamage[1]+=apply ? proto->DamageMax[0] : -proto->DamageMax[0];
+			BaseRangedDamage[0]+=apply ? proto->Damage[0].Min : -proto->Damage[0].Min;
+			BaseRangedDamage[1]+=apply ? proto->Damage[0].Max : -proto->Damage[0].Max;
 		}
 		else
 		{
 			if(slot==EQUIPMENT_SLOT_OFFHAND)
 			{
-				BaseOffhandDamage[0]=apply ? proto->DamageMin[0] : 0;
-				BaseOffhandDamage[1]=apply ? proto->DamageMax[0] : 0;
+				BaseOffhandDamage[0]=apply ? proto->Damage[0].Min : 0;
+				BaseOffhandDamage[1]=apply ? proto->Damage[0].Max : 0;
 			}
 			else
 			{
-				BaseDamage[0]=apply ? proto->DamageMin[0] : 1;
-				BaseDamage[1]=apply ? proto->DamageMax[0] : 1;
+				BaseDamage[0]=apply ? proto->Damage[0].Min : 1;
+				BaseDamage[1]=apply ? proto->Damage[0].Max : 1;
 			}
 		}
 	}
@@ -3150,9 +3150,9 @@ void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 
 		for (int k = 0; k < 5;k++)
 		{
-			if (item->GetProto()->SpellTrigger[k] == 1)
+			if (item->GetProto()->Spells[k].Trigger == 1)
 			{
-				SpellEntry* spells = sSpellStore.LookupEntry(item->GetProto()->SpellId[k]);
+				SpellEntry* spells = sSpellStore.LookupEntry(item->GetProto()->Spells[k].Id);
 				Spell *spell = new Spell(this, spells ,true,NULL);
 				SpellCastTargets targets;
 				targets.m_unitTarget = this->GetGUID();
@@ -3162,11 +3162,11 @@ void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 						m_SSSPecificSpells.insert(spells->Id);
 
 			}
-			else if(item->GetProto()->SpellTrigger[k] == 2)
+			else if(item->GetProto()->Spells[k].Trigger == 2)
 			{
 				ProcTriggerSpell ts;
 				ts.origId=0;
-				ts.spellId=item->GetProto()->SpellId[k];
+				ts.spellId=item->GetProto()->Spells[k].Id;
 				ts.procChance=5;
 				ts.caster=this->GetGUID();
 				ts.procFlags=PROC_ON_MELEE_ATTACK;
@@ -3181,18 +3181,18 @@ void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 		item->RemoveEnchantmentBonuses();
 		for (int k = 0; k < 5;k++)
 		{
-			if (item->GetProto()->SpellTrigger[k] == 1)
+			if (item->GetProto()->Spells[k].Trigger == 1)
 			{
-				this->RemoveAura(item->GetProto()->SpellId[k]); 
+				this->RemoveAura(item->GetProto()->Spells[k].Id); 
 				if(m_SSSPecificSpells.size())
-					m_SSSPecificSpells.erase(item->GetProto()->SpellId[k]);
+					m_SSSPecificSpells.erase(item->GetProto()->Spells[k].Id);
 
 
-			}else if(item->GetProto()->SpellTrigger[k] == 2)
+			}else if(item->GetProto()->Spells[k].Trigger == 2)
 			{
 				std::list<struct ProcTriggerSpell>::iterator i;
 				for(i=m_procSpells.begin();i!=m_procSpells.end();i++)
-				if((*i).spellId==item->GetProto()->SpellId[k])
+				if((*i).spellId==item->GetProto()->Spells[k].Id)
 				{
 					//m_procSpells.erase(i);
 					i->deleted = true;
@@ -7287,7 +7287,7 @@ void Player::CalcDamage()
 					ItemPrototype * xproto=ItemPrototypeStorage.LookupEntry(GetUInt32Value(PLAYER_AMMO_ID));
 					if(xproto)
 					{
-						bonus+=((xproto->DamageMin[0]+xproto->DamageMax[0])*it->GetProto()->Delay)/2000.0;
+						bonus+=((xproto->Damage[0].Min+xproto->Damage[0].Max)*it->GetProto()->Delay)/2000.0;
 					}
 				}
 			}else bonus =0;

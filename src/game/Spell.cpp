@@ -1395,7 +1395,7 @@ void Spell::cast(bool check)
 					}
 					else
 					{
-						i_caster->SetUInt32Value(ITEM_FIELD_SPELL_CHARGES, proto->SpellCharges[0] );
+						i_caster->SetUInt32Value(ITEM_FIELD_SPELL_CHARGES, proto->Spells[0].Charges );
 						i_caster->ModUInt32Value(ITEM_FIELD_STACK_COUNT,-1);
 						i_caster->m_isDirty = true;
 						//i_caster->Update();
@@ -1409,7 +1409,7 @@ void Spell::cast(bool check)
 			}
 			else if(proto->Class == ITEM_CLASS_QUEST )
 			{					
-				if(proto->SpellCharges[0]!=-1)
+				if(proto->Spells[0].Charges!=-1)
 				{
 					int32 cha=i_caster->GetUInt32Value(ITEM_FIELD_SPELL_CHARGES);
 					//0 - remove, -1 don't remove otherwise inc count
