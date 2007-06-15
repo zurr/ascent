@@ -5419,10 +5419,9 @@ void Aura::SpellAuraIncreasePartySpeed(bool apply)
 
 void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
 {
-	float val;
+	uint32 val;
 	val = mod->m_amount;
 	SM_FIValue(GetUnitCaster()->SM_FEffectBonus,&val,m_spellProto->SpellGroupType);
-	val /= 100;
 
 	if(apply)
 	{
@@ -5440,7 +5439,7 @@ void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
 		{
 			if (mod->m_miscValue & (((uint32)1)<<x) )
 			{
-				static_cast<Player*>(m_target)->SpellDmgDoneBySpr[x]+=val;
+				static_cast<Player*>(m_target)->SpellDmgDoneBySpr[x]+=((float)(val))/100;
 			}
 		}
 	}
@@ -5448,10 +5447,9 @@ void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
 
 void Aura::SpellAuraIncreaseHealingBySpr(bool apply)
 {
-	float val;
+	uint32 val;
 	val = mod->m_amount;
 	SM_FIValue(GetUnitCaster()->SM_FEffectBonus,&val,m_spellProto->SpellGroupType);
-	val /= 100;
 
 	if(apply)
 	{
@@ -5469,7 +5467,7 @@ void Aura::SpellAuraIncreaseHealingBySpr(bool apply)
 		{
 		   // if (mod->m_miscValue & (((uint32)1)<<x) )
 			{
-				static_cast<Player*>(m_target)->SpellHealDoneBySpr[x]+=val;
+				static_cast<Player*>(m_target)->SpellHealDoneBySpr[x]+=((float)(val))/100;
 			}
 		}
 	}
