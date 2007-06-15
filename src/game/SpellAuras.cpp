@@ -5421,7 +5421,7 @@ void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
 {
 	float val;
 	val = mod->m_amount;
-	SM_FIValue(caster->SM_FEffectBonus,&val,m_spellProto->SpellGroupType)
+	SM_FIValue(GetUnitCaster()->SM_FEffectBonus,&val,m_spellProto->SpellGroupType);
 	val /= 100;
 
 	if(apply)
@@ -5450,7 +5450,7 @@ void Aura::SpellAuraIncreaseHealingBySpr(bool apply)
 {
 	float val;
 	val = mod->m_amount;
-	SM_FIValue(caster->SM_FEffectBonus,&val,m_spellProto->SpellGroupType)
+	SM_FIValue(GetUnitCaster()->SM_FEffectBonus,&val,m_spellProto->SpellGroupType);
 	val /= 100;
 
 	if(apply)
