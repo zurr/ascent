@@ -1082,11 +1082,11 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 		return;
 	}
 
-	if(error = _player->GetItemInterface()->CanAffordItem(it,amount))
-	{
-		SendBuyFailed(srcguid, itemid, 0x02);
-		return;
-	}
+   if(error = _player->GetItemInterface()->CanAffordItem(it,amount*it->amount))
+   {
+      SendBuyFailed(srcguid, itemid, error);
+      return;
+   }
  
 	// Find free slot and break if inv full
 	add = _player->GetItemInterface()->FindItemLessMax(itemid,amount, false);

@@ -1606,15 +1606,23 @@ void ItemInterface::BuyItem(ItemPrototype *item, uint32 amount)
 {
 	m_pOwner->ModUInt32Value(PLAYER_FIELD_COINAGE, -(GetBuyPriceForItem(item, amount, amount)));
 	ItemExtendedCostEntry *ex = ItemExtendedCostStore::getSingleton().LookupEntry(item->ItemExtendedCost);
-	for(int i = 0;i<5;i++)
+	if(ex)
 	{
-		if(ex->item[i])
+		for(int i = 0;i<5;i++)
 		{
-			m_pOwner->GetItemInterface()->RemoveItemAmt(ex->item[i],ex->count[i]);
+			if(ex->item[i])
+			{
+				m_pOwner->GetItemInterface()->RemoveItemAmt(ex->item[i],ex->count[i]);
+			}
 		}
+		//just make sure we do not loop the value, Though we should have checked it before
+		if(m_pOwner->GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY) >= ex->honor)
+			m_pOwner->ModUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, -int32(ex->honor));
+		if(m_pOwner->GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY ) >= ex->arena)
+			m_pOwner->ModUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, -int32(ex->arena));
 	}
-	m_pOwner->ModUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, -int32(ex->honor));
-	m_pOwner->ModUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, -int32(ex->arena));
+	else sLog.outDebug("Warning: item %u has extended cost but could not find the value in ItemExtendedCostStore",item->ItemId);
+
 }
 
 int8 ItemInterface::CanAffordItem(ItemPrototype *item,uint32 amount)
@@ -1622,18 +1630,22 @@ int8 ItemInterface::CanAffordItem(ItemPrototype *item,uint32 amount)
 	if(item->ItemExtendedCost)
 	{
 		ItemExtendedCostEntry *ex = ItemExtendedCostStore::getSingleton().LookupEntry(item->ItemExtendedCost);
-		for(int i = 0;i<5;i++)
+		if(ex)
 		{
-			if(ex->item[i])
+			for(int i = 0;i<5;i++)
 			{
-				if(m_pOwner->GetItemInterface()->GetItemCount(ex->item[i], false) < ex->count[i])
-					return INV_ERR_NOT_ENOUGH_MONEY;
+				if(ex->item[i])
+				{
+					if(m_pOwner->GetItemInterface()->GetItemCount(ex->item[i], false) < ex->count[i])
+						return INV_ERR_NOT_ENOUGH_MONEY;
+				}
 			}
+			if(m_pOwner->GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY) < ex->honor)
+				return INV_ERR_NOT_ENOUGH_MONEY;
+			if(m_pOwner->GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY ) < ex->arena)
+				return INV_ERR_NOT_ENOUGH_MONEY;
 		}
-		if(m_pOwner->GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY) < ex->honor)
-			return INV_ERR_NOT_ENOUGH_MONEY;
-		if(m_pOwner->GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY ) < ex->arena)
-			return INV_ERR_NOT_ENOUGH_MONEY;
+		else sLog.outDebug("Warning: item %u has extended cost but could not find the value in ItemExtendedCostStore",item->ItemId);
 	}
 	if(item->BuyPrice)
 	{
