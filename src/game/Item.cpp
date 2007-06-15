@@ -719,6 +719,8 @@ int32 Item::FindFreeEnchantSlot(EnchantEntry * Enchantment)
 		++Slot;
 	}*/
 
+	if(m_uint32Values[ITEM_FIELD_ENCHANTMENT + 3] == 0) return 1;
+
 	uint32 GemSlotsReserve=GetSocketsCount();
 	if(GetProto()->SocketBonus)
 		GemSlotsReserve++;
