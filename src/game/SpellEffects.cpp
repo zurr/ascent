@@ -1430,7 +1430,7 @@ void Spell::SpellEffectWeapon(uint32 i)
 		skill = SKILL_POLEARMS;
 		break;
 	case 15590: // fist weapons
-		skill = 0;
+		skill = SKILL_UNARMED;
 		break;
 	case 264:   // bows
 		{
