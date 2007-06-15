@@ -61,6 +61,7 @@ Unit::Unit()
 	SM_PCriticalDamage=0;
 	SM_FDOT=0;
 	SM_PDOT=0;
+	SM_FEffectBonus=0;
 	SM_PEffectBonus=0;
 	SM_FDamageBonus=0;
 	SM_PDamageBonus=0;

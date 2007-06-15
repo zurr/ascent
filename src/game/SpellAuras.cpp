@@ -5414,19 +5414,21 @@ void Aura::SpellAuraIncreasePartySpeed(bool apply)
 
 void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
 {
-	 float val;
-	
-	 if(apply)
-	 {
-		 val = mod->m_amount/100.0;
-		 if(val<0)
-			 SetNegative();
-		 else
-			 SetPositive();
-	 }
-	 else
-		val =- mod->m_amount/100.0;
-		
+	float val;
+	val = mod->m_amount;
+	SM_FIValue(caster->SM_FEffectBonus,&val,m_spellProto->SpellGroupType)
+	val /= 100;
+
+	if(apply)
+	{
+		if(val<0)
+			SetNegative();
+		else
+			SetPositive();
+	}
+	else
+		val =- val;
+
 	if(m_target->IsPlayer())
 	{	
 		for(uint32 x=1;x<7;x++)
@@ -5441,18 +5443,21 @@ void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
 
 void Aura::SpellAuraIncreaseHealingBySpr(bool apply)
 {
-	 float val;
-	 if(apply)
-	 {
-		 val = mod->m_amount/100.0;
-		 if(val<0)
-			 SetNegative();
-		 else
-			 SetPositive();
-	 }
-	 else
-		val =- mod->m_amount/100.0;
-		
+	float val;
+	val = mod->m_amount;
+	SM_FIValue(caster->SM_FEffectBonus,&val,m_spellProto->SpellGroupType)
+	val /= 100;
+
+	if(apply)
+	{
+		if(val<0)
+			SetNegative();
+		else
+			SetPositive();
+	}
+	else
+		val =- val;
+
 	if(m_target->IsPlayer())
 	{	
 		for(uint32 x=1;x<7;x++)
@@ -5507,11 +5512,12 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 	case SMT_DAMAGE_DONE:
 		SendModifierLog(&m_target->SM_FDamageBonus,val,AffectedGroups,mod->m_miscValue);
 		break;
-/*
-	case SMT_SPEED:
-		SendModifierLog(&m_target->SM_FSpeedMod,val,AffectedGroups,mod->m_miscValue);
+
+	case SMT_EFFECT_BONUS:
+	case SMT_EFFECT:
+		SendModifierLog(&m_target->SM_FEffectBonus,val,AffectedGroups,mod->m_miscValue,true);
 		break;
-*/
+
 	case SMT_DUMMY:
 		SendModifierLog(&m_target->SM_FDummy,val,AffectedGroups,mod->m_miscValue);
 		break;

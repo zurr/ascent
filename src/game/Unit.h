@@ -781,6 +781,7 @@ public:
 	int32 * SM_PCriticalDamage;
 	int32 * SM_PDOT;//pct
 	int32 * SM_FDOT;//flat
+	int32 * SM_FEffectBonus;//flat
 	int32 * SM_PEffectBonus;//pct
 	int32 * SM_FDamageBonus;//flat
 	int32 * SM_PDamageBonus;//pct
