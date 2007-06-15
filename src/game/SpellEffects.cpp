@@ -727,10 +727,13 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 
 			uint32 amount = 1500;
 
-			playerTarget->ModUInt32Value(UNIT_FIELD_MAXHEALTH,amount);
-			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
+			SpellCastTargets tgt;
+			tgt.m_unitTarget = playerTarget->GetGUID();
+			SpellEntry * inf =sSpellStore.LookupEntry(23782);
+			Spell * spe = new Spell(u_caster,inf,true,NULL);
+			spe->prepare(&tgt);
 
-			sEventMgr.AddEvent(playerTarget, &Player::EventFieldUpdateExpire, spellId, amount, EVENT_FIELD_UPDATE_EXPIRE, 20000, 1);
+			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
 		}break;
 	case 12975:// Last Stand
 		{
@@ -739,10 +742,15 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 
 			uint32 amount = (playerTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) * 0.3;
 
-			playerTarget->ModUInt32Value(UNIT_FIELD_MAXHEALTH,amount);
-			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
+			SpellCastTargets tgt;
+			tgt.m_unitTarget = playerTarget->GetGUID();
+			SpellEntry * inf =sSpellStore.LookupEntry(12976);
+			Spell * spe = new Spell(u_caster,inf,true,NULL);
+			spe->prepare(&tgt);
 
-			sEventMgr.AddEvent(playerTarget, &Player::EventFieldUpdateExpire, spellId, amount, EVENT_FIELD_UPDATE_EXPIRE, 20000, 1);
+			playerTarget->SetHealthFromSpell(playerTarget->GetHealthFromSpell() + amount);
+			playerTarget->UpdateStats();
+			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
 		}break;
 	case 24325:// Pagle's Point Cast - Create Mudskunk Lure
 		{
