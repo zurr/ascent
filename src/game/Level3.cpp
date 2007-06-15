@@ -1914,7 +1914,7 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
 bool ChatHandler::HandleNpcReturnCommand(const char* args, WorldSession* m_session)
 {
 	Creature * creature = getSelectedCreature(m_session);
-	if(!creature) return true;
+	if(!creature || !creature->m_spawn) return true;
 
 	// return to respawn coords
 	float x = creature->m_spawn->x;

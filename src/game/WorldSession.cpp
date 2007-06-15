@@ -28,6 +28,7 @@ _player(0), _logoutTime(0), _loggingOut(false), permissions(NULL), permissioncou
 	memset(movement_packet, 0, sizeof(movement_packet));
 	m_currMsTime = getMSTime();
 	bDeleted = false;
+	m_bIsWLevelSet = false;
 
 	for(uint32 x=0;x<8;x++)
 		sAccountData[x].data=NULL;	

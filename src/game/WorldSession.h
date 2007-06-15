@@ -629,6 +629,9 @@ private:
 	MovementInfo movement_info;
 	uint8 movement_packet[90];
 
+	float m_wLevel; // Level of water the player is currently in
+	bool m_bIsWLevelSet; // Does the m_wLevel variable contain up-to-date information about water level?
+	
 	uint32 _accountId;
 	uint32 _accountFlags;
 	string _accountName;

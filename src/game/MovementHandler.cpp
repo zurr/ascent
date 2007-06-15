@@ -377,16 +377,24 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 
 	if(movement_info.flags & 0x200000)
 	{
+		// get water level only if it was not set before
+		if (!m_bIsWLevelSet)
+		{
+			// water level is somewhere below the nose of the character when entering water
+			m_wLevel = movement_info.z + _player->m_noseLevel*0.95;
+			m_bIsWLevelSet = true;
+		}
 		if(!(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
 			_player->m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
 	}
-	else
+	// make sure the swimming flag was disabled because of getting out of water
+	else if (m_bIsWLevelSet && movement_info.z > m_wLevel)
 	{
 		if(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
 		{
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
-			//should make another condition to filter out of water jumps. Too complex :P
 			_player->RemoveAura(1066);//remove aquatic form on land
+			m_bIsWLevelSet = false;
 		}
 
 		if(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
@@ -400,9 +408,9 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 		return;
 
 //	uint8 wtype  = _player->m_mapMgr->GetWaterType(movement_info.x, movement_info.y);
-	float wlevel = _player->m_mapMgr->GetWaterHeight(movement_info.x, movement_info.y);
+//	float wlevel = _player->m_mapMgr->GetWaterHeight(movement_info.x, movement_info.y);
 
-	if((movement_info.z - 2) > wlevel && (movement_info.flags & 0x200000))
+	if(m_bIsWLevelSet && (movement_info.z + _player->m_noseLevel) < m_wLevel)
 	{
 		// underwater, w000t!
 		if(_player->m_MountSpellId)
@@ -422,7 +430,7 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 	else
 	{
 		// we're not underwater
-		if(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER && recv_data.GetOpcode() != MSG_MOVE_JUMP)
+		if(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
 		{
 			WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
 			data << uint32(1) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << uint32(10) << uint32(0);

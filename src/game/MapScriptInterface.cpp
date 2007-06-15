@@ -93,8 +93,38 @@ GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY
 
 Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2)
 {
-	//TODO: REPLACE WITH PROTOTYPE!
-	return 0;
+	CreatureProto * proto = CreatureProtoStorage.LookupEntry(Entry);
+	CreatureInfo * info = CreatureNameStorage.LookupEntry(Entry);
+	if(proto == 0 || info == 0)
+	{
+		return 0;
+	}
+
+	CreatureSpawn * sp = new CreatureSpawn;
+	sp->displayid = info->DisplayID;
+	sp->entry = Entry;
+	sp->form = 0;
+	sp->id = 0;
+	sp->movetype = 0;
+	sp->x = cX;
+	sp->y = cY;
+	sp->z = cZ;
+	sp->o = cO;
+	sp->emote_state =0;
+	sp->flags = 0;
+	sp->factionid = proto->Faction;
+	sp->bytes=0;
+	sp->bytes2=0;
+	sp->respawnNpcLink = 0;
+
+	Creature * p = this->mapMgr.CreateCreature();
+	ASSERT(p);
+	p->Load(sp, NULL, NULL);
+	p->spawnid = 0;
+	p->m_spawn = 0;
+	delete sp;
+	p->PushToWorld(&mapMgr);
+	return p;
 }
 
 void MapScriptInterface::DeleteCreature(Creature* ptr)

@@ -196,10 +196,13 @@ bool ChatHandler::HandleDeleteCommand(const char* args, WorldSession *m_session)
 
 	if(unit->IsInWorld())
 	{
-		uint32 cellx=((_maxX-unit->m_spawn->x)/_cellSize);
-		uint32 celly=((_maxY-unit->m_spawn->y)/_cellSize);
-
-		unit->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx, celly)->CreatureSpawns.erase(unit->m_spawn);
+		if(unit->m_spawn)
+		{
+			uint32 cellx=((_maxX-unit->m_spawn->x)/_cellSize);
+			uint32 celly=((_maxY-unit->m_spawn->y)/_cellSize);
+			unit->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx, celly)->CreatureSpawns.erase(unit->m_spawn);
+		}
+		
 		unit->RemoveFromWorld(false);
 	}
 	unit->DeleteFromDB();

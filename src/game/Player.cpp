@@ -2187,6 +2187,8 @@ bool Player::LoadFromDB(uint32 guid)
 		return false;
 	}
 
+	SetNoseLevel();
+
 	// set power type
 	SetPowerType(myClass->power_type);
 
@@ -2656,6 +2658,8 @@ void Player::LoadFromDB_Light(Field *fields, uint32 guid)
 	SetUInt32Value(PLAYER_BYTES, get_next_field.GetUInt32());
 	SetUInt32Value(PLAYER_BYTES_2, get_next_field.GetUInt32());
 	SetUInt32Value(PLAYER_GUILDID, get_next_field.GetUInt32());
+
+	SetNoseLevel();
 	
 	// Load name
 	m_name = get_next_field.GetString();
@@ -6564,6 +6568,10 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 		instance = true;
 	}
 
+	// make sure player does not drown when teleporting from under water
+	if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+		m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+
 	if(flying_aura && m_mapId != 530)
 	{
 		RemoveAura(flying_aura);
@@ -7422,5 +7430,52 @@ void Player::SoftDisconnect()
 	  session->Disconnect();
 }
 
-
-
+void Player::SetNoseLevel()
+{
+	// Set the height of the player
+	switch (getRace())
+	{
+		case RACE_HUMAN:
+		// female
+			if (getGender()) m_noseLevel = 1.72;
+			// male
+			else m_noseLevel = 1.78;
+		break;
+		case RACE_ORC:
+			if (getGender()) m_noseLevel = 1.82;
+			else m_noseLevel = 1.98;
+		break;
+		case RACE_DWARF:
+		if (getGender()) m_noseLevel = 1.27;
+			else m_noseLevel = 1.4;
+		break;
+		case RACE_NIGHTELF:
+			if (getGender()) m_noseLevel = 1.84;
+			else m_noseLevel = 2.13;
+		break;
+		case RACE_UNDEAD:
+			if (getGender()) m_noseLevel = 1.61;
+			else m_noseLevel = 1.8;
+		break;
+		case RACE_TAUREN:
+			if (getGender()) m_noseLevel = 2.48;
+			else m_noseLevel = 2.01;
+		break;
+		case RACE_GNOME:
+			if (getGender()) m_noseLevel = 1.06;
+			else m_noseLevel = 1.04;
+		break;
+		case RACE_TROLL:
+			if (getGender()) m_noseLevel = 2.02;
+			else m_noseLevel = 1.93;
+		break;
+		case RACE_BLOODELF:
+			if (getGender()) m_noseLevel = 1.83;
+			else m_noseLevel = 1.93;
+		break;
+		case RACE_DRAENEI:
+			if (getGender()) m_noseLevel = 2.09;
+			else m_noseLevel = 2.36;
+		break;
+	}
+}

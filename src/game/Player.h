@@ -1130,6 +1130,10 @@ public:
 	Player *getTradeTarget() {return mTradeTarget;};
 	Item *getTradeItem(uint32 slot) {return mTradeItems[slot];};
         
+	// Water level related stuff (they are public because they need to be accessed fast)
+	// Nose level of the character (needed for proper breathing)
+	float m_noseLevel;
+
 protected:
 	uint32 iActivePet;
 	void _SetCreateBits(UpdateMask *updateMask, Player *target) const;
@@ -1165,6 +1169,8 @@ protected:
 	void _EventAttack(bool offhand);
 	void _EventExploration();
 	void UpdateCooldowns();
+	// Water level related stuff
+	void SetNoseLevel();
 	// Cooldown stuff
 	std::map<uint32,uint32>	 SpellCooldownMap;
 	std::map<uint32,uint32>	 SpellCooldownCategoryMap;
