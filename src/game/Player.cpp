@@ -5935,7 +5935,7 @@ void Player::EventFieldUpdateExpire(uint32 spellID)
 	}
 
 	uint32 newHealth;
-	if(!isAlive()
+	if(!isAlive())
 		newHealth = 0;
 	else if (GetUInt32Value(UNIT_FIELD_HEALTH) < amount)
 		newHealth = 1;

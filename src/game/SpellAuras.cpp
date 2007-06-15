@@ -5929,20 +5929,25 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
 
 void Aura::SpellAuraIncreaseMaxHealth(bool apply)
 {
-        if(apply)
+	if(apply)
 	{
-                m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, mod->m_amount);
-                m_target->ModUInt32Value(UNIT_FIELD_HEALTH, mod->m_amount);
-        }
-        else
-        {       
-                m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, -mod->m_amount);
-                if (!m_target->isAlive())
-                        return;
-                uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) - mod->m_amount;
-                
-                if (m_target->GetUInt32Value(UNIT_FIELD_HEALTH) < mod->m_amount)
-                        newHealth = 1;
-                m_target->SetUInt32Value(UNIT_FIELD_HEALTH, newHealth);
-        }
+		m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, mod->m_amount);
+		m_target->ModUInt32Value(UNIT_FIELD_HEALTH, mod->m_amount);
+		if(m_target->IsPlayer())
+			((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() + mod->m_amount); 
+
+	}
+	else
+	{       
+		m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, -mod->m_amount);
+		if(m_target->IsPlayer())
+			((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() - mod->m_amount); 
+		if (!m_target->isAlive())
+			return;
+		uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) - mod->m_amount;
+
+		if (m_target->GetUInt32Value(UNIT_FIELD_HEALTH) < mod->m_amount)
+			newHealth = 1;
+		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, newHealth);
+	}
 }
