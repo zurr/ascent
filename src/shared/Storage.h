@@ -544,9 +544,16 @@ public:
 
 		if(result->GetFieldCount() != cols)
 		{
-			printf("Invalid format in %s (%u/%u).\n", IndexName, cols, result->GetFieldCount());
-			delete result;
-			return;
+			if(result->GetFieldCount() > cols)
+			{
+				printf("Invalid format in %s (%u/%u), loading anyway because we have enough data\n", IndexName, cols, result->GetFieldCount());
+			}
+			else
+			{
+				printf("Invalid format in %s (%u/%u), not enough data to proceed.\n", IndexName, cols, result->GetFieldCount());
+				delete result;
+				return;
+			}
 		}
 
 		uint32 Entry;
