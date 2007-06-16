@@ -263,6 +263,7 @@ void World::SetInitialWorldSettings()
 	{
 		GmClientChannel = "";
 	}
+    realmtype = Config.MainConfig.GetBoolDefault("realmtype", false);
 
 	m_lastTick = time(NULL);
 

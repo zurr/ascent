@@ -2250,7 +2250,8 @@ void Spell::HandleAddAura(uint64 guid)
 		return;
 
 	// Applying an aura to a flagged target will cause you to get flagged.
-	if(Target->IsPlayer() && p_caster)
+    // self casting doesnt flag himself.
+	if(Target->IsPlayer() && p_caster && p_caster != static_cast<Player*>(Target))
 	{
 		if(static_cast<Player*>(Target)->IsPvPFlagged())
 			p_caster->SetPvPFlag();
@@ -3125,7 +3126,8 @@ void Spell::Heal(int32 amount)
 	if(!unitTarget || !unitTarget->isAlive())
 		return;
 	
-	if(p_caster && playerTarget)
+    //self healing shouldnt flag himself
+	if(p_caster && playerTarget && p_caster != playerTarget)
 	{
 		// Healing a flagged target will flag you.
 		if(playerTarget->IsPvPFlagged())

@@ -200,6 +200,12 @@ struct MapInfo
 	std::string name;
     uint32 lvl_mod_a;
 };
+
+enum REALM_TYPE
+{
+    REALM_PVE = 0,
+    REALM_PVP = 1,
+};
 struct AreaTable;
 
 /*class StartupTask
@@ -451,6 +457,8 @@ public:
 	void	SetKickAFKPlayerTime(uint32 idletimer){m_KickAFKPlayers=idletimer;}
 	uint32	GetKickAFKPlayerTime(){return m_KickAFKPlayers;}
 
+    uint32 GetRealmType() { return realmtype; }
+
 protected:
 	// update Stuff, FIXME: use diff
 	time_t _UpdateGameTime()
@@ -497,6 +505,8 @@ protected:
 
 	bool reqGmClient;
 	std::string GmClientChannel;
+    
+    uint32 realmtype;
 
 	time_t m_gameTime;
 	time_t m_lastTick;
