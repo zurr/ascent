@@ -566,7 +566,7 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 						if(p_caster)
 								p=p_caster;
 						else if(u_caster && u_caster->GetTypeId()==TYPEID_UNIT && ((Creature*)u_caster)->IsTotem())
-								Player*p=(Player*) ((Creature*)u_caster)->GetTotemOwner();
+								p=(Player*) ((Creature*)u_caster)->GetTotemOwner();
 						if(p_caster)
 						{
 							float r =range;

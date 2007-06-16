@@ -435,8 +435,6 @@ int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Per
 {
 	int32 Slot;
 	m_isDirty = true;
-  
-
 
 	if(Perm)
 	{
@@ -445,7 +443,9 @@ int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Per
 			Slot=Slot_;
 		}
 		else
+        {
 			Slot = FindFreeEnchantSlot(Enchantment);
+        }
 	}
 	else
 	{
@@ -473,8 +473,6 @@ int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Per
 		}
 	}   
 		
-	//printf("SLOT %u\n",Slot);
-
 	// Create the enchantment struct.
 	EnchantmentInstance Instance;
 	Instance.ApplyTime = time(NULL);

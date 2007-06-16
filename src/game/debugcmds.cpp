@@ -667,7 +667,7 @@ bool ChatHandler::HandleKnockBackCommand(const char* args, WorldSession *m_sessi
 	if(f == 0.0f)
 		f = 5.0f;
 
-	Player * plr = m_session->GetPlayer();
+	//Player * plr = m_session->GetPlayer();
 
 	float dx =sinf(m_session->GetPlayer()->GetOrientation());
 	float dy =cosf(m_session->GetPlayer()->GetOrientation());

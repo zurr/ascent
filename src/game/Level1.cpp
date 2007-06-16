@@ -620,7 +620,7 @@ bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession *m_se
 		return false;
 
 	int valcount = sscanf(args, "%u", &id);
-	if(id)
+	if(valcount)
 	{
 		sprintf(sql, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", id, target->GetSQL_id());
 		sDatabase.Execute( sql );

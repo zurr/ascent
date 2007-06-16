@@ -780,7 +780,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
 	UnSetTaxiPos();
 	m_taxi_ride_time = 0;
 
-	uint32 modelid = GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID);
+	//uint32 modelid = GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID);
 
 	SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
 	RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_MOUNT_SIT );

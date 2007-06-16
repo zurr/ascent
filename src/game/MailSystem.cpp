@@ -263,7 +263,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
 	uint64 gameobject;
 	uint32 unk2;
 	string recepient;
-	uint32 err = MAIL_OK;
+	//uint32 err = MAIL_OK;
 
 	recv_data >> gameobject >> recepient;
 	recv_data >> msg.subject >> msg.body >> msg.stationary;
