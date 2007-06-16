@@ -249,13 +249,649 @@ public:
     }
 protected:
 
-	SpellEntry * m_spellProto;
 	int FIRST_ATTACK;
     bool *m_spellcheck;
     SP_AI_Spell *spells;
 	int nrspells;
 };
 
+// Shadowmoon Darkcaster AI
+
+#define CN_SHADOWMOON_DARKCASTER 17694
+
+#define RAIN_OF_FIRE 37279 // 37279, 39376, 36808, 34360, 33617
+#define FEAR 38154 // 38595, 38660, 39119, 39210, 39415, 38154, 34259, 33924, 31358, 30615
+
+class SHADOWMOONDARKCASTERAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHADOWMOONDARKCASTERAI);
+    SHADOWMOONDARKCASTERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 2;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(RAIN_OF_FIRE);
+		spells[0].targettype = TARGET_DESTINATION;
+		spells[0].instant = true;	// should be false, but then model bug appears
+		spells[0].perctrigger = 8.0f;
+		spells[0].attackstoptimer = 1000;
+
+        spells[1].info = sSpellStore.LookupEntry(FEAR);
+		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].instant = true;	// changed from false to prevent spell stucking
+		spells[1].perctrigger = 6.0f;
+		spells[1].attackstoptimer = 1000;
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
+// Shattered Hand Gladiator AI
+
+#define CN_SHATTERED_HAND_GLADIATOR 17464
+
+#define MORTAL_STRIKE 31911 // 31911, 29572, 32736, 35054, 39171, 37335
+// sth more?
+
+class SHATTEREDHANDGLADIATORAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDGLADIATORAI);
+    SHATTEREDHANDGLADIATORAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 1;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(MORTAL_STRIKE);
+		spells[0].targettype = TARGET_ATTACKING;
+		spells[0].instant = true;
+		spells[0].perctrigger = 8.0f;
+		spells[0].attackstoptimer = 1000;
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+		_unit->CastSpell(_unit, spells[1].info, spells[1].targettype);
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
+// Shattered Hand Houndmaster AI
+
+#define CN_SHATTERED_HAND_HOUNDMASTER 17670
+
+#define VOLLEY 34100 // 34100, 35950, 30933, 22908
+// he patrols with Rabid Warhounds
+
+class SHATTEREDHANDHOUNDMASTERAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDHOUNDMASTERAI);
+    SHATTEREDHANDHOUNDMASTERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 1;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(VOLLEY);
+		spells[0].targettype = TARGET_DESTINATION;
+		spells[0].instant = true;
+		spells[0].perctrigger = 8.0f;
+		spells[0].attackstoptimer = 1000;
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
+// Shattered Hand Reaver AI
+
+#define CN_SHATTERED_HAND_REAVER 16699
+
+#define CLEAVE_REAVER 34995 // no idea if this is good id
+#define UPPERCUT 34996 // 32055, 34014, 34996, 39069, 41388, 30471
+#define ENRAGE 34971 // 34624, 37023, 37648, 38046, 41305, 34670, 34970, 34971, 36992, 38947, 41447 and many others =/
+
+class SHATTEREDHANDREAVERAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDREAVERAI);
+    SHATTEREDHANDREAVERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 3;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(CLEAVE_REAVER);
+		spells[0].targettype = TARGET_VARIOUS;
+		spells[0].instant = true;
+		spells[0].perctrigger = 10.0f;
+		spells[0].attackstoptimer = 1000;
+
+        spells[1].info = sSpellStore.LookupEntry(UPPERCUT);
+		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].instant = true;
+		spells[1].perctrigger = 7.0f;
+		spells[1].attackstoptimer = 1000;
+
+        spells[2].info = sSpellStore.LookupEntry(ENRAGE);
+		spells[2].targettype = TARGET_SELF;
+		spells[2].instant = true;
+		spells[2].perctrigger = 3.0f;
+		spells[2].attackstoptimer = 1000;
+
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
+// Shattered Hand Sentry AI
+
+#define CN_SHATTERED_HAND_SENTRY 16507
+
+#define CHARGE 35570 // 35570 many others
+
+class SHATTEREDHANDSENTRYAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDSENTRYAI);
+    SHATTEREDHANDSENTRYAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 1;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(CHARGE);
+		spells[0].targettype = TARGET_ATTACKING;
+		spells[0].instant = true;
+		spells[0].perctrigger = 5.0f;
+		spells[0].attackstoptimer = 1000;
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
+// Shattered Hand Sharpshooter AI
+
+#define CN_SHATTERED_HAND_SHARPSHOOTER 16704
+
+#define SCATTER_SHOT 36732 // not sure
+#define IMMOLATION_ARROW 35932 // same here
+
+class SHATTEREDHANDSHARPSHOOTERAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDSHARPSHOOTERAI);
+    SHATTEREDHANDSHARPSHOOTERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 2;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(SCATTER_SHOT);
+		spells[0].targettype = TARGET_ATTACKING;
+		spells[0].instant = true;
+		spells[0].perctrigger = 5.0f;
+		spells[0].attackstoptimer = 1000;
+
+        spells[1].info = sSpellStore.LookupEntry(IMMOLATION_ARROW);
+		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].instant = false;
+		spells[1].perctrigger = 8.0f;
+		spells[1].attackstoptimer = 1000;
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
 
 /*****************************/
 /*                           */
@@ -862,8 +1498,16 @@ void SetupTheShatteredHalls(ScriptMgr * mgr)
 {
 	mgr->register_creature_script(CN_SHADOWMOON_ACOLYTE, &SHADOWMOONACOLYTEAI::Create);
 	mgr->register_creature_script(CN_SHATTERED_HAND_ASSASSIN, &SHATTEREDHANDASSASSINAI::Create);
+	mgr->register_creature_script(CN_SHADOWMOON_DARKCASTER, &SHADOWMOONDARKCASTERAI::Create);
+	mgr->register_creature_script(CN_SHATTERED_HAND_GLADIATOR, &SHATTEREDHANDGLADIATORAI::Create);	
+	mgr->register_creature_script(CN_SHATTERED_HAND_HOUNDMASTER, &SHATTEREDHANDHOUNDMASTERAI::Create);	
+	mgr->register_creature_script(CN_SHATTERED_HAND_REAVER, &SHATTEREDHANDREAVERAI::Create);	
+	mgr->register_creature_script(CN_SHATTERED_HAND_SENTRY, &SHATTEREDHANDSENTRYAI::Create);
+	mgr->register_creature_script(CN_SHATTERED_HAND_SHARPSHOOTER, &SHATTEREDHANDSHARPSHOOTERAI::Create);
 	mgr->register_creature_script(CN_GRAND_WARLOCK_NETHEKURSE, &GRANDWARLOCKNETHEKURSEAI::Create);
 	mgr->register_creature_script(CN_BLOOD_GUARD_PORUNG, &BLOODGUARDPORUNGAI::Create);
 	mgr->register_creature_script(CN_WARBRINGER_OMROGG, &WARBRINGEROMROGGAI::Create);
 	mgr->register_creature_script(CN_WARCHIEF_KARGATH_BLADEFIST, &WARCHIEFKARGATHBLADEFISTAI::Create);
 }
+
+// TO DO: Shattered Hand Brawler and Legionnaire and maybe others if I have infos bout them

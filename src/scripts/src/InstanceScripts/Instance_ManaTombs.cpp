@@ -1317,7 +1317,7 @@ public:
 			_unit->PlaySoundToSet(10542);
 			break;
 		case 2:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have longed for a good adventure!")
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have longed for a good adventure!");
 			_unit->PlaySoundToSet(10543);
 			break;
 		}
