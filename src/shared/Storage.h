@@ -538,7 +538,7 @@ public:
 
 		Storage<T, StorageType>::_storage.Setup(Max);
 
-		int cols = strlen(FormatString);
+		size_t cols = strlen(FormatString);
 		result = sDatabase.Query("SELECT * FROM %s", IndexName);
 		Field * fields = result->Fetch();
 
@@ -586,7 +586,7 @@ public:
 
 		Storage<T, StorageType>::_storage.Resetup(Max);
 
-		int cols = strlen(Storage<T, StorageType>::_formatString);
+		size_t cols = strlen(Storage<T, StorageType>::_formatString);
 		result = sDatabase.Query("SELECT * FROM %s", Storage<T, StorageType>::_indexName);
 		Field * fields = result->Fetch();
 

@@ -962,7 +962,7 @@ void MapMgr::Do()
 	// always declare local variables outside of the loop!
 	// otherwise theres a lot of sub esp; going on.
 
-	uint32 exec_time, t, exec_start;
+	uint32 exec_time, t = 0, exec_start;
 	while((ThreadState != THREADSTATE_TERMINATE) && !_shutdown)
 	{
 		t = time(NULL);

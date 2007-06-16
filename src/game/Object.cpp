@@ -391,7 +391,7 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 {
 	bool activate_quest_object = false;
 	bool reset = false;
-	uint32 oldflags;
+	uint32 oldflags = 0;
 
 	if(updateMask->GetBit(OBJECT_FIELD_GUID) && target)	   // We're creating.
 	{

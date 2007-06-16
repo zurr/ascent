@@ -186,7 +186,7 @@ void WorldSession::HandleLearnTalentOpcode( WorldPacket & recv_data )
 	// Check if it requires another talent
 	if (talentInfo->DependsOn > 0)
 	{
-		TalentEntry *depTalentInfo ;
+		TalentEntry *depTalentInfo = NULL;
 		for (unsigned int i = 0; i < numRows; i++)		  // Loop through all talents.
 		{
 			TalentEntry *t= sTalentStore.LookupEntry( i );

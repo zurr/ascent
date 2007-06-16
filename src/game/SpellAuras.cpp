@@ -2718,6 +2718,9 @@ void Aura::SpellAuraModIncreaseEnergy(bool apply)
 		powerField = UNIT_FIELD_POWER4;
 		maxField = UNIT_FIELD_MAXPOWER4;
 	}
+    else // Capt: if we can not use identify the type: do nothing
+        return;
+    
 
 	m_target->ModUInt32Value(powerField,apply?mod->m_amount:-mod->m_amount);
 	m_target->ModUInt32Value(maxField,apply?mod->m_amount:-mod->m_amount);

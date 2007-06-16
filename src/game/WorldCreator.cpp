@@ -412,7 +412,7 @@ uint32 WorldCreator::CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid
     {
        pInstance->iInstanceMode = difficulty;
     }
-
+    //Capt: We do not realy need to store this one if we are not doing something with it.
 	Instance_Map_Info_Holder *pMapHolder = sInstanceSavingManager.SaveInstance(pInstance); //first time instance saving holder
 	if(destptr)
 		*destptr = pInstance;
