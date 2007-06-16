@@ -2692,13 +2692,22 @@ void Player::_LoadInventoryLight()
 		{
 			Field *fields = result->Fetch();
 			Item* item;
+            uint32 entry = fields[2].GetUInt32();
 	
-			item=new Item(HIGHGUID_ITEM,fields[1].GetUInt64());
-			item->LoadFromDB(fields, 0, true);
+            ItemPrototype * proto = ItemPrototypeStorage.LookupEntry(entry);
+            if(proto)
+            {
+			    item=new Item(HIGHGUID_ITEM,fields[1].GetUInt64());
+			    item->LoadFromDB(fields, 0, true);
 
-			int8 slot=fields[11].GetInt8();
-		
-			GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slot);
+			    int8 slot=fields[11].GetInt8();
+    		
+			    GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slot);
+            }
+            /*else
+            {
+                sDatabase.Execute("DELETE FROM playeritems WHERE guid ="I64FMTD, fields[1].GetUInt64());
+            }*/
 			
 		}
 		while( result->NextRow() );
@@ -6631,7 +6640,7 @@ void Player::UpdatePvPArea()
         return;
 
 	// This is where all the magic happens :P
-    if((at->AreaFlags & AREA_SANCTUARY) || (at->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 0) || (at->category == AREAC_HORDE_TERRITORY && GetTeam() == 1))
+    if((at->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 0) || (at->category == AREAC_HORDE_TERRITORY && GetTeam() == 1))
 	{
 		if(IsPvPFlagged())
 		{
