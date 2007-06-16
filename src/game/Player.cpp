@@ -5893,23 +5893,23 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
 	GetSession()->SendPacket(&data);
 
 	// remove cooldown data from Server side lists
-	SpellEntry * spe = sSpellStore.LookuoEntry(spell_id);
+	SpellEntry * spe = sSpellStore.LookupEntry(spell_id);
 	if(!spe) return;
 
 	map<uint32,uint32>::iterator itr;
 	itr = SpellCooldownMap.find(spell_id);
 	if(itr != SpellCooldownMap.end())
-		SpellCoolDownMap.erase(itr);
+		SpellCooldownMap.erase(itr);
 
 	itr = SpellCooldownCategoryMap.find(spe->Category);
-	if(itr != SpellCooldownMap.end())
-		SpellCoolDownMap.erase(itr);
+	if(itr != SpellCooldownCategoryMap.end())
+		SpellCooldownCategoryMap.erase(itr);
 
 	ItemCooldownSet::iterator itr2, it2;
 	for (itr2 = m_itemcooldown.begin(); itr2 != m_itemcooldown.end(); )
 	{
 		ItemCooldown * temp = (*itr2);
-		it2 = itr2++
+		it2 = itr2++;
 		if(temp)
 		{
 			if(temp->SpellID == spell_id || temp->SpellCategory == spe->Category)
