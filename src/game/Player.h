@@ -816,7 +816,6 @@ public:
 	void EventAllowTiggerPort(bool enable);
 	int32 m_rangedattackspeedmod;
 	int32 m_meleeattackspeedmod;
-	void EventFieldUpdateExpire(uint32 spellID);
 	void SendInitialLogonPackets();
 	void Reset_Spells();
 	void Reset_Talents();

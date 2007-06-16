@@ -2678,8 +2678,17 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 void Aura::SpellAuraModIncreaseHealth(bool apply)
 {
 	int32 amt;
+
 	if(apply)
 	{
+		//threet special cases. We should move these to scripted spells maybe
+		switch(m_spellProto->Id)
+		{
+			case 23782:// Gift of Life
+				mod->m_amount = 1500; break;
+			case 12976:// Last Stand
+				mod->m_amount = m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3;break;
+		}
 		SetPositive();
 		amt = mod->m_amount;
 	}
@@ -2688,10 +2697,17 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
    
 	if(m_target->IsPlayer())
 	{
-		if(!apply)
-			static_cast<Player*>(m_target)->EventFieldUpdateExpire(m_spellProto->Id);
-		static_cast<Player*>(m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() + amt);
+		//maybe we should not adjust hitpoints too but only maximum health
+		static_cast<Player*>(m_target)->SetHealthFromSpell(static_cast<Player*>(m_target)->GetHealthFromSpell() + amt);
 		static_cast<Player*>(m_target)->UpdateStats();
+		if(apply)
+			m_target->ModUInt32Value(UNIT_FIELD_HEALTH,amt);
+		else
+		{
+			if(m_target->GetUInt32Value(UNIT_FIELD_HEALTH)>-amt)//watch it on remove value is negative
+				m_target->ModUInt32Value(UNIT_FIELD_HEALTH,amt);
+			else m_target->SetUInt32Value(UNIT_FIELD_HEALTH,1); //do not kill player but do strip him good
+		}
 	}
 	else
 		 m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, amt);

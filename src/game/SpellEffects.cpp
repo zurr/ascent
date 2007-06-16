@@ -739,18 +739,12 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		{
 			if(!playerTarget)
 				break;
-
-			uint32 amount = (playerTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) * 0.3;
-
 			SpellCastTargets tgt;
 			tgt.m_unitTarget = playerTarget->GetGUID();
 			SpellEntry * inf =sSpellStore.LookupEntry(12976);
 			Spell * spe = new Spell(u_caster,inf,true,NULL);
 			spe->prepare(&tgt);
 
-			playerTarget->SetHealthFromSpell(playerTarget->GetHealthFromSpell() + amount);
-			playerTarget->UpdateStats();
-			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
 		}break;
 	case 24325:// Pagle's Point Cast - Create Mudskunk Lure
 		{
