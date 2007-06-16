@@ -146,18 +146,53 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
 
 	if(Points > 0)
 	{
-		pPlayer->m_killsToday++;
-		pPlayer->m_killsLifetime++;
-		AddHonorPointsToPlayer(pPlayer, Points);
-		
-		if(pVictim)
-		{
-			// Send PVP credit
-			WorldPacket data(SMSG_PVP_CREDIT, 12);
-			uint32 pvppoints = Points * 10;
-			data << pvppoints << pVictim->GetGUID() << uint32(static_cast<Player*>(pVictim)->GetPVPRank());
-			pPlayer->GetSession()->SendPacket(&data);
-		}
+        if(pPlayer->GetGroup())
+        {
+            Group *pGroup = pPlayer->GetGroup();
+            Player *gPlayer = NULL;
+            int32 GroupPoints;
+            GroupPoints = (Points / (pGroup->MemberCount() ? pGroup->MemberCount() : 1));
+            GroupMembersSet::iterator gitr;
+			for(uint32 k = 0; k < pGroup->GetSubGroupCount(); k++)
+			{
+				for(gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
+				{
+					gPlayer = (*gitr);
+                    
+                    if(gPlayer->isInRange(pPlayer,100.0f)) // visible range
+                    {
+                        gPlayer->m_killsToday++;
+                        gPlayer->m_killsLifetime++;
+		                AddHonorPointsToPlayer(gPlayer, GroupPoints);
+                        if(pVictim)
+		                {
+			                // Send PVP credit
+			                WorldPacket data(SMSG_PVP_CREDIT, 12);
+			                uint32 pvppoints = GroupPoints * 10;
+			                data << pvppoints << pVictim->GetGUID() << uint32(static_cast<Player*>(pVictim)->GetPVPRank());
+			                gPlayer->GetSession()->SendPacket(&data);
+		                }
+                    }
+
+                }
+            }
+        
+        }
+        else
+        {
+		    pPlayer->m_killsToday++;
+		    pPlayer->m_killsLifetime++;
+		    AddHonorPointsToPlayer(pPlayer, Points);
+    		
+		    if(pVictim)
+		    {
+			    // Send PVP credit
+			    WorldPacket data(SMSG_PVP_CREDIT, 12);
+			    uint32 pvppoints = Points * 10;
+			    data << pvppoints << pVictim->GetGUID() << uint32(static_cast<Player*>(pVictim)->GetPVPRank());
+			    pPlayer->GetSession()->SendPacket(&data);
+		    }
+        }
 	}
 }
 

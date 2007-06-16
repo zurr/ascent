@@ -91,12 +91,7 @@ enum PvPAreaStatus
 	AREA_CONTESTED = 3,
 	AREA_PVPARENA = 4,
 };
-struct PvPArea {
-	uint32 AreaId;
-	char * AreaName;
-	uint16 PvPType;
-	bool HomeFor(Player* plr);
-};
+
 struct CreateInfo_ItemStruct
 {
 	uint32 protoid;
@@ -411,6 +406,7 @@ public:
 	
 	void Update( uint32 time );
 	void BuildEnumData( WorldPacket * p_data );
+    void BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag);
 	std::string m_afk_reason;
 	void SetAFKReason(std::string reason) { m_afk_reason = reason; };
 	inline const char* GetName() { return m_name.c_str(); }
@@ -892,7 +888,6 @@ public:
 	void RegenerateHealth(bool inCombat);
 	void RegenerateEnergy();
 	void LooseRage();
-	PvPArea * currentPVPArea;
 	uint32 SoulStone;
 	uint32 SoulStoneReciever;
 	void removeSoulStone();

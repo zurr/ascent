@@ -297,7 +297,6 @@ Player::Player ( uint32 high, uint32 low )
 	m_speedhackChances	  = 1;
 	m_explorationTimer	  = getMSTime();
 	linkTarget			  = 0;
-	currentPVPArea		  = 0;
 	stack_cheat			 = false;
 	myGuild				 = 0;
 	m_pvpTimer			  = 0;
@@ -827,24 +826,6 @@ void Player::_EventAttack(bool offhand)
 		return;
 	}
 
-	// disallow attacking players in sanctuary zones
-	// allow attacks in duels
-	if(pVictim->IsPlayer() && this->DuelingWith != (Player*)pVictim)
-	{
-		AreaTable * at = sAreaStore.LookupEntry(this->GetAreaID());
-		AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)pVictim)->GetAreaID());
-		if(at->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
-		{
-			if(m_AttackMsgTimer != 3)
-			{
-				m_session->OutPacket(SMSG_ATTACKSWING_CANT_ATTACK);
-				m_AttackMsgTimer = 3;
-			}
-			setAttackTimer(300, offhand);
-			return;
-		}
-	}
-
 	if (!canReachWithAttack(pVictim))
 	{
 		if(m_AttackMsgTimer != 1)
@@ -1032,7 +1013,8 @@ void Player::_EventExploration()
 	else
 	{
 		strcpy(areaname, "UNKNOWN");
-	}*/
+	}
+    sChatHandler.BlueSystemMessageToPlr(this,areaname);*/
 
 	int offset = at->explorationFlag / 32;
 	offset += PLAYER_EXPLORED_ZONES_1;
@@ -1050,18 +1032,21 @@ void Player::_EventExploration()
 		ZoneUpdate(at->ZoneId);
 
 	// Check for a restable area
-	if(at->AreaFlags == 312)
+    if(at->AreaFlags & AREA_CITY_AREA || at->AreaFlags & AREA_CITY)
 	{
 		// check faction
-		if((at->factiongroup == 2 && GetTeam() == 0) ||
-			(at->factiongroup == 4 && GetTeam() == 1) )
+		if((at->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 0) || (at->category == AREAC_HORDE_TERRITORY && GetTeam() == 1) )
 		{
 			if(!m_isResting) ApplyPlayerRestState(true);
 		}
-		else
+        else if(at->category != AREAC_ALLIANCE_TERRITORY && at->category != AREAC_HORDE_TERRITORY)
 		{
-			if(m_isResting) ApplyPlayerRestState(false);
+			if(!m_isResting) ApplyPlayerRestState(true);
 		}
+        else
+        {
+            if(m_isResting) ApplyPlayerRestState(false);
+        }
 	}
 	else
 	{
@@ -6610,18 +6595,12 @@ void Player::SetGuildId(uint32 guildId)
 
 void Player::UpdatePvPArea()
 {
-	PvPArea * oldArea = currentPVPArea;
-
-	currentPVPArea = PvPAreaStorage.LookupEntry(m_AreaID);
-	if(currentPVPArea == oldArea ||
-		currentPVPArea == 0 || !currentPVPArea->AreaId)
-	{
-		// Someone is too lazy to extract adt, or they haven't filled in the info in the table.
-		return;
-	}
+	AreaTable * at = sAreaStore.LookupEntry(m_AreaID);
+	if(at == 0)
+        return;
 
 	// This is where all the magic happens :P
-	if(currentPVPArea->HomeFor(this))
+    if((at->AreaFlags & AREA_SANCTUARY) || (at->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 0) || (at->category == AREAC_HORDE_TERRITORY && GetTeam() == 1))
 	{
 		if(IsPvPFlagged())
 		{
@@ -6633,20 +6612,59 @@ void Player::UpdatePvPArea()
 	{
 		// I just walked into either an enemies town, or a contested zone.
 		// Force flag me if i'm not already.
-		if(!IsPvPFlagged()) SetPvPFlag();
+        if(at->category == AREAC_SANCTUARY || at->AreaFlags & AREA_SANCTUARY)
+        {
+            if(IsPvPFlagged()) RemovePvPFlag();
 
-		// Check for FFA PvP
-		if(currentPVPArea->PvPType == AREA_PVPARENA)
-		{
-			if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
-				SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
-		}
-		else
-		{
-			if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
+            if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
+				RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+
+            if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
 				RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
-		}
+
+           StopPvPTimer();
+        }
+        else
+        {
+            if(!IsPvPFlagged()) SetPvPFlag();
+
+            if(at->AreaFlags & AREA_PVP_ARENA)
+            {
+                if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
+				    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+
+                if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
+                     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+            }
+            else
+            {
+                if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
+				    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+            }
+        }
 	}
+}
+
+void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
+{
+    Object *curObj;
+    for (Object::InRangeSet::iterator iter = GetInRangeSetBegin(); iter != GetInRangeSetEnd();)
+	{
+		curObj = *iter;
+		iter++;
+        if(curObj->IsPlayer())
+        {
+            Group *pGroup = static_cast<Player*>(curObj)->GetGroup();
+            if(pGroup && pGroup == GetGroup())
+            {
+            }
+            else
+            {
+                BuildFieldUpdatePacket(((Player*)curObj),index,flag);
+            }
+        }
+       
+    }
 }
 
 void Player::LoginPvPSetup()
@@ -6654,14 +6672,7 @@ void Player::LoginPvPSetup()
 	// Make sure we know our area ID.
 	_EventExploration();
 
-	// Lazy bastards..
-	if(currentPVPArea == 0)
-		return;
-
-	// If we're not in the home area for our faction, add a honorless target
-	// buff to avoid ganking.
-	if(!currentPVPArea->HomeFor(this))
-		CastSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
+    CastSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
 }
 
 void Player::PvPToggle()
@@ -6673,15 +6684,17 @@ void Player::PvPToggle()
 
 		if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
 			SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+
+        if(!IsPvPFlagged()) SetPvPFlag();
 	}
 	else
 	{
-		uint32 AreaType = AREA_CONTESTED;
-		if(currentPVPArea)
-			AreaType = currentPVPArea->PvPType;
+        AreaTable * at = sAreaStore.LookupEntry(m_AreaID);
+	    if(at == 0)
+		    return;
 
 		// Can't modify flags in a contested area.
-		if(AreaType == AREA_CONTESTED)
+		if(at->category == AREAC_CONTESTED)
 			return;
 
 		if(IsPvPFlagged())
@@ -6702,16 +6715,6 @@ void Player::PvPToggle()
 			SetPvPFlag();
 		}		
 	}
-}
-
-bool PvPArea::HomeFor(Player* plr)
-{
-	if(plr->GetTeam() == 0 && PvPType == AREA_ALLIANCE ||
-		plr->GetTeam() == 1 && PvPType == AREA_HORDE)
-	{
-		return true;
-	}
-	return false;
 }
 
 bool Player::CanCastDueToCooldown(SpellEntry * spellid)

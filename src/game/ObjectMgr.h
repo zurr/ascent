@@ -175,6 +175,25 @@ enum MONSTER_SAY_EVENTS
 	NUM_MONSTER_SAY_EVENTS,
 };
 
+enum AREATABLE_FLAGS
+{
+    AREA_CITY_AREA          = 0x20,
+    AREA_NEUTRAL_AREA       = 0x40,
+    AREA_PVP_ARENA          = 0x80,
+    AREA_CITY               = 0x200,
+    AREA_SANCTUARY          = 0x800,
+    AREA_ISLAND             = 0x1000,
+    AREA_PVP_OBJECTIVE_AREA = 0x8000,
+};
+
+enum AREATABLE_CATEGORY
+{
+    AREAC_CONTESTED          = 0,
+    AREAC_ALLIANCE_TERRITORY = 2,
+    AREAC_HORDE_TERRITORY    = 4,
+    AREAC_SANCTUARY          = 6,
+};
+
 class SERVER_DECL GossipMenu
 {
 public:

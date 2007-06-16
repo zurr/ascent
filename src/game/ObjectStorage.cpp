@@ -43,7 +43,6 @@ SQLStorage<GossipText, HashMapStorageContainer<GossipText> >					NpcTextStorage;
 SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >			SpellExtraStorage;
 SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >		GraveyardStorage;
 SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >			TeleportCoordStorage;
-SQLStorage<PvPArea, HashMapStorageContainer<PvPArea> >							PvPAreaStorage;
 SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
@@ -195,7 +194,6 @@ void Storage_FillTaskList(TaskList & tl)
 	make_task(SpellExtraStorage, SpellExtraInfo, HashMapStorageContainer, "spellextra", gSpellExtraFormat);
 	make_task(GraveyardStorage, GraveyardTeleport, HashMapStorageContainer, "graveyards", gGraveyardFormat);
 	make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
-	make_task(PvPAreaStorage, PvPArea, HashMapStorageContainer, "pvpareas", gPvPAreaFormat);
 	make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
 	make_task(NpcTextStorage, GossipText, HashMapStorageContainer, "npc_text", gNpcTextFormat);
 }
@@ -227,7 +225,6 @@ void Storage_Cleanup()
 	SpellExtraStorage.Cleanup();
 	GraveyardStorage.Cleanup();
 	TeleportCoordStorage.Cleanup();
-	PvPAreaStorage.Cleanup();
 	FishingZoneStorage.Cleanup();
 	NpcTextStorage.Cleanup();
 }
@@ -253,8 +250,6 @@ bool Storage_ReloadTable(const char * TableName)
 		QuestStorage.Reload();
 	else if(!stricmp(TableName, "npc_text"))			// NPC Text Storage
 		NpcTextStorage.Reload();
-	else if(!stricmp(TableName, "pvpareas"))			// PvP Areas
-		PvPAreaStorage.Reload();
 	else if(!stricmp(TableName, "fishing"))				// Fishing Zones
 		FishingZoneStorage.Reload();
 	else if(!stricmp(TableName, "teleport_coords"))		// Teleport coords

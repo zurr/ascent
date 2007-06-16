@@ -462,7 +462,7 @@ struct AreaTable
 	uint32 nameAlt14;
 	uint32 nameAlt15;
 	uint32 nameFlags;
-	uint32 factiongroup;
+	uint32 category;
 	uint32 unk7;
 	uint32 unk8;
 	uint32 unk9;

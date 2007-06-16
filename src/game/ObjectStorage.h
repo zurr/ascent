@@ -26,7 +26,6 @@ extern SQLStorage<GossipText, HashMapStorageContainer<GossipText> >					NpcTextS
 extern SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >			SpellExtraStorage;
 extern SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >	GraveyardStorage;
 extern SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >			TeleportCoordStorage;
-extern SQLStorage<PvPArea, HashMapStorageContainer<PvPArea> >						PvPAreaStorage;
 extern SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
 
 void Storage_FillTaskList(TaskList & tl);
