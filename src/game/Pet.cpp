@@ -174,11 +174,11 @@ void Pet::Update(uint32 time)
 			// Set the value
 			SetUInt32Value(UNIT_FIELD_POWER5, val);
 
-			if(val <= 0)
+			/*if(val <= 0)
 			{
 				Dismiss();
 				return;
-			}
+			}*/
 
 			// reset timer
 			m_LoyaltyTimer = PET_LOYALTY_UPDATE_TIMER;

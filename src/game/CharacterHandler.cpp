@@ -406,6 +406,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	Player* plr = new Player(HIGHGUID_PLAYER,playerGuid);
 	ASSERT(plr);
 	plr->SetSession(this);
+	m_bIsWLevelSet = false;
 	
 	if(!plr->LoadFromDB(GUID_LOPART(playerGuid)))
 	{
