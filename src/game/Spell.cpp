@@ -2199,18 +2199,16 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 				break;
 			case HIGHGUID_PLAYER:
 				{
-					// hackety hack
-					if(m_targets.m_itemTarget == guid && m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
-						itemTarget = p_caster->getTradeTarget()->getTradeItem(guid);
-					else
-					{
-						unitTarget =  m_caster->GetMapMgr()->GetPlayer(guid);
-						playerTarget = static_cast<Player*>(unitTarget);
-					}
+					unitTarget =  m_caster->GetMapMgr()->GetPlayer(guid);
+					playerTarget = static_cast<Player*>(unitTarget);
 				}break;
 			case HIGHGUID_ITEM:
-				itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
-				break;
+				{
+					if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+						itemTarget = p_caster->getTradeTarget()->getTradeItem(guid);
+					else
+						itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
+				}break;
 			case HIGHGUID_GAMEOBJECT:
 				gameObjTarget = m_caster->GetMapMgr()->GetGameObject(guid);
 				break;
@@ -2805,13 +2803,17 @@ int8 Spell::CheckItems()
 	
 	if(m_targets.m_itemTarget)
 	{
-		Item *it=((Player*)m_caster)->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
-		//FIXME: we can enchant items not only in player inventory <- should be fine now - fishbait
+		Item *it
+		if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+			it=((Player*)m_caster)->getTradeTarget()->GetTradeItem(m_targets.m_itemTarget);
+		else
+			it=((Player*)m_caster)->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+
 		if(it)
-		{			
+		{
 			ItemPrototype *proto=it->GetProto();
 			ASSERT(proto);
-		   
+
 			if(m_spellInfo->Id==13262) //check for disenchant, only greeen and better items could be disenchanted
 			{
 				if(proto->Quality < 2 || proto->InventoryType == INVTYPE_NON_EQUIP
@@ -2830,26 +2832,11 @@ int8 Spell::CheckItems()
 						(m_spellInfo->RequiredItemFlags && !(m_spellInfo->RequiredItemFlags & (1<<proto->InventoryType))))		
 							return int8(SPELL_FAILED_BAD_TARGETS);
 			}
+			if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+				m_targets.m_itemTarget = it->GetGUID();
 		}
 		else 
-		{
-			for(uint32 j=0; j < 3; j++)
-			{
-				switch (m_spellInfo->Effect[j])
-				{
-				case SPELL_EFFECT_ENCHANT_ITEM:
-				case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
-					if(!m_targets.m_itemTarget)
-						return int8(SPELL_FAILED_ITEM_NOT_FOUND);
-					break;
-				case SPELL_EFFECT_ENCHANT_HELD_ITEM:
-					break;
-				default:
-					return int8(SPELL_FAILED_ITEM_NOT_FOUND);
-					break;
-				}
-			}			
-		}
+			return int8(SPELL_FAILED_ITEM_NOT_FOUND);
 	}
 	return int8(-1);
 }
