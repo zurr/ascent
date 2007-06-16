@@ -4391,10 +4391,12 @@ void Player::AddCooldown(uint32 cat, uint32 tm)
 //  rename this function into AddRecoverSpellCooldown or something
 void Player::AddRecoverCooldown(SpellEntry * spellInfo)
 {
+	if(CooldownCheat) return;
 	// if we have a cooldown larger then 1 minute
 	if (spellInfo->RecoveryTime > 1 * 60 * 1000 || spellInfo->CategoryRecoveryTime > 1 * 60 * 1000)
 	{
 		ItemCooldown * item = new ItemCooldown;
+		uint32 cooltime;
 
 		item->ItemEntry = 0;						// SpellCoolDowns have no itemid
 		item->SpellID = spellInfo->Id;			  // spellId
@@ -4404,14 +4406,15 @@ void Player::AddRecoverCooldown(SpellEntry * spellInfo)
 		//  double check this
 		if (spellInfo->RecoveryTime)
 		{
-			item->Cooldown = spellInfo->RecoveryTime;
-			item->CooldownTimeStamp = now() + spellInfo->RecoveryTime;
+			cooltime = spellInfo->RecoveryTime;
 		}
 		else
 		{
-			item->Cooldown = spellInfo->CategoryRecoveryTime;
-			item->CooldownTimeStamp = now() + spellInfo->CategoryRecoveryTime;
+			cooltime = spellInfo->CategoryRecoveryTime;
 		}
+		item->Cooldown = cooltime;
+		item->CooldownTimeStamp = now() + cooltime;
+
 		m_itemcooldown.insert(item);
 	}
 }
@@ -5877,6 +5880,32 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
 	data.SetOpcode(SMSG_CLEAR_COOLDOWN);
 	data << spell_id << GetGUID();
 	GetSession()->SendPacket(&data);
+
+	// remove cooldown data from Server side lists
+	SpellEntry * spe = sSpellStore.LookuoEntry(spell_id);
+	if(!spe) return;
+
+	map<uint32,uint32>::iterator itr;
+	itr = SpellCooldownMap.find(spell_id);
+	if(itr != SpellCooldownMap.end())
+		SpellCoolDownMap.erase(itr);
+
+	itr = SpellCooldownCategoryMap.find(spe->Category);
+	if(itr != SpellCooldownMap.end())
+		SpellCoolDownMap.erase(itr);
+
+	ItemCooldownSet::iterator itr2, it2;
+	for (itr2 = m_itemcooldown.begin(); itr2 != m_itemcooldown.end(); )
+	{
+		ItemCooldown * temp = (*itr2);
+		it2 = itr2++
+		if(temp)
+		{
+			if(temp->SpellID == spell_id || temp->SpellCategory == spe->Category)
+				m_itemcooldown.erase(it2);
+			delete temp;
+		}
+	}
 }
 
 void Player::ClearCooldownsOnLine(uint32 skill_line, uint32 called_from)

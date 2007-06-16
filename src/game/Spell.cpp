@@ -1278,7 +1278,7 @@ void Spell::AddCooldown()
 		}
 
 		if(cooltime > 0)
-			p_caster->AddCategoryCooldown(m_spellInfo->Category,m_spellInfo->CategoryRecoveryTime);
+			p_caster->AddCategoryCooldown(m_spellInfo->Category,cooltime);
 	}
 }
 
@@ -1306,7 +1306,7 @@ void Spell::AddStartCooldown()
 		}
 
 		if(cooltime > 0)
-			p_caster->AddCategoryCooldown(m_spellInfo->Category,m_spellInfo->CategoryRecoveryTime);
+			p_caster->AddCategoryCooldown(m_spellInfo->Category,cooltime);
 
 		// add spell recover cooldown for visual stuff
 		p_caster->AddRecoverCooldown(m_spellInfo);
