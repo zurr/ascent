@@ -2805,7 +2805,7 @@ int8 Spell::CheckItems()
 	{
 		Item *it;
 		if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
-			it=((Player*)m_caster)->getTradeTarget()->GetTradeItem(m_targets.m_itemTarget);
+			it=((Player*)m_caster)->getTradeTarget()->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
 		else
 			it=((Player*)m_caster)->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
 
