@@ -4396,7 +4396,7 @@ void Player::AddRecoverCooldown(SpellEntry * spellInfo)
 	if (spellInfo->RecoveryTime > 1 * 60 * 1000 || spellInfo->CategoryRecoveryTime > 1 * 60 * 1000)
 	{
 		ItemCooldown * item = new ItemCooldown;
-		uint32 cooltime;
+		int32 cooltime;
 
 		item->ItemEntry = 0;						// SpellCoolDowns have no itemid
 		item->SpellID = spellInfo->Id;			  // spellId
@@ -4412,6 +4412,8 @@ void Player::AddRecoverCooldown(SpellEntry * spellInfo)
 		{
 			cooltime = spellInfo->CategoryRecoveryTime;
 		}
+		SM_FIValue(this->SM_FCooldownTime, &cooltime, spellInfo->SpellGroupType);
+		SM_PIValue(this->SM_PCooldownTime, &cooltime, spellInfo->SpellGroupType);
 		item->Cooldown = cooltime;
 		item->CooldownTimeStamp = now() + cooltime;
 
