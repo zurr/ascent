@@ -5913,8 +5913,10 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
 		if(temp)
 		{
 			if(temp->SpellID == spell_id || temp->SpellCategory == spe->Category)
+			{
 				m_itemcooldown.erase(it2);
-			delete temp;
+				delete temp;
+			}
 		}
 	}
 }
