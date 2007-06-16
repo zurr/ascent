@@ -893,6 +893,107 @@ protected:
 	int nrspells;
 };
 
+// Shattered Hand Brawler AI
+
+#define CN_SHATTERED_HAND_BRAWLER 16593
+
+#define CURSE_OF_THE_SHATTERED_HAND 36020
+
+class SHATTEREDHANDBRAWLERAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDBRAWLERAI);
+    SHATTEREDHANDBRAWLERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 1;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(CURSE_OF_THE_SHATTERED_HAND);
+		spells[0].targettype = TARGET_ATTACKING;
+		spells[0].instant = true;
+		spells[0].perctrigger = 7.0f;
+		spells[0].attackstoptimer = 1000;
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
 /*****************************/
 /*                           */
 /*         Boss AIs          */
@@ -1504,10 +1605,13 @@ void SetupTheShatteredHalls(ScriptMgr * mgr)
 	mgr->register_creature_script(CN_SHATTERED_HAND_REAVER, &SHATTEREDHANDREAVERAI::Create);	
 	mgr->register_creature_script(CN_SHATTERED_HAND_SENTRY, &SHATTEREDHANDSENTRYAI::Create);
 	mgr->register_creature_script(CN_SHATTERED_HAND_SHARPSHOOTER, &SHATTEREDHANDSHARPSHOOTERAI::Create);
+	mgr->register_creature_script(CN_SHATTERED_HAND_BRAWLER, &SHATTEREDHANDBRAWLERAI::Create);
 	mgr->register_creature_script(CN_GRAND_WARLOCK_NETHEKURSE, &GRANDWARLOCKNETHEKURSEAI::Create);
 	mgr->register_creature_script(CN_BLOOD_GUARD_PORUNG, &BLOODGUARDPORUNGAI::Create);
 	mgr->register_creature_script(CN_WARBRINGER_OMROGG, &WARBRINGEROMROGGAI::Create);
 	mgr->register_creature_script(CN_WARCHIEF_KARGATH_BLADEFIST, &WARCHIEFKARGATHBLADEFISTAI::Create);
 }
 
-// TO DO: Shattered Hand Brawler and Legionnaire and maybe others if I have infos bout them
+// TO DO: Shattered Hand Brawler(+) and Legionnaire and maybe others 
+// if I have infos bout them. Also Idk if those are all spells casted
+// by those mobs.
