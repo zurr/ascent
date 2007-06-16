@@ -22,6 +22,7 @@ void SetupBattleOfMountHyjal(ScriptMgr * mgr);
 void SetupShadowLabyrinth(ScriptMgr * mgr);
 void SetupBloodFurnace(ScriptMgr * mgr);
 void SetupScholomance(ScriptMgr * mgr);
+void SetupTheShatteredHalls(ScriptMgr * mgr);
 
 struct SP_AI_Spell{
 	SpellEntry *info; // spell info

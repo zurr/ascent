@@ -456,3 +456,5 @@ void SetupBloodFurnace(ScriptMgr * mgr)
 	mgr->register_creature_script(CN_BROGGOK, &BROGGOKAI::Create);
 	mgr->register_creature_script(CN_THE_MAKER, &THEMAKERAI::Create);
 }
+
+// Lack of info to make this instance with trash mobs...

@@ -28,6 +28,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupShadowLabyrinth(mgr);
 	SetupBloodFurnace(mgr);
 	SetupScholomance(mgr);
+	SetupTheShatteredHalls(mgr);
 }
 
 #ifdef WIN32

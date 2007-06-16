@@ -1351,3 +1351,10 @@ void SetupScholomance(ScriptMgr * mgr)
 	mgr->register_creature_script(CN_LOREKEEPER_POLKELT, &LorekeeperPolkeltAI::Create);
 	mgr->register_creature_script(CN_DARKMASTER_GANDLING, &DarkmasterGandlingAI::Create);
 }
+
+// Who should be added ?
+//	*Kirtonos the Herald
+//	*Death Knight Darkreaver
+//	*Lord Blackwood
+//	*Marduk Blackpool
+//	*Rattlegore

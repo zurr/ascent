@@ -243,6 +243,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_TheShatteredHalls.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_TheSlavePens.cpp"
 				>
 			</File>
