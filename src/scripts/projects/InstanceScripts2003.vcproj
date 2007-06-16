@@ -146,6 +146,9 @@
 				RelativePath="..\src\InstanceScripts\Instance_Deadmines.cpp">
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_HellfireRamparts.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_ManaTombs.cpp">
 			</File>
 			<File
