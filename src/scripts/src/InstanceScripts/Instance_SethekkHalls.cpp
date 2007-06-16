@@ -1585,7 +1585,7 @@ public:
 			switch (RandomSpeach)
 			{
 			case 0:
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "<missing_text>!"); // need to add it
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Yes! Fleeting life is..."); // need to add it
 				_unit->PlaySoundToSet(10506);
 				break;
 			case 1:

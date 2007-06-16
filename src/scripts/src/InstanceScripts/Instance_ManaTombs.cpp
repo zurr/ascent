@@ -1317,7 +1317,7 @@ public:
 			_unit->PlaySoundToSet(10542);
 			break;
 		case 2:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have [missing_word] for a good adventure!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have longed for a good adventure!")
 			_unit->PlaySoundToSet(10543);
 			break;
 		}
@@ -1334,11 +1334,11 @@ public:
 			switch (RandomSpeach)
 			{
 			case 0: 
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "And now, we part company"); // part company?
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "And now, we part company."); // part company?
 				_unit->PlaySoundToSet(10544);
 				break;
 			case 1:
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I has been... entertainming.");
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It has been... entertaining.");
 				_unit->PlaySoundToSet(10545);
 				break;
 			}
@@ -1356,7 +1356,7 @@ public:
     void OnDied(Unit * mKiller)
     {
 		SUMMON_ETEREAL_BECON_Cooldown = 10;
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I must omit you. Very well."); // I don't think it's correct.
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I must bid you... Farewell."); // I don't think it's correct.
         _unit->PlaySoundToSet(10546);
        RemoveAIUpdateEvent();
 	   delete[] spells;

@@ -843,7 +843,7 @@ public:
 
     void OnDied(Unit * mKiller)
     {
-	   _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I... <missing_word>...");
+	   _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I... Deserve this...");
        _unit->PlaySoundToSet(10382);
        RemoveAIUpdateEvent();
 	   delete[] spells;

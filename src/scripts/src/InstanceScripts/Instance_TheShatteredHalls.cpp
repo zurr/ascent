@@ -5,6 +5,258 @@
 /* Instance_TheShatteredHalls.cpp Script		                        */
 /************************************************************************/
 
+// Shadowmoon AcolyteAI
+
+#define CN_SHADOWMOON_ACOLYTE 16594
+
+#define HEAL 31730 // 32130, 31730, 39378, 31739
+#define POWER_WORD_SHIELD 41373 // 41373, 29408, 36052, 35944, 32595
+#define MIND_BLAST 26048 //38259 // ofc not sure (and this one can be really overpowered)
+//#define 105 resist shadow buff?
+
+class SHADOWMOONACOLYTEAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHADOWMOONACOLYTEAI);
+    SHADOWMOONACOLYTEAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 3;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(HEAL);
+		spells[0].targettype = TARGET_SELF;
+		spells[0].instant = false;
+		spells[0].perctrigger = 8.0f;
+		spells[0].attackstoptimer = 1000;
+
+        spells[1].info = sSpellStore.LookupEntry(POWER_WORD_SHIELD);
+		spells[1].targettype = TARGET_SELF;
+		spells[1].instant = true;
+		spells[1].perctrigger = 5.0f;
+		spells[1].attackstoptimer = 1000;
+
+        spells[2].info = sSpellStore.LookupEntry(MIND_BLAST);
+		spells[2].targettype = TARGET_ATTACKING;
+		spells[2].instant = true;	// to prevent model stucking =/
+		spells[2].perctrigger = 7.0f;
+		spells[2].attackstoptimer = 1000;
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+		_unit->CastSpell(_unit, spells[1].info, spells[1].targettype);
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
+// Shattered Hand AssassinAI
+
+#define CN_SHATTERED_HAND_ASSASSIN 17695
+
+#define SAP 30980
+#define STEALTH 30991 // 32615, 30831, 30991, 31526, 31621, 34189, 32199	// I think should be harder to detect
+#define CHEAP_SHOT 30986
+
+class SHATTEREDHANDASSASSINAI : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDASSASSINAI);
+    SHATTEREDHANDASSASSINAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 3;
+		m_spellcheck = new bool[nrspells];
+		spells = new SP_AI_Spell[nrspells];
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+        spells[0].info = sSpellStore.LookupEntry(SAP);
+		spells[0].targettype = TARGET_ATTACKING;
+		spells[0].instant = true;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
+
+        spells[1].info = sSpellStore.LookupEntry(STEALTH);
+		spells[1].targettype = TARGET_SELF;
+		spells[1].instant = true;
+		spells[1].perctrigger = 0.0f;
+		spells[1].attackstoptimer = 1000;
+
+        spells[2].info = sSpellStore.LookupEntry(CHEAP_SHOT);
+		spells[2].targettype = TARGET_ATTACKING;
+		spells[2].instant = true;
+		spells[2].perctrigger = 7.0f;
+		spells[2].attackstoptimer = 1000;
+
+		_unit->CastSpell(_unit, spells[1].info, spells[1].targettype);
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		FIRST_ATTACK = 1;
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+    }
+
+	void OnTargetDied(Unit* mTarget)
+    {
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+		FIRST_ATTACK = 1;
+		_unit->CastSpell(_unit, spells[1].info, spells[1].targettype);
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+		FIRST_ATTACK = 1;
+       RemoveAIUpdateEvent();
+	   delete[] spells;
+	   delete[] m_spellcheck;
+	   spells = NULL;
+	   m_spellcheck = NULL;
+    }
+
+    void AIUpdate()
+    {
+		if (FIRST_ATTACK && _unit->GetAIInterface()->GetNextTarget())
+		{
+			FIRST_ATTACK = 0;
+			Unit *target = NULL;
+			target = _unit->GetAIInterface()->GetNextTarget();
+			_unit->CastSpell(target, spells[0].info, spells[0].instant);
+		}
+
+		else
+		{
+			float val = sRand.rand(100.0f);
+			SpellCast(val);
+		}
+    }
+
+    void SpellCast(float val)
+    {
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				if(!spells[i].perctrigger) continue;
+				
+				if(m_spellcheck[i])
+				{
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+    }
+protected:
+
+	SpellEntry * m_spellProto;
+	int FIRST_ATTACK;
+    bool *m_spellcheck;
+    SP_AI_Spell *spells;
+	int nrspells;
+};
+
+
 /*****************************/
 /*                           */
 /*         Boss AIs          */
@@ -65,11 +317,11 @@ public:
 			_unit->PlaySoundToSet(10271);
 			break;
 		case 1:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Come on! Show me your real fight!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Come on! Show me a real fight!");
 			_unit->PlaySoundToSet(10272);
 			break;
 		case 2:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have more fun tortuing the peons!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I had more fun torturing the peons!");
 			_unit->PlaySoundToSet(10273);
 			break;
 		}
@@ -106,7 +358,7 @@ public:
 
     void OnDied(Unit * mKiller)
     {
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What a... ashame.");
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What a... shame.");
 		_unit->PlaySoundToSet(10276);
        RemoveAIUpdateEvent();
 	   delete[] spells;
@@ -483,15 +735,15 @@ public:
 		switch (RandomSpeach)
 		{
 		case 0:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "<missing_word> is true horde! The only horde!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ours is the true horde! The only horde!");
 			_unit->PlaySoundToSet(10323);
 			break;
 		case 1:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll corve the meat from your bones!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll carve the meat from your bones!");
 			_unit->PlaySoundToSet(10324);
 			break;
 		case 2:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am colled Bladefist for a reason... as you will see!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am called Bladefists for a reason... as you will see!");
 			_unit->PlaySoundToSet(10325);
 			break;
 		}
@@ -530,7 +782,7 @@ public:
     void OnDied(Unit * mKiller)
     {
 		BLADE_DANCECooldown = 30;
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "A true horde... will... prevail!");
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The true horde... will... prevail!");
 		_unit->PlaySoundToSet(10328);
        RemoveAIUpdateEvent();
 	   delete[] spells;
@@ -608,6 +860,8 @@ protected:
 
 void SetupTheShatteredHalls(ScriptMgr * mgr)
 {
+	mgr->register_creature_script(CN_SHADOWMOON_ACOLYTE, &SHADOWMOONACOLYTEAI::Create);
+	mgr->register_creature_script(CN_SHATTERED_HAND_ASSASSIN, &SHATTEREDHANDASSASSINAI::Create);
 	mgr->register_creature_script(CN_GRAND_WARLOCK_NETHEKURSE, &GRANDWARLOCKNETHEKURSEAI::Create);
 	mgr->register_creature_script(CN_BLOOD_GUARD_PORUNG, &BLOODGUARDPORUNGAI::Create);
 	mgr->register_creature_script(CN_WARBRINGER_OMROGG, &WARBRINGEROMROGGAI::Create);

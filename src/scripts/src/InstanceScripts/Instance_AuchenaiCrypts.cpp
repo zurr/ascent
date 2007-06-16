@@ -52,6 +52,7 @@ public:
 		spells[2].instant = false;				
 		spells[2].perctrigger = 8.0f;
 		spells[2].attackstoptimer = 1000;
+		/* There should be a tag line at the end, with the name of the player Shirrak is targeting with his 'bomb' */
 		spells[2].speech = "Shirrak the Dead Watcher focuses his energy";
     }
     
@@ -172,7 +173,7 @@ public:
 		spells[1].perctrigger = 10.0f;
 		spells[1].attackstoptimer = 2000;
 		spells[1].soundid = 10511;
-		spells[1].speech = "Stand to the darkness of your soul!"; // not sure if it's really "stand"
+		spells[1].speech = "Stare into the darkness of your soul!"; // not sure if it's really "stand"
 
 		spells[2].info = sSpellStore.LookupEntry(SUMMON_AVATAR_OF_THE_MARTYR);
 		spells[2].targettype = TARGET_SELF; // ?
@@ -205,7 +206,7 @@ public:
 			_unit->PlaySoundToSet(10514);
 			break;
 		case 2:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Serve your <missingword>");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Serve your penitence");
 			_unit->PlaySoundToSet(10515);
 			break;
 		}
@@ -222,11 +223,11 @@ public:
 			switch (RandomSpeach)
 			{
 			case 0: 
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "These wall will be your, doom!");
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "These wall will be your DOOM!");
 				_unit->PlaySoundToSet(10516);
 				break;
 			case 1:
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Haha, now you stay for a <missingword>! Mwahahah!"); // spelling check needed !
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Haha, now you stay for eternity! Mwahahah!"); // spelling check needed !
 				_unit->PlaySoundToSet(10517);
 				break;
 			}
@@ -243,7 +244,7 @@ public:
 
 	void OnDied(Unit * mKiller)
     {
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This is... well... I am <missingword>...");
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This is... Where... I belong...");
 		_unit->PlaySoundToSet(10518);
        RemoveAIUpdateEvent();
 	   delete[] spells;

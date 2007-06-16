@@ -1253,7 +1253,7 @@ public:
 			_unit->PlaySoundToSet(10368);
 			break;
 		case 1:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Wh4t3v3r! H4x0R!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Eat hot metal! Scumbag!");
 			_unit->PlaySoundToSet(10369);
 			break;
 		case 2:
@@ -1261,7 +1261,7 @@ public:
 			_unit->PlaySoundToSet(10370);
 			break;
 		case 3:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ah, bring me that pain!"); // really2?
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'm bringin' the pain!"); // really2?
 			_unit->PlaySoundToSet(10371);
 			break;
 		}
@@ -1455,7 +1455,7 @@ public:
 		switch (RandomSpeach)
 		{
 		case 0:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The depts will consume you!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The depths will consume you!");
 			_unit->PlaySoundToSet(10361);
 			break;
 		case 1:
@@ -1480,11 +1480,11 @@ public:
 			switch (RandomSpeach)
 			{
 			case 0: 
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "To the depts of oblivion with you!");
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "To the depths of oblivion with you!");
 				_unit->PlaySoundToSet(10364);
 				break;
 			case 1:
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "For my Lady and the Master.");
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "For my Lady and Master.");
 				_unit->PlaySoundToSet(10365);
 				break;
 			}
@@ -1500,7 +1500,7 @@ public:
 
     void OnDied(Unit * mKiller)
     {
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Our matron will be ... The end of you all");
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Our matron will be ... The end of you");
         _unit->PlaySoundToSet(10366);
        RemoveAIUpdateEvent();
 	   delete[] spells;
@@ -1626,7 +1626,7 @@ public:
 		switch (RandomSpeach)
 		{
 		case 0: 
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your head will roll !");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your head will roll!");
 			_unit->PlaySoundToSet(10392);
 			break;
 		case 1:
@@ -1634,6 +1634,7 @@ public:
 			_unit->PlaySoundToSet(10393);
 			break;
 		case 2:
+			/* Maybe an emote for "strange words"? */
 			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No freaking idea :P");
 			_unit->PlaySoundToSet(10394);
 			break;
@@ -1656,7 +1657,7 @@ public:
 				_unit->PlaySoundToSet(10395);
 				break;
 			case 1:
-				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Hahahahah <w00t?>");
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Hahahahah");
 				_unit->PlaySoundToSet(10366);
 				break;
 			}
@@ -1672,7 +1673,7 @@ public:
 
 	void OnDied(Unit * mKiller)
     {
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "For her exelencty , For Vash...");
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "For her exelency , For Vash...");
         _unit->PlaySoundToSet(10397);
        RemoveAIUpdateEvent();
 	   delete[] spells;

@@ -1187,15 +1187,15 @@ public:
 		switch (RandomSpeach)
 		{
 		case 0:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pathetic mortals, you will be doomed!"); // not sure if doomed
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pathetic mortals, you will pay dearly!"); // not sure if doomed
 			_unit->PlaySoundToSet(10475);
 			break;
 		case 1:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will <missing_word> you"); // drink you, bring you, w00t?
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will break you"); // drink you, bring you, w00t?
 			_unit->PlaySoundToSet(10476);
 			break;
 		case 2:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Finally, something to believe the team!"); // something to believe the team?
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Finally, something to relieve the tedium!"); // something to believe the team?
 			_unit->PlaySoundToSet(10477);
 			break;
 		}
@@ -1357,7 +1357,7 @@ public:
 		switch (RandomSpeach)
 		{
 		case 0:
-			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You be sorry!");
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll be sorry!");
 			_unit->PlaySoundToSet(10486);
 			break;
 		case 1:
@@ -1402,7 +1402,7 @@ public:
 
     void OnDied(Unit * mKiller)
     {
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This...is ...not..good");
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This...no..good");
 		_unit->PlaySoundToSet(10491);
        RemoveAIUpdateEvent();
 	   delete[] spells;
