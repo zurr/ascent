@@ -1414,8 +1414,6 @@ void Player::_SaveSpellCoolDownSecurity()
 	uint8	hascooldowns=0;
 	for (itr = SpellCooldownMap.begin(); itr != SpellCooldownMap.end();)
 	{
-		if(itr != SpellCooldownMap.begin())
-			query << ",";
 
 		SpellID	  = itr->first;
 		TimeStamp	= itr->second;
@@ -1427,6 +1425,8 @@ void Player::_SaveSpellCoolDownSecurity()
 			SpellCooldownMap.erase(it2);
 			continue;
 		}
+		if(hascooldowns)
+			query << ",";
 		query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
 		hascooldowns=1;
 		++itr;
@@ -7248,6 +7248,14 @@ void Player::SaveAuras(stringstream &ss)
 			case 17116: // Natures Swiftness
 			case 34936: // Backlash
 			case 35076: // Blessing of A'dal
+
+			case 588: // Inner fire
+			case 602: // Inner fire
+			case 1006: // Inner fire
+			case 7128: // Inner fire
+			case 10951: // Inner fire
+			case 10952: // Inner fire
+			case 25431: // Inner fire
 				skip = true;
 				break;
 			}
