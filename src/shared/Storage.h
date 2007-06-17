@@ -48,6 +48,13 @@ public:
 	 */
 	StorageContainerIterator<T> * MakeIterator();
 
+	/** Do we need to get the max?
+	*/
+	bool NeedsMax()
+	{
+		return true;
+	}
+
 	/** Creates the array with specified maximum
 	 */
 	void Setup(uint32 Max)
@@ -172,6 +179,13 @@ public:
 	{
 		for(typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr = _map.begin(); itr != _map.end(); ++itr)
 			delete itr->second;
+	}
+
+	/** Do we need to get the max?
+	 */
+	bool NeedsMax()
+	{
+		return false;
 	}
 
 	/** Creates the array with specified maximum
@@ -528,15 +542,19 @@ public:
 	{
 		printf("Loading database cache from `%s`...\n", IndexName);
 		Storage<T, StorageType>::Load(IndexName, FormatString);
-		QueryResult * result = sDatabase.Query("SELECT MAX(entry) FROM %s", IndexName);
-		uint32 Max = 999999;
-		if(result)
+		QueryResult * result;
+		if(Storage<T, StorageType>::_storage.NeedsMax())
 		{
-			Max = result->Fetch()[0].GetUInt32() + 1;
-			delete result;
-		}
+			result = sDatabase.Query("SELECT MAX(entry) FROM %s", IndexName);
+			uint32 Max = 999999;
+			if(result)
+			{
+				Max = result->Fetch()[0].GetUInt32() + 1;
+				delete result;
+			}
 
-		Storage<T, StorageType>::_storage.Setup(Max);
+			Storage<T, StorageType>::_storage.Setup(Max);
+		}
 
 		size_t cols = strlen(FormatString);
 		result = sDatabase.Query("SELECT * FROM %s", IndexName);
