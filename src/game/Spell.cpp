@@ -2186,6 +2186,10 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 			itemTarget = 0;
 			gameObjTarget = 0;
 		}
+		else if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
+		{
+			itemTarget = p_caster->getTradeTarget()->getTradeItem(guid);
+		}
 		else
 		{
 			unitTarget = NULL;
@@ -2203,12 +2207,8 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 					playerTarget = static_cast<Player*>(unitTarget);
 				}break;
 			case HIGHGUID_ITEM:
-				{
-					if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
-						itemTarget = p_caster->getTradeTarget()->getTradeItem(guid);
-					else
-						itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
-				}break;
+				itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
+				break;
 			case HIGHGUID_GAMEOBJECT:
 				gameObjTarget = m_caster->GetMapMgr()->GetGameObject(guid);
 				break;
@@ -2806,7 +2806,18 @@ int8 Spell::CheckItems()
 	{
 		Item *it;
 		if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
-			it=((Player*)m_caster)->getTradeTarget()->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+			//only allow some item targetable spells to work in trade windows
+			switch(m_spellInfo->Effect[0])
+			{
+			case SPELL_EFFECT_OPEN_LOCK://lock picking
+			case SPELL_EFFECT_ENCHANT_ITEM://enchanting
+			case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY://temporary enchanting
+				it=((Player*)m_caster)->getTradeTarget()->getTradeItem(m_targets.m_itemTarget);
+				break;
+			default:
+				return int8(SPELL_FAILED_BAD_TARGETS);
+				break;
+			}
 		else
 			it=((Player*)m_caster)->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
 
@@ -2833,8 +2844,6 @@ int8 Spell::CheckItems()
 						(m_spellInfo->RequiredItemFlags && !(m_spellInfo->RequiredItemFlags & (1<<proto->InventoryType))))		
 							return int8(SPELL_FAILED_BAD_TARGETS);
 			}
-			if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
-				m_targets.m_itemTarget = it->GetGUID();
 		}
 		else 
 			return int8(SPELL_FAILED_ITEM_NOT_FOUND);
@@ -3491,6 +3500,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
 
