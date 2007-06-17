@@ -224,7 +224,7 @@ void WorldSession::HandlePageTextQueryOpcode( WorldPacket & recv_data )
 	ItemPage* page = NULL;
 	while(pageid)
 	{
-		//page = ItemPageStorage.LookupEntry(pageid);
+		page = ItemPageStorage.LookupEntry(pageid);
 		if(page == NULL) 
 			break;
 		data << pageid;
