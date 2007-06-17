@@ -489,6 +489,7 @@ public:
 	inline MapInfoMap::iterator GetMapInfoEnd() { return m_mapinfo.end(); }
 
 	static time_t UNIXTIME;
+	static time_t MSTIME;
 
 protected:
 	MapInfoMap m_mapinfo;

@@ -104,6 +104,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 		{
 			if(!sp->spell)
 			{
+				printf("SpellId %u in ai_agent for %u is invalid.\n", fields[5].GetUInt32(), sp->entryId);
 				delete sp;
 				continue;
 			}

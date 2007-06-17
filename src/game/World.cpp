@@ -16,6 +16,7 @@
 
 initialiseSingleton( World );
 time_t World::UNIXTIME = time(NULL);
+time_t World::MSTIME = getMSTime();
 
 World::World()
 {
@@ -853,6 +854,7 @@ void World::Update(time_t diff)
 
 	/* since time() is an expensive system call, we only update it once per server loop */
 	World::UNIXTIME = time(NULL);
+	World::MSTIME = getMSTime();
 }
 
 

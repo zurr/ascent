@@ -76,6 +76,7 @@ AIInterface::AIInterface()
 	m_formationLinkSqlId = 0;
 
 	b_isAttackableOld = false;
+	waiting_for_cooldown = false;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
@@ -813,6 +814,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 		}
 	}
 
+	/* do nothing if we're casting */
+	if(m_Unit->isCasting())
+		return;
+
 	bool cansee;
 	if(m_nextTarget && m_nextTarget->GetInstanceID() == m_Unit->GetInstanceID())
 	{
@@ -828,6 +833,9 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 	{
 		if(agent == AGENT_NULL)
 		{
+			if(!m_nextSpell)
+				m_nextSpell = this->getSpellByEvent(0);
+
 			if(m_canFlee && !m_hasFleed 
 				&& ((m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH) / m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) < m_FleeHealth ))
 				agent = AGENT_FLEE;
@@ -2697,6 +2705,8 @@ void AIInterface::CastSpell(Unit* caster, SpellEntry *spellInfo, SpellCastTarget
 {
 	// Stop movement while casting.
 	m_AIState = STATE_CASTING;
+	sLog.outString("AI DEBUG: Unit %u casting spell %s on target "I64FMT, caster->GetEntry(), 
+		sSpellStore.LookupString(spellInfo->Name), targets.m_unitTarget);
 
 	Spell *spell = new Spell(caster, spellInfo, false, NULL);
 	spell->prepare(&targets);
@@ -2754,6 +2764,7 @@ AI_Spell *AIInterface::getSpellByEvent(uint32 event)
 {
 	// look at our spells
 	AI_Spell * sp;
+	AI_Spell * def_spell = 0;
 	for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
 	{
         sp = *itr;
@@ -2768,6 +2779,8 @@ AI_Spell *AIInterface::getSpellByEvent(uint32 event)
 					{
 						if(!m_Unit->HasActiveAura(sp->spell->Id))
 						{
+							sLog.outString("AI DEBUG: Returning aura %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
+								sp->entryId);
 							return sp;
 						}
 					}
@@ -2775,16 +2788,28 @@ AI_Spell *AIInterface::getSpellByEvent(uint32 event)
 
 			default:
 				{
+					if(def_spell)
+						continue;
+
 					// cast the spell at requested percent.
 					if(sp->procChance >= 100 || Rand(sp->procChance))
 					{
-						return sp;
+						if(m_Unit->GetUInt32Value(UNIT_FIELD_POWER1) < sp->spell->manaCost)
+							continue;
+
+						sLog.outString("AI DEBUG: Returning spell %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
+							sp->entryId);
+						def_spell = sp;
 					}
 				}break;
 			}
 		}
 	}
 
+	if(def_spell)
+		return def_spell;
+
+	sLog.outString("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
 	return m_DefaultSpell;
 }
 
