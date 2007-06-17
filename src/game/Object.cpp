@@ -1585,6 +1585,22 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			// We will no longer be attacking this target, as it's dead.
 			static_cast<Unit*>(this)->setAttackTarget(NULL);
 		}
+		//so now we are completely dead
+		//lets see if we have spirit of redemption
+		if(pVictim->IsPlayer())
+		{
+			if(((Player*)pVictim)->HasSpell(20711)) //check for spirit of Redemption
+			{
+				SpellEntry * sorInfo = sSpellStore.LookupEntry(27827);
+				if(sorInfo)
+				{
+					Spell *sor = new Spell(pVictim, sorInfo, true, NULL);
+					SpellCastTargets targets;
+					targets.m_unitTarget = pVictim->GetGUID();
+					sor->prepare(&targets);
+				}
+			}
+		}
 		/* -------------------------------- HONOR + BATTLEGROUND CHECKS ------------------------ */
 		if(this->IsPlayer())		// Honor System Checks
 		{

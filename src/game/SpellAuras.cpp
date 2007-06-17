@@ -191,7 +191,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//missing = 173 // Apply Aura: Allow Champion Spells
 		&Aura::SpellAuraIncreaseSpellDamageBySpr,//missing = 174 //used //Apply Aura: Increase Spell Damage by % Spirit (Spells) //http://www.thottbot.com/?sp=15031
 		&Aura::SpellAuraIncreaseHealingBySpr,//missing = 175 //used //Apply Aura: Increase Spell Healing by % Spirit //http://www.thottbot.com/?sp=15031
-		&Aura::SpellAuraNULL,//missing = 176 //used // not known
+		&Aura::SpellAuraSpiritOfRedemption,//missing = 176 //used // Apply Aura: Spirit of Redemption
 		&Aura::SpellAuraNULL,//missing = 177 //used //Apply Aura: Area Charm // http://www.thottbot.com/?sp=26740
 		&Aura::SpellAuraNULL,//missing = 178 //Apply Aura: Increase Debuff Resistance 
 		&Aura::SpellAuraNULL,//missing = 179 //used //Apply Aura: Increase Attacker Spell Crit % *type* //http://www.thottbot.com/?sp=12579
@@ -2901,6 +2901,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
 		}break;
 	case FORM_SPIRITOFREDEMPTION:
 		{
+			spellId = 27795;
+			modelId = 12824;
 		}break;
 	}
 
@@ -5983,5 +5985,29 @@ void Aura::SpellAuraIncreaseMaxHealth(bool apply)
 
 		((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() - mod->m_amount);
 		((Player*)m_target)->UpdateStats();
+	}
+}
+
+void Aura::SpellAuraSpiritOfRedemption(bool apply)
+{
+	if(!m_target->IsPlayer())
+		return;
+
+	if(apply)
+	{
+		m_target->SetFloatValue(OBJECT_FIELD_SCALE_X, 0.5);
+		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, 1);
+		SpellEntry * sorInfo = sSpellStore.LookupEntry(27792);
+		if(!sorInfo) return;
+		Spell * sor = new Spell(m_target, sorInfo, true, NULL);
+		SpellCastTargets targets;
+		targets.m_unitTarget = m_target->GetGUID();
+		sor->prepare(&targets);
+	}
+	else
+	{
+		m_target->SetFloatValue(OBJECT_FIELD_SCALE_X, 1);
+		m_target->RemoveAura(27792);
+		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
 	}
 }

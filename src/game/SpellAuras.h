@@ -191,6 +191,7 @@ enum MOD_TYPES
 	SPELL_AURA_INCREASE_MOVEMENT_AND_MOUNTED_SPEED = 172,// Increase Movement and Mounted Speed (Non-Stacking)
 	SPELL_AURA_INCREASE_SPELL_DAMAGE_PCT = 174,		 // Increase Spell Damage by % Spirit (Spells
 	SPELL_AURA_INCREASE_SPELL_HEALING_PCT = 175,		// Increase Spell Healing by % Spirit
+	SPELL_AURA_SPIRIT_OF_REDEMPTION = 176,				// Spirit of Redemption Auras
 	SPELL_AURA_AREA_CHARM = 177,						// Area Charm 
 	SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT = 179,	  // Increase Attacker Spell Crit Type
 	SPELL_AURA_INCREASE_SPELL_DAMAGE_VS_TYPE = 180,	 // Increase Spell Damage Type
@@ -485,7 +486,8 @@ public:
 	void SpellAuraIncreaseCastTimePCT(bool apply);
 	void SpellAuraRegenManaStatPCT(bool apply);
 	void SpellAuraSpellHealingStatPCT(bool apply);
-        void SpellAuraIncreaseMaxHealth(bool apply);
+	void SpellAuraIncreaseMaxHealth(bool apply);
+	void SpellAuraSpiritOfRedemption(bool apply);
 
 	void SendModifierLog(int32 ** m,int32 v,uint32 mask,uint8 type,bool pct = false);
 	// Events
