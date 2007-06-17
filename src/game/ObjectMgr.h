@@ -79,7 +79,7 @@ struct FishingZoneEntry
 
 struct ItemPage
 {
-	std::string text;
+	char * text;
 	uint32 next_page;
 };
 

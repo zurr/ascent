@@ -38,7 +38,7 @@
 				ObjectFile=".\game___Win32_Debug/"
 				ProgramDataBaseFileName=".\game___Win32_Debug/"
 				BrowseInformation="0"
-				WarningLevel="4"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"
