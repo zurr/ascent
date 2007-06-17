@@ -2483,27 +2483,32 @@ int8 Spell::CanCast(bool rangetolerate)
 				/* 2e way is trough the data in the extraspell db
 				/*
 				/**********************************************************/
-				if (m_spellInfo->Spell_Dmg_Type == 3) // 3 is ranged so we do not need to check, we just need inface
-				{   // our spell is a ranged spell
-					if (!u_caster->isInFront(target))
-						return SPELL_FAILED_NOT_INFRONT;
-				}
-				else
-				{   // our spell is not a ranged spell
 
-					// get spell extra data
-					SpellExtraInfo* SpellExtra = SpellExtraStorage.LookupEntry(m_spellInfo->Id);
+				/* burlex: units are always facing the target! */
+				if(p_caster)
+				{
+					if (m_spellInfo->Spell_Dmg_Type == 3) // 3 is ranged so we do not need to check, we just need inface
+					{   // our spell is a ranged spell
+						if (!u_caster->isInFront(target))
+							return SPELL_FAILED_NOT_INFRONT;
+					}
+					else
+					{   // our spell is not a ranged spell
 
-					if(SpellExtra)
-					{
-						// Spell extra infront check
-						if (GetType() == SPELL_TYPE_MAGIC && SpellExtra->ExtraFlags & SPELL_EXTRA_INFRONT) // only do spells
-							if (!u_caster->isInFront(target))
-								return SPELL_FAILED_NOT_INFRONT;
-						// Spell extra Behind check
-						if(SpellExtra->ExtraFlags & SPELL_EXTRA_BEHIND)
-							if(target->isInFront(u_caster))
-								return SPELL_FAILED_NOT_BEHIND;
+						// get spell extra data
+						SpellExtraInfo* SpellExtra = SpellExtraStorage.LookupEntry(m_spellInfo->Id);
+
+						if(SpellExtra)
+						{
+							// Spell extra infront check
+							if (GetType() == SPELL_TYPE_MAGIC && SpellExtra->ExtraFlags & SPELL_EXTRA_INFRONT) // only do spells
+								if (!u_caster->isInFront(target))
+									return SPELL_FAILED_NOT_INFRONT;
+							// Spell extra Behind check
+							if(SpellExtra->ExtraFlags & SPELL_EXTRA_BEHIND)
+								if(target->isInFront(u_caster))
+									return SPELL_FAILED_NOT_BEHIND;
+						}
 					}
 				}
 			}

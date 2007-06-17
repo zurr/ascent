@@ -92,14 +92,14 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt)
 	m_Unit = un;
 
 	m_moveSpeed = m_Unit->m_runSpeed*0.001f;
-	if(!m_DefaultMeleeSpell)
+	/*if(!m_DefaultMeleeSpell)
 	{
 		m_DefaultMeleeSpell = new AI_Spell;
 		m_DefaultMeleeSpell->entryId = 0;
 		m_DefaultMeleeSpell->spellType = 0;
 		m_DefaultMeleeSpell->agent = AGENT_MELEE;
 		m_DefaultSpell = m_DefaultMeleeSpell;
-	}
+	}*/
 	m_sourceX = un->GetPositionX();
 	m_sourceY = un->GetPositionY();
 	m_sourceZ = un->GetPositionZ();
@@ -834,7 +834,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 		if(agent == AGENT_NULL)
 		{
 			if(!m_nextSpell)
-				m_nextSpell = this->getSpellByEvent(0);
+				m_nextSpell = this->getSpellByEvent(0xFFFFFFFF);
 
 			if(m_canFlee && !m_hasFleed 
 				&& ((m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH) / m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) < m_FleeHealth ))
@@ -1004,6 +1004,9 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 			{
 				if(!m_nextSpell || !m_nextTarget || waiting_for_cooldown)
 					return;  // this shouldnt happen
+
+				/* stop moving so we don't interrupt the spell */
+				StopMovement(0);
 
 				float distance = m_Unit->GetDistanceSq(m_nextTarget);
 				if((distance <= powf(m_nextSpell->maxrange,2)  && distance >= powf(m_nextSpell->minrange,2)) || m_nextSpell->maxrange == 0) // Target is in Range -> Attack
@@ -1414,46 +1417,49 @@ Unit* AIInterface::FindTarget()
 
 Unit* AIInterface::FindTargetForSpell(AI_Spell *sp)
 {
-	if(!m_Unit) return NULL;
+	/*if(!m_Unit) return NULL;*/
 
-	if(!sp)
+	/*if(!sp)
 	{
 		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 		return NULL;
-	}
+	}*/
 
 	TargetMap::iterator itr, itr2;
 
-	if(sp->spellType == STYPE_HEAL)
+	if(sp)
 	{
-		uint32 cur = m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH);
-		uint32 max = m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
-		float healthPercent = float(long2float(cur) / long2float(max));
-		if(healthPercent <= sp->floatMisc1) // Heal ourselves cause we got too low HP
+		if(sp->spellType == STYPE_HEAL)
+		{
+			uint32 cur = m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH);
+			uint32 max = m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
+			float healthPercent = float(long2float(cur) / long2float(max));
+			if(healthPercent <= sp->floatMisc1) // Heal ourselves cause we got too low HP
+			{
+				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+				return m_Unit;
+			}
+			for(AssistTargetSet::iterator i = m_assistTargets.begin(); i != m_assistTargets.end(); i++)
+			{
+				if(!(*i)->isAlive())
+				{
+					continue;
+				}
+				cur = (*i)->GetUInt32Value(UNIT_FIELD_HEALTH);
+				max = (*i)->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
+				healthPercent = float(long2float(cur) / long2float(max));
+				if(healthPercent <= sp->floatMisc1) // Heal ourselves cause we got too low HP
+				{
+					m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, (*i)->GetGUID());
+					return (*i); // heal Assist Target which has low HP
+				}
+			}
+		}
+		if(sp->spellType == STYPE_BUFF)
 		{
 			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 			return m_Unit;
 		}
-		for(AssistTargetSet::iterator i = m_assistTargets.begin(); i != m_assistTargets.end(); i++)
-		{
-			if(!(*i)->isAlive())
-			{
-				continue;
-			}
-			cur = (*i)->GetUInt32Value(UNIT_FIELD_HEALTH);
-			max = (*i)->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
-			healthPercent = float(long2float(cur) / long2float(max));
-			if(healthPercent <= sp->floatMisc1) // Heal ourselves cause we got too low HP
-			{
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, (*i)->GetGUID());
-				return (*i); // heal Assist Target which has low HP
-			}
-		}
-	}
-	if(sp->spellType == STYPE_BUFF)
-	{
-		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
-		return m_Unit;
 	}
 
 
@@ -2810,7 +2816,10 @@ AI_Spell *AIInterface::getSpellByEvent(uint32 event)
 		return def_spell;
 
 	sLog.outString("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
-	return m_DefaultSpell;
+	if(event != 0xFFFFFFFF)
+		return m_DefaultSpell;
+	else
+		return 0;
 }
 
 void AIInterface::addSpellToList(AI_Spell *sp)
