@@ -544,6 +544,8 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 
 	if(offset == UNIT_FIELD_MINRANGEDDAMAGE)
 	{
+		//starting from base attack power then we apply mods on it
+		ap += pAttacker->GetRAP();
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())
 		{
@@ -573,11 +575,8 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 		else
 		{
 			wspeed = (float)pAttacker->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
-
-			// TODO: we never use this variable apall :S:S:S:S:S
-			int32 apall = pAttacker->GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER)+
-				(int32)pAttacker->GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
 		}
+
 		bonus = (wspeed*ap)/14000.0f;
 
 		min_damage += bonus;
@@ -586,6 +585,9 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 	else
 	{
 		//MinD = AP(28AS-(WS/7))-MaxD
+		//starting from base attack power then we apply mods on it
+		ap += pAttacker->GetAP();
+
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())
 		{
@@ -621,10 +623,6 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 		else
 		{
 			wspeed = (float)pAttacker->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
-
-			int32 apall = pAttacker->GetAP();
-
-			ap += apall;			
 		}
 
 		bonus = (wspeed*ap)/14000.0f;
