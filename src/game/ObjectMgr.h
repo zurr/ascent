@@ -79,6 +79,7 @@ struct FishingZoneEntry
 
 struct ItemPage
 {
+    uint32 id;
 	char * text;
 	uint32 next_page;
 };
