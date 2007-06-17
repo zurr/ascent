@@ -549,7 +549,7 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data )
 
 			// might as well send them a message
 			ChatHandler::getSingleton().SystemMessageToPlr(sender, "%s pays you %u copper for your %s (via cash on delivery).", 
-				_player->GetName(), message->cod, item->GetProto()->Name);
+				_player->GetName(), message->cod, item->GetProto()->Name1);
 		}
 		else
 		{

@@ -220,8 +220,16 @@ void WorldSession::HandlePageTextQueryOpcode( WorldPacket & recv_data )
 	CHECK_PACKET_SIZE(recv_data, 4);
 	uint32 pageid = 0;
 	recv_data >> pageid;
+	ItemPage * page = ItemPageStorage.LookupEntry(pageid);
+	if(!page)
+		return;
+
 	WorldPacket data(SMSG_PAGE_TEXT_QUERY_RESPONSE, 1000);
-	ItemPage* page = NULL;
+	data << pageid;
+	data << page->text;
+	data << page->next_page;
+	SendPacket(&data);
+	/*ItemPage* page = NULL;
 	while(pageid)
 	{
 		page = ItemPageStorage.LookupEntry(pageid);
@@ -232,7 +240,7 @@ void WorldSession::HandlePageTextQueryOpcode( WorldPacket & recv_data )
 		data << page->next_page;
 		pageid = page->next_page;
 		SendPacket(&data);
-	}
+	}*/
 }
 //////////////////////////////////////////////////////////////
 /// This function handles CMSG_ITEM_NAME_QUERY:
@@ -248,6 +256,6 @@ void WorldSession::HandleItemNameQueryOpcode( WorldPacket & recv_data )
 	if(!proto)
 		reply << "Unknown Item";
 	else
-		reply << proto->Name;
+		reply << proto->Name1;
 	SendPacket(&reply);	
 }

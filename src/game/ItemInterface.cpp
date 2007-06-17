@@ -197,7 +197,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 				
 				// send message to player
 				sChatHandler.BlueSystemMessageToPlr(m_pOwner, "A duplicated item, `%s` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
-					item->GetProto()->Name);
+					item->GetProto()->Name1);
 				if(result.Result == true)
 				{
 					// Found a new slot for that item.

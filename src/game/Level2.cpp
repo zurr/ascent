@@ -257,7 +257,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession *m_session)
 
 		pCreature->AddVendorItem(item, amount);
 
-		sstext << "Item '" << item << "' '" << tmpItem->Name << "' Added to list" << '\0';
+		sstext << "Item '" << item << "' '" << tmpItem->Name1 << "' Added to list" << '\0';
 	}
 	else
 	{
@@ -305,7 +305,7 @@ bool ChatHandler::HandleItemRemoveCommand(const char* args, WorldSession *m_sess
 		ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(itemguid);
 		if(tmpItem)
 		{
-			sstext << "Item '" << itemguid << "' '" << tmpItem->Name << "' Deleted from list" << '\0';
+			sstext << "Item '" << itemguid << "' '" << tmpItem->Name1 << "' Deleted from list" << '\0';
 		}
 		else
 		{

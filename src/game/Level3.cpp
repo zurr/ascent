@@ -404,7 +404,7 @@ bool ChatHandler::HandleAddWeaponCommand(const char* args, WorldSession *m_sessi
 		}
 		if(added)
 		{
-			sstext << "Item '" << ItemID << "' '" << tmpItem->Name << "' Added to Slot " << SlotID << '\0';
+			sstext << "Item '" << ItemID << "' '" << tmpItem->Name1 << "' Added to Slot " << SlotID << '\0';
 		}
 	}
 	else
@@ -1205,7 +1205,7 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
 			delete itm;
 			return true;
 		} else {
-			SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name, (*itr)->ItemId);
+			SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
 		}
 	}
 	GreenSystemMessage(m_session, "Added set to inventory complete. Time: %u ms", getMSTime() - start);
@@ -2504,7 +2504,7 @@ bool ChatHandler::HandleLookupItemCommand(const char * args, WorldSession * m_se
 		if(FindXinYString(x, it->lowercase_name))
 		{
 			// Print out the name in a cool highlighted fashion
-			SendHighlightedName(m_session, it->Name, it->lowercase_name, x, it->ItemId, true);
+			SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
 			++count;
 			if(count == 25)
 			{

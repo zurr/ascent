@@ -557,12 +557,15 @@ void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 	} 
 
 	//WorldPacket * data = new WorldPacket(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600 + itemProto->Name1.length() + itemProto->Description.length() );
-	WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600 + strlen(itemProto->Name) + strlen(itemProto->Description) );
+	WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 600 + strlen(itemProto->Name1) + strlen(itemProto->Description) );
 	data << itemProto->ItemId;
 	data << itemProto->Class;
 	data << itemProto->SubClass;
 	data << itemProto->unknown_bc;
-	data << itemProto->Name;
+	data << itemProto->Name1;
+	/*data << itemProto->Name2;
+	data << itemProto->Name3;
+	data << itemProto->Name4;*/
 	data << uint8(0) << uint8(0) << uint8(0); // name 2,3,4
 	data << itemProto->DisplayInfoID;
 	data << itemProto->Quality;

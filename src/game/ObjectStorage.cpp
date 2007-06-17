@@ -16,7 +16,7 @@
 
 /** Table formats converted to strings
  */
-const char * gItemPrototypeFormat						= "uuuusxxxuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuffuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuu";
+const char * gItemPrototypeFormat						= "uuuussssuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuffuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gCreatureNameFormat						= "ussuuuuuuuffcc";
 const char * gGameObjectNameFormat						= "uuusuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gCreatureProtoFormat						= "uuuuufuuffuffuuuuuuuuuuuuuuuuuuffsu";
@@ -167,7 +167,7 @@ void ObjectMgr::LoadExtraItemStuff()
 
 
 		// lowercase name, used for searches
-		pItemPrototype->lowercase_name = pItemPrototype->Name;
+		pItemPrototype->lowercase_name = pItemPrototype->Name1;
 		for(uint32 j = 0; j < pItemPrototype->lowercase_name.length(); ++j)
 			pItemPrototype->lowercase_name[j] = tolower(pItemPrototype->lowercase_name[j]);
 
