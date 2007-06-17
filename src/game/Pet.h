@@ -172,9 +172,6 @@ public:
 		return DEFAULT_SPELL_STATE;
 	}
 	
-	uint32 __fastcall GetSpellCooldown(uint32 SpellId);
-	void __fastcall AddSpellCooldown(uint32 SpellId);
-
 	void CreateAISpell(SpellEntry * info);
 	inline PetSpellMap* GetSpells() { return &mSpells; }
 	inline bool IsSummon() { return Summon; }
@@ -192,7 +189,6 @@ protected:
 	uint32 ActionBar[10];   // 10 slots
 	
 	std::map<uint32, AI_Spell*> m_AISpellStore;
-	map<uint32, uint32> m_spellCooldown;
 
 	uint32 m_AutoCombatSpell;
 

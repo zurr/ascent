@@ -93,20 +93,24 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 		sp = new AI_Spell;
 		sp->entryId = fields[0].GetUInt32();
+		sp->spell = ((FastIndexedDataStore<SpellEntry>*)SpellStore::getSingletonPtr())->LookupEntryForced(fields[5].GetUInt32());
 		sp->agent = fields[1].GetUInt16();
-		sp->procEvent = fields[2].GetUInt32();
 		sp->procChance = fields[3].GetUInt32();
-		sp->procCount = fields[4].GetUInt32();
-		sp->spellId = fields[5].GetUInt32();
 		sp->spellType = fields[6].GetUInt32();;
 		sp->spelltargetType = fields[7].GetUInt32();
-		sp->spellCooldown = fields[8].GetUInt32();
 		sp->floatMisc1 = fields[9].GetFloat();
 		sp->Misc2 = fields[10].GetUInt32();
-		sp->spellCooldownTimer = 0;
-		sp->procCounter = 0;
-		sp->minrange = GetMinRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
-		sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
+		if(sp->agent == AGENT_SPELL)
+		{
+			if(!sp->spell)
+			{
+				delete sp;
+				continue;
+			}
+
+			sp->minrange = GetMinRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
+			sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
+		}
 
 		if(sp->agent == AGENT_RANGED)
 		{

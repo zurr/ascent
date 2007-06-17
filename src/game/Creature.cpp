@@ -164,7 +164,6 @@ void Creature::OnRespawn()
 		SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shiat
 		if(HasFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE))
 			RemoveFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
-		GetAIInterface()->resetSpellCounter();
 		Skinned = false;
 		Tagged = false;
 		TaggerGuid = 0;
@@ -605,7 +604,7 @@ void Creature::FormationLinkUp(uint32 SqlId)
 
 void Creature::LoadAIAgents()
 {
-	std::stringstream ss;
+	/*std::stringstream ss;
 	ss << "SELECT * FROM ai_agents where entryId=" << GetUInt32Value(OBJECT_FIELD_ENTRY);
 	QueryResult *result = sDatabase.Query( ss.str().c_str() );
 
@@ -621,17 +620,12 @@ void Creature::LoadAIAgents()
 		sp = new AI_Spell;
 		sp->entryId = fields[0].GetUInt32();
 		sp->agent = fields[1].GetUInt16();
-		sp->procEvent = fields[2].GetUInt32();
 		sp->procChance = fields[3].GetUInt32();
-		sp->procCount = fields[4].GetUInt32();
 		sp->spellId = fields[5].GetUInt32();
 		sp->spellType = fields[6].GetUInt32();;
 		sp->spelltargetType = fields[7].GetUInt32();
-		sp->spellCooldown = fields[8].GetUInt32();
 		sp->floatMisc1 = fields[9].GetFloat();
 		sp->Misc2 = fields[10].GetUInt32();
-		sp->spellCooldownTimer = 0;
-		sp->procCounter = 0;
 		sp->minrange = GetMinRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
 		sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
 
@@ -673,7 +667,7 @@ void Creature::LoadAIAgents()
 		}
 	} while( result->NextRow() );
 
-	delete result;
+	delete result;*/
 }
 
 WayPoint * Creature::CreateWaypointStruct()

@@ -136,12 +136,12 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 			if(sp)
 			{
 				// Check the cooldown
-				if(pPet->GetSpellCooldown(sp->spellId) > 0)
+				if(pPet->GetAIInterface()->GetSpellCooldown(sp->spell->Id) > 0)
 				{
 					//SendNotification("That spell is still cooling down.");
 					WorldPacket data(SMSG_SPELL_FAILURE, 20);
 					data << pPet->GetNewGUID();
-					data << sp->spellId;
+					data << sp->spell->Id;
 					data << uint8(SPELL_FAILED_NOT_READY);
 					SendPacket(&data);
 				}
@@ -153,7 +153,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 						if(pTarget == pPet || !isAttackable(pPet, pTarget))
 						{
 							WorldPacket data(SMSG_SPELL_FAILURE, 20);
-							data << _player->GetNewGUID() << sp->spellId << uint8(SPELL_FAILED_BAD_TARGETS);
+							data << _player->GetNewGUID() << sp->spell->Id << uint8(SPELL_FAILED_BAD_TARGETS);
 							SendPacket(&data);
 							return;
 						}
@@ -331,7 +331,7 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
 	pet->ActionBar[slot] = spell;
 	pet->SetSpellState(spell, state);
 	if(state == 0x8100 &&	   // no autocast
-		spell == pet->GetAIInterface()->GetDefaultSpell()->spellId)
+		spell == pet->GetAIInterface()->GetDefaultSpell()->spell->Id)
 	{
 		// removing autocast
 		pet->GetAIInterface()->SetDefaultSpell(0);

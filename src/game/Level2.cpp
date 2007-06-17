@@ -1049,23 +1049,22 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession *m_sess
 
 	AI_Spell * sp = new AI_Spell;
 	sp->agent = atoi(agent);
-	sp->procEvent = atoi(procEvent);
 	sp->procChance = atoi(procChance);
-	sp->procCount = atoi(procCount);
-	sp->spellId = atoi(spellId);
+	sp->spell = sSpellStore.LookupEntry(atoi(spellId));
 	sp->spellType = atoi(spellType);
 	sp->spelltargetType = atoi(spelltargetType);
-	sp->spellCooldown = atoi(spellCooldown);
 	sp->floatMisc1 = atof(floatMisc1);
 	sp->Misc2 = atof(Misc2);
-	sp->minrange = GetMinRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
-	sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(sp->spellId)->rangeIndex));
+	sp->minrange = GetMinRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(atoi(spellId))->rangeIndex));
+	sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(atoi(spellId))->rangeIndex));
 	if(sp->agent == AGENT_CALLFORHELP)
 		target->GetAIInterface()->m_canCallForHelp = true;
 	else if(sp->agent == AGENT_FLEE)
 		target->GetAIInterface()->m_canFlee = true;
 	else if(sp->agent == AGENT_RANGED)
 		target->GetAIInterface()->m_canRangedAttack = true;
+	else
+		target->GetAIInterface()->addSpellToList(sp);
 
 	return true;
 }

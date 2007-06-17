@@ -99,6 +99,12 @@ public:
 		return dataIndex[row];
 	}
 
+	T * LookupEntryForced(const uint32 row)
+	{
+		if(row >= high) return 0;
+		return dataIndex[row];
+	}
+
 	T *LookupRow(const uint32 row)
 	{
 		return (T*)DataStore<T>::d.GetRow(row);

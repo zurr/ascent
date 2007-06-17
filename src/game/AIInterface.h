@@ -152,21 +152,15 @@ struct AI_Spell
 {
 	uint32 entryId;
 	uint16 agent;
-	uint32 procEvent;
 	uint32 procChance;
-	uint32 procCount;
-	uint32 spellId;
+	SpellEntry * spell;
 	uint8 spellType;
 	uint8 spelltargetType;
-	uint32 spellCooldown;
 	float floatMisc1;
 	uint32 Misc2;
 	float minrange;
 	float maxrange;
-	uint32 procCounter;
-	uint32 spellCooldownTimer;
 };
-
 
 typedef HM_NAMESPACE::hash_map<Unit*, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
@@ -217,8 +211,6 @@ public:
 	SpellEntry *getSpellEntry(uint32 spellId);
 	SpellCastTargets setSpellTargets(SpellEntry *spellInfo, Unit* target);
 	AI_Spell *getSpellByEvent(uint32 event);
-	void resetSpellCounter();
-	void increaseProcCounter(uint32 event, AI_Spell *sp);
 	void addSpellToList(AI_Spell *sp);
 
 	// Event Handler
@@ -304,14 +296,6 @@ public:
 			m_DefaultSpell = sp;
 	}
 
-	inline void CleanupSpellMap(SpellMap* sm)
-	{
-		for(SpellMap::iterator itr = sm->begin(); itr != sm->end(); ++itr)
-		{
-			if(itr->second) // dunno why it happens, but it does :P
-				delete itr->second;
-		}
-	}
 	float m_sourceX, m_sourceY, m_sourceZ;
 	uint32 m_totalMoveTime;
 	inline void AddStopTime(uint32 Time) { m_moveTimer += Time; }
@@ -330,6 +314,12 @@ public:
 
 	bool b_isAttackableOld; //used for determining when a totem is to stop affected the m_nextTarget
    
+	map<uint32, uint32> m_spellCooldown;
+	list<AI_Spell*> m_spells;
+	uint32 __fastcall GetSpellCooldown(uint32 SpellId);
+	void __fastcall AddSpellCooldown(uint32 SpellId);
+	bool waiting_for_cooldown;
+
 private:
 	bool m_AllowedToEnterCombat;
 
@@ -338,26 +328,6 @@ private:
 	void _UpdateMovement(uint32 p_time);
 	void _UpdateCombat(uint32 p_time);
 	void _UpdateTimer(uint32 p_time);
-	void _UpdateCooldownTimers(uint32 p_time);
-	inline void _UpdateCooldownTimer(bool* b_val, SpellMap* spellmap, uint32 p_time)
-	{
-		bool changed = false;
-		if((*b_val) == true)
-		{
-			for(SpellMap::iterator i = spellmap->begin();i != spellmap->end(); ++i)
-			{
-				if(i->second->spellCooldownTimer > p_time)
-				{
-					changed = true;
-					i->second->spellCooldownTimer -= p_time;
-				}else
-				{
-					i->second->spellCooldownTimer = 0;
-				}
-			}
-			*b_val = changed;
-		}
-	}
 	int m_updateAssist;
 	int m_updateTargets;
 	uint32 m_updateAssistTimer;
@@ -374,59 +344,6 @@ private:
 	bool m_hasFleed;
 	bool m_hasCalledForHelp;
 	uint32 m_outOfCombatRange;
-
-	// Spell lists
-	bool m_hasOnEnterCombatSpells;
-	bool m_hasOnLeaveCombatSpells;
-	bool m_hasOnDamageTakenSpells;
-	bool m_hasOnTargetCastSpellSpells;
-	bool m_hasOnTargetParryedSpells;
-	bool m_hasOnTargetDodgedSpells;
-	bool m_hasOnTargetBlockedSpells;
-	bool m_hasOnTargetCritHitSpells;
-	bool m_hasOnTargetDiedSpells;
-	bool m_hasOnUnitParryedSpells;
-	bool m_hasOnUnitDodgedSpells;
-	bool m_hasOnUnitBlockedSpells;
-	bool m_hasOnUnitCritHitSpells;
-	bool m_hasOnUnitDiedSpells;
-	bool m_hasOnAssistTargetDiedSpells;
-	bool m_hasOnFollowOwnerSpells;
-	bool waiting_for_cooldown;
-	SpellMap m_OnEnterCombatSpells;
-	SpellMap m_OnLeaveCombatSpells;
-	SpellMap m_OnDamageTakenSpells;
-	SpellMap m_OnTargetCastSpellSpells;
-	SpellMap m_OnTargetParryedSpells;
-	SpellMap m_OnTargetDodgedSpells;
-	SpellMap m_OnTargetBlockedSpells;
-	SpellMap m_OnTargetCritHitSpells;
-	SpellMap m_OnTargetDiedSpells;
-	SpellMap m_OnUnitParryedSpells;
-	SpellMap m_OnUnitDodgedSpells;
-	SpellMap m_OnUnitBlockedSpells;
-	SpellMap m_OnUnitCritHitSpells;
-	SpellMap m_OnUnitDiedSpells;
-	SpellMap m_OnAssistTargetDiedSpells;
-	SpellMap m_OnFollowOwnerSpells;
-	// Spell Cooldown Lists
-	bool m_hasCooldownOnEnterCombatSpells;
-	bool m_hasCooldownOnLeaveCombatSpells;
-	bool m_hasCooldownOnDamageTakenSpells;
-	bool m_hasCooldownOnTargetCastSpellSpells;
-	bool m_hasCooldownOnTargetParryedSpells;
-	bool m_hasCooldownOnTargetDodgedSpells;
-	bool m_hasCooldownOnTargetBlockedSpells;
-	bool m_hasCooldownOnTargetCritHitSpells;
-	bool m_hasCooldownOnTargetDiedSpells;
-	bool m_hasCooldownOnUnitParryedSpells;
-	bool m_hasCooldownOnUnitDodgedSpells;
-	bool m_hasCooldownOnUnitBlockedSpells;
-	bool m_hasCooldownOnUnitCritHitSpells;
-	bool m_hasCooldownOnUnitDiedSpells;
-	bool m_hasCooldownOnAssistTargetDiedSpells;
-	bool m_hasCooldownOnFollowOwnerSpells;
-
 
 	Unit *m_Unit;
 	Unit *m_PetOwner;

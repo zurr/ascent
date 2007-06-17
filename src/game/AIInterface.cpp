@@ -50,13 +50,6 @@ AIInterface::AIInterface()
 	m_updateAssistTimer = 1;
 	m_updateTargetsTimer = TARGET_UPDATE_INTERVAL;
 
-	m_hasOnEnterCombatSpells = m_hasOnLeaveCombatSpells = m_hasOnDamageTakenSpells = m_hasOnTargetCastSpellSpells = m_hasOnTargetParryedSpells = m_hasOnTargetDodgedSpells = m_hasOnTargetBlockedSpells =
-		m_hasOnTargetCritHitSpells = m_hasOnTargetDiedSpells = m_hasOnUnitParryedSpells = m_hasOnUnitDodgedSpells = m_hasOnUnitBlockedSpells = m_hasOnUnitCritHitSpells = m_hasOnUnitDiedSpells =
-		m_hasOnAssistTargetDiedSpells = m_hasOnFollowOwnerSpells = m_hasCooldownOnEnterCombatSpells = m_hasCooldownOnLeaveCombatSpells = m_hasCooldownOnDamageTakenSpells = m_hasCooldownOnTargetCastSpellSpells = m_hasCooldownOnTargetParryedSpells =
-		m_hasCooldownOnTargetDodgedSpells = m_hasCooldownOnTargetBlockedSpells = m_hasCooldownOnTargetCritHitSpells = m_hasCooldownOnTargetDiedSpells = m_hasCooldownOnUnitParryedSpells = m_hasCooldownOnUnitDodgedSpells =
-		m_hasCooldownOnUnitBlockedSpells = m_hasCooldownOnUnitCritHitSpells = m_hasCooldownOnUnitDiedSpells = m_hasCooldownOnAssistTargetDiedSpells = m_hasCooldownOnFollowOwnerSpells = false;
-
-
 	m_nextSpell = NULL;
 	m_nextTarget = NULL;
 	m_Unit = NULL;
@@ -81,7 +74,6 @@ AIInterface::AIInterface()
 	m_formationFollowDistance = 0.0f;
 	m_formationLinkTarget = 0;
 	m_formationLinkSqlId = 0;
-	waiting_for_cooldown = false;
 
 	b_isAttackableOld = false;
 }
@@ -115,37 +107,8 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt)
 
 AIInterface::~AIInterface()
 {
-
-	// cleanup all spell maps
-	CleanupSpellMap(&m_OnEnterCombatSpells);
-	CleanupSpellMap(&m_OnLeaveCombatSpells);
-	CleanupSpellMap(&m_OnDamageTakenSpells);
-	CleanupSpellMap(&m_OnTargetCastSpellSpells);
-	CleanupSpellMap(&m_OnTargetParryedSpells);
-	CleanupSpellMap(&m_OnTargetDodgedSpells);
-	CleanupSpellMap(&m_OnTargetBlockedSpells);
-	CleanupSpellMap(&m_OnTargetCritHitSpells);
-	CleanupSpellMap(&m_OnTargetDiedSpells);
-	CleanupSpellMap(&m_OnUnitParryedSpells);
-	CleanupSpellMap(&m_OnUnitDodgedSpells);
-	CleanupSpellMap(&m_OnUnitCritHitSpells);
-	CleanupSpellMap(&m_OnUnitBlockedSpells);
-	CleanupSpellMap(&m_OnUnitDiedSpells);
-	CleanupSpellMap(&m_OnAssistTargetDiedSpells);
-	CleanupSpellMap(&m_OnFollowOwnerSpells);
-
-
 	if(m_DefaultMeleeSpell)
 		delete m_DefaultMeleeSpell;
-
-	/*if(m_waypoints)
-	{
-		for(WayPointMap::iterator iter = m_waypoints->begin(); iter != m_waypoints->end(); ++iter)
-		{
-			delete iter->second;
-		}
-		delete m_waypoints;
-	}*/
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt, Unit *owner)
@@ -267,7 +230,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				
 				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 
-				resetSpellCounter();
 				firstLeaveCombat = false;
 
 				// Scan for a new target before moving back on waypoint path
@@ -393,7 +355,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				m_nextSpell = NULL;
 				m_nextTarget = NULL;
 				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
-				resetSpellCounter();
 			}break;
 		case EVENT_PET_ATTACK:
 			{
@@ -424,8 +385,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				
 				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 				//m_Unit->setAttackTarget(NULL);
-
-				resetSpellCounter();
 			}break;
 		case EVENT_UNFEAR:
 			{
@@ -458,7 +417,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 				//m_Unit->setAttackTarget(NULL);
 
-				resetSpellCounter();
 			}break;
 		case EVENT_UNWANDER:
 			{
@@ -503,7 +461,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 			// There isn't any need to do any attacker checks here, as
 			// they should all be taken care of in DealDamage
 
-			resetSpellCounter();
 			if(m_AIType == AITYPE_PET)
 			{
 				SetUnitToFollow(m_PetOwner);
@@ -600,7 +557,7 @@ void AIInterface::Update(uint32 p_time)
 					if(m_DefaultSpell->agent == AGENT_SPELL)
 					{
 						// Check cooldown on this spell
-						if(pPet->GetSpellCooldown(m_DefaultSpell->spellId) == 0)
+						if(GetSpellCooldown(m_DefaultSpell->spell->Id) == 0)
 						{
 							// We're fine to cast.
 							m_nextSpell = m_DefaultSpell;
@@ -725,28 +682,6 @@ void AIInterface::_UpdateTimer(uint32 p_time)
 		m_updateTargets = true;
 		m_updateTargetsTimer = TARGET_UPDATE_INTERVAL * 2 - m_updateTargetsTimer - p_time;
 	}
-
-	_UpdateCooldownTimers(p_time);
-}
-
-void AIInterface::_UpdateCooldownTimers(uint32 p_time)
-{
-	_UpdateCooldownTimer(&m_hasCooldownOnEnterCombatSpells, &m_OnEnterCombatSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnLeaveCombatSpells, &m_OnLeaveCombatSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnDamageTakenSpells, &m_OnDamageTakenSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnTargetCastSpellSpells, &m_OnTargetCastSpellSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnTargetParryedSpells, &m_OnTargetParryedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnTargetDodgedSpells, &m_OnTargetDodgedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnTargetBlockedSpells, &m_OnTargetBlockedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnTargetCritHitSpells, &m_OnTargetCritHitSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnTargetDiedSpells, &m_OnTargetDiedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnUnitParryedSpells, &m_OnUnitParryedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnUnitDodgedSpells, &m_OnUnitDodgedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnUnitBlockedSpells, &m_OnUnitBlockedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnUnitCritHitSpells, &m_OnUnitCritHitSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnUnitDiedSpells, &m_OnUnitDiedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnAssistTargetDiedSpells, &m_OnAssistTargetDiedSpells, p_time);
-	_UpdateCooldownTimer(&m_hasCooldownOnFollowOwnerSpells, &m_OnFollowOwnerSpells, p_time);
 }
 
 void AIInterface::_UpdateTargets()
@@ -1065,17 +1000,11 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				float distance = m_Unit->GetDistanceSq(m_nextTarget);
 				if((distance <= powf(m_nextSpell->maxrange,2)  && distance >= powf(m_nextSpell->minrange,2)) || m_nextSpell->maxrange == 0) // Target is in Range -> Attack
 				{
-					uint32 spellId = m_nextSpell->spellId;
-					SpellEntry* spellInfo = getSpellEntry(spellId);
+					SpellEntry* spellInfo = m_nextSpell->spell;
 					SpellCastTargets targets = setSpellTargets(spellInfo, m_nextTarget);
 					CastSpell(m_Unit, spellInfo, targets);
-					if(m_nextSpell)
-						increaseProcCounter(m_nextSpell->procEvent, m_nextSpell);
-
 					m_nextSpell = NULL;
-
-					if(m_AIType == AITYPE_PET)	  // Add cooldown
-						((Pet*)m_Unit)->AddSpellCooldown(spellId);
+					AddSpellCooldown(spellInfo->Id);
 				}
 				else // Target out of Range -> Run to it
 				{
@@ -2823,739 +2752,46 @@ SpellCastTargets AIInterface::setSpellTargets(SpellEntry *spellInfo, Unit* targe
 
 AI_Spell *AIInterface::getSpellByEvent(uint32 event)
 {
-	SpellMap::iterator i;
-	switch(event)
+	// look at our spells
+	AI_Spell * sp;
+	for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
 	{
-	case EVENT_ENTERCOMBAT:
+        sp = *itr;
+		if(sp->agent == AGENT_SPELL)
 		{
-			if(!m_hasOnEnterCombatSpells) // has Spells for that Event -- used to reduce iterations
+			switch(sp->spellType)
 			{
-				break;
-			}
-			for(i = m_OnEnterCombatSpells.begin();i != m_OnEnterCombatSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
+			case STYPE_BUFF:
 				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
+					// cast the buff at requested percent only if we don't have it already
+					if(sp->procChance >= 100 || Rand(sp->procChance))
 					{
-						if(Rand(i->second->procChance)) // proc this Spell
+						if(!m_Unit->HasActiveAura(sp->spell->Id))
 						{
-							return i->second;
+							return sp;
 						}
 					}
-				}
-			}
-		}break;
-	case EVENT_LEAVECOMBAT:
-		{
-			if(!m_hasOnLeaveCombatSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnLeaveCombatSpells.begin();i != m_OnLeaveCombatSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
+				}break;
+
+			default:
 				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
+					// cast the spell at requested percent.
+					if(sp->procChance >= 100 || Rand(sp->procChance))
 					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
+						return sp;
 					}
-				}
+				}break;
 			}
-		}break;
-	case EVENT_DAMAGETAKEN:
-		{
-			if(!m_hasOnDamageTakenSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnDamageTakenSpells.begin();i != m_OnDamageTakenSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_TARGETCASTSPELL:
-		{
-			if(!m_hasOnTargetCastSpellSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnTargetCastSpellSpells.begin();i != m_OnTargetCastSpellSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_TARGETPARRYED:
-		{
-			if(!m_hasOnTargetParryedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnTargetParryedSpells.begin();i != m_OnTargetParryedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_TARGETDODGED:
-		{
-			if(!m_hasOnTargetDodgedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnTargetDodgedSpells.begin();i != m_OnTargetDodgedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_TARGETBLOCKED:
-		{
-			if(!m_hasOnTargetBlockedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnTargetBlockedSpells.begin();i != m_OnTargetBlockedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_TARGETCRITHIT:
-		{
-			if(!m_hasOnTargetCritHitSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnTargetCritHitSpells.begin();i != m_OnTargetCritHitSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							i->second->spellCooldownTimer = 500;
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_TARGETDIED:
-		{
-			if(!m_hasOnTargetDiedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnTargetDiedSpells.begin();i != m_OnTargetDiedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_UNITPARRYED:
-		{
-			if(!m_hasOnUnitParryedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnUnitParryedSpells.begin();i != m_OnUnitParryedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_UNITDODGED:
-		{
-			if(!m_hasOnUnitDodgedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnUnitDodgedSpells.begin();i != m_OnUnitDodgedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_UNITBLOCKED:
-		{
-			if(!m_hasOnUnitBlockedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnUnitBlockedSpells.begin();i != m_OnUnitBlockedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_UNITCRITHIT:
-		{
-			if(!m_hasOnUnitCritHitSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnUnitCritHitSpells.begin();i != m_OnUnitCritHitSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_UNITDIED:
-		{
-			if(!m_hasOnUnitDiedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnUnitDiedSpells.begin();i != m_OnUnitDiedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_ASSISTTARGETDIED:
-		{
-			if(!m_hasOnAssistTargetDiedSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnAssistTargetDiedSpells.begin();i != m_OnAssistTargetDiedSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
-	case EVENT_FOLLOWOWNER:
-		{
-			if(!m_hasOnFollowOwnerSpells) // has Spells for that Event -- used to reduce iterations
-			{
-				break;
-			}
-			for(i = m_OnFollowOwnerSpells.begin();i != m_OnFollowOwnerSpells.end(); i++)
-			{
-				if(i->second->procCount == 0 || i->second->procCounter < i->second->procCount) // procCount for that spell isnt expired yet
-				{
-					if(i->second->spellCooldownTimer == 0) // there is no Cooldown for that Spell
-					{
-						if(Rand(i->second->procChance)) // proc this Spell
-						{
-							return i->second;
-						}
-					}
-				}
-			}
-		}break;
+		}
 	}
 
 	return m_DefaultSpell;
 }
 
-void AIInterface::resetSpellCounter()
-{
-	SpellMap::iterator i;
-	if(m_hasCooldownOnEnterCombatSpells == true)
-	{
-		m_hasCooldownOnEnterCombatSpells = false;
-		for(i = m_OnEnterCombatSpells.begin();i != m_OnEnterCombatSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnLeaveCombatSpells == true)
-	{
-		m_hasCooldownOnLeaveCombatSpells = false;
-		for(i = m_OnLeaveCombatSpells.begin();i != m_OnLeaveCombatSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnDamageTakenSpells == true)
-	{
-		m_hasCooldownOnDamageTakenSpells = false;
-		for(i = m_OnDamageTakenSpells.begin();i != m_OnDamageTakenSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnTargetCastSpellSpells == true)
-	{
-		m_hasCooldownOnTargetCastSpellSpells = false;
-		for(i = m_OnTargetCastSpellSpells.begin();i != m_OnTargetCastSpellSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnTargetParryedSpells == true)
-	{
-		m_hasCooldownOnTargetParryedSpells = false;
-		for(i = m_OnTargetParryedSpells.begin();i != m_OnTargetParryedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnTargetDodgedSpells == true)
-	{
-		m_hasCooldownOnTargetDodgedSpells = false;
-		for(i = m_OnTargetDodgedSpells.begin();i != m_OnTargetDodgedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnTargetBlockedSpells == true)
-	{
-		m_hasCooldownOnTargetBlockedSpells = false;
-		for(i = m_OnTargetBlockedSpells.begin();i != m_OnTargetBlockedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnTargetCritHitSpells == true)
-	{
-		m_hasCooldownOnTargetCritHitSpells = false;
-		for(i = m_OnTargetCritHitSpells.begin();i != m_OnTargetCritHitSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnTargetDiedSpells == true)
-	{
-		m_hasCooldownOnTargetDiedSpells = false;
-		for(i = m_OnTargetDiedSpells.begin();i != m_OnTargetDiedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnUnitParryedSpells == true)
-	{
-		m_hasCooldownOnUnitParryedSpells = false;
-		for(i = m_OnUnitParryedSpells.begin();i != m_OnUnitParryedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnUnitDodgedSpells == true)
-	{
-		m_hasCooldownOnUnitDodgedSpells = false;
-		for(i = m_OnUnitDodgedSpells.begin();i != m_OnUnitDodgedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnUnitBlockedSpells == true)
-	{
-		m_hasCooldownOnUnitBlockedSpells = false;
-		for(i = m_OnUnitBlockedSpells.begin();i != m_OnUnitBlockedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnUnitCritHitSpells == true)
-	{
-		m_hasCooldownOnUnitCritHitSpells = false;
-		for(i = m_OnUnitCritHitSpells.begin();i != m_OnUnitCritHitSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnUnitDiedSpells == true)
-	{
-		m_hasCooldownOnUnitDiedSpells = false;
-		for(i = m_OnUnitDiedSpells.begin();i != m_OnUnitDiedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnAssistTargetDiedSpells == true)
-	{
-		m_hasCooldownOnAssistTargetDiedSpells = false;
-		for(i = m_OnAssistTargetDiedSpells.begin();i != m_OnAssistTargetDiedSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-	if(m_hasCooldownOnFollowOwnerSpells == true)
-	{
-		m_hasCooldownOnFollowOwnerSpells = false;
-		for(i = m_OnFollowOwnerSpells.begin();i != m_OnFollowOwnerSpells.end(); i++)
-		{
-			i->second->spellCooldownTimer = 0;
-		}
-	}
-}
-
-void AIInterface::increaseProcCounter(uint32 event, AI_Spell *sp)
-{
-	SpellMap::iterator i;
-	switch(event)
-	{
-	case EVENT_ENTERCOMBAT:
-		{
-			i = m_OnEnterCombatSpells.find(sp->spellId);
-			if(i != m_OnEnterCombatSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnEnterCombatSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_LEAVECOMBAT:
-		{
-			i = m_OnLeaveCombatSpells.find(sp->spellId);
-			if(i != m_OnLeaveCombatSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnLeaveCombatSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_DAMAGETAKEN:
-		{
-			i = m_OnDamageTakenSpells.find(sp->spellId);
-			if(i != m_OnDamageTakenSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnDamageTakenSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_TARGETCASTSPELL:
-		{
-			i = m_OnTargetCastSpellSpells.find(sp->spellId);
-			if(i != m_OnTargetCastSpellSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnTargetCastSpellSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_TARGETPARRYED:
-		{
-			i = m_OnTargetParryedSpells.find(sp->spellId);
-			if(i != m_OnTargetParryedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnTargetParryedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_TARGETDODGED:
-		{
-			i = m_OnTargetDodgedSpells.find(sp->spellId);
-			if(i != m_OnTargetDodgedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnTargetDodgedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_TARGETBLOCKED:
-		{
-			i = m_OnTargetBlockedSpells.find(sp->spellId);
-			if(i != m_OnTargetBlockedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnTargetBlockedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_TARGETCRITHIT:
-		{
-			i = m_OnTargetCritHitSpells.find(sp->spellId);
-			if(i != m_OnTargetCritHitSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnTargetCritHitSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_TARGETDIED:
-		{
-			i = m_OnTargetDiedSpells.find(sp->spellId);
-			if(i != m_OnTargetDiedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnTargetDiedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_UNITPARRYED:
-		{
-			i = m_OnUnitParryedSpells.find(sp->spellId);
-			if(i != m_OnUnitParryedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnUnitParryedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_UNITDODGED:
-		{
-			i = m_OnUnitDodgedSpells.find(sp->spellId);
-			if(i != m_OnUnitDodgedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnUnitDodgedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_UNITBLOCKED:
-		{
-			i = m_OnUnitBlockedSpells.find(sp->spellId);
-			if(i != m_OnUnitBlockedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnUnitBlockedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_UNITCRITHIT:
-		{
-			i = m_OnUnitCritHitSpells.find(sp->spellId);
-			if(i != m_OnUnitCritHitSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnUnitCritHitSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_UNITDIED:
-		{
-			i = m_OnUnitDiedSpells.find(sp->spellId);
-			if(i != m_OnUnitDiedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnUnitDiedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_ASSISTTARGETDIED:
-		{
-			i = m_OnAssistTargetDiedSpells.find(sp->spellId);
-			if(i != m_OnAssistTargetDiedSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnAssistTargetDiedSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	case EVENT_FOLLOWOWNER:
-		{
-			i = m_OnFollowOwnerSpells.find(sp->spellId);
-			if(i != m_OnFollowOwnerSpells.end())
-			{
-				i->second->spellCooldownTimer = i->second->spellCooldown;
-				if(i->second->spellCooldown > 0)
-					m_hasCooldownOnFollowOwnerSpells = true;
-				i->second->procCounter++;
-			}
-		}break;
-	}
-}
-
 void AIInterface::addSpellToList(AI_Spell *sp)
 {
-	switch(sp->procEvent)
-	{
-	case EVENT_ENTERCOMBAT:
-		{
-			m_OnEnterCombatSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnEnterCombatSpells = true;
-		}break;
-	case EVENT_LEAVECOMBAT:
-		{
-			m_OnLeaveCombatSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnLeaveCombatSpells = true;
-		}break;
-	case EVENT_DAMAGETAKEN:
-		{
-			m_OnDamageTakenSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnDamageTakenSpells = true;
-		}break;
-	case EVENT_TARGETCASTSPELL:
-		{
-			m_OnTargetCastSpellSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnTargetCastSpellSpells = true;
-		}break;
-	case EVENT_TARGETPARRYED:
-		{
-			m_OnTargetParryedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnTargetParryedSpells = true;
-		}break;
-	case EVENT_TARGETDODGED:
-		{
-			m_OnTargetDodgedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnTargetDodgedSpells = true;
-		}break;
-	case EVENT_TARGETBLOCKED:
-		{
-			m_OnTargetBlockedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnTargetBlockedSpells = true;
-		}break;
-	case EVENT_TARGETCRITHIT:
-		{
-			m_OnTargetCritHitSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnTargetCritHitSpells = true;
-		}break;
-	case EVENT_TARGETDIED:
-		{
-			m_OnTargetDiedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnTargetDiedSpells = true;
-		}break;
-	case EVENT_UNITPARRYED:
-		{
-			m_OnUnitParryedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnUnitParryedSpells = true;
-		}break;
-	case EVENT_UNITDODGED:
-		{
-			m_OnUnitDodgedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnUnitDodgedSpells = true;
-		}break;
-	case EVENT_UNITBLOCKED:
-		{
-			m_OnUnitBlockedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnUnitBlockedSpells = true;
-		}break;
-	case EVENT_UNITCRITHIT:
-		{
-			m_OnUnitCritHitSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnUnitCritHitSpells = true;
-		}break;
-	case EVENT_UNITDIED:
-		{
-			m_OnUnitDiedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnUnitDiedSpells = true;
-		}break;
-	case EVENT_ASSISTTARGETDIED:
-		{
-			m_OnAssistTargetDiedSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnAssistTargetDiedSpells = true;
-		}break;
-	case EVENT_FOLLOWOWNER:
-		{
-			m_OnFollowOwnerSpells.insert(SpellMap::value_type(sp->spellId, sp));
-			m_hasOnFollowOwnerSpells = true;
-		}break;
-	}
-
-	m_Unit->m_SpellList.insert(sp->spellId); // add to list
+	m_spells.push_back(sp);
+	m_Unit->m_SpellList.insert(sp->spell->Id); // add to list
 }
 
 uint32 AIInterface::getThreatByGUID(uint64 guid)
@@ -3737,4 +2973,43 @@ void AIInterface::WipeReferences()
 	UnitToFear = 0;
 	UnitToFollow = 0;
 	tauntedBy = 0;
+}
+
+uint32 AIInterface::GetSpellCooldown(uint32 SpellId)
+{
+	map<uint32, uint32>::iterator itr = m_spellCooldown.find(SpellId);
+	if(itr != m_spellCooldown.end())
+	{
+		uint32 mstime = getMSTime();
+		uint32 cotime = itr->second;
+		if(mstime > cotime)
+		{
+			// empty cooldown -> erase it
+			m_spellCooldown.erase(itr);
+			return 0;
+		}
+		else
+			return cotime - mstime;
+	}
+	return 0;
+}
+
+void AIInterface::AddSpellCooldown(uint32 SpellId)
+{
+	uint32 Cooldown = objmgr.GetPetSpellCooldown(SpellId);
+	if(Cooldown == 0)
+	{
+		// Try to pull a cooldown value from spelldbc.
+		SpellEntry * sp = sSpellStore.LookupEntry(SpellId);
+		if(sp)
+		{
+			Cooldown = sp->CategoryRecoveryTime > sp->RecoveryTime ? sp->CategoryRecoveryTime : sp->RecoveryTime;
+		}
+
+		// if still 0
+		if(!Cooldown)
+			Cooldown = 1000;	// hack..
+	}
+
+	m_spellCooldown[SpellId] = getMSTime() + Cooldown;
 }

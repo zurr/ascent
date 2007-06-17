@@ -282,12 +282,7 @@ void Pet::CreateAISpell(SpellEntry * info)
 	sp->minrange = GetMinRange(sSpellRange.LookupEntry(info->rangeIndex));
 	sp->Misc2 = 0;
 	sp->procChance = 0;
-	sp->procCount = 0;
-	sp->procCounter = 0;
-	sp->procEvent = 0;
-	sp->spellCooldown = 0;
-	sp->spellCooldownTimer = 0;
-	sp->spellId = info->Id;
+	sp->spell = info;
 	sp->spellType = STYPE_DAMAGE;
 	sp->spelltargetType = TTYPE_SINGLETARGET;
 	if(info->Effect[0] == SPELL_EFFECT_APPLY_AURA || info->Effect[0] == SPELL_EFFECT_APPLY_AREA_AURA)
@@ -444,7 +439,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 	if(sp)
 	{
 		if(sp->agent == AGENT_SPELL)
-			pi->autocastspell = sp->spellId;
+			pi->autocastspell = sp->spell->Id;
 		else
 			pi->autocastspell = 0;
 	}
@@ -689,45 +684,6 @@ void Pet::SetDefaultActionbar()
 	ActionBar[7] = PET_SPELL_AGRESSIVE;
 	ActionBar[8] = PET_SPELL_DEFENSIVE;
 	ActionBar[9] = PET_SPELL_PASSIVE;
-}
-
-uint32 Pet::GetSpellCooldown(uint32 SpellId)
-{
-	map<uint32, uint32>::iterator itr = m_spellCooldown.find(SpellId);
-	if(itr != m_spellCooldown.end())
-	{
-		uint32 mstime = getMSTime();
-		uint32 cotime = itr->second;
-		if(mstime > cotime)
-		{
-			// empty cooldown -> erase it
-			m_spellCooldown.erase(itr);
-			return 0;
-		}
-		else
-			return cotime - mstime;
-	}
-	return 0;
-}
-
-void Pet::AddSpellCooldown(uint32 SpellId)
-{
-	uint32 Cooldown = objmgr.GetPetSpellCooldown(SpellId);
-	if(Cooldown == 0)
-	{
-		// Try to pull a cooldown value from spelldbc.
-		SpellEntry * sp = sSpellStore.LookupEntry(SpellId);
-		if(sp)
-		{
-			Cooldown = sp->CategoryRecoveryTime > sp->RecoveryTime ? sp->CategoryRecoveryTime : sp->RecoveryTime;
-		}
-
-		// if still 0
-		if(!Cooldown)
-			Cooldown = 1000;	// hack..
-	}
-
-	m_spellCooldown[SpellId] = getMSTime() + Cooldown;
 }
 
 void Pet::RemoveSpell(SpellEntry * sp)
