@@ -2714,7 +2714,7 @@ int8 Spell::CanCast(bool rangetolerate)
 				return SPELL_FAILED_SILENCED;
 		}
 
-		if(u_caster->m_silenced)
+		if(u_caster->m_silenced && m_spellInfo->School != NORMAL_DAMAGE)// can only silence non-physical
 			return SPELL_FAILED_SILENCED;
 
 		if(target)
@@ -2729,7 +2729,7 @@ int8 Spell::CanCast(bool rangetolerate)
 				}
 		}
 
-		if(u_caster->IsPacified())
+		if(u_caster->IsPacified() && m_spellInfo->School == NORMAL_DAMAGE) // only affects physical damage
 			return SPELL_FAILED_PACIFIED;
 
 		if(u_caster->IsStunned())
