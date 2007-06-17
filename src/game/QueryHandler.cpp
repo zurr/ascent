@@ -228,7 +228,7 @@ void WorldSession::HandlePageTextQueryOpcode( WorldPacket & recv_data )
 		if(page == NULL) 
 			break;
 		data << pageid;
-		data << page->text.c_str();
+		data << page->text;
 		data << page->next_page;
 		pageid = page->next_page;
 		SendPacket(&data);
