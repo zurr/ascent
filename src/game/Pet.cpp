@@ -150,8 +150,6 @@ Pet::~Pet()
 	for(std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.begin(); itr != m_AISpellStore.end(); ++itr)
 		delete itr->second;
 
-	GetAIInterface()->SetDefaultSpell(NULL);
-
 	if(IsInWorld())
 		this->Remove(false, true, true);
 }
@@ -335,7 +333,10 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 	{
 		AI_Spell * sp = GetAISpellForSpellId(pi->autocastspell);
 		if(sp)
-			m_aiInterface->SetDefaultSpell(sp);
+		{
+			sp->procChance = 100;
+			m_aiInterface->disable_melee = true;
+		}
 	}
 	
 	if(m_Owner && getLevel() > m_Owner->getLevel())
@@ -435,14 +436,15 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 
 	pi->actionbar = ss.str();
 	pi->summon = Summon;
-	AI_Spell * sp = m_aiInterface->GetDefaultSpell();
+	/*AI_Spell * sp = m_aiInterface->GetDefaultSpell();
 	if(sp)
 	{
 		if(sp->agent == AGENT_SPELL)
 			pi->autocastspell = sp->spell->Id;
 		else
 			pi->autocastspell = 0;
-	}
+	}*/
+	//FIXME
 }
 
 void Pet::Dismiss(bool bSafeDelete)
@@ -693,8 +695,15 @@ void Pet::RemoveSpell(SpellEntry * sp)
 	if(itr != m_AISpellStore.end())
 	{
 		delete itr->second;
-		if(GetAIInterface()->GetDefaultSpell() == itr->second)
-			GetAIInterface()->SetDefaultSpell(0);
+		for(list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
+		{
+			if((*it) == itr->second)
+			{
+				m_aiInterface->m_spells.erase(it);
+				m_aiInterface->CheckNextSpell(itr->second);
+				break;
+			}
+		}
 
 		m_AISpellStore.erase(itr);
 	}

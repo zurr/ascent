@@ -1576,7 +1576,9 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	   
 		if(this->IsUnit())
 		{
-			static_cast<Unit*>(this)->GetAIInterface()->HandleEvent(EVENT_TARGETDIED, pVictim, 0);
+			CALL_SCRIPT_EVENT(this, OnTargetDied)(pVictim);
+			ScriptSystem->OnCreatureEvent(((Creature*)this), pVictim, CREATURE_EVENT_ON_KILLED_TARGET);
+
 			((Unit*)this)->smsg_AttackStop(pVictim);
 		
 			/* Tell Unit that it's target has Died */
@@ -1820,14 +1822,14 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			// Send AI Reaction UNIT vs UNIT
 			if (GetTypeId() ==TYPEID_UNIT)
 			{
-				((Unit*)this)->GetAIInterface()->AttackReaction(pVictim, damage, unitEvent + 0xFF, spellId);
+				((Unit*)this)->GetAIInterface()->AttackReaction(pVictim, damage, spellId);
 			}
 			
 			// Send AI Victim Reaction
 			if(this->IsPlayer() || this->GetTypeId()==TYPEID_UNIT)
 			if (pVictim->GetTypeId() != TYPEID_PLAYER)
 			{
-				((Creature*)pVictim)->GetAIInterface()->AttackReaction((Unit*)this, damage, targetEvent, spellId);
+				((Creature*)pVictim)->GetAIInterface()->AttackReaction((Unit*)this, damage, spellId);
 			}
 		}
 		

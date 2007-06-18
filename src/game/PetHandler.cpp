@@ -94,7 +94,10 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 					// Attack target with melee if the owner if we dont have spells - other wise cast. All done by AIInterface.
 					if(pPet->GetAIInterface()->getUnitToFollow() == NULL)
 						pPet->GetAIInterface()->SetUnitToFollow(_player);
-					pPet->GetAIInterface()->HandleEvent(EVENT_PET_ATTACK, pTarget, 0);
+
+					// EVENT_PET_ATTACK
+					pPet->GetAIInterface()->SetAIState(STATE_ATTACKING);
+					pPet->GetAIInterface()->AttackReaction(pTarget, 1, 0);
 				}break;
 			case PET_ACTION_FOLLOW:
 				{
@@ -163,7 +166,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 					pPet->GetAIInterface()->WipeTargetList();
 					pPet->GetAIInterface()->WipeHateList();
 
-					pPet->GetAIInterface()->AttackReaction(pTarget, 1, 0, 0);
+					pPet->GetAIInterface()->AttackReaction(pTarget, 1, 0);
 					pPet->GetAIInterface()->SetNextSpell(sp);
 				}
 			}
@@ -330,7 +333,7 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
 	Pet * pet = _player->GetSummon();
 	pet->ActionBar[slot] = spell;
 	pet->SetSpellState(spell, state);
-	if(state == 0x8100 &&	   // no autocast
+	/*if(state == 0x8100 &&	   // no autocast
 		spell == pet->GetAIInterface()->GetDefaultSpell()->spell->Id)
 	{
 		// removing autocast
@@ -342,6 +345,19 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
 		AI_Spell * sp = pet->GetAISpellForSpellId(spell);
 		if(sp)
 			pet->GetAIInterface()->SetDefaultSpell(sp);
+	}*/
+	AI_Spell * sp = pet->GetAISpellForSpellId(spell);
+	if(!sp) return;
+
+	if(state == 0x8100)
+	{
+		if(sp->procChance == 100)
+			sp->procChance = 0;
+	}
+	else if(state == 0xC100)
+	{
+		if(sp->procChance != 100)
+			sp->procChance = 100;
 	}
 }
 

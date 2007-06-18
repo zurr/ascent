@@ -877,12 +877,16 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	}
 	else if ((!ability)&&Rand(dodge)) //Dodge
 	{
+		CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
+		CALL_SCRIPT_EVENT(this, OnDodged)(this);
 		targetEvent = 1;
 		vstate = DODGE;
 		pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED);			// Animation
 	}
 	else if ((!ability)&&Rand(parry)) //Parry
 	{
+		CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
+		CALL_SCRIPT_EVENT(this, OnParried)(this);
 		targetEvent = 3;
 		vstate = PARRY;
 		pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED);			// Animation
@@ -951,7 +955,11 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 					pVictim->Emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
 					blocked_damage = shield->GetProto()->Block+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
 					if(dmg.full_damage <= blocked_damage)
+					{
+						CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, blocked_damage);
+						CALL_SCRIPT_EVENT(this, OnBlocked)(pVictim, blocked_damage);
 						vstate = BLOCK;			
+					}
 				}
 			}
 			else if (Rand(crit)) //Crictical Hit
@@ -968,6 +976,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 				vproc |= PROC_ON_CRIT_HIT_VICTIM;
 				aproc |= PROC_ON_CRIT_ATTACK;
+
+				CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.full_damage);
+				CALL_SCRIPT_EVENT(this, OnCritHit)(pVictim, dmg.full_damage);
 			}
 			else
 			{
@@ -1518,7 +1529,7 @@ void Unit::AddAura(Aura *aur)
 
 			addAttacker(pCaster);
 
-			GetAIInterface()->AttackReaction(pCaster, 1, 1, aur->GetSpellId());
+			GetAIInterface()->AttackReaction(pCaster, 1, aur->GetSpellId());
 		}
 	}
 }

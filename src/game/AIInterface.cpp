@@ -63,7 +63,6 @@ AIInterface::AIInterface()
 	tauntedBy = NULL;
 	isTaunted = false;
 	m_AllowedToEnterCombat = true;
-	m_DefaultSpell = m_DefaultMeleeSpell = NULL;
 	m_totalMoveTime = 0;
 	m_lastFollowX = m_lastFollowY = 0;
 	m_FearTimer = 0;
@@ -76,7 +75,8 @@ AIInterface::AIInterface()
 	m_formationLinkSqlId = 0;
 
 	b_isAttackableOld = false;
-	waiting_for_cooldown = false;
+	disable_melee = false;
+	next_spell_time = 0;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
@@ -108,8 +108,7 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt)
 
 AIInterface::~AIInterface()
 {
-	if(m_DefaultMeleeSpell)
-		delete m_DefaultMeleeSpell;
+
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt, Unit *owner)
@@ -126,12 +125,6 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt, Unit *owner)
 	m_PetOwner = owner;
 
 	m_moveSpeed = m_Unit->m_runSpeed*0.001f;
-	if(!m_DefaultMeleeSpell)
-	{
-		m_DefaultMeleeSpell = new AI_Spell;
-		m_DefaultMeleeSpell->agent = AGENT_MELEE;
-		m_DefaultSpell = m_DefaultMeleeSpell;
-	}
 	m_sourceX = un->GetPositionX();
 	m_sourceY = un->GetPositionY();
 	m_sourceZ = un->GetPositionZ();
@@ -173,8 +166,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 					StopMovement(0);
 
 				m_AIState = STATE_ATTACKING;
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
 				firstLeaveCombat = true;
 				if(pUnit && pUnit->GetInstanceID() == m_Unit->GetInstanceID())
 				{
@@ -236,7 +227,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				// Scan for a new target before moving back on waypoint path
 				Unit * Target = FindTarget();
 				if(Target != NULL)
-					AttackReaction(Target, 1, 0, 0);
+					AttackReaction(Target, 1, 0);
 				else
 					firstLeaveCombat = true;
 
@@ -269,76 +260,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				{
 					m_aiTargets.insert(TargetMap::value_type(pUnit, misc1));
 				}
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_TARGETCASTSPELL:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnCastSpell)(0);  //fixme
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_TARGETPARRYED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnTargetParried)(pUnit);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_TARGETDODGED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnTargetDodged)(pUnit);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_TARGETBLOCKED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnTargetBlocked)(pUnit,misc1);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_TARGETCRITHIT:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnTargetCritHit)(pUnit,(float)misc1);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_TARGETDIED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnTargetDied)(pUnit);
-				ScriptSystem->OnCreatureEvent(((Creature*)m_Unit), pUnit, CREATURE_EVENT_ON_KILLED_TARGET);
-
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_UNITPARRYED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnParried)(pUnit);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_UNITDODGED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnDodged)(pUnit);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_UNITBLOCKED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnBlocked)(pUnit, misc1);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_UNITCRITHIT:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnCritHit)(pUnit, (float)misc1);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
-			}break;
-		case EVENT_ASSISTTARGETDIED:
-			{
-				CALL_SCRIPT_EVENT(m_Unit, OnAssistTargetDied)(pUnit);
-				m_nextSpell = getSpellByEvent(event);
-				m_nextTarget = FindTargetForSpell(m_nextSpell);
 			}break;
 		case EVENT_FOLLOWOWNER:
 			{
@@ -356,11 +277,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				m_nextSpell = NULL;
 				m_nextTarget = NULL;
 				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
-			}break;
-		case EVENT_PET_ATTACK:
-			{
-				m_AIState = STATE_ATTACKING;
-				m_Unit->GetAIInterface()->AttackReaction(pUnit,1,0);
 			}break;
 		case EVENT_FEAR:
 			{   
@@ -494,7 +410,7 @@ void AIInterface::Update(uint32 p_time)
 {
 	if(m_AIType == AITYPE_TOTEM)
 	{
-		assert(m_DefaultSpell != 0 && totemspell != 0);
+		assert(totemspell != 0);
 		if(p_time >= m_totemspelltimer)
 		{
 			Spell * pSpell = new Spell(m_Unit, totemspell, true, 0);
@@ -550,31 +466,6 @@ void AIInterface::Update(uint32 p_time)
 
 			if(pPet->GetPetAction() == PET_ACTION_ATTACK || pPet->GetPetState() != PET_STATE_PASSIVE)
 			{
-				// todo: some check for autocast here
-				/*if(m_DefaultSpell && !m_nextSpell)
-					m_nextSpell = m_DefaultSpell;*/
-				if(m_DefaultSpell && !m_nextSpell)
-				{
-					if(m_DefaultSpell->agent == AGENT_SPELL)
-					{
-						// Check cooldown on this spell
-						if(GetSpellCooldown(m_DefaultSpell->spell->Id) == 0)
-						{
-							// We're fine to cast.
-							m_nextSpell = m_DefaultSpell;
-							waiting_for_cooldown = false;
-						}							
-						else
-						{
-							// Waiting for cooldown to expire....
-							m_nextSpell = m_DefaultSpell;
-							waiting_for_cooldown = true;
-						}
-					}
-				}
-				else
-					waiting_for_cooldown = false;
-
 				_UpdateCombat(p_time);
 			}
 		}
@@ -783,17 +674,6 @@ void AIInterface::_UpdateTargets()
 void AIInterface::_UpdateCombat(uint32 p_time)
 {
 	uint16 agent = m_aiCurrentAgent;
-	
-	/*if(m_AIType == AITYPE_PET)				  // pets - default spell
-	{
-		if(m_DefaultSpell != NULL)
-		{
-			if(m_DefaultSpell != m_nextSpell)
-			{
-				m_nextSpell = m_DefaultSpell;
-			}
-		}
-	}*/ // no need to do this anymore
 
 	// If creature is very far from spawn point return to spawnpoint
 	// If at instance dont return -- this is wrong ... instance creatures always returns to spawnpoint, dunno how do you got this ideia. 
@@ -814,10 +694,6 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 		}
 	}
 
-	/* do nothing if we're casting */
-	if(m_Unit->isCasting())
-		return;
-
 	bool cansee;
 	if(m_nextTarget && m_nextTarget->GetInstanceID() == m_Unit->GetInstanceID())
 	{
@@ -834,7 +710,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 		if(agent == AGENT_NULL)
 		{
 			if(!m_nextSpell)
-				m_nextSpell = this->getSpellByEvent(0xFFFFFFFF);
+				m_nextSpell = this->getSpell();
 
 			if(m_canFlee && !m_hasFleed 
 				&& ((m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH) / m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) < m_FleeHealth ))
@@ -882,7 +758,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				agent = AGENT_MELEE;
 			}
 		}
-  
+
+		if(this->disable_melee && agent == AGENT_MELEE)
+			agent = AGENT_NULL;
+		  
 		switch(agent)
 		{
 		case AGENT_MELEE:
@@ -1002,7 +881,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 			}break;
 		case AGENT_SPELL:
 			{
-				if(!m_nextSpell || !m_nextTarget || waiting_for_cooldown)
+				if(!m_nextSpell || !m_nextTarget)
 					return;  // this shouldnt happen
 
 				/* stop moving so we don't interrupt the spell */
@@ -1124,7 +1003,7 @@ void AIInterface::DismissPet()
 	sEventMgr.AddEvent(((Creature*)this->m_Unit), &Creature::DeleteMe, EVENT_DELETE_TIMER, 1, 1);*/
 }
 
-void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 state, uint32 spellId)
+void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId)
 {
 	if(m_AIState == STATE_EVADE || m_fleeTimer != 0 || !pUnit 
 		|| m_Unit->IsPacified() || m_Unit->IsStunned() || !m_Unit->isAlive())
@@ -1135,86 +1014,15 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 state,
 	{
 		return;
 	}
-	
-	bool state_reduced = false;
-	if(state >= 0xFF)
-	{
-		state -= 0xFF;
-		state_reduced = true;
-	}
-
-	// this isn't right if we're dealing damage.. we dont want to add threat for when we're attacking someone? or do we?
-	//modThreatByGUID(pUnit->GetGUID(), _CalcThreat(damage_dealt, spellId, pUnit));
 
 	if(m_AIState == STATE_IDLE || m_AIState == STATE_FOLLOWING)
 	{
 		WipeTargetList();
 		
 		HandleEvent(EVENT_ENTERCOMBAT, pUnit, 0);
-		if(pUnit->GetTypeId() == TYPEID_PLAYER)
-		{
-			// Show attack animation icon
-			//((Player*)pUnit)->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_ATTACK_ANIMATION);
-		//	if(((Player*)pUnit)->GetUInt64Value(PLAYER_SELECTION) == 0)
-		  //	  ((Player*)pUnit)->SetUInt64Value(PLAYER_SELECTION, m_Unit->GetGUID());
-		}
-
-		//these 2 are done already in deal damage
-		//right before this func is called
-		//there should be a way not to do this twice....
-
-		// no need to do this
-		/*if(pUnit != m_Unit)	 // this shouldnt happen
-		{
-			pUnit->AddAttacker(m_Unit);
-			m_Unit->m_AttackTarget = pUnit;
-		} else {
-			char msg[100];
-			sprintf(msg, "AI: Tried to add self to attacker set "I64FMT, m_Unit->GetGUID());
-			sWorld.SendIRCMessage(msg);
-			sLog.outString(msg);
-		}*/
 	}
 
-	switch(state)
-	{
-	case 1: // Target dodged
-		{
-			HandleEvent(EVENT_TARGETDODGED, pUnit, 0);
-		}break;
-	case 2: // Target blocked
-		{
-			HandleEvent(EVENT_TARGETBLOCKED, pUnit, 0);
-		}break;
-	case 3: // Target parryed
-		{
-			HandleEvent(EVENT_TARGETPARRYED, pUnit, 0);
-		}break;
-	case 5: // Unit critted
-		{
-			HandleEvent(EVENT_UNITCRITHIT, pUnit, 0);
-		}break;
-	}
-	if(!state_reduced)
-	{
-		HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId, pUnit));
-	}
-
-	/*// check for a Pet/Summon owner and add him to Targetlist
-	if(pUnit->GetUInt64Value(UNIT_FIELD_SUMMONEDBY))
-	{
-		Unit* petOwner = NULL;
-		petOwner = sObjHolder.GetObject<Player>(pUnit->GetUInt64Value(UNIT_FIELD_SUMMONEDBY));
-		if(!petOwner)
-		{
-			petOwner = sObjHolder.GetCreature(pUnit->GetUInt64Value(UNIT_FIELD_SUMMONEDBY));
-		}
-		if(!petOwner)
-		{
-			return;
-		}
-		AttackReaction(petOwner, 1, 0);
-	}*/
+	HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId, pUnit));
 }
 
 bool AIInterface::HealReaction(Unit* caster, Unit* victim, uint32 amount)
@@ -2766,8 +2574,13 @@ SpellCastTargets AIInterface::setSpellTargets(SpellEntry *spellInfo, Unit* targe
 	return targets;
 }
 
-AI_Spell *AIInterface::getSpellByEvent(uint32 event)
+AI_Spell *AIInterface::getSpell()
 {
+	/* limit spell query time to once every second */
+	if(next_spell_time >= World::UNIXTIME)
+		return 0;
+
+	next_spell_time = World::UNIXTIME + 1;
 	// look at our spells
 	AI_Spell * sp;
 	AI_Spell * def_spell = 0;
@@ -2816,10 +2629,7 @@ AI_Spell *AIInterface::getSpellByEvent(uint32 event)
 		return def_spell;
 
 	sLog.outString("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
-	if(event != 0xFFFFFFFF)
-		return m_DefaultSpell;
-	else
-		return 0;
+	return 0;
 }
 
 void AIInterface::addSpellToList(AI_Spell *sp)

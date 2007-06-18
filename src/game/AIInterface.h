@@ -125,24 +125,12 @@ enum AiEvents
 	EVENT_ENTERCOMBAT,
 	EVENT_LEAVECOMBAT,
 	EVENT_DAMAGETAKEN,
-	EVENT_TARGETCASTSPELL,
-	EVENT_TARGETPARRYED,
-	EVENT_TARGETDODGED,
-	EVENT_TARGETBLOCKED,
-	EVENT_TARGETCRITHIT,
-	EVENT_TARGETDIED,
-	EVENT_UNITPARRYED,
-	EVENT_UNITDODGED,
-	EVENT_UNITBLOCKED,
-	EVENT_UNITCRITHIT,
-	EVENT_UNITDIED,
-	EVENT_ASSISTTARGETDIED,
 	EVENT_FEAR,
 	EVENT_UNFEAR,
 	EVENT_FOLLOWOWNER,
-	EVENT_PET_ATTACK,
 	EVENT_WANDER,
 	EVENT_UNWANDER,
+	EVENT_UNITDIED,
 };
 
 struct SpellEntry;
@@ -210,13 +198,13 @@ public:
 	void CastSpell(Unit* caster, SpellEntry *spellInfo, SpellCastTargets targets);
 	SpellEntry *getSpellEntry(uint32 spellId);
 	SpellCastTargets setSpellTargets(SpellEntry *spellInfo, Unit* target);
-	AI_Spell *getSpellByEvent(uint32 event);
+	AI_Spell *getSpell();
 	void addSpellToList(AI_Spell *sp);
 
 	// Event Handler
 	void HandleEvent(uint32 event, Unit* pUnit, uint32 misc1);
 	void OnDeath(Object* pKiller);
-	void AttackReaction(Unit *pUnit, uint32 damage_dealt, uint32 state, uint32 spellId = 0);
+	void AttackReaction(Unit *pUnit, uint32 damage_dealt, uint32 spellId = 0);
 	bool HealReaction(Unit* caster, Unit* victim, uint32 amount);
 
 	// Update
@@ -287,15 +275,6 @@ public:
 	uint32 m_totemspelltime;
 	SpellEntry * totemspell;
 
-	inline AI_Spell* GetDefaultSpell(void) { return m_DefaultSpell; }
-	inline void SetDefaultSpell(AI_Spell* sp)
-	{
-		if(!sp)
-			m_DefaultSpell = m_DefaultMeleeSpell;
-		else
-			m_DefaultSpell = sp;
-	}
-
 	float m_sourceX, m_sourceY, m_sourceZ;
 	uint32 m_totalMoveTime;
 	inline void AddStopTime(uint32 Time) { m_moveTimer += Time; }
@@ -318,7 +297,14 @@ public:
 	list<AI_Spell*> m_spells;
 	uint32 __fastcall GetSpellCooldown(uint32 SpellId);
 	void __fastcall AddSpellCooldown(uint32 SpellId);
-	bool waiting_for_cooldown;
+	bool disable_melee;
+	uint32 next_spell_time;
+
+	void CheckNextSpell(AI_Spell * sp)
+	{
+		if(m_nextSpell == sp)
+			m_nextSpell = 0;
+	}
 
 private:
 	bool m_AllowedToEnterCombat;
@@ -389,8 +375,6 @@ private:
 
 	MovementType m_MovementType;
 	MovementState m_MovementState;
-	AI_Spell* m_DefaultSpell;
-	AI_Spell* m_DefaultMeleeSpell;
 	uint32 m_guardTimer;
 
 };

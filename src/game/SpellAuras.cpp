@@ -1893,7 +1893,7 @@ void Aura::SpellAuraModStun(bool apply)
 				target = m_target->GetAIInterface()->GetNextTarget();
 
 			if(!target) return;
-			m_target->GetAIInterface()->AttackReaction(target, 1, 1, 0);
+			m_target->GetAIInterface()->AttackReaction(target, 1, 0);
 		}
 	}
 
@@ -2482,7 +2482,7 @@ void Aura::SpellAuraModRoot(bool apply)
 			Unit * target = GetUnitCaster();
 			if(!target) return;
 
-			m_target->GetAIInterface()->AttackReaction(target, 1, 1, 0);
+			m_target->GetAIInterface()->AttackReaction(target, 1, 0);
 		}
 	}
 }
