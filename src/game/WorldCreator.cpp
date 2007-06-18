@@ -45,7 +45,7 @@ WorldCreator::WorldCreator(TaskList * tl)
 		{
 			// Create it (we're a non-instance).
 			// Add a loading task for this map.
-			tl->AddTask(new CallbackP1<WorldCreator, uint32>(WorldCreator::getSingletonPtr(), &WorldCreator::CreateMap, pInfo->mapid));
+			tl->AddTask(new Task(new CallbackP1<WorldCreator, uint32>(WorldCreator::getSingletonPtr(), &WorldCreator::CreateMap, pInfo->mapid)));
 		}
 	}
 }

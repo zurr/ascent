@@ -208,31 +208,40 @@ enum REALM_TYPE
 };
 struct AreaTable;
 
-/*class StartupTask
+class BasicTaskExecutor : public ThreadBase
 {
+	CallbackBase * cb;
+	uint32 priority;
 public:
-	virtual void run() = 0;
-	virtual ~StartupTask() {}
+	BasicTaskExecutor(CallbackBase * Callback, uint32 Priority) : cb(Callback), priority(Priority) {}
+	~BasicTaskExecutor() { delete cb; }
+	void run();
 };
 
-template<class T>
-class StartupTaskImpl : public StartupTask
+class Task
 {
-	typedef void (T::*procedure)();
-	T * inst;
-	procedure * func;
+	CallbackBase * _cb;
 public:
-	inline void run() { inst->(*func)(); }
-	StartupTaskImpl(T * obj, procedure * f) : inst(obj), func(f) {}
-};*/
+	Task(CallbackBase * cb) : _cb(cb), completed(false), in_progress(false) {}
+	~Task() { delete _cb; }
+	bool completed;
+	bool in_progress;
+	void execute();
+};
 
 class TaskList
 {
-	queue<CallbackBase*> tasks;
+	set<Task*> tasks;
 	Mutex queueLock;
 public:
-	CallbackBase * GetTask();
-	void AddTask(CallbackBase * task);
+	Task * GetTask();
+	void AddTask(Task* task);
+	void RemoveTask(Task * task)
+	{
+		queueLock.Acquire();
+		tasks.erase(task);
+		queueLock.Release();
+	}
 
 	void spawn();
 	void kill();
@@ -263,16 +272,6 @@ enum BasicTaskExecutorPriorities
 	BTE_PRIORITY_LOW		= 0,
 	BTE_PRIORITY_MED		= 1,
 	BTW_PRIORITY_HIGH	   = 2,
-};
-
-class BasicTaskExecutor : public ThreadBase
-{
-	CallbackBase * cb;
-	uint32 priority;
-public:
-	BasicTaskExecutor(CallbackBase * Callback, uint32 Priority) : cb(Callback), priority(Priority) {}
-	~BasicTaskExecutor() { delete cb; }
-	void run();
 };
 
 class TaskExecutor : public ThreadBase

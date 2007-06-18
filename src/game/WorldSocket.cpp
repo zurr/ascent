@@ -12,6 +12,9 @@
  *
  */
 
+/* echo send/received packets to console */
+#define ECHO_PACKET_LOG_TO_CONSOLE 1
+
 // Class WorldSocket - Main network code functions, handles
 // reading/writing of all packets.
 
@@ -336,6 +339,11 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 
 void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction)
 {
+//#if ECHO_PACKET_LOG_TO_CONSOLE == 1
+	sLog.outString("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "recieved",
+		LookupName(opcode, g_worldOpcodeNames), opcode, len);
+//#endif
+
 	if(bEnabled)
 	{
 		mutex.Acquire();

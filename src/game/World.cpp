@@ -396,7 +396,7 @@ void World::SetInitialWorldSettings()
 	FillSpellReplacementsTable();
 	sLog.outString("");*/
 
-#define MAKE_TASK(sp, ptr) tl.AddTask(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr))
+#define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
 	// Fill the task list with jobs to do.
 	TaskList tl;
 	MAKE_TASK(ObjectMgr, LoadPlayerCreateInfo);
@@ -1282,25 +1282,27 @@ void World::GetStats(uint32 * GMCount, float * AverageLatency)
 	*GMCount = gm;
 }
 
-void TaskList::AddTask(CallbackBase * task)
+void TaskList::AddTask(Task * task)
 {
 	queueLock.Acquire();
-	tasks.push(task);
+	tasks.insert(task);
 	queueLock.Release();
 }
 
-CallbackBase * TaskList::GetTask()
+Task * TaskList::GetTask()
 {
 	queueLock.Acquire();
 
-	if(!tasks.size())
+	Task* t = 0;
+	for(set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
 	{
-		queueLock.Release();
-		return 0;
+		if(!(*itr)->in_progress)
+		{
+			t = (*itr);
+			t->in_progress = true;
+			break;
+		}
 	}
-
-	CallbackBase * t = tasks.front();
-	tasks.pop();
 	queueLock.Release();
 	return t;
 }
@@ -1344,7 +1346,15 @@ void TaskList::wait()
 	while(has_tasks)
 	{
 		queueLock.Acquire();
-		has_tasks = (tasks.size() > 0) ? true : false;
+		has_tasks = false;
+		for(set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
+		{
+			if(!(*itr)->completed)
+			{
+				has_tasks = true;
+				break;
+			}
+		}
 		queueLock.Release();
 		Sleep(20);
 	}
@@ -1355,15 +1365,22 @@ void TaskList::kill()
 	running = false;
 }
 
+void Task::execute()
+{
+	_cb->execute();
+}
+
 void TaskExecutor::run()
 {
-	CallbackBase * t;
+	Task * t;
 	while(starter->running)
 	{
 		t = starter->GetTask();
 		if(t)
 		{
 			t->execute();
+			t->completed = true;
+			starter->RemoveTask(t);
 			delete t;
 		}
 		else

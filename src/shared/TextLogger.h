@@ -333,5 +333,6 @@ public:
 
 
 std::string FormatOutputString(const char * Prefix, const char * Description, bool useTimeStamp);
+void SetLowThreadPriority();
 
 #endif
