@@ -2315,8 +2315,7 @@ void Spell::HandleAddAura(uint64 guid)
 		SpellEntry *spellInfo = sSpellStore.LookupEntry( spellid );
 		if(!spellInfo) return;
 		Spell *spell = new Spell(p_caster, spellInfo ,true, NULL);
-		SpellCastTargets targets;
-		targets.m_unitTarget = Target->GetGUID();
+		SpellCastTargets targets(Target->GetGUID());
 		spell->prepare(&targets);	
 	}
 }

@@ -214,7 +214,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//196 Apply Aura: Mod All Weapon Skills (6)
 		&Aura::SpellAuraNULL,//197 Apply Aura: Reduce Attacker Critical Hit Chance by %
 		&Aura::SpellAuraNULL,//198
-		&Aura::SpellAuraNULL,//199 Apply Aura: Increases Spell % To Hit (Fire, Nature, Frost)
+		&Aura::SpellAuraIncreaseHitRate,//199 Apply Aura: Increases Spell % To Hit (Fire, Nature, Frost)
 		&Aura::SpellAuraNULL,//200
 		&Aura::SpellAuraNULL,//201 Apply Aura: Cannot be Dodged
 		&Aura::SpellAuraNULL,//202
@@ -1655,6 +1655,7 @@ void Aura::SpellAuraModThreatGenerated(bool apply)
 	if(!m_target)
 		return;
 
+	//shaman spell 30672 needs to be based on spell schools
 	if(m_target->GetGeneratedThreatModifyer() == mod->m_amount)
 	{
 		mod->m_amount < 0 ? SetPositive() : SetNegative();
@@ -5653,6 +5654,15 @@ void Aura::SpellAuraIncreaseHealingByInt(bool apply)
 			}
 		}
 	}
+}
+
+void Aura::SpellAuraIncreaseHitRate(bool apply)
+{
+	if(!m_target->IsPlayer())
+		return;
+	if(apply)
+		static_cast<Player*>(m_target)->ModifyBonuses(SPELL_HIT_RATING,mod->m_amount);
+	else static_cast<Player*>(m_target)->ModifyBonuses(SPELL_HIT_RATING,-mod->m_amount);
 }
 
 void Aura::SpellAuraIncreaseRageFromDamageDealtPCT(bool apply)

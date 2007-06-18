@@ -477,6 +477,7 @@ public:
 	void SpellAuraIncreaseTimeBetweenAttacksPCT(bool apply);
 	void SpellAuraIncreaseSpellDamageByInt(bool apply);
 	void SpellAuraIncreaseHealingByInt(bool apply);
+	void SpellAuraIncreaseHitRate(bool apply);
 	void SpellAuraEnableFlight(bool apply);
 	void SpellAuraEnableFlightWithUnmountedSpeed(bool apply);
 	void SpellAuraIncreaseRageFromDamageDealtPCT(bool apply);
