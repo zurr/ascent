@@ -2627,3 +2627,19 @@ bool ChatHandler::HandleGOMove(const char * args, WorldSession * m_session)
 	return true;
 }
 
+bool ChatHandler::HandleNpcPossessCommand(const char * args, WorldSession * m_session)
+{
+	Creature * pTarget = getSelectedCreature(m_session, true);
+	if(!pTarget) return true;
+
+	m_session->GetPlayer()->Possess(pTarget);
+	BlueSystemMessage(m_session, "Possessed %s.", pTarget->GetCreatureName()->Name);
+	return true;
+}
+
+bool ChatHandler::HandleNpcUnPossessCommand(const char * args, WorldSession * m_session)
+{
+	m_session->GetPlayer()->UnPossess();
+	GreenSystemMessage(m_session, "Removed any possessed targets.");
+	return true;
+}

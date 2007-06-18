@@ -4639,8 +4639,11 @@ void Player::RemoveInRangeObject(Object* pObj)
 	}
 
 	if( pObj == m_CurrentCharm )
+	{
+		this->UnPossess();
 		if(m_currentSpell)
 			m_currentSpell->cancel();	   // cancel the spell
+	}
 
 	if(pObj == m_Summon)
 	{
@@ -7621,4 +7624,110 @@ void Player::SetNoseLevel()
 			else m_noseLevel = 2.36;
 		break;
 	}
+}
+
+void Player::Possess(Unit * pTarget)
+{
+	if(m_Summon || m_CurrentCharm)
+		return;
+
+	m_CurrentCharm = pTarget;
+	if(pTarget->GetTypeId() == TYPEID_UNIT)
+	{
+		// unit-only stuff.
+		pTarget->setAItoUse(false);
+		pTarget->GetAIInterface()->StopMovement(0);
+	}
+
+	m_noInterrupt++;
+	SetUInt64Value(UNIT_FIELD_CHARM, pTarget->GetGUID());
+	SetUInt64Value(PLAYER_FARSIGHT, pTarget->GetGUID());
+
+	pTarget->SetUInt64Value(UNIT_FIELD_CHARMEDBY, GetGUID());
+	pTarget->SetCharmTempVal(pTarget->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+	pTarget->SetUInt64Value(UNIT_FIELD_FACTIONTEMPLATE, GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+	pTarget->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PLAYER_CONTROLLED_CREATURE);
+
+	SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
+	
+	/* send "switch mover" packet */
+	WorldPacket data1(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
+	data1 << pTarget->GetGUID() << uint8(0);
+	m_session->SendPacket(&data1);
+
+	/* update target faction set */
+	pTarget->_setFaction();
+	pTarget->UpdateOppFactionSet();
+
+	list<uint32> avail_spells;
+	for(list<AI_Spell*>::iterator itr = pTarget->GetAIInterface()->m_spells.begin(); itr != pTarget->GetAIInterface()->m_spells.end(); ++itr)
+	{
+		if((*itr)->agent == AGENT_SPELL)
+			avail_spells.push_back((*itr)->spell->Id);
+	}
+	list<uint32>::iterator itr = avail_spells.begin();
+
+	/* build + send pet_spells packet */
+	WorldPacket data(SMSG_PET_SPELLS, pTarget->GetAIInterface()->m_spells.size() * 4 + 20);
+	data << pTarget->GetGUID();
+	data << uint32(0x00000000);//unk1
+	data << uint32(0x00000101);//unk2
+
+	// First spell is attack.
+	data << uint32(PET_SPELL_ATTACK);
+
+	// Send the actionbar
+	for(uint32 i = 1; i < 10; ++i)
+	{
+		if(itr != avail_spells.end())
+		{
+			data << uint16((*itr)) << uint16(DEFAULT_SPELL_STATE);
+			++itr;
+		}
+		else
+			data << uint16(0) << uint8(0) << uint8(i+5);
+	}
+
+	// Send the rest of the spells.
+	data << uint8(avail_spells.size());
+	for(itr = avail_spells.begin(); itr != avail_spells.end(); ++itr)
+		data << uint16(*itr) << uint16(DEFAULT_SPELL_STATE);
+	
+	data << uint64(0);
+	m_session->SendPacket(&data);
+}
+
+void Player::UnPossess()
+{
+	if(m_Summon || !m_CurrentCharm)
+		return;
+
+	Unit * pTarget = m_CurrentCharm; 
+	m_CurrentCharm = 0;
+
+	if(pTarget->GetTypeId() == TYPEID_UNIT)
+	{
+		// unit-only stuff.
+		pTarget->setAItoUse(true);
+	}
+
+	m_noInterrupt--;
+	SetUInt64Value(PLAYER_FARSIGHT, 0);
+	SetUInt64Value(UNIT_FIELD_CHARM, 0);
+	pTarget->SetUInt64Value(UNIT_FIELD_CHARMEDBY, 0);
+
+	RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
+	pTarget->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PLAYER_CONTROLLED_CREATURE);
+	pTarget->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, pTarget->GetCharmTempVal());
+	pTarget->_setFaction();
+	pTarget->UpdateOppFactionSet();
+
+	/* send "switch mover" packet */
+	WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
+	data << pTarget->GetGUID() << uint8(1);
+	m_session->SendPacket(&data);
+
+	data.Initialize(SMSG_PET_SPELLS);
+	data << uint64(0);
+	m_session->SendPacket(&data);
 }

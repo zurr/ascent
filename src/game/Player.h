@@ -918,7 +918,7 @@ public:
 	void Kick(uint32 delay = 0);
 	void SoftDisconnect();
 	uint32 m_KickDelay;
-	Creature * m_CurrentCharm;
+	Unit * m_CurrentCharm;
 	Transporter * m_CurrentTransporter;
 	
 	Object * GetSummonedObject () {return m_SummonedObject;};
@@ -1127,6 +1127,10 @@ public:
 	// Water level related stuff (they are public because they need to be accessed fast)
 	// Nose level of the character (needed for proper breathing)
 	float m_noseLevel;
+
+	/* Mind Control */
+	void Possess(Unit * pTarget);
+	void UnPossess();
 
 protected:
 	uint32 iActivePet;
