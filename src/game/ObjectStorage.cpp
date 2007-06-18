@@ -47,35 +47,52 @@ SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		Fishin
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
-	StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
-	CreatureProto * cn;
-	while(!itr->AtEnd())
 	{
-		cn = itr->Get();
-		string auras = itr->Get()->aura_string;
-		vector<string> aurs = StrSplit(auras, " ");
-		for(vector<string>::iterator it = aurs.begin(); it != aurs.end(); ++it)
+		StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
+		CreatureProto * cn;
+		while(!itr->AtEnd())
 		{
-			uint32 id = atol((*it).c_str());
-			if(id)
-				itr->Get()->start_auras.insert( id );
+			cn = itr->Get();
+			string auras = itr->Get()->aura_string;
+			vector<string> aurs = StrSplit(auras, " ");
+			for(vector<string>::iterator it = aurs.begin(); it != aurs.end(); ++it)
+			{
+				uint32 id = atol((*it).c_str());
+				if(id)
+					itr->Get()->start_auras.insert( id );
+			}
+
+			if(!itr->Get()->Health)
+				itr->Get()->Health = 1;
+
+			cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
+			cn->m_fleeHealth = 0.0f;
+			cn->m_fleeDuration = 0.0f;
+
+			if(!itr->Inc())
+				break;
 		}
 
-		if(!itr->Get()->Health)
-			itr->Get()->Health = 1;
-
-		cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
-		cn->m_fleeHealth = 0.0f;
-		cn->m_fleeDuration = 0.0f;
-
-        if(!itr->Inc())
-			break;
+		itr->Destruct();
 	}
 
-	itr->Destruct();
+	{
+		StorageContainerIterator<CreatureInfo> * itr = CreatureNameStorage.MakeIterator();
+		CreatureInfo * ci;
+		while(!itr->AtEnd())
+		{
+			ci = itr->Get();
+			ci->lowercase_name = string(ci->Name);
+
+			if(!itr->Inc())
+				break;
+		}
+		itr->Destruct();
+	}
 
 	// Load AI Agents
 	QueryResult * result = sDatabase.Query( "SELECT * FROM ai_agents" );
+	CreatureProto * cn;
 
 	if( !result )
 		return;
