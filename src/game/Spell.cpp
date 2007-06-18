@@ -1105,19 +1105,25 @@ void Spell::prepare(SpellCastTargets * targets)
 	chaindamage=0;
 	m_targets = *targets;
 
-	m_castTime = GetCastTime(sCastTime.LookupEntry(m_spellInfo->CastingTimeIndex));
-
-	if (m_spellInfo->SpellGroupType && u_caster)
+	if(!m_triggeredSpell && p_caster && p_caster->CastTimeCheat)
+		m_castTime = 0;
+	else
 	{
-		SM_FIValue(u_caster->SM_FCastTime,(int32*)&m_castTime,m_spellInfo->SpellGroupType);
-		SM_PIValue(u_caster->SM_PCastTime,(int32*)&m_castTime,m_spellInfo->SpellGroupType);
+		m_castTime = GetCastTime(sCastTime.LookupEntry(m_spellInfo->CastingTimeIndex));
+
+		if (m_spellInfo->SpellGroupType && u_caster)
+		{
+			SM_FIValue(u_caster->SM_FCastTime,(int32*)&m_castTime,m_spellInfo->SpellGroupType);
+			SM_PIValue(u_caster->SM_PCastTime,(int32*)&m_castTime,m_spellInfo->SpellGroupType);
+		}
+
+		// handle MOD_CAST_TIME
+		if(u_caster)
+		{
+			m_castTime *= u_caster->GetFloatValue(UNIT_MOD_CAST_SPEED);
+		}
 	}
 
-	// handle MOD_CAST_TIME
-	if(u_caster)
-	{
-		m_castTime *= u_caster->GetFloatValue(UNIT_MOD_CAST_SPEED);
-	}
 
 	if(p_caster)
 	{
@@ -1128,9 +1134,14 @@ void Spell::prepare(SpellCastTargets * targets)
 			p_caster->cannibalize = false;
 		}
 	}
+	
+	//let us make sure cast_time is within decent range
 
-	if(!m_triggeredSpell && p_caster && p_caster->CastTimeCheat)
-		m_castTime = 0;
+	if(m_castTime<0)
+		m_castTime=0;
+	//this is a hax but there is no spell that has more then 10 minutes cast time
+	else if(m_castTime>60*10*1000)
+		m_castTime=60*10*1000; //we should limit cast time to 10 minutes right ?
 
 	m_timer = m_castTime;
    // if(p_caster)
@@ -1347,12 +1358,9 @@ void Spell::cast(bool check)
 			if(m_spellInfo->Effect[i] && m_spellInfo->Effect[i]!=27)
 				 FillTargetMap(i);
 		
-		if(p_caster)
-		if(p_caster->IsStealth())
-		if(!(m_spellInfo->AttributesEx & ATTRIBUTESEX_REMAIN_STEALTHED))
+		if(p_caster && p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_REMAIN_STEALTHED))
 		{
 			p_caster->RemoveAura(p_caster->m_stealth);
-		
 		}
 		/*if (m_spellInfo->RecoveryTime && m_caster->IsPlayer() && m_caster->IsInWorld())
 		{
