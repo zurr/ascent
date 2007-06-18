@@ -2590,8 +2590,7 @@ void Spell::SpellEffectTriggerSpell(uint32 i) // Trigger Spell
 		return;
 
 	Spell*sp=new Spell(m_caster,sSpellStore.LookupEntry(m_spellInfo->EffectTriggerSpell[i]),true,NULL);
-	SpellCastTargets tgt;
-	tgt.m_unitTarget=unitTarget->GetGUID();
+	SpellCastTargets tgt(unitTarget->GetGUID());
 	sp->prepare(&tgt);
 
 	//if(m_spellInfo->EffectTriggerSpell[i] != 0)

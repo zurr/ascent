@@ -2231,7 +2231,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 
 	damage = CalculateEffect(i);  
 
-	sLog.outDebug( "WORLD: Spell effect id = %u, damage = %u", m_spellInfo->Effect[i], damage); 
+	sLog.outDebug( "WORLD: Spell effect id = %u, damage = %d", m_spellInfo->Effect[i], damage); 
 
 	if(m_spellInfo->Effect[i] != SPELL_EFFECT_DUEL)
 	{

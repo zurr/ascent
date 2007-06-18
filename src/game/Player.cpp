@@ -6897,9 +6897,9 @@ void Player::CompleteLoading()
 			a->AddMod(sp->EffectApplyAuraName[x],sp->EffectBasePoints[x]+1,sp->EffectMiscValue[x],x);
 		}	
 
-		//Somehow we should restore number of appearence. Right now i have no idea how :(
-
 		this->AddAura(a);		//FIXME: must save amt,pos/neg
+		//Somehow we should restore number of appearence. Right now i have no idea how :(
+		this->AddAuraVisual((*i).id,count_appearence,a->IsPositive());
 	}
 		
 
