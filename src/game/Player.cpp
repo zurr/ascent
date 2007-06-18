@@ -6878,6 +6878,16 @@ void Player::CompleteLoading()
 	std::list<LoginAura>::iterator i =  loginauras.begin();
 	for(;i!=loginauras.end();i++)
 	{
+		//check if we already have this aura
+		if(this->HasActiveAura((*i).id))
+			continue;
+		//how many times do we intend to put this oura on us
+		uint32 count_appearence=0;
+		std::list<LoginAura>::iterator i2 =  i;
+		for(;i2!=loginauras.end();i2++)
+			if((*i).id==(*i2).id)
+				count_appearence++;
+
 		SpellEntry * sp = sSpellStore.LookupEntry((*i).id);
 		Aura * a = new Aura(sp,(*i).dur,this,this);
 		
@@ -6886,7 +6896,9 @@ void Player::CompleteLoading()
 		{
 			a->AddMod(sp->EffectApplyAuraName[x],sp->EffectBasePoints[x]+1,sp->EffectMiscValue[x],x);
 		}	
-	
+
+		//Somehow we should restore number of appearence. Right now i have no idea how :(
+
 		this->AddAura(a);		//FIXME: must save amt,pos/neg
 	}
 		
@@ -7197,14 +7209,6 @@ void Player::SaveAuras(stringstream &ss)
 			case 17116: // Natures Swiftness
 			case 34936: // Backlash
 			case 35076: // Blessing of A'dal
-
-			case 588: // Inner fire
-			case 602: // Inner fire
-			case 1006: // Inner fire
-			case 7128: // Inner fire
-			case 10951: // Inner fire
-			case 10952: // Inner fire
-			case 25431: // Inner fire
 				skip = true;
 				break;
 			}
