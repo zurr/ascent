@@ -7637,6 +7637,7 @@ void Player::Possess(Unit * pTarget)
 		// unit-only stuff.
 		pTarget->setAItoUse(false);
 		pTarget->GetAIInterface()->StopMovement(0);
+		pTarget->m_redirectSpellPackets = this;
 	}
 
 	m_noInterrupt++;
@@ -7709,6 +7710,7 @@ void Player::UnPossess()
 	{
 		// unit-only stuff.
 		pTarget->setAItoUse(true);
+		pTarget->m_redirectSpellPackets = 0;
 	}
 
 	m_noInterrupt--;

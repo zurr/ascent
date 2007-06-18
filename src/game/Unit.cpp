@@ -189,6 +189,7 @@ Unit::Unit()
 	pLastSpell = 0;
 	m_flyspeedModifier = 0;
 	bInvincible = false;
+	m_redirectSpellPackets = 0;
 }
 
 Unit::~Unit()

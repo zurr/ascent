@@ -992,6 +992,7 @@ public:
 	SpellEntry * pLastSpell;
 	bool bProcInUse;
 	bool bInvincible;
+	Player * m_redirectSpellPackets;
 	
 protected:
 	Unit ();

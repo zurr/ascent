@@ -267,3 +267,32 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
 //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
 	GetPlayer()->m_onAutoShot = false;
 }
+
+void WorldSession::HandleAddDynamicTargetOpcode(WorldPacket & recvPacket)
+{
+	uint64 guid;
+	uint32 spellid;
+	uint8 flags;
+	recvPacket >> guid >> spellid >> flags;
+	
+	SpellEntry * sp = sSpellStore.LookupEntry(spellid);
+	if(!_player->m_CurrentCharm || guid != _player->m_CurrentCharm->GetGUID())
+		return;
+
+	/* burlex: this is.. strange */
+	SpellCastTargets targets;
+	targets.m_targetMask = flags;
+
+	if(flags == 0)
+		targets.m_unitTarget = guid;
+	else if(flags == 2)
+	{
+		WoWGuid guid;
+		recvPacket >> flags;		// skip one byte
+		recvPacket >> guid;
+		targets.m_unitTarget = guid.GetOldGuid();
+	}
+
+	Spell * pSpell = new Spell(_player->m_CurrentCharm, sp, false, 0);
+	pSpell->prepare(&targets);
+}

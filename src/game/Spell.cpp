@@ -1756,24 +1756,27 @@ void Spell::finish()
 
 void Spell::SendCastResult(int16 result)
 {
+	StackWorldPacket<9> data(SMSG_CAST_RESULT);
 	if(result != -1)
 		failed = true;
 
 	if(!m_caster->IsInWorld())
 		return;
 
-	if (m_caster->GetTypeId() != TYPEID_PLAYER)
-		return;
-
 	if(result != -1)
 	{
-		StackWorldPacket<9> data(SMSG_CAST_RESULT);
 		data << m_spellInfo->Id;
 		data << (uint8)result;
 		if(result == SPELL_FAILED_REQUIRES_SPELL_FOCUS)
 			data << (uint32)m_spellInfo->RequiresSpellFocus;
 
-		static_cast<Player*>(m_caster)->GetSession()->SendPacket(&data);
+		Player * plr = p_caster;
+		if(!plr)
+			if(u_caster)
+				plr = u_caster->m_redirectSpellPackets;
+
+		if(plr)
+			plr->GetSession()->SendPacket(&data);
 	}
 	else
 	{
@@ -1986,6 +1989,8 @@ void Spell::SendInterrupted(uint8 result)
 	Player *plr = p_caster;
 	if(!plr && m_caster->IsPet())
 		plr = static_cast<Pet*>(m_caster)->GetPetOwner();
+	if(!plr && u_caster)
+		plr = u_caster->m_redirectSpellPackets;
 
 	if(plr)
 	{
@@ -3483,27 +3488,33 @@ uint32 GetDiminishingGroup(uint32 NameHash)
 
 void Spell::SendCastSuccess(Object * target)
 {
-	if(!p_caster)
+	Player * plr = p_caster;
+	if(!plr && u_caster)
+		plr = u_caster->m_redirectSpellPackets;
+	if(!plr)
 		return;
 
 	WorldPacket data(SMSG_TARGET_CAST_RESULT, 13);
 	data << ((target != 0) ? target->GetNewGUID() : uint8(0));
 	data << m_spellInfo->Id;
 	
-	p_caster->GetSession()->SendPacket(&data);
+	plr->GetSession()->SendPacket(&data);
 }
 
 void Spell::SendCastSuccess(const uint64& guid)
 {
-	if(!p_caster)
+	Player * plr = p_caster;
+	if(!plr && u_caster)
+		plr = u_caster->m_redirectSpellPackets;
+	if(!plr)
 		return;
-
+    
 	// fuck bytebuffers
 	unsigned char buffer[13];
 	uint32 c = FastGUIDPack(guid, buffer, 0);
 	*(uint32*)&buffer[c] = m_spellInfo->Id;			c += 4;
 
-	p_caster->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
+	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
 
 
