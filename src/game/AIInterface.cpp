@@ -900,7 +900,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				{
 					//calculate next move
 					m_moveRun = true;
-					_CalcDestinationAndMove(m_nextTarget, m_nextSpell->maxrange - 5.0f);
+					if(m_nextSpell->maxrange < 5.0f)
+						_CalcDestinationAndMove(m_nextTarget, 0.0f);
+					else
+						_CalcDestinationAndMove(m_nextTarget, m_nextSpell->maxrange - 5.0f);
 					/*Destination* dst = _CalcDestination(m_nextTarget, dist);
 					MoveTo(dst->x, dst->y, dst->z,0);
 					delete dst;*/
