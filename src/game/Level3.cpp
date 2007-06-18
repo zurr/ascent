@@ -2643,3 +2643,32 @@ bool ChatHandler::HandleNpcUnPossessCommand(const char * args, WorldSession * m_
 	GreenSystemMessage(m_session, "Removed any possessed targets.");
 	return true;
 }
+
+bool ChatHandler::HandleChangePasswordCommand(const char * args, WorldSession * m_session)
+{
+	char password[100];
+	char username[100];
+	int argc = sscanf("%s %s", password, username);
+	if(argc == 2)
+	{
+		// username = password :P
+		BlueSystemMessage(m_session, "Changed password of %s to %s.", password, username);
+		sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET password = '%s' WHERE login = '%s'", password, username);
+		sLogonCommHandler.LogonDatabaseReloadAccounts();
+		sGMLog.writefromsession(m_session, "used change password command, %s to %s.", password, username);
+	}
+	else if(argc == 1)
+	{
+		// changing our own username.
+		BlueSystemMessage(m_session, "Changed your password to %s.", password);
+		sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET password = '%s' WHERE login = '%s'", password, m_session->GetAccountName().c_str());
+		sLogonCommHandler.LogonDatabaseReloadAccounts();
+		sGMLog.writefromsession(m_session, "used change password command, self to %s.", password);
+	}
+	else
+	{
+		RedSystemMessage(m_session, "Use .changepassword <username> <password> or .changepassword <password>.");
+		return false;
+	}
+	return true;
+}
