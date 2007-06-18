@@ -294,6 +294,7 @@ void Pet::CreateAISpell(SpellEntry * info)
 	}
 
 	m_AISpellStore[info->Id] = sp;
+	m_aiInterface->addSpellToList(sp);
 }
 
 void Pet::LoadFromDB(Player* owner, PlayerPet * pi)

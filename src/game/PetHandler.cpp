@@ -353,11 +353,15 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
 	{
 		if(sp->procChance == 100)
 			sp->procChance = 0;
+
+		pet->GetAIInterface()->disable_melee = false;
 	}
 	else if(state == 0xC100)
 	{
 		if(sp->procChance != 100)
 			sp->procChance = 100;
+		
+		pet->GetAIInterface()->disable_melee = true;
 	}
 }
 

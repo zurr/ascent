@@ -2584,8 +2584,10 @@ AI_Spell *AIInterface::getSpell()
 		return 0;
 
 	next_spell_time = World::UNIXTIME + 1;
+
 	// look at our spells
 	AI_Spell * sp;
+	uint32 cast_time;
 	AI_Spell * def_spell = 0;
 	for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
 	{
@@ -2629,7 +2631,20 @@ AI_Spell *AIInterface::getSpell()
 	}
 
 	if(def_spell)
+	{
+		// Check for cooldowns
+		if(GetSpellCooldown(sp->spell->Id) > 0)
+			return 0;
+
+		cast_time = GetCastTime(sCastTime.LookupEntry( sp->spell->CastingTimeIndex ) );
+		cast_time /= 1000;
+		if(cast_time)
+			next_spell_time = World::UNIXTIME + cast_time;
+
+		// add the cooldown
+		AddSpellCooldown(sp->spell->Id);
 		return def_spell;
+	}
 
 	sLog.outString("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
 	return 0;
