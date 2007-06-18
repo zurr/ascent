@@ -232,6 +232,12 @@ bool Master::Run()
 	uint32 etime;
 	uint32 next_printout = getMSTime(), next_send = getMSTime();
 
+	// Start Network Subsystem
+	sLog.outString("Starting network subsystem...");
+	new SocketMgr;
+	new SocketGarbageCollector;
+	sSocketMgr.SpawnWorkerThreads();
+
 	sScriptMgr.LoadScripts();
 
 	// open cheat log file
@@ -249,12 +255,6 @@ bool Master::Run()
 	LoadingTime = getMSTime() - LoadingTime;
 	Log::getSingleton( ).outString ("\nServer is ready for connections. Startup time: %ums\n", LoadingTime );
  
-	// Start Network Subsystem
-	sLog.outString("Starting network subsystem...");
-	new SocketMgr;
-	new SocketGarbageCollector;
-	sSocketMgr.SpawnWorkerThreads();
-
 	/* Connect to realmlist servers / logon servers */
 	new LogonCommHandler();
 	sLogonCommHandler.Startup();
