@@ -17,6 +17,7 @@
 
 #include "StdAfx.h"
 #include "IRCSocket.h"
+#include "CPUMem.h"
 
 /* state vars */
 enum IRC_STATES

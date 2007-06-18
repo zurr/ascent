@@ -32,7 +32,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 
 	Config.MainConfig.GetString(UserName, "IRCPlugin.NickName", "WoWBot", 500 );
 	Config.MainConfig.GetString(AltUserName, "IRCPlugin.AltNickName", "WoWBot_", 500 );
-	Config.MainConfig.GetString(Channel, "IRCPlugin.Channel", "#bot", 500 );
+	Config.MainConfig.GetString(Channel, "IRCPlugin.Channel", "#antrix", 500 );
 	Config.MainConfig.GetString(Server, "IRCPlugin.Server", "192.168.1.1", 500 );
 
 	IRCThread * t = new IRCThread;
@@ -49,6 +49,8 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 /***** IRC THREAD ******/
 void IRCThread::run()
 {
+	// Sleep for a bit to allow the server to start up fully.
+	//Sleep(5000);
 	State = STATE_CONNECTING;
 
 	for(;;)
@@ -64,7 +66,7 @@ void IRCThread::run()
 			break;
 		}
 
-		Sleep(50);
+		Sleep(20);
 	}
 }
 

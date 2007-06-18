@@ -24,6 +24,8 @@ public:
 
 	void OnRead();
 	void SendLine(const char * format, ...);
+	void SendMessage(const char * destination_user, const char * format, ...);
+	void SendBoldMessage(const char * destination_user, const char * format, ...);
 
 	Mutex m_recvQLock;
 	string recvq;
@@ -42,5 +44,12 @@ public:
 	void HandleJoin();
 	void HandlePrivMsg();
 };
+
+void info_cmd(const char* source, IRCSocket * s, int argc, char ** argv);
+void kick_cmd(const char* source, IRCSocket * s, int argc, char ** argv);
+void uptime_cmd(const char* source, IRCSocket * s, int argc, char ** argv);
+void gm_cmd(const char* source, IRCSocket * s, int argc, char ** argv);
+void announce_cmd(const char* source, IRCSocket * s, int argc, char ** argv);
+void wannounce_cmd(const char* source, IRCSocket * s, int argc, char ** argv);
 
 #endif

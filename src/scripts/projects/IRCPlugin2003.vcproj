@@ -122,10 +122,19 @@
 			Name="Main Resources"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath="..\src\IRCPlugin\CPUMem.cpp">
+			</File>
+			<File
+				RelativePath="..\src\IRCPlugin\CPUMem.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Socket"
 			Filter="">
+			<File
+				RelativePath="..\src\IRCPlugin\IRCCommands.cpp">
+			</File>
 			<File
 				RelativePath="..\src\IRCPlugin\IRCPlugin.cpp">
 			</File>
