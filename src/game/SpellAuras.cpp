@@ -2728,7 +2728,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 		}break;
 	case FORM_STEALTH:
 		{// rogue		
-			static_cast<Player*>(m_target)->UpdateVisibility();
+			m_target->UpdateVisibility();
 		} break;
 	case FORM_MOONKIN:
 		{//druid
