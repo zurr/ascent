@@ -795,7 +795,7 @@ public:
 	void ClearInRangeSet();
 	void AddVisibleObject(Object* pObj) { m_visibleObjects.insert(pObj); }
 	void RemoveVisibleObject(Object* pObj) { m_visibleObjects.erase(pObj); }
-	void UpdateVisibility(bool destroy);
+
 	inline InRangeSet::iterator GetVisibleSetBegin() { return m_visibleObjects.begin(); }
 	inline InRangeSet::iterator GetVisibleSetEnd() { return m_visibleObjects.end(); }
 	std::set<Player*> m_KnownGroupMembers;

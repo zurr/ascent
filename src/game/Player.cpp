@@ -3336,7 +3336,7 @@ void Player::RepopRequestedPlayer()
 	setDeathState(CORPSE);
 	
 	// Update visibility, that way people wont see running corpses :P
-	UpdateVisibility(true);
+	UpdateVisibility();
 
 	// If we're in battleground, remove the skinnable flag.. has bad effects heheh
 	if(m_bgInBattleground && HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_SKINNABLE))
@@ -3391,7 +3391,7 @@ void Player::ResurrectPlayer()
 
 	RemoveFlag(PLAYER_FLAGS, 0x10);
 	setDeathState(ALIVE);
-	UpdateVisibility(true);
+	UpdateVisibility();
 	if(resurrector && IsInWorld())
 	{
 		Player * p= objmgr.GetPlayer(resurrector);
@@ -4668,60 +4668,6 @@ void Player::ClearInRangeSet()
 {
 	m_visibleObjects.clear();
 	Unit::ClearInRangeSet();
-}
-
-void Player::UpdateVisibility(bool destroy)
-{
-	ByteBuffer buf(2500);
-	uint32 count;
-	Player *pl;
-	Object * pObj;
-
-	for (Object::InRangeSet::iterator itr = GetInRangeSetBegin(); 
-		itr != GetInRangeSetEnd();)
-	{
-		pObj = (*itr);
-		++itr;
-
-		if (CanSee(pObj) && !IsVisible(pObj))
-		{
-			count = pObj->BuildCreateUpdateBlockForPlayer( &buf, this );
-			PushUpdateData(&buf, count);
-			buf.clear();
-
-			AddVisibleObject(pObj);
-		}
-		else if (!CanSee(pObj) && IsVisible(pObj))
-		{
-			if(destroy)
-				pObj->DestroyForPlayer(this);
-			else				
-				PushOutOfRange(pObj->GetNewGUID());
-
-			RemoveVisibleObject(pObj);
-		}
-
-		if (pObj->GetTypeId() == TYPEID_PLAYER)
-		{
-			pl = ((Player*)pObj);
-			if (pl->CanSee(this) && !pl->IsVisible(this))
-			{
-				count = BuildCreateUpdateBlockForPlayer(&buf, pl);
-				pl->PushUpdateData(&buf, count);
-				buf.clear();
-				pl->AddVisibleObject(this);
-			}
-			else if (!pl->CanSee(this) && pl->IsVisible(this))
-			{
-				if(destroy)
-					DestroyForPlayer(pl);
-				else
-					pl->PushOutOfRange(m_wowGuid);	   
-
-				pl->RemoveVisibleObject(this);
-			}
-		}
-	}
 }
 
 void Player::EventCannibalize(uint32 amount)

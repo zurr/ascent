@@ -2000,18 +2000,9 @@ void Aura::SpellAuraModDetect(bool apply)
 
 void Aura::SpellAuraModInvisibility(bool apply)
 {
-	if(m_target->GetTypeId() == TYPEID_PLAYER)
-	{
-		if(apply)
-		{
-			SetPositive();
-			m_target->m_invisible = true;
-		}
-		else 
-			m_target->m_invisible = false;
-
-		static_cast<Player*>(m_target)->UpdateVisibility(true);
-	}
+	SetPositive();
+	m_target->m_invisible = apply;
+	m_target->UpdateVisibility();
 }
 
 void Aura::SpellAuraModInvisibilityDetection(bool apply)
@@ -2028,7 +2019,7 @@ void Aura::SpellAuraModInvisibilityDetection(bool apply)
 		m_target->InvisibilityDetectBonus[mod->m_miscValue] -= mod->m_amount;
 
 	if(m_target->IsPlayer())
-		static_cast<Player*>(m_target)->UpdateVisibility(true);
+		static_cast<Player*>(m_target)->UpdateVisibility();
 }
 
 void Aura::SpellAuraModTotalHealthRegenPct(bool apply)
@@ -2737,7 +2728,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 		}break;
 	case FORM_STEALTH:
 		{// rogue		
-			static_cast<Player*>(m_target)->UpdateVisibility(true);
+			static_cast<Player*>(m_target)->UpdateVisibility();
 		} break;
 	case FORM_MOONKIN:
 		{//druid

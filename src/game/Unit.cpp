@@ -2932,3 +2932,96 @@ bool Unit::IsDazed()
 	return false;
 
 }
+
+void Unit::UpdateVisibility()
+{
+	ByteBuffer buf(2500);
+	uint32 count;
+	bool can_see;
+	bool is_visible;
+	Player *pl;
+	Object * pObj;
+	Player * plr;
+
+	if(m_objectTypeId == TYPEID_PLAYER)
+	{
+		plr = ((Player*)this);
+		for (Object::InRangeSet::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+		{
+			pObj = (*itr);
+			++itr;
+
+			can_see = plr->CanSee(pObj);
+			is_visible = plr->IsVisible(pObj);
+			if(can_see)
+			{
+				if(!is_visible)
+				{
+					buf.clear();
+					count = pObj->BuildCreateUpdateBlockForPlayer( &buf, plr );
+					plr->PushUpdateData(&buf, count);
+					plr->AddVisibleObject(pObj);
+				}
+			}
+			else
+			{
+				if(is_visible)
+				{
+					pObj->DestroyForPlayer(plr);
+					plr->RemoveVisibleObject(pObj);
+				}
+			}
+
+			if (pObj->GetTypeId() == TYPEID_PLAYER)
+			{
+				pl = ((Player*)pObj);
+				can_see = pl->CanSee(plr);
+				is_visible = pl->IsVisible(plr);
+				if(can_see)
+				{
+					if(!is_visible)
+					{
+						buf.clear();
+						count = plr->BuildCreateUpdateBlockForPlayer( &buf, pl );
+						pl->PushUpdateData(&buf, count);
+						pl->AddVisibleObject(plr);
+					}
+				}
+				else
+				{
+					if(is_visible)
+					{
+						plr->DestroyForPlayer(pl);
+						pl->RemoveVisibleObject(plr);
+					}
+				}
+			}
+		}
+	}
+	else			// For units we can save a lot of work
+	{
+		for(set<Player*>::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+		{
+			can_see = (*itr)->CanSee(this);
+			is_visible = (*itr)->IsVisible(this);
+			if(!can_see)
+			{
+				if(is_visible)
+				{
+					DestroyForPlayer(*itr);
+					(*itr)->RemoveVisibleObject(this);
+				}
+			}
+			else
+			{
+				if(!is_visible)
+				{
+					buf.clear();
+					count = BuildCreateUpdateBlockForPlayer(&buf, *itr);
+					(*itr)->PushUpdateData(&buf, count);
+					(*itr)->AddVisibleObject(this);
+				}
+			}
+		}
+	}
+}

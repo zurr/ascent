@@ -994,6 +994,7 @@ public:
 	bool bProcInUse;
 	bool bInvincible;
 	Player * m_redirectSpellPackets;
+	void UpdateVisibility();
 	
 protected:
 	Unit ();
