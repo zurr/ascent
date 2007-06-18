@@ -12,7 +12,17 @@
  *
  */
 
-#include "IRCSocket.h"
+#include "IRCPlugin.h"
+
+IRCSocket::IRCSocket(SOCKET fd) : Socket(fd, 65536, 65536)
+{
+
+}
+
+IRCSocket::~IRCSocket()
+{
+
+}
 
 void IRCSocket::SendLine(const char * format, ...)
 {
@@ -73,16 +83,16 @@ string IRCSocket::GetLine()
 struct IRCCommandHandler
 {
 	const char * Command;
-	uint32 ParameterCount;
 	void(IRCSocket::*CommandHandler)();
 };
 
 IRCCommandHandler * getCommandHandlers()
 {
 	static IRCCommandHandler Handlers[] = {
-		{ "JOIN", 3, &IRCSocket::HandleJoin },
-		{ "433", 3, &IRCSocket::Handle433 },
-		{ 0, 0, 0 },
+		{ "JOIN", &IRCSocket::HandleJoin },
+		{ "433", &IRCSocket::Handle433 },
+		{ "001", &IRCSocket::Handle001 },
+		{ 0, 0 },
 	};
 
 	return Handlers;
@@ -100,7 +110,14 @@ void IRCSocket::PollRecvQ()
 	if(sp == string::npos)
 		return;
 
-	string numeric = line.substr(0, sp);
+	/* skip the leading : */
+	string source = line.substr(1, sp);
+
+	/* find the next space */
+	string::size_type sp2 = line.find(" ", sp+1);
+
+	/* grab the numeric */
+	string numeric = line.substr(sp+1, sp2-sp-1);
 	
 	/* find the command handler */
 	IRCCommandHandler * ch = getCommandHandlers();
@@ -110,6 +127,33 @@ void IRCSocket::PollRecvQ()
 			break;
 	}
 
+	printf("Numeric: %s\n", numeric.c_str());
 	/* split into parameters */
 
+	/* blah, execute it */
+	if(ch->Command != 0)
+		(this->*(ch->CommandHandler))();
 }
+
+void IRCSocket::Handle433()
+{
+	/* invalid nickname, try sending the alt */
+	SendLine("NICK %s", Thread->AltNickName.c_str());
+}
+
+void IRCSocket::HandleJoin()
+{
+	/* joined channel */
+}
+
+void IRCSocket::HandlePrivMsg()
+{
+	/* message on channel */
+}
+
+void IRCSocket::Handle001()
+{
+	/* we're fully connected now */
+	Thread->State = STATE_FULLCONNECTED;
+}
+

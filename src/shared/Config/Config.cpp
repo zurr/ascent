@@ -192,7 +192,10 @@ bool ConfigFile::GetString(char * buffer, const char * name, const char * def, u
 
 	DOTCONFDocumentNode *node = (DOTCONFDocumentNode *)mConf->findNode(name);
 	if(!node || !node->getValue())
-		return false;
+	{
+		strcpy(buffer, def);
+		return true;
+	}
 
 	const char * value = node->getValue();
 	int blen = strlen(value);

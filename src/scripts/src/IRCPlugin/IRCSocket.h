@@ -31,13 +31,13 @@ public:
 	bool BufferReady();
 	string GetLine();
 	IRCThread * Thread;
-	bool m_registered;
 
 	void PollRecvQ();
 
 	char * Parameters[10];
 
 	/** Handlers **/
+	void Handle001();			// Sent on connect.
 	void Handle433();			// Nickname already in use
 	void HandleJoin();
 	void HandlePrivMsg();

@@ -63,6 +63,8 @@ void IRCThread::run()
 			_HandleConnected();
 			break;
 		}
+
+		Sleep(50);
 	}
 }
 
@@ -77,6 +79,7 @@ void IRCThread::_HandleConnecting()
 	}
 
 	/* connection established */
+	socket->Thread = this;
 	State = STATE_CONNECTED;
 }
 
@@ -95,10 +98,6 @@ void IRCThread::_HandleConnected()
 	case STATE_REGISTER:
 		{
 			// Wait for registration.
-			if(socket->m_registered)
-			{
-				State = STATE_JOINCHANNELS;
-			}
 		}break;
 
 	case STATE_JOINCHANNELS:
