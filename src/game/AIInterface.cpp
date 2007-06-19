@@ -2796,6 +2796,8 @@ void AIInterface::CheckTarget(Unit* target)
 	if(target == UnitToFear)
 		UnitToFear = NULL;
 
+	if(tauntedBy == target)
+		tauntedBy = 0;
 
 	AssistTargetSet::iterator  itr = m_assistTargets.find(target);
 	if(itr != m_assistTargets.end())
