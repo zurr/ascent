@@ -7637,8 +7637,8 @@ void Player::Possess(Unit * pTarget)
 	SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
 	
 	/* send "switch mover" packet */
-	WorldPacket data1(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
-	data1 << pTarget->GetGUID() << uint8(0);
+	WorldPacket data1(SMSG_DEATH_NOTIFY_OBSOLETE, 10);		/* burlex: this should be renamed SMSG_SWITCH_ACTIVE_MOVER :P */
+	data1 << pTarget->GetNewGUID() << uint8(1);
 	m_session->SendPacket(&data1);
 
 	/* update target faction set */
@@ -7711,7 +7711,7 @@ void Player::UnPossess()
 
 	/* send "switch mover" packet */
 	WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
-	data << pTarget->GetGUID() << uint8(1);
+	data << GetNewGUID() << uint8(1);
 	m_session->SendPacket(&data);
 
 	data.Initialize(SMSG_PET_SPELLS);
