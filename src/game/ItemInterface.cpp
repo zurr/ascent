@@ -2234,8 +2234,8 @@ void ItemInterface::mLoadItemsFromDatabase()
 					item->LoadFromDB(fields, m_pOwner, false);
 
 				}
-				SafeAddItem(item, containerslot, slot);
-				item->m_isDirty = false;
+				if(SafeAddItem(item, containerslot, slot));
+				    item->m_isDirty = false;
 			}
 		}
 		while( result->NextRow() );
