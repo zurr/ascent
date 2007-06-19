@@ -2522,8 +2522,10 @@ void AIInterface::CastSpell(Unit* caster, SpellEntry *spellInfo, SpellCastTarget
 {
 	// Stop movement while casting.
 	m_AIState = STATE_CASTING;
+#ifdef _AI_DEBUG
 	sLog.outString("AI DEBUG: Unit %u casting spell %s on target "I64FMT, caster->GetEntry(), 
 		sSpellStore.LookupString(spellInfo->Name), targets.m_unitTarget);
+#endif
 
 	Spell *spell = new Spell(caster, spellInfo, false, NULL);
 	spell->prepare(&targets);
@@ -2603,8 +2605,10 @@ AI_Spell *AIInterface::getSpell()
 					{
 						if(!m_Unit->HasActiveAura(sp->spell->Id))
 						{
+#ifdef _AI_DEBUG
 							sLog.outString("AI DEBUG: Returning aura %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
 								sp->entryId);
+#endif
 							return sp;
 						}
 					}
@@ -2620,9 +2624,10 @@ AI_Spell *AIInterface::getSpell()
 					{
 						if(m_Unit->GetUInt32Value(UNIT_FIELD_POWER1) < sp->spell->manaCost)
 							continue;
-
+#ifdef _AI_DEBUG
 						sLog.outString("AI DEBUG: Returning spell %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
 							sp->entryId);
+#endif
 						def_spell = sp;
 					}
 				}break;
@@ -2646,7 +2651,9 @@ AI_Spell *AIInterface::getSpell()
 		return def_spell;
 	}
 
+#ifdef _AI_DEBUG
 	sLog.outString("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
+#endif
 	return 0;
 }
 
