@@ -544,8 +544,8 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 
 	if(offset == UNIT_FIELD_MINRANGEDDAMAGE)
 	{
-		//starting from base attack power then we apply mods on it
-		ap += pAttacker->GetRAP();
+//		//starting from base attack power then we apply mods on it
+//		ap += pAttacker->GetRAP();
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())
 		{
@@ -585,8 +585,8 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 	else
 	{
 		//MinD = AP(28AS-(WS/7))-MaxD
-		//starting from base attack power then we apply mods on it
-		ap += pAttacker->GetAP();
+//		//starting from base attack power then we apply mods on it
+//		ap += pAttacker->GetAP();
 
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())

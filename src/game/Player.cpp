@@ -4198,7 +4198,7 @@ void Player::UpdateStats()
 	if(AP < 0) AP=0;
 	SetUInt32Value(UNIT_FIELD_ATTACK_POWER, AP);
 	SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, RAP);
-	SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, 1.0f);	 
+//	SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, 1.0f);	 
    
 	
 	int32 hp=GetUInt32Value(UNIT_FIELD_BASE_HEALTH);
@@ -6914,15 +6914,17 @@ void Player::CompleteLoading()
 	for(;i!=loginauras.end();i++)
 	{
 		//check if we already have this aura
-		if(this->HasActiveAura((*i).id))
-			continue;
+//		if(this->HasActiveAura((*i).id))
+//			continue;
 		//how many times do we intend to put this oura on us
-		uint32 count_appearence=0;
+/*		uint32 count_appearence=0;
 		std::list<LoginAura>::iterator i2 =  i;
 		for(;i2!=loginauras.end();i2++)
 			if((*i).id==(*i2).id)
+			{
 				count_appearence++;
-
+			}
+*/
 		SpellEntry * sp = sSpellStore.LookupEntry((*i).id);
 		Aura * a = new Aura(sp,(*i).dur,this,this);
 		
@@ -6934,7 +6936,8 @@ void Player::CompleteLoading()
 
 		this->AddAura(a);		//FIXME: must save amt,pos/neg
 		//Somehow we should restore number of appearence. Right now i have no idea how :(
-		this->AddAuraVisual((*i).id,count_appearence,a->IsPositive());
+//		if(count_appearence>1)
+//			this->AddAuraVisual((*i).id,count_appearence-1,a->IsPositive());
 	}
 		
 
@@ -7247,6 +7250,16 @@ void Player::SaveAuras(stringstream &ss)
 				skip = true;
 				break;
 			}
+
+			//disabled proc spells until proper loading is fixed. Some spells tend to block or not remove when restored
+			if(aur->GetSpellProto()->procFlags)
+			{
+//				sLog.outDebug("skipping aura %d because has flags %d",aur->GetSpellId(),aur->GetSpellProto()->procFlags);
+				skip = true;
+			}
+			//we are going to cast passive spells anyway on login so no need to save auras for them
+			if(aur->IsPassive())
+				skip = true;
 
 			if(skip)continue;
 			uint32 d=aur->GetTimeLeft();

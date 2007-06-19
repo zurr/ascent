@@ -784,6 +784,12 @@ void World::SetInitialWorldSettings()
 		}
 		if(sp->Id==16164)
 			sp->procFlags=PROC_ON_SPELL_CRIT_HIT_VICTIM;
+
+//remove stormstrike effect 0
+if(sp->Id==17364)
+	sp->Effect[0]=0;
+
+			sp->procFlags=PROC_ON_SPELL_CRIT_HIT_VICTIM;
 		sp->procFlags=pr;
 		//sp->dummy=result;
 	}
