@@ -5296,9 +5296,13 @@ void Aura::SpellAuraIncreasePartySpeed(bool apply)
 
 void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
 {
+	Unit * pCaster = GetUnitCaster();
+	if(!pCaster)
+		return;
+
 	int32 val;
 	val = mod->m_amount;
-	SM_FIValue(GetUnitCaster()->SM_FEffectBonus,&val,m_spellProto->SpellGroupType);
+	SM_FIValue(pCaster->SM_FEffectBonus,&val,m_spellProto->SpellGroupType);
 
 	if(apply)
 	{

@@ -255,6 +255,20 @@ bool Master::Run()
 	LoadingTime = getMSTime() - LoadingTime;
 	Log::getSingleton( ).outString ("\nServer is ready for connections. Startup time: %ums\n", LoadingTime );
  
+	/* write pid file */
+	FILE * fPid = fopen("antrix.pid", "w");
+	if(fPid)
+	{
+		uint32 pid;
+#ifdef WIN32
+		pid = GetCurrentProcessId();
+#else
+		pid = getpid();
+#endif
+		fprintf(fPid, "%u", pid);
+		fclose(fPid);
+	}
+
 	/* Connect to realmlist servers / logon servers */
 	new LogonCommHandler();
 	sLogonCommHandler.Startup();
