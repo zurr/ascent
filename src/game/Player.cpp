@@ -6567,6 +6567,17 @@ void Player::UpdatePvPArea()
 	}
 	else
 	{
+        //Enemy city check
+        if(at->AreaFlags & AREA_CITY_AREA || at->AreaFlags & AREA_CITY)
+        {
+            if((at->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 1) || (at->category == AREAC_HORDE_TERRITORY && GetTeam() == 0))
+            {
+                if(!IsPvPFlagged()) SetPvPFlag();
+                    StopPvPTimer();
+                return;
+            }
+        }
+
         //fix for zone areas.
         if(at->ZoneId)
         {
@@ -6579,6 +6590,16 @@ void Player::UpdatePvPArea()
 			        ResetPvPTimer();
 		        }
                 return;
+            }
+            //enemy territory check
+            if(at2 && at2->AreaFlags & AREA_CITY_AREA || at2 && at2->AreaFlags & AREA_CITY)
+            {
+                if(at2 && (at2->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 1) || at2 && (at2->category == AREAC_HORDE_TERRITORY && GetTeam() == 0))
+                {
+                   if(!IsPvPFlagged()) SetPvPFlag();
+                       StopPvPTimer();
+                   return;
+                }
             }
         }
         
@@ -6679,9 +6700,23 @@ void Player::PvPToggle()
 	    {
 		    if(IsPvPFlagged())
 		    {
-			    // Start the "cooldown" timer.
-			    ResetPvPTimer();
-
+                AreaTable * at = sAreaStore.LookupEntry(m_AreaID);
+                if(at && at->AreaFlags & AREA_CITY_AREA || at && at->AreaFlags & AREA_CITY)
+                {
+                    if(at && (at->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 1) || at && (at->category == AREAC_HORDE_TERRITORY && GetTeam() == 0))
+                    {
+                    }
+                    else
+                    {
+                        // Start the "cooldown" timer.
+			            ResetPvPTimer();
+                    }
+                }
+                else
+                {
+                    // Start the "cooldown" timer.
+			        ResetPvPTimer();
+                }
 			    if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
 				    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 		    }
@@ -6719,7 +6754,7 @@ void Player::PvPToggle()
 	        {
 		        if(IsPvPFlagged())
 		        {
-			        // Start the "cooldown" timer.
+                    // Start the "cooldown" timer.
 			        ResetPvPTimer();
 
 			        if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))

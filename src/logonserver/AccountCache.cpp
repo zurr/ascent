@@ -383,7 +383,7 @@ void InformationCore::TimeoutSockets()
 		it2 = itr;
 		++itr;
 
-		if(!s->IsConnected() || (usepings && (t - s->last_ping) > 20)) // ping timeout
+		if(!s->IsConnected() || (usepings && (t - s->last_ping) > 60)) // ping timeout
 		{
 			s->removed = true;
 			s->Disconnect();

@@ -296,15 +296,6 @@ void LogonServer::CheckForDeadSockets()
 		s = (*it2);
 		++itr;
 
-		diff = t - s->GetLastRecv();
-		if(diff > 30)		   // More than 30 seconds -> kill the socket.
-		{
-			sLog.outString("Killing connection from %s:%u due to no activity!", s->GetRemoteIP().c_str(), 
-				s->GetRemotePort());
-			_authSockets.erase(it2);
-			s->removedFromSet = true;
-			s->Disconnect();
-		}
 	}
 	_authSocketLock.Release();
 }
