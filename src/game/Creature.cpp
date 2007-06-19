@@ -132,7 +132,7 @@ void Creature::OnRemoveCorpse()
 
 		sLog.outDetail("Removing corpse of "I64FMT"...", GetGUID());
 	   
-			if(GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID && this->GetCreatureName()->Rank == 3)
+			if(GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID && this->GetCreatureName() && this->GetCreatureName()->Rank == 3)
 			{
 				RemoveFromWorld(false);
 			}
@@ -385,11 +385,17 @@ void Creature::AddToWorld()
 		return;
 
 	Unit::AddToWorld();
-	
-	if(_myScriptClass)
-		_myScriptClass->OnLoad();
+}
 
-	objmgr.SetCreatureBySqlId(GetSQL_id(), this);
+bool Creature::CanAddToWorld()
+{
+	if(m_factionDBC == 0 || m_faction == 0)
+		_setFaction();
+
+	if(creature_info == 0 || m_faction == 0 || m_factionDBC == 0)
+		return false;
+	
+	return true;
 }
 
 void Creature::RemoveFromWorld(bool addev)
@@ -1024,6 +1030,11 @@ void Creature::OnPushToWorld()
 
 	/* script */
 	ScriptSystem->OnCreatureEvent(this, 0, CREATURE_EVENT_ON_SPAWN);
+
+	if(_myScriptClass)
+		_myScriptClass->OnLoad();
+
+	objmgr.SetCreatureBySqlId(GetSQL_id(), this);
 }
 
 // this is used for guardians. They are non respawnable creatures linked to a player

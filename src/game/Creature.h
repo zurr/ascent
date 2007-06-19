@@ -406,6 +406,7 @@ public:
 	bool has_combat_text;
 
 	void DeleteMe();
+	bool CanAddToWorld();
 
 protected:
 	CreatureAIScript *_myScriptClass;

@@ -138,6 +138,9 @@ void MapCell::LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pIns
 
             if(c->Load(*i, _mapmgr->iInstanceMode, _mapmgr->GetMapInfo()))
 			{
+				if(!c->CanAddToWorld())
+					delete c;
+
 				c->PushToWorld(_mapmgr);
 			}
 			else
