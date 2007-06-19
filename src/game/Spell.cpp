@@ -2829,8 +2829,10 @@ int8 Spell::CheckItems()
 			case SPELL_EFFECT_OPEN_LOCK://lock picking
 			case SPELL_EFFECT_ENCHANT_ITEM://enchanting
 			case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY://temporary enchanting
-				it=((Player*)m_caster)->getTradeTarget()->getTradeItem(m_targets.m_itemTarget);
-				break;
+				{
+					if(p_caster->getTradeTarget())
+						it = p_caster->getTradeTarget()->getTradeItem(m_targets.m_itemTarget);
+				}break;
 			default:
 				return int8(SPELL_FAILED_BAD_TARGETS);
 				break;

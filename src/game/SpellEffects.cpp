@@ -2958,7 +2958,7 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 	break;
 	case 20271://judgment
 		{
-			if(!unitTarget) return;
+			if(!unitTarget || !p_caster) return;
 
 			SpellEntry*en=sSpellStore.LookupEntry(p_caster->judgespell);
 			Spell *sp=new Spell(p_caster,en,true,NULL);
