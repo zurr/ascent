@@ -2466,7 +2466,7 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
 
 	//remove other perm enchantment that was enchanted by profession
 	itemTarget->RemoveProfessionEnchant();
-	int32 Slot = itemTarget->AddEnchantment(Enchantment, 0, true);
+	int32 Slot = itemTarget->AddEnchantment(Enchantment, 0, true, true, false, 1);
 	if(Slot < 0)
 		return; // Apply failed
 			
@@ -2481,7 +2481,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(!Enchantment) return;
 
-	int32 Slot = itemTarget->AddEnchantment(Enchantment, Duration, false);
+	int32 Slot = itemTarget->AddEnchantment(Enchantment, Duration, false, true, false, 1);
 	if(Slot < 0)
 		return; // Apply failed
 
