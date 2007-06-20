@@ -290,8 +290,8 @@ private:
 	uint32 m_GroupSignatureId;
 
 public:
-#ifdef _DEBUG
-	uint32 threadid;
+#ifdef WIN32
+	DWORD threadid;
 #endif
 	GameObjectSet activeGameObjects;
 	CreatureSet activeCreatures;

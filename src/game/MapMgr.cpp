@@ -107,10 +107,11 @@ MapMgr::~MapMgr()
 
 void MapMgr::PushObject(Object *obj)
 {
-#ifdef _DEBUG
+#ifdef WIN32
 	if(GetCurrentThreadId()!=threadid && !_shutdown)
 	{
 		printf("Push object of mapmgr is accessed from external thread!!!\n");
+		Crash_Log->AddLine("Push object of mapmgr is accessed from external thread!!!");
 		CStackWalker sw;
 		sw.ShowCallstack();
 	}
@@ -254,11 +255,11 @@ void MapMgr::PushObject(Object *obj)
 
 void MapMgr::RemoveObject(Object *obj)
 {
-#ifdef _DEBUG
+#ifdef WIN32
 	if(GetCurrentThreadId()!=threadid && !_shutdown)
 	{
 		printf("Remove object of mapmgr is accessed from external thread!!!\n");
-		sLog.outString("Callstack: ");
+		Crash_Log->AddLine("Remove object of mapmgr is accessed from external thread!!!\n");
 		CStackWalker sw;
 		sw.ShowCallstack();
 		sLog.outString("");
@@ -379,11 +380,11 @@ void MapMgr::RemoveObject(Object *obj)
 
 void MapMgr::ChangeObjectLocation(Object *obj)
 {
-#ifdef _DEBUG
+#ifdef WIN32
 	if(GetCurrentThreadId()!=threadid)
 	{
 		sLog.outString("Change object location of mapmgr is accessed from external thread!!!");
-		sLog.outString("Callstack: ");
+		Crash_Log->AddLine("Change object location of mapmgr is accessed from external thread!!!");
 		CStackWalker sw;
 		sw.ShowCallstack();
 		sLog.outString("");
@@ -820,6 +821,15 @@ bool MapMgr::_CellActive(uint32 x, uint32 y)
 
 void MapMgr::ObjectUpdated(Object *obj)
 {
+#ifdef WIN32
+	if(GetCurrentThreadId() != threadid)
+	{
+		Crash_Log->AddLine("ObjectUpdated accessed from external thread!!!");
+		sLog.outString("ObjectUpdated accessed from external thread!!!");
+		CStackWalker sw;
+		sw.ShowCallstack();
+	}
+#endif
 	// set our fields to dirty
 	_updates.insert(obj);
 }
@@ -888,11 +898,11 @@ void MapMgr::ChangeFarsightLocation(Player *plr, Creature *farsight)
 
 void MapMgr::LoadAllCells()
 {
-#ifdef _DEBUG
-	SuspendThread((HANDLE)threadid);
-	HANDLE t = (HANDLE)threadid;
-	threadid = (uint32)GetCurrentThreadId();
-	_shutdown = true;
+#ifdef WIN32
+	HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, threadid);
+	SuspendThread(hThread);
+	DWORD tid = threadid;
+	threadid = GetCurrentThreadId();
 #endif
 
 	MapCell * pCell;
@@ -931,10 +941,10 @@ void MapMgr::LoadAllCells()
 			}*/
 		}
 	}
-#ifdef _DEBUG
-	_shutdown = false;
-	threadid = (uint32)t;
-	ResumeThread(t);
+#ifdef WIN32
+	threadid = tid;
+	ResumeThread(hThread);
+	CloseHandle(hThread);
 #endif
 }
 
@@ -951,7 +961,7 @@ void MapMgr::run()
 
 void MapMgr::Do()
 {
-#ifdef _DEBUG
+#ifdef WIN32
 	threadid=GetCurrentThreadId();
 #endif
 	ThreadState =THREADSTATE_BUSY;
