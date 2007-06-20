@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 /************************************************************************/
-/* Instance_SteamVault.cpp Script		                                    */
+/* Instance_SteamVault.cpp Script		                                */
 /************************************************************************/
 
 // Coilfang Engineer AI

@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 /************************************************************************/
-/* Instance_ManaTombs.cpp Script		                                    */
+/* Instance_ManaTombs.cpp Script		                                */
 /************************************************************************/
 
 // Ethereal Darkcaster AI

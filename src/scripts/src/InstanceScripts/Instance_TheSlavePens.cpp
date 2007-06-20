@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 /************************************************************************/
-/* Instance_TheSlavePens.cpp Script		                                    */
+/* Instance_TheSlavePens.cpp Script		                                */
 /************************************************************************/
 
 // Coilfang Champion AI
