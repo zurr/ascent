@@ -33,6 +33,8 @@ struct SP_AI_Spell{
 	int attackstoptimer; // stop the creature from attacking
 	int soundid; // sound id in DBC
 	std::string speech; // text displaied when spell was casted
+	uint32 cooldown;	// spell cooldown
+	uint32 casttime;	// "time" left to cast spell
 };
 
 enum

@@ -1,0 +1,27 @@
+*TO DO LIST*
+
+GossipScripts:
+   - Fix Shaman Gossip in Stormwind [ ]
+
+InstanceScripts:
+ *Outland: Instances* 
+   - 
+
+Done:
+ *Outland: Instances*
+   -
+
+RoadMap:
+ *Outland* - > *?* - > *?*
+
+
+
+
+[ ] - not started
+[*] - done partially (leave notes!)
+[+] - fully done
+[!] - crash bugs
+[?] - not sure to many things
+[R] - to redo
+[C] - checks needed
+*?* - to discuss
