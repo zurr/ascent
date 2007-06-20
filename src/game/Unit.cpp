@@ -2946,7 +2946,7 @@ void Unit::UpdateVisibility()
 	if(m_objectTypeId == TYPEID_PLAYER)
 	{
 		plr = ((Player*)this);
-		for (Object::InRangeSet::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+		for (Object::InRangeSet::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end();)
 		{
 			pObj = (*itr);
 			++itr;
