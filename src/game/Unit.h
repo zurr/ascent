@@ -763,6 +763,7 @@ public:
 	SchoolAbsorb Absorbs[7];
 	uint32 AbsorbDamage(uint32 School,uint32 * dmg);//returns amt of absorbed dmg, decreases dmg by absorbed value
 	int32 RAPvModifier;
+	int32 APvModifier;
 	uint64 stalkedby;
 	uint32 dispels[10];
 	bool trackStealth;

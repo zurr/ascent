@@ -180,7 +180,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraPowerBurn,//missing = 162 //used //Apply Aura: Power Burn (Mana) //http://www.thottbot.com/?sp=19659
 		&Aura::SpellAuraNULL,//missing = 163 //Apply Aura: Mod Crit Damage Bonus (Physical)
 		&Aura::SpellAuraNULL,//missing = 164 //used //test spell
-		&Aura::SpellAuraNULL,//missing = 165
+		&Aura::SpellAuraAPAttackerBonus,//SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS = 165,	// Melee AP Attacker Bonus
 		&Aura::SpellAuraModPAttackPower,//missing = 166 //used //Apply Aura: Mod Attack Power % // http://www.thottbot.com/?sp=30803
 		&Aura::SpellAuraNULL,//missing = 167
 		&Aura::SpellAuraIncreaseDamageTypePCT,//missing = 168 //used //Apply Aura: Increase Damage % *type* //http://www.thottbot.com/?sp=24991
@@ -5221,6 +5221,17 @@ void Aura::SpellAuraWaterBreathing(bool apply)
 	   static_cast<Player*>(m_target)->m_bUnlimitedBreath=apply;
    }
 }
+
+void Aura::SpellAuraAPAttackerBonus(bool apply)
+{
+	if(apply)
+	{
+		m_target->APvModifier += mod->m_amount;
+	}
+	else 
+		m_target->APvModifier -= mod->m_amount;
+}
+
 
 void Aura::SpellAuraModPAttackPower(bool apply)
 {

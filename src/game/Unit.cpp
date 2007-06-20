@@ -85,6 +85,7 @@ Unit::Unit()
 	m_resistChance = 0;
 	m_powerRegenPCT = 0;
 	RAPvModifier=0;
+	APvModifier=0;
 	stalkedby=0;
 
 	m_invisible = false;

@@ -546,6 +546,8 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 	{
 //		//starting from base attack power then we apply mods on it
 //		ap += pAttacker->GetRAP();
+		ap += pVictim->RAPvModifier;
+
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())
 		{
@@ -587,11 +589,12 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 		//MinD = AP(28AS-(WS/7))-MaxD
 //		//starting from base attack power then we apply mods on it
 //		ap += pAttacker->GetAP();
+		ap += pVictim->APvModifier;
 
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())
 		{
-			ap += (float)pAttacker->CreatureAttackPowerMod[((Creature*)pVictim)->GetCreatureName()->Type];			
+			ap += (float)pAttacker->CreatureAttackPowerMod[((Creature*)pVictim)->GetCreatureName()->Type];
 			if(pAttacker->IsPlayer())
 			{
 				min_damage += min_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
