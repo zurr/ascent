@@ -313,7 +313,7 @@ void WorldSession::LogoutPlayer(bool Save)
 			_player->critterPet = NULL;
 		}
 		// Save Honor Points
-		_player->SaveHonorFields(true);
+		_player->SaveHonorFields();
 
 		// Update any dirty account_data fields.
 		/*bool dirty=false;
