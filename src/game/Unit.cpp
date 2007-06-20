@@ -884,6 +884,10 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		targetEvent = 1;
 		vstate = DODGE;
 		pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED);			// Animation
+		if(pVictim->IsPlayer())
+		{
+			pVictim->SetFlag(UNIT_FIELD_AURASTATE,1);	//SB@L: Enables spells requiring dodge
+		}
 	}
 	else if ((!ability)&&Rand(parry)) //Parry
 	{
@@ -892,11 +896,17 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		targetEvent = 3;
 		vstate = PARRY;
 		pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED);			// Animation
+		if(pVictim->IsPlayer())
+		{
+			pVictim->SetFlag(UNIT_FIELD_AURASTATE,7);	//SB@L: Enables spells requiring parry
+		}
 	}
 	else//hit 
 	{
+		pVictim->RemoveFlag(UNIT_FIELD_AURASTATE,1 | 7); //SB@L: removes dodge and parry flag after a hit
+
 		hit_status |= HITSTATUS_HITANIMATION;//hit animation on victim
-	
+
 		if(pVictim->SchoolImmunityList[0])
 		{
 			vstate = IMMUNE;		
