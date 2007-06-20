@@ -116,7 +116,7 @@ public:
         m_whelpCooldown = 7;
         _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
         _unit->SetStandState(0);
-        _unit->SendChatMessage(11, 0, "How fortuitous, usually I must leave my lair to feed!");
+        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "How fortuitous, usually I must leave my lair to feed!");
         if(m_useSpell)
             RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
 
