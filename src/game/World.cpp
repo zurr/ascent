@@ -782,14 +782,6 @@ void World::SetInitialWorldSettings()
 					sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
 			}			
 		}
-		if(sp->Id==16164)
-			sp->procFlags=PROC_ON_SPELL_CRIT_HIT_VICTIM;
-
-//remove stormstrike effect 0
-if(sp->Id==17364)
-	sp->Effect[0]=0;
-
-			sp->procFlags=PROC_ON_SPELL_CRIT_HIT_VICTIM;
 		sp->procFlags=pr;
 		//sp->dummy=result;
 	}
@@ -798,6 +790,15 @@ if(sp->Id==17364)
 	SpellEntry * triggersp = sSpellStore.LookupEntry(30824);
 	if(parentsp && triggersp) 
 		triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
+
+	SpellEntry * sp = sSpellStore.LookupEntry(16164);
+	if(sp && sp->Id==16164)
+		sp->procFlags=PROC_ON_SPELL_CRIT_HIT_VICTIM;
+
+	sp = sSpellStore.LookupEntry(17364);
+	//remove stormstrike effect 0
+	if(sp && sp->Id==17364)
+		sp->Effect[0]=0;
 
 	//fix for Predatory Strikes
 	uint32 mm=(1<<(FORM_BEAR-1))|(1<<(FORM_DIREBEAR-1))|(1<<(FORM_MOONKIN-1))|(1<<(FORM_CAT-1));
