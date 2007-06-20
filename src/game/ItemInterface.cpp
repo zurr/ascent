@@ -265,7 +265,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 	if ( slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET )
 	{
 		int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * 16);
-		if(VisibleBase >= PLAYER_VISIBLE_ITEM_19_0)
+		if(VisibleBase > PLAYER_VISIBLE_ITEM_19_0)
 		{
 			printf("Slot warning: slot: %d\n", slot);
 			Crash_Log->AddFormat("Slot warning: slot: %d\n", slot);
