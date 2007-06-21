@@ -45,8 +45,15 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 			MSG_COLOR_SUBWHITE, id);
 	}
 
+	/* if we don't have an areatrigger, create one on the stack to use for gm scripts :p */
 	if(!pAreaTrigger)
+	{
+		AreaTrigger tmpTrigger;
+		tmpTrigger.AreaTriggerID = id;
+
+		ScriptSystem->OnActivateAreaTrigger(&tmpTrigger, _player);
 		return;
+	}
 
 	/* script prerequsites */
 	if(ScriptSystem->OnActivateAreaTrigger(pAreaTrigger, _player) == false)
