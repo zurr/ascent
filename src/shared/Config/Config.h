@@ -42,7 +42,7 @@ public:
 	bool GetString(const char * block, char * buffer, const char * name, const char * def, uint32 len);
 
 	bool GetBool(const char * block, const char* name, bool *value);
-	bool GetBoolDefault(const char * block, const char* name, const bool def = false);
+	bool GetBoolDefault(const char * block, const char* name, const bool def);
 
 	bool GetInt(const char * block, const char* name, int *value);
 	int GetIntDefault(const char * block, const char* name, const int def);

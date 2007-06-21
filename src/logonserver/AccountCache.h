@@ -146,7 +146,7 @@ public:
 	InformationCore()
 	{ 
 		realmhigh = 0;
-		usepings  = !Config.MainConfig.GetBoolDefault("DisablePings", false);
+		usepings  = !Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
 	}
 
 	// Packets

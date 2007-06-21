@@ -212,7 +212,7 @@ WorldLog::WorldLog()
 	log = new TextLogger(FormatOutputString("logs", "WorldLog", true).c_str(), false);
 	bEnabled = false;
 
-	if (Config.MainConfig.GetBoolDefault("LogWorld", false))
+	if (Config.MainConfig.GetBoolDefault("LogLevel", "World", false))
 	{
 		sLog.outString("  Enabling packetlog output to \"world.log\"");
 		Enable();

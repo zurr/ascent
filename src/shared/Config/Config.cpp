@@ -15,6 +15,8 @@
 #include "ConfigEnv.h"
 ConfigMgr Config;
 
+#define _CONFIG_DEBUG
+
 ConfigFile::ConfigFile()
 {
 }
@@ -90,6 +92,7 @@ void apply_setting(string & str, ConfigSetting & setting)
 	setting.AsString = str;
 	setting.AsInt = atoi(str.c_str());
 	setting.AsBool = (setting.AsInt > 0);
+	setting.AsFloat = atof(str.c_str());
 
 	/* check for verbal yes/no answers */
 	if(str.length() > 1)
@@ -114,7 +117,9 @@ uint32 hash(const char * str)
 	register uint32 ret = 0;
 	register int i = 0;
 	for(; i < len; ++i)
-		ret += 5 * ret + lowermap[(unsigned char)str];
+		ret += 5 * ret + lowermap[(unsigned char)str[i]];
+
+	printf("%s : %u\n", str, ret);
 	return ret;
 }
 
@@ -132,6 +137,7 @@ bool ConfigFile::SetSource(const char *file, bool ignorecase)
 	if(file != 0)
 	{
 		FILE * f = fopen(file, "r");
+		char * buf;
 		int length;
 		if(!f)
 		{
@@ -142,16 +148,17 @@ bool ConfigFile::SetSource(const char *file, bool ignorecase)
 		/* get the length of the file */
 		fseek(f, 0, SEEK_END);
 		length = ftell(f);
+		buf = new char[length];
 		fseek(f, 0, SEEK_SET);
 
-		/* read the file into one large buffer */
-		string buffer;
-		buffer.reserve(length);
-		if(length != fread((void*)buffer.data(), 1, length, f))
+		int read = fread(buf, length, 1, f);
+		string buffer = string(buf);
+		delete [] buf;
+		/*if(length != read)
 		{
 			sLog.outError("Could not read file %s.", file);
 			return false;
-		}
+		}*/
 
 		/* close the file, it is no longer needed */
 		fclose(f);
@@ -178,10 +185,13 @@ bool ConfigFile::SetSource(const char *file, bool ignorecase)
 				break;
 
 			line = buffer.substr(0, end);
-			buffer.erase(0, end);
+			buffer.erase(0, end+1);
 			goto parse;
 
 parse:
+			if(!line.size())
+				continue;
+
 			/* are we a comment? */
 			if(!in_multiline_comment && is_comment(line, &in_multiline_comment))
 			{
@@ -240,7 +250,9 @@ parse:
 
 					/* the setting is done, append it to the current block. */
                     current_block_map[hash(current_variable)] = current_setting_struct;
-
+#ifdef _CONFIG_DEBUG
+					printf("Block: '%s', Setting: '%s', Value: '%s'\n", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
+#endif
 					/* no longer doing this setting, or in a quote. */
 					current_setting = "";
 					current_variable = "";
@@ -255,7 +267,7 @@ parse:
 				if(offset != string::npos)
 				{
 					ASSERT(current_variable == "");
-					current_variable = line.substr(0, offset+1);
+					current_variable = line.substr(0, offset);
 
 					/* remove any spaces from the end of the setting */
 					remove_all_spaces(current_variable);
@@ -269,14 +281,14 @@ parse:
 				if(offset != string::npos)
 				{
 					ASSERT(current_setting == "");
-					ASSERT(current_variable == "");
+					ASSERT(current_variable != "");
 
 					/* try and find the ending quote */
 					end = line.find("\"", offset + 1);
 					if(end != string::npos)
 					{
 						/* the closing quote is on the same line, oh goody. */
-						current_setting = line.substr(offset+1, offset-end-1);
+						current_setting = line.substr(offset+1, end-offset-1);
 
 						/* erase up to the end */
 						line.erase(0, end + 1);
@@ -287,6 +299,9 @@ parse:
 						/* the setting is done, append it to the current block. */
 						current_block_map[hash(current_variable)] = current_setting_struct;
 
+#ifdef _CONFIG_DEBUG
+						printf("Block: '%s', Setting: '%s', Value: '%s'\n", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
+#endif
 						/* no longer doing this setting, or in a quote. */
 						current_setting = "";
 						current_variable = "";
@@ -305,8 +320,11 @@ parse:
 				}
 
 				/* are we at the end of the block yet? */
-				if(line.find(">") != string::npos)
+				offset = line.find(">");
+				if(offset != string::npos)
 				{
+					line.erase(0, offset+1);
+
 					// freeeee!
 					in_block = false;
 					

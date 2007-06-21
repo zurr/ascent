@@ -34,13 +34,6 @@ World::World()
 	m_event_Instanceid = eventholder->GetInstanceID();
 
 	mQueueUpdateInterval = 10000;
-	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendBuildOnJoin", false);
-	MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
-	UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
-	BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
-	SpeedhackProtection = Config.MainConfig.GetBoolDefault("Server", "SpeedhackProtection", false);
-	SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
-	compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
 	PeakSessionCount = 0;
 	mInWorldPlayerCount = 0;
 	mAcceptedConnections = 0;
@@ -259,13 +252,6 @@ void World::SetInitialWorldSettings()
 {
 	sDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
    
-	reqGmClient = Config.MainConfig.GetBoolDefault("GMClient", "ReqGmClient", false);
-	if(!Config.MainConfig.GetString("GMClient", "GmClientChannel", &GmClientChannel))
-	{
-		GmClientChannel = "";
-	}
-    realmtype = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
-
 	m_lastTick = time(NULL);
 
 	// TODO: clean this
@@ -825,10 +811,7 @@ void World::SetInitialWorldSettings()
 
 	HonorHandler::PerformStartupTasks();
 
-	TimeOut= uint32(1000* Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180) );
 	m_queueUpdateTimer = mQueueUpdateInterval;
-	
-	
 	if(Config.MainConfig.GetBoolDefault("Startup", "Preloading", false))
 	{
 		// Load all data on each map.
@@ -1408,4 +1391,104 @@ void TaskList::waitForThreadsToExit()
 void World::DeleteObject(Object * obj)
 {
 	delete obj;
+}
+
+void World::Rehash(bool load)
+{
+	if(load)
+		Config.MainConfig.SetSource("antrix.conf", true);
+
+	channelmgr.seperatechannels = Config.MainConfig.GetBoolDefault("Server", "SeperateChatChannels", false);
+	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendBuildOnJoin", false);
+	MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
+	UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
+	BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
+	SpeedhackProtection = Config.MainConfig.GetBoolDefault("Server", "SpeedhackProtection", false);
+	SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
+	compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
+	LevelCap = Config.MainConfig.GetIntDefault("Server", "LevelCap", 70);
+
+	// load regeneration rates.
+	setRate(RATE_HEALTH,Config.MainConfig.GetFloatDefault("Rates", "Health",1));
+	setRate(RATE_POWER1,Config.MainConfig.GetFloatDefault("Rates", "Power1",1));
+	setRate(RATE_POWER2,Config.MainConfig.GetFloatDefault("Rates", "Power2",1));
+	setRate(RATE_POWER3,Config.MainConfig.GetFloatDefault("Rates", "Power4",1));
+	setRate(RATE_DROP,Config.MainConfig.GetFloatDefault("Rates", "Drop",1));
+	setRate(RATE_XP,Config.MainConfig.GetFloatDefault("Rates", "XP",1));
+	setRate(RATE_RESTXP,Config.MainConfig.GetFloatDefault("Rates", "RestXP", 1));
+	setRate(RATE_QUESTXP,Config.MainConfig.GetFloatDefault("Rates", "QuestXP", 1));
+	setIntRate(INTRATE_SAVE, Config.MainConfig.GetIntDefault("Rates", "Save", 1));
+	setRate(RATE_MONEY, Config.MainConfig.GetFloatDefault("Rates", "DropMoney", 1.0f));
+	setRate(RATE_QUESTREPUTATION, Config.MainConfig.GetFloatDefault("Rates", "QuestReputation", 1.0f));
+	setRate(RATE_KILLREPUTATION, Config.MainConfig.GetFloatDefault("Rates", "KillReputation", 1.0f));
+	setRate(RATE_HONOR, Config.MainConfig.GetFloatDefault("Rates", "Honor", 1.0f));
+	setIntRate(INTRATE_COMPRESSION, Config.MainConfig.GetIntDefault("Rates", "Compression", 1));
+	setIntRate(INTRATE_PVPTIMER, Config.MainConfig.GetIntDefault("Rates", "PvPTimer", 300000));
+	SetPlayerLimit(Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000));
+	SetMotd(Config.MainConfig.GetStringDefault("Server", "Motd", "Antrix Default MOTD").c_str());
+	SetUpdateDistance( Config.MainConfig.GetFloatDefault("Server", "PlrUpdateDistance", 79.1f) );
+	mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
+	SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
+	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "Screen", 1));
+	sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", -1));
+
+	bool log_enabled = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
+	if(Anticheat_Log->IsOpen())
+	{
+		if(!log_enabled)
+			Anticheat_Log->Close();
+	}
+	else
+		if(log_enabled)
+			Anticheat_Log->Open();
+
+	log_enabled = Config.MainConfig.GetBoolDefault("Log", "GMCommands", false);
+	if(GMCommand_Log->IsOpen())
+	{
+		if(!log_enabled)
+			GMCommand_Log->Close();
+	}
+	else
+		if(log_enabled)
+			GMCommand_Log->Open();
+
+#ifdef WIN32
+	DWORD current_priority_class = GetPriorityClass(GetCurrentProcess());
+	bool high = Config.MainConfig.GetBoolDefault("Server", "AdjustPriority", false);
+
+	if(current_priority_class == HIGH_PRIORITY_CLASS && !high)
+		SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+	else if(current_priority_class != HIGH_PRIORITY_CLASS && high)
+		SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+#endif
+
+	reqGmClient = Config.MainConfig.GetBoolDefault("GMClient", "ReqGmClient", false);
+	if(!Config.MainConfig.GetString("GMClient", "GmClientChannel", &GmClientChannel))
+	{
+		GmClientChannel = "";
+	}
+
+	realmtype = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
+	TimeOut= uint32(1000* Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180) );
+
+	uint32 config_flags = 0;
+	if(Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCostsForGM", true))
+		config_flags |= MAIL_FLAG_NO_COST_FOR_GM;
+
+	if(Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCosts", false))
+		config_flags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
+
+	if(Config.MainConfig.GetBoolDefault("Mail", "DisablePostageDelayItems", true))
+		config_flags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
+
+	if(Config.MainConfig.GetBoolDefault("Mail", "DisableMessageExpiry", false))
+		config_flags |= MAIL_FLAG_NO_EXPIRY;
+
+	if(Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionMail", true))
+		config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
+
+	if(Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionForGM", true))
+		config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
+
+	sMailSystem.config_flags = config_flags;
 }

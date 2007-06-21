@@ -127,12 +127,12 @@ public:
 	{
 		return (config_flags & flag) ? true : false;
 	}
+	uint32 config_flags;
 
 protected:
 	MailboxMap Mailboxes;
 	Mailbox * CreateMailbox(uint64 ownerguid);
 	uint32 message_high;
-	uint32 config_flags;
 	Mutex MUTEX;
 };
 

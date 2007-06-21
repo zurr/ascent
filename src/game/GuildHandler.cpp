@@ -1117,7 +1117,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket & recv_data)
 	Charter * gc = _player->m_charter;
 	if(gc == 0)
 		return;
-	if(gc->SignatureCount < 9 && Config.MainConfig.GetBoolDefault("Guild.RequireAllSignatures", false))
+	if(gc->SignatureCount < 9 && Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false))
 	{
 		SendNotification("You don't have the required amount of signatures to turn in this petition.");
 		return;

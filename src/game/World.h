@@ -296,6 +296,10 @@ public:
 	World();
 	~World();
 
+	/** Reloads the config and sets all of the setting variables 
+	 */
+	void Rehash(bool load);
+
 	WorldSession* FindSession(uint32 id);
 	WorldSession* FindSessionByName(const char *);
 	void AddSession(WorldSession *s);

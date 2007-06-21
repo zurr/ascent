@@ -171,47 +171,21 @@ bool Master::Run()
 	ScriptSystem = new ScriptEngine;
 	ScriptSystem->Reload();
 
-	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "Screen", 1));
-	sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", -1));
 
-	string host = Config.MainConfig.GetStringDefault("Listen", "Host", DEFAULT_HOST);
 
 	new EventMgr;
 	new World;
 
-	sWorld.SetPlayerLimit(Config.MainConfig.GetIntDefault("Server", "PlayerLimit", DEFAULT_PLAYER_LIMIT));
-	sWorld.SetMotd(Config.MainConfig.GetStringDefault("Server", "Motd", "Antrix Default MOTD").c_str());
-	sWorld.SetUpdateDistance( Config.MainConfig.GetFloatDefault("Server", "PlrUpdateDistance", 79.1f) );
-	sWorld.mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Network", "QueueUpdateInterval", 5000);
-	sWorld.SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));//kick players if AFK for a while.Disabled by default
-
 	// Initialize Opcode Table
 	WorldSession::InitPacketHandlerTable();
-	sWorld.LevelCap = Config.MainConfig.GetIntDefault("Server", "LevelCap", 70);
 
-	// load regeneration rates.
-	sWorld.setRate(RATE_HEALTH,Config.MainConfig.GetFloatDefault("Rates", "Health",DEFAULT_REGEN_RATE));
-	sWorld.setRate(RATE_POWER1,Config.MainConfig.GetFloatDefault("Rates", "Power1",DEFAULT_REGEN_RATE));
-	sWorld.setRate(RATE_POWER2,Config.MainConfig.GetFloatDefault("Rates", "Power2",DEFAULT_REGEN_RATE));
-	sWorld.setRate(RATE_POWER3,Config.MainConfig.GetFloatDefault("Rates", "Power4",DEFAULT_REGEN_RATE));
-	sWorld.setRate(RATE_DROP,Config.MainConfig.GetFloatDefault("Rates", "Drop",DEFAULT_DROP_RATE));
-	sWorld.setRate(RATE_XP,Config.MainConfig.GetFloatDefault("Rates", "XP",DEFAULT_XP_RATE));
-	sWorld.setRate(RATE_RESTXP,Config.MainConfig.GetFloatDefault("Rates", "RestXP", DEFAULT_REST_XP_RATE));
-	sWorld.setRate(RATE_QUESTXP,Config.MainConfig.GetFloatDefault("Rates", "QuestXP", DEFAULT_QUEST_XP_RATE));
-	sWorld.setIntRate(INTRATE_SAVE, Config.MainConfig.GetIntDefault("Rates", "Save", DEFAULT_SAVE_RATE));
-	sWorld.setRate(RATE_MONEY, Config.MainConfig.GetFloatDefault("Rates", "DropMoney", 1.0f));
-	sWorld.setRate(RATE_QUESTREPUTATION, Config.MainConfig.GetFloatDefault("Rates", "QuestReputation", 1.0f));
-	sWorld.setRate(RATE_KILLREPUTATION, Config.MainConfig.GetFloatDefault("Rates", "KillReputation", 1.0f));
-	sWorld.setRate(RATE_HONOR, Config.MainConfig.GetFloatDefault("Rates", "Honor", 1.0f));
-	sWorld.setIntRate(INTRATE_COMPRESSION, Config.MainConfig.GetIntDefault("Rates", "Compression", 1));
-	sWorld.setIntRate(INTRATE_PVPTIMER, Config.MainConfig.GetIntDefault("Rates", "PvPTimer", 300000));
+	string host = Config.MainConfig.GetStringDefault("Listen", "Host", DEFAULT_HOST);
+	int wsport = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", DEFAULT_WORLDSERVER_PORT);
 
 	new ScriptMgr;
 
 	sWorld.SetInitialWorldSettings();
 
-	int wsport = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", DEFAULT_WORLDSERVER_PORT);
-	uint32 loopdelay = Config.MainConfig.GetIntDefault("Network", "ThreadDelay", 20);
 
 	sWorld.SetStartTime((uint32)time(NULL));
 	
@@ -244,11 +218,6 @@ bool Master::Run()
 	Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", false).c_str(), false);
 	GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", false).c_str(), false);
 
-	if(Config.MainConfig.GetBoolDefault("Log", "Cheaters", false))
-		Anticheat_Log->Open();
-
-	if(Config.MainConfig.GetBoolDefault("Log", "GMCommands", false))
-		GMCommand_Log->Open();
 
 	sLog.outString("Threading system initialized, currently %u threads are active.", sThreadMgr.GetThreadCount());	
 
@@ -277,13 +246,6 @@ bool Master::Run()
 	ListenSocket<WorldSocket> Listener("0.0.0.0", wsport);
 	bool listnersockcreate = Listener.IsOpen();
 
-#ifdef WIN32
-	if(Config.MainConfig.GetBoolDefault("Server", "AdjustPriority", true))
-	{
-		SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-		sLog.outString("Process priority adjusted to high.");
-	}
-#endif
 
 	while(!m_stopEvent && listnersockcreate)
 	{
@@ -341,8 +303,8 @@ bool Master::Run()
 		sDatabase.CheckConnections();
 		sWorld.UpdateQueuedSessions(diff);
 
-		if(loopdelay > etime)
-			Sleep(loopdelay - etime);
+		if(50 > etime)
+			Sleep(50 - etime);
 
 	}
 	_UnhookSignals();

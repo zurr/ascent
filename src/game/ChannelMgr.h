@@ -18,7 +18,7 @@ class ChannelMgr :  public Singleton < ChannelMgr >
 public:
 	ChannelMgr()
 	{
-		seperatechannels = Config.MainConfig.GetBoolDefault("SeperateChatChannels", false);
+		
 	}
 
 	~ChannelMgr();
@@ -79,9 +79,9 @@ public:
 		}
 		return false;
 	}
+	bool seperatechannels;
 private:
 	//team 0: aliance, team 1 horde
-	bool seperatechannels;
 	typedef map<string,Channel *> ChannelList;
 	ChannelList Channels[2];
 

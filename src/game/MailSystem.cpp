@@ -19,36 +19,7 @@ void MailSystem::StartMailSystem()
 {
 	sLog.outString("Starting Mail System...");
 	sLog.outString("");
-	
 	LoadMessages();
-
-	sLog.outString("  Loading  mail configuration options...");
-	config_flags = 0;
-	if(Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCostsForGM", true))
-		config_flags |= MAIL_FLAG_NO_COST_FOR_GM;
-
-	if(Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCosts", false))
-		config_flags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
-
-	if(Config.MainConfig.GetBoolDefault("Mail", "DisablePostageDelayItems", true))
-		config_flags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
-
-	if(Config.MainConfig.GetBoolDefault("Mail", "DisableMessageExpiry", false))
-		config_flags |= MAIL_FLAG_NO_EXPIRY;
-
-	if(Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionMail", true))
-		config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
-
-	if(Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionForGM", true))
-		config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
-
-	uint32 delay = Config.MainConfig.GetIntDefault("Mail", "ReloadDelay", 0);
-	if(delay)
-	{
-		//this code can crash server it's done in wrong way...better keep it disabled
-		sLog.outString("  Enabling periodic mail database reload ...");
-		sEventMgr.AddEvent(this, &MailSystem::PeriodicMailRefresh, EVENT_MAILSYSTEM_RELOAD, delay, 0);
-	}
 	sLog.outString("");
 	sLog.outString("Mail System Ready!");
 }
