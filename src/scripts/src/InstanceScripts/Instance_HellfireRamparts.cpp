@@ -40,6 +40,8 @@ public:
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = true;
 		spells[2].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -132,8 +134,8 @@ protected:
 
 #define CN_BLEEDING_HOLLOW_DARKCASTER 17269
 
-#define SCORCH 36807	// 15241 // not sure	DBC both
-#define RAIN_OF_FIRE 36808	// 20754 same here
+#define SCORCH 36807	// DBC: 15241 // not sure
+#define RAIN_OF_FIRE 36808	// DBC: 20754 same here
 
 class BLEEDINGHOLLOWDARKCASTERAI : public CreatureAIScript
 {
@@ -158,6 +160,8 @@ public:
 		spells[1].targettype = TARGET_DESTINATION;
 		spells[1].instant = false;
 		spells[1].cooldown = 30;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -281,6 +285,8 @@ public:
 		spells[2].targettype = TARGET_VARIOUS;	// why it targets enemy :O
 		spells[2].instant = true;
 		spells[2].cooldown = 25;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -404,6 +410,8 @@ public:
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = true;
 		spells[2].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -533,6 +541,8 @@ public:
 		spells[3].targettype = TARGET_ATTACKING;
 		spells[3].instant = true;
 		spells[3].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -662,6 +672,8 @@ public:
 		spells[3].targettype = TARGET_ATTACKING;
 		spells[3].instant = true;
 		spells[3].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -779,6 +791,8 @@ public:
 		spells[1].targettype = TARGET_ATTACKING;
 		spells[1].instant = true;
 		spells[1].cooldown = 25;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -896,6 +910,8 @@ public:
 		spells[1].targettype = TARGET_ATTACKING;
 		spells[1].instant = true;
 		spells[1].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1007,6 +1023,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = false;
 		spells[0].cooldown = 25;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1101,7 +1119,7 @@ protected:
 
 #define SHADOW_WORD_PAIN 14032
 #define HEAL 30643	// DBC: 12039, 30643
-#define RENEW 37260 // no idea if those are correct spells // uses it also on enemy :O // DBC: 8362
+#define RENEW 37260 // DBC: 8362; no idea if those are correct spells // uses it also on enemy :O // DBC: 8362
 // renew? other heal?
 
 class HELLFIREWATCHERAI : public CreatureAIScript
@@ -1131,6 +1149,8 @@ public:
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = true;
 		spells[2].cooldown = 60;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1255,6 +1275,7 @@ public:
 		spells[2].instant = true;
 		spells[2].cooldown = 20;
 */
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1356,7 +1377,7 @@ protected:
 #define SURGE 34645 // 25787 not sure
 #define MORTAL_WOUND 30641 // 25646
 #define	OVERPOWER 32154	// I am not sure about this spell and those down there
-#define RETALIATION 22857 // 22858
+#define RETALIATION 22857 // DBC: 22857, 22858
 
 class WATCHKEEPERGARGOLMARAI : public CreatureAIScript
 {
@@ -1393,6 +1414,8 @@ public:
 		spells[3].targettype = TARGET_SELF;
 		spells[3].instant = true;
 		spells[3].cooldown = 45;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1593,6 +1616,8 @@ public:
 		spells[6].cooldown = 70;
 		spells[6].speech = "<missing_text>";
 		spells[6].soundid = 10278;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1767,6 +1792,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
 		spells[0].cooldown = 25;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1858,7 +1885,7 @@ protected:
 
 #define CN_VAZRUDEN 17537
 
-#define REVENGE 40392 // 37517, 40392, 19130 or other
+#define REVENGE 40392 // DBC: 19130; 37517, 40392, 19130 or other
 
 class VAZRUDENAI : public CreatureAIScript
 {
@@ -1878,6 +1905,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
 		spells[0].cooldown = 10;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -2070,6 +2099,8 @@ public:
         _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
 		_unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
 		_unit->GetAIInterface()->setWaypointToMove(1);
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)

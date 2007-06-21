@@ -1792,8 +1792,6 @@ void SetupShadowLabyrinth(ScriptMgr * mgr)
 	mgr->register_creature_script(CN_FEL_OVERSEER, &FELOVERSEERAI::Create);
 	mgr->register_creature_script(CN_MALICIOUS_INSTRUCTOR, &MALICIOUSINSTRUCTORAI::Create);
 	mgr->register_creature_script(CN_AMBASSADOR_HELLMAW, &AMBASSADORHELLMAWAI::Create);
-	mgr->register_creature_script(CN_AMBASSADOR_HELLMAW, &AMBASSADORHELLMAWAI::Create);
-	mgr->register_creature_script(CN_AMBASSADOR_HELLMAW, &AMBASSADORHELLMAWAI::Create);
 	mgr->register_creature_script(CN_BLACKHEART_THE_INCITER, &BLACKHEARTTHEINCITERAI::Create);
 	mgr->register_creature_script(CN_GRANDMASTER_VORPIL, &GRANDMASTERVORPILAI::Create);
     mgr->register_creature_script(CN_MURMUR, &MURMURAI::Create);

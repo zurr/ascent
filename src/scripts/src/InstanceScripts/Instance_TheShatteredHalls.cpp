@@ -34,6 +34,8 @@ public:
 		spells[1].targettype = TARGET_ATTACKING;
 		spells[1].instant = true;
 		spells[1].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -156,6 +158,8 @@ public:
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = true;
 		spells[2].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -285,6 +289,8 @@ public:
 		spells[3].targettype = TARGET_ATTACKING;
 		spells[3].instant = true;
 		spells[3].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -414,6 +420,8 @@ public:
 		spells[3].targettype = TARGET_ATTACKING;
 		spells[3].instant = true;
 		spells[3].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -558,6 +566,7 @@ public:
 		spells[5].instant = false;
 		spells[5].cooldown = 15;
 */
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -683,6 +692,8 @@ public:
 		spells[2].cooldown = 25;
 
 		_unit->CastSpell(_unit, spells[1].info, spells[1].targettype);
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -822,6 +833,8 @@ public:
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = false;
 		spells[2].cooldown = 10;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -933,6 +946,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
 		spells[0].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     
@@ -1045,6 +1060,8 @@ public:
 		spells[0].targettype = TARGET_DESTINATION;
 		spells[0].instant = false;
 		spells[0].cooldown = 30;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     
@@ -1174,6 +1191,8 @@ public:
 		spells[3].targettype = TARGET_ATTACKING;
 		spells[3].instant = true;
 		spells[3].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1291,6 +1310,8 @@ public:
 		spells[1].targettype = TARGET_ATTACKING;
 		spells[1].instant = true;
 		spells[1].cooldown = 20;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1407,14 +1428,14 @@ public:
 		spells[0].cooldown = 20;
 
         spells[1].info = sSpellStore.LookupEntry(IMMOLATION_ARROW);
-		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].targettype = TARGET_ATTACKING;	// no idea why fire stays under caster instead of target
 		spells[1].instant = false;
-		spells[1].cooldown = 45;
+		spells[1].cooldown = 5;
 
-        spells[2].info = sSpellStore.LookupEntry(SHOT);	// for now just forces to cast it all the time
+        spells[2].info = sSpellStore.LookupEntry(SHOT);	// disabled for now
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = true;
-		spells[2].cooldown = 1;
+		spells[2].cooldown = -1;
 
         spells[3].info = sSpellStore.LookupEntry(INCENDIARY_SHOT);
 		spells[3].targettype = TARGET_ATTACKING;
@@ -1425,6 +1446,8 @@ public:
 		spells[4].targettype = TARGET_ATTACKING;
 		spells[4].instant = false;
 		spells[4].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1554,6 +1577,8 @@ public:
 		spells[3].targettype = TARGET_SELF;
 		spells[3].instant = true;
 		spells[3].cooldown = 20;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1684,6 +1709,8 @@ public:
 		spells[2].targettype = TARGET_ATTACKING;	// can't check it now =/
 		spells[2].instant = true;	// doesn't work, because of lack of core support (so to prevent channeling I changed false to true)
 		spells[2].cooldown = 25;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1841,6 +1868,8 @@ public:
 		spells[0].targettype = TARGET_VARIOUS;
 		spells[0].instant = true;
 		spells[0].cooldown = 15;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1972,6 +2001,8 @@ public:
 		spells[3].targettype = TARGET_VARIOUS;
 		spells[3].instant = false;
 		spells[3].cooldown = -1;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -2110,6 +2141,8 @@ public:
 		spells[0].targettype = TARGET_VARIOUS;
 		spells[0].instant = true;
 		spells[0].cooldown = 30;
+
+		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
