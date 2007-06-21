@@ -19,8 +19,8 @@ LogonCommHandler::LogonCommHandler()
 {
 	idhigh = 1;
 	next_request = 1;
-	pings = !Config.MainConfig.GetBoolDefault("DisablePings", false);
-	string logon_pass = Config.MainConfig.GetStringDefault("LogonServer.RemotePassword", "r3m0t3");
+	pings = !Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
+	string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
 	
 	// sha1 hash it
 	Sha1Hash hash;
@@ -300,7 +300,7 @@ void LogonCommHandler::LogonDatabaseReloadAccounts()
 
 void LogonCommHandler::LoadRealmConfiguration()
 {
-	uint32 logoncount = Config.RealmConfig.GetIntDefault("LogonServerCount", 0);
+	uint32 logoncount = Config.RealmConfig.GetIntDefault("LogonServers", "Count", 0);
 	if(logoncount == 0)
 	{
 		sLog.outColor(TRED, "\n   >> no logon servers found. this server will not be online anywhere!\n");
@@ -311,15 +311,15 @@ void LogonCommHandler::LoadRealmConfiguration()
 		{
 			LogonServer * ls = new LogonServer;
 			ls->ID = idhigh++;
-			ls->Name = Config.RealmConfig.GetStringVA("UnkLogon", "LogonServer%u.Name", i);
-			ls->Address = Config.RealmConfig.GetStringVA("127.0.0.1", "LogonServer%u.Address", i);
-			ls->Port = Config.RealmConfig.GetIntVA(8093, "LogonServer%u.Port", i);
+			ls->Name = Config.RealmConfig.GetStringVA("Name", "UnkLogon", "LogonServer%u", i);
+			ls->Address = Config.RealmConfig.GetStringVA("Address", "127.0.0.1", "LogonServer%u", i);
+			ls->Port = Config.RealmConfig.GetIntVA("Port", 8093, "Port", i);
 			servers.insert(ls);
 		}
 		sLog.outColor(TYELLOW, "%u servers, ", logoncount);
 	}
 
-	uint32 realmcount = Config.RealmConfig.GetIntDefault("RealmCount", 1);
+	uint32 realmcount = Config.RealmConfig.GetIntDefault("Realms", "Count", 1);
 	if(realmcount == 0)
 	{
 		sLog.outColor(TRED, "\n   >> no realms found. this server will not be online anywhere!\n");
@@ -329,12 +329,12 @@ void LogonCommHandler::LoadRealmConfiguration()
 		for(uint32 i = 1; i < realmcount+1; ++i)
 		{
 			Realm * realm = new Realm;
-			realm->Name = Config.RealmConfig.GetStringVA("SomeRealm", "Realm%u.Name", i);
-			realm->Address = Config.RealmConfig.GetStringVA("127.0.0.1:8129", "Realm%u.Address", i);
-			realm->Colour = Config.RealmConfig.GetIntVA(1, "Realm%u.Colour", i);
-			realm->TimeZone = Config.RealmConfig.GetIntVA(1, "Realm%u.TimeZone", i);
-			realm->Population = Config.RealmConfig.GetFloatVA(0, "Realm%u.Population", i);
-			string rt = Config.RealmConfig.GetStringVA("Normal", "Realm%u.Icon", i);
+			realm->Name = Config.RealmConfig.GetStringVA("Name", "SomeRealm", "Realm%u", i);
+			realm->Address = Config.RealmConfig.GetStringVA("Address", "127.0.0.1:8129", "Realm%u", i);
+			realm->Colour = Config.RealmConfig.GetIntVA("Colour", 1, "Realm%u", i);
+			realm->TimeZone = Config.RealmConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
+			realm->Population = Config.RealmConfig.GetFloatVA("Population", 0, "Realm%u", i);
+			string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
 			uint32 type;
 
 			// process realm type

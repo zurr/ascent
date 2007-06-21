@@ -99,13 +99,8 @@ private:
 	/// We don't want to be reading from a file from more than one thread at once
 	Mutex mutex;
 
-#ifdef WIN32
-	/// Our main file descriptor for accessing the binary terrain file.
-	uint32 FileDescriptor;
-#else
 	/// Our main file descriptor for accessing the binary terrain file.
 	FILE * FileDescriptor;
-#endif
 
 	/// This holds the offsets of the cell information for each cell.
 	uint32 CellOffsets[_sizeX][_sizeY];

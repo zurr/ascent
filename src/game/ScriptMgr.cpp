@@ -30,7 +30,7 @@ void ScriptMgr::LoadScripts()
 	sLog.outString("Loading External Script Libraries...");
 	sLog.outString("");
 
-	string start_path = Config.MainConfig.GetStringDefault("Script.BinaryLocation", "script_bin") + "\\";
+	string start_path = Config.MainConfig.GetStringDefault("Script", "BinaryLocation", "script_bin") + "\\";
 	string search_path = start_path + "*.";
 
 	/* Loading system for win32 */

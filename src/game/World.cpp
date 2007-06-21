@@ -34,13 +34,13 @@ World::World()
 	m_event_Instanceid = eventholder->GetInstanceID();
 
 	mQueueUpdateInterval = 10000;
-	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("SendBuildOnJoin", false);
-	MapPath = Config.MainConfig.GetStringDefault("MapPath", "maps");
-	UnloadMapFiles = Config.MainConfig.GetBoolDefault("UnloadMapFiles", true);
-	BreathingEnabled = Config.MainConfig.GetBoolDefault("EnableBreathing", true);
-	SpeedhackProtection = Config.MainConfig.GetBoolDefault("SpeedhackProtection", false);
-	SendStatsOnJoin = Config.MainConfig.GetBoolDefault("SendStatsOnJoin", true);
-	compression_threshold = Config.MainConfig.GetIntDefault("CompressionThreshold", 1000);
+	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendBuildOnJoin", false);
+	MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
+	UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
+	BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
+	SpeedhackProtection = Config.MainConfig.GetBoolDefault("Server", "SpeedhackProtection", false);
+	SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
+	compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
 	PeakSessionCount = 0;
 	mInWorldPlayerCount = 0;
 	mAcceptedConnections = 0;
@@ -259,12 +259,12 @@ void World::SetInitialWorldSettings()
 {
 	sDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
    
-	reqGmClient = Config.MainConfig.GetBoolDefault("reqGmClient", false);
-	if(!Config.MainConfig.GetString("GmClientChannel", &GmClientChannel))
+	reqGmClient = Config.MainConfig.GetBoolDefault("GMClient", "ReqGmClient", false);
+	if(!Config.MainConfig.GetString("GMClient", "GmClientChannel", &GmClientChannel))
 	{
 		GmClientChannel = "";
 	}
-    realmtype = Config.MainConfig.GetBoolDefault("realmtype", false);
+    realmtype = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
 
 	m_lastTick = time(NULL);
 
@@ -825,11 +825,11 @@ void World::SetInitialWorldSettings()
 
 	HonorHandler::PerformStartupTasks();
 
-	TimeOut= uint32(1000* Config.MainConfig.GetIntDefault("ConnectionTimeout", 180) );
+	TimeOut= uint32(1000* Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180) );
 	m_queueUpdateTimer = mQueueUpdateInterval;
 	
 	
-	if(Config.MainConfig.GetBoolDefault("MapMgr.Preloading", false))
+	if(Config.MainConfig.GetBoolDefault("Startup", "Preloading", false))
 	{
 		// Load all data on each map.
 
@@ -839,7 +839,7 @@ void World::SetInitialWorldSettings()
 	}
 
 	launch_thread(new WorldRunnable);
-	if(Config.MainConfig.GetBoolDefault("Startup.BackgroundLootLoading", true))
+	if(Config.MainConfig.GetBoolDefault("Startup", "BackgroundLootLoading", true))
 	{
 		sLog.outString("Backgrounding loot loading...");
 
@@ -1322,7 +1322,7 @@ void TaskList::spawn()
 	thread_count = 0;
 
 	uint32 threadcount;
-	if(Config.MainConfig.GetBoolDefault("Startup.EnableMultithreadedLoading", true))
+	if(Config.MainConfig.GetBoolDefault("Startup", "EnableMultithreadedLoading", true))
 	{
 		// get processor count
 #ifndef WIN32

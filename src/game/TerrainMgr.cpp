@@ -41,12 +41,8 @@ TerrainMgr::~TerrainMgr()
 	{
 		// Free up our file pointer.
 		mutex.Acquire();
-#ifdef WIN32
-		_close(FileDescriptor);
-#else
 		fclose(FileDescriptor);
-#endif
-	mutex.Release();
+		mutex.Release();
 	}
 
 	// Big memory cleanup, whee.
@@ -69,11 +65,7 @@ bool TerrainMgr::LoadTerrainHeader()
 
 	sprintf(File, "%s/Map_%u.bin", mapPath.c_str(), mapId);
 
-#ifdef WIN32
-	FileDescriptor = _open(File, O_RDONLY | O_BINARY | O_RANDOM);
-#else
 	FileDescriptor = fopen(File, "rb");
-#endif
 
 	if((uint32)FileDescriptor == -1 || FileDescriptor == 0)
 	{
@@ -82,11 +74,7 @@ bool TerrainMgr::LoadTerrainHeader()
 	}
 
 	// Read in the header.
-#ifdef WIN32
-	if(_read(FileDescriptor, CellOffsets, TERRAIN_HEADER_SIZE) != TERRAIN_HEADER_SIZE)
-#else
 	if(fread(CellOffsets, TERRAIN_HEADER_SIZE, 1, FileDescriptor) < 1)
-#endif
 		return false;
 
 	return true;
@@ -116,21 +104,13 @@ bool TerrainMgr::LoadCellInformation(uint32 x, uint32 y)
 	}
 	
 	// Seek to our specified offset.
-#ifdef WIN32
-	if(_lseek(FileDescriptor, Offset, SEEK_SET) == Offset)
-#else
 	if(fseek(FileDescriptor, Offset, SEEK_SET) == 0)
-#endif
 	{
 		// Allocate the cell information.
 		CellInformation[x][y] = new CellTerrainInformation;
 
 		// Read from our file into this newly created struct.
-#ifdef WIN32
-		_read(FileDescriptor, CellInformation[x][y], sizeof(CellTerrainInformation));
-#else
 		fread(CellInformation[x][y], sizeof(CellTerrainInformation), 1, FileDescriptor);
-#endif
 	}
 
 	// Release the mutex.
