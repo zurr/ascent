@@ -29,7 +29,7 @@ RoadMap:
 Milestones:
  *Milestone 0.1 - OutlandN00bZ0R*
     - Finish Instances in Hellfire Peninsula	[*] Note: I would like to add to it that EVENT, but 
-							  without it this Milestone will be finished.
+							  without it this Milestone will be finished too.
     - Finish Instances in Zangarmarsh		[*] Note: To further discussion!
 
  *Milestone 0.2 - BoneStorm*

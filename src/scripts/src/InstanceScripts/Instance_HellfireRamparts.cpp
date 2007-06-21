@@ -132,8 +132,8 @@ protected:
 
 #define CN_BLEEDING_HOLLOW_DARKCASTER 17269
 
-#define SCORCH 36807	// 15241 // not sure
-#define RAIN_OF_FIRE 36808	// same here
+#define SCORCH 36807	// 15241 // not sure	DBC both
+#define RAIN_OF_FIRE 36808	// 20754 same here
 
 class BLEEDINGHOLLOWDARKCASTERAI : public CreatureAIScript
 {
@@ -754,25 +754,31 @@ protected:
 
 #define CN_BONECHEWER_RAVENER 17264
 
+#define DAZED_RAVENGER 1604
 #define KIDNEY_SHOT 30621
-//18950
+// Invisibility and Stealth Detection ? 18950
 class BONECHEWERRAVENERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BONECHEWERRAVENERAI);
     BONECHEWERRAVENERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 1;
+		nrspells = 2;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
 		}
-        spells[0].info = sSpellStore.LookupEntry(KIDNEY_SHOT);
+        spells[0].info = sSpellStore.LookupEntry(DAZED_RAVENGER);
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
-		spells[0].cooldown = 20;
+		spells[0].cooldown = 15;
+
+        spells[1].info = sSpellStore.LookupEntry(KIDNEY_SHOT);
+		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].instant = true;
+		spells[1].cooldown = 25;
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -866,6 +872,7 @@ protected:
 #define CN_BONECHEWER_RIPPER 17281
 
 #define ENRAGE 18501
+#define DAZED_RIPPER 1604
 
 class BONECHEWERRIPPERAI : public CreatureAIScript
 {
@@ -873,7 +880,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(BONECHEWERRIPPERAI);
     BONECHEWERRIPPERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		nrspells = 1;
+		nrspells = 2;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
@@ -884,6 +891,11 @@ public:
 		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
 		spells[0].cooldown = 20;
+
+        spells[1].info = sSpellStore.LookupEntry(DAZED_RIPPER);
+		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].instant = true;
+		spells[1].cooldown = 15;
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1088,8 +1100,8 @@ protected:
 #define CN_HELLFIRE_WATCHER 17309
 
 #define SHADOW_WORD_PAIN 14032
-#define HEAL 30643
-#define RENEW 37260 // no idea if those are correct spells // uses it also on enemy :O
+#define HEAL 30643	// DBC: 12039, 30643
+#define RENEW 37260 // no idea if those are correct spells // uses it also on enemy :O // DBC: 8362
 // renew? other heal?
 
 class HELLFIREWATCHERAI : public CreatureAIScript
@@ -1214,7 +1226,7 @@ protected:
 #define CARNIVOROUS_BITE 30639
 #define DAZED_WARHOUND 1604
 //#define FURIOUS_HOWL 30636
-// 18950 ?
+// Invisibility and Stealth Detection 18950 ? && Increase Spell Dam 43 17280 ?
 class SHATTEREDHANDWARHOUNDAI : public CreatureAIScript
 {
 public:
@@ -1971,10 +1983,10 @@ protected:
 // Event: Phase1 spells
 #define SUMMON_VAZRUDEN 30717
 // Event: Phase2 spells
-#define FIREBALL 30691
+#define FIREBALL 30691	// DBC: 34653, 30691
 #define LIQUID_FLAME 1
 #define CONE_OF_FIRE 30926
-
+// FACE HIGHEST THREAT 30700
 struct Coords
 {
     float x;
