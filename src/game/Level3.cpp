@@ -2639,7 +2639,23 @@ bool ChatHandler::HandleNpcPossessCommand(const char * args, WorldSession * m_se
 
 bool ChatHandler::HandleNpcUnPossessCommand(const char * args, WorldSession * m_session)
 {
-	m_session->GetPlayer()->UnPossess();
+	Creature * creature = getSelectedCreature(m_session);
+ 	m_session->GetPlayer()->UnPossess();
+
+	if(creature)
+	{
+			// return to respawn coords
+			float x = creature->m_spawn->x;
+			float y = creature->m_spawn->y;
+			float z = creature->m_spawn->z;
+			float o = creature->m_spawn->o;
+	
+			// restart movement
+			creature->GetAIInterface()->SetAIState(STATE_IDLE);
+			creature->GetAIInterface()->WipeHateList();
+			creature->GetAIInterface()->WipeTargetList();
+			creature->GetAIInterface()->MoveTo(x, y, z, o);
+	}
 	GreenSystemMessage(m_session, "Removed any possessed targets.");
 	return true;
 }
