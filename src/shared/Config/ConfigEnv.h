@@ -19,7 +19,6 @@
 #include "Common.h"
 
 //! Our own includes.
-#include "dotconfpp/dotconfpp.h"
 #include "Config.h"
 #include "Log.h"
 

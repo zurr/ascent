@@ -85,12 +85,12 @@ bool startdb()
 	bool result;
 
 	// Configure Logon Database...
-	result = Config.MainConfig.GetString("LogonDatabase.Username", &lusername);
-	result = !result ? result : Config.MainConfig.GetString("LogonDatabase.Password", &lpassword);
-	result = !result ? result : Config.MainConfig.GetString("LogonDatabase.Hostname", &lhostname);
-	result = !result ? result : Config.MainConfig.GetString("LogonDatabase.Name", &ldatabase);
-	result = !result ? result : Config.MainConfig.GetInt("LogonDatabase.Port", &lport);
-	result = !result ? result : Config.MainConfig.GetInt("LogonDatabase.Type", &ltype);
+	result = Config.MainConfig.GetString("LogonDatabase", "Username", &lusername);
+	result = !result ? result : Config.MainConfig.GetString("LogonDatabase", "Password", &lpassword);
+	result = !result ? result : Config.MainConfig.GetString("LogonDatabase", "Hostname", &lhostname);
+	result = !result ? result : Config.MainConfig.GetString("LogonDatabase", "Name", &ldatabase);
+	result = !result ? result : Config.MainConfig.GetInt("LogonDatabase", "Port", &lport);
+	result = !result ? result : Config.MainConfig.GetInt("LogonDatabase", "Type", &ltype);
 
 	if(result == false)
 	{
@@ -98,12 +98,12 @@ bool startdb()
 		return false;
 	}
 
-	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", 0));
+	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "Screen", 0));
 	sLogonSQL = CreateDatabaseInterface((DatabaseType)ltype);
 
 	// Initialize it
 	if(!sLogonSQL->Initialize(lhostname.c_str(), (unsigned int)lport, lusername.c_str(),
-		lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase.ConnectionCount", 1),
+		lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 1),
 		16384))
 	{
 		sLog.outError("sql: Logon database initialization failed. Exiting.");
@@ -177,7 +177,7 @@ void LogonServer::Run()
 	sLog.outColor(TNORMAL, "\n");
 
 	// Spawn periodic function caller thread for account reload every 10mins
-	int time = Config.MainConfig.GetIntDefault("AccountRefresh",600);
+	int time = Config.MainConfig.GetIntDefault("Rates", "AccountRefresh",600);
 	time *= 1000;
 	//SpawnPeriodicCallThread(AccountMgr, AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, time);
 	PeriodicFunctionCaller<AccountMgr> * pfc = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(),
@@ -185,15 +185,15 @@ void LogonServer::Run()
 	launch_thread(pfc);
 
 	// Load conf settings..
-	uint32 cport = Config.MainConfig.GetIntDefault("RealmListPort", 3724);
-	uint32 sport = Config.MainConfig.GetIntDefault("ServerPort", 8093);
-	uint32 threadcount = Config.MainConfig.GetIntDefault("Network.ThreadCount", 5);
-	uint32 threaddelay = Config.MainConfig.GetIntDefault("Network.ThreadDelay", 20);
-	string host = Config.MainConfig.GetStringDefault("Host", "0.0.0.0");
-	string shost = Config.MainConfig.GetStringDefault("ISHost", host.c_str());
-	min_build = Config.MainConfig.GetIntDefault("MinClientBuild", 6180);
-	max_build = Config.MainConfig.GetIntDefault("MaxClientBuild", 6999);
-	string logon_pass = Config.MainConfig.GetStringDefault("LogonServer.RemotePassword", "r3m0t3b4d");
+	uint32 cport = Config.MainConfig.GetIntDefault("Listen", "RealmListPort", 3724);
+	uint32 sport = Config.MainConfig.GetIntDefault("Listen", "ServerPort", 8093);
+	uint32 threadcount = Config.MainConfig.GetIntDefault("Network", "ThreadCount", 5);
+	uint32 threaddelay = Config.MainConfig.GetIntDefault("Network", "ThreadDelay", 20);
+	string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
+	string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
+	min_build = Config.MainConfig.GetIntDefault("Client", "MinClientBuild", 6180);
+	max_build = Config.MainConfig.GetIntDefault("Client", "MaxClientBuild", 6999);
+	string logon_pass = Config.MainConfig.GetStringDefault("Link", "RemotePassword", "r3m0t3b4d");
 	Sha1Hash hash;
 	hash.UpdateData(logon_pass);
 	hash.Finalize();
