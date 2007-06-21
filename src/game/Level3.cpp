@@ -2629,11 +2629,18 @@ bool ChatHandler::HandleGOMove(const char * args, WorldSession * m_session)
 
 bool ChatHandler::HandleNpcPossessCommand(const char * args, WorldSession * m_session)
 {
-	Creature * pTarget = getSelectedCreature(m_session, true);
-	if(!pTarget) return true;
+	Unit * pTarget = getSelectedCreature(m_session, false);
+	if(!pTarget)
+		pTarget = getSelectedChar(m_session, false);
+
+	if(!pTarget)
+	{
+		RedSystemMessage(m_session, "You must select a player/creature.");
+		return true;
+	}
 
 	m_session->GetPlayer()->Possess(pTarget);
-	BlueSystemMessage(m_session, "Possessed %s.", pTarget->GetCreatureName()->Name);
+	BlueSystemMessage(m_session, "Possessed "I64FMT, pTarget->GetGUID());
 	return true;
 }
 
