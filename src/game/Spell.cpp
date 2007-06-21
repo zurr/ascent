@@ -2201,7 +2201,12 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 		}
 		else if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
 		{
-			itemTarget = p_caster->getTradeTarget()->getTradeItem(guid);
+			if(p_caster)
+			{
+				Player * plr = p_caster->GetTradeTarget();
+				if(plr)
+					itemTarget = plr->getTradeItem(guid);
+			}
 		}
 		else
 		{
@@ -2821,7 +2826,7 @@ int8 Spell::CheckItems()
 	
 	if(m_targets.m_itemTarget)
 	{
-		Item *it;
+		Item *it = 0;
 		if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
 			//only allow some item targetable spells to work in trade windows
 			switch(m_spellInfo->Effect[0])
@@ -2830,8 +2835,12 @@ int8 Spell::CheckItems()
 			case SPELL_EFFECT_ENCHANT_ITEM://enchanting
 			case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY://temporary enchanting
 				{
-					if(p_caster->getTradeTarget())
-						it = p_caster->getTradeTarget()->getTradeItem(m_targets.m_itemTarget);
+					if(p_caster)
+					{
+						Player * plr = p_caster->GetTradeTarget();
+                        if(plr)
+							it = plr->getTradeItem(m_targets.m_itemTarget);
+					}
 				}break;
 			default:
 				return int8(SPELL_FAILED_BAD_TARGETS);

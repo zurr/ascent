@@ -329,8 +329,17 @@ Player::~Player ( )
 	if(m_session)
 		m_session->SetPlayer(0);
 
+	Player * pTarget;
 	if(mTradeTarget != 0)
-		mTradeTarget->mTradeTarget = 0;
+	{
+		pTarget = GetTradeTarget();
+		if(pTarget)
+			pTarget->mTradeTarget = 0;
+	}
+
+	if(m_Summon)
+		m_Summon->ClearPetOwner();
+
 	mTradeTarget = 0;
 
 	if(DuelingWith != 0)
@@ -2884,9 +2893,13 @@ void Player::ResetHeartbeatCoords()
 void Player::RemoveFromWorld()
 {
 	// Cancel trade if it's active.
+	Player * pTarget;
 	if(mTradeTarget != 0)
 	{
-		mTradeTarget->ResetTradeVariables();
+		pTarget = GetTradeTarget();
+		if(pTarget)
+			pTarget->ResetTradeVariables();
+
 		ResetTradeVariables();
 	}
 	//clear buyback
@@ -4651,6 +4664,7 @@ void Player::RemoveInRangeObject(Object* pObj)
 			m_Summon->Dismiss(true);
 		else
 			m_Summon->Remove(true, true, false);
+		m_Summon->ClearPetOwner();
 		m_Summon = 0;
 	}
 
@@ -6154,7 +6168,9 @@ void Player::ZoneUpdate(uint32 ZoneId)
 
 void Player::SendTradeUpdate()
 {
-	ASSERT(mTradeTarget != 0);
+	Player * pTarget = GetTradeTarget();
+	if(!pTarget)
+		return;
 
 	WorldPacket data(SMSG_TRADE_STATUS_EXTENDED, 500);
 	data << uint8(1);
@@ -6194,7 +6210,7 @@ void Player::SendTradeUpdate()
 		}
 	}
 
-	mTradeTarget->GetSession()->SendPacket(&data);
+	pTarget->GetSession()->SendPacket(&data);
 }
 
 void Player::RequestDuel(Player *pTarget)

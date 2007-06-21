@@ -583,6 +583,7 @@ public:
 		mTradeGold = 0;
 		memset(&mTradeItems, 0, sizeof(Item*) * 8);
 		mTradeStatus = 0;
+		mTradeTarget = 0;
 	}
 	//Pet
 	inline void SetSummon(Pet *pet) { m_Summon = pet; }
@@ -1121,7 +1122,14 @@ public:
 	uint32 HasMuteOnPlayer(){return chat_disabled_until;};
         
 	// Trade Target
-	Player *getTradeTarget() {return mTradeTarget;};
+	//Player *getTradeTarget() {return mTradeTarget;};
+
+	inline Player * GetTradeTarget()
+	{
+		if(!IsInWorld()) return 0;
+		return m_mapMgr->GetPlayer(mTradeTarget);
+	}
+
 	Item *getTradeItem(uint32 slot) {return mTradeItems[slot];};
         
 	// Water level related stuff (they are public because they need to be accessed fast)
@@ -1180,7 +1188,7 @@ protected:
 	Item* mTradeItems[8];
    
 	uint32 mTradeGold;
-	Player* mTradeTarget;
+	uint64 mTradeTarget;
 	uint32 mTradeStatus;
 	PlayerCreateInfo *info;
 	uint32 m_AttackMsgTimer;	// "too far away" and "wrong facing" timer

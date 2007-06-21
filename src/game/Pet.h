@@ -129,6 +129,7 @@ public:
 	void DelayedRemove(bool bTime, bool bDeath);
 
 	inline Player* GetPetOwner() { return m_Owner; }
+	inline void ClearPetOwner() { m_Owner = 0; }
 	void GiveXP(uint32 xp);
 	uint32 GetNextLevelXP(uint32 currentlevel);
 	void ApplyStatsForLevel();

@@ -78,7 +78,7 @@ inline bool isHostile(Object* objA, Object* objB)// B is hostile for A?
 		if(objB->IsPet())
 		{
 			// Check PvP Flags.
-			if(static_cast<Pet*>(objB)->GetPetOwner()->IsPvPFlagged())
+			if(static_cast<Pet*>(objB)->GetPetOwner() && static_cast<Pet*>(objB)->GetPetOwner()->IsPvPFlagged())
 				return true;
 			else
 				return false;
