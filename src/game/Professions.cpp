@@ -41,7 +41,8 @@ void AddItemFromDisenchant(ItemPrototype *proto,Player*owner)
 	if(proto->Quality ==4 && l>=51)
 	{
 		count=1;
-		item=20725;
+		if (l<61) item=20725;
+		else item=22450;
 	}
 	else
 	{
@@ -52,9 +53,9 @@ void AddItemFromDisenchant(ItemPrototype *proto,Player*owner)
 				if(l<=20)item=10940;
 				else if(l<=30)item=11083;
 				else if(l<=40)item=11137;
-				else if(l<=50)item=5803;
-				else item=16204;
-				 
+				else if(l<=50)item=11176;
+				else if(l<=60)item=16204;
+				else item=22445;
 			}
 			else
 			{
@@ -67,7 +68,9 @@ void AddItemFromDisenchant(ItemPrototype *proto,Player*owner)
 				else if(l<=40)item=11174;
 				else if(l<=45)item=11175;
 				else if(l<=50)item=16202;
-				else item=16203;
+				else if(l<=60)item=16203;
+				else if(l<=66) item=22447;
+				else item=22446;
 			
 			}
 			count =1+rand()%3; 
@@ -81,7 +84,9 @@ void AddItemFromDisenchant(ItemPrototype *proto,Player*owner)
 				else if(l<=40)item=11177;
 				else if(l<=45)item=11178;
 				else if(l<=50)item=14343;
-				else item=14344;
+				else if(l<=60)item=14344;
+				else if(l<=65)item=22448;
+				else item=22449;
 		
 			count = proto->Quality-2+rand()%3;
 		}
@@ -102,7 +107,7 @@ Dusts usually are extracted from armors, but also occasionally found from weapon
 Strange Dust - Disenchanted from level 1 to 20 items [10940]
 Soul Dust - Disenchanted from level 21 to 30 items [11083]
 Vision Dust - Disenchanted from level 31 to 40 items [11137]
-Dream Dust - Disenchanted from level 41 to 50 items [5803]
+Dream Dust - Disenchanted from level 41 to 50 items [11176]
 Illusion Dust - Disenchanted from level 51 to 60 items [16204]
 
 
