@@ -96,7 +96,7 @@ void apply_setting(string & str, ConfigSetting & setting)
 	}
 }
 
-uint32 hash(const char * str)
+uint32 ahash(const char * str)
 {
 	register int len = strlen(str);
 	register uint32 ret = 0;
@@ -108,9 +108,9 @@ uint32 hash(const char * str)
 	return ret;
 }
 
-uint32 hash(string& str)
+uint32 ahash(string& str)
 {
-	return hash(str.c_str());
+	return ahash(str.c_str());
 }
 
 bool ConfigFile::SetSource(const char *file, bool ignorecase)
@@ -234,7 +234,7 @@ parse:
 					apply_setting(current_setting, current_setting_struct);
 
 					/* the setting is done, append it to the current block. */
-                    current_block_map[hash(current_variable)] = current_setting_struct;
+                    current_block_map[ahash(current_variable)] = current_setting_struct;
 #ifdef _CONFIG_DEBUG
 					printf("Block: '%s', Setting: '%s', Value: '%s'\n", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
 #endif
@@ -282,7 +282,7 @@ parse:
 						apply_setting(current_setting, current_setting_struct);
 
 						/* the setting is done, append it to the current block. */
-						current_block_map[hash(current_variable)] = current_setting_struct;
+						current_block_map[ahash(current_variable)] = current_setting_struct;
 
 #ifdef _CONFIG_DEBUG
 						printf("Block: '%s', Setting: '%s', Value: '%s'\n", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
@@ -317,7 +317,7 @@ parse:
 					in_block = false;
 					
 					/* assign this block to the main "big" map. */
-					m_settings[hash(current_block)] = current_block_map;
+					m_settings[ahash(current_block)] = current_block_map;
 
 					/* erase all data for this so it doesn't seep through */
 					current_block_map.clear();
@@ -385,8 +385,8 @@ parse:
 
 ConfigSetting * ConfigFile::GetSetting(const char * Block, const char * Setting)
 {
-	uint32 block_hash = hash(Block);
-	uint32 setting_hash = hash(Setting);
+	uint32 block_hash = ahash(Block);
+	uint32 setting_hash = ahash(Setting);
 
 	/* find it in the big map */
 	map<uint32, ConfigBlock>::iterator itr = m_settings.find(block_hash);
