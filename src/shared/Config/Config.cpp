@@ -29,7 +29,7 @@ ConfigFile::~ConfigFile()
 
 void remove_spaces(string& str)
 {
-	while(*str.begin() == ' ')
+	while(str.size() && *str.begin() == ' ')
 		str.erase(str.begin());
 }
 
@@ -162,6 +162,9 @@ bool ConfigFile::SetSource(const char *file, bool ignorecase)
 		ConfigBlock current_block_map;
 		ConfigSetting current_setting_struct;
 
+		/* oh god this is awful */
+		try {
+
 		for(;;)
 		{
 			/* grab a line. */
@@ -246,6 +249,9 @@ parse:
 
 				/* remove any leading spaces */
 				remove_spaces(line);
+
+				if(!line.size())
+					continue;
 
 				/* our target is a *setting*. look for an '=' sign, this is our seperator. */
                 offset = line.find("=");
@@ -356,6 +362,12 @@ parse:
 				}
 			}
 		}
+
+		}catch(...)
+			{
+				sLog.outError("Exception in config parsing.");
+				return false;
+			}
 
 		/* handle any errors */
 		if(in_block)
