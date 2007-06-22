@@ -182,6 +182,10 @@ bool Master::Run()
 	new EventMgr;
 	new World;
 
+	// open cheat log file
+	Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", false).c_str(), false);
+	GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", false).c_str(), false);
+
 	/* load the config file */
 	sWorld.Rehash(false);
 
@@ -222,10 +226,6 @@ bool Master::Run()
 	sSocketMgr.SpawnWorkerThreads();
 
 	sScriptMgr.LoadScripts();
-
-	// open cheat log file
-	Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", false).c_str(), false);
-	GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", false).c_str(), false);
 
 
 	sLog.outString("Threading system initialized, currently %u threads are active.", sThreadMgr.GetThreadCount());	
