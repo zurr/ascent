@@ -2695,3 +2695,14 @@ bool ChatHandler::HandleChangePasswordCommand(const char * args, WorldSession * 
 	}
 	return true;
 }
+
+bool ChatHandler::HandleRehashCommand(const char * args, WorldSession * m_session)
+{
+	/* rehashes */
+	char msg[250];
+	sprintf(msg, "%s is rehashing config file.", m_session->GetPlayer()->GetName());
+	sWorld.SendWorldWideScreenText(msg, 0);
+	sWorld.SendWorldText(msg, 0);
+	sWorld.Rehash(true);
+	return true;
+}

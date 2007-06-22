@@ -424,6 +424,7 @@ protected:
 	bool HandleNpcPossessCommand(const char * args, WorldSession * m_session);
 	bool HandleNpcUnPossessCommand(const char * args, WorldSession * m_session);
 	bool HandleChangePasswordCommand(const char * args, WorldSession * m_session);
+	bool HandleRehashCommand(const char * args, WorldSession * m_session);
 };
 
 
