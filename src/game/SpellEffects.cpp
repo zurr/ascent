@@ -1298,7 +1298,7 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 		switch(m_spellInfo->Id)
 		{
 		case 27389: //Conjure Food 7
-		case 33718: //Conjure Food 8
+		case 33717: //Conjure Food 8
 		case 10140: //Conjure Water 7
 		case 37420: //Conjure Water 8
 		case 27090: //Conjure Water 9
