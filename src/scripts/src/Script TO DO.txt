@@ -1,12 +1,13 @@
 *TO DO LIST*
 
 MAIN TASKS *FOR NOW*:
--> Rewrite The Shattered Halls Script to fit new coding style (also add missing [-]
+-> Rewrite The Shattered Halls Script to fit new coding style (also add missing [*]
    mobs scripts, check spells and fully done it).				
--> Rewrite Blood Furnace script bosses and add all trash mobs. 			[-]
--> Rewrite The Slave Pens (and add eventuall some more monster scripts)		[-]
--> Rewrite The Underbog and add rest of mobs (if there are any)			[-]
--> Rewrite SteamVaults and add rest of stuff					[-]
+-> Rewrite Blood Furnace script bosses and add all trash mobs. 			[*]
+-> Rewrite The Slave Pens (and add eventuall some more monster scripts) 	[*]
+    - no info in DBC =(	
+-> Rewrite The Underbog and add rest of mobs (if there are any).		[*]
+-> Rewrite SteamVaults and add rest of stuff.					[-]
 -> More ? 
 
 
@@ -17,11 +18,11 @@ GossipScripts:
 InstanceScripts:
  *Outland: Instances* 
     - Hellfire Rampage 		[*] Note: Herald Event must be done!
-    - Blood Furnace 		[*] Note: Rewrite to new coding style, add trash mobs
-    - The Shattered Halls 	[*] Note: Rewrite to new coding style, add rest of stuff
-    - The Slave Pens		[*] Note: Rewrite to new coding style, add rest of stuff
+    - Blood Furnace 		[*] Note: Rewrite to new coding style (DONE), add trash mobs (DONE - not sure if 100%)
+    - The Shattered Halls 	[*] Note: Rewrite to new coding style (DONE), add rest of stuff (DONE)
+    - The Slave Pens		[*] Note: Rewrite to new coding style (DONE), add rest of stuff
     - The Underbog		[*] Note: Rewrite to new coding style, add rest of stuff
-    - The Steamvault		[*] Note: Rewrite to new coding style, add rest of stuff
+    - The Steamvault		[-] Note: Rewrite to new coding style, add rest of stuff
 
 Done:
  *Outland: Instances*
@@ -38,7 +39,7 @@ Milestones:
 
  *Milestone 0.2 - BoneStorm*
     - Finish Instances in Bone Wastes		[*] Note: To future discussion!
-    - Finish Instances in Netherstorm		[*] Note: So far nearly untouched Instances.
+    - Finish Instances in Netherstorm		[*] Note: So far nearly untouched Instances. 
 
  *Milestone 0.5*
     - *?*
