@@ -201,7 +201,8 @@ public:
 
         case 20: //Shaman
             {
-                Plr->Gossip_SendPOI(-8624.54, 402.61, 6, 6, 0, "Farseer Umbrua");
+//                Plr->Gossip_SendPOI(-8624.54, 402.61, 6, 6, 0, "Farseer Umbrua");
+				Plr->Gossip_SendPOI(-9031.54, 549.87, 6, 6, 0, "Farseer Umbrua");
                 SendQuickMenu(10106);
             }break;
 

@@ -725,15 +725,12 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			if(!playerTarget)
 				break;
 
-			uint32 amount = 1500;
-
 			SpellCastTargets tgt;
 			tgt.m_unitTarget = playerTarget->GetGUID();
 			SpellEntry * inf =sSpellStore.LookupEntry(23782);
 			Spell * spe = new Spell(u_caster,inf,true,NULL);
 			spe->prepare(&tgt);
 
-			playerTarget->ModUInt32Value(UNIT_FIELD_HEALTH,amount);
 		}break;
 	case 12975:// Last Stand
 		{

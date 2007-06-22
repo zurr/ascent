@@ -1394,8 +1394,6 @@ void Player::_SaveItemCooldown()
 			<< "," << (*itr)->CooldownTimeStamp << "," << (*itr)->Cooldown << ")";
 		++itr;
 		entrys_to_insert++;
-//		if(itr!=itrend)
-//			query << ",";
 	}
 	//only execute if we have entrys to insert
 	if(entrys_to_insert)
@@ -1437,8 +1435,8 @@ void Player::_SaveSpellCoolDownSecurity()
 		if(hascooldowns)
 			query << ",";
 		query << "(" << GetGUIDLow() << "," << SpellID << "," << TimeStamp << ")";
-		hascooldowns=1;
 		++itr;
+		hascooldowns++;
 	}
 	if(hascooldowns)
 		sDatabase.Execute( query.str().c_str( ) );
