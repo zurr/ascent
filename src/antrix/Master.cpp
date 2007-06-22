@@ -511,7 +511,7 @@ void OnCrash(bool Terminate)
 {
 	sLog.outString("Advanced crash handler initialized.");
 	if(!m_crashedMutex.AttemptAcquire())
-		TerminateProcess(GetCurrentProcess(), 0);
+		TerminateThread(GetCurrentThread(), 0);
 
 	try
 	{
