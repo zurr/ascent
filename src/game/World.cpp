@@ -799,7 +799,6 @@ void World::SetInitialWorldSettings()
 	objmgr.LoadTransporters();
 
 	// start mail system
-	new MailSystem;
 	MailSystem::getSingleton().StartMailSystem();
 
 	sLog.outString("");
@@ -1399,6 +1398,9 @@ void World::Rehash(bool load)
 
 	if(!ChannelMgr::getSingletonPtr())
 		new ChannelMgr;
+
+	if(!MailSystem::getSingletonPtr())
+		new MailSystem;
 
 	channelmgr.seperatechannels = Config.MainConfig.GetBoolDefault("Server", "SeperateChatChannels", false);
 	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendBuildOnJoin", false);
