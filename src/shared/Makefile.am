@@ -42,12 +42,7 @@ libauth_a_SOURCES = \
 libconfig_a_SOURCES = \
     Config/Config.cpp \
     Config/Config.h \
-    Config/ConfigEnv.h \
-    Config/dotconfpp/dotconfpp.cpp \
-    Config/dotconfpp/dotconfpp.h \
-    Config/dotconfpp/mempool.cpp \
-    Config/dotconfpp/mempool.h \
-    Config/dotconfpp
+    Config/ConfigEnv.h
 
 libdatabase_a_SOURCES = \
     Database/DBC.cpp \

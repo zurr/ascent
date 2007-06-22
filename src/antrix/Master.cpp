@@ -143,6 +143,14 @@ bool Master::Run()
 		return false;
 	}
 
+	/* test for die variables */
+	string die;
+	if(Config.MainConfig.GetString("die", "msg", &die) || Config.MainConfig.GetString("die2", "msg", &die))
+	{
+		printf("Die directive received: %s", die.c_str());
+		return false;
+	}	
+
 #ifdef WIN32
 	sLog.outColor(TYELLOW, "  >> realms.conf :: ");
 	if(Config.RealmConfig.SetSource("realms.conf"))
@@ -171,10 +179,11 @@ bool Master::Run()
 	ScriptSystem = new ScriptEngine;
 	ScriptSystem->Reload();
 
-
-
 	new EventMgr;
 	new World;
+
+	/* load the config file */
+	sWorld.Rehash(false);
 
 	// Initialize Opcode Table
 	WorldSession::InitPacketHandlerTable();

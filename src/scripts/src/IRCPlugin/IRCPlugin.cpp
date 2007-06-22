@@ -21,7 +21,7 @@ extern "C" SCRIPT_DECL uint32 _exp_get_version()
 
 extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
-	bool Enabled = Config.MainConfig.GetBoolDefault("IRCPlugin.Enabled", false);
+	bool Enabled = Config.MainConfig.GetBoolDefault("IRCPlugin", "Enabled", false);
 	if(!Enabled)
 		return;
 
@@ -30,17 +30,17 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     char Channel[500];
 	char Server[500];
 
-	Config.MainConfig.GetString(UserName, "IRCPlugin.NickName", "WoWBot", 500 );
-	Config.MainConfig.GetString(AltUserName, "IRCPlugin.AltNickName", "WoWBot_", 500 );
-	Config.MainConfig.GetString(Channel, "IRCPlugin.Channel", "#antrix", 500 );
-	Config.MainConfig.GetString(Server, "IRCPlugin.Server", "192.168.1.1", 500 );
+	Config.MainConfig.GetString(UserName, "IRCPlugin", "NickName", "WoWBot", 500 );
+	Config.MainConfig.GetString(AltUserName, "IRCPlugin", "AltNickName", "WoWBot_", 500 );
+	Config.MainConfig.GetString(Channel, "IRCPlugin", "Channel", "#antrix", 500 );
+	Config.MainConfig.GetString(Server, "IRCPlugin", "Server", "192.168.1.1", 500 );
 
 	IRCThread * t = new IRCThread;
 	t->Server = string(Server);
 	t->AltNickName = string(AltUserName);
 	t->NickName = string(UserName);
 	t->Channel = string(Channel);
-	t->Port = Config.MainConfig.GetIntDefault("IRCPlugin.Port", 6667);
+	t->Port = Config.MainConfig.GetIntDefault("IRCPlugin", "Port", 6667);
 
 	launch_thread(t);
 }

@@ -49,7 +49,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
     //strcpy(Filename, Config.MainConfig.GetStringDefault("StatDumper.Filename", "stats.xml").c_str());
     //strcpy(Filename, "stats.xml");
-	if(!Config.MainConfig.GetString(Filename, "StatDumper.Filename", "stats.xml", MAX_PATH))
+	if(!Config.MainConfig.GetString(Filename, "StatDumper", "Filename", "stats.xml", MAX_PATH))
 		strcpy(Filename, "stats.xml");
 
 #ifdef WIN32
@@ -57,7 +57,7 @@ memset(&m_OldPerfTime100nSec, 0, sizeof(m_OldPerfTime100nSec));
 #endif
     dumper.DumpStats();
 
-	int t = Config.MainConfig.GetIntDefault("StatDumper.Interval", 120000);
+	int t = Config.MainConfig.GetIntDefault("StatDumper", "Interval", 120000);
 	TimedEvent * te = TimedEvent::Allocate(&dumper, new CallbackP0<StatDumper>(&dumper, &StatDumper::DumpStats), 1, t, 0);
     sWorld.event_AddEvent(te);
 }
