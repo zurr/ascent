@@ -2659,6 +2659,9 @@ AI_Spell *AIInterface::getSpell()
 
 void AIInterface::addSpellToList(AI_Spell *sp)
 {
+	if(!sp->spell)
+		return;
+
 	m_spells.push_back(sp);
 	m_Unit->m_SpellList.insert(sp->spell->Id); // add to list
 }

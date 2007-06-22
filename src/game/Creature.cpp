@@ -798,8 +798,6 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	// kek
 	for(list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
 	{
-		/*AI_Spell * sp = new AI_Spell;
-		memcpy(sp, (*itr), sizeof(AI_Spell));*/
 		m_aiInterface->addSpellToList(*itr);
 	}
 	m_aiInterface->m_canCallForHelp = proto->m_canCallForHelp;
@@ -963,8 +961,6 @@ void Creature::Load(CreatureProto * proto_, float x, float y, float z)
 	// kek
 	for(list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
 	{
-		AI_Spell * sp = new AI_Spell;
-		memcpy(sp, (*itr), sizeof(AI_Spell));
 		m_aiInterface->addSpellToList(sp);
 	}
 	m_aiInterface->m_canCallForHelp = proto->m_canCallForHelp;
