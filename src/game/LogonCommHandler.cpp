@@ -308,7 +308,7 @@ void LogonCommHandler::LoadRealmConfiguration()
 	servers.insert(ls);
 	sLog.outColor(TYELLOW, "1 servers, ");
 
-	uint32 realmcount = Config.RealmConfig.GetIntDefault("Realms", "Count", 1);
+	uint32 realmcount = Config.RealmConfig.GetIntDefault("LogonServer", "RealmCount", 1);
 	if(realmcount == 0)
 	{
 		sLog.outColor(TRED, "\n   >> no realms found. this server will not be online anywhere!\n");
