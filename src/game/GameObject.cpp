@@ -437,7 +437,8 @@ void GameObject::UseFishingNode(Player *player)
 		return;
 	}
 	uint32 maxskill=entry->MaxSkill;
-	uint32 minskill=entry->MaxSkill;
+//	uint32 minskill=entry->MaxSkill;
+	uint32 minskill=entry->MinSkill;
 
 	if(player->GetBaseSkillAmt(SKILL_FISHING)<maxskill)	
 		player->AdvanceSkillLine(SKILL_FISHING);
