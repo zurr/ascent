@@ -443,7 +443,8 @@ bool ConfigFile::GetInt(const char * block, const char* name, int *value)
 	if(Setting == 0)
 		return false;
 
-	return Setting->AsInt;
+	*value = Setting->AsInt;
+	return true;
 }
 
 bool ConfigFile::GetFloat(const char * block, const char* name, float *value)

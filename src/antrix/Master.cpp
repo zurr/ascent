@@ -63,6 +63,11 @@ void Master::_OnSignal(int s)
 {
 	switch (s)
 	{
+#ifndef WIN32
+	case SIGHUP:
+		sWorld.Rehash(true);
+		break;
+#endif
 	case SIGINT:
 	case SIGTERM:
 	case SIGABRT:
@@ -479,6 +484,8 @@ void Master::_HookSignals()
 	signal(SIGABRT, _OnSignal);
 #ifdef _WIN32
 	signal(SIGBREAK, _OnSignal);
+#else
+	signal(SIGHUP, _OnSignal);
 #endif
 }
 
@@ -489,6 +496,8 @@ void Master::_UnhookSignals()
 	signal(SIGABRT, 0);
 #ifdef _WIN32
 	signal(SIGBREAK, 0);
+#else
+	signal(SIGHUP, 0);
 #endif
 
 }

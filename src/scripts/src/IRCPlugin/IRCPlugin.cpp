@@ -30,10 +30,10 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     char Channel[500];
 	char Server[500];
 
-	Config.MainConfig.GetString(UserName, "IRCPlugin", "NickName", "WoWBot", 500 );
-	Config.MainConfig.GetString(AltUserName, "IRCPlugin", "AltNickName", "WoWBot_", 500 );
-	Config.MainConfig.GetString(Channel, "IRCPlugin", "Channel", "#antrix", 500 );
-	Config.MainConfig.GetString(Server, "IRCPlugin", "Server", "192.168.1.1", 500 );
+	Config.MainConfig.GetString("IRCPlugin", UserName, "NickName", "WoWBot", 500 );
+	Config.MainConfig.GetString("IRCPlugin", AltUserName, "AltNickName", "WoWBot_", 500 );
+	Config.MainConfig.GetString("IRCPlugin", Channel, "Channel", "#antrix", 500 );
+	Config.MainConfig.GetString("IRCPlugin", Server, "Server", "192.168.1.1", 500 );
 
 	IRCThread * t = new IRCThread;
 	t->Server = string(Server);

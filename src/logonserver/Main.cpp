@@ -191,9 +191,9 @@ void LogonServer::Run()
 	uint32 threaddelay = Config.MainConfig.GetIntDefault("Network", "ThreadDelay", 20);
 	string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
 	string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
-	min_build = Config.MainConfig.GetIntDefault("Client", "MinClientBuild", 6180);
-	max_build = Config.MainConfig.GetIntDefault("Client", "MaxClientBuild", 6999);
-	string logon_pass = Config.MainConfig.GetStringDefault("Link", "RemotePassword", "r3m0t3b4d");
+	min_build = Config.MainConfig.GetIntDefault("Client", "MinBuild", 6180);
+	max_build = Config.MainConfig.GetIntDefault("Client", "MaxBuild", 6999);
+	string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
 	Sha1Hash hash;
 	hash.UpdateData(logon_pass);
 	hash.Finalize();

@@ -300,24 +300,13 @@ void LogonCommHandler::LogonDatabaseReloadAccounts()
 
 void LogonCommHandler::LoadRealmConfiguration()
 {
-	uint32 logoncount = Config.RealmConfig.GetIntDefault("LogonServers", "Count", 0);
-	if(logoncount == 0)
-	{
-		sLog.outColor(TRED, "\n   >> no logon servers found. this server will not be online anywhere!\n");
-	}
-	else
-	{
-		for(uint32 i = 1; i < logoncount+1; ++i)
-		{
-			LogonServer * ls = new LogonServer;
-			ls->ID = idhigh++;
-			ls->Name = Config.RealmConfig.GetStringVA("Name", "UnkLogon", "LogonServer%u", i);
-			ls->Address = Config.RealmConfig.GetStringVA("Address", "127.0.0.1", "LogonServer%u", i);
-			ls->Port = Config.RealmConfig.GetIntVA("Port", 8093, "Port", i);
-			servers.insert(ls);
-		}
-		sLog.outColor(TYELLOW, "%u servers, ", logoncount);
-	}
+	LogonServer * ls = new LogonServer;
+	ls->ID = idhigh++;
+	ls->Name = Config.RealmConfig.GetStringDefault("LogonServer", "Name", "UnkLogon");
+	ls->Address = Config.RealmConfig.GetStringDefault("LogonServer", "Address", "127.0.0.1");
+	ls->Port = Config.RealmConfig.GetIntDefault("LogonServer", "Port", 8093);
+	servers.insert(ls);
+	sLog.outColor(TYELLOW, "1 servers, ");
 
 	uint32 realmcount = Config.RealmConfig.GetIntDefault("Realms", "Count", 1);
 	if(realmcount == 0)
