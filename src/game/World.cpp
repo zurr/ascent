@@ -364,7 +364,6 @@ void World::SetInitialWorldSettings()
 	}
 
 	new ObjectMgr;
-	new ChannelMgr;
 	new QuestMgr;
 	new LootMgr;
 	new LfgMgr;
@@ -1397,6 +1396,9 @@ void World::Rehash(bool load)
 {
 	if(load)
 		Config.MainConfig.SetSource("antrix.conf", true);
+
+	if(!ChannelMgr::getSingletonPtr())
+		new ChannelMgr;
 
 	channelmgr.seperatechannels = Config.MainConfig.GetBoolDefault("Server", "SeperateChatChannels", false);
 	sendRevisionOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendBuildOnJoin", false);
