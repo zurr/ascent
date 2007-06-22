@@ -3256,12 +3256,14 @@ void Aura::SpellAuraTransform(bool apply)
 				if(apply)
 				{
 					m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, displayId);
+					m_target->m_silenced++;
 					m_target->m_pacified++;
 					sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1,(uint32)1000,EVENT_AURA_PERIODIC_HEAL,1000,0);
 				}
 				else
 				{
 					m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID));
+					m_target->m_silenced--;
 					m_target->m_pacified--;
 				}
 			}break;
