@@ -961,7 +961,7 @@ void Creature::Load(CreatureProto * proto_, float x, float y, float z)
 	// kek
 	for(list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
 	{
-		m_aiInterface->addSpellToList(sp);
+		m_aiInterface->addSpellToList(*itr);
 	}
 	m_aiInterface->m_canCallForHelp = proto->m_canCallForHelp;
 	m_aiInterface->m_CallForHelpHealth = proto->m_callForHelpHealth;
