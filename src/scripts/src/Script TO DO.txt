@@ -4,11 +4,15 @@ MAIN TASKS *FOR NOW*:
 -> Rewrite The Shattered Halls Script to fit new coding style (also add missing [-]
    mobs scripts, check spells and fully done it).				
 -> Rewrite Blood Furnace script bosses and add all trash mobs. 			[-]
+-> Rewrite The Slave Pens (and add eventuall some more monster scripts)		[-]
+-> Rewrite The Underbog and add rest of mobs (if there are any)			[-]
+-> Rewrite SteamVaults and add rest of stuff					[-]
 -> More ? 
 
 
 GossipScripts:
-   - Fix Shaman Gossip in Stormwind [-]
+   - Fix Shaman Gossip in Stormwind [+]
+   - More?
 
 InstanceScripts:
  *Outland: Instances* 
