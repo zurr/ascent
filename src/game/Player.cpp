@@ -828,7 +828,7 @@ void Player::_EventAttack(bool offhand)
 		pVictim = GetMapMgr()->GetUnit(m_curSelection);
 	
 	//Can't find victim, stop attacking
-	if (!pVictim && !pVictim->IsPlayer())
+	if (!pVictim)
 	{
 		Log::getSingleton( ).outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
 		setHRegenTimer(5000); //prevent clicking off creature for a quick heal
@@ -909,7 +909,7 @@ void Player::_EventCharmAttack()
 	pVictim= GetMapMgr()->GetUnit(m_curSelection);
 
 	//Can't find victim, stop attacking
-	if (!pVictim && !pVictim->IsPlayer())
+	if (!pVictim)
 	{
 		Log::getSingleton( ).outError( "WORLD: "I64FMT" doesn't exist.",m_curSelection);
 		Log::getSingleton( ).outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
