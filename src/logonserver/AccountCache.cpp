@@ -139,7 +139,7 @@ bool AccountMgr::LoadAccount(string Name)
 void AccountMgr::UpdateAccountLastIP(uint32 accountId, const char * lastIp)
 {
 	//This allows us to keep track of last connection date and last ip  (can be useful)
-	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", lastIp, accountId);
+	
 }
 
 

@@ -132,7 +132,7 @@ void AuthSocket::HandleChallenge()
 	sLog.outDebug("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
 	// Don't update when IP banned, but update anyway if it's an account ban
-	AccountMgr::getSingleton().UpdateAccountLastIP(m_account->AccountId, GetRemoteIP().c_str());
+	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", inet_ntoa(GetRemoteAddress()), m_account->AccountId);
 
 	// Check that the account isn't banned.
 	if(m_account->Banned == 1)

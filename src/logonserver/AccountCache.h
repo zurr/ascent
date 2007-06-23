@@ -85,10 +85,8 @@ public:
 		setBusy.Release();
 		return pAccount;
 	}
+
 	void UpdateAccount(Account * acct, Field * field);
-
-	void UpdateAccountLastIP(uint32 accountId, const char * lastIp);
-
 	bool LoadAccount(string Name);	
 	void ReloadAccounts(bool silent);
 	void ReloadAccountsCallback();
