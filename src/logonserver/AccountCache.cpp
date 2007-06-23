@@ -136,13 +136,6 @@ bool AccountMgr::LoadAccount(string Name)
 	return true;
 }
 
-void AccountMgr::UpdateAccountLastIP(uint32 accountId, const char * lastIp)
-{
-	//This allows us to keep track of last connection date and last ip  (can be useful)
-	
-}
-
-
 void AccountMgr::ReloadAccountsCallback()
 {
 	ReloadAccounts(true);

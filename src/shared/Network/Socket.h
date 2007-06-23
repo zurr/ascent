@@ -80,7 +80,7 @@ public:
 	string GetRemoteIP();
 	inline uint32 GetRemotePort() { return ntohs(m_client.sin_port); }
 	inline SOCKET GetFd() { return m_fd; }
-	inline uint32 GetRemoteAddress() { return m_client.sin_addr.s_addr; }
+	inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 	
 /* Platform-specific methods */
 
