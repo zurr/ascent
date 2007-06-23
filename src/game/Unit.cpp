@@ -124,7 +124,8 @@ Unit::Unit()
 		BaseStats[x]=0;
 
 	m_attackTimer = 0;
-	m_regenTimer = 2000;
+	m_H_regenTimer = 2000;
+	m_P_regenTimer = 2000;
 
 
 	//	if(GetTypeId() == TYPEID_PLAYER) //only player for now
@@ -256,10 +257,15 @@ void Unit::Update( uint32 p_time )
 		
 	}
 
-	if(p_time >= m_regenTimer)
-		RegenerateAll();	
+	if(p_time >= m_H_regenTimer)
+		RegenerateHealth();	
 	else
-		m_regenTimer -= p_time;
+		m_H_regenTimer -= p_time;
+	//most of the times the 2 timers will be the same (except on spell casts)
+	if(p_time >= m_P_regenTimer)
+		RegeneratePower();	
+	else
+		m_P_regenTimer -= p_time;
 
 	if(!isDead())
 	{
@@ -594,9 +600,35 @@ bool Unit::isCasting()
 	return (m_currentSpell != NULL);
 }
 
-void Unit::RegenerateAll()
+void Unit::RegenerateHealth()
 {
-	m_regenTimer = 2000;//set next regen time 
+	m_H_regenTimer = 2000;//set next regen time 
+
+	if (!isAlive())
+		return;
+
+	// player regen
+	if(this->IsPlayer())
+	{
+		// These only NOT in combat
+		if(!static_cast<Player*>(this)->isInCombat())
+		{
+			static_cast<Player*>(this)->RegenerateHealth(false);
+		}
+		else
+			static_cast<Player*>(this)->RegenerateHealth(true);
+	}
+	else
+	{
+		// Only regen health out of combat
+		if(!isInCombat())
+			static_cast<Creature*>(this)->RegenerateHealth();
+	}
+}
+
+void Unit::RegeneratePower()
+{
+	m_H_regenTimer = 2000;//set next regen time 
 
 	if (!isAlive())
 		return;
@@ -622,12 +654,9 @@ void Unit::RegenerateAll()
 		// These only NOT in combat
 		if(!static_cast<Player*>(this)->isInCombat())
 		{
-			static_cast<Player*>(this)->RegenerateHealth(false);
 			if(powertype == POWER_TYPE_RAGE && !static_cast<Player*>(this)->isInCombat())//rage is dropped only out of combat
 				static_cast<Player*>(this)->LooseRage();
 		}
-		else
-			static_cast<Player*>(this)->RegenerateHealth(true);
 	}
 	else
 	{
@@ -641,10 +670,6 @@ void Unit::RegenerateAll()
 			static_cast<Creature*>(this)->RegenerateFocus();
 			break;
 		}
-		
-		// Only regen health out of combat
-		if(!isInCombat())
-			static_cast<Creature*>(this)->RegenerateHealth();
 	}
 }
 

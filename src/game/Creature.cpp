@@ -35,7 +35,8 @@ Creature::Creature(uint32 high, uint32 low)
 	spawnid=0;
  
 	creature_info=NULL;
-	m_regenTimer=0;
+	m_H_regenTimer=0;
+	m_P_regenTimer=0;
 	m_useAI = true;
 	mTaxiNode = 0;
 

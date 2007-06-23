@@ -642,8 +642,10 @@ public:
 
 	bool isCasting();
 	   void CalculateResistanceReduction(Unit *pVictim,dealdamage *dmg) ;
-	void RegenerateAll();
-	inline void setRegenTimer(uint32 time) {m_regenTimer = time; }
+	void RegenerateHealth();
+	void RegeneratePower();
+	inline void setHRegenTimer(uint32 time) {m_H_regenTimer = time; }
+	inline void setPRegenTimer(uint32 time) {m_P_regenTimer = time; }
 	void DeMorph();
 	uint32 ManaShieldAbsorb(uint32 dmg);
 	void smsg_AttackStart(Unit* pVictim);
@@ -1003,7 +1005,8 @@ protected:
 	uint32 m_meleespell;
 	void _UpdateSpells(uint32 time);
 
-	uint32 m_regenTimer;
+	uint32 m_H_regenTimer;
+	uint32 m_P_regenTimer;
 	uint32 m_state;		 // flags for keeping track of some states
 	uint32 m_attackTimer;   // timer for attack
 	uint32 m_attackTimer_1;

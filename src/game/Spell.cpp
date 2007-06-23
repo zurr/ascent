@@ -1713,8 +1713,8 @@ void Spell::finish()
 	{
 		u_caster->m_canMove = true;
  
-		if(m_usesMana && !failed) 
-			u_caster->setRegenTimer(5000); /* 5 Seconds */
+		if(m_usesMana && !failed && u_caster->GetPowerType()==POWER_TYPE_MANA) 
+			u_caster->setPRegenTimer(5000); /* 5 Seconds */
 	}
 	/* Mana Regenerates while in combat but not for 5 seconds after each spell */
 	/* Only if the spell uses mana, will it cause a regen delay.

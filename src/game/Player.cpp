@@ -54,7 +54,8 @@ Player::Player ( uint32 high, uint32 low )
 	m_PetNumberMax		  = 0;
 	m_lastShotTime		  = 0;
 
-	m_regenTimer			= 0;
+	m_H_regenTimer			= 0;
+	m_P_regenTimer			= 0;
 	m_onTaxi				= false;
 	
 	m_taxi_pos_x			= 0;
@@ -827,10 +828,10 @@ void Player::_EventAttack(bool offhand)
 		pVictim = GetMapMgr()->GetUnit(m_curSelection);
 	
 	//Can't find victim, stop attacking
-	if (!pVictim)
+	if (!pVictim && !pVictim->IsPlayer())
 	{
 		Log::getSingleton( ).outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
-		setRegenTimer(5000); //prevent clicking off creature for a quick heal
+		setHRegenTimer(5000); //prevent clicking off creature for a quick heal
 		EventAttackStop();
 		return;
 	}
@@ -908,11 +909,11 @@ void Player::_EventCharmAttack()
 	pVictim= GetMapMgr()->GetUnit(m_curSelection);
 
 	//Can't find victim, stop attacking
-	if (!pVictim)
+	if (!pVictim && !pVictim->IsPlayer())
 	{
 		Log::getSingleton( ).outError( "WORLD: "I64FMT" doesn't exist.",m_curSelection);
 		Log::getSingleton( ).outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
-		this->setRegenTimer(5000); //prevent clicking off creature for a quick heal
+		this->setHRegenTimer(5000); //prevent clicking off creature for a quick heal
 		clearStateFlag(UF_ATTACKING);
 		EventAttackStop();
 	}
