@@ -539,9 +539,22 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 						uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
 						if(pct == 0 && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
 							pct = 1;
-						else if(pct<20 && !HasFlag(UNIT_FIELD_AURASTATE,2))
-							SetFlag(UNIT_FIELD_AURASTATE,2); //required for execute and other spells
-						else if(HasFlag(UNIT_FIELD_AURASTATE,2))RemoveFlag(UNIT_FIELD_AURASTATE,2);
+						else if(pct<35)
+						{
+							if(!HasFlag(UNIT_FIELD_AURASTATE,13)) //13 = 8 + 4 + 1
+								SetFlag(UNIT_FIELD_AURASTATE,13); //have no idea which spell is this :D
+							if(pct<20 && !HasFlag(UNIT_FIELD_AURASTATE,2))
+								SetFlag(UNIT_FIELD_AURASTATE,2); //required for execute and other spells
+							else if(HasFlag(UNIT_FIELD_AURASTATE,2))
+								RemoveFlag(UNIT_FIELD_AURASTATE,2);
+						}
+						else
+						{
+							if(HasFlag(UNIT_FIELD_AURASTATE,13))
+								RemoveFlag(UNIT_FIELD_AURASTATE,13);
+							if(HasFlag(UNIT_FIELD_AURASTATE,2))
+								RemoveFlag(UNIT_FIELD_AURASTATE,2);
+						}
 
 						switch(m_objectTypeId)
 						{
