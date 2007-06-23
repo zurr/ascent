@@ -131,6 +131,7 @@ struct Quest
 
 	uint32 reward_repfaction[2];
 	uint32 reward_repvalue[2];
+	uint32 reward_replimit;
 
 	uint32 reward_money;
 	uint32 reward_xp;

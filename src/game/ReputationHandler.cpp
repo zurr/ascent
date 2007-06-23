@@ -397,10 +397,16 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 			if(!(*itr).faction[team])
 				continue;
 
+			/* rep limit? */
+			if((*itr).replimit)
+			{
+				if(GetStandingRank((*itr).faction[team]) >= (*itr).replimit)
+					continue;
+			}
 			// meh.. its weird I know :P but the random number generator doesn't accept negative values.
-			bool is_negative = ((*itr).delta_max[team] < 0);
-			int32 minv = abs((*itr).delta_min[team]);
-			int32 maxv = abs((*itr).delta_max[team]);
+			bool is_negative = ((*itr).value < 0);
+			int32 minv = abs((*itr).value);
+			int32 maxv = abs((*itr).value);
 			int32 diff = maxv - minv;
 			int32 change = sRand.randInt(diff) + minv;
 			if(is_negative)

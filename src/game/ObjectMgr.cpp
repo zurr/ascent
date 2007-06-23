@@ -2654,12 +2654,9 @@ void ObjectMgr::LoadReputationModifierTable(const char * tablename, HM_NAMESPACE
 		do 
 		{
 			mod.faction[0] = result->Fetch()[1].GetUInt32();
-			mod.delta_min[0] = result->Fetch()[2].GetInt32();
-			mod.delta_max[0] = result->Fetch()[3].GetInt32();
-
-			mod.faction[1] = result->Fetch()[4].GetUInt32();
-			mod.delta_min[1] = result->Fetch()[5].GetUInt32();
-			mod.delta_max[1] = result->Fetch()[6].GetUInt32();
+			mod.faction[1] = result->Fetch()[2].GetUInt32();
+			mod.value = result->Fetch()[3].GetInt32();
+			mod.replimit = result->Fetch()[4].GetUInt32();
 
 			itr = dmap->find(result->Fetch()[0].GetUInt32());
 			if(itr == dmap->end())

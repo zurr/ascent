@@ -148,8 +148,8 @@ struct LevelInfo
 struct ReputationMod
 {
 	uint32 faction[2];
-	int32 delta_min[2];
-	int32 delta_max[2];
+	int32 value;
+	uint32 replimit;
 };
 
 struct ReputationModifier
