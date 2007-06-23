@@ -475,7 +475,7 @@ void Pet::Remove(bool bSafeDelete, bool bUpdate, bool bSetOffline)
 		m_Owner->SetSummon(NULL);
 		SendNullSpellsToOwner();
 	}
-
+	ClearPetOwner();
 /*	if(bSafeDelete)
 		
 	else*/

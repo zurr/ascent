@@ -4656,14 +4656,17 @@ void Player::RemoveInRangeObject(Object* pObj)
 		if(m_currentSpell)
 			m_currentSpell->cancel();	   // cancel the spell
 	}
-
+ 
 	if(pObj == m_Summon)
 	{
 		if(m_Summon->IsSummon())
+		{
 			m_Summon->Dismiss(true);
+		}
 		else
+		{
 			m_Summon->Remove(true, true, false);
-		m_Summon->ClearPetOwner();
+		}
 		m_Summon = 0;
 	}
 
