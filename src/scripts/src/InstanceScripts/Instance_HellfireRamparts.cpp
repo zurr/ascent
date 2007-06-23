@@ -2379,8 +2379,8 @@ public:
 
     void PhaseThree()
     {
-		float val = sRand.rand(100.0f)
-			SpellCast(val);;
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
 	void SpellCast(float val)
