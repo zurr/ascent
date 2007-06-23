@@ -815,7 +815,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			}
 			dodge = pVictim->GetFloatValue(PLAYER_DODGE_PERCENTAGE);
 			
-			if(((Player*)pVictim)->HasSpell(3124))//only players that have parry skill/spell may parry
+			if(((Player*)pVictim)->HasSpell(3127))//only players that have parry skill/spell may parry
 				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
 		}
 		victim_skill = vskill+((Player*)pVictim)->CalcRating(1); // you compare weapon and defense skills not weapon and weapon
