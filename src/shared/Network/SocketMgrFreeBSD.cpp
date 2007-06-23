@@ -95,7 +95,7 @@ void SocketWorkerThread::run()
 
             if(ptr == NULL)
             {
-                printf("kqueue returned invalid fd (no pointer) of FD %u!!\n", events[i].ident);
+                /*printf("kqueue returned invalid fd (no pointer) of FD %u!!\n", events[i].ident);*/
                 continue;
             }
 
