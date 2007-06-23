@@ -335,6 +335,8 @@ Item *ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int8 
 				m_pOwner->SetUInt32Value(i, 0);
 			}
 		}
+		else if ( slot < INVENTORY_SLOT_BAG_END )
+			m_pOwner->ApplyItemMods( pItem, slot, false );
 
 		if(slot == EQUIPMENT_SLOT_OFFHAND)
 			m_pOwner->SetDuelWield(false);
@@ -483,6 +485,8 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int8 slot)
 				m_pOwner->SetUInt32Value(i, 0);
 			}
 		}
+		else if( slot < INVENTORY_SLOT_BAG_END )
+			m_pOwner->ApplyItemMods(pItem, slot, false ); //watch containers that give attackspeed and stuff ;)
 
 		if(slot == EQUIPMENT_SLOT_OFFHAND)
 			m_pOwner->SetDuelWield(false);
