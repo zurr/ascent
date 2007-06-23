@@ -2110,7 +2110,7 @@ public:
 		spells[2].info = sSpellStore.LookupEntry(WARLORDS_RAGE);
 		spells[2].targettype = TARGET_SELF;
 		spells[2].instant = true;
-		spells[2].cooldown = 5;
+		spells[2].cooldown = 90;
 		spells[2].soundid = 10391;
 		spells[2].speech = "This is not nearly over!";
 
