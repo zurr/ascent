@@ -1811,7 +1811,7 @@ void Aura::SpellAuraModStun(bool apply)
 				}
 			}
 		}
-	}/**/
+	}*/
 }
 
 void Aura::SpellAuraModDamageDone(bool apply)
@@ -5251,12 +5251,11 @@ void Aura::SpellAuraModPAttackPower(bool apply)
 	if(m_target->IsPlayer())
 	{
 		if(apply)
-		{
-			mod->m_amount /= 100; //value is in percent
-			m_target->ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,mod->m_amount);
+		{		
+			m_target->ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,(float)mod->m_amount/100);
 		}
 		else
-			m_target->ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,-mod->m_amount);
+			m_target->ModFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,-(float)mod->m_amount/100);
 		m_target->CalcDamage();
 	}
 }
