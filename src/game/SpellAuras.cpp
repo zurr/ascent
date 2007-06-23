@@ -417,7 +417,7 @@ void Aura::Remove()
 	/* m_spellProto->Attributes == 0x2040100
 	/* are handled. Its possible there are more spells like this
 	*************************************************************/
-	if ( caster && caster->IsPlayer() && caster->IsInWorld() && (m_spellProto->Attributes&ATTRIBUTES_UNK27) && !m_spellProto->AttributesEx)
+	if ( caster && caster->IsPlayer() && caster->IsInWorld() && (m_spellProto->Attributes&ATTRIBUTES_UNK27) && (!m_spellProto->AttributesEx || m_spellProto->AttributesEx&0x20000))
 	{
 		WorldPacket data(12);
 		data.SetOpcode(SMSG_COOLDOWN_EVENT);
@@ -2916,6 +2916,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		}
 		pts.procChance = GetSpellProto()->procChance;
 		pts.procFlags = GetSpellProto()->procFlags;
+		printf("procFlags: %u\n", pts.procFlags);
 		pts.procCharges = GetSpellProto()->procCharges;
 		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
 //		if(pts.procCharges==0)
