@@ -2629,10 +2629,10 @@ bool ChatHandler::HandleGOMove(const char * args, WorldSession * m_session)
 
 bool ChatHandler::HandleNpcPossessCommand(const char * args, WorldSession * m_session)
 {
-	Unit * pTarget = getSelectedCreature(m_session, false);
+	Unit * pTarget = getSelectedChar(m_session, false);
 	if(!pTarget)
-		pTarget = getSelectedChar(m_session, false);
-
+		pTarget = getSelectedCreature(m_session, false);
+		
 	if(!pTarget)
 	{
 		RedSystemMessage(m_session, "You must select a player/creature.");

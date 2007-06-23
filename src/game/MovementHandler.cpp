@@ -51,7 +51,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 	if(GetPlayer()->GetPlayerStatus() == TRANSFER_PENDING) //dont update coords
 		return;
-	if(!_player->IsInWorld())
+	if(!_player->IsInWorld() || _player->m_uint32Values[UNIT_FIELD_CHARMEDBY])
 		return;
 
 	// spell cancel on movement, for now only fishing is added
@@ -269,7 +269,7 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 {
 	if(GetPlayer()->GetPlayerStatus() == TRANSFER_PENDING) //don't update coords
 		return;
-	if(!_player->IsInWorld())
+	if(!_player->IsInWorld() || _player->m_uint32Values[UNIT_FIELD_CHARMEDBY])
 		return;
 
     movement_info.init(recv_data);
