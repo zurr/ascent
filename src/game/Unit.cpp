@@ -627,7 +627,7 @@ void Unit::RegenerateHealth()
 
 void Unit::RegeneratePower()
 {
-	m_H_regenTimer = 2000;//set next regen time 
+	m_P_regenTimer = 2000;//set next regen time 
 
 	if (!isAlive())
 		return;
