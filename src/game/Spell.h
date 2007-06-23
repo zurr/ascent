@@ -850,7 +850,8 @@ enum SpellTypes
 	SPELL_TYPE_SHIELD				= 16384,
 	SPELL_TYPE_FRTITUDE				= 32768,
 	SPELL_TYPE_SPIRIT				= 65536,
-	SPELL_TYPE_WARLOCK_CURSES		= 131072,
+//	SPELL_TYPE_WARLOCK_CURSES		= 131072,
+	SPELL_TYPE_WARLOCK_IMMOLATE		= 262144, //maybe there is a better way to trigger the aurastate for imolate spell
 };
 
 inline bool IsInrange(float x1,float y1, float z1, Object * o,float square_r)

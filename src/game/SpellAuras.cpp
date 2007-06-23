@@ -876,6 +876,15 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 		sEventMgr.AddEvent(this, &Aura::EventPeriodicDamage,dmg, 
 			EVENT_AURA_PERIODIC_DAMAGE,GetSpellProto()->EffectAmplitude[mod->i],0);
 		SetNegative();
+		if(m_spellProto->buffType & SPELL_TYPE_WARLOCK_IMMOLATE)
+		{
+			m_target->SetFlag(UNIT_FIELD_AURASTATE,14); //8+4+2
+		}
+	}
+	else
+	{
+		if(m_spellProto->buffType & SPELL_TYPE_WARLOCK_IMMOLATE)
+			m_target->RemoveFlag(UNIT_FIELD_AURASTATE,14);
 	}
 }
 
@@ -979,9 +988,6 @@ void Aura::EventPeriodicDamage(uint32 amount)
 		c->DealDamage(m_target, res,  2, 0, GetSpellId ());
 	else
 		m_target->DealDamage(m_target, res,  2, 0,  GetSpellId ());
-
-	if(m_casterGuid != cguid)
-		printf("EventPeriodicDamage: SpellId %u\n", sp->Id);
 
 	if(mtarget->GetGUID()!=cguid && c)//don't use resist when cast on self-- this is some internal stuff
 	{
@@ -2916,7 +2922,6 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		}
 		pts.procChance = GetSpellProto()->procChance;
 		pts.procFlags = GetSpellProto()->procFlags;
-		printf("procFlags: %u\n", pts.procFlags);
 		pts.procCharges = GetSpellProto()->procCharges;
 		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
 //		if(pts.procCharges==0)

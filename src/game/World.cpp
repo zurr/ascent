@@ -528,8 +528,11 @@ void World::SetInitialWorldSettings()
 		else if(namehash==2977508401 || namehash==3371527599)
             type |= SPELL_TYPE_SPIRIT;
 //		else if(strstr(nametext, "Curse of Weakness") || strstr(nametext, "Curse of Agony") || strstr(nametext, "Curse of Recklessness") || strstr(nametext, "Curse of Tongues") || strstr(nametext, "Curse of the Elements") || strstr(nametext, "Curse of Idiocy") || strstr(nametext, "Curse of Shadow") || strstr(nametext, "Curse of Doom"))
-		else if(namehash==4129426293 || namehash==885131426 || namehash==626036062 || namehash==3551228837 || namehash==2784647472 || namehash==776142553 || namehash==3407058720 || namehash==202747424)
-            type |= SPELL_TYPE_WARLOCK_CURSES;
+//		else if(namehash==4129426293 || namehash==885131426 || namehash==626036062 || namehash==3551228837 || namehash==2784647472 || namehash==776142553 || namehash==3407058720 || namehash==202747424)
+//		else if(strstr(nametext, "Curse of "))
+//            type |= SPELL_TYPE_WARLOCK_CURSES;
+		else if(strstr(nametext, "Immolate") || strstr(nametext, "Conflagrate"))
+			type |= SPELL_TYPE_WARLOCK_IMMOLATE;
 
 		/*FILE * f = fopen("C:\\spells.txt", "a");
 		fprintf(f, "case 0x%08X:		// %s\n", namehash, nametext);

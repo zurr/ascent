@@ -2502,7 +2502,8 @@ int8 Spell::CanCast(bool rangetolerate)
 				/**********************************************************/
 
 				/* burlex: units are always facing the target! */
-				if(p_caster)
+sLog.outDebug("is spell a curse ? %u",(m_spellInfo->buffType & SPELL_TYPE_CURSE));
+				if(p_caster && !(m_spellInfo->buffType & SPELL_TYPE_CURSE))
 				{
 					if (m_spellInfo->Spell_Dmg_Type == 3) // 3 is ranged so we do not need to check, we just need inface
 					{   // our spell is a ranged spell
