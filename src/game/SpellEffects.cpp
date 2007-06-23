@@ -446,7 +446,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 					Heal(heal32);
 			}
 		}break;
-	case 26545: // Lightning Shield
+/*	case 26545: // Lightning Shield
 		{
 			if(!pSpellId) return;
 			SpellEntry *spellInfo = sSpellStore.LookupEntry(pSpellId);
@@ -468,7 +468,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				m_caster->SpellNonMeleeDamageLog(unitTarget,pSpellId,dmg32, false);
 			delete tmpspell;
 			}
-		}break;
+		}break;*/
 	case 28730:
 		{
 			// for each mana tap, gives you 12 mana
@@ -2722,8 +2722,10 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
 		// Fields
 		InvisibleSummon->SetUInt32Value(OBJECT_FIELD_ENTRY, ci->Id);
 		InvisibleSummon->SetUInt32Value(UNIT_FIELD_LEVEL, 1);
-		InvisibleSummon->SetUInt32Value(UNIT_FIELD_DISPLAYID,  14495);
-		InvisibleSummon->SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, 14495);
+//		InvisibleSummon->SetUInt32Value(UNIT_FIELD_DISPLAYID,  14495);
+//		InvisibleSummon->SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, 14495);
+		InvisibleSummon->SetUInt32Value(UNIT_FIELD_DISPLAYID,  ci->DisplayID);
+		InvisibleSummon->SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, ci->DisplayID);
 		InvisibleSummon->SetUInt32Value(UNIT_FIELD_HEALTH , 100);
 		InvisibleSummon->SetUInt32Value(UNIT_FIELD_MAXHEALTH , 100);
 		InvisibleSummon->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, m_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));

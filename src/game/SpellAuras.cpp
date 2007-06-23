@@ -1811,7 +1811,7 @@ void Aura::SpellAuraModStun(bool apply)
 				}
 			}
 		}
-	}*/
+	}/**/
 }
 
 void Aura::SpellAuraModDamageDone(bool apply)
