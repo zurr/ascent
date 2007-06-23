@@ -534,11 +534,20 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 						*data << m_uint32Values[index];
 					else
 					{
+						//maybe if we would test this on heathchange event it would be called less times ?
+						//maybe it would not be so safe as it is here
+						uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
+						if(pct == 0 && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
+							pct = 1;
+						else if(pct<20 && !HasFlag(UNIT_FIELD_AURASTATE,2))
+							SetFlag(UNIT_FIELD_AURASTATE,2); //required for execute and other spells
+						else if(HasFlag(UNIT_FIELD_AURASTATE,2))RemoveFlag(UNIT_FIELD_AURASTATE,2);
+
 						switch(m_objectTypeId)
 						{
 						case TYPEID_PLAYER:
 							*data << m_uint32Values[index];
-							break;
+						break;
 
 						case TYPEID_UNIT:
 							{
@@ -549,9 +558,6 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 								}
 								else
 								{
-									uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
-									if(pct == 0 && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
-										pct = 1;
 									*data << pct;	
 								}
 							}

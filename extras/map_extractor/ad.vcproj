@@ -41,7 +41,7 @@
 				OutputFile="ad debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="./debug/"
+				AdditionalLibraryDirectories="./debug/;D:\Munka\Myserver\antrix\win\VC71\zlib___Win32_Debug"
 				IgnoreDefaultLibraryNames="LIBCD.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="./ad debug.pdb"
