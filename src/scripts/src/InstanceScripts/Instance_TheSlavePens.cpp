@@ -32,6 +32,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
 		spells[0].cooldown = 15;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -72,22 +74,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -110,7 +113,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -147,6 +155,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = false;
 		spells[0].cooldown = 35;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -187,22 +197,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -225,7 +236,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -265,6 +281,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true; // for other spells than 41475 false!
 		spells[0].cooldown = 40; // 20
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -306,22 +324,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -344,7 +363,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -385,16 +409,22 @@ public:
 		spells[0].targettype = TARGET_VARIOUS;
 		spells[0].instant = true;
 		spells[0].cooldown = 20;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
 		spells[1].info = sSpellStore.LookupEntry(POWER_WORD_SHIELD);
 		spells[1].targettype = TARGET_SELF;
 		spells[1].instant = true;
 		spells[1].cooldown = 45;
+		spells[1].perctrigger = 0.0f;
+		spells[1].attackstoptimer = 1000;
 
 		spells[2].info = sSpellStore.LookupEntry(GREATER_HEAL);
 		spells[2].targettype = TARGET_SELF;
 		spells[2].instant = false;
 		spells[2].cooldown = 50;
+		spells[2].perctrigger = 0.0f;
+		spells[2].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -437,22 +467,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -475,7 +506,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -514,6 +550,8 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
 		spells[0].cooldown = 40;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -554,22 +592,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -592,7 +631,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -632,11 +676,15 @@ public:
 		spells[0].targettype = TARGET_DESTINATION;
 		spells[0].instant = true;
 		spells[0].cooldown = 35;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
 		spells[1].info = sSpellStore.LookupEntry(BLIZZARD);
 		spells[1].targettype = TARGET_DESTINATION; 
 		spells[1].instant = false;
 		spells[1].cooldown = 20;
+		spells[1].perctrigger = 0.0f;
+		spells[1].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -677,22 +725,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -715,7 +764,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -752,6 +806,8 @@ public:
 		spells[0].targettype = TARGET_VARIOUS; 
 		spells[0].instant = false;
 		spells[0].cooldown = 20;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -792,22 +848,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -830,7 +887,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -877,26 +939,36 @@ public:
 		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
 		spells[0].cooldown = 45;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
         spells[1].info = sSpellStore.LookupEntry(TAINTED_EARTHGRAB_TOTEM);
 		spells[1].targettype = TARGET_SELF; // Needs more checks
 		spells[1].instant = true;
 		spells[1].cooldown = 35;
+		spells[1].perctrigger = 0.0f;
+		spells[1].attackstoptimer = 1000;
 
         spells[2].info = sSpellStore.LookupEntry(TAINTED_STONESKIN_TOTEM);
 		spells[2].targettype = TARGET_SELF;
 		spells[2].instant = true;
 		spells[2].cooldown = 55;
+		spells[2].perctrigger = 0.0f;
+		spells[2].attackstoptimer = 1000;
 
         spells[3].info = sSpellStore.LookupEntry(CORRUPTED_NOVA_TOTEM);
 		spells[3].targettype = TARGET_SELF;
 		spells[3].instant = true;
 		spells[3].cooldown = 65;
+		spells[3].perctrigger = 0.0f;
+		spells[3].attackstoptimer = 1000;
 
         spells[4].info = sSpellStore.LookupEntry(LIGHTNING_BOLT);
 		spells[4].targettype = TARGET_ATTACKING;
 		spells[4].instant = false;
 		spells[4].cooldown = 10;
+		spells[4].perctrigger = 0.0f;
+		spells[4].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -974,22 +1046,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -1012,7 +1085,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -1054,21 +1132,29 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
 		spells[0].cooldown = 20;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
         spells[1].info = sSpellStore.LookupEntry(WATER_SPIT);
 		spells[1].targettype = TARGET_ATTACKING;
 		spells[1].instant = true;
 		spells[1].cooldown = 25;
+		spells[1].perctrigger = 0.0f;
+		spells[1].attackstoptimer = 1000;
 
         spells[2].info = sSpellStore.LookupEntry(ENSNARING_MOSS);
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = false;
 		spells[2].cooldown = 35;
+		spells[2].perctrigger = 0.0f;
+		spells[2].attackstoptimer = 1000;
 
         spells[3].info = sSpellStore.LookupEntry(ENRAGE);
 		spells[3].targettype = TARGET_SELF;
 		spells[3].instant = true;
 		spells[3].cooldown = -1;
+		spells[3].perctrigger = 0.0f;
+		spells[3].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -1119,23 +1205,24 @@ public:
 		}
 		else
 		{
-			SpellCast();
+			float val = sRand.rand(100.0f);
+			SpellCast(val);
 		}
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -1158,7 +1245,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
@@ -1197,16 +1289,22 @@ public:
 		spells[0].targettype = TARGET_DESTINATION;
 		spells[0].instant = true;
 		spells[0].cooldown = 35;
+		spells[0].perctrigger = 0.0f;
+		spells[0].attackstoptimer = 1000;
 
         spells[1].info = sSpellStore.LookupEntry(POISON_BOLT_VOLLEY);
 		spells[1].targettype = TARGET_VARIOUS;
 		spells[1].instant = true;
 		spells[1].cooldown = 25;
+		spells[1].perctrigger = 0.0f;
+		spells[1].attackstoptimer = 1000;
 
         spells[2].info = sSpellStore.LookupEntry(CLEAVE);
 		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = true;
 		spells[2].cooldown = 10;
+		spells[2].perctrigger = 0.0f;
+		spells[2].attackstoptimer = 1000;
 
 		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
@@ -1247,22 +1345,23 @@ public:
 
     void AIUpdate()
 	{
-		SpellCast();
+		float val = sRand.rand(100.0f);
+		SpellCast(val);
     }
 
-	void SpellCast()
+	void SpellCast(float val)
 	{
         if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
+			float comulativeperc = 0;
 		    Unit *target = NULL;
 			for(int i=0;i<nrspells;i++)
 			{
 				spells[i].casttime--;
-				if(spells[i].casttime) continue;
 				
-				if (!spells[i].casttime && m_spellcheck)
-				{
-					spells[i].casttime = spells[i].cooldown;					
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
 					target = _unit->GetAIInterface()->GetNextTarget();
 					switch(spells[i].targettype)
 					{
@@ -1285,7 +1384,12 @@ public:
 					return;
 				}
 
-				m_spellcheck[i] = true;
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
 			}
 		}
 	}
