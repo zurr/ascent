@@ -4436,6 +4436,10 @@ void Aura::SpellAuraAddPctMod(bool apply)
 	case SMT_DUMMY:
 		SendModifierLog(&m_target->SM_PDummy,val,AffectedGroups,mod->m_miscValue,true);
 		break;
+
+	case SMT_PENALTY:
+		SendModifierLog(&m_target->SM_PPenalty,val,AffectedGroups,mod->m_miscValue,true);
+		break;
 /*
 	//disabled until clarification
 	case SMT_ATTACK_POWER_BONUS:

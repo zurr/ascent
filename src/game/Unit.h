@@ -800,6 +800,7 @@ public:
 	int32 * SM_FSpeedMod;
 	int32 * SM_FAdditionalTargets;
 	int32 * SM_FPenalty;//flat
+	int32 * SM_PPenalty;//Pct
 	int32 * SM_PCooldownTime;
 	int32 * SM_FCooldownTime;
 

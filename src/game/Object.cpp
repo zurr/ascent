@@ -1912,14 +1912,17 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 
 			if (critical) //Spell Crictical Hit
 			{		
-				int32 dmgbonus = 0;
-				if(spellInfo->SpellGroupType)
-					SM_FIValue(static_cast<Unit*>(this)->SM_PCriticalDamage, &dmgbonus, spellInfo->SpellGroupType);
+				//int32 dmgbonus = 0;
+				//if(spellInfo->SpellGroupType)
+					//SM_FIValue(static_cast<Unit*>(this)->SM_PCriticalDamage, &dmgbonus, spellInfo->SpellGroupType);
 
 			   // res *= 1.5f;
 				float b = res/2;
 
-				res += ((100+dmgbonus)*b)/100.0;
+				if(spellInfo->SpellGroupType)
+					SM_PFValue(static_cast<Unit*>(this)->SM_PCriticalDamage, &b, spellInfo->SpellGroupType);
+
+				res += b;
 
 				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 				vproc |=  PROC_ON_SPELL_CRIT_HIT_VICTIM;

@@ -78,6 +78,7 @@ Unit::Unit()
 	SM_FSpeedMod=0;
 	SM_PNonInterrupt=0;
 	SM_FPenalty=0;
+	SM_PPenalty=0;
 	SM_FCooldownTime = 0;
 	SM_PCooldownTime = 0;
 	m_pacified = 0;
@@ -486,7 +487,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		if(itr2->procFlags & flag)
 		{
 			uint32 spellId = itr2->spellId;
-			
 			if(itr2->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
 			{
 				if(!CastingSpell)
@@ -498,7 +498,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				else
 					if(sp->dummy == 1)
 						continue;
-
 			}			
 
 			if(spellId && Rand(itr2->procChance))
@@ -1009,10 +1008,10 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			else if (Rand(crit)) //Crictical Hit
 			{
 				hit_status |= HITSTATUS_CRICTICAL;
-				int32 dmgbonus = 0;
+				int32 dmgbonus = dmg.full_damage;
 				if(ability && ability->SpellGroupType)
 					SM_FIValue(SM_PCriticalDamage,&dmgbonus,ability->SpellGroupType);
-				dmg.full_damage *= 2;
+				dmg.full_damage += dmgbonus;
 				if(!pVictim->IsPlayer())
 				if(IsPlayer())
 					dmg.full_damage += dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0];
