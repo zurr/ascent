@@ -10,7 +10,7 @@ void SetupZulGurub(ScriptMgr * mgr);
 void SetupBotanica(ScriptMgr * mgr);
 void SetupBlackwingLair(ScriptMgr * mgr);
 void SetupNaxxramas(ScriptMgr * mgr);
-void SetupSteamVault(ScriptMgr * mgr);
+void SetupTheSteamvault(ScriptMgr * mgr);
 void SetupTheEye(ScriptMgr * mgr);
 void SetupManaTombs(ScriptMgr * mgr);
 void SetupAuchenaiCrypts(ScriptMgr * mgr);
