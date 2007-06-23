@@ -81,9 +81,10 @@ void SetupWarriorSpells(ScriptMgr * mgr)
 
     /**** Execute ****/
     mgr->register_dummy_spell(5308, &Execute);     // Rank 1
-    mgr->register_dummy_spell(20660, &Execute);    // Rank 2
-    mgr->register_dummy_spell(20661, &Execute);    // Rank 3
-    mgr->register_dummy_spell(20662, &Execute);    // Rank 4
-    mgr->register_dummy_spell(25234, &Execute);    // Rank 5
-    mgr->register_dummy_spell(25236, &Execute);    // Rank 6
+    mgr->register_dummy_spell(20658, &Execute);    // Rank 2
+    mgr->register_dummy_spell(20660, &Execute);    // Rank 3
+    mgr->register_dummy_spell(20661, &Execute);    // Rank 4
+    mgr->register_dummy_spell(20662, &Execute);    // Rank 5
+    mgr->register_dummy_spell(25234, &Execute);    // Rank 6
+    mgr->register_dummy_spell(25236, &Execute);    // Rank 7
 }
