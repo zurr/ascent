@@ -4638,9 +4638,10 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
 			{
 				OverrideIdMap::iterator itermap = objmgr.mOverrideIdMap.find(mod->m_miscValue);
 				SpellOverrideMap::iterator itr, itr2;
+                std::list<SpellEntry *>::iterator itrSE;
 				for(itr = plr->mSpellOverrideMap.begin(); itr != plr->mSpellOverrideMap.end(); itr++)
 				{
-					std::list<SpellEntry *>::iterator itrSE = itermap->second->begin();
+					itrSE = itermap->second->begin();
 					for(;itrSE != itermap->second->end(); ++itrSE)
 					{
 						if(itr->first == (*itrSE)->Id)
