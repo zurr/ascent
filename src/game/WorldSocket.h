@@ -80,7 +80,7 @@ inline void FastGUIDPack(ByteBuffer & buf, const uint64 & oldguid)
 {
 	// hehe speed freaks
 	uint8 guidmask = 0;
-	uint8 guidfields[8] = {0,0,0,0,0,0,0,0};
+	uint8 guidfields[9] = {0,0,0,0,0,0,0,0};
 	
 	int j = 1;
 	uint8 * test = (uint8*)&oldguid;
@@ -138,6 +138,8 @@ inline void FastGUIDPack(ByteBuffer & buf, const uint64 & oldguid)
 	buf.append(guidfields,j);
 }
 
+//!!! warning. This presumes that all guids can be compressed at least 1 byte
+//make sure you choose highguids acordingly
 inline unsigned int FastGUIDPack(const uint64 & oldguid, unsigned char * buffer, uint32 pos)
 {
 	// hehe speed freaks
