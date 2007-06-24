@@ -322,6 +322,8 @@ Player::Player ( uint32 high, uint32 low )
 	chat_disabled_until		= 0;
 	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
 	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
+
+	UpdateLastSpeeds();
 }
 
 
@@ -3271,28 +3273,48 @@ void Player::SetPlayerSpeed(uint8 SpeedType, float value)
 	{
 	case RUN:
 		{
+			if(value == m_lastRunSpeed)
+				return;
+
 			data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
 			m_runSpeed = value;
+			m_lastRunSpeed = value;
 		}break;
 	case RUNBACK:
 		{
+			if(value == m_lastRunBackSpeed)
+				return;
+
 			data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
 			m_backWalkSpeed = value;
+			m_lastRunBackSpeed = value;
 		}break;
 	case SWIM:
 		{
+			if(value == m_lastSwimSpeed)
+				return;
+
 			data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
 			m_swimSpeed = value;
+			m_lastSwimSpeed = value;
 		}break;
 	case SWIMBACK:
 		{
+			if(value == m_lastBackSwimSpeed)
+				break;
+
 			data.SetOpcode(MSG_MOVE_SET_SWIM_BACK_SPEED);
 			m_backSwimSpeed = value;
+			m_lastBackSwimSpeed = value;
 		}break;
 	case FLY:
 		{
+			if(value == m_lastFlySpeed)
+				return;
+
 			data.SetOpcode(SMSG_MOVE_SET_FLY_SPEED);
 			m_flySpeed = value;
+			m_lastFlySpeed = value;
 		}break;
 	default:return;
 	}

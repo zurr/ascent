@@ -271,7 +271,14 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2,
 
 	Player * pThis = 0;
 	if(m_objectTypeId == TYPEID_PLAYER)
+	{
 		pThis = static_cast<Player*>(this);
+		if(target == this)
+		{
+			// Updating our last speeds.
+			pThis->UpdateLastSpeeds();
+		}
+	}
 
 	if (flags & 0x20)
 	{

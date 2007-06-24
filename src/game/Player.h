@@ -1140,6 +1140,16 @@ public:
 	void Possess(Unit * pTarget);
 	void UnPossess();
 
+	/* Last Speeds */
+	inline void UpdateLastSpeeds()
+	{
+		m_lastRunSpeed = m_runSpeed;
+		m_lastRunBackSpeed = m_backWalkSpeed;
+		m_lastSwimSpeed = m_swimSpeed;
+		m_lastRunBackSpeed = m_backSwimSpeed;
+		m_lastFlySpeed = m_flySpeed;
+	}
+
 protected:
 	uint32 iActivePet;
 	void _SetCreateBits(UpdateMask *updateMask, Player *target) const;
@@ -1295,5 +1305,12 @@ protected:
 	void JumpToEndTaxiNode(TaxiPath * path);
 	uint64	polytarget;//temp variable that stores our poly target to be able to remove it when polymorphing others 
 	uint32	chat_disabled_until;//force player to be silent. Yeah i'm pissed of on noobs
+
+	float m_lastRunSpeed;
+	float m_lastRunBackSpeed;
+	float m_lastSwimSpeed;
+	float m_lastBackSwimSpeed;
+	float m_lastFlySpeed;
 };
+
 #endif
