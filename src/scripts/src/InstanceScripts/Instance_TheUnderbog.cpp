@@ -2389,7 +2389,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(HUNGARFENAI);
     HUNGARFENAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		FOUL_SPORESTimer = 0;
+		FOUL_SPORES_LIMITER = 0;
 		nrspells = 2;
 		m_spellcheck = new bool[nrspells];
 		spells = new SP_AI_Spell[nrspells];
@@ -2417,7 +2417,7 @@ public:
     
     void OnCombatStart(Unit* mTarget)
     {
-		FOUL_SPORESTimer = 0;
+		FOUL_SPORES_LIMITER = 0;
 		CastTime();
 		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
     }
@@ -2434,7 +2434,7 @@ public:
 
     void OnCombatStop(Unit *mTarget)
     {
-		FOUL_SPORESTimer = 0;
+		FOUL_SPORES_LIMITER = 0;
 		CastTime();
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -2443,7 +2443,7 @@ public:
 
     void OnDied(Unit * mKiller)
     {
-		FOUL_SPORESTimer = 0;
+		FOUL_SPORES_LIMITER = 0;;
 		CastTime();
        RemoveAIUpdateEvent();
 	   delete[] spells;
@@ -2454,11 +2454,10 @@ public:
 
     void AIUpdate()
     {
-		FOUL_SPORESTimer--;
-		if(_unit->GetHealthPct() <= 20 && FOUL_SPORESTimer  <= 0)
+		if(_unit->GetHealthPct() <= 20 && !FOUL_SPORES_LIMITER)
 		{
 			_unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-			FOUL_SPORESTimer = 11;	// this value is probably wrong
+			FOUL_SPORES_LIMITER = 1;
 		}
 
 		else
@@ -2514,7 +2513,7 @@ public:
 	}
 protected:
 
-	int FOUL_SPORESTimer;
+	int FOUL_SPORES_LIMITER;
     bool *m_spellcheck;
     SP_AI_Spell *spells;
 	int nrspells;
@@ -2717,28 +2716,28 @@ public:
         spells[0].info = sSpellStore.LookupEntry(MULTI_SHOT);
 		spells[0].targettype = TARGET_ATTACKING; // changed from VARIOUS to prevent crashes
 		spells[0].instant = true;
-		spells[0].cooldown = 45;
+		spells[0].cooldown = -1;	//45
 		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
 
         spells[1].info = sSpellStore.LookupEntry(AIMED_SHOT);
 		spells[1].targettype = TARGET_ATTACKING;
 		spells[1].instant = false;
-		spells[1].cooldown = 35;
+		spells[1].cooldown = -1;	//35
 		spells[1].perctrigger = 0.0f;
 		spells[1].attackstoptimer = 1000;
 
         spells[2].info = sSpellStore.LookupEntry(THROW_FREEZING_TRAP);
 		spells[2].targettype = TARGET_ATTACKING; // not sure to target type
 		spells[2].instant = true;
-		spells[2].cooldown = 65;
+		spells[2].cooldown = 45;
 		spells[2].perctrigger = 0.0f;
 		spells[2].attackstoptimer = 1000;
 
         spells[3].info = sSpellStore.LookupEntry(ECHOING_ROAR);
 		spells[3].targettype = TARGET_VARIOUS;
 		spells[3].instant = true;
-		spells[3].cooldown = 55;
+		spells[3].cooldown = 25;
 		spells[3].perctrigger = 0.0f;
 		spells[3].attackstoptimer = 1000;
 		spells[3].speech = "Beast, obey me! Kill them at once!";
@@ -2754,7 +2753,7 @@ public:
         spells[5].info = sSpellStore.LookupEntry(HUNTERS_MARK);
 		spells[5].targettype = TARGET_ATTACKING;
 		spells[5].instant = true;
-		spells[5].cooldown = 75;
+		spells[5].cooldown = 35;
 		spells[5].perctrigger = 0.0f;
 		spells[5].attackstoptimer = 1000;
 
@@ -2784,6 +2783,8 @@ public:
     
     void OnCombatStart(Unit* mTarget)
     {
+		ShotCount=rand()%2+1;
+		//SHOTTimer = 0;
 		CastTime();
 		int RandomSpeach;
 		sRand.randInt(1000);
@@ -2835,6 +2836,7 @@ public:
 
     void OnCombatStop(Unit *mTarget)
     {
+		//SHOTTimer = 0;
 		CastTime();
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -2843,6 +2845,7 @@ public:
 
     void OnDied(Unit * mKiller)
     {
+		//SHOTTimer = 0;
 		CastTime();
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Will... done..."); // not sure
 		_unit->PlaySoundToSet(10389);
@@ -2853,15 +2856,95 @@ public:
 	   m_spellcheck = NULL;
     }
 
+	void AIUpdate()
+	{
+		if (/*m_spellcheck && spells && _unit->GetCurrentSpell() == NULL &&*/ _unit->GetAIInterface()->GetNextTarget())
+		{
+			//SHOTTimer++;
+			Unit *target = NULL;
+			target = _unit->GetAIInterface()->GetNextTarget();
+			if (_unit->GetDistance2dSq(target) >= 100.0f /*225.0f*/ && _unit->GetDistanceSq(target) <= 900.0f && ShotCount/*SHOTTimer < 12*/)
+			{
+				ShotCount--;
+				_unit->GetAIInterface()->m_canMove = false;
+				int RangedSpell;
+				sRand.randInt(1000);
+				RangedSpell=rand()%100;
+				if (RangedSpell >= 0 && RangedSpell <= 20)
+				{
+					_unit->CastSpell(target, spells[0].info, spells[0].instant);
+					_unit->setAttackTimer(spells[0].attackstoptimer, false);
+				}
+				if (RangedSpell > 20 && RangedSpell <= 40)
+				{
+					_unit->CastSpell(target, spells[1].info, spells[1].instant);
+					_unit->setAttackTimer(spells[1].attackstoptimer, false);
+				}
+				else
+				{
+					_unit->CastSpell(target, spells[8].info, spells[8].instant);
+					_unit->setAttackTimer(spells[8].attackstoptimer, false);
+				}
+			}
+
+			else
+			{
+				ShotCount=rand()%2+1;
+				_unit->GetAIInterface()->m_canMove = true;
+				if (_unit->GetDistance2dSq(target) < 100.0f /*225.0f*/)
+				{
+					float val = sRand.rand(100.0f);
+					SpellCast(val);
+				}
+			}
+			/*if (SHOTTimer == 32)
+				SHOTTimer = 0;*/
+		}
+		else return;
+	}
+	
+/*
     void AIUpdate()
 	{
-		float val = sRand.rand(100.0f);
-		SpellCast(val);
-    }
-
+		sRand.randInt(1000);
+		if (_unit->GetAIInterface()->GetNextTarget())
+		{
+			Unit *target = NULL;
+			target = _unit->GetAIInterface()->GetNextTarget();
+			if (_unit->GetDistanceSq(target) >= 10.0f && _unit->GetDistanceSq(target) <= 40.0f)
+			{
+				//_unit->GetAIInterface()->m_canMove = false;
+				int RangedSpell;
+				RangedSpell=rand()%100;
+				if (RangedSpell >= 0 && RangedSpell <= 15)
+				{
+					_unit->CastSpell(target, spells[0].info, spells[0].instant);
+					//_unit->setAttackTimer(spells[0].attackstoptimer, false);
+				}
+				if (RangedSpell > 15 && RangedSpell <= 25)
+				{
+					_unit->CastSpell(target, spells[1].info, spells[1].instant);
+					//_unit->setAttackTimer(spells[1].attackstoptimer, false);
+				}
+				else
+				{
+					_unit->CastSpell(target, spells[8].info, spells[8].instant);
+					//_unit->setAttackTimer(spells[8].attackstoptimer, false);
+				}
+			}
+			if (_unit->GetDistanceSq(target) < 10.0f)
+			{
+				//_unit->GetAIInterface()->m_canMove = true;
+				float val = sRand.rand(100.0f);
+				SpellCast(val);
+			}
+			else return;
+		}
+	}
+*/
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL/* && _unit->GetAIInterface()->GetNextTarget()*/)
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -2906,6 +2989,8 @@ public:
 
 protected:
 
+	//uint32 SHOTTimer;
+	int ShotCount;
     bool *m_spellcheck;
     SP_AI_Spell *spells;
 	int nrspells;
