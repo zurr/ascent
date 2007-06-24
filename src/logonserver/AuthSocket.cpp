@@ -98,7 +98,7 @@ void AuthSocket::HandleChallenge()
 #ifdef WIN32
 	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteStruct().sin_addr.S_un.S_addr);
 #else
-	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteIP().c_str());
+	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(inet_ntoa(GetRemoteAddress()));
 #endif
 
 	switch(ipb)

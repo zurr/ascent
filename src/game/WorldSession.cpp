@@ -858,7 +858,7 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
 	int l = strlen(out);
 
 	snprintf(&out[l], 32768 - l, "Account %u [%s], IP %s, Player %s :: ", session->GetAccountId(), session->GetAccountName().c_str(),
-		session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP", 
+		session->GetSocket() ? inet_ntoa(session->GetSocket()->GetRemoteAddress()) : "NOIP", 
 		session->GetPlayer() ? session->GetPlayer()->GetName() : "nologin");
 
 	l = strlen(out);

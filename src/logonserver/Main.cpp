@@ -299,7 +299,7 @@ void LogonServer::CheckForDeadSockets()
 		diff = t - s->GetLastRecv();
 		if(diff > 240)		   // More than 4mins -> kill the socket.
 		{
-			sLog.outString("Killing connection from %s:%u due to no activity!", s->GetRemoteIP().c_str(), 
+			sLog.outString("Killing connection from %s:%u due to no activity!", inet_ntoa(s->GetRemoteAddress()), 
 				s->GetRemotePort());
 			_authSockets.erase(it2);
 			s->removedFromSet = true;

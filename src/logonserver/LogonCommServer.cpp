@@ -259,7 +259,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 	if(memcmp(encrypted_key, LogonServer::getSingleton().sql_hash, 20))
 		result = 0;
 
-	sLog.outString("Authentication request from %s, result %s.", GetRemoteIP().c_str(), result ? "OK" : "FAIL");
+	sLog.outString("Authentication request from %s, result %s.", inet_ntoa(GetRemoteAddress()), result ? "OK" : "FAIL");
 
 	// use the supplied encrypted key to build the rc4 keys
 	Sha1Hash enc_key;
