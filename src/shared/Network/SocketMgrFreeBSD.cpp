@@ -13,7 +13,9 @@ initialiseSingleton(SocketMgr);
 void SocketMgr::AddSocket(Socket * s)
 {
     //printf("adding fd %u\n", s->GetFd());
-    assert(fds[s->GetFd()] == 0);
+    /*assert(fds[s->GetFd()] == 0);*/
+	if(fds[s->GetFd()] != 0)
+		RemoveSocket(fds[s->GetFd()]);
 
     // add kevent
     struct kevent ev;
