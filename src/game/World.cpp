@@ -523,7 +523,7 @@ void World::SetInitialWorldSettings()
             type |= SPELL_TYPE_SHIELD;
 //		else if(strstr(nametext, "Power Word: Fortitude") || strstr(nametext, "Prayer of Fortitude"))
 		else if(namehash==2421609042 || namehash==1369413555)
-            type |= SPELL_TYPE_FRTITUDE;
+            type |= SPELL_TYPE_FORTITUDE;
 //		else if(strstr(nametext, "Divine Spirit") || strstr(nametext, "Prayer of Spirit"))
 		else if(namehash==2977508401 || namehash==3371527599)
             type |= SPELL_TYPE_SPIRIT;
@@ -769,6 +769,18 @@ void World::SetInitialWorldSettings()
 				else if((aura == 107 || aura == 108) && sp->procCharges==1)
 					sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
 			}			
+		}
+		//omg lighnong shield trigger spell id's are all wrong ?
+		//if you are bored you could make thiese by hand but i guess we might find other spells with this problem..and this way it's safe
+		if(strstr(nametext, "Lightning Shield") && sp->EffectTriggerSpell[0])
+		{
+			//check if we can find in the desription
+			char *startofid=strstr(desc, "for $");
+			if(startofid)
+			{
+				startofid += strlen("for $");
+				sp->EffectTriggerSpell[0]=atoi(startofid); //get new lightning shield trigger id
+			}
 		}
 		sp->procFlags=pr;
 		//sp->dummy=result;
