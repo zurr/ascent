@@ -193,6 +193,7 @@ Unit::Unit()
 	m_flyspeedModifier = 0;
 	bInvincible = false;
 	m_redirectSpellPackets = 0;
+	can_parry = false;
 }
 
 Unit::~Unit()
@@ -815,7 +816,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			}
 			dodge = pVictim->GetFloatValue(PLAYER_DODGE_PERCENTAGE);
 			
-			if(((Player*)pVictim)->HasSpell(3127))//only players that have parry skill/spell may parry
+//			if(((Player*)pVictim)->HasSpell(3127))//only players that have parry skill/spell may parry
+//				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
+			if(pVictim->can_parry)
 				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
 		}
 		victim_skill = vskill+((Player*)pVictim)->CalcRating(1); // you compare weapon and defense skills not weapon and weapon
@@ -827,7 +830,6 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 
 		victim_skill = pVictim->getLevel() * 5;
 	}
-	
 
 	if(this->IsPlayer())
 	{	  

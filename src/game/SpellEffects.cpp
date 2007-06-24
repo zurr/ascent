@@ -37,7 +37,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectAddExtraAttacks,//SPELL_EFFECT_ADD_EXTRA_ATTACKS - 19
 		&Spell::SpellEffectDodge,//SPELL_EFFECT_DODGE - 20
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_EVADE - 21
-		&Spell::SpellEffectNULL,//SPELL_EFFECT_PARRY - 22
+		&Spell::SpellEffectParry,//SPELL_EFFECT_PARRY - 22
 		&Spell::SpellEffectBlock,//SPELL_EFFECT_BLOCK - 23
 		&Spell::SpellEffectCreateItem,//SPELL_EFFECT_CREATE_ITEM - 24
 		&Spell::SpellEffectWeapon,//SPELL_EFFECT_WEAPON - 25
@@ -1246,6 +1246,12 @@ void Spell::SpellEffectDodge(uint32 i)
 	//this is only basic value and will be overwiten elsewhere !!!
 //	if(unitTarget->IsPlayer())
 //		unitTarget->SetFloatValue(PLAYER_DODGE_PERCENTAGE,damage);
+}
+
+void Spell::SpellEffectParry(uint32 i)
+{
+	if(unitTarget)
+		unitTarget->setcanperry(true);
 }
 
 void Spell::SpellEffectBlock(uint32 i)

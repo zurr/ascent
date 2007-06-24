@@ -858,6 +858,7 @@ public:
 	void removeAttacker(Unit *pUnit);
 	void setAttackTarget(Unit* pUnit);
 	void clearAttackers(bool bFromOther);
+	inline void setcanperry(bool newstatus){can_parry=newstatus;}
 		
 	std::map<uint32,Aura*> tmpAura;
 
@@ -1030,6 +1031,7 @@ protected:
 	// AI
 	AIInterface *m_aiInterface;
 	bool m_useAI;
+	bool can_parry;//will be enabled by block spell
 	int32 m_threatModifyer;
 	int32 m_generatedThreatModifyer;
 
