@@ -4641,11 +4641,10 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
 			else
 			{
 				OverrideIdMap::iterator itermap = objmgr.mOverrideIdMap.find(mod->m_miscValue);
-				SpellOverrideMap::iterator itr, itr2;
-                std::list<SpellEntry *>::iterator itrSE;
-				for(itr = plr->mSpellOverrideMap.begin(); itr != plr->mSpellOverrideMap.end(); itr++)
+				SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.begin(), itr2;
+				while(itr != plr->mSpellOverrideMap.end())
 				{
-					itrSE = itermap->second->begin();
+					std::list<SpellEntry *>::iterator itrSE = itermap->second->begin();
 					for(;itrSE != itermap->second->end(); ++itrSE)
 					{
 						if(itr->first == (*itrSE)->Id)
@@ -4655,6 +4654,9 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
 							break;
 						}
 					}
+					// Check if the loop above got to the end, if so it means the item wasn't found
+					// and the itr wasn't incremented so increment it now.
+					if(itrSE == itermap->second->end())      itr++;
 				}
 			}
 		}break;
