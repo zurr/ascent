@@ -118,6 +118,8 @@ void LogonCommHandler::Connect(LogonServer * server)
 	if(conn->authenticated != 1)
 	{
 		sLog.outColor(TRED, " failure.\n");
+		logons[server] = 0;
+		conn->Disconnect();
 		return;
 	}
 	else
@@ -140,6 +142,8 @@ void LogonCommHandler::Connect(LogonServer * server)
 		if(time(NULL) >= st)
 		{
 			sLog.outColor(TYELLOW, "timeout.");
+			logons[server] = 0;
+			conn->Disconnect();
 			break;
 		}
 		Sleep(50);

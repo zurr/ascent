@@ -69,6 +69,18 @@ void _OnSignal(int s)
 
 int main(int argc, char** argv)
 {
+#ifndef WIN32
+	rlimit rl;
+	if (getrlimit(RLIMIT_CORE, &rl) == -1)
+		printf("getrlimit failed. This could be problem.\n");
+	else
+	{
+		rl.rlim_cur = rl.rlim_max;
+		if (setrlimit(RLIMIT_CORE, &rl) == -1)
+			printf("setrlimit failed. Server may not save core.dump files.\n");
+	}
+#endif
+
 	new LogonServer;
 
 	// Run!
