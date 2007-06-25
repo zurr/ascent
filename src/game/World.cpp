@@ -763,6 +763,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					if(strstr(desc, "victim of a melee or ranged critical strike"))
 						pr|=PROC_ON_CRIT_HIT_VICTIM;
+					if(strstr(desc, "getting a critical effect from"))
+						pr|=PROC_ON_SPELL_CRIT_HIT_VICTIM;
 				}
 				//dirty fix to remove auras that should expire on event and they are not
 //				else if((aura == SpellAuraAddFlatModifier || aura == SpellAuraAddPctMod) && sp->procCharges)

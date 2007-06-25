@@ -891,13 +891,13 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 		SetNegative();
 		if(m_spellProto->buffType & SPELL_TYPE_WARLOCK_IMMOLATE)
 		{
-			m_target->SetFlag(UNIT_FIELD_AURASTATE,14); //8+4+2
+			m_target->SetFlag(UNIT_FIELD_AURASTATE,1 << 14); //8+4+2
 		}
 	}
 	else
 	{
 		if(m_spellProto->buffType & SPELL_TYPE_WARLOCK_IMMOLATE)
-			m_target->RemoveFlag(UNIT_FIELD_AURASTATE,14);
+			m_target->RemoveFlag(UNIT_FIELD_AURASTATE,1 << 14);
 	}
 }
 
