@@ -548,21 +548,21 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 							pct = 1;
 						else if(pct<35)
 						{
-							if(!HasFlag(UNIT_FIELD_AURASTATE,13)) //13 = 8 + 4 + 1
-								SetFlag(UNIT_FIELD_AURASTATE,13); //have no idea which spell is this :D
-							if(pct<20 && !HasFlag(UNIT_FIELD_AURASTATE,2))
-								SetFlag(UNIT_FIELD_AURASTATE,2); //required for execute and other spells
-							else if(HasFlag(UNIT_FIELD_AURASTATE,2)) {
+							if(!HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35)) 
+								SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35); //ardent defender
+							if(pct<20 && !HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2))
+								SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2); //required for execute and other spells
+							else if(HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2)) {
 							  if(pct > 20)
-								RemoveFlag(UNIT_FIELD_AURASTATE,2);
+								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2);
 							}
 						}
 						else
 						{
-							if(HasFlag(UNIT_FIELD_AURASTATE,13))
-								RemoveFlag(UNIT_FIELD_AURASTATE,13);
-							if(HasFlag(UNIT_FIELD_AURASTATE,2))
-								RemoveFlag(UNIT_FIELD_AURASTATE,2);
+							if(HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35))
+								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35);
+							if(HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2))
+								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2);
 						}
 
 						switch(m_objectTypeId)

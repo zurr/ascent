@@ -2176,7 +2176,55 @@ void Spell::SpellEffectDualWield(uint32 i)
 
 void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 {
-	//grepREWRITETODO:
+	//these are some cretures that have your faction and do not respawn
+	//number of creatures is actualy dmg (the usual formula), sometimes =3 sometimes =1
+	uint32 cr_entry=m_spellInfo->EffectMiscValue[i];
+	CreatureProto * proto = CreatureProtoStorage.LookupEntry(cr_entry);
+	CreatureInfo * info = CreatureNameStorage.LookupEntry(cr_entry);
+	if(proto == 0 || info == 0)
+	{
+		sLog.outDetail("Missing summon creature template %u",cr_entry);
+		return;
+	}
+	for(int i=0;i<damage;i++)
+	{
+		//this sucks, there is no function to create from template and i'm not sure if i missed any fields
+		CreatureSpawn * sp = new CreatureSpawn;
+		float m_fallowAngle=-(M_PI/2*i);
+		sp->displayid = info->DisplayID;
+		sp->entry = cr_entry;
+		sp->form = 0;
+		sp->id = objmgr.GenerateCreatureSpawnID();
+		sp->movetype = 0;
+        sp->x = u_caster->GetPositionX()+(3*(cosf(m_fallowAngle+u_caster->GetOrientation())));
+        sp->y = u_caster->GetPositionY()+(3*(sinf(m_fallowAngle+u_caster->GetOrientation())));
+		sp->z = u_caster->GetPositionZ();
+		sp->o = u_caster->GetOrientation();
+		sp->emote_state =0;
+		sp->flags = 0;
+		sp->factionid = u_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE);
+		sp->bytes=0;
+		sp->bytes2=0;
+
+		Creature * p = u_caster->GetMapMgr()->CreateCreature();
+		ASSERT(p);
+        p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
+        p->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_caster->GetGUID());
+        p->SetZoneId(m_caster->GetZoneId());
+		p->Load(sp, (uint32)NULL, NULL);
+		p->PushToWorld(u_caster->GetMapMgr());
+
+		// Add spawn to map
+        uint32 cellx=((_maxX-sp->x)/_cellSize);
+        uint32 celly=((_maxY-sp->y)/_cellSize);
+		u_caster->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx,celly)->CreatureSpawns.insert(sp);
+
+		//set target to follow
+        p->GetAIInterface()->Init(p,AITYPE_AGRO,MOVEMENTTYPE_NONE,NULL);
+
+		//make sure they will be desumonized (roxor)
+		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1);
+	}
 }
 
 void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian

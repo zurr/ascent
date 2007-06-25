@@ -891,13 +891,13 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 		SetNegative();
 		if(m_spellProto->buffType & SPELL_TYPE_WARLOCK_IMMOLATE)
 		{
-			m_target->SetFlag(UNIT_FIELD_AURASTATE,1 << 14); //8+4+2
+			m_target->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_IMMOLATE);
 		}
 	}
 	else
 	{
 		if(m_spellProto->buffType & SPELL_TYPE_WARLOCK_IMMOLATE)
-			m_target->RemoveFlag(UNIT_FIELD_AURASTATE,1 << 14);
+			m_target->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_IMMOLATE);
 	}
 }
 
@@ -1025,8 +1025,8 @@ void Aura::SpellAuraDummy(bool apply)
 		
 		if(apply)
 		{
-			if(!c->HasFlag(UNIT_FIELD_AURASTATE, 16))
-				c->SetFlag(UNIT_FIELD_AURASTATE, 16);
+			if(!c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON))
+				c->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
 
 			if(!c->judgespell)
 				c->judgespell = mod->m_amount;
@@ -1035,8 +1035,8 @@ void Aura::SpellAuraDummy(bool apply)
 		}
 		else
 		{
-			if(c->HasFlag(UNIT_FIELD_AURASTATE, 16))
-				c->RemoveFlag(UNIT_FIELD_AURASTATE, 16);
+			if(c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON))
+				c->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
 
 			if(c->judgespell)
 				c->judgespell = 0;
@@ -1265,12 +1265,12 @@ void Aura::SpellAuraDummy(bool apply)
 					c->RemoveAura(c->Seal);
 					c->Seal = GetSpellId();
 					c->judgespell = mod->m_amount;
-					c->SetFlag(UNIT_FIELD_AURASTATE,16);
+					c->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_POISON);
 				}
 				else
 				{
 					c->Seal = 0;
-					c->RemoveFlag(UNIT_FIELD_AURASTATE,16);
+					c->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_POISON);
 				}
 			}
 		}break;*/
