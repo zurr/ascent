@@ -78,7 +78,6 @@ AIInterface::AIInterface()
 	b_isAttackableOld = false;
 	disable_melee = false;
 	next_spell_time = 0;
-	oocr = 50*50;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
