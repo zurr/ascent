@@ -78,6 +78,7 @@ AIInterface::AIInterface()
 	b_isAttackableOld = false;
 	disable_melee = false;
 	next_spell_time = 0;
+	oocr = 50*50;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
@@ -680,7 +681,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 	// If at instance dont return -- this is wrong ... instance creatures always returns to spawnpoint, dunno how do you got this ideia. 
 
 	if(m_AIType != AITYPE_PET 
-		&& (m_Unit->GetDistanceSq(m_returnX,m_returnY,m_returnZ) > m_outOfCombatRange/*oocr*/) 
+		&& (m_outOfCombatRange && m_Unit->GetDistanceSq(m_returnX,m_returnY,m_returnZ) > m_outOfCombatRange) 
 		&& m_AIState != STATE_EVADE
 		&& m_AIState != STATE_SCRIPTMOVE)
 	{

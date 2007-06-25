@@ -1032,6 +1032,9 @@ void Creature::OnPushToWorld()
 		_myScriptClass->OnLoad();
 
 	objmgr.SetCreatureBySqlId(GetSQL_id(), this);
+
+	if(IS_INSTANCE(m_mapMgr->GetMapId()))
+		m_aiInterface->setOutOfCombatRange(0);		
 }
 
 // this is used for guardians. They are non respawnable creatures linked to a player
