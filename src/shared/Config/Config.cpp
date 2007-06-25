@@ -133,10 +133,11 @@ bool ConfigFile::SetSource(const char *file, bool ignorecase)
 		/* get the length of the file */
 		fseek(f, 0, SEEK_END);
 		length = ftell(f);
-		buf = new char[length];
+		buf = new char[length + 1];
 		fseek(f, 0, SEEK_SET);
 
 		int read = fread(buf, length, 1, f);
+		buf[length] = '\0';
 		string buffer = string(buf);
 		delete [] buf;
 		/*if(length != read)
