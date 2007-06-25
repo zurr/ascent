@@ -80,6 +80,7 @@ class ScriptEngine
 	 */
 	gmMachine * m_machine;
 
+public:
 	/** gmType variables (for player, unit, gameobject)
 	 */
 	gmType m_playerType;
@@ -91,6 +92,7 @@ class ScriptEngine
 	gmType m_areaTriggerType;
 	gmType m_scriptEngineType;
 	
+protected:
 	/** ScriptMap - binding of events to gm functions
 	 */
 	typedef HM_NAMESPACE::hash_map<uint32, map<uint32, gmFunctionObject*> > ScriptMap;
@@ -107,11 +109,16 @@ class ScriptEngine
 	 */
 	Mutex m_lock;
 
+public:
 	/** User objects, used in passing of arguments and used for 'this' pointer.
 	 */
 	gmVariable m_variables[10];
 	gmUserObject * m_userObjects[10];
+	
+	/** UserObject counter */
+	uint32 m_userObjectCounter;
 
+protected:
 	/** Gets the function table of scriptable exports.
 	 */
 	void SetPlayerFunctionTable();
@@ -187,6 +194,10 @@ public:
 	/** Looks up a script on a gameobject and executes it.
 	 */
 	bool OnGameObjectEvent(GameObject * pGameObject, Player * pUser, uint32 Event);
+
+	/** Returns the machine
+	 */
+	inline gmMachine * GetMachine() { return m_machine; }
 };
 
 /* gonna make one global scriptengine for testing */

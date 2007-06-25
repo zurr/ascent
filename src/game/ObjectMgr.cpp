@@ -2679,6 +2679,7 @@ void ObjectMgr::LoadReputationModifiers()
 {
 	LoadReputationModifierTable("reputation_creature_onkill", &m_reputation_creature);
 	LoadReputationModifierTable("reputation_faction_onkill", &m_reputation_faction);
+	LoadInstanceReputationModifiers();
 }
 
 ReputationModifier * ObjectMgr::GetReputationModifier(uint32 entry_id, uint32 faction_id)
@@ -2771,6 +2772,83 @@ bool ObjectMgr::HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event)
 	MonsterSayMap::iterator itr = mMonsterSays[Event].find(Entry);
 	if(itr == mMonsterSays[Event].end())
 		return false;
+
+	return true;
+}
+
+void ObjectMgr::LoadInstanceReputationModifiers()
+{
+	QueryResult * result = sDatabase.Query("SELECT * FROM reputation_onkill_instance");
+	if(!result) return;
+
+	do 
+	{
+		Field * fields = result->Fetch();
+		InstanceReputationMod mod;
+		mod.mapid = fields[0].GetUInt32();
+		mod.mob_rep_reward = fields[1].GetInt32();
+		mod.mob_rep_limit = fields[2].GetUInt32();
+		mod.boss_rep_reward = fields[3].GetInt32();
+		mod.boss_rep_limit = fields[4].GetUInt32();
+		mod.faction[0] = fields[5].GetUInt32();
+		mod.faction[1] = fields[6].GetUInt32();
+
+		HM_NAMESPACE::hash_map<uint32, InstanceReputationModifier*>::iterator itr = m_reputation_instance.find(mod.mapid);
+		if(itr == m_reputation_instance.end())
+		{
+			InstanceReputationModifier * m = new InstanceReputationModifier;
+			m->mapid = mod.mapid;
+			m->mods.push_back(mod);
+			m_reputation_instance.insert( make_pair( m->mapid, m ) );
+		}
+		else
+			itr->second->mods.push_back(mod);
+
+	} while(result->NextRow());
+	delete result;
+}
+
+bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVictim)
+{
+	uint32 team = pPlayer->GetTeam();
+	bool is_boss;
+	if(pVictim->GetTypeId() != TYPEID_UNIT)
+		return false;
+
+	HM_NAMESPACE::hash_map<uint32, InstanceReputationModifier*>::iterator itr = m_reputation_instance.find(pVictim->GetMapId());
+	if(itr == m_reputation_instance.end())
+		return false;
+
+	is_boss = ((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Rank : 0;
+	if(!is_boss && ((Creature*)pVictim)->proto->boss)
+		is_boss = 1;
+
+	// Apply the bonuses as normal.
+	uint32 replimit;
+	int32 value;
+
+	for(vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i !=  itr->second->mods.end(); ++itr)
+	{
+		if(!(*i).faction[team])
+			continue;
+
+		if(is_boss)
+		{
+			value = i->boss_rep_reward;
+			replimit = i->boss_rep_limit;
+		}
+		else
+		{
+			value = i->mob_rep_reward;
+			replimit = i->mob_rep_reward;
+		}
+
+		if(!value || (replimit && pPlayer->GetStanding(i->faction[team]) >= replimit))
+			continue;
+
+		value *= sWorld.getRate(RATE_KILLREPUTATION);
+		pPlayer->ModStanding(i->faction[team], value);
+	}
 
 	return true;
 }

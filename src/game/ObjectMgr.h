@@ -152,10 +152,26 @@ struct ReputationMod
 	uint32 replimit;
 };
 
+struct InstanceReputationMod
+{
+	uint32 mapid;
+	uint32 mob_rep_reward;
+	uint32 mob_rep_limit;
+	uint32 boss_rep_reward;
+	uint32 boss_rep_limit;
+	uint32 faction[2];
+};
+
 struct ReputationModifier
 {
 	uint32 entry;
 	vector<ReputationMod> mods;
+};
+
+struct InstanceReputationModifier
+{
+	uint32 mapid;
+	vector<InstanceReputationMod> mods;
 };
 
 struct NpcMonsterSay
@@ -443,6 +459,9 @@ public:
 	bool HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event);
 	void LoadMonsterSay();
 
+	bool HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVictim);
+	void LoadInstanceReputationModifiers();
+
 protected:
 	RWLock playernamelock;
 	uint32 m_mailid;
@@ -455,6 +474,7 @@ protected:
 	RWLock m_charterLock;
 	HM_NAMESPACE::hash_map<uint32, ReputationModifier*> m_reputation_faction;
 	HM_NAMESPACE::hash_map<uint32, ReputationModifier*> m_reputation_creature;
+	HM_NAMESPACE::hash_map<uint32, InstanceReputationModifier*> m_reputation_instance;
 
 	HM_NAMESPACE::hash_map<uint32, Charter*> m_charters;
 	

@@ -403,22 +403,17 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 				if(GetStanding((*itr).faction[team]) >= (*itr).replimit)
 					continue;
 			}
-			// meh.. its weird I know :P but the random number generator doesn't accept negative values.
-			bool is_negative = ((*itr).value < 0);
-			int32 minv = abs((*itr).value);
-			int32 maxv = abs((*itr).value);
-			int32 diff = maxv - minv;
-			int32 change = sRand.randInt(diff) + minv;
-			if(is_negative)
-				change = -change;
 
-			// Apply global rep rate.
-			change = int32((float(change) * sWorld.getRate(RATE_KILLREPUTATION)));
-			ModStanding((*itr).faction[team], change);
+			int32 value = itr->value;
+			value *= sWorld.getRate(RATE_KILLREPUTATION);
+			ModStanding(itr->faction[team], value);
 		}
 	}
 	else
 	{
+		if(IS_INSTANCE(GetMapId()) && objmgr.HandleInstanceReputationModifiers(this, pUnit))
+			return;
+
 		// decrease rep by 5.
 		int change = -5;
 		change = int32((float(change) * sWorld.getRate(RATE_KILLREPUTATION)));

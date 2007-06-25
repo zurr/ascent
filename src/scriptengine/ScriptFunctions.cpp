@@ -449,3 +449,21 @@ int GM_RAND(gmThread * a_thread)
 		a_thread->PushInt(0);
 	return GM_OK;
 }
+
+/*int Player_GetSelectedCreature(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(show_message, 0);
+
+	Player * pThis = GetThisPointer<Player>(a_thread);
+	Creature * pCreature = sChatHandler.getSelectedCreature(pThis->GetSession(), show_message);
+	if(ScriptSystem->m_userObjectCounter == 9)
+		return GM_EXCEPTION;
+
+	gmUserObject * obj = ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter++];
+	obj->m_userType = ScriptSystem->m_unitType;
+	obj->m_user = pCreature;
+
+	a_thread->PushUser(obj);
+}
+*/

@@ -192,6 +192,7 @@ void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount)
 		for(int i = 0; i < ArgumentCount; ++i)
 			call.AddParam(m_variables[1+i]);
 
+		m_userObjectCounter = ArgumentCount + 1;
 		call.End();
 		DumpErrors();
 	}
@@ -225,6 +226,7 @@ bool ScriptEngine::OnActivateAreaTrigger(AreaTrigger * at, Player * plr)
 	m_userObjects[1]->m_user = plr;
 	m_userObjects[1]->m_userType = m_playerType;
 	m_variables[1].SetUser(m_userObjects[1]);
+	m_userObjectCounter = 2;
 
 	// Setup the call.
 	gmCall call;
