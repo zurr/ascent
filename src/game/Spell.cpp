@@ -375,6 +375,11 @@ bool Spell::DidHit(uint64 target)
 		else
 			resistchance = resistPvE[3] - ((lvldiff-3)*11);
 	}
+	//check mechanical resistance
+	//i have no idea what is the best pace for this code
+	if(p_victim)
+		resistchance += p_victim->MechanicsResistances[m_spellInfo->DispelType];
+	else resistchance += u_victim->MechanicsResistances[m_spellInfo->DispelType];
  
 	resistchance = 100.0-resistchance;
 	//rating bonus
@@ -392,7 +397,7 @@ bool Spell::DidHit(uint64 target)
 		else
 			return !Rand(resistchance);
 	}
-  
+ 
 }
 //generate possible target list for a spell. Use as last resort since it is not acurate
 //this function makes a rough estimation for possible target !

@@ -3727,7 +3727,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
 {
 	if(apply)
 	{
-		assert(mod->m_miscValue < 26);
+		assert(mod->m_miscValue < 27);
 		m_target->MechanicsDispels[mod->m_miscValue]++;
 
 		if(mod->m_miscValue != 16 && mod->m_miscValue != 25 && mod->m_miscValue != 19) // dont remove bandages, Power Word and protection effect
@@ -4728,7 +4728,24 @@ void Aura::SpellAuraIgnoreRegenInterrupt(bool apply)
 
 void Aura::SpellAuraModMechanicResistance(bool apply)
 {
-	//FIXME:Find formula for this to implement mechanic resistance
+	//silence=26 ?
+	//mecanics=9 ?
+	if(apply)
+	{
+		assert(mod->m_miscValue < 27);
+		m_target->MechanicsResistances[mod->m_miscValue]+=mod->m_amount;
+
+		if(mod->m_miscValue != 16 && mod->m_miscValue != 25 && mod->m_miscValue != 19) // dont remove bandages, Power Word and protection effect
+		{
+			SetPositive();
+		}
+		else
+		{
+			SetNegative();
+		}
+	}
+	else
+		m_target->MechanicsResistances[mod->m_miscValue]-=mod->m_amount;
 }
 
 void Aura::SpellAuraModHealingPCT(bool apply)

@@ -775,7 +775,8 @@ public:
 	uint64 stalkedby;
 	uint32 dispels[10];
 	bool trackStealth;
-	uint32 MechanicsDispels[26];
+	uint32 MechanicsDispels[27];
+	uint32 MechanicsResistances[27];
 	int32 modAttackTimeIncreasePCT;
 
 	//SM
@@ -868,7 +869,7 @@ public:
 		
 	std::map<uint32,Aura*> tmpAura;
 
-	uint32 BaseResistance[7];
+	uint32 BaseResistance[7]; //there are resistances for silence, fear, mechanics ....
 	uint32 BaseStats[5];
 	int32 HealDoneMod[7];
 	int32 HealDonePctMod[7];

@@ -47,8 +47,11 @@ Unit::Unit()
 	m_mountedspeedModifier=0;
 	VampEmbCaster=0;
         VampTchCaster=0;
-	for(uint32 x=0;x<26;x++)
+	for(uint32 x=0;x<27;x++)
+	{
 		MechanicsDispels[x]=0;
+		MechanicsResistances[x]=0;
+	}
 
 	//SM
 	SM_CriticalChance=0;
