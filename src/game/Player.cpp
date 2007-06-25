@@ -4071,7 +4071,7 @@ void Player::UpdateChances()
 
 	tmp = 5.0f + GetSkillAmt(SKILL_DEFENSE)*.04  + this->GetParryFromSpell();
 	tmp+=CalcRating(3);
-	SetFloatValue(PLAYER_PARRY_PERCENTAGE,min(tmp,95.0));
+	SetFloatValue(PLAYER_PARRY_PERCENTAGE,max(0,min(tmp,95.0))); //let us not use negative parry. Some spells decrease it
 /* The formula is generated as follows:
 
 [agility] / [crit constant*] + [skill modifier] + [bonuses]

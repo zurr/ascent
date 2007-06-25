@@ -9,3 +9,4 @@ SMT_RESIST_DISPEL - check if it is used
 
 - make a proper loading for auras. Should restore caster guid, charges, procflags....
 - in world.cpp,line 788 removed stormstrike effect 0 until find a solution for : spell is casted on target and should apply 1 aura, but it also adds the other 2 effects that should be aplied only to caster.
+- a lot of spells have wrong trigger spell id. Lightning shield, Parry Mastery ...Make a tool to find them all and see what can be done for them.
