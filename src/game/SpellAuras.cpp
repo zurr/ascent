@@ -3526,6 +3526,8 @@ void Aura::SpellAuraFeighDeath(bool apply)
                         data.SetOpcode(SMSG_COOLDOWN_EVENT);
                         data << (uint32)GetSpellProto()->Id << m_target->GetGUID();
                         static_cast<Player*>(m_target)->GetSession()->SendPacket(&data);
+						//hopefully will disable bug of teleporting target to graveyard
+						sEventMgr.RemoveEvents(m_target,EVENT_PLAYER_FORECED_RESURECT);
                 }
         }
 }
