@@ -324,6 +324,8 @@ Player::Player ( uint32 high, uint32 low )
 	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
 
 	UpdateLastSpeeds();
+
+	m_resist_critical[0]=m_resist_critical[1]=0;
 }
 
 

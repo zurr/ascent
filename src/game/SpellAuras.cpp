@@ -202,8 +202,8 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//missing = 184
 		&Aura::SpellAuraNULL,//missing = 185 //used //Apply Aura: Reduces Attacker Chance to Hit with Ranged //http://www.thottbot.com/?sp=30895
 		&Aura::SpellAuraNULL,//missing = 186 //used //Apply Aura: Reduces Attacker Chance to Hit with Spells (Spells) //http://www.thottbot.com/?sp=30895
-		&Aura::SpellAuraNULL,//missing = 187 //used //Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?) //http://www.thottbot.com/?sp=30893
-		&Aura::SpellAuraNULL,//missing = 188 //used //Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?) //http://www.thottbot.com/?sp=30893
+		&Aura::SpellAuraReduceEnemyMCritChance,//missing = 187 //used //Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?) //http://www.thottbot.com/?sp=30893
+		&Aura::SpellAuraReduceEnemyRCritChance,//missing = 188 //used //Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?) //http://www.thottbot.com/?sp=30893
 		&Aura::SpellAuraIncreaseRating,//missing = 189 //Apply Aura: Increases Rating
 		&Aura::SpellAuraNULL,//missing = 190 //used // Apply Aura: Increases Reputation Gained by % //http://www.thottbot.com/?sp=30754
 		&Aura::SpellAuraNULL,//missing = 191 //used // noname //http://www.thottbot.com/?sp=29894
@@ -5637,6 +5637,36 @@ void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
 				static_cast<Creature*>(m_target)->CalcResistance(x);
 			}
 		}
+	}
+}
+
+void Aura::SpellAuraReduceEnemyMCritChance(bool apply)
+{
+	if(!m_target->IsPlayer())
+		return;
+	if(apply)
+	{
+		//value is negative percent
+		static_cast<Player*>(m_target)->res_M_crit_set(static_cast<Player*>(m_target)->res_M_crit_get()+mod->m_amount);
+	}
+	else
+	{
+		static_cast<Player*>(m_target)->res_M_crit_set(static_cast<Player*>(m_target)->res_M_crit_get()-mod->m_amount);
+	}
+}
+
+void Aura::SpellAuraReduceEnemyRCritChance(bool apply)
+{
+	if(!m_target->IsPlayer())
+		return;
+	if(apply)
+	{
+		//value is negative percent
+		static_cast<Player*>(m_target)->res_R_crit_set(static_cast<Player*>(m_target)->res_R_crit_get()+mod->m_amount);
+	}
+	else
+	{
+		static_cast<Player*>(m_target)->res_R_crit_set(static_cast<Player*>(m_target)->res_R_crit_get()-mod->m_amount);
 	}
 }
 

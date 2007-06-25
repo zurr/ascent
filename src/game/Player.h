@@ -852,12 +852,17 @@ public:
 	void EventTimedQuestExpire(Quest *qst, QuestLogEntry *qle, uint32 log_slot);
 	uint32 timed_quest_slot;	
 	void CalcResistance(uint32 type);
+	inline float res_M_crit_get(){return m_resist_critical[0];}
+	inline void res_M_crit_set(float newvalue){m_resist_critical[0]=newvalue;}
+	inline float res_R_crit_get(){return m_resist_critical[1];}
+	inline void res_R_crit_set(float newvalue){m_resist_critical[1]=newvalue;}
 	uint32 FlatResistanceModifierPos[7];
 	uint32 FlatResistanceModifierNeg[7];
 	uint32 BaseResistanceModPctPos[7];
 	uint32 BaseResistanceModPctNeg[7];
 	uint32 ResistanceModPctPos[7];
 	uint32 ResistanceModPctNeg[7];
+	float m_resist_critical[2];//when we are a victim we can have talents to decrese chance for critical hit. This is a negative value and it's added to critshances
 	float SpellDmgDoneByInt[7];
 	float SpellHealDoneByInt[7];
 	float SpellDmgDoneBySpr[7];
@@ -1311,6 +1316,7 @@ protected:
 	float m_lastSwimSpeed;
 	float m_lastBackSwimSpeed;
 	float m_lastFlySpeed;
+
 };
 
 #endif

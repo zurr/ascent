@@ -907,6 +907,17 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		crit = (this->getLevel()-pVictim->getLevel()+1)*5+(self_skill-victim_skill)*0.04;//don't ask me ... that's on wowwiki
 	}
 
+	if(pVictim->IsPlayer())
+	{
+		if((damage_type != RANGED))
+			crit += static_cast<Player*>(pVictim)->res_M_crit_get();
+		else crit += static_cast<Player*>(pVictim)->res_R_crit_get(); //this could be ability but in that case we overwrite the value
+	}
+
+//  if we get a negative chance .. we will never use it again
+//	if(crit<0) 
+//		crit=0;
+
 	float vsk = (self_skill*0.04);
 	dodge -= vsk;
 	parry -= vsk;
