@@ -32,6 +32,11 @@
 #endif
 
 #define SERVER_NAME "Antrix"
+#ifdef _DEBUG
+#define CONFIG "Debug"
+#else
+#define CONFIG "Release"
+#endif
 
 bool VerifyName(const char * name, size_t nlen)
 {
@@ -596,11 +601,11 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	{
 		uint32 rev = g_getRevision();
 		if(!sWorld.SendStatsOnJoin) {
-			_player->BroadcastMessage("Server: %s%s%s Core v2.1.0-%u/%s|r %s %s", MSG_COLOR_LIGHTBLUE, 
-				SERVER_NAME, MSG_COLOR_WHITE, rev, PLATFORM_TEXT, __DATE__, __TIME__);
+			_player->BroadcastMessage("Server: %s%s%s Core v2.1.2-%u-%s/%s|r %s %s", MSG_COLOR_LIGHTBLUE, 
+				SERVER_NAME, MSG_COLOR_WHITE, rev, CONFIG, PLATFORM_TEXT, __DATE__, __TIME__);
 		} else {
-			_player->BroadcastMessage("Server Version: %s%s%s Core v2.1.0-%u/%s|r %s\nOnline Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_LIGHTBLUE, 
-				SERVER_NAME, MSG_COLOR_WHITE, rev, PLATFORM_TEXT, __DATE__, 
+			_player->BroadcastMessage("Server Version: %s%s%s Core v2.1.2.%u-%s/%s|r %s\nOnline Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_LIGHTBLUE, 
+				SERVER_NAME, MSG_COLOR_WHITE, rev, CONFIG, PLATFORM_TEXT, __DATE__, 
 				MSG_COLOR_WHITE, sWorld.GetSessionCount(), MSG_COLOR_WHITE, sWorld.PeakSessionCount, MSG_COLOR_WHITE, sWorld.mAcceptedConnections);
 		}
 	}

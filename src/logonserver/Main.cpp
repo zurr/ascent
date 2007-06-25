@@ -19,17 +19,17 @@
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
-#define BANNER "Antrix/Win32-2.1.0-%u :: Logon Server                        www.emupedia.com"
+#define BANNER "Antrix/Win32-2.1.2-%u :: Logon Server                        www.emupedia.com"
 #else
 #if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
 #define PLATFORM_TEXT "Linux"
-#define BANNER "Antrix/Linux-2.1.0-%u :: Logon Server                        www.emupedia.com"
+#define BANNER "Antrix/Linux-2.1.2-%u :: Logon Server                        www.emupedia.com"
 #elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
 #define PLATFORM_TEXT "FreeBSD"
-#define BANNER "Antrix/FreeBSD-2.1.0-%u :: Logon Server                      www.emupedia.com"
+#define BANNER "Antrix/FreeBSD-2.1.2-%u :: Logon Server                      www.emupedia.com"
 #else
 #define PLATFORM_TEXT "Unix"
-#define BANNER "Antrix/Unix-2.1.0-%u :: Logon Server                         www.emupedia.com"
+#define BANNER "Antrix/Unix-2.1.2-%u :: Logon Server                         www.emupedia.com"
 #endif
 #include <sched.h>
 #endif
