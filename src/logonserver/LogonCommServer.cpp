@@ -80,10 +80,13 @@ void LogonCommServerSocket::OnRead()
 
 		// create the buffer
 		WorldPacket buff(opcode, remaining);
-		buff.resize(remaining);
-		Read(remaining, (uint8*)buff.contents());
+		if(remaining)
+		{
+			buff.resize(remaining);
+			Read(remaining, (uint8*)buff.contents());
+		}
 
-		if(use_crypto)
+		if(use_crypto && remaining)
 			recvCrypto.Process((unsigned char*)buff.contents(), (unsigned char*)buff.contents(), remaining);
 
 		// handle the packet

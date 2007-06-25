@@ -61,11 +61,14 @@ void LogonCommClientSocket::OnRead()
 
 		// create the buffer
 		WorldPacket buff(opcode, remaining);
-		buff.resize(remaining);
-		Read(remaining, (uint8*)buff.contents());
+		if(remaining)
+		{
+			buff.resize(remaining);
+			Read(remaining, (uint8*)buff.contents());
+		}
 
 		// decrypt the rest of the packet
-		if(use_crypto)
+		if(use_crypto && remaining)
 			_recvCrypto.Process((unsigned char*)buff.contents(), (unsigned char*)buff.contents(), remaining);
 
 		// handle the packet
