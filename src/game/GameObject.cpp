@@ -477,9 +477,11 @@ void GameObject::EndFishing(Player* player, bool abort )
 			spell->SendChannelUpdate(0);
 			spell->finish();
 
-			if(this->IsInWorld())
+			/*if(this->IsInWorld())
 				RemoveFromWorld();
-			delete this;
+			delete this;*/
+
+			sEventMgr.AddEvent(this, &GameObject::Expire, EVENT_DELETE_TIMER, 10000, 1);
 		}
 	}
 	else // if this is called, and there is no spell so remove the gameobject
