@@ -186,7 +186,18 @@ string Socket::GetRemoteIP()
 
 void Socket::Disconnect()
 {
+	if(!m_connected) return;
+
 	m_connected = false;
+
+	// remove from mgr
+#ifdef CONFIG_USE_EPOLL
+	sSocketMgr.RemoveSocket(this);
+#endif
+
+#ifdef CONFIG_USE_KQUEUE
+	sSocketMgr.RemoveSocket(this);
+#endif
 
 	SocketOps::CloseSocket(m_fd);
 
@@ -202,15 +213,6 @@ void Socket::Delete()
 	m_deleted = true;
 
 	if(m_connected) Disconnect();
-
-	// remove from mgr
-#ifdef CONFIG_USE_EPOLL
-	sSocketMgr.RemoveSocket(this);
-#endif
-
-#ifdef CONFIG_USE_KQUEUE
-	sSocketMgr.RemoveSocket(this);
-#endif
 
 	sSocketGarbageCollector.QueueSocket(this);
 
