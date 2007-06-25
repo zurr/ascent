@@ -1471,6 +1471,9 @@ void ObjectMgr::GenerateTrainerSpells()
 				continue;
 			}
 
+			if(m_disabled_trainer_spells.find(Sp->Id) != m_disabled_trainer_spells.end())
+				continue;
+
 			// Convert rank name into a number
 			int32 RankNumber = -1;
 
@@ -1743,6 +1746,13 @@ void ObjectMgr::GenerateTrainerSpells()
 				}
 			}
 
+			if(m_disabled_trainer_spells.find( TS->pSpell->Id ) != m_disabled_trainer_spells.end() ||
+				m_disabled_trainer_spells.find( TS->pTrainingSpell->Id ) != m_disabled_trainer_spells.end())
+			{
+				delete TS;
+				continue;
+			}
+
 			TrainerSpellMap::iterator iter = destmap->find(sp->skilline);
 			if(iter == destmap->end())
 			{
@@ -1769,6 +1779,7 @@ void ObjectMgr::GenerateTrainerSpells()
 void ObjectMgr::LoadTrainers()
 {
 	sLog.outString("  Loading Trainers...");
+	LoadDisabledSpells();
 	GenerateTrainerSpells();
 	QueryResult * result = sDatabase.Query("SELECT * FROM trainers");
 	if(!result) return;
@@ -2851,4 +2862,27 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVict
 	}
 
 	return true;
+}
+
+void ObjectMgr::LoadDisabledSpells()
+{
+	QueryResult * result = sDatabase.Query("SELECT * FROM spell_disable");
+	if(result)
+	{
+		do 
+		{
+			m_disabled_spells.insert( result->Fetch()[0].GetUInt32() );
+		} while(result->NextRow());
+		delete result;
+	}
+
+	result = sDatabase.Query("SELECT * FROM spell_disable_trainers");
+	if(result)
+	{
+		do 
+		{
+			m_disabled_trainer_spells.insert( result->Fetch()[0].GetUInt32() );
+		} while(result->NextRow());
+		delete result;
+	}
 }

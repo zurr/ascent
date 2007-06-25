@@ -462,6 +462,15 @@ public:
 	bool HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVictim);
 	void LoadInstanceReputationModifiers();
 
+	inline bool IsSpellDisabled(uint32 spellid)
+	{
+		if(m_disabled_spells.find(spellid) != m_disabled_spells.end())
+			return true;
+		return false;
+	}
+
+	void LoadDisabledSpells();
+
 protected:
 	RWLock playernamelock;
 	uint32 m_mailid;
@@ -478,6 +487,8 @@ protected:
 
 	HM_NAMESPACE::hash_map<uint32, Charter*> m_charters;
 	
+	set<uint32> m_disabled_spells;
+	set<uint32> m_disabled_trainer_spells;
 
 	Transporter ** m_transporters;
 	uint32 TransportersCount;

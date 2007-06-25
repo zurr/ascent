@@ -2405,6 +2405,9 @@ bool Spell::IsSeal()
 
 int8 Spell::CanCast(bool rangetolerate)
 {
+	if(objmgr.IsSpellDisabled(m_spellInfo->Id))
+		return SPELL_FAILED_ERROR;
+
 	float maxr = 0;
 	Unit *target = NULL;
 	if(m_targets.m_unitTarget)
