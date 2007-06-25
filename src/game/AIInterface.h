@@ -376,6 +376,7 @@ private:
 	MovementType m_MovementType;
 	MovementState m_MovementState;
 	uint32 m_guardTimer;
+	int32 m_currentHighestThreat;
 
 };
 #endif

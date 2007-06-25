@@ -73,6 +73,7 @@ AIInterface::AIInterface()
 	m_formationFollowDistance = 0.0f;
 	m_formationLinkTarget = 0;
 	m_formationLinkSqlId = 0;
+	m_currentHighestThreat = 0;
 
 	b_isAttackableOld = false;
 	disable_melee = false;
@@ -1306,6 +1307,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell *sp)
 			}
 		}
 	}
+	m_currentHighestThreat = threat;
 	if(target && target->GetInstanceID() == m_Unit->GetInstanceID())
 	{
 		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, target->GetGUID());
@@ -2703,9 +2705,41 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 	if(it != m_aiTargets.end())
 	{
 		it->second += mod;
-		return true;
+		if((it->second + obj->GetThreatModifyer()) > m_currentHighestThreat)
+		{
+			// new target!
+			if(!isTaunted)
+			{
+				m_nextTarget = obj;
+				m_currentHighestThreat = it->second + obj->GetThreatModifyer();
+				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+			}
+		}
 	}
-	return false;
+	else
+	{
+		m_aiTargets.insert( make_pair( obj, mod ) );
+		if((mod + obj->GetThreatModifyer()) > m_currentHighestThreat)
+		{
+			if(!isTaunted)
+			{
+				m_nextTarget = obj;
+				m_currentHighestThreat = mod + obj->GetThreatModifyer();
+				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+			}
+		}
+	}
+
+	if(obj == m_nextTarget)
+	{
+		// check for a possible decrease in threat.
+		if(mod < 0)
+		{
+			m_nextTarget = FindTargetForSpell(m_nextSpell);
+			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+		}
+	}
+	return true;
 }
 
 void AIInterface::addAssistTargets(Unit* Friend)
