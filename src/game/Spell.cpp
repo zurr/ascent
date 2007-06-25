@@ -3276,7 +3276,7 @@ void Spell::Heal(int32 amount)
 					add = *target_threat.begin();
 			}
 
-			if(add)
+			if(add && !add->IsPlayer())
 				u_caster->addAttacker(add);
 		}
 		if(!doneTarget && u_caster->getAttackTarget())
