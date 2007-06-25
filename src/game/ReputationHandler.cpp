@@ -400,7 +400,7 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 			/* rep limit? */
 			if((*itr).replimit)
 			{
-				if(GetStandingRank((*itr).faction[team]) >= (*itr).replimit)
+				if(GetStanding((*itr).faction[team]) >= (*itr).replimit)
 					continue;
 			}
 			// meh.. its weird I know :P but the random number generator doesn't accept negative values.

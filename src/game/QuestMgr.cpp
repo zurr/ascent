@@ -735,7 +735,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 		}
 
 		if(qst->reward_replimit)
-			if(plr->GetStandingRank(fact) >= qst->reward_replimit)
+			if(plr->GetStanding(fact) >= qst->reward_replimit)
 				continue;
 
 		plr->ModStanding(fact, amt);
