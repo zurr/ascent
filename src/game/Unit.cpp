@@ -1042,7 +1042,11 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				if(!pVictim->IsPlayer())
 				if(IsPlayer())
 					dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);
-				dmg.full_damage = (dmg.full_damage*(100+dmgbonus))/100;
+				
+				// burlex: this causes huge damage increases. I'm not sure what it's meant to accompilsh either, so
+				//         i'm gonna comment it.
+
+				/*dmg.full_damage = (dmg.full_damage*(100+dmgbonus))/100;*/
 				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 				vproc |= PROC_ON_CRIT_HIT_VICTIM;
 				aproc |= PROC_ON_CRIT_ATTACK;
