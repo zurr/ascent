@@ -1456,7 +1456,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 		if(m_caster->isAlive())
 		{
 			m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
-			m_target->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GetUnitCaster(), 0);
+			//m_target->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GetUnitCaster(), 0);
 		}
 	}
 }
