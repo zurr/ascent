@@ -140,9 +140,7 @@ void AccountMgr::ReloadAccountsCallback()
 {
 	ReloadAccounts(true);
 }
-
-#ifdef WIN32
-BAN_STATUS IPBanner::CalculateBanStatus(uint32 ip_address)
+BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
 	setBusy.Acquire();
 
@@ -150,23 +148,6 @@ BAN_STATUS IPBanner::CalculateBanStatus(uint32 ip_address)
 	uint8 b2 = ((uint8*)&ip_address)[1];
 	uint8 b3 = ((uint8*)&ip_address)[2];
 	uint8 b4 = ((uint8*)&ip_address)[3];
-#else
-BAN_STATUS IPBanner::CalculateBanStatus(const char* ip_address)
-{
-	setBusy.Acquire();
-
-	//uint8 b1 = static_cast<uint8>( atol(strtok((char*)ip_address, ".")) );
-	//uint8 b2 = static_cast<uint8>( atol(strtok(NULL, ".")) );
-	//uint8 b3 = static_cast<uint8>( atol(strtok(NULL, ".")) );
-	//uint8 b4 = static_cast<uint8>( atol(strtok(NULL, ".")) );
-	uint32 b1, b2, b3, b4;
-	if(sscanf(ip_address, "%u.%u.%u.%u", &b1, &b2, &b3, &b4) != 4)
-	{
-		setBusy.Release();
-		return BAN_STATUS_NOT_BANNED;
-	}
-
-#endif
 
 	// loop storage array
 	set<IPBan*>::iterator itr = banList.begin();
@@ -267,7 +248,7 @@ void IPBanner::Remove(set<IPBan*>::iterator ban)
 {
 	setBusy.Acquire();
 
-	char * strIp = new char[16];
+	char strIp[16] = {0};
 	sprintf(strIp, "%u.%u.%u.%u", (*ban)->ip.full.b1, (*ban)->ip.full.b2, (*ban)->ip.full.b3,
 		(*ban)->ip.full.b4 );
 
@@ -277,7 +258,6 @@ void IPBanner::Remove(set<IPBan*>::iterator ban)
 	setBusy.Release();
 
 	sLog.outDebug("[IPBanner] Removed expired IPBan for ip '%s'", strIp);
-	delete [] strIp;
 }
 
 void InformationCore::AddRealm(uint32 realm_id, Realm * rlm)
@@ -307,10 +287,7 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	data << uint32(0);
 
 	sAuthLogonChallenge_C * client = Socket->GetChallenge();
-	if(client->build < CLIENT_2_0_7)
-		data << uint8(m_realms.size());
-	else
-		data << uint16(m_realms.size());
+	data << uint16(m_realms.size());
 	
 	// loop realms :/
 	map<uint32, Realm>::iterator itr = m_realms.begin();
@@ -366,6 +343,12 @@ void InformationCore::SetSessionKey(uint32 account_id, BigNumber * key)
 
 void InformationCore::TimeoutSockets()
 {
+	if(!usepings)
+		return;
+
+	/* burlex: this is vulnerable to race conditions, adding a mutex to it. */
+	serverSocketLock.Acquire();
+
 	uint32 t = time(NULL);
 	// check the ping time
 	set<LogonCommServerSocket*>::iterator itr, it2;
@@ -376,14 +359,19 @@ void InformationCore::TimeoutSockets()
 		it2 = itr;
 		++itr;
 
-		if(!s->IsConnected() || (usepings && (t - s->last_ping) > 60)) // ping timeout
+		if(s->last_ping < t && ((t - s->last_ping) > 60))
 		{
+			// ping timeout
+			printf("Closing socket due to ping timeout.\n");
 			s->removed = true;
-			s->Disconnect();
 			set<uint32>::iterator itr = s->server_ids.begin();
 			for(; itr != s->server_ids.end(); ++itr)
 				RemoveRealm(*itr);
 			m_serverSockets.erase(it2);
+
+			s->Disconnect();
 		}
 	}
+
+	serverSocketLock.Release();
 }

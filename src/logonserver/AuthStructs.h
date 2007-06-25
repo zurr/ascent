@@ -85,13 +85,5 @@ typedef struct {
 #pragma pack(pop)
 #endif
 
-enum CLIENT_VERSIONS
-{
-	CLIENT_2_0_3		= 6299,
-	CLIENT_2_0_5		= 6320,
-	CLIENT_2_0_6		= 6337,
-	CLIENT_2_0_7		= 6383,
-};
-
 #endif
 

@@ -23,11 +23,9 @@ typedef struct
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 32768, 65536)
 {
 	// do nothing
-	last_ping = time(NULL);
+	last_ping = last_pong = time(NULL);
 	remaining = opcode = 0;
 	_id=0;
-	gotpong = true;
-	pingseq = 0;
 	latency = 0;
 	use_crypto = false;
 	authenticated = 0;
@@ -145,19 +143,16 @@ void LogonCommClientSocket::HandlePong(WorldPacket & recvData)
 	if(latency)
 		sLog.outDebug(">> logonserver latency: %ums", getMSTime() - pingtime);
 	latency = getMSTime() - pingtime;
-	gotpong = true;
+	last_pong = time(NULL);
 }
 
 void LogonCommClientSocket::SendPing()
 {
-	pingseq++;
 	pingtime = getMSTime();
 	WorldPacket data(RCMSG_PING, 4);
-	data << pingseq;
 	SendPacket(&data);
 
 	last_ping = time(NULL);
-	gotpong = false;
 }
 
 void LogonCommClientSocket::SendPacket(WorldPacket * data)
@@ -196,7 +191,10 @@ void LogonCommClientSocket::SendPacket(WorldPacket * data)
 void LogonCommClientSocket::OnDisconnect()
 {
 	if(_id != 0)
+	{
+		printf("Calling ConnectionDropped() due to OnDisconnect().\n");
 		sLogonCommHandler.ConnectionDropped(_id);	
+	}
 }
 
 LogonCommClientSocket::~LogonCommClientSocket()
@@ -206,46 +204,25 @@ LogonCommClientSocket::~LogonCommClientSocket()
 
 void LogonCommClientSocket::SendChallenge()
 {
-	seed = sRand.randInt(0xFFFFFFFF);
+	uint8 * key = sLogonCommHandler.sql_passhash;
 
-	WorldPacket data(RCMSG_AUTH_CHALLENGE, 24);
-	data << seed;
-	data.append(sLogonCommHandler.sql_passhash, 20);
-
-	SimpleCrypt(20, (char*)data.contents() + 4, seed);
+	WorldPacket data(RCMSG_AUTH_CHALLENGE, 20);
+	data.append(key, 20);
 	SendPacket(&data);
 
 	/* initialize rc4 keys */
-	Sha1Hash enc_key;
-	enc_key.UpdateData((const uint8*)&seed, 4);
-	enc_key.UpdateData(sLogonCommHandler.sql_passhash, 20);
-	enc_key.Finalize();
-
-	unsigned char k[20];
-	memcpy(k, enc_key.GetDigest(), 20);
-	ReverseBytes(k, 20);
-	SimpleCrypt(20, (char*)k, seed);
 
 	printf("Key:");
 	sLog.outColor(TGREEN, " ");
 	for(int i = 0; i < 20; ++i)
-		printf("%.2X ", k[i]);
+		printf("%.2X ", key[i]);
 	sLog.outColor(TNORMAL, "\n");
 
-	_recvCrypto.Setup(k, 20);
-	_sendCrypto.Setup(k, 20);	
+	_recvCrypto.Setup(key, 20);
+	_sendCrypto.Setup(key, 20);	
 
 	/* packets are encrypted from now on */
 	use_crypto = true;
-}
-
-void SimpleCrypt(int len, char * buffer, uint32 key)
-{
-	char * k = (char*)&key;
-	for(int i = 0; i < len; ++i)
-	{
-		buffer[i] = buffer[i] ^ k[i % 4];
-	}
 }
 
 void LogonCommClientSocket::HandleAuthResponse(WorldPacket & recvData)

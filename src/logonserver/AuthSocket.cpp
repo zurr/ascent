@@ -95,11 +95,7 @@ void AuthSocket::HandleChallenge()
 	}
 
 	// Check for a possible IP ban on this client.
-#ifdef WIN32
-	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteStruct().sin_addr.S_un.S_addr);
-#else
-	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(inet_ntoa(GetRemoteAddress()));
-#endif
+	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
 
 	switch(ipb)
 	{

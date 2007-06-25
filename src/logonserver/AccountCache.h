@@ -52,11 +52,7 @@ public:
 	void Reload();
 	void Remove(set<IPBan*>::iterator ban);
 
-#ifdef WIN32
-	BAN_STATUS CalculateBanStatus(uint32 ip_address);
-#else
-	BAN_STATUS CalculateBanStatus(const char* ip_address);
-#endif
+	BAN_STATUS CalculateBanStatus(in_addr ip_address);
 
 protected:
 	Mutex setBusy;
@@ -135,12 +131,15 @@ class InformationCore : public Singleton<InformationCore>
 	map<uint32, BigNumber*>	 m_sessionkeys;
 	map<uint32, Realm>		  m_realms;
 	set<LogonCommServerSocket*> m_serverSockets;
+	Mutex serverSocketLock;
 	Mutex realmLock;
 
 	uint32 realmhigh;
 	bool usepings;
 
 public:
+	inline Mutex & getServerSocketLock() { return serverSocketLock; }
+
 	InformationCore()
 	{ 
 		realmhigh = 0;
@@ -165,8 +164,8 @@ public:
 	void		  AddRealm(uint32 realm_id, Realm * rlm);
 	void		  RemoveRealm(uint32 realm_id);
 
-	inline void   AddServerSocket(LogonCommServerSocket * sock) { m_serverSockets.insert( sock ); }
-	inline void   RemoveServerSocket(LogonCommServerSocket * sock) { m_serverSockets.erase( sock ); }
+	inline void   AddServerSocket(LogonCommServerSocket * sock) { serverSocketLock.Acquire(); m_serverSockets.insert( sock ); serverSocketLock.Release(); }
+	inline void   RemoveServerSocket(LogonCommServerSocket * sock) { serverSocketLock.Acquire(); m_serverSockets.erase( sock ); serverSocketLock.Release(); }
 
 	void		  TimeoutSockets();
 };

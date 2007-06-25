@@ -191,11 +191,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 {
-	uint32 seq;
-	recvData >> seq;
-
 	WorldPacket data(RSMSG_PONG, 4);
-	data << seq;
 	SendPacket(&data);
 	last_ping = time(NULL);
 }
@@ -237,48 +233,25 @@ void LogonCommServerSocket::HandleReloadAccounts(WorldPacket & recvData)
 	sAccountMgr.ReloadAccounts(true);
 }
 
-void SimpleCrypt(int len, char * buffer, uint32 key)
-{
-	char * k = (char*)&key;
-	for(int i = 0; i < len; ++i)
-	{
-		buffer[i] = buffer[i] ^ k[i % 4];
-	}
-}
-
 void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 {
-	unsigned char encrypted_key[20];
-	uint8 result = 1;
-	recvData >> seed;
-	recvData.read(encrypted_key, 20);
-
-	SimpleCrypt(20, (char*)encrypted_key, seed);
+	unsigned char key[20];
+	uint32 result = 1;
+	recvData.read(key, 20);
 
 	// check if we have the correct password
-	if(memcmp(encrypted_key, LogonServer::getSingleton().sql_hash, 20))
+	if(memcmp(key, LogonServer::getSingleton().sql_hash, 20))
 		result = 0;
 
 	sLog.outString("Authentication request from %s, result %s.", inet_ntoa(GetRemoteAddress()), result ? "OK" : "FAIL");
 
-	// use the supplied encrypted key to build the rc4 keys
-	Sha1Hash enc_key;
-	enc_key.UpdateData((const uint8*)&seed, 4);
-	enc_key.UpdateData(encrypted_key, 20);
-	enc_key.Finalize();
-
-	unsigned char k[20];
-	memcpy(k, enc_key.GetDigest(), 20);
-	ReverseBytes(k, 20);
-	SimpleCrypt(20, (char*)k, seed);
-
 	printf("Key: ");
 	for(int i = 0; i < 20; ++i)
-		printf("%.2X", k[i]);
+		printf("%.2X", key[i]);
 	printf("\n");
 
-	recvCrypto.Setup(k, 20);
-	sendCrypto.Setup(k, 20);	
+	recvCrypto.Setup(key, 20);
+	sendCrypto.Setup(key, 20);	
 
 	/* packets are encrypted from now on */
 	use_crypto = true;

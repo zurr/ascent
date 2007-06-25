@@ -182,21 +182,22 @@ void LogonCommHandler::UpdateSockets()
 		cs = itr->second;
 		if(cs != 0)
 		{
-			if(pings && (t - cs->last_ping) > 10)
+			if(!pings) continue;
+
+			if(cs->last_pong < t && ((t - cs->last_pong) > 60))
 			{
-				if(!cs->gotpong)
-				{
-					// flag for dc
-					cs->_id = 0;
-					sLog.outString(" >> realm id %u connection was dropped unexpectedly (ping timeout). reconnecting next loop.", itr->first->ID);
-					cs->Disconnect();
-					itr->second = 0;
-					continue;
-				}
-				else
-				{
-					cs->SendPing();
-				}
+				// no pong for 60 seconds -> remove the socket
+				printf(" >> realm id %u connection dropped due to pong timeout.\n", itr->first->ID);
+				cs->_id = 0;
+				cs->Disconnect();
+				itr->second = 0;
+				continue;
+			}
+
+			if( (t - cs->last_ping) > 15 )
+			{
+				// send a ping packet.
+				cs->SendPing();
 			}
 		}
 		else

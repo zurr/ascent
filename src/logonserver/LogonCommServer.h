@@ -48,6 +48,4 @@ public:
 	set<uint32> server_ids;
 };
 
-void SimpleCrypt(int len, char * buffer, uint32 key);
-
 #endif

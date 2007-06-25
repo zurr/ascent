@@ -41,18 +41,14 @@ public:
 
 	void OnDisconnect();
 	uint32 last_ping;
+	uint32 last_pong;
 
 	uint32 pingtime;
 	uint32 latency;
-	uint32 pingseq;
 	uint32 _id;
-	bool gotpong;
 	uint32 authenticated;
-	uint32 seed;
 	bool use_crypto;
 };
-
-void SimpleCrypt(int len, char * buffer, uint32 key);
 
 #endif
 
