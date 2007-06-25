@@ -4733,7 +4733,7 @@ void Aura::SpellAuraModMechanicResistance(bool apply)
 	if(apply)
 	{
 		assert(mod->m_miscValue < 27);
-		m_target->MechanicsResistances[mod->m_miscValue]+=mod->m_amount;
+		m_target->MechanicsResistancesPCT[mod->m_miscValue]+=mod->m_amount;
 
 		if(mod->m_miscValue != 16 && mod->m_miscValue != 25 && mod->m_miscValue != 19) // dont remove bandages, Power Word and protection effect
 		{
@@ -4745,7 +4745,7 @@ void Aura::SpellAuraModMechanicResistance(bool apply)
 		}
 	}
 	else
-		m_target->MechanicsResistances[mod->m_miscValue]-=mod->m_amount;
+		m_target->MechanicsResistancesPCT[mod->m_miscValue]-=mod->m_amount;
 }
 
 void Aura::SpellAuraModHealingPCT(bool apply)

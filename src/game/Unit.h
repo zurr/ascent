@@ -776,7 +776,7 @@ public:
 	uint32 dispels[10];
 	bool trackStealth;
 	uint32 MechanicsDispels[27];
-	uint32 MechanicsResistances[27];
+	float MechanicsResistancesPCT[27]; 
 	int32 modAttackTimeIncreasePCT;
 
 	//SM

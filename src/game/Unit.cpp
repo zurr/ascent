@@ -50,7 +50,7 @@ Unit::Unit()
 	for(uint32 x=0;x<27;x++)
 	{
 		MechanicsDispels[x]=0;
-		MechanicsResistances[x]=0;
+		MechanicsResistancesPCT[x]=0;
 	}
 
 	//SM
