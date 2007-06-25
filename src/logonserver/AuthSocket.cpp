@@ -94,6 +94,9 @@ void AuthSocket::HandleChallenge()
 		return;
 	}
 
+	/** Burlex TODO: This fucks up bad on freebsd systems, I have got NO IDEA why.
+	 */
+#ifdef WIN32
 	// Check for a possible IP ban on this client.
 	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
 
@@ -107,6 +110,7 @@ void AuthSocket::HandleChallenge()
 			SendChallengeError(CE_ACCOUNT_FREEZED);
 			return;
 	}
+#endif
 
 	// Null-terminate the account string
 	m_challenge.I[m_challenge.I_len] = 0;
@@ -127,8 +131,12 @@ void AuthSocket::HandleChallenge()
 
 	sLog.outDebug("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
+	/** Burlex TODO: This fucks up bad on freebsd systems, I have got NO IDEA why.
+	 */
+#ifndef WIN32
 	// Don't update when IP banned, but update anyway if it's an account ban
 	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", inet_ntoa(GetRemoteAddress()), m_account->AccountId);
+#endif
 
 	// Check that the account isn't banned.
 	if(m_account->Banned == 1)
@@ -142,17 +150,10 @@ void AuthSocket::HandleChallenge()
 		return;
 	}
 
-	// We've passed all initial tests if we're here, lets build the response packet.
-	Sha1Hash I;
-	I.UpdateData((m_account->Username + ":" + m_account->Password));
-	I.Finalize();
-
-	sLog.outDebug("[AuthChallenge] UserPass hash: %X", I.GetDigest());
-
 	Sha1Hash sha;
 	uint32 tc = s.GetNumBytes();
 	sha.UpdateData( s.AsByteArray(), 32 );
-	sha.UpdateData( I.GetDigest(), 20 );
+	sha.UpdateData( m_account->SrpHash, 20 );
 	sha.Finalize();
 
 	BigNumber x;

@@ -87,6 +87,7 @@ void AccountMgr::ReloadAccounts(bool silent)
 void AccountMgr::AddAccount(Field* field)
 {
 	Account acct;
+	Sha1Hash hash;
 	acct.AccountId	  = field[0].GetUInt32();
 	acct.Username	   = field[1].GetString();
 	acct.Password	   = field[2].GetString();
@@ -97,6 +98,11 @@ void AccountMgr::AddAccount(Field* field)
 	// Convert username/password to uppercase. this is needed ;)
 	transform(acct.Username.begin(), acct.Username.end(), acct.Username.begin(), towupper);
 	transform(acct.Password.begin(), acct.Password.end(), acct.Password.begin(), towupper);
+
+	// Prehash the I value.
+	hash.UpdateData((acct.Username + ":" + acct.Password));
+	hash.Finalize();
+	memcpy(acct.SrpHash, hash.GetDigest(), 20);
 
 	AccountDatabase[acct.Username] = acct;
 }

@@ -181,12 +181,14 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 	{
 		if(objA->IsPlayer())
 			if(
+				static_cast<Pet*>(objB)->GetPetOwner() && 
 				static_cast<Pet *>(objB)->GetPetOwner()->DuelingWith == static_cast<Player *>(objA) && 
 				static_cast<Pet *>(objB)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
 				)
 				return true;
 		if(objA->IsPet())
-			if(static_cast<Pet *>(objB)->GetPetOwner()->DuelingWith == static_cast<Pet *>(objA)->GetPetOwner() && 
+			if(static_cast<Pet*>(objA)->GetPetOwner() && 
+				static_cast<Pet *>(objB)->GetPetOwner()->DuelingWith == static_cast<Pet *>(objA)->GetPetOwner() && 
 				static_cast<Pet *>(objB)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
 				)
 				return true;

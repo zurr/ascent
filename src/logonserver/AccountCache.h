@@ -26,6 +26,7 @@ typedef struct
 	string GMFlags;
 	uint32 AccountFlags;
 	uint32 Banned;
+	uint8 SrpHash[20];
 } Account;
 
 typedef struct 
