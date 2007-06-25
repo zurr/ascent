@@ -3261,6 +3261,24 @@ void Spell::Heal(int32 amount)
 				doneTarget = 1;
 		}
 
+		if(!u_caster->isInCombat() && unitTarget->isInCombat() && unitTarget->IsInWorld())
+		{
+			// "get" the caster in combat.
+			Unit * add = 0;
+
+			if(unitTarget->getAttackTarget())
+				add = unitTarget->GetMapMgr()->GetUnit(unitTarget->getAttackTarget());
+
+			if(!add)
+			{
+				// try and grab one from the list
+				if(target_threat.size())
+					add = *target_threat.begin();
+			}
+
+			if(add)
+				u_caster->addAttacker(add);
+		}
 		if(!doneTarget && u_caster->getAttackTarget())
 		{
 			// this shouldn't happen..
