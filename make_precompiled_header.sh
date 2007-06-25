@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo Building Precompiled Header...
 cd src/game
