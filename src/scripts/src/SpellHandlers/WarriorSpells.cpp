@@ -71,7 +71,7 @@ bool Execute(uint32 i, Spell* pSpell)
     return true;
 }
 
-bool Bloodrage(uint32i, Spell* pSpell)
+bool Bloodrage(uint32 i, Spell* pSpell)
 {
   // Put the player in Combat (gotta find when to put him ooc)
 
