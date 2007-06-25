@@ -32,7 +32,7 @@ void DBC::Load(const char *filename) {
 		return;
 	}
 
-	char buffer[256] = {NULL};
+	char buffer[256] = {(char)NULL};
 	fread(buffer, 4, 1, f);
 	fread(&rows,4, 1, f);
 	fread(&cols, 4, 1, f);

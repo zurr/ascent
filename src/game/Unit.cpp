@@ -417,7 +417,7 @@ void Unit::GiveGroupXP(Unit *pVictim, Player *PlayerInGroup)
 		xp = CalculateXpToGive(pVictim, pHighLvlPlayer);
 		//i'm not sure about this formula is correct or not. Maybe some brackets are wrong placed ?
 		for(int i=0;i<active_player_count;i++)
-			active_player_list[i]->GiveXP( ((xp*active_player_list[i]->getLevel()) / total_level)*xp_mod, pVictim->GetGUID(), true );
+			active_player_list[i]->GiveXP( float2int32(((xp*active_player_list[i]->getLevel()) / total_level)*xp_mod), pVictim->GetGUID(), true );
 	}
 		/* old code start before 2007 04 22
 		GroupMembersSet::iterator itr;
@@ -628,7 +628,8 @@ void Unit::RegenerateHealth()
 
 void Unit::RegeneratePower()
 {
-	m_P_regenTimer = 2000;//set next regen time 
+        // This is only 2000 IF the power is not rage
+        m_P_regenTimer = 2000;//set next regen time 
 
 	if (!isAlive())
 		return;
@@ -647,6 +648,24 @@ void Unit::RegeneratePower()
 			break;
 		}
 		
+		/*
+
+		There is a problem here for druids.
+		Druids when shapeshifted into bear have 2 power with different regen timers
+		a) Mana (which regenerates while shapeshifted
+		b) Rage
+
+		Mana has a regen timer of 2 seconds
+		Rage has a regen timer of 3 seconds
+
+		I think the only viable way of fixing this is to have 2 different timers
+		to check each individual power.
+
+		Atm, mana is being regen at 3 seconds while shapeshifted...
+
+		*/
+
+
 		// druids regen mana when shapeshifted
 		if(getClass() == DRUID && powertype != POWER_TYPE_MANA)
 			static_cast<Player*>(this)->RegenerateMana();
@@ -654,8 +673,14 @@ void Unit::RegeneratePower()
 		// These only NOT in combat
 		if(!static_cast<Player*>(this)->isInCombat())
 		{
-			if(powertype == POWER_TYPE_RAGE && !static_cast<Player*>(this)->isInCombat())//rage is dropped only out of combat
-				static_cast<Player*>(this)->LooseRage();
+		        // This was already checked above, redundant
+			//if(powertype == POWER_TYPE_RAGE && !static_cast<Player*>(this)->isInCombat())//rage is dropped only out of combat
+
+  		        // Rage timer is 3 seconds not 2
+		        m_P_regenTimer = 3000;
+
+		        if(powertype == POWER_TYPE_RAGE)
+			        static_cast<Player*>(this)->LooseRage();
 		}
 	}
 	else
@@ -821,7 +846,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			if(pVictim->can_parry)
 				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
 		}
-		victim_skill = vskill+((Player*)pVictim)->CalcRating(1); // you compare weapon and defense skills not weapon and weapon
+		victim_skill = float2int32(vskill+((Player*)pVictim)->CalcRating(1)); // you compare weapon and defense skills not weapon and weapon
 	}
 	else
 	{
@@ -844,19 +869,19 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		{
 			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 			hitmodifier+=pr->CalcRating(5);
-			self_skill=pr->CalcRating(20);
+			self_skill = float2int32(pr->CalcRating(20));
 		}
 		else if(damage_type == DUALWIELD)//dual wield
 		{
 			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 			hitmodifier+=pr->CalcRating(5);
-			self_skill=pr->CalcRating(21);
+			self_skill = float2int32(pr->CalcRating(21));
 		}
 		else if(damage_type == RANGED)
 		{
 			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 			hitmodifier+=pr->CalcRating(6);
-			self_skill=pr->CalcRating(0);
+			self_skill = float2int32(pr->CalcRating(0));
 		}
 
 		if(it)
@@ -979,7 +1004,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				dmg.full_damage = 0;
 			else
 			{
-				dmg.full_damage *= pVictim->DamageTakenPctMod[0]; 
+				dmg.full_damage *= float2int32(pVictim->DamageTakenPctMod[0]); 
 				if(pct_dmg_mod)
 					dmg.full_damage = (dmg.full_damage*pct_dmg_mod)/100;
 			}
@@ -1016,7 +1041,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				dmg.full_damage += dmgbonus;
 				if(!pVictim->IsPlayer())
 				if(IsPlayer())
-					dmg.full_damage += dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0];
+					dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);
 				dmg.full_damage = (dmg.full_damage*(100+dmgbonus))/100;
 				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 				vproc |= PROC_ON_CRIT_HIT_VICTIM;
@@ -1035,7 +1060,14 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 						if(Rand((self_skill-victim_skill)*2))
 						{
 							hit_status |= HITSTATUS_CRUSHINGBLOW;
-							dmg.full_damage *= 1.5;
+							// full_damage is a uint32, now, multiplying it by 1.5 is the same thing as multiplying it by 1
+							// i'm pretty sure this isn't supposed to be, maybe put full_damage in a tmp double variable, make
+							// the math and recast back to uint32 ? os full_damage should be a double ?
+							// for now i do the first assumption
+							//dmg.full_damage *= 1.5;
+							double tmpDmg = (double)dmg.full_damage;
+							tmpDmg *= 1.5;
+							dmg.full_damage = (uint32)tmpDmg;
 						}
 					}
 				}
@@ -1281,14 +1313,28 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		}
 	}
 
+	/* Brandon
+	   Rage combat Formulas
+	   wowwiki.com
+	   2.0.10
+
+	   Rage Gained from dealing damage = ((Damage Dealt) / (Rage Conversion at Your Level) * 7.5 + (Weapon Speed * Factor))/2
+	   TODO
+	*/
+
 	uint32 val;
 	if(IsPlayer())
 	{
 		if(this->GetPowerType() == POWER_TYPE_RAGE && !ability)
 		{
+		  // It only regens rage if in combat, don't know why but this is making
+		  // the player to regen 1 rage every 3 secs.....
+		  // and the formula is wrong also ... TODO
+		  if(isInCombat()) {
 			val = GetUInt32Value(UNIT_FIELD_POWER2)+(realdamage*20)/getLevel();
 			val += (static_cast<Player *>(this)->rageFromDamageDealt*val)/100;
 			SetUInt32Value(UNIT_FIELD_POWER2, val>=1000?1000:val);
+		  }
 		}
 	}
 		

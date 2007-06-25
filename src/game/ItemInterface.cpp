@@ -1600,7 +1600,7 @@ int8 ItemInterface::CanReceiveItem(ItemPrototype * item, uint32 amount)
 {
 	if(!item)
 	{
-		return NULL;
+		return (int8)NULL;
 	}
 
 	if(item->Unique)
@@ -1611,7 +1611,7 @@ int8 ItemInterface::CanReceiveItem(ItemPrototype * item, uint32 amount)
 			return INV_ERR_CANT_CARRY_MORE_OF_THIS;
 		}
 	}
-	return NULL;
+	return (int8)NULL;
 }
 
 void ItemInterface::BuyItem(ItemPrototype *item, uint32 amount)
@@ -1671,7 +1671,7 @@ int8 ItemInterface::CanAffordItem(ItemPrototype *item,uint32 amount)
 	{
 		FactionDBC *factdbc = sFactionStore.LookupEntry(item->RequiredFaction);
 		if(!factdbc || factdbc->RepListId < 0)
-			return NULL;
+			return (int8)NULL;
 		
 		//if(this->m_pOwner->reputationByListId[factdbc->RepListId]->CalcRating() < item->RequiredFactionStanding)
 		if(m_pOwner->reputationByListId[factdbc->RepListId] == 0 || m_pOwner->reputationByListId[factdbc->RepListId]->CalcRating()
@@ -1680,7 +1680,7 @@ int8 ItemInterface::CanAffordItem(ItemPrototype *item,uint32 amount)
 			return INV_ERR_ITEM_REPUTATION_NOT_ENOUGH;
 		}
 	}
-	return NULL;
+	return (int8)NULL;
 }
 
 //-------------------------------------------------------------------//
@@ -2043,8 +2043,9 @@ void ItemInterface::RemoveBuyBackItem(uint32 index)
 //-------------------------------------------------------------------//
 void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 {
-	ASSERT(srcslot < MAX_INVENTORY_SLOT && srcslot >= NULL);
-	ASSERT(dstslot < MAX_INVENTORY_SLOT && dstslot >= NULL);
+  // srcslot and dstslot are int... NULL might not be an int depending on arch where it is compiled
+	ASSERT(srcslot < MAX_INVENTORY_SLOT && srcslot >= 0);
+	ASSERT(dstslot < MAX_INVENTORY_SLOT && dstslot >= 0);
 
 	Item *SrcItem = GetInventoryItem(srcslot);
 	Item *DstItem = GetInventoryItem(dstslot);

@@ -943,7 +943,9 @@ void Aura::EventPeriodicDamage(uint32 amount)
 		res=(float)ress;
 		dealdamage dmg;
 		dmg.damage_type = school;
-		dmg.full_damage = res;
+		// again.......
+		//dmg.full_damage = res;
+		dmg.full_damage = ress;
 		dmg.resisted_damage = 0;
 
 		if(c)
@@ -957,7 +959,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 		//it calcs damage in wrong way
 		//it displays wrong log
 		//it may have crit
-		SendPeriodicAuraLog(m_casterGuid, m_target, GetSpellProto()->Id, school, res, FLAG_PERIODIC_DAMAGE);
+		SendPeriodicAuraLog(m_casterGuid, m_target, GetSpellProto()->Id, school, float2int32(res), FLAG_PERIODIC_DAMAGE);
 
 		if(school == SHADOW_DAMAGE)
 		{
@@ -966,7 +968,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 				if(GetUnitCaster() && GetUnitCaster()->isAlive())
 				{
 					if(c)
-						c->VampiricEmbrace(res, m_target);
+						c->VampiricEmbrace(float2int32(res), m_target);
 				}
 			}
 			if(m_casterGuid == m_target->VampTchCaster)
@@ -974,7 +976,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 				if(GetUnitCaster() && GetUnitCaster()->isAlive())
 				{
 					if(c)
-						c->VampiricTouch(res, m_target);
+						c->VampiricTouch(float2int32(res), m_target);
 				}
 			}
 		}
@@ -985,16 +987,16 @@ void Aura::EventPeriodicDamage(uint32 amount)
 	uint64 cguid = m_casterGuid;
 
 	if(c)
-		c->DealDamage(m_target, res,  2, 0, GetSpellId ());
+		c->DealDamage(m_target, float2int32(res),  2, 0, GetSpellId ());
 	else
-		m_target->DealDamage(m_target, res,  2, 0,  GetSpellId ());
+		m_target->DealDamage(m_target, float2int32(res),  2, 0,  GetSpellId ());
 
 	if(mtarget->GetGUID()!=cguid && c)//don't use resist when cast on self-- this is some internal stuff
 	{
 		uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION;
 		uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
-		c->HandleProc(aproc, mtarget, sp,res);
-		mtarget->HandleProc(vproc,c,sp,res);
+		c->HandleProc(aproc, mtarget, sp, float2int32(res));
+		mtarget->HandleProc(vproc,c,sp, float2int32(res));
 	}
 }
 
@@ -1574,8 +1576,8 @@ void Aura::EventPeriodicHeal(uint32 amount)
 	if(c)
 		if(c->IsPlayer())
 		{
-			bonus += ((Player*)c)->SpellHealDoneByInt[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT3);
-			bonus += ((Player*)c)->SpellHealDoneBySpr[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT4);
+			bonus += float2int32(((Player*)c)->SpellHealDoneByInt[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT3));
+			bonus += float2int32(((Player*)c)->SpellHealDoneBySpr[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT4));
 		}
 
 	if(bonus)
@@ -1593,7 +1595,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 	
 	bonus+=m_target->HealTakenMod[GetSpellProto()->School];
 		
-	bonus+=m_target->HealTakenPctMod[GetSpellProto()->School]*amount;
+	bonus += float2int32(m_target->HealTakenPctMod[GetSpellProto()->School]*amount);
 	int add = amount+bonus;
 	uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) + (uint32)add;
 	
@@ -2044,7 +2046,7 @@ void Aura::EventPeriodicHealPct(float RegenPct)
 	if(!m_target->isAlive())
 		return;
 
-	uint32 add = m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * (RegenPct / 100.0f);
+	uint32 add = float2int32(m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * (RegenPct / 100.0f));
 
 	uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) + add;
 
@@ -2076,7 +2078,7 @@ void Aura::EventPeriodicManaPct(float RegenPct)
 	if(!m_target->isAlive())
 		return;
 
-	uint32 add = m_target->GetUInt32Value(UNIT_FIELD_MAXPOWER1) * (RegenPct / 100.0f);
+	uint32 add = float2int32(m_target->GetUInt32Value(UNIT_FIELD_MAXPOWER1) * (RegenPct / 100.0f));
 
 	uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_POWER1) + add;
 
@@ -2547,9 +2549,11 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
 		switch(m_spellProto->Id)
 		{
 			case 23782:// Gift of Life
-				mod->m_amount = 1500; break;
+			  mod->m_amount = 1500; 
+			  break;
 			case 12976:// Last Stand
-				mod->m_amount = m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3;break;
+			  mod->m_amount = (uint32)(m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3);
+			  break;
 		}
 		SetPositive();
 		amt = mod->m_amount;
@@ -3234,7 +3238,7 @@ void Aura::SpellAuraTransform(bool apply)
 					//set new poly target if necesarry
 					if(apply)
 						static_cast<Player*>(m_caster)->SetPolyTarget(m_target->GetGUID());
-					else static_cast<Player*>(m_caster)->SetPolyTarget(NULL);
+					else static_cast<Player*>(m_caster)->SetPolyTarget((uint64)NULL);
 				}
 				if(!displayId)
 				{
@@ -5583,7 +5587,7 @@ void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
 	uint32 i_Int = m_target->GetUInt32Value(UNIT_FIELD_STAT3);
 	uint32 Flag = mod->m_miscValue;
 
-	int32 amt = i_Int * ((float)mod->m_amount / 100.0f);
+	int32 amt = float2int32(i_Int * ((float)mod->m_amount / 100.0f));
 	if(apply)
 	{
 		m_dynamicValue = amt;

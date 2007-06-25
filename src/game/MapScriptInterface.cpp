@@ -119,7 +119,7 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
 
 	Creature * p = this->mapMgr.CreateCreature();
 	ASSERT(p);
-	p->Load(sp, NULL, NULL);
+	p->Load(sp, (uint32)NULL, NULL);
 	p->spawnid = 0;
 	p->m_spawn = 0;
 	delete sp;

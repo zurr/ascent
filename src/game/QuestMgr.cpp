@@ -369,7 +369,7 @@ void QuestMgr::BuildQuestComplete(Player*plr, Quest* qst)
 		xp = 0;
 	}else
 	{
-		xp = GenerateQuestXP(plr,qst) * sWorld.getRate(RATE_QUESTXP);
+		xp = float2int32(GenerateQuestXP(plr,qst) * sWorld.getRate(RATE_QUESTXP));
 		plr->GiveXP(xp, 0, false);
 	}
   
@@ -935,13 +935,13 @@ uint32 QuestMgr::GenerateQuestXP(Player *plr, Quest *qst)
   if( plr->getLevel() <= qst->max_level +  5 )
       return qst->reward_xp;	
   if( plr->getLevel() == qst->max_level +  6 )
-      return (qst->reward_xp * 0.8);
+      return (uint32)(qst->reward_xp * 0.8);
   if( plr->getLevel() == qst->max_level +  7 )
-      return (qst->reward_xp * 0.6);
+      return (uint32)(qst->reward_xp * 0.6);
   if( plr->getLevel() == qst->max_level +  8 )
-      return (qst->reward_xp * 0.4);
+      return (uint32)(qst->reward_xp * 0.4);
   if( plr->getLevel() == qst->max_level +  9 )
-      return (qst->reward_xp * 0.2);
+      return (uint32)(qst->reward_xp * 0.2);
 		     
   else
       return 0;

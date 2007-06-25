@@ -46,7 +46,7 @@ void InstanceSavingManagement::BuildSavedInstancesForPlayer(Player *pPlayer)
 	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
 	{
 		Instance_Map_Info_Holder *p = itr->second;
-		result = p->FindPlayer(pPlayer->GetGUID(), NULL, MODE_NORMAL); //find only non grouped results
+		result = p->FindPlayer(pPlayer->GetGUID(), (uint32)NULL, MODE_NORMAL); //find only non grouped results
 		if(result)
 		{
 			data.Initialize(SMSG_INSTANCE_SAVE);
@@ -217,7 +217,7 @@ bool InstanceSavingManagement::IsPlayerSavedToMap(uint32 mapid, Player *pPlayer)
 		Instance_Map_Info_Holder *p = itr->second;
         if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
-            bool result = p->FindPlayer(pPlayer->GetGUID(), NULL, pPlayer->iInstanceType);
+            bool result = p->FindPlayer(pPlayer->GetGUID(), (uint32)NULL, pPlayer->iInstanceType);
 			if(result)
             {
                 instanceInfoListMutex.Release();

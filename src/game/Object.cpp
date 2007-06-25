@@ -552,8 +552,10 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 								SetFlag(UNIT_FIELD_AURASTATE,13); //have no idea which spell is this :D
 							if(pct<20 && !HasFlag(UNIT_FIELD_AURASTATE,2))
 								SetFlag(UNIT_FIELD_AURASTATE,2); //required for execute and other spells
-							else if(HasFlag(UNIT_FIELD_AURASTATE,2))
+							else if(HasFlag(UNIT_FIELD_AURASTATE,2)) {
+							  if(pct > 20)
 								RemoveFlag(UNIT_FIELD_AURASTATE,2);
+							}
 						}
 						else
 						{
@@ -1439,15 +1441,17 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			pVictim->RemoveAura(pVictim->m_rooted);
 	}
 */	
-	///Rage
-	uint32 val;
+        ///Rage
+        uint32 val;
 
-	if(pVictim->GetPowerType() == POWER_TYPE_RAGE && !spellId && pVictim != this)
-	{	
-		val = pVictim->GetUInt32Value(UNIT_FIELD_POWER2)+(damage*20)/(pVictim->getLevel()*3);
-		pVictim->SetUInt32Value(UNIT_FIELD_POWER2, val>=1000?1000:val);
-	}
-	//
+        if(pVictim->GetPowerType() == POWER_TYPE_RAGE && !spellId && pVictim != this)
+	  {
+	    if(pVictim->IsPlayer() && pVictim->isInCombat()) {
+	      val = pVictim->GetUInt32Value(UNIT_FIELD_POWER2)+(damage*20)/(pVictim->getLevel()*3);
+	      pVictim->SetUInt32Value(UNIT_FIELD_POWER2, val>=1000?1000:val);
+	    }
+	  }
+        //
 
 	if(pVictim->IsPlayer())
 	{
@@ -1905,7 +1909,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		}
 		
 		int32 plus_damage = static_cast<Unit*>(this)->GetDamageDoneMod(school);
-		int32 bonus_damage = plus_damage * dmgdoneaffectperc ;
+		int32 bonus_damage = float2int32(plus_damage * dmgdoneaffectperc);
 		if(spellInfo->SpellGroupType)
 		{
 			SM_FIValue(static_cast<Unit*>(this)->SM_FPenalty, &bonus_damage, spellInfo->SpellGroupType);
@@ -1960,7 +1964,9 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	res=(float)ress;
 	dealdamage dmg;
 	dmg.damage_type = school;
-	dmg.full_damage = res;
+	// ress above is typecasted to float, comming from int, going to int down here..... jesus
+	//dmg.full_damage = res;
+	dmg.full_damage = ress;
 	dmg.resisted_damage = 0;
 	// make it say resisted :p
 	if(res == 0)
@@ -1981,15 +1987,15 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	//DK:FIXME->SplitDamage
 	
 	// Send spell log
-	SendSpellNonMeleeDamageLog(this, pVictim, spellID, res, school, abs_dmg, dmg.resisted_damage, false, 0, critical, IsPlayer());
+	SendSpellNonMeleeDamageLog(this, pVictim, spellID, float2int32(res), school, abs_dmg, dmg.resisted_damage, false, 0, critical, IsPlayer());
 	
 	if(this->IsUnit() && allowProc && spellInfo->Id != 25501)
 	{
-		static_cast<Unit*>(this)->HandleProc(aproc,pVictim,spellInfo,res);
-		pVictim->HandleProc(vproc,(Unit*)this,spellInfo,res);
+		static_cast<Unit*>(this)->HandleProc(aproc,pVictim,spellInfo, float2int32(res));
+		pVictim->HandleProc(vproc,(Unit*)this,spellInfo, float2int32(res));
 	}
 	
-	DealDamage(pVictim, res,  2, 0, spellID);
+	DealDamage(pVictim, float2int32(res),  2, 0, spellID);
 
 	if (pVictim->GetCurrentSpell())
 		pVictim->GetCurrentSpell()->AddTime(school);
@@ -2001,13 +2007,13 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		if(this->GetGUID() == pVictim->VampEmbCaster && IsUnit())
 		{
 			if(static_cast<Unit*>(this)->isAlive())
-				static_cast<Unit*>(this)->VampiricEmbrace(res, pVictim);
+				static_cast<Unit*>(this)->VampiricEmbrace(float2int32(res), pVictim);
 		}
                 //VampiricTouch
 		if(this->GetGUID() == pVictim->VampTchCaster && IsUnit())
 		{
 			if(static_cast<Unit*>(this)->isAlive())
-				static_cast<Unit*>(this)->VampiricTouch(res, pVictim);
+				static_cast<Unit*>(this)->VampiricTouch(float2int32(res), pVictim);
 		}
 	}
 }

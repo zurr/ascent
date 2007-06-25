@@ -1120,7 +1120,7 @@ void Spell::prepare(SpellCastTargets * targets)
 		// handle MOD_CAST_TIME
 		if(u_caster)
 		{
-			m_castTime *= u_caster->GetFloatValue(UNIT_MOD_CAST_SPEED);
+			m_castTime *= float2int32(u_caster->GetFloatValue(UNIT_MOD_CAST_SPEED));
 		}
 	}
 
@@ -2929,14 +2929,14 @@ int32 Spell::CalculateEffect(uint32 i)
 
 	if(m_spellInfo->Id ==3025 ||m_spellInfo->Id==9635 || m_spellInfo->Id == 1178 || m_spellInfo->Id == 24905)
 	{
-		value += m_spellInfo->EffectRealPointsPerLevel[i]*(u_caster->getLevel()-m_spellInfo->baseLevel);
+		value += float2int32(m_spellInfo->EffectRealPointsPerLevel[i]*(u_caster->getLevel()-m_spellInfo->baseLevel));
 	}
 	//sripted shit
 	else
 	if(m_spellInfo->Id == 34120)
 	{			//A steady shot that causes ${$RAP*0.3+$m1} damage. 
 		if(i==0)
-			value +=u_caster->GetRAP()*0.3;
+			value += (uint32)(u_caster->GetRAP()*0.3);
 	}else
 	if(m_spellInfo->Id == 34428 || m_spellInfo->Id ==23881 ||m_spellInfo->Id == 23892 || m_spellInfo->Id==23893 ||m_spellInfo->Id == 23894||
 		m_spellInfo->Id == 25251 || m_spellInfo->Id == 30335)
@@ -2955,7 +2955,7 @@ int32 Spell::CalculateEffect(uint32 i)
 			value+=u_caster->GetAP()/100;
 		else if(i==1)
 		{
-			value =value*3+ u_caster->GetAP()*0.06;
+			value = (uint32)(value*3+ u_caster->GetAP()*0.06);
 		}
 	}else if(m_spellInfo->NameHash == 1594322590)//Mongoose Bite
 	{// ${$AP*0.2+$m1} damage.
@@ -2967,7 +2967,7 @@ int32 Spell::CalculateEffect(uint32 i)
 		if(m_spellInfo->NameHash==3448285709 && i == 0 )//Envenom
 		{
 			value *= p_caster->m_comboPoints;
-			value+=p_caster->GetAP()*(0.03*p_caster->m_comboPoints);
+			value += (uint32)(p_caster->GetAP()*(0.03*p_caster->m_comboPoints));
 			m_requiresCP=true;
 		}
 		int32 comboDamage = (int32)m_spellInfo->EffectPointsPerComboPoint[i];
@@ -2976,7 +2976,7 @@ int32 Spell::CalculateEffect(uint32 i)
 		{
 			
 			if(m_spellInfo->NameHash==3356779121) //Eviscerate
-			value+=p_caster->GetAP()*(0.03*p_caster->m_comboPoints);
+			value += (uint32)(p_caster->GetAP()*(0.03*p_caster->m_comboPoints));
 
 			value += (comboDamage * p_caster->m_comboPoints);
 			m_requiresCP=true;
@@ -3183,10 +3183,10 @@ void Spell::Heal(int32 amount)
 		else if(castaff < 1500) castaff = 1500;
 		float healdoneaffectperc = castaff / 3500;
 		
-		amount += u_caster->HealDoneMod[m_spellInfo->School] * healdoneaffectperc;
+		amount += float2int32(u_caster->HealDoneMod[m_spellInfo->School] * healdoneaffectperc);
 		amount += (amount*u_caster->HealDonePctMod[m_spellInfo->School])/100;
 		amount += unitTarget->HealTakenMod[m_spellInfo->School];//amt of health that u RECIVE, not heal
-		amount += unitTarget->HealTakenPctMod[m_spellInfo->School]*amount;
+		amount += float2int32(unitTarget->HealTakenPctMod[m_spellInfo->School]*amount);
 		
 		float spellCrit = u_caster->spellcritperc + u_caster->SpellCritChanceSchool[m_spellInfo->School];
 		if(critical = Rand(spellCrit))
@@ -3201,8 +3201,8 @@ void Spell::Heal(int32 amount)
 
 	if(p_caster)  
 	{
-		amount += p_caster->SpellHealDoneByInt[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT3);
-		amount += p_caster->SpellHealDoneBySpr[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT4);
+		amount += float2int32(p_caster->SpellHealDoneByInt[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT3));
+		amount += float2int32(p_caster->SpellHealDoneBySpr[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT4));
 
 		if(unitTarget->IsPlayer())
 		{

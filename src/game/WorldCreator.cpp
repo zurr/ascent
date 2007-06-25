@@ -315,7 +315,9 @@ bool WorldCreator::CheckInstanceForObject(Object *obj, MapInfo *pMapinfo)
 							 {
 								//group leader didnt made any instance yet, create instance for this group.
 								uint32 id = sWorldCreator.CreateInstance(pGroup, pGroup->GetLeader(), pMapinfo->mapid);
-								if(id != NULL)
+								// again, NULL might not be 0
+								//if(id != NULL)
+								if(id != 0)
 								{
 									//INSTANCE CREATED
 									_player->SetInstanceID(id);
@@ -363,7 +365,8 @@ bool WorldCreator::CheckInstanceForObject(Object *obj, MapInfo *pMapinfo)
 						 else
 						 {
 							 uint32 id2 = sWorldCreator.CreateInstance(NULL, _player, pMapinfo->mapid);
-							 if(id2 != NULL)
+							 //if(id2 != NULL)
+							 if(id2 != 0)
 							 {
 								_player->SetInstanceID(id2);
 							 }

@@ -258,7 +258,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_CurrentCharm		  = NULL;
 	m_CurrentTransporter	= NULL;
 	m_SummonedObject		= NULL;
-	m_currentLoot		   = NULL;
+	m_currentLoot		   = (uint64)NULL;
 	pctReputationMod		= 0;
 	roll					= 0;
 	mUpdateCount			= 0;
@@ -4151,14 +4151,14 @@ void Player::UpdateAttackSpeed()
 			speed=weap->GetProto()->Delay;
 	}
 		SetUInt32Value(UNIT_FIELD_BASEATTACKTIME, 
-			speed*(100.0 - ((float)m_meleeattackspeedmod) - CalcRating(17))/100.0);
+			       (uint32)(speed*(100.0 - ((float)m_meleeattackspeedmod) - CalcRating(17))/100.0));
 	
 	weap=GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 	if(weap && weap->GetProto()->Class==2)//weapon
 	{
 		speed=weap->GetProto()->Delay;
 		SetUInt32Value(UNIT_FIELD_BASEATTACKTIME_01, 
-			speed*(100.0 - ((float)m_meleeattackspeedmod) - CalcRating(17))/100.0);
+			       (uint32)(speed*(100.0 - ((float)m_meleeattackspeedmod) - CalcRating(17))/100.0));
 	}
 	  
 	weap=GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -4166,7 +4166,7 @@ void Player::UpdateAttackSpeed()
 	{
 		speed=weap->GetProto()->Delay;
 		SetUInt32Value(UNIT_FIELD_RANGEDATTACKTIME,
-			speed*(100.0 - ((float)m_rangedattackspeedmod) - CalcRating(18))/100.0);
+			       (uint32)(speed*(100.0 - ((float)m_rangedattackspeedmod) - CalcRating(18))/100.0));
 	}
 }
 
@@ -4283,7 +4283,7 @@ void Player::AddRestXP(uint32 amount)
 	if(GetUInt32Value(UNIT_FIELD_LEVEL) >= sWorld.LevelCap)		// Save CPU, don't waste time on this if you're >= 60
 		return;
 	m_restAmount += amount;
-	SetUInt32Value(PLAYER_REST_STATE_EXPERIENCE, (m_restAmount*0.5));
+	SetUInt32Value(PLAYER_REST_STATE_EXPERIENCE, (uint32)(m_restAmount*0.5));
 	UpdateRestState();
 }
 
@@ -5629,7 +5629,7 @@ void Player::RegenerateMana()
 			if(amt<=1.0)//this fixes regen like 0.98
 				cur++;
 			else
-				cur += amt;	
+				cur += float2int32(amt);	
 
 			SetUInt32Value(UNIT_FIELD_POWER1,(cur >= mm) ? mm : cur);
 }
@@ -5676,11 +5676,11 @@ void Player::RegenerateHealth(bool inCombat)
 			if(amt <= 1.0)//this fixes regen like 0.98
 				cur++;
 			else
-				cur += amt;
+				cur += float2int32(amt);
 			SetUInt32Value(UNIT_FIELD_HEALTH,(cur>=mh) ? mh : cur);
 		}
 		else
-			DealDamage(this, amt, 0, 0, 0);
+			DealDamage(this, float2int32(amt), 0, 0, 0);
 	}
 }
 
@@ -5689,8 +5689,23 @@ void Player::LooseRage()
 	//Rage is lost at a rate of 3 rage every 3 seconds. 
 	//The Anger Management talent changes this to 2 rage every 3 seconds.
 	uint32 cur = GetUInt32Value(UNIT_FIELD_POWER2);
-	if(cur)
-		SetUInt32Value(UNIT_FIELD_POWER2,(cur<=20) ? 0 : (cur-20));
+	uint32 decayValue = 30; // default not modified
+	
+	if(cur) {
+	  uint32 cl=getClass();
+
+	  switch(cl) {
+	  case WARRIOR:
+	    // Check for talent modifiers when the talent code is completed
+	    break;
+	  case DRUID:
+	    // For now, i don't think there is anything that might change druids
+	    // rage per decay anywhere
+	    break;
+	  }
+
+	  SetUInt32Value(UNIT_FIELD_POWER2, (cur <= decayValue) ? 0 : (cur - decayValue));
+	}
 }
 
 void Player::RegenerateEnergy()
@@ -5701,7 +5716,7 @@ void Player::RegenerateEnergy()
 		return;
 	float amt = 20.0 * PctPowerRegenModifier;
 
-	cur += amt;
+	cur += float2int32(amt);
 	SetUInt32Value(UNIT_FIELD_POWER4,(cur>=mh) ? mh : cur);
 }
 

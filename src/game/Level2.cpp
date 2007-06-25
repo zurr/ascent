@@ -198,8 +198,8 @@ bool ChatHandler::HandleDeleteCommand(const char* args, WorldSession *m_session)
 	{
 		if(unit->m_spawn)
 		{
-			uint32 cellx=((_maxX-unit->m_spawn->x)/_cellSize);
-			uint32 celly=((_maxY-unit->m_spawn->y)/_cellSize);
+			uint32 cellx=float2int32(((_maxX-unit->m_spawn->x)/_cellSize));
+			uint32 celly=float2int32(((_maxY-unit->m_spawn->y)/_cellSize));
 			unit->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx, celly)->CreatureSpawns.erase(unit->m_spawn);
 		}
 		
@@ -677,8 +677,8 @@ bool ChatHandler::HandleGODelete(const char *args, WorldSession *m_session)
 	
 	if(GObj->m_spawn != 0)
 	{
-		uint32 cellx=((_maxX-GObj->m_spawn->x)/_cellSize);
-		uint32 celly=((_maxY-GObj->m_spawn->y)/_cellSize);
+		uint32 cellx=float2int32(((_maxX-GObj->m_spawn->x)/_cellSize));
+		uint32 celly=float2int32(((_maxY-GObj->m_spawn->y)/_cellSize));
 		m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx,celly)->GOSpawns.erase(GObj->m_spawn);
 		delete GObj->m_spawn;
 	}
@@ -1058,7 +1058,7 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession *m_sess
 	sp->spellType = atoi(spellType);
 	sp->spelltargetType = atoi(spelltargetType);
 	sp->floatMisc1 = atof(floatMisc1);
-	sp->Misc2 = atof(Misc2);
+	sp->Misc2 = (uint32)atof(Misc2);
 	sp->minrange = GetMinRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(atoi(spellId))->rangeIndex));
 	sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(atoi(spellId))->rangeIndex));
 	if(sp->agent == AGENT_CALLFORHELP)

@@ -105,9 +105,9 @@ int32 HonorHandler::CalculateHonorPointsForKill(Player *pPlayer, Unit* pVictim)
 		uint32 k_grey = 0;
 
 		if (k_level > 5 && k_level < 40) {
-			k_grey = k_level - (5 + floor(float(float(k_level) / 10.0f)));
+			k_grey = k_level - (uint32)(5 + floor(float(float(k_level) / 10.0f)));
 		} else {
-			k_grey = k_level - (1 + floor(float(float(k_level) / 5.0f)));
+			k_grey = k_level - (uint32)(1 + floor(float(float(k_level) / 5.0f)));
 		}
 
 		float tmp =  (float)(k_level - k_grey);
@@ -128,7 +128,7 @@ int32 HonorHandler::CalculateHonorPointsForKill(Player *pPlayer, Unit* pVictim)
 		honor_points *= ((float)k_level) / 70.0;
 		honor_points *= World::getSingleton().getRate(RATE_HONOR);
 
-		return honor_points;
+		return float2int32(honor_points);
 	}
 	return 0;
 }

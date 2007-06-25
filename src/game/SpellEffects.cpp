@@ -2691,7 +2691,7 @@ void Spell::SpellEffectPickpocket(uint32 i) // pickpocket
 	}		
 
 	uint32 _rank = ((Creature*)unitTarget)->GetCreatureName()->Rank ;
-	unitTarget->loot.gold = (_rank+1) * unitTarget->getLevel() * (sRand.randInt(5) + 1) * sWorld.getRate(RATE_DROP);
+	unitTarget->loot.gold = float2int32((_rank+1) * unitTarget->getLevel() * (sRand.randInt(5) + 1) * sWorld.getRate(RATE_DROP));
 	unitTarget->loot.items.clear();
 
 	p_caster->SendLoot(unitTarget->GetGUID(), 2);
@@ -3627,7 +3627,7 @@ void Spell::SpellEffectSummonDeadPet(uint32 i)
 	if(pPet)
 	{
 		pPet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
-		pPet->SetUInt32Value(UNIT_FIELD_HEALTH, pPet->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.5);
+		pPet->SetUInt32Value(UNIT_FIELD_HEALTH, (uint32)(pPet->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.5));
 		pPet->setDeathState(ALIVE);
 		pPet->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, pPet, 0);
 		sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
@@ -3839,7 +3839,7 @@ void Spell::SpellEffectDummyMelee(uint32 i) // Normalized Weapon damage +
 
 	if(m_spellInfo->Effect[0] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE || m_spellInfo->Effect[1] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE)
 	{
-		add_damage = damage * 1.5;
+		add_damage = (uint32)(damage * 1.5);
 		return;
 	}
    

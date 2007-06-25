@@ -620,7 +620,7 @@ public:
 
 	int32 GetAP()
 	{
-		int32 temp=(GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS))*GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER);
+		int32 temp=(GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS))*float2int32(GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER));
 		if(temp>=0)
 			return temp;
 		return	0;
@@ -628,7 +628,7 @@ public:
 		
 	int32 GetRAP()
 	{
-		int32 temp=(GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS))*GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER);
+		int32 temp=(GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS))*float2int32(GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER));
 		if(temp>=0)
 			return temp;
 		return	0;

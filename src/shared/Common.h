@@ -295,6 +295,31 @@ Scripting system exports/imports
 #define GNL_LONG_AT_BYTE(x,b)	*(long *)(((char *)&x) + b)
 #define FIST_MAGIC_QROUND (((65536.0 * 65536.0 * 16.0) + (65536.0 * 0.5)) * 65536.0)
 
+/// Fastest Method of float2int32
+static inline int float2int32(const float value)
+{
+  union { int asInt[2]; double asDouble; } n;
+  n.asDouble = value + 6755399441055744.0;
+  
+#if GNL_BIG_ENDIAN
+  return n.asInt [1];
+#else
+  return n.asInt [0];
+#endif
+}
+
+/// Fastest Method of long2int32
+static inline int long2int32(const double value)
+{
+  union { int asInt[2]; double asDouble; } n;
+  n.asDouble = value + 6755399441055744.0;
+
+#if GNL_BIG_ENDIAN
+  return n.asInt [1];
+#else
+  return n.asInt [0];
+#endif
+}
 
 /// Round a floating-point value and convert to integer
 static inline long QRound (double inval)

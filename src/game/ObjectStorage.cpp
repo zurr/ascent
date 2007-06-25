@@ -67,7 +67,9 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 			cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
 			cn->m_fleeHealth = 0.0f;
-			cn->m_fleeDuration = 0.0f;
+			// please.... m_fleeDuration is a uint32...
+			//cn->m_fleeDuration = 0.0f;
+			cn->m_fleeDuration = 0;
 
 			if(!itr->Inc())
 				break;
