@@ -638,6 +638,13 @@ void Aura::RemoveAuraVisual()
 
 void Aura::EventUpdateAA(float r)
 {
+	/* burlex: cheap hack to get this to execute in the correct context always */
+	if(event_GetCurrentInstanceId() == -1)
+	{
+		event_Relocate();
+		return;
+	}
+
 	Unit * u_caster = GetUnitCaster();
 
 	// if the caster is no longer valid->remove the aura
@@ -678,7 +685,7 @@ void Aura::EventUpdateAA(float r)
 			if((*itr) != plr && (*itr)->GetDistanceSq(u_caster) <= r)
 			{
 				// Add the aura if they don't have it.
-				if(!(*itr)->HasActiveAura(m_spellProto->Id))
+				if(!(*itr)->HasActiveAura(m_spellProto->Id) && (*itr)->GetInstanceID() == plr->GetInstanceID())
 				{
 					Aura * aura = new Aura(m_spellProto, -1, u_caster, (*itr));
 					aura->m_areaAura = true;
@@ -705,11 +712,17 @@ void Aura::EventUpdateAA(float r)
 		else
 			iplr = objmgr.GetPlayer((uint32)*it2);
 
-		if(!iplr || iplr->GetDistanceSq(u_caster) > r)
+		if(!iplr || iplr->GetDistanceSq(u_caster) > r || iplr->GetInstanceID() != plr->GetInstanceID())
 		{
 			targets.erase(it2);
 			if(iplr)
-				iplr->RemoveAura(m_spellProto->Id);
+			{
+				// execute in the correct context
+                if(iplr->GetInstanceID() != plr->GetInstanceID())
+					sEventMgr.AddEvent(((Unit*)iplr), &Unit::EventRemoveAura, m_spellProto->Id, EVENT_DELETE_TIMER, 500, 1);
+				else
+					iplr->RemoveAura(m_spellProto->Id);
+			}
 
 			continue;
 		}

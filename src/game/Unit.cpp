@@ -2806,10 +2806,10 @@ AuraCheckResponse Unit::AuraCheck(uint32 name_hash, uint32 rank, Aura* aur)
 void Unit::AddToWorld()
 {
 	Object::AddToWorld();
-	
-	// don't relocate auras
-	if(!m_mapMgr) return;
+}
 
+void Unit::OnPushToWorld()
+{
 	for(uint32 x = 0; x < MAX_AURAS+MAX_PASSIVE_AURAS; ++x)
 	{
 		if(m_auras[x] != 0)

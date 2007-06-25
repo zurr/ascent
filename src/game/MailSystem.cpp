@@ -516,7 +516,12 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data )
 		if(sender != 0)
 		{
 			// player is inworld... this is easy..
-			sender->ModUInt32Value(PLAYER_FIELD_COINAGE, message->cod);
+			// prevent from executing in wrong context
+			uint32 field = PLAYER_FIELD_COINAGE;
+			if(sender->GetInstanceID() != _player->GetInstanceID())
+				sEventMgr.AddEvent(((Object*)sender), &Object::ModUInt32Value, field, (int32)message->cod, EVENT_DELETE_TIMER, 1, 1);
+			else
+				sender->ModUInt32Value(PLAYER_FIELD_COINAGE, message->cod);
 
 			// might as well send them a message
 			ChatHandler::getSingleton().SystemMessageToPlr(sender, "%s pays you %u copper for your %s (via cash on delivery).", 

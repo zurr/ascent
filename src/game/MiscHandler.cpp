@@ -223,25 +223,34 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 		Group* party = _player->GetGroup();
 		if(party)
 		{
-			uint32 share = money/party->MemberCount();
-
-			pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
-			pkt << share;
+			/*uint32 share = money/party->MemberCount();*/
+			vector<Player*> targets;
+			targets.reserve(party->MemberCount());
 
 			GroupMembersSet::iterator itr;
-			SubGroup *sgrp = NULL;
-
+			SubGroup * sgrp;
 			for(uint32 i = 0; i < party->GetSubGroupCount(); i++)
 			{
 				sgrp = party->GetSubGroup(i);
 				for(itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
 				{
-					if(_player->GetZoneId() == (*itr)->GetZoneId())
-					{
-						(*itr)->ModUInt32Value(PLAYER_FIELD_COINAGE, share);
-						(*itr)->GetSession()->SendPacket(&pkt);
-					}
+					if((*itr)->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->GetInstanceID())
+						targets.push_back((*itr));
 				}
+			}
+
+			if(!targets.size())
+				return;
+
+			uint32 share = money / targets.size();
+
+			pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
+			pkt << share;
+
+			for(vector<Player*>::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+			{
+				(*itr)->ModUInt32Value(PLAYER_FIELD_COINAGE, share);
+				(*itr)->GetSession()->SendPacket(&pkt);
 			}
 		}
 	}   

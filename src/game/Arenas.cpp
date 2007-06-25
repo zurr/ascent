@@ -114,6 +114,7 @@ void Arena::SpawnBattleground()
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_01,-0.0602880);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_02,0.3449600);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_03,0.9365900);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 	
 	// Horde Gate
@@ -122,6 +123,7 @@ void Arena::SpawnBattleground()
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_01,0.0151270);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_02,0.9292169);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_03,-0.3657840);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 
 	bSpawned = true;

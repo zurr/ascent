@@ -933,7 +933,7 @@ uint32 Object::GetModPUInt32Value(const uint32 index, const int32 value)
 	return ((basevalue*value)/100);
 }
 
-void Object::ModUInt32Value(const uint32 index, const int32 value )
+void Object::ModUInt32Value(uint32 index, int32 value )
 {
 	ASSERT( index < m_valuesCount );
 	if(value == 0)

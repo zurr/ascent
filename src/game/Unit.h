@@ -562,6 +562,7 @@ public:
 	virtual void Update( uint32 time );
 	virtual void AddToWorld();
 	virtual void RemoveFromWorld();
+	virtual void OnPushToWorld();
 
 	inline void setAttackTimer(int32 time, bool offhand)
 	{
@@ -685,6 +686,11 @@ public:
 	bool RemoveAura(Aura *aur);
 	bool RemoveAura(uint32 spellId);
 	bool RemoveAura(uint32 spellId,uint64 guid);
+	void EventRemoveAura(uint32 SpellId)
+	{
+		RemoveAura(SpellId);
+	}
+
 	//! Remove all auras
 	void RemoveAllAuras();
     void RemoveAllAuraType(uint32 auratype);//ex:to remove morph spells

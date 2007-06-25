@@ -42,6 +42,7 @@ protected:
 	void event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time);
 	bool event_HasEvent(uint32 EventType);
 	void event_RemoveByPointer(TimedEvent * ev);
+	inline int32 event_GetCurrentInstanceId() { return m_event_Instanceid; }
 
 public:
 	uint32 event_GetEventPeriod(uint32 EventType);

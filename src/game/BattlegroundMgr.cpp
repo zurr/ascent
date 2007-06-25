@@ -1264,7 +1264,7 @@ GameObject* Battleground::SpawnGameObject(uint32 entry,uint32 MapId , float x, f
 	//void Create ( uint32 display_id, uint8 state, uint32 obj_field_entry, float scale, uint16 type, uint16 faction, uint32 mapid, float x, float y, float z, float ang );
 
 	//go->PushToWorld(m_MapMgr);
-	go->AddToWorld();
+	//go->AddToWorld();
 	
 	return go;
 }

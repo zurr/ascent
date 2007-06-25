@@ -86,6 +86,7 @@ void AlteracValley::HandleBanner(Player *p_caster,GameObject *go,uint32 spellid)
 		pcbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
 		pcbanner->SetUInt32Value(GAMEOBJECT_DYN_FLAGS,1);
 		pcbanner->bannerslot = bannerslot;
+		pcbanner->AddToWorld();
 		
 		if(pcbanner->GetInfo()->sound3)
 		{		
@@ -95,6 +96,7 @@ void AlteracValley::HandleBanner(Player *p_caster,GameObject *go,uint32 spellid)
 			pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			pcbanner->pcbannerAura->AddToWorld();
 		}
 		
 		if(go->pcbannerAura)
@@ -246,6 +248,7 @@ void AlteracValley::EventCaptureBase(Player *src,uint32 bannerslot)
 	pcbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pcbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pcbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pcbanner->AddToWorld();
 	
 	if(pcbanner->GetInfo()->sound3)
 	{
@@ -255,6 +258,7 @@ void AlteracValley::EventCaptureBase(Player *src,uint32 bannerslot)
 		pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pcbanner->pcbannerAura->AddToWorld();
 	}
 	
 	if(gcbanner[bannerslot]->pcbannerAura)
@@ -422,6 +426,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	if(pbanner->GetInfo()->sound3)
 	{
@@ -431,6 +436,7 @@ void AlteracValley::SpawnBattleground()
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pbanner->pcbannerAura->AddToWorld();
 	}
 	
 	pbanner->bannerslot = 0;
@@ -440,6 +446,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	if(pbanner->GetInfo()->sound3)
 	{
@@ -449,6 +456,7 @@ void AlteracValley::SpawnBattleground()
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pbanner->pcbannerAura->AddToWorld();
 	}
 	
 	pbanner->bannerslot = 1;
@@ -458,6 +466,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	if(pbanner->GetInfo()->sound3)
 	{
@@ -467,6 +476,7 @@ void AlteracValley::SpawnBattleground()
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pbanner->pcbannerAura->AddToWorld();
 	}
 	
 	pbanner->bannerslot = 2;
@@ -476,6 +486,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	if(pbanner->GetInfo()->sound3)
 	{
@@ -485,6 +496,7 @@ void AlteracValley::SpawnBattleground()
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pbanner->pcbannerAura->AddToWorld();
 	}
 	
 	pbanner->bannerslot = 3;
@@ -494,6 +506,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	if(pbanner->GetInfo()->sound3)
 	{
@@ -503,6 +516,7 @@ void AlteracValley::SpawnBattleground()
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pbanner->pcbannerAura->AddToWorld();
 	}
 	
 	pbanner->bannerslot = 4;
@@ -512,6 +526,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	if(pbanner->GetInfo()->sound3)
 	{
@@ -521,6 +536,7 @@ void AlteracValley::SpawnBattleground()
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pbanner->pcbannerAura->AddToWorld();
 	}
 	
 	pbanner->bannerslot = 5;
@@ -530,6 +546,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 6;
 	
@@ -538,6 +555,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 7;
 	   
@@ -546,6 +564,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 8;
 	   
@@ -554,6 +573,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 9;
 	   
@@ -562,6 +582,7 @@ void AlteracValley::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 10;
 	   

@@ -234,14 +234,14 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 	// Dueling is already catered for
 	AreaTable *atA;
 	AreaTable *atB;
-	if(objA->IsPet())
+	if(objA->IsPet() && ((Pet*)objA)->GetPetOwner())
 		atA = sAreaStore.LookupEntry(static_cast<Pet *>(objA)->GetPetOwner()->GetAreaID());
 	else if (objA->IsPlayer())
 		atA = sAreaStore.LookupEntry(static_cast<Player *>(objA)->GetAreaID());
 	else
 		atA = NULL;
 
-	if(objB->IsPet())
+	if(objB->IsPet() && ((Pet*)objB)->GetPetOwner())
 		atB = sAreaStore.LookupEntry(static_cast<Pet *>(objB)->GetPetOwner()->GetAreaID());
 	else if (objB->IsPlayer())
 		atB = sAreaStore.LookupEntry(static_cast<Player *>(objB)->GetAreaID());

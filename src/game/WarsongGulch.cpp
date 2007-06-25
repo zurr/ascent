@@ -345,6 +345,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 24);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+				pFlags[flagteam]->AddToWorld();
 			}
 			else
 			{
@@ -353,6 +354,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 24);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+				pFlags[flagteam]->AddToWorld();
 			}
 			
 			SetWorldStateValue(Source->m_bgTeam ? WSG_ALLIANCE_FLAG_CAPTURED:WSG_HORDE_FLAG_CAPTURED,1);
@@ -428,6 +430,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 24);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+				pFlags[flagteam]->AddToWorld();
 			}
 			else
 			{
@@ -436,6 +439,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 24);
 				pFlags[flagteam]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+				pFlags[flagteam]->AddToWorld();
 			}
 			
 			uint64 guid = Source->GetGUID();
@@ -514,6 +518,7 @@ void WarsongGulch::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 1:
 			gbuffs[bannerslot] = SpawnGameObject(179899, 489, 1005.17071533203, 1447.94567871094, 335.903228759766, 1.64060950279236, 0, 114, 1);
@@ -522,6 +527,7 @@ void WarsongGulch::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 2:
 			gbuffs[bannerslot] = SpawnGameObject(179904, 489, 1317.50573730469, 1550.85070800781, 313.234375, -0.26179963350296, 0, 114, 1);
@@ -530,6 +536,7 @@ void WarsongGulch::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 3:
 			gbuffs[bannerslot] = SpawnGameObject(179906, 489, 1110.45129394531, 1353.65563964844, 316.518096923828, -0.68067866563797, 0, 114, 1);
@@ -538,6 +545,7 @@ void WarsongGulch::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 4:
 			gbuffs[bannerslot] = SpawnGameObject(179905, 489, 1320.09375, 1378.78967285156, 314.753234863281, 1.18682384490967, 0, 114, 1);
@@ -546,6 +554,7 @@ void WarsongGulch::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 5:
 			gbuffs[bannerslot] = SpawnGameObject(179907, 489, 1139.68774414063, 1560.28771972656, 306.843170166016, -2.4434609413147, 0, 114, 1);
@@ -554,6 +563,7 @@ void WarsongGulch::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 	}
 }
@@ -565,12 +575,15 @@ void WarsongGulch::SpawnBattleground()
 	
 	// Alliance Gates
 	GameObject *gate = SpawnGameObject(179921, 489, 1471.554688, 1458.778076, 362.633240, 0, 33, 114, 2.33271);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 	
 	gate = SpawnGameObject(179919, 489, 1492.477783, 1457.912354, 342.968933, 0, 33, 114, 2.68149);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 	
 	gate = SpawnGameObject(179918, 489, 1503.335327, 1493.465820, 352.188843, 0, 33, 114, 2.26);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 
 	// Horde Gates
@@ -579,6 +592,7 @@ void WarsongGulch::SpawnBattleground()
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_01,-0.004956);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_02,-0.283972);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_03,0.9586736);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 	
 	gate = SpawnGameObject(179917, 489, 953.0507202, 1459.8424072, 340.6525573, -1.9966197, 32, 114, 0.854700);   
@@ -586,6 +600,7 @@ void WarsongGulch::SpawnBattleground()
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_01,0.1575096);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_02,-0.8239487);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_03,0.5073640);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 
 	// Flags
@@ -594,12 +609,14 @@ void WarsongGulch::SpawnBattleground()
 	pFlags[1]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pFlags[1]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 24);
 	pFlags[1]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pFlags[1]->AddToWorld();
 
 	// silverwing flag - alliance base
 	pFlags[0] = SpawnGameObject(179830, 489, 1540.29, 1481.34, 352.64, 3.17301, 0,1314, 2.5f);
 	pFlags[0]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pFlags[0]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 24);
 	pFlags[0]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pFlags[0]->AddToWorld();
 	
 	SpawnSpiritGuides();
 

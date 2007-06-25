@@ -117,6 +117,7 @@ void ArathiBasin::HandleBanner(Player *p_caster,GameObject *go,uint32 spellid)
 		pcbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
 		pcbanner->SetUInt32Value(GAMEOBJECT_DYN_FLAGS,1);
 		pcbanner->bannerslot = bannerslot;
+		pcbanner->AddToWorld();
 				
 		pcbanner->pcbannerAura = SpawnGameObject(pcbanner->GetInfo()->sound3, 529, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), go->GetOrientation(), 32, 114, 5);
 		pcbanner->pcbannerAura->SetFloatValue(GAMEOBJECT_ROTATION_02,go->GetFloatValue(GAMEOBJECT_ROTATION_02));
@@ -124,6 +125,7 @@ void ArathiBasin::HandleBanner(Player *p_caster,GameObject *go,uint32 spellid)
 		pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 		pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 		pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+		pcbanner->pcbannerAura->AddToWorld();
 		
 		if(go->pcbannerAura)
 		{
@@ -385,6 +387,7 @@ void ArathiBasin::EventResourcesCapture(uint64 srcguid,uint32 bannerslot)
 	pcbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pcbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 1);
 	pcbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pcbanner->AddToWorld();
 	
 	pcbanner->pcbannerAura = src->GetCurrentBattleground()->SpawnGameObject(pcbanner->GetInfo()->sound3, 529, pcbanner->GetPositionX(), pcbanner->GetPositionY(), pcbanner->GetPositionZ(), pcbanner->GetOrientation(), 32, 114, 5);
 	pcbanner->pcbannerAura->SetFloatValue(GAMEOBJECT_ROTATION_02,pcbanner->GetFloatValue(GAMEOBJECT_ROTATION_02));
@@ -392,6 +395,7 @@ void ArathiBasin::EventResourcesCapture(uint64 srcguid,uint32 bannerslot)
 	pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 	pcbanner->pcbannerAura->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pcbanner->pcbannerAura->AddToWorld();
 	
 	if(gcbanner[bannerslot]->pcbannerAura)
 	{
@@ -531,6 +535,7 @@ void ArathiBasin::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			   break;
 		   case 1: // Blacksmith Buff
 			gbuffs[bannerslot] = SpawnGameObject(typeentry, 529, 990.113098144531, 1008.73028564453, -42.6032752990723, 0.820304811000824, 0, 114, 1);
@@ -539,6 +544,7 @@ void ArathiBasin::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 2: // Farm Buff
 			gbuffs[bannerslot] = SpawnGameObject(typeentry, 529, 816.906799, 842.339844, -56.538746, 3.272740, 0, 114, 1);
@@ -547,6 +553,7 @@ void ArathiBasin::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 3: // Lumber mill Buff
 			gbuffs[bannerslot] = SpawnGameObject(typeentry, 529, 808.846252441406, 1185.41748046875, 11.9216051101685, -0.663225054740906, 0, 114, 1);
@@ -555,6 +562,7 @@ void ArathiBasin::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 		case 4: // Mine Buff
 			gbuffs[bannerslot] = SpawnGameObject(typeentry, 529, 1147.09057617188, 816.836242675781, -98.3989562988281, -0.226892784237862, 0, 114, 1);
@@ -563,6 +571,7 @@ void ArathiBasin::SpawnBuff(uint32 typeentry,uint32 bannerslot)
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_STATE, 1);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_TYPE_ID, 6);
 			gbuffs[bannerslot]->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+			gbuffs[bannerslot]->AddToWorld();
 			break;
 	}
 }
@@ -579,6 +588,7 @@ void ArathiBasin::SpawnBattleground()
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_01,-0.0602880);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_02,0.3449600);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_03,0.9365900);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 	
 	// Horde Gate
@@ -587,6 +597,7 @@ void ArathiBasin::SpawnBattleground()
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_01,0.0151270);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_02,0.9292169);
 	gate->SetFloatValue(GAMEOBJECT_ROTATION_03,-0.3657840);
+	gate->AddToWorld();
 	m_Gates.insert(gate);
 	
 	// -- Resources Banner --
@@ -598,6 +609,7 @@ void ArathiBasin::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 10);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 0;
 	
@@ -608,6 +620,7 @@ void ArathiBasin::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 10);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 1;
 	
@@ -618,6 +631,7 @@ void ArathiBasin::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 10);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 2;
 
@@ -628,6 +642,7 @@ void ArathiBasin::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 10);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 3;
 	
@@ -638,6 +653,7 @@ void ArathiBasin::SpawnBattleground()
 	pbanner->SetUInt32Value(GAMEOBJECT_STATE, 1);
 	pbanner->SetUInt32Value(GAMEOBJECT_TYPE_ID, 10);
 	pbanner->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+	pbanner->AddToWorld();
 	
 	pbanner->bannerslot = 4;  
 	
