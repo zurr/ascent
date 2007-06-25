@@ -1217,24 +1217,21 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 	{
 		//yep, the usual special case. This one is shaman talen : Nature's guardian
 		//health is below 30%, we have a mother spell to get value from
-		if(m_spellInfo->Id==31616 && unitTarget->IsPlayer() && pSpellId && unitTarget->GetHealthPct()<30)
+		if(m_spellInfo->Id==31616) 
 		{
-			//check for that 10 second cooldown
-			SpellEntry *spellInfo = sSpellStore.LookupEntry(pSpellId );
-			if(static_cast<Player*>(unitTarget)->CanCastDueToCooldown(spellInfo))
+			if(unitTarget && unitTarget->IsPlayer() && pSpellId && unitTarget->GetHealthPct()<30)
 			{
-				//only trigger it from time to time
-				static_cast<Player*>(unitTarget)->AddCooldown(31616,5000);
-				//heal value is receivad by the level of current active talent :s
-				if(pSpellId)
+				//check for that 10 second cooldown
+				SpellEntry *spellInfo = sSpellStore.LookupEntry(pSpellId );
+				if(spellInfo && static_cast<Player*>(unitTarget)->CanCastDueToCooldown(spellInfo))
 				{
+					//only trigger it from time to time
+					static_cast<Player*>(unitTarget)->AddCooldown(31616,5000);
+					//heal value is receivad by the level of current active talent :s
 					//maybe we should use CalculateEffect(uint32 i) to gain SM benefits
 					int32 value = 0;
-					float randomPointsPerLevel = spellInfo->EffectDicePerLevel[i];
-					int32 basePoints = spellInfo->EffectBasePoints[i] + 1;//+(m_caster->getLevel()*basePointsPerLevel);
+					int32 basePoints = spellInfo->EffectBasePoints[i]+1;//+(m_caster->getLevel()*basePointsPerLevel);
 					int32 randomPoints = spellInfo->EffectDieSides[i];
-					if(u_caster)
-						randomPoints += u_caster->getLevel() * (int32)randomPointsPerLevel;
 					if(randomPoints <= 1)
 						value = basePoints;
 					else
@@ -1242,9 +1239,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 					//the value is in percent. Until now it's a fixed 10%
 					Heal(unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)*value/100);
 				}
-				Heal((int32)damage);
 			}
-
 		}
 		else Heal((int32)damage);
 	}
@@ -2183,7 +2178,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 	CreatureInfo * info = CreatureNameStorage.LookupEntry(cr_entry);
 	if(proto == 0 || info == 0)
 	{
-		sLog.outDetail("Missing summon creature template %u",cr_entry);
+		sLog.outDetail("Warning : Missing summon creature template %u used by spell %u!",cr_entry,m_spellInfo->Id);
 		return;
 	}
 	for(int i=0;i<damage;i++)
@@ -2218,9 +2213,6 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
         uint32 cellx=((_maxX-sp->x)/_cellSize);
         uint32 celly=((_maxY-sp->y)/_cellSize);
 		u_caster->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx,celly)->CreatureSpawns.insert(sp);
-
-		//set target to follow
-        p->GetAIInterface()->Init(p,AITYPE_AGRO,MOVEMENTTYPE_NONE,NULL);
 
 		//make sure they will be desumonized (roxor)
 		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1);

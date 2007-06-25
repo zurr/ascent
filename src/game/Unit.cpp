@@ -506,6 +506,9 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 
 			if(spellId && Rand(itr2->procChance))
 			{
+				//yep, another special case: Nature's grace
+				if(spellId==31616 && GetHealthPct()>30)
+					continue;
 				SpellEntry *spellInfo = sSpellStore.LookupEntry(spellId );
 				if(!spellInfo)
 				{

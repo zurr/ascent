@@ -774,7 +774,7 @@ void World::SetInitialWorldSettings()
 					sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
 			}			
 		}
-		//omg lighnong shield trigger spell id's are all wrong ?
+		//omg lighning shield trigger spell id's are all wrong ?
 		//if you are bored you could make thiese by hand but i guess we might find other spells with this problem..and this way it's safe
 		if(strstr(nametext, "Lightning Shield") && sp->EffectTriggerSpell[0])
 		{
@@ -786,6 +786,12 @@ void World::SetInitialWorldSettings()
 				sp->EffectTriggerSpell[0]=atoi(startofid); //get new lightning shield trigger id
 			}
 		}
+		//more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
+		if( //strstr(nametext, "Nature's Guardian") && 
+			sp->EffectTriggerSpell[0]==18350
+			)
+			sp->EffectTriggerSpell[0]=31616;
+		
 		sp->procFlags=pr;
 		//sp->dummy=result;
 	}
