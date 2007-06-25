@@ -16,6 +16,9 @@
 #include <signal.h>
 #include "../shared/svn_revision.h"
 #include <TextLogger.h>
+#ifndef WIN32
+#include <sys/resource.h>
+#endif
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
