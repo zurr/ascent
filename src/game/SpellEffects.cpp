@@ -2522,9 +2522,13 @@ void Spell::SpellEffectSummonObject(uint32 i)
 		}
 		else if(entry == 36727 || entry == 177193) // Portal of Summoning and portal of doom
 		{
-			go->m_ritualmembers[0] = p_caster;
-			go->m_ritualcaster = p_caster;
-			go->m_ritualtarget = p_caster->GetMapMgr()->GetPlayer(p_caster->GetSelection());
+			Player * pTarget = p_caster->GetMapMgr()->GetPlayer(p_caster->GetSelection());
+			if(!pTarget)
+				return;
+
+			go->m_ritualmembers[0] = p_caster->GetGUID();
+			go->m_ritualcaster = p_caster->GetGUID();
+			go->m_ritualtarget = pTarget->GetGUID();
 			go->m_ritualspell = m_spellInfo->Id;	 
 		}
 		else//Lightwell,if there is some other type -- add it

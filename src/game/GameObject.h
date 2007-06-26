@@ -173,8 +173,8 @@ public:
 	/// Quest data
 	std::list<QuestRelation *>* m_quests;
    
-	Player **m_ritualmembers;
-	Player *m_ritualcaster,*m_ritualtarget;
+	uint32 *m_ritualmembers;
+	uint32 m_ritualcaster,m_ritualtarget;
 	uint32 m_ritualspell;
 
 	void InitAI();

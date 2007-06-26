@@ -1169,23 +1169,24 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			{
 				if(!obj->m_ritualmembers[i])
 				{
-					obj->m_ritualmembers[i] = plyr;
+					obj->m_ritualmembers[i] = plyr->GetGUID();
 					plyr->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, obj->GetGUID());
 					plyr->SetUInt32Value(UNIT_CHANNEL_SPELL, obj->m_ritualspell);
 					break;
-				}
-				if(obj->m_ritualmembers[i] && obj->m_ritualmembers[i]->GetGUID() == plyr->GetGUID()) 
+				}else if(obj->m_ritualmembers[i] == plyr->GetGUID()) 
 					return;
 			}
 
 			if(i == goinfo->SpellFocus - 1)
 			{
+				Player * plr;
 				for(i=0;i<goinfo->SpellFocus;i++)
 				{
-					if(obj->m_ritualmembers[i])
+					plr = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[i]);
+					if(plr)
 					{
-						obj->m_ritualmembers[i]->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, 0);
-						obj->m_ritualmembers[i]->SetUInt32Value(UNIT_CHANNEL_SPELL, 0);
+						plr->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, 0);
+						plr->SetUInt32Value(UNIT_CHANNEL_SPELL, 0);
 					}
 				}
 				
@@ -1197,9 +1198,13 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 					info = sSpellStore.LookupEntry(goinfo->sound1);
 					if(!info)
 						break;
+					Player * target = _player->GetMapMgr()->GetPlayer(obj->m_ritualtarget);
+					if(!target)
+						return;
+
 					spell = new Spell(obj,info,true,NULL);
 					SpellCastTargets targets;
-					targets.m_unitTarget = obj->m_ritualtarget->GetGUID();
+					targets.m_unitTarget = target->GetGUID();
 					spell->prepare(&targets);
 				}
 				else if(goinfo->ID == 177193) // doom portal
@@ -1209,7 +1214,11 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 					Spell * spell = NULL;
 					
 					// kill the sacrifice player
-					psacrifice = obj->m_ritualmembers[(int)(rand()%(goinfo->SpellFocus-1))];
+					psacrifice = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[(int)(rand()%(goinfo->SpellFocus-1))]);
+					Player * pCaster = obj->GetMapMgr()->GetPlayer(obj->m_ritualcaster);
+					if(!psacrifice || !pCaster)
+						return;
+
 					info = sSpellStore.LookupEntry(goinfo->sound4);
 					if(!info)
 						break;
@@ -1219,9 +1228,9 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 					
 					// summons demon		   
 					info = sSpellStore.LookupEntry(goinfo->sound1);
-					spell = new Spell(obj->m_ritualcaster, info, true, NULL);
+					spell = new Spell(pCaster, info, true, NULL);
 					SpellCastTargets targets;
-					targets.m_unitTarget = obj->m_ritualcaster->GetGUID();
+					targets.m_unitTarget = pCaster->GetGUID();
 					spell->prepare(&targets);					
 				}
 			}

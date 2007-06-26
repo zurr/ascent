@@ -331,8 +331,8 @@ void GameObject::InitAI()
 	}
 	else if(pInfo->Type == GAMEOBJECT_TYPE_RITUAL)
 	{	
-		m_ritualmembers = new Player*[pInfo->SpellFocus];
-		memset(m_ritualmembers,0,sizeof(Player*)*pInfo->SpellFocus);
+		m_ritualmembers = new uint32[pInfo->SpellFocus];
+		memset(m_ritualmembers,0,sizeof(uint32)*pInfo->SpellFocus);
 	}
 
 	myScript = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
