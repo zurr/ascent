@@ -561,7 +561,7 @@ public:
 	inline uint32 GetGuildId() { return m_uint32Values[PLAYER_GUILDID]; }
 	void SetGuildId(uint32 guildId);
 	inline uint32 GetGuildRank() { return m_uint32Values[PLAYER_GUILDRANK]; }
-	inline void SetGuildRank(uint32 guildRank) { SetUInt32Value(PLAYER_GUILDRANK, guildRank); }
+	void SetGuildRank(uint32 guildRank) { SetUInt32Value(PLAYER_GUILDRANK, guildRank); }
 	uint64 GetGuildInvitersGuid() { return m_invitersGuid; }
 	void SetGuildInvitersGuid( uint64 guid ) { m_invitersGuid = guid; }
 	void UnSetGuildInvitersGuid() { m_invitersGuid = 0; }

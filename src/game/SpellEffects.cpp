@@ -2531,9 +2531,9 @@ void Spell::SpellEffectSummonObject(uint32 i)
 			if(!pTarget)
 				return;
 
-			go->m_ritualmembers[0] = p_caster->GetGUID();
-			go->m_ritualcaster = p_caster->GetGUID();
-			go->m_ritualtarget = pTarget->GetGUID();
+			go->m_ritualmembers[0] = p_caster->GetGUIDLow();
+			go->m_ritualcaster = p_caster->GetGUIDLow();
+			go->m_ritualtarget = pTarget->GetGUIDLow();
 			go->m_ritualspell = m_spellInfo->Id;	 
 		}
 		else//Lightwell,if there is some other type -- add it
@@ -3656,10 +3656,14 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 	
 	if( GoSummon )
 	{
-		if( GoSummon->IsInWorld() )
-			GoSummon->RemoveFromWorld();
-
-		delete GoSummon;
+		if(GoSummon->GetInstanceID() != u_caster->GetInstanceID())
+			sEventMgr.AddEvent(GoSummon, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1000, 1);
+		else
+		{
+			if( GoSummon->IsInWorld() )
+				GoSummon->RemoveFromWorld();
+			delete GoSummon;
+		}
 	}
 
    

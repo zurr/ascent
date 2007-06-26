@@ -382,6 +382,13 @@ public:
 	bool m_inQueue;
 	inline void SetMapMgr(MapMgr * mgr) { m_mapMgr = mgr; }
 
+	void Delete()
+	{
+		if(IsInWorld())
+			RemoveFromWorld();
+		delete this;
+	}
+
 protected:
 	Object (  );
 

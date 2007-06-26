@@ -602,5 +602,14 @@ void GameObject::OnPushToWorld()
 void GameObject::RemoveInRangeObject(Object* pObj)
 {
 	if(m_summonedGo && m_summoner == pObj)
+	{
+		for(int i = 0; i < 4; i++)
+			if (m_summoner->m_ObjectSlots[i] == this)
+				m_summoner->m_ObjectSlots[i] = NULL;
+
 		m_summoner = 0;
+		sEventMgr.AddEvent(this, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 5000, 1);
+	}
+
+	Object::RemoveInRangeObject(pObj);
 }

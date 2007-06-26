@@ -313,7 +313,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 	OutPacket(SMSG_PONG, 4, &ping);
 
 	// Dynamically change nagle buffering status based on latency.
-	if(_latency >= 150)
+	if(_latency >= 250)
 	{
 		if(!m_nagleEanbled)
 		{

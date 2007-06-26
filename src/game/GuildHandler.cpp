@@ -324,7 +324,14 @@ void WorldSession::HandleGuildPromote(WorldPacket & recv_data)
 	if(pTarget)
 	{
 		//They Online
-		pTarget->SetGuildRank(pTargetRank);
+		if(pTarget->GetInstanceID() != _player->GetInstanceID())
+		{
+			sEventMgr.AddEvent(pTarget, &Player::SetGuildRank, (uint32)pTargetRank, 1, 1, 1);
+		}
+		else
+		{
+			pTarget->SetGuildRank(pTargetRank);
+		}
 	//	pTarget->SetUInt32Value(PLAYER_GUILDRANK, pTargetRank);
 	}
 

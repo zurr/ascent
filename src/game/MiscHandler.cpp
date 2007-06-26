@@ -1169,11 +1169,11 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			{
 				if(!obj->m_ritualmembers[i])
 				{
-					obj->m_ritualmembers[i] = plyr->GetGUID();
+					obj->m_ritualmembers[i] = plyr->GetGUIDLow();
 					plyr->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, obj->GetGUID());
 					plyr->SetUInt32Value(UNIT_CHANNEL_SPELL, obj->m_ritualspell);
 					break;
-				}else if(obj->m_ritualmembers[i] == plyr->GetGUID()) 
+				}else if(obj->m_ritualmembers[i] == plyr->GetGUIDLow()) 
 					return;
 			}
 

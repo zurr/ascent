@@ -234,9 +234,9 @@ Unit::~Unit()
 
 	delete m_aiInterface;
 
-	for(int i = 0; i < 4; i++)
+	/*for(int i = 0; i < 4; i++)
 		if (m_ObjectSlots[i])
-			delete m_ObjectSlots[i];
+			delete m_ObjectSlots[i];*/
 
 	if(m_currentSpell)
 		m_currentSpell->cancel();
@@ -2838,9 +2838,18 @@ void Unit::OnPushToWorld()
 
 void Unit::RemoveFromWorld()
 {
-	Object::RemoveFromWorld();
 	if(dynObj != 0)
 		dynObj->Remove();
+
+	for(uint32 i = 0; i < 4; ++i)
+		if(m_ObjectSlots[i] != 0)
+		{
+			sEventMgr.AddEvent(m_ObjectSlots[i], &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 100, 1);
+			m_ObjectSlots[i] = 0;
+		}
+
+	Object::RemoveFromWorld();
+
 
 	for(uint32 x = 0; x < MAX_AURAS+MAX_PASSIVE_AURAS; ++x)
 	{

@@ -2912,9 +2912,6 @@ void Player::RemoveFromWorld()
 	{
 		if(m_TotemSlots[x])
 			m_TotemSlots[x]->TotemExpire();
-			
-		if(m_ObjectSlots[x])
-			m_ObjectSlots[x]->Expire();
 	}
 
 	ResetHeartbeatCoords();
@@ -2928,27 +2925,17 @@ void Player::RemoveFromWorld()
 
 	if(m_SummonedObject)
 	{
-		if(m_SummonedObject->IsInWorld())
+		if(m_SummonedObject->GetInstanceID() != GetInstanceID())
 		{
-			m_SummonedObject->RemoveFromWorld();
+			sEventMgr.AddEvent(m_SummonedObject, &Object::Delete, EVENT_GAMEOBJECT_EXPIRE, 100, 1);
+		}else
+		{
+			if(m_SummonedObject->IsInWorld())
+			{
+				m_SummonedObject->RemoveFromWorld();
+			}
+			delete m_SummonedObject;
 		}
-
-
-		if(m_SummonedObject->GetTypeId() == TYPEID_UNIT)
-		{
-			if(m_SummonedObject->IsPet())
-				delete ((Pet*)m_SummonedObject);
-			else
-				delete ((Creature*)m_SummonedObject);
-		}else if(m_SummonedObject->GetTypeId() == TYPEID_GAMEOBJECT)
-		{
-			delete ((GameObject*)m_SummonedObject);
-		}
-		else if(m_SummonedObject->GetTypeId() == TYPEID_DYNAMICOBJECT)
-		{
-			delete ((DynamicObject*)m_SummonedObject);
-		}
-			
 		m_SummonedObject = NULL;
 	}
 
@@ -3584,17 +3571,12 @@ void Player::SpawnCorpseBones()
 	{
 		if (pCorpse->IsInWorld() && pCorpse->GetCorpseState() == CORPSE_STATE_BODY)
 		{
-			pCorpse->SetUInt32Value(CORPSE_FIELD_FLAGS, 5);
-			pCorpse->SetUInt64Value(CORPSE_FIELD_OWNER, 0); // remove corpse owner association
-			//remove item association
-			for (int i = 0; i < EQUIPMENT_SLOT_END; i++)
+			if(pCorpse->GetInstanceID() != GetInstanceID())
 			{
-				if(pCorpse->GetUInt32Value(CORPSE_FIELD_ITEM + i))
-					pCorpse->SetUInt32Value(CORPSE_FIELD_ITEM + i, 0);
+				sEventMgr.AddEvent(pCorpse, &Corpse::SpawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1);
 			}
-			pCorpse->DeleteFromDB();
-			objmgr.CorpseAddEventDespawn(pCorpse);
-			pCorpse->SetCorpseState(CORPSE_STATE_BONES);
+			else
+				pCorpse->SpawnBones();
 		}
 		else
 		{

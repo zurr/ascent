@@ -52,6 +52,7 @@ public:
 	Loot loot;
 	void generateLoot();
 
+	void SpawnBones();
 private:
 	uint32 m_state;
 	uint32 _fields[CORPSE_END];

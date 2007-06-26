@@ -102,3 +102,18 @@ void Corpse::generateLoot()
 {
 	loot.gold = rand() % 150 + 50; // between 50c and 1.5s, need to fix this!
 }
+
+void Corpse::SpawnBones()
+{
+	SetUInt32Value(CORPSE_FIELD_FLAGS, 5);
+	SetUInt64Value(CORPSE_FIELD_OWNER, 0); // remove corpse owner association
+	//remove item association
+	for (int i = 0; i < EQUIPMENT_SLOT_END; i++)
+	{
+		if(GetUInt32Value(CORPSE_FIELD_ITEM + i))
+			SetUInt32Value(CORPSE_FIELD_ITEM + i, 0);
+	}
+	DeleteFromDB();
+	objmgr.CorpseAddEventDespawn(this);
+	SetCorpseState(CORPSE_STATE_BONES);
+}
