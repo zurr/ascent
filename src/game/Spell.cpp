@@ -377,9 +377,12 @@ bool Spell::DidHit(uint64 target)
 	}
 	//check mechanical resistance
 	//i have no idea what is the best pace for this code
-	if(p_victim)
-		resistchance += p_victim->MechanicsResistancesPCT[m_spellInfo->DispelType];
-	else resistchance += u_victim->MechanicsResistancesPCT[m_spellInfo->DispelType];
+	if(m_spellInfo->MechanicsType<27)
+	{
+		if(p_victim)
+			resistchance += p_victim->MechanicsResistancesPCT[m_spellInfo->MechanicsType];
+		else resistchance += u_victim->MechanicsResistancesPCT[m_spellInfo->MechanicsType];
+	}
  
 	resistchance = 100.0-resistchance;
 	//rating bonus
