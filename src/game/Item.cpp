@@ -518,6 +518,11 @@ int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Per
 		EnchantLog << Enchantment->Id;
 		EnchantLog << uint8(0);
 		m_owner->GetSession()->SendPacket(&EnchantLog);
+
+		if(m_owner->GetTradeTarget())
+		{
+			m_owner->SendTradeUpdate();
+		}
 	
 		ApplyEnchantmentBonus(Slot, APPLY);
 	}

@@ -2872,13 +2872,41 @@ int8 Spell::CheckItems()
 			else
 			{
 				if(m_spellInfo->EquippedItemClass != -1)//all items
-					if((m_spellInfo->EquippedItemClass != proto->Class)||
-						!(m_spellInfo->EquippedItemSubClass & (1 << proto->SubClass)) ||
-						
-						// replaced the dummy code with correct code
-						//(m_spellInfo->dummy && !(m_spellInfo->dummy & (1<<proto->InventoryType))))		
-						(m_spellInfo->RequiredItemFlags && !(m_spellInfo->RequiredItemFlags & (1<<proto->InventoryType))))		
-							return int8(SPELL_FAILED_BAD_TARGETS);
+					if(m_spellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM || m_spellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)
+					{
+						if(m_spellInfo->RequiredItemFlags == 0x10000)
+						{
+							if(proto->InventoryType != INVTYPE_CLOAK)
+								return int8(SPELL_FAILED_BAD_TARGETS);
+						}
+						else if(m_spellInfo->RequiredItemFlags == 0x800)
+						{
+							if(proto->InventoryType != INVTYPE_FINGER)
+								return int8(SPELL_FAILED_BAD_TARGETS);
+						}
+						else if(m_spellInfo->RequiredItemFlags == 0)
+						{
+							if(proto->InventoryType != INVTYPE_SHIELD)
+								return int8(SPELL_FAILED_BAD_TARGETS);
+						}
+						else
+						{
+							if((m_spellInfo->EquippedItemClass != proto->Class)||
+							!(m_spellInfo->EquippedItemSubClass & (1 << proto->SubClass)) ||
+							(m_spellInfo->RequiredItemFlags && !(m_spellInfo->RequiredItemFlags & (1<<proto->InventoryType))))
+								return int8(SPELL_FAILED_BAD_TARGETS);
+						}
+					}
+					else
+					{
+						if((m_spellInfo->EquippedItemClass != proto->Class)||
+							!(m_spellInfo->EquippedItemSubClass & (1 << proto->SubClass)) ||
+							
+							// replaced the dummy code with correct code
+							//(m_spellInfo->dummy && !(m_spellInfo->dummy & (1<<proto->InventoryType))))		
+							(m_spellInfo->RequiredItemFlags && !(m_spellInfo->RequiredItemFlags & (1<<proto->InventoryType))))		
+								return int8(SPELL_FAILED_BAD_TARGETS);
+					}
 			}
 		}
 		else 
