@@ -2789,7 +2789,7 @@ bool ObjectMgr::HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event)
 
 void ObjectMgr::LoadInstanceReputationModifiers()
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM reputation_onkill_instance");
+	QueryResult * result = sDatabase.Query("SELECT * FROM reputation_instance_onkill");
 	if(!result) return;
 
 	do 

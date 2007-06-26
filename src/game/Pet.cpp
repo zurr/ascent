@@ -156,6 +156,9 @@ Pet::~Pet()
 
 void Pet::Update(uint32 time)
 {
+	if(!m_Owner)
+		return;
+
 	Creature::Update(time); // passthrough
 
 	if(bHasLoyalty)

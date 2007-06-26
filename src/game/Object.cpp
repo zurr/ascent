@@ -266,7 +266,7 @@ void Object::DestroyForPlayer(Player *target) const
 /// TODO: rewrite this stuff, document unknown fields and flags
 void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2, Player* target )
 {
-	ByteBuffer *splinebuf = target->GetAndRemoveSplinePacket(GetGUID());
+	ByteBuffer *splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(GetGUID()) : 0;
 	*data << (uint8)flags;
 
 	Player * pThis = 0;

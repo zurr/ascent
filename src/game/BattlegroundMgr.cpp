@@ -840,7 +840,7 @@ void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 	{
 		m_Active = true;
 		sEventMgr.AddEvent(this, &Battleground::EventResurrectPlayers, EVENT_BATTLEGROUND_REVIVE_PLAYERS, 30000, 0);
-		EventResurrectPlayers();
+		/*EventResurrectPlayers();*/
 	}
 	if(!bSpawned && GetMapId() == 489)
 		((WarsongGulch*)this)->SpawnBattleground();

@@ -167,12 +167,15 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 	{
 		if(objB->IsPlayer())
 			if(
+				static_cast<Pet *>(objA)->GetPetOwner() &&
 				static_cast<Pet *>(objA)->GetPetOwner()->DuelingWith == static_cast<Player *>(objB) && 
 				static_cast<Pet *>(objA)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
 				)
 				return true;
 		if(objB->IsPet())
-			if(static_cast<Pet *>(objA)->GetPetOwner()->DuelingWith == static_cast<Pet *>(objB)->GetPetOwner() && 
+			if(static_cast<Pet *>(objA)->GetPetOwner() &&
+				static_cast<Pet *>(objB)->GetPetOwner() &&
+				static_cast<Pet *>(objA)->GetPetOwner()->DuelingWith == static_cast<Pet *>(objB)->GetPetOwner() && 
 				static_cast<Pet *>(objA)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
 				)
 				return true;
@@ -186,8 +189,9 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 				static_cast<Pet *>(objB)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
 				)
 				return true;
-		if(objA->IsPet())
+		else if(objA->IsPet())
 			if(static_cast<Pet*>(objA)->GetPetOwner() && static_cast<Pet *>(objB)->GetPetOwner() &&
+				static_cast<Pet*>(objB)->GetPetOwner() &&
 				static_cast<Pet *>(objB)->GetPetOwner()->DuelingWith == static_cast<Pet *>(objA)->GetPetOwner() && 
 				static_cast<Pet *>(objB)->GetPetOwner()->GetDuelState() == DUEL_STATE_STARTED
 				)

@@ -532,6 +532,9 @@ bool QuestMgr::OnGameObjectActivate(Player *plr, GameObject *go)
 
 void QuestMgr::OnPlayerKill(Player* plr, Creature* victim)
 {
+	if(!plr)
+		return;
+
 	uint32 i, j;
 	uint32 entry = victim->GetEntry();
 	QuestLogEntry *qle;
