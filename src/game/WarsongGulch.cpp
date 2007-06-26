@@ -83,7 +83,7 @@ void WarsongGulch::HandleBattlegroundAreaTrigger(Player *plr, uint32 TriggerID)
 		case 3669:
 		case 3671:
 			{
-				RemovePlayer(plr, true, true);
+				RemovePlayer(plr, true, true, true);
 				return;
 			}break;
 		case 3646:

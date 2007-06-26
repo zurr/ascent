@@ -196,6 +196,6 @@ bool ChatHandler::HandleBattlegroundExitCommand(const char* args, WorldSession* 
 	}
 
 	GreenSystemMessage(m_session, "Removed player from battleground.");
-	bg->RemovePlayer(plr, true, true, false);
+	bg->RemovePlayer(plr, true, true, true);
 	return true;
 }
