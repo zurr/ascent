@@ -115,15 +115,7 @@ void DynamicObject::RemoveInRangeObject(Object* pObj)
 {
 	if(pObj->IsUnit())
 	{
-		bool attackable;
-		if(p_caster)
-			attackable = isAttackable(p_caster, pObj);
-		else
-			attackable = isAttackable(this, pObj);
-
-		if(attackable)
-			m_inRangeOppFactions.erase(((Unit*)pObj));
-
+		m_inRangeOppFactions.erase(((Unit*)pObj));
 		targets.erase(((Unit*)pObj));
 	}
 	Object::RemoveInRangeObject(pObj);
