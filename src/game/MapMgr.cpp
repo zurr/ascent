@@ -37,6 +37,9 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellH
 	RaidExpireTime = 0;
 	if(pMapInfo && pMapInfo->type == INSTANCE_RAID || pMapInfo && pMapInfo->type == INSTANCE_MULTIMODE)
 	{
+		if(!pMapInfo->cooldown)
+			pMapInfo->cooldown = 604800;
+
 		RaidExpireTime = (CreationTime + (pMapInfo ? pMapInfo->cooldown : 604800));
 	}
 	m_iCreator = 0;

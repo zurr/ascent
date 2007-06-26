@@ -1211,6 +1211,12 @@ Unit* AIInterface::FindTarget()
 	if( target )
 	{
 		AttackReaction(target, 1, 0);
+		if(target->IsPlayer())
+		{
+			WorldPacket data(SMSG_AI_REACTION, 12);
+			data << m_Unit->GetGUID() << uint32(2);		// Aggro sound
+			((Player*)target)->GetSession()->SendPacket(&data);
+		}
 		if(target->GetUInt32Value(UNIT_FIELD_CREATEDBY) != 0)
 		{
 			Unit* target2 = m_Unit->GetMapMgr()->GetPlayer(target->GetUInt32Value(UNIT_FIELD_CREATEDBY));

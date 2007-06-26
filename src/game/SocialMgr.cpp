@@ -78,7 +78,7 @@ void SocialMgr::SendFriendList(Player* plr)
 		data << uint64(*itr);
 		pFriend = objmgr.GetPlayer( *itr );
 		if(pFriend && (!pFriend->m_isGmInvisible || isGm))
-			data << uint8(1) << (uint32)pFriend->GetZoneId() << (uint8)pFriend->getLevel() << (uint8)pFriend->getClass();
+			data << uint8(1) << (uint32)pFriend->GetZoneId() << (uint32)pFriend->getLevel() << (uint32)pFriend->getClass();
 		else
 			data << uint8(0);
 	}
