@@ -228,6 +228,9 @@ void CommandTableStorage::Init()
 		{ "weather",	 'd', &ChatHandler::HandleWeatherCommand,	   "",							   NULL, 0, 0, 0},
 		{ "setbit",	  'd',  &ChatHandler::HandleModifyBitCommand,	"",							   NULL, 0, 0, 0},
 		{ "setvalue",	'd', &ChatHandler::HandleModifyValueCommand,   "",							   NULL, 0, 0, 0},
+		{ "aispelltestbegin", 'd', &ChatHandler::HandleAIAgentDebugBegin, "", NULL, 0, 0, 0 },
+		{ "aispelltestcontinue", 'd', &ChatHandler::HandleAIAgentDebugContinue, "", NULL, 0, 0, 0 },
+		{ "aispelltestskip", 'd', &ChatHandler::HandleAIAgentDebugSkip, "", NULL, 0, 0, 0 },
 		{ NULL,		   0, NULL,									  "",							   NULL, 0, 0  }
 	};
 	dupe_command_table(debugCommandTable, _debugCommandTable);

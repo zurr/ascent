@@ -2710,3 +2710,129 @@ bool ChatHandler::HandleRehashCommand(const char * args, WorldSession * m_sessio
 	sWorld.Rehash(true);
 	return true;
 }
+
+struct spell_thingo
+{
+	uint32 type;
+	uint32 target;
+};
+
+list<SpellEntry*> aiagent_spells;
+map<uint32, spell_thingo> aiagent_extra;
+
+bool ChatHandler::HandleAIAgentDebugBegin(const char * args, WorldSession * m_session)
+{
+	QueryResult * result = sDatabase.Query("SELECT DISTINCT spellId FROM ai_agents");
+	if(!result) return false;
+
+	do 
+	{
+		SpellEntry * se = ((FastIndexedDataStore<SpellEntry>*)SpellStore::getSingletonPtr())->LookupEntryForced(result->Fetch()[0].GetUInt32());
+		if(se)
+			aiagent_spells.push_back(se);
+	} while(result->NextRow());
+	delete result;
+
+	for(list<SpellEntry*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
+	{
+		result = sDatabase.Query("SELECT * FROM ai_agents WHERE spellId = %u", (*itr)->Id);
+		ASSERT(result);
+		spell_thingo t;
+		t.type = result->Fetch()[6].GetUInt32();
+		t.target = result->Fetch()[7].GetUInt32();
+		delete result;
+		aiagent_extra[(*itr)->Id] = t;
+	}
+
+	GreenSystemMessage(m_session, "Loaded %u spells for testing.", aiagent_spells.size());
+	return true;
+}
+
+SpellCastTargets SetTargets(SpellEntry * sp, uint32 type, uint32 targettype, Unit * dst, Creature * src)
+{
+	SpellCastTargets targets;
+	targets.m_unitTarget = 0;
+	targets.m_itemTarget = 0;
+	targets.m_srcX = 0;
+	targets.m_srcY = 0;
+	targets.m_srcZ = 0;
+	targets.m_destX = 0;
+	targets.m_destY = 0;
+	targets.m_destZ = 0;
+
+	if(targettype == TTYPE_SINGLETARGET)
+	{
+		targets.m_targetMask = 2;
+		targets.m_unitTarget = dst->GetGUID();
+	}
+	else if(targettype == TTYPE_SOURCE)
+	{
+		targets.m_targetMask = 32;
+		targets.m_srcX = src->GetPositionX();
+		targets.m_srcY = src->GetPositionY();
+		targets.m_srcZ = src->GetPositionZ();
+	}
+	else if(targettype == TTYPE_DESTINATION)
+	{
+		targets.m_targetMask = 64;
+		targets.m_destX = dst->GetPositionX();
+		targets.m_destY = dst->GetPositionY();
+		targets.m_destZ = dst->GetPositionZ();
+	}
+
+	return targets;
+};
+
+bool ChatHandler::HandleAIAgentDebugContinue(const char * args, WorldSession * m_session)
+{
+	uint32 count = atoi(args);
+	if(!count) return false;
+
+	Creature * pCreature = getSelectedCreature(m_session, true);
+	if(!pCreature) return true;
+
+	Player * pPlayer = m_session->GetPlayer();
+
+	for(uint32 i = 0; i < count; ++i)
+	{
+		if(!aiagent_spells.size())
+			break;
+
+		SpellEntry * sp = *aiagent_spells.begin();
+		aiagent_spells.erase(aiagent_spells.begin());
+		BlueSystemMessage(m_session, "Casting %u "MSG_COLOR_WHITE"(%s), "MSG_COLOR_SUBWHITE"%u remaining.", sp->Id, sSpellStore.LookupString(sp->Name), aiagent_spells.size());
+
+		map<uint32, spell_thingo>::iterator it = aiagent_extra.find(sp->Id);
+		ASSERT(it != aiagent_extra.end());
+
+		SpellCastTargets targets;
+		if(it->second.type = STYPE_BUFF)
+			targets = SetTargets(sp, it->second.type, it->second.type, pCreature, pCreature );
+		else
+			targets = SetTargets(sp, it->second.type, it->second.type, pPlayer, pCreature );
+
+		pCreature->GetAIInterface()->CastSpell(pCreature, sp, targets);
+	}
+
+	if(!aiagent_spells.size())
+		RedSystemMessage(m_session, "Finished.");
+	/*else
+		BlueSystemMessage(m_session, "Got %u remaining.", aiagent_spells.size());*/
+	return true;
+}
+
+bool ChatHandler::HandleAIAgentDebugSkip(const char * args, WorldSession * m_session)
+{
+	uint32 count = atoi(args);
+	if(!count) return false;
+
+	for(uint32 i = 0; i < count; ++i)
+	{
+		if(!aiagent_spells.size())
+			break;
+
+		aiagent_spells.erase(aiagent_spells.begin());
+	}
+	BlueSystemMessage(m_session, "Erased %u spells.", count);
+	return true;
+}

@@ -825,7 +825,7 @@ bool MapMgr::_CellActive(uint32 x, uint32 y)
 void MapMgr::ObjectUpdated(Object *obj)
 {
 #ifdef WIN32
-	if(GetCurrentThreadId() != threadid)
+	if(GetCurrentThreadId() != threadid && !_shutdown)
 	{
 		Crash_Log->AddLine("ObjectUpdated accessed from external thread!!!");
 		sLog.outString("ObjectUpdated accessed from external thread!!!");

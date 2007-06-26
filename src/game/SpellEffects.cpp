@@ -1290,6 +1290,9 @@ void Spell::SpellEffectBlock(uint32 i)
 
 void Spell::SpellEffectCreateItem(uint32 i) // Create item 
 {
+	if(!p_caster)
+		return;
+
 	Item* newItem;
 	Item *add;
 	uint8 slot;
@@ -3569,6 +3572,9 @@ void Spell::SpellEffectDisenchant(uint32 i)
 
 void Spell::SpellEffectInebriate(uint32 i) // lets get drunk!
 {
+	if(!p_caster)
+		return;
+
 	// Drunkee!
 	uint8 b2 = m_caster->GetByte(PLAYER_BYTES_3,1);
 	b2 += damage;	// 10 beers will get you smassssshed!
@@ -4016,7 +4022,7 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(!Enchantment) return;
 
-	itemTarget->RemoveEnchantment(1);
+	item->RemoveEnchantment(1);
 	int32 Slot = item->AddEnchantment(Enchantment, Duration, false, true, false, 1);
 }
 

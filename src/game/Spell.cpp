@@ -762,6 +762,9 @@ void Spell::FillTargetMap(uint32 i)
 				if(((Creature*)u_caster)->IsTotem())
 					p=(Player*)((Creature*)u_caster)->GetTotemOwner();
 			}
+			if(!p)
+				break;
+
 			float r= GetRadius(i);
 				
 			r*=r;

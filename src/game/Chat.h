@@ -425,6 +425,11 @@ protected:
 	bool HandleNpcUnPossessCommand(const char * args, WorldSession * m_session);
 	bool HandleChangePasswordCommand(const char * args, WorldSession * m_session);
 	bool HandleRehashCommand(const char * args, WorldSession * m_session);
+
+	/** AI AGENT DEBUG COMMANDS */
+	bool HandleAIAgentDebugBegin(const char * args, WorldSession * m_session);
+	bool HandleAIAgentDebugContinue(const char * args, WorldSession * m_session);
+	bool HandleAIAgentDebugSkip(const char * args, WorldSession * m_session);
 };
 
 
