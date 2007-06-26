@@ -3,91 +3,6 @@
 [23:52:39] WORLD: Spell effect id = 6, damage = 1
 [23:52:39] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 5301, i = 0, apply = true
 
-[23:53:13] Spell::cast 12287, Unit: 283
-[23:53:13] WORLD: Spell effect id = 6, damage = -10
-[23:53:13] WORLD: Spell effect id = 6, damage = 40
-[23:53:13] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12287, i = 0, apply = true
-[23:53:13] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12287, i = 1, apply = true
-[23:53:13] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12287, i = 0, apply = false
-[23:53:13] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12287, i = 1, apply = false
-[23:53:13] Spell::cast 12665, Unit: 283
-[23:53:13] WORLD: Spell effect id = 6, damage = -20
-[23:53:13] WORLD: Spell effect id = 6, damage = 70
-[23:53:13] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12665, i = 0, apply = true
-[23:53:13] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12665, i = 1, apply = true
-[23:53:14] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12665, i = 0, apply = false
-[23:53:14] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12665, i = 1, apply = false
-[23:53:14] Spell::cast 12666, Unit: 283
-[23:53:14] WORLD: Spell effect id = 6, damage = -40
-[23:53:14] WORLD: Spell effect id = 6, damage = 100
-[23:53:14] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12666, i = 0, apply = true
-[23:53:14] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12666, i = 1, apply = true
-[23:53:15] Spell::cast 12290, Unit: 283
-[23:53:15] WORLD: Spell effect id = 6, damage = 25
-[23:53:15] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12290, i = 0, apply = true
-[23:53:15] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12290, i = 0, apply = false
-[23:53:15] Spell::cast 12963, Unit: 283
-[23:53:15] WORLD: Spell effect id = 6, damage = 50
-[23:53:15] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12963, i = 0, apply = true
-[23:53:17] Spell::cast 12296, Unit: 283
-[23:53:17] WORLD: Spell effect id = 6, damage = 17
-[23:53:17] WORLD: target = 283 , Spell Aura id = 85, SpellId  = 12296, i = 0, apply = true
-[23:53:18] Spell::cast 12834, Unit: 283
-[23:53:18] WORLD: Spell effect id = 6, damage = 1
-[23:53:18] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12834, i = 0, apply = true
-[23:53:18] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12834, i = 0, apply = false
-[23:53:18] Spell::cast 12849, Unit: 283
-[23:53:18] WORLD: Spell effect id = 6, damage = 1
-[23:53:18] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12849, i = 0, apply = true
-[23:53:19] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12849, i = 0, apply = false
-[23:53:19] Spell::cast 12867, Unit: 283
-[23:53:19] WORLD: Spell effect id = 6, damage = 1
-[23:53:19] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12867, i = 0, apply = true
-[23:53:20] Spell::cast 12163, Unit: 283
-[23:53:20] WORLD: Spell effect id = 6, damage = 1
-[23:53:20] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12163, i = 0, apply = true
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12163, i = 0, apply = false
-[23:53:21] Spell::cast 12711, Unit: 283
-[23:53:21] WORLD: Spell effect id = 6, damage = 2
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12711, i = 0, apply = true
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12711, i = 0, apply = false
-[23:53:21] Spell::cast 12712, Unit: 283
-[23:53:21] WORLD: Spell effect id = 6, damage = 3
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12712, i = 0, apply = true
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12712, i = 0, apply = false
-[23:53:21] Spell::cast 12713, Unit: 283
-[23:53:21] WORLD: Spell effect id = 6, damage = 4
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12713, i = 0, apply = true
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12713, i = 0, apply = false
-[23:53:21] Spell::cast 12714, Unit: 283
-[23:53:21] WORLD: Spell effect id = 6, damage = 5
-[23:53:21] WORLD: target = 283 , Spell Aura id = 79, SpellId  = 12714, i = 0, apply = true
-[23:53:22] Spell::cast 16493, Unit: 283
-[23:53:22] WORLD: Spell effect id = 6, damage = 10
-[23:53:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 16493, i = 0, apply = true
-[23:53:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 16493, i = 0, apply = false
-[23:53:22] Spell::cast 16494, Unit: 283
-[23:53:22] WORLD: Spell effect id = 6, damage = 20
-[23:53:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 16494, i = 0, apply = true
-[23:53:23] Spell::cast 12700, Unit: 283
-[23:53:23] WORLD: Spell effect id = 6, damage = 1
-[23:53:23] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12700, i = 0, apply = true
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12700, i = 0, apply = false
-[23:53:24] Spell::cast 12781, Unit: 283
-[23:53:24] WORLD: Spell effect id = 6, damage = 2
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12781, i = 0, apply = true
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12781, i = 0, apply = false
-[23:53:24] Spell::cast 12783, Unit: 283
-[23:53:24] WORLD: Spell effect id = 6, damage = 3
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12783, i = 0, apply = true
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12783, i = 0, apply = false
-[23:53:24] Spell::cast 12784, Unit: 283
-[23:53:24] WORLD: Spell effect id = 6, damage = 4
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12784, i = 0, apply = true
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12784, i = 0, apply = false
-[23:53:24] Spell::cast 12785, Unit: 283
-[23:53:24] WORLD: Spell effect id = 6, damage = 5
-[23:53:24] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12785, i = 0, apply = true
 [23:53:26] Spell::cast 12284, Unit: 283
 [23:53:26] WORLD: Spell effect id = 6, damage = 1
 [23:53:26] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12284, i = 0, apply = true
@@ -152,25 +67,6 @@
 [23:53:34] Spell::cast 23695, Unit: 283
 [23:53:34] WORLD: Spell effect id = 6, damage = 0
 [23:53:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 23695, i = 0, apply = true
-[23:53:35] Spell::cast 29723, Unit: 283
-[23:53:35] WORLD: Spell effect id = 6, damage = -240000
-[23:53:35] WORLD: Spell effect id = 6, damage = 2000
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29723, i = 0, apply = true
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29723, i = 1, apply = true
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29723, i = 0, apply = false
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29723, i = 1, apply = false
-[23:53:35] Spell::cast 29724, Unit: 283
-[23:53:35] WORLD: Spell effect id = 6, damage = -420000
-[23:53:35] WORLD: Spell effect id = 6, damage = 4000
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29724, i = 0, apply = true
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29724, i = 1, apply = true
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29724, i = 0, apply = false
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29724, i = 1, apply = false
-[23:53:35] Spell::cast 29725, Unit: 283
-[23:53:35] WORLD: Spell effect id = 6, damage = -600000
-[23:53:35] WORLD: Spell effect id = 6, damage = 6000
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29725, i = 0, apply = true
-[23:53:35] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 29725, i = 1, apply = true
 [23:53:36] Spell::cast 29836, Unit: 283
 [23:53:36] WORLD: Spell effect id = 6, damage = 100
 [23:53:36] WORLD: target = 283 , Spell Aura id = 109, SpellId  = 29836, i = 0, apply = true
@@ -185,39 +81,6 @@
 [23:53:39] Spell::cast 29838, Unit: 283
 [23:53:39] WORLD: Spell effect id = 6, damage = 0
 [23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29838, i = 0, apply = true
-[23:53:41] Spell::cast 35446, Unit: 283
-[23:53:41] WORLD: Spell effect id = 6, damage = -200
-[23:53:41] WORLD: Spell effect id = 6, damage = 1
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35446, i = 0, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35446, i = 1, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35446, i = 0, apply = false
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35446, i = 1, apply = false
-[23:53:41] Spell::cast 35448, Unit: 283
-[23:53:41] WORLD: Spell effect id = 6, damage = -400
-[23:53:41] WORLD: Spell effect id = 6, damage = 2
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35448, i = 0, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35448, i = 1, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35448, i = 0, apply = false
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35448, i = 1, apply = false
-[23:53:41] Spell::cast 35449, Unit: 283
-[23:53:41] WORLD: Spell effect id = 6, damage = -600
-[23:53:41] WORLD: Spell effect id = 6, damage = 3
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35449, i = 0, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35449, i = 1, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35449, i = 0, apply = false
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35449, i = 1, apply = false
-[23:53:41] Spell::cast 35450, Unit: 283
-[23:53:41] WORLD: Spell effect id = 6, damage = -800
-[23:53:41] WORLD: Spell effect id = 6, damage = 4
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35450, i = 0, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35450, i = 1, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35450, i = 0, apply = false
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35450, i = 1, apply = false
-[23:53:41] Spell::cast 35451, Unit: 283
-[23:53:41] WORLD: Spell effect id = 6, damage = -1000
-[23:53:41] WORLD: Spell effect id = 6, damage = 5
-[23:53:41] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 35451, i = 0, apply = true
-[23:53:41] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 35451, i = 1, apply = true
 [23:53:42] Spell::cast 29623, Unit: 283
 [23:53:42] WORLD: Spell effect id = 6, damage = 25
 [23:53:42] WORLD: target = 283 , Spell Aura id = 213, SpellId  = 29623, i = 0, apply = true
@@ -226,39 +89,6 @@
 [23:53:57] WORLD: Spell effect id = 6, damage = 17
 [23:53:57] WORLD: target = 283 , Spell Aura id = 84, SpellId  = 433, i = 0, apply = true
 [23:53:58] WORLD: target = 283 , Spell Aura id = 84, SpellId  = 433, i = 0, apply = false
-[23:54:11] Spell::cast 12321, Unit: 283
-[23:54:11] WORLD: Spell effect id = 6, damage = 10
-[23:54:11] WORLD: Spell effect id = 6, damage = 10
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12321, i = 0, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12321, i = 1, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12321, i = 0, apply = false
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12321, i = 1, apply = false
-[23:54:11] Spell::cast 12835, Unit: 283
-[23:54:11] WORLD: Spell effect id = 6, damage = 20
-[23:54:11] WORLD: Spell effect id = 6, damage = 20
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12835, i = 0, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12835, i = 1, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12835, i = 0, apply = false
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12835, i = 1, apply = false
-[23:54:11] Spell::cast 12836, Unit: 283
-[23:54:11] WORLD: Spell effect id = 6, damage = 30
-[23:54:11] WORLD: Spell effect id = 6, damage = 30
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12836, i = 0, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12836, i = 1, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12836, i = 0, apply = false
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12836, i = 1, apply = false
-[23:54:11] Spell::cast 12837, Unit: 283
-[23:54:11] WORLD: Spell effect id = 6, damage = 40
-[23:54:11] WORLD: Spell effect id = 6, damage = 40
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12837, i = 0, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12837, i = 1, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12837, i = 0, apply = false
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12837, i = 1, apply = false
-[23:54:11] Spell::cast 12838, Unit: 283
-[23:54:11] WORLD: Spell effect id = 6, damage = 50
-[23:54:11] WORLD: Spell effect id = 6, damage = 50
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12838, i = 0, apply = true
-[23:54:11] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12838, i = 1, apply = true
 [23:54:13] Spell::cast 12320, Unit: 283
 [23:54:13] WORLD: Spell effect id = 6, damage = 1
 [23:54:13] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12320, i = 0, apply = true
@@ -278,25 +108,6 @@
 [23:54:13] Spell::cast 12856, Unit: 283
 [23:54:13] WORLD: Spell effect id = 6, damage = 5
 [23:54:13] WORLD: target = 283 , Spell Aura id = 52, SpellId  = 12856, i = 0, apply = true
-[23:54:14] Spell::cast 12324, Unit: 283
-[23:54:14] WORLD: Spell effect id = 6, damage = 8
-[23:54:14] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12324, i = 0, apply = true
-[23:54:14] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12324, i = 0, apply = false
-[23:54:14] Spell::cast 12876, Unit: 283
-[23:54:14] WORLD: Spell effect id = 6, damage = 16
-[23:54:14] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12876, i = 0, apply = true
-[23:54:14] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12876, i = 0, apply = false
-[23:54:14] Spell::cast 12877, Unit: 283
-[23:54:14] WORLD: Spell effect id = 6, damage = 24
-[23:54:14] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12877, i = 0, apply = true
-[23:54:15] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12877, i = 0, apply = false
-[23:54:15] Spell::cast 12878, Unit: 283
-[23:54:15] WORLD: Spell effect id = 6, damage = 32
-[23:54:15] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12878, i = 0, apply = true
-[23:54:15] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12878, i = 0, apply = false
-[23:54:15] Spell::cast 12879, Unit: 283
-[23:54:15] WORLD: Spell effect id = 6, damage = 40
-[23:54:15] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12879, i = 0, apply = true
 [23:54:16] Spell::cast 12322, Unit: 283
 [23:54:16] WORLD: Spell effect id = 6, damage = 0
 [23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12322, i = 0, apply = true
@@ -316,17 +127,6 @@
 [23:54:17] Spell::cast 13002, Unit: 283
 [23:54:17] WORLD: Spell effect id = 6, damage = 0
 [23:54:17] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13002, i = 0, apply = true
-[23:54:18] Spell::cast 12329, Unit: 283
-[23:54:18] WORLD: Spell effect id = 6, damage = 40
-[23:54:18] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12329, i = 0, apply = true
-[23:54:18] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12329, i = 0, apply = false
-[23:54:18] Spell::cast 12950, Unit: 283
-[23:54:18] WORLD: Spell effect id = 6, damage = 80
-[23:54:18] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12950, i = 0, apply = true
-[23:54:18] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12950, i = 0, apply = false
-[23:54:18] Spell::cast 20496, Unit: 283
-[23:54:18] WORLD: Spell effect id = 6, damage = 120
-[23:54:18] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 20496, i = 0, apply = true
 [23:54:20] Spell::cast 16487, Unit: 283
 [23:54:20] WORLD: Spell effect id = 6, damage = 1
 [23:54:20] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16487, i = 0, apply = true
@@ -338,25 +138,6 @@
 [23:54:21] Spell::cast 16492, Unit: 283
 [23:54:21] WORLD: Spell effect id = 6, damage = 1
 [23:54:21] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16492, i = 0, apply = true
-[23:54:21] Spell::cast 12318, Unit: 283
-[23:54:21] WORLD: Spell effect id = 6, damage = 5
-[23:54:21] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12318, i = 0, apply = true
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12318, i = 0, apply = false
-[23:54:22] Spell::cast 12857, Unit: 283
-[23:54:22] WORLD: Spell effect id = 6, damage = 10
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12857, i = 0, apply = true
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12857, i = 0, apply = false
-[23:54:22] Spell::cast 12858, Unit: 283
-[23:54:22] WORLD: Spell effect id = 6, damage = 15
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12858, i = 0, apply = true
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12858, i = 0, apply = false
-[23:54:22] Spell::cast 12860, Unit: 283
-[23:54:22] WORLD: Spell effect id = 6, damage = 20
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12860, i = 0, apply = true
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12860, i = 0, apply = false
-[23:54:22] Spell::cast 12861, Unit: 283
-[23:54:22] WORLD: Spell effect id = 6, damage = 25
-[23:54:22] WORLD: target = 283 , Spell Aura id = 108, SpellId  = 12861, i = 0, apply = true
 [23:54:23] Spell::cast 23584, Unit: 283
 [23:54:23] WORLD: Spell effect id = 6, damage = 5
 [23:54:23] WORLD: target = 283 , Spell Aura id = 122, SpellId  = 23584, i = 0, apply = true
@@ -376,13 +157,6 @@
 [23:54:24] Spell::cast 23588, Unit: 283
 [23:54:24] WORLD: Spell effect id = 6, damage = 25
 [23:54:24] WORLD: target = 283 , Spell Aura id = 122, SpellId  = 23588, i = 0, apply = true
-[23:54:25] Spell::cast 20502, Unit: 283
-[23:54:25] WORLD: Spell effect id = 6, damage = -20
-[23:54:25] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 20502, i = 0, apply = true
-[23:54:25] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 20502, i = 0, apply = false
-[23:54:25] Spell::cast 20503, Unit: 283
-[23:54:25] WORLD: Spell effect id = 6, damage = -50
-[23:54:25] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 20503, i = 0, apply = true
 [23:54:26] Spell::cast 12317, Unit: 283
 [23:54:26] WORLD: Spell effect id = 6, damage = 1
 [23:54:26] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12317, i = 0, apply = true
@@ -402,20 +176,6 @@
 [23:54:27] Spell::cast 13048, Unit: 283
 [23:54:27] WORLD: Spell effect id = 6, damage = 1
 [23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13048, i = 0, apply = true
-[23:54:28] Spell::cast 12862, Unit: 283
-[23:54:28] WORLD: Spell effect id = 6, damage = -500
-[23:54:28] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12862, i = 0, apply = true
-[23:54:28] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12862, i = 0, apply = false
-[23:54:28] Spell::cast 12330, Unit: 283
-[23:54:28] WORLD: Spell effect id = 6, damage = -1000
-[23:54:28] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 12330, i = 0, apply = true
-[23:54:31] Spell::cast 20504, Unit: 283
-[23:54:31] WORLD: Spell effect id = 6, damage = -5000
-[23:54:31] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 20504, i = 0, apply = true
-[23:54:31] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 20504, i = 0, apply = false
-[23:54:31] Spell::cast 20505, Unit: 283
-[23:54:31] WORLD: Spell effect id = 6, damage = -10000
-[23:54:31] WORLD: target = 283 , Spell Aura id = 107, SpellId  = 20505, i = 0, apply = true
 [23:54:34] Spell::cast 20500, Unit: 283
 [23:54:34] WORLD: Spell effect id = 6, damage = 0
 [23:54:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 20500, i = 0, apply = true

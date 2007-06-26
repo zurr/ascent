@@ -791,7 +791,17 @@ void World::SetInitialWorldSettings()
 			sp->EffectTriggerSpell[0]==18350
 			)
 			sp->EffectTriggerSpell[0]=31616;
-		
+		//this starts to be an issue for trigger spell id : Deep Wounds
+		if(strstr(nametext, "Deep Wounds") && sp->EffectTriggerSpell[0])
+		{
+			//check if we can find in the desription
+			char *startofid=strstr(desc, "over $");
+			if(startofid)
+			{
+				startofid += strlen("over $");
+				sp->EffectTriggerSpell[0]=atoi(startofid); //get new lightning shield trigger id
+			}
+		}
 		sp->procFlags=pr;
 		//sp->dummy=result;
 	}

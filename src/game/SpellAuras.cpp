@@ -860,6 +860,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 {
 	if(apply)
 	{
+		Unit *c = GetUnitCaster();
 		switch(m_spellProto->Id)
 		{
 		case 703:
@@ -869,12 +870,59 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 		case 8818:
 		case 11289:
 		case 11290:
-			Unit *c = GetUnitCaster();
 			if(c)
 				c->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
 			break;
 		};
-		uint32 dmg = mod->m_amount;
+		uint32 dmg	= mod->m_amount;
+		//this is warrior : Deep Wounds
+		if(c && c->IsPlayer())
+		{
+			Player *pr=static_cast<Player*>(c);
+			if(pr->GetItemInterface())
+			{
+				//level 1 of the talent should apply 20 of avarege melee weapon dmg
+				if(m_spellProto->Id==12834)
+				{
+					Item *it;
+					it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+					if(it && it->GetProto())
+					{
+						dmg = 0;
+						for(int i=0;i<5;i++)
+							if(it->GetProto()->Damage[0].Type==SCHOOL_NORMAL)
+								dmg += (it->GetProto()->Damage[0].Min + it->GetProto()->Damage[0].Max) / 2;
+						dmg = dmg * 20 /100;
+					}
+				}
+				else if(m_spellProto->Id==12849)
+				{
+					Item *it;
+					it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+					if(it && it->GetProto())
+					{
+						dmg = 0;
+						for(int i=0;i<5;i++)
+							if(it->GetProto()->Damage[0].Type==SCHOOL_NORMAL)
+								dmg += (it->GetProto()->Damage[0].Min + it->GetProto()->Damage[0].Max) / 2;
+						dmg = dmg * 40 /100;
+					}
+				}
+				else if (m_spellProto->Id==12867)
+				{
+					Item *it;
+					it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+					if(it && it->GetProto())
+					{
+						dmg = 0;
+						for(int i=0;i<5;i++)
+							if(it->GetProto()->Damage[0].Type==SCHOOL_NORMAL)
+								dmg += (it->GetProto()->Damage[0].Min + it->GetProto()->Damage[0].Max) / 2;
+						dmg = dmg * 60 /100;
+					}
+				}
+			}
+		}
 		uint32 gr = GetSpellProto()->SpellGroupType;
 		if(gr)
 		{
