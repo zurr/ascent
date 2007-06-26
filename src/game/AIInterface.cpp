@@ -2555,7 +2555,7 @@ SpellEntry *AIInterface::getSpellEntry(uint32 spellId)
 SpellCastTargets AIInterface::setSpellTargets(SpellEntry *spellInfo, Unit* target)
 {
 	SpellCastTargets targets;
-	targets.m_unitTarget = 0;
+	targets.m_unitTarget = target ? target->GetGUID() : 0;
 	targets.m_itemTarget = 0;
 	targets.m_srcX = 0;
 	targets.m_srcY = 0;
@@ -2582,6 +2582,11 @@ SpellCastTargets AIInterface::setSpellTargets(SpellEntry *spellInfo, Unit* targe
 		targets.m_destX = target->GetPositionX();
 		targets.m_destY = target->GetPositionY();
 		targets.m_destZ = target->GetPositionZ();
+	}
+	else if(m_nextSpell->spelltargetType == TTYPE_CASTER)
+	{
+		targets.m_targetMask = 2;
+		targets.m_unitTarget = m_Unit->GetGUID();
 	}
 
 	return targets;

@@ -199,7 +199,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 			SendPacketToAll(data);
 			delete data;
 
-			sEventMgr.AddEvent(this, &WarsongGulch::AutoReturnFlag, ((GameObject*)dst), ((Player*)Source), EVENT_BATTLEGROND_WSG_AUTO_RETURN_FLAG, 5000, 1); 
+			sEventMgr.AddEvent(this, &WarsongGulch::AutoReturnFlag, ((GameObject*)dst), ((Player*)Source)->GetGUID(), EVENT_BATTLEGROND_WSG_AUTO_RETURN_FLAG, 5000, 1); 
 		}
 		break;
 	case BGEVENT_WSG_CAPTURE_FLAG:
@@ -728,9 +728,13 @@ bool WarsongGulch::GetRepopCoordinates(Player * plr, LocationVector & vec)
 	return true;
 }
 
-void WarsongGulch::AutoReturnFlag(GameObject * flag, Player * src)
+void WarsongGulch::AutoReturnFlag(GameObject * flag, uint64 src)
 {
-	uint32 flagteam = src->m_bgTeam ? 0 : 1;
+	Player * plr = m_MapMgr->GetPlayer(src);
+	if(!plr)
+		return;
+
+	uint32 flagteam = plr->m_bgTeam ? 0 : 1;
 	// flag is the flag that has been dropped
 	if(flag->IsInWorld())
 	{
@@ -740,7 +744,7 @@ void WarsongGulch::AutoReturnFlag(GameObject * flag, Player * src)
 
 	char message[200];
 	sprintf(message, "The %s Flag was returned to its base", flagteam ? "Horde" : "Alliance");
-	WorldPacket *data3 = sChatHandler.FillMessageData(0x53, 0, message, src->GetGUID());
+	WorldPacket *data3 = sChatHandler.FillMessageData(0x53, 0, message, plr->GetGUID());
 	SendPacketToAll(data3);
 	delete data3;
 
