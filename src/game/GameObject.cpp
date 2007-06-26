@@ -63,9 +63,12 @@ GameObject::~GameObject()
 		Player *plr = objmgr.GetPlayer(guid);
 		if(plr && plr->GetSummonedObject() == this)
 			plr->SetSummonedObject(NULL);
+
+		if(plr == m_summoner)
+			m_summoner = 0;
 	}
 
-	if (m_summonedGo)
+	if (m_summonedGo && m_summoner)
 		for(int i = 0; i < 4; i++)
 			if (m_summoner->m_ObjectSlots[i] == this)
 				m_summoner->m_ObjectSlots[i] = NULL;
@@ -151,7 +154,7 @@ void GameObject::Update(uint32 p_time)
 			{
 				pUnit = static_cast<Unit*>(*itr);
 
-				if(m_summonedGo)
+				if(m_summonedGo && m_summoner)
 				if(!isAttackable(m_summoner,pUnit))continue;
 
 				Spell * sp=new Spell((Object*)this,spell,true,NULL);
@@ -594,4 +597,10 @@ void GameObject::OnPushToWorld()
 	Object::OnPushToWorld();
 	/* script */
 	ScriptSystem->OnGameObjectEvent(this, 0, GAMEOBJECT_EVENT_ON_SPAWN);
+}
+
+void GameObject::RemoveInRangeObject(Object* pObj)
+{
+	if(m_summonedGo && m_summoner == pObj)
+		m_summoner = 0;
 }

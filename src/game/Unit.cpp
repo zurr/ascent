@@ -197,6 +197,8 @@ Unit::Unit()
 	bInvincible = false;
 	m_redirectSpellPackets = 0;
 	can_parry = false;
+	bProcInUse = false;
+	spellcritperc = 0;
 }
 
 Unit::~Unit()

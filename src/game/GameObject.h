@@ -201,6 +201,7 @@ public:
 	inline bool HasAI() { return spell != 0; }
 	GOSpawn * m_spawn;
 	void OnPushToWorld();
+	void RemoveInRangeObject(Object* pObj);
 
 protected:
 
