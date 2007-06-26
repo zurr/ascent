@@ -181,7 +181,11 @@ void Item::ApplyRandomProperties()
 				if (rp->spells[k] != 0)
 				{
 					EnchantEntry * ee = sEnchantStore.LookupEntry(rp->spells[k]);
-					if(HasEnchantment(ee->Id) < 0) AddEnchantment(ee, 0, false, false, true);
+					if(HasEnchantment(ee->Id) < 0) 
+					{
+						uint32 Slot = FindFreeEnchantSlot(ee);
+						AddEnchantment(ee, 0, false, false, true, Slot);
+					}
 				}
 			}
 		}
@@ -433,10 +437,10 @@ void Item::SetOwner(Player *owner)
 
 int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Perm /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */,uint32 Slot_)
 {
-	int32 Slot;
+	int32 Slot = Slot_;
 	m_isDirty = true;
 
-	if(Perm)
+/*	if(Perm)
 	{
 		if(Slot_)
 		{
@@ -456,7 +460,7 @@ int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Per
 		}
 		else
 		{
-			Slot = FindFreeEnchantSlot(Enchantment);
+			Slot = FindFreeEnchantSlot(Enchantment);*/
 			/*
 			Slot = Enchantment->type ? 3 : 0;
 			 //that's 's code
@@ -470,9 +474,10 @@ int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Per
 			// reach max of temp enchants
 			if(Slot >= 11) return -1;
 		*/
-		}
+		/*}
 	}   
-		
+*/
+
 	// Create the enchantment struct.
 	EnchantmentInstance Instance;
 	Instance.ApplyTime = time(NULL);

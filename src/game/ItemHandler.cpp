@@ -1652,7 +1652,10 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket &recvPacket)
 
 			Enchantment = sEnchantStore.LookupEntry(TargetItem->GetProto()->SocketBonus);
 			if(Enchantment)
-				TargetItem->AddEnchantment(Enchantment, 0, true,apply,false);
+			{
+				uint32 Slot = TargetItem->FindFreeEnchantSlot(Enchantment);
+				TargetItem->AddEnchantment(Enchantment, 0, true,apply,false, Slot);
+			}
 		}else //remove
 		{
 			TargetItem->RemoveSocketBonusEnchant();

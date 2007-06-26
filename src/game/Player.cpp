@@ -2991,7 +2991,10 @@ void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 					EnchantEntry * ee = sEnchantStore.LookupEntry(rp->spells[k]);
 					int32 Slot = item->HasEnchantment(ee->Id);
 					if(Slot < 0)
-						item->AddEnchantment(ee, 0, true, false, true);
+					{
+						Slot = item->FindFreeEnchantSlot(ee);
+						item->AddEnchantment(ee, 0, true, false, true, Slot);
+					}
 					else
 						item->ApplyEnchantmentBonus(Slot, true);
 				}else
