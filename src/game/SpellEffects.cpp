@@ -1111,7 +1111,12 @@ void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 	Player* pTarget = (Player*)unitTarget;
 
 	if(pTarget->m_bgInBattleground)
+	{
+		if(!pTarget->m_bgInitialTeleport)
 			pTarget->GetCurrentBattleground()->RemovePlayer(pTarget, false);
+		else
+			pTarget->m_bgInitialTeleport = false;
+	}
 
 	// Try a dummy spell handler.
 	if(sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))

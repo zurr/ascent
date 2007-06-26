@@ -25,6 +25,7 @@ WarsongGulch::WarsongGulch()
 	pFlags[0] = pFlags[1] = NULL;
 	bSpawned = false;
 	bStarted = false;
+	m_GameStatus = true;
 	m_BGTime = 0;
 	m_HordeGroup = m_AllianceGroup = NULL;
 	m_MaxScore = 3;
@@ -657,6 +658,8 @@ void WarsongGulch::Start()
 	pkt.Initialize(SMSG_PLAY_SOUND);
 	pkt << uint32(SOUND_BATTLEGROUND_BEGIN); // Battleground Sound Begin
 	SendPacketToAll(&pkt);
+
+	m_GameStatus = false;
 }
 
 void WarsongGulch::SetAllianceScore(uint32 score)

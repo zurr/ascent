@@ -164,6 +164,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_bgEntryPointY		 = 0;
 	m_bgEntryPointZ		 = 0;
 	m_bgEntryPointO		 = 0;
+	m_bgInitialTeleport  = false;
 
 	m_bgTeam				= 0;
 	m_bgHasFlag			 = false;

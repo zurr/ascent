@@ -759,6 +759,7 @@ void Battleground::RemoveAllPlayers(bool Transport, bool SendPacket)
 
 void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 {
+	plr->m_bgInitialTeleport = true;
 	// We're in BG.
 	plr->m_bgLastBattlegroundID = plr->m_bgBattlegroundID = m_ID;
 	plr->m_bgInBattleground = true;

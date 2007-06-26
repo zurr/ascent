@@ -95,7 +95,7 @@ void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket &recv_data)
 	Battleground *bg = GetPlayer()->GetCurrentBattleground();
 	if(!bg)
 		return;
-	bg->RemovePlayer(GetPlayer(),true,true,true);
+	bg->RemovePlayer(GetPlayer(),true,true,!bg->m_GameStatus);
 }
 
 void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket &recv_data)

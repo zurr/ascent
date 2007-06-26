@@ -831,6 +831,7 @@ public:
 	float m_bgEntryPointZ;
 	float m_bgEntryPointO;
 	int32 m_bgEntryPointInstance;
+	bool m_bgInitialTeleport;
 	uint32 m_bgTeam;
 	Battleground* GetCurrentBattleground();
 	bool m_bgHasFlag;
