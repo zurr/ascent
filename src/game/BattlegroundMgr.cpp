@@ -867,11 +867,11 @@ void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 				m_start = true;
 				WorldPacket *data = NULL;
 				if(m_MapId == 489)
-					data = BuildMessageChat(0x52, 0x29, "The Battle for Warsong Gulch will begin in 1 minute.", 0);
+					data = sChatHandler.FillMessageData(0x52, 0, "The Battle for Warsong Gulch will begin in 1 minute.", 0);
 				else if(m_MapId == 529)
-					data = BuildMessageChat(0x52, 0x29, "The Battle for Arathi Basin will begin in 1 minute.", 0);	
+					data = sChatHandler.FillMessageData(0x52, 0, "The Battle for Arathi Basin will begin in 1 minute.", 0);	
 				else if(m_MapId == 30)
-					data = BuildMessageChat(0x52, 0x29, "The Battle for Alterac Valley will begin in 1 minute.", 0);
+					data = sChatHandler.FillMessageData(0x52, 0, "The Battle for Alterac Valley will begin in 1 minute.", 0);
 					
 				SendPacketToAll(data);
 				delete data;
@@ -1152,6 +1152,7 @@ void Battleground::End()
 	for(; itr != m_Players.end(); ++itr)
 	{
 		(*itr)->SetMovement(MOVE_ROOT, 1);
+		(*itr)->m_bgInitialTeleport = true;
 	}
 
 	uint32 teamspell[2] = {0,0};
