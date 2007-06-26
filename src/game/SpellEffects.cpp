@@ -1147,6 +1147,8 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 			pAura=new Aura(m_spellInfo, Duration, g_caster->m_summoner, unitTarget);
 		else
 			pAura=new Aura(m_spellInfo, Duration, m_caster, unitTarget);
+
+		pAura->pSpellId = pSpellId; //this is required for triggered spells
 		
 		unitTarget->tmpAura[m_spellInfo->Id] = pAura;		
 	}

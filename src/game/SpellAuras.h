@@ -575,6 +575,7 @@ public:
 	uint32 m_castedItemId;
 	bool m_areaAura;		// Area aura stuff -> never passive.
 	uint8 m_visualSlot;
+	uint32 pSpellId; //this represents the triggering spell id
 
 private:
 	uint32 GetCasterFaction() { return m_casterfaction; }
@@ -605,7 +606,7 @@ private:
 	uint32 m_dynamicValue;
 
 protected:
-	uint32 m_casterfaction; 
+	uint32 m_casterfaction;
 };
 
 typedef void(Aura::*pSpellAura)(bool apply);
