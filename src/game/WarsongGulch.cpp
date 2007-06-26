@@ -254,6 +254,10 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 			SendPacketToAll(data3);
 			delete data3;
 
+			//set PvP flaged if not already
+			if(!Source->IsPvPFlagged())
+				Source->SetPvPFlag();
+
 			// Update the worldstate
 			if(Source->m_bgTeam == 0)
 				SetWorldStateValue(0x60A,-1);

@@ -766,6 +766,10 @@ void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 	// Calculate team
 	plr->m_bgTeam = sBattlegroundMgr.GenerateTeamByRace(plr->getRace());
 
+	//set PvP flaged if not already
+	if(!plr->IsPvPFlagged())
+		plr->SetPvPFlag();
+
 	// Packets/Movement
 	if(SendPacket)
 	{
