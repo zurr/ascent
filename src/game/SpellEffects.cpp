@@ -1105,8 +1105,13 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 
 void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 {
-	if(!unitTarget)
+	if(!unitTarget || unitTarget->GetTypeId()!= TYPEID_PLAYER)
 		return;
+
+	Player* pTarget = (Player*)unitTarget;
+
+	if(pTarget->m_bgInBattleground)
+			pTarget->GetCurrentBattleground()->RemovePlayer(pTarget, false);
 
 	// Try a dummy spell handler.
 	if(sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
