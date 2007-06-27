@@ -1140,18 +1140,28 @@ void Aura::SpellAuraDummy(bool apply)
 				if(m_target->m_noInterrupt < 0)
 					m_target->m_noInterrupt = 0;
 			}
-		}
-		case 12295:
-		case 12676:
-		case 12677:
-		case 12678:
-			{
-				if(apply)
-					((Player*)m_target)->m_retainedrage += mod->m_amount;
-				else
-					((Player*)m_target)->m_retainedrage -= mod->m_amount;
-			}
-
+		}break;
+	case 17056://Furor
+	case 17058:
+	case 17059:
+	case 17060:
+	case 17061:
+		{
+			if(apply)
+				((Player*)m_target)->m_furorChance += mod->m_amount;
+			else
+				((Player*)m_target)->m_furorChance -= mod->m_amount;
+		}break;
+	case 12295:
+	case 12676:
+	case 12677:
+	case 12678:
+		{
+			if(apply)
+				((Player*)m_target)->m_retainedrage += mod->m_amount;
+			else
+				((Player*)m_target)->m_retainedrage -= mod->m_amount;
+		}break;
 	case 2096://MindVision
 		{
 		}break;
@@ -2838,6 +2848,30 @@ void Aura::SpellAuraModShapeshift(bool apply)
 	{
 		if(m_target->getClass() == WARRIOR && m_target->GetUInt32Value(UNIT_FIELD_POWER2) > static_cast<Player*>(m_target)->m_retainedrage)
 			m_target->SetUInt32Value(UNIT_FIELD_POWER2, static_cast<Player*>(m_target)->m_retainedrage);
+
+		if(m_target->getClass() == DRUID)
+		{
+			if(Rand(((Player*)m_target)->m_furorChance))
+			{
+				uint32 furorSpell;
+				if(mod->m_miscValue == FORM_CAT)
+					furorSpell = 17099;
+				else if(mod->m_miscValue == FORM_BEAR || mod->m_miscValue == FORM_DIREBEAR)
+					furorSpell = 17057;
+				else
+					furorSpell = 0;
+
+				if(furorSpell)
+				{
+					SpellEntry *spellInfo = sSpellStore.LookupEntry(furorSpell);
+		
+					Spell *sp = new Spell(m_target, spellInfo, true, NULL);
+					SpellCastTargets tgt;
+					tgt.m_unitTarget = m_target->GetGUID();
+					sp->prepare(&tgt);
+				}
+			}
+		}
 
 		if(spellId != GetSpellId())
 		{

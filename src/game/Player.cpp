@@ -37,6 +37,7 @@ Player::Player ( uint32 high, uint32 low )
 	SoulStone			   = 0;
 	SoulStoneReciever		= 0;
 	bReincarnation			= false;
+	m_furorChance			= 0;
 	Seal					= 0;
 	judgespell			  = 0;
 	m_session			   = 0;

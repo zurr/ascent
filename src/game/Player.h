@@ -752,6 +752,8 @@ public:
 	
 	std::set<uint32> m_SSSPecificSpells;
 	void SetShapeShift(uint8 ss);
+
+	uint32 m_furorChance;
 	//inline uint32 GetEating() { return eating; }
 	//void SetEating(uint32 spell) { eating = spell; }
 	//Showing Units WayPoints
