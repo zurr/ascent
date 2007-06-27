@@ -199,6 +199,10 @@ Unit::Unit()
 	can_parry = false;
 	bProcInUse = false;
 	spellcritperc = 0;
+
+	polySpell = 0;
+	sapSpell = 0;
+	fearSpell = 0;
 }
 
 Unit::~Unit()
@@ -3145,5 +3149,30 @@ void Unit::UpdateVisibility()
 				}
 			}
 		}
+	}
+}
+
+void Unit::RemoveSoloAura(uint32 type)
+{
+	switch(type)
+	{
+		case 1:// Polymorph
+		{
+			if(!polySpell) return;
+			if(HasActiveAura(polySpell))
+				RemoveAura(polySpell);
+		}break;
+		case 2:// Sap
+		{
+			if(!sapSpell) return;
+			if(HasActiveAura(sapSpell))
+				RemoveAura(sapSpell);
+		}break;
+		case 3:// Fear (Warlock)
+		{
+			if(!fearSpell) return;
+			if(HasActiveAura(fearSpell))
+				RemoveAura(fearSpell);
+		}break;
 	}
 }

@@ -887,6 +887,8 @@ public:
 	float PctPowerRegenModifier;
 	inline uint32 GetPowerType(){ return (GetUInt32Value(UNIT_FIELD_BYTES_0)>> 24);}
 
+	void RemoveSoloAura(uint32 type);
+
 	void RemoveAurasByInterruptFlag(uint32 flag);
 	void RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip);
 	// Auras Modifiers
@@ -1007,6 +1009,11 @@ public:
 	bool bInvincible;
 	Player * m_redirectSpellPackets;
 	void UpdateVisibility();
+
+	//solo target auras
+	uint32 polySpell;
+	uint32 sapSpell;
+	uint32 fearSpell;
 	
 protected:
 	Unit ();

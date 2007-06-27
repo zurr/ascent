@@ -1118,8 +1118,8 @@ public:
 	}
 	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
 	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; UpdateComboPoints(); }
-	Unit *PolyTarget();
-	void  SetPolyTarget(uint64 newtarget) { polytarget = newtarget; }
+	Unit *GetSoloSpellTarget();
+	void  SetSoloSpellTarget(uint64 newtarget) { solospelltarget = newtarget; }
 	uint32 m_speedChangeCounter;
 
 	void SendAreaTriggerMessage(const char * message, ...);
@@ -1309,7 +1309,7 @@ protected:
 	uint32 m_lastHonorResetTime;
 	uint32 _fields[PLAYER_END];
 	void JumpToEndTaxiNode(TaxiPath * path);
-	uint64	polytarget;//temp variable that stores our poly target to be able to remove it when polymorphing others 
+	uint64	solospelltarget;
 	uint32	chat_disabled_until;//force player to be silent. Yeah i'm pissed of on noobs
 
 	float m_lastRunSpeed;

@@ -1753,7 +1753,23 @@ void Aura::SpellAuraModStun(bool apply)
 
 	if(m_spellProto->Id == 38554)		// Eye of gilrock
 		return;
-   
+
+	if(m_spellProto->NameHash == 1108982579) // Sap
+	{
+		Unit* m_caster = GetUnitCaster();
+		if(m_caster && m_caster->IsPlayer())
+		{
+			Unit* saptarget=static_cast<Player*>(m_caster)->GetSoloSpellTarget();
+			//remove sap from old target before we set it to new
+			if(saptarget && saptarget!=m_target && saptarget->sapSpell)
+				saptarget->RemoveSoloAura(((uint32)2));
+			//set new sap target if necesarry
+			if(apply)
+				static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_target->GetGUID());
+			else static_cast<Player*>(m_caster)->SetSoloSpellTarget((uint64)NULL);
+		}
+	}
+
 	if(apply)
 	{ 
 		SetNegative();
@@ -1783,6 +1799,8 @@ void Aura::SpellAuraModStun(bool apply)
 			m_target->m_currentSpell->cancel();
 			m_target->m_currentSpell = 0;
 		}
+		if(m_spellProto->NameHash == 1108982579)
+			m_target->sapSpell = m_spellProto->Id;
 	}
 	else
 	{
@@ -1809,6 +1827,9 @@ void Aura::SpellAuraModStun(bool apply)
 			if(!target) return;
 			m_target->GetAIInterface()->AttackReaction(target, 1, 0);
 		}
+
+		if(m_spellProto->NameHash == 1108982579)
+			m_target->sapSpell = 0;
 	}
 
 /*
@@ -3272,14 +3293,14 @@ void Aura::SpellAuraTransform(bool apply)
 			    Unit* m_caster = GetUnitCaster();
 				if(m_caster && m_caster->IsPlayer())
 				{
-					Unit* polytarget=static_cast<Player*>(m_caster)->PolyTarget();
+					Unit* polytarget=static_cast<Player*>(m_caster)->GetSoloSpellTarget();
 					//remove poly from old target before we set it to new
-					if(polytarget && polytarget!=m_target && polytarget->GetUInt32Value(UNIT_FIELD_DISPLAYID)!=polytarget->GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID))
-						polytarget->RemoveAura(GetSpellProto()->Id);
+					if(polytarget && polytarget!=m_target && polytarget->polySpell)
+						polytarget->RemoveSoloAura(((uint32)1));
 					//set new poly target if necesarry
 					if(apply)
-						static_cast<Player*>(m_caster)->SetPolyTarget(m_target->GetGUID());
-					else static_cast<Player*>(m_caster)->SetPolyTarget((uint64)NULL);
+						static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_target->GetGUID());
+					else static_cast<Player*>(m_caster)->SetSoloSpellTarget((uint64)NULL);
 				}
 				if(!displayId)
 				{
@@ -3310,12 +3331,14 @@ void Aura::SpellAuraTransform(bool apply)
 					m_target->m_silenced++;
 					m_target->m_pacified++;
 					sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1,(uint32)1000,EVENT_AURA_PERIODIC_HEAL,1000,0);
+					m_target->polySpell = GetSpellProto()->Id;
 				}
 				else
 				{
 					m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, m_target->GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID));
 					m_target->m_silenced--;
 					m_target->m_pacified--;
+					m_target->polySpell = 0;
 				}
 			}break;
 

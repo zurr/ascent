@@ -319,7 +319,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_comboTarget = 0;
 	m_comboPoints = 0;
 
-	polytarget				= 0;
+	solospelltarget				= 0;
 	chat_disabled_until		= 0;
 	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
 	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
@@ -7546,11 +7546,11 @@ void Player::UpdateComboPoints()
 	m_session->OutPacket(SMSG_SET_COMBO_POINTS, c, buffer);
 }
 
-Unit *Player::PolyTarget()
+Unit *Player::GetSoloSpellTarget()
 {
-	if(!polytarget)
+	if(!solospelltarget)
 		return NULL;
-	return GetMapMgr()->GetUnit(polytarget);
+	return GetMapMgr()->GetUnit(solospelltarget);
 }
 
 void Player::SendAreaTriggerMessage(const char * message, ...)
