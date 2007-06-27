@@ -213,7 +213,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraIncreaseHealingByInt,//195 Apply Aura: Increase Healing by % of Intellect
 		&Aura::SpellAuraNULL,//196 Apply Aura: Mod All Weapon Skills (6)
 		&Aura::SpellAuraNULL,//197 Apply Aura: Reduce Attacker Critical Hit Chance by %
-		&Aura::SpellAuraNULL,//198
+		&Aura::SpellAuraIncreaseAllWeaponSkill,//198
 		&Aura::SpellAuraIncreaseHitRate,//199 Apply Aura: Increases Spell % To Hit (Fire, Nature, Frost)
 		&Aura::SpellAuraNULL,//200
 		&Aura::SpellAuraNULL,//201 Apply Aura: Cannot be Dodged
@@ -5846,6 +5846,22 @@ void Aura::SpellAuraIncreaseHealingByInt(bool apply)
 				static_cast<Player*>(m_target)->SpellHealDoneByInt[x]+=val;
 			}
 		}
+	}
+}
+
+void Aura::SpellAuraIncreaseAllWeaponSkill(bool apply)
+{
+	if (m_target->GetTypeId() == TYPEID_PLAYER)
+	{   
+		if(apply)
+		{
+			SetPositive();
+			static_cast<Player*>(m_target)->ModSkillBonusType(SKILL_TYPE_WEAPON, mod->m_amount); 
+		}
+		else
+			static_cast<Player*>(m_target)->ModSkillBonusType(SKILL_TYPE_WEAPON, -mod->m_amount); 
+
+		static_cast<Player*>(m_target)->UpdateChances();
 	}
 }
 

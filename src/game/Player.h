@@ -691,6 +691,7 @@ public:
 	void RemoveSkillLine(uint32 id);
 	uint32 GetBaseSkillAmt(uint32 id);
 	void ModSkillBonus(uint32 id,int32 bonus);
+	void ModSkillBonusType(uint32 type,int32 bonus);
 	void UpdateMaxSkills();
 	//inline std::list<struct skilllines>getSkillLines() { return m_skilllines; }
 	float SpellCrtiticalStrikeRatingBonus;

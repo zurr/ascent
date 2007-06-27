@@ -3894,6 +3894,27 @@ void Player::ModSkillBonus(uint32 id,int32 bonus)
 	}
 }
 
+void Player::ModSkillBonusType(uint32 type,int32 bonus)
+{
+	uint16 skillid;
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	{
+		if(skillid=GetUInt32Value(i))
+		{
+			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
+			if(!sp)
+				continue;
+			if (sp->type != type)
+				 continue;
+			//we should check if adding this value will be larger then max skill
+			//BUT if we do this then when we remove the mod we would get a smaller skill then before
+			//you might get skills bigger then max skill :)
+			ModUInt32Value(i+2,bonus);
+			return;
+		}
+	}
+}
+
 void Player::UpdateMaxSkills()
 {
 	uint16 skillid;
