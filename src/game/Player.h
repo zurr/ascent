@@ -1034,15 +1034,13 @@ public:
 	{
 		// reset the timer as well..
 		StopPvPTimer();
-		if(!HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP))
-			SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP);
+		SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP);
 	}
 	//! Removal
 	inline void RemovePvPFlag()
 	{
 		StopPvPTimer();
-		if(HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP))
-			RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP);			
+		RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP);			
 	}
 	//! Do this on /pvp off
 	inline void ResetPvPTimer();

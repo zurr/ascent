@@ -254,18 +254,12 @@ void Unit::Update( uint32 p_time )
 
 	if(m_attackers.size() == 0 && m_attackTarget == 0)
 	{
-		if(HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_ATTACK_ANIMATION))
-		{
-			RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_ATTACK_ANIMATION);
-		}
+		RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_ATTACK_ANIMATION);
 		if(hasStateFlag(UF_ATTACKING)) clearStateFlag(UF_ATTACKING);
 	}
 	else
 	{
-		if(!HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_ATTACK_ANIMATION))
-		{
-			SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_ATTACK_ANIMATION);
-		}
+		SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_ATTACK_ANIMATION);
 		if(!hasStateFlag(UF_ATTACKING)) addStateFlag(UF_ATTACKING);
 		
 	}

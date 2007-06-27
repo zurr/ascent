@@ -548,21 +548,16 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 							pct = 1;
 						else if(pct<35)
 						{
-							if(!HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35)) 
-								SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35); //ardent defender
-							if(pct<20 && !HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2))
-								SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2); //required for execute and other spells
-							else if(HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2)) {
-							  if(pct > 20)
-								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2);
-							}
+							SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35); //ardent defender
+							if(pct<20)
+								SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20); //required for execute and other spells
+							else
+								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20);
 						}
 						else
 						{
-							if(HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35))
-								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35);
-							if(HasFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2))
-								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH2);
+							RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35);
+							RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20);
 						}
 
 						switch(m_objectTypeId)
@@ -1038,16 +1033,19 @@ void Object::SetFloatValue( const uint32 index, const float value )
 void Object::SetFlag( const uint32 index, uint32 newFlag )
 {
 	ASSERT( index < m_valuesCount );
-	m_uint32Values[ index ] |= newFlag;
 
-	if(IsInWorld())
+	if(!(m_uint32Values[ index ] & newFlag))
 	{
-		m_updateMask.SetBit( index );
-
-		if(!m_objectUpdated)
+		m_uint32Values[ index ] |= newFlag;
+		if(IsInWorld())
 		{
-			m_mapMgr->ObjectUpdated(this);
-			m_objectUpdated = true;
+			m_updateMask.SetBit( index );
+
+			if(!m_objectUpdated)
+			{
+				m_mapMgr->ObjectUpdated(this);
+				m_objectUpdated = true;
+			}
 		}
 	}
 }
@@ -1056,16 +1054,19 @@ void Object::SetFlag( const uint32 index, uint32 newFlag )
 void Object::RemoveFlag( const uint32 index, uint32 oldFlag )
 {
 	ASSERT( index < m_valuesCount );
-	m_uint32Values[ index ] &= ~oldFlag;
 
-	if(IsInWorld())
+	if((m_uint32Values[ index ] & oldFlag))
 	{
-		m_updateMask.SetBit( index );
-
-		if(!m_objectUpdated)
+		m_uint32Values[ index ] &= ~oldFlag;
+		if(IsInWorld())
 		{
-			m_mapMgr->ObjectUpdated(this);
-			m_objectUpdated = true;
+			m_updateMask.SetBit( index );
+
+			if(!m_objectUpdated)
+			{
+				m_mapMgr->ObjectUpdated(this);
+				m_objectUpdated = true;
+			}
 		}
 	}
 }
@@ -1586,8 +1587,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			pVictim->SetUInt32Value(PLAYER_SELF_RES_SPELL, self_res_spell);
 
 			pVictim->SetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID , 0);
-			if(pVictim->HasFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT ))
-				pVictim->RemoveFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT );
+			pVictim->RemoveFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT );
 		}
 
 		// Wipe our attacker set on death
@@ -1640,8 +1640,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			{
 				if(((Player*)pVictim)->m_bgInBattleground)
 				{					
-					if(!pVictim->HasFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE))
-						pVictim->SetFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
+					pVictim->SetFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
 
 					// set loot
 					pVictim->loot.gold = rand() % 150 + 50;
@@ -1670,13 +1669,24 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 				{
 					unsigned int diff = ((Unit*)this)->getLevel() - pVictim->getLevel();
 					if(diff <= 8)
+					{
 						HonorHandler::OnPlayerKilledUnit(static_cast<Player*>(this), pVictim);
+						SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
+					}
+					else RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
 				}
 				else
+				{
 					HonorHandler::OnPlayerKilledUnit(static_cast<Player*>(this), pVictim);
+					SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
+				}
 			}
-			else			// REPUTATION
+			else
+			{
+				// REPUTATION
 				((Player*)this)->Reputation_OnKilledUnit(pVictim);
+				RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
+			}
 		}
 		/* -------------------------------- HONOR + BATTLEGROUND CHECKS END------------------------ */
 

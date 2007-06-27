@@ -67,8 +67,7 @@ public:
 	
 	inline void SoulBind()
 	{
-		if(!this->HasFlag(ITEM_FIELD_FLAGS,1))
-			this->SetFlag(ITEM_FIELD_FLAGS,1);
+		this->SetFlag(ITEM_FIELD_FLAGS,1);
 	}
 	inline bool IsSoulbound()
 	{

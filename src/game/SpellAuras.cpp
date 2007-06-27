@@ -1053,8 +1053,7 @@ void Aura::SpellAuraDummy(bool apply)
 		
 		if(apply)
 		{
-			if(!c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT))
-				c->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT);
+			c->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT);
 
 			if(!c->judgespell)
 				c->judgespell = mod->m_amount;
@@ -1063,8 +1062,7 @@ void Aura::SpellAuraDummy(bool apply)
 		}
 		else
 		{
-			if(c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT))
-				c->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT);
+			c->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT);
 
 			if(c->judgespell)
 				c->judgespell = 0;
@@ -1793,8 +1791,7 @@ void Aura::SpellAuraModStun(bool apply)
 		if(m_target->m_stunned == 0)
 		{
 			// First stun. block rotation.
-			if(!m_target->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE))
-				m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
+			m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
 		}
 
 		m_target->m_rooted++;
@@ -1825,8 +1822,7 @@ void Aura::SpellAuraModStun(bool apply)
 		if(m_target->m_stunned == 0)
 		{
 			// Last stun. Enable rotation again.
-			if(m_target->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE))
-				m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
+			m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
 		}
 
 		// attack them back.. we seem to lose this sometimes for some reason

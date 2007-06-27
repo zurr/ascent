@@ -163,8 +163,7 @@ void Creature::OnRespawn()
 		sLog.outDetail("Respawning "I64FMT"...", GetGUID());
 		SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 		SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shiat
-		if(HasFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE))
-			RemoveFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
+		RemoveFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
 		Skinned = false;
 		Tagged = false;
 		TaggerGuid = 0;

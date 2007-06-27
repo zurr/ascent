@@ -4367,7 +4367,7 @@ void Player::ApplyPlayerRestState(bool apply)
 		m_restState = RESTSTATE_RESTED;
 		m_isResting = true;
 
-		if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_RESTING)) this->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_RESTING);	//put zzz icon
+		SetFlag(PLAYER_FLAGS, PLAYER_FLAG_RESTING);	//put zzz icon
 
 		UpdateRestState();
 		m_lastRestUpdate = (uint32)time(NULL);
@@ -4379,7 +4379,7 @@ void Player::ApplyPlayerRestState(bool apply)
 	else
 	{
 		m_isResting = false;
-		if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_RESTING)) RemoveFlag(PLAYER_FLAGS,PLAYER_FLAG_RESTING);	//remove zzz icon
+		RemoveFlag(PLAYER_FLAGS,PLAYER_FLAG_RESTING);	//remove zzz icon
 		sEventMgr.RemoveEvents(this, EVENT_PLAYER_REST);
 		UpdateRestState();
 	}
@@ -5566,8 +5566,7 @@ void Player::JumpToEndTaxiNode(TaxiPath * path)
 	SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID , 0);
 	RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_MOUNT_SIT );
 
-	if (HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER ))   
-		RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
+	RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
 
 	SetPlayerSpeed(RUN, m_runSpeed);
 
@@ -6686,8 +6685,7 @@ void Player::UpdatePvPArea()
         {
             if(IsPvPFlagged()) RemovePvPFlag();
 
-            if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
-				RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+			RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
             StopPvPTimer();
         }
@@ -6717,13 +6715,11 @@ void Player::UpdatePvPArea()
             {
                 if(!IsPvPFlagged()) SetPvPFlag();
 
-                if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
-				    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+			    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
             }
             else
             {
-                if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
-				    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
+			    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
             }
         }
 	}
@@ -6768,8 +6764,7 @@ void Player::PvPToggle()
 		    // Means that we typed /pvp while we were "cooling down". Stop the timer.
 		    StopPvPTimer();
 
-		    if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-			    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+		    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 
             if(!IsPvPFlagged()) SetPvPFlag();
 	    }
@@ -6794,14 +6789,12 @@ void Player::PvPToggle()
                     // Start the "cooldown" timer.
 			        ResetPvPTimer();
                 }
-			    if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-				    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+			    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 		    }
 		    else
 		    {
 			    // Move into PvP state.
-			    if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-				    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+			    SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 
 			    StopPvPTimer();
 			    SetPvPFlag();
@@ -6822,8 +6815,7 @@ void Player::PvPToggle()
 		        // Means that we typed /pvp while we were "cooling down". Stop the timer.
 		        StopPvPTimer();
 
-		        if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-			        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+		        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 
                 if(!IsPvPFlagged()) SetPvPFlag();
 	        }
@@ -6834,14 +6826,12 @@ void Player::PvPToggle()
                     // Start the "cooldown" timer.
 			        ResetPvPTimer();
 
-			        if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-				        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+			        RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 		        }
 		        else
 		        {
 			        // Move into PvP state.
-			        if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-				        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+			        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 
 			        StopPvPTimer();
 			        SetPvPFlag();
@@ -6860,8 +6850,7 @@ void Player::PvPToggle()
 		                // Means that we typed /pvp while we were "cooling down". Stop the timer.
 		                StopPvPTimer();
 
-		                if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-			                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+		                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 
                         if(!IsPvPFlagged()) SetPvPFlag();
 	                }
@@ -6872,14 +6861,12 @@ void Player::PvPToggle()
 			                // Start the "cooldown" timer.
 			                ResetPvPTimer();
 
-			                if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-				                RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+			                RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 		                }
 		                else
 		                {
 			                // Move into PvP state.
-			                if(!HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-				                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+			                SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
 
 			                StopPvPTimer();
 			                SetPvPFlag();
@@ -6893,8 +6880,7 @@ void Player::PvPToggle()
 		        SetFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
             else
             {
-                if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
-				    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
+			    RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE);
             }
         }
     }

@@ -654,8 +654,7 @@ void WorldSession::HandleLogoutRequestOpcode( WorldPacket & recv_data )
 		pPlayer->SetMovement(MOVE_ROOT,1);
 
 		// Set the "player locked" flag, to prevent movement
-		if ( !pPlayer->HasFlag (UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER) )
-			pPlayer->SetFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
+		pPlayer->SetFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
 
 		//make player sit
 		pPlayer->SetStandState(STANDSTATE_SIT);
@@ -697,8 +696,7 @@ void WorldSession::HandleLogoutCancelOpcode( WorldPacket & recv_data )
 	pPlayer->SetMovement(MOVE_UNROOT,5);
 
 	// Remove the "player locked" flag, to allow movement
-	if ( pPlayer->HasFlag (UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER ))
-		pPlayer->RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
+	pPlayer->RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
 
 	//make player stand
 	pPlayer->SetStandState(STANDSTATE_STAND);
