@@ -5150,11 +5150,14 @@ void Aura::SpellAuraResistPushback(bool apply)
 	if(GetSpellProto()->NameHash==36158091 && m_caster && m_caster->IsPlayer())
 	{
 		Unit* earthshielded=static_cast<Player*>(m_caster)->GetSoloSpellTarget(m_spellProto->Id);
+
 		if(earthshielded && earthshielded!=m_target)
+		{
+			static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id, (uint64)NULL);
 			earthshielded->RemoveAuraByNameHash(GetSpellProto()->NameHash);//remove auras from target
+		}
 		if(apply)
 			static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,m_target->GetGUID());
-		else static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,(uint64)NULL);
 	}
 
 	if(m_target->IsPlayer())

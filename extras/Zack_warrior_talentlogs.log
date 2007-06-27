@@ -3,6 +3,7 @@
 [23:52:39] WORLD: Spell effect id = 6, damage = 1
 [23:52:39] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 5301, i = 0, apply = true
 
+SELECT * FROM dbc_spell where name like "Mace Specialization"
 [23:53:26] Spell::cast 12284, Unit: 283
 [23:53:26] WORLD: Spell effect id = 6, damage = 1
 [23:53:26] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12284, i = 0, apply = true

@@ -710,7 +710,9 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_RANGED_ATTACK;
 					if(strstr(desc,"whenever you deal melee damage"))
 						pr|=PROC_ON_MELEE_ATTACK;
-					if(strstr(desc,"when struck in melee combat"))
+					if(strstr(desc,"whenever you deal melee damage"))
+						pr|=PROC_ON_MELEE_ATTACK;
+					if(strstr(desc,"your melee attacks"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
 					if(strstr(desc,"any successful spell cast against the priest"))
 						pr|=PROC_ON_SPELL_HIT_VICTIM;
@@ -819,6 +821,20 @@ void World::SetInitialWorldSettings()
 	//remove stormstrike effect 0
 	if(sp && sp->Id==17364)
 		sp->Effect[0]=0;
+
+	//forcing some change for warrior mace specialisation (there are no differences between the 5 talent levels :S )
+	//!!!! I soo invent these values. Please feel free to change them as you think it's right
+	// old one had each 100 chance to stun an enemy, but that is too much for me
+	sp = sSpellStore.LookupEntry(12284);
+	if(sp)	sp->procChance=10;
+	sp = sSpellStore.LookupEntry(12701);
+	if(sp)	sp->procChance=20;
+	sp = sSpellStore.LookupEntry(12702);
+	if(sp)	sp->procChance=30;
+	sp = sSpellStore.LookupEntry(12703);
+	if(sp)	sp->procChance=40;
+	sp = sSpellStore.LookupEntry(12704);
+	if(sp)	sp->procChance=50;
 
 	//fix for Predatory Strikes
 	uint32 mm=(1<<(FORM_BEAR-1))|(1<<(FORM_DIREBEAR-1))|(1<<(FORM_MOONKIN-1))|(1<<(FORM_CAT-1));

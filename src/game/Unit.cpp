@@ -511,6 +511,22 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				//yep, another special case: Nature's grace
 				if(spellId==31616 && GetHealthPct()>30)
 					continue;
+				//warrior mace specialization can trigger only when using maces
+				if(spellId==5530 && IsPlayer())
+				{
+					Player *pr=static_cast<Player*>(this);
+					if(pr->GetItemInterface())
+					{
+						Item *it;
+						it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+						if(it && it->GetProto())
+						{
+							uint32 reqskill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
+							if(!(reqskill==SKILL_MACES || reqskill==SKILL_2H_MACES))
+								continue;
+						}
+					}
+				}
 				SpellEntry *spellInfo = sSpellStore.LookupEntry(spellId );
 				if(!spellInfo)
 				{
