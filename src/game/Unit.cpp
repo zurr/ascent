@@ -1698,7 +1698,6 @@ bool Unit::RemoveAura(Aura *aur)
 
 bool Unit::RemoveAura(uint32 spellId)
 {//this can be speed up, if we know passive \pos neg
-	bool res = false;
 	for(uint32 x=0;x<MAX_AURAS+MAX_PASSIVE_AURAS;x++)
 	{
 		if(m_auras[x])
@@ -1706,12 +1705,11 @@ bool Unit::RemoveAura(uint32 spellId)
 			if(m_auras[x]->GetSpellId()==spellId)
 			{
 				m_auras[x]->Remove();
-				res = true;
-				return res;
+				return true;
 			}
 		}
 	}
-	return true;
+	return false;
 }
 
 bool Unit::RemoveAura(uint32 spellId, uint64 guid)
@@ -1732,20 +1730,101 @@ bool Unit::RemoveAura(uint32 spellId, uint64 guid)
 
 bool Unit::RemoveAuraByNameHash(uint32 namehash)
 {
-	bool res = false;
-	for(uint32 x=0;x<MAX_AURAS+MAX_PASSIVE_AURAS;x++)
+	for(uint32 x=0;x<MAX_AURAS;x++)
 	{
 		if(m_auras[x])
 		{
 			if(m_auras[x]->GetSpellProto()->NameHash==namehash)
 			{
 				m_auras[x]->Remove();
-				res = true;
-				return res;
+				return true;
 			}
 		}
 	}
-	return true;
+	return false;
+}
+
+bool Unit::RemoveAuraPosByNameHash(uint32 namehash)
+{
+	for(uint32 x=0;x<MAX_POSITIVE_AURAS;x++)
+	{
+		if(m_auras[x])
+		{
+			if(m_auras[x]->GetSpellProto()->NameHash==namehash)
+			{
+				m_auras[x]->Remove();
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Unit::RemoveAuraNegByNameHash(uint32 namehash)
+{
+	for(uint32 x=MAX_POSITIVE_AURAS;x<MAX_AURAS;x++)
+	{
+		if(m_auras[x])
+		{
+			if(m_auras[x]->GetSpellProto()->NameHash==namehash)
+			{
+				m_auras[x]->Remove();
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Unit::RemoveAllAuraByNameHash(uint32 namehash)
+{
+	bool res = false;
+	for(uint32 x=0;x<MAX_AURAS;x++)
+	{
+		if(m_auras[x])
+		{
+			if(m_auras[x]->GetSpellProto()->NameHash==namehash)
+			{
+				m_auras[x]->Remove();
+				res=true;
+			}
+		}
+	}
+	return res;
+}
+
+bool Unit::RemoveAllPosAuraByNameHash(uint32 namehash)
+{
+	bool res = false;
+	for(uint32 x=0;x<MAX_POSITIVE_AURAS;x++)
+	{
+		if(m_auras[x])
+		{
+			if(m_auras[x]->GetSpellProto()->NameHash==namehash)
+			{
+				m_auras[x]->Remove();
+				res=true;
+			}
+		}
+	}
+	return res;
+}
+
+bool Unit::RemoveAllNegAuraByNameHash(uint32 namehash)
+{
+	bool res = false;
+	for(uint32 x=MAX_POSITIVE_AURAS;x<MAX_AURAS;x++)
+	{
+		if(m_auras[x])
+		{
+			if(m_auras[x]->GetSpellProto()->NameHash==namehash)
+			{
+				m_auras[x]->Remove();
+				res=true;
+			}
+		}
+	}
+	return res;
 }
 
 void Unit::RemoveNegativeAuras()

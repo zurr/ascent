@@ -687,6 +687,8 @@ public:
 	bool RemoveAura(uint32 spellId);
 	bool RemoveAura(uint32 spellId,uint64 guid);
 	bool RemoveAuraByNameHash(uint32 namehash);//required to remove weaker instances of a spell
+	bool RemoveAuraPosByNameHash(uint32 namehash);//required to remove weaker instances of a spell
+	bool RemoveAuraNegByNameHash(uint32 namehash);//required to remove weaker instances of a spell
 	void EventRemoveAura(uint32 SpellId)
 	{
 		RemoveAura(SpellId);
@@ -695,6 +697,9 @@ public:
 	//! Remove all auras
 	void RemoveAllAuras();
     void RemoveAllAuraType(uint32 auratype);//ex:to remove morph spells
+	bool RemoveAllAuraByNameHash(uint32 namehash);//required to remove weaker instances of a spell
+	bool RemoveAllPosAuraByNameHash(uint32 namehash);//required to remove weaker instances of a spell
+	bool RemoveAllNegAuraByNameHash(uint32 namehash);//required to remove weaker instances of a spell
 	void RemoveNegativeAuras();
 	void RemoveAllAreaAuras();
 	// Temporary remove all auras
