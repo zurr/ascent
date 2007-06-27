@@ -54,7 +54,7 @@ bool RockbiterWeapon(uint32 i, Spell* pSpell)
         item->ModifyEnchantmentTime(Slot, 1800);
     else
     {
-        Slot = item->AddEnchantment(enchant, 1800, false, true);   // 5min
+        Slot = item->AddEnchantment(enchant, 1800, false, true, false, 1);   // 5min
         if(Slot < 0) return true;
         item->ApplyEnchantmentBonus(Slot, APPLY);
     }
