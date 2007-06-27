@@ -150,12 +150,12 @@ public:
 	/** These are the default read/write operators.
 	 */
 #define DEFINE_BUFFER_READ_OPERATOR(type) void operator >> (type& dest) { dest = Read<type>(); }
-#define DEFINE_BUFFER_WRITE_OPERATOR(type) void operator << (type src) { Write<type>(src); }
+#define DEFINE_BUFFER_WRITE_OPERATOR(type) void operator << (const type src) { Write<type>(src); }
 
 	/** Fast read/write operators without using the templated read/write functions.
 	 */
 #define DEFINE_FAST_READ_OPERATOR(type, size) ByteBuffer& operator >> (type& dest) { if(m_readPos + size > m_writePos) { dest = (type)0; return *this; } else { dest = *(type*)&m_buffer[m_readPos]; m_readPos += size; return *this; } }
-#define DEFINE_FAST_WRITE_OPERATOR(type, size) ByteBuffer& operator << (type src) { if(m_writePos + size > m_buffersize) { reserve(m_buffersize + DEFAULT_INCREASE_SIZE); } *(type*)&m_buffer[m_writePos] = src; m_writePos += size; return *this; }
+#define DEFINE_FAST_WRITE_OPERATOR(type, size) ByteBuffer& operator << (const type src) { if(m_writePos + size > m_buffersize) { reserve(m_buffersize + DEFAULT_INCREASE_SIZE); } *(type*)&m_buffer[m_writePos] = src; m_writePos += size; return *this; }
 
 	/** Integer/float r/w operators
 	*/
@@ -188,7 +188,7 @@ public:
 
 	/** string (null-terminated) operators
 	 */
-	ByteBuffer& operator << (std::string & value) { EnsureBufferSize(value.length() + 1); memcpy(&m_buffer[m_writePos], value.c_str(), value.length()+1); m_writePos += (value.length() + 1); return *this; }
+	ByteBuffer& operator << (const std::string & value) { EnsureBufferSize(value.length() + 1); memcpy(&m_buffer[m_writePos], value.c_str(), value.length()+1); m_writePos += (value.length() + 1); return *this; }
 	ByteBuffer& operator >> (std::string & dest)
 	{
 		dest.clear();
