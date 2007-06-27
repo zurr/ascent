@@ -3,45 +3,6 @@
 [23:52:39] WORLD: Spell effect id = 6, damage = 1
 [23:52:39] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 5301, i = 0, apply = true
 
-SELECT * FROM dbc_spell where name like "Mace Specialization"
-[23:53:26] Spell::cast 12284, Unit: 283
-[23:53:26] WORLD: Spell effect id = 6, damage = 1
-[23:53:26] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12284, i = 0, apply = true
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12284, i = 0, apply = false
-[23:53:27] Spell::cast 12701, Unit: 283
-[23:53:27] WORLD: Spell effect id = 6, damage = 1
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12701, i = 0, apply = true
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12701, i = 0, apply = false
-[23:53:27] Spell::cast 12702, Unit: 283
-[23:53:27] WORLD: Spell effect id = 6, damage = 1
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12702, i = 0, apply = true
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12702, i = 0, apply = false
-[23:53:27] Spell::cast 12703, Unit: 283
-[23:53:27] WORLD: Spell effect id = 6, damage = 1
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12703, i = 0, apply = true
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12703, i = 0, apply = false
-[23:53:27] Spell::cast 12704, Unit: 283
-[23:53:27] WORLD: Spell effect id = 6, damage = 1
-[23:53:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12704, i = 0, apply = true
-[23:53:28] Spell::cast 12281, Unit: 283
-[23:53:28] WORLD: Spell effect id = 6, damage = 0
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12281, i = 0, apply = true
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12281, i = 0, apply = false
-[23:53:28] Spell::cast 12812, Unit: 283
-[23:53:28] WORLD: Spell effect id = 6, damage = 0
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12812, i = 0, apply = true
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12812, i = 0, apply = false
-[23:53:28] Spell::cast 12813, Unit: 283
-[23:53:28] WORLD: Spell effect id = 6, damage = 0
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12813, i = 0, apply = true
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12813, i = 0, apply = false
-[23:53:28] Spell::cast 12814, Unit: 283
-[23:53:28] WORLD: Spell effect id = 6, damage = 0
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12814, i = 0, apply = true
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12814, i = 0, apply = false
-[23:53:28] Spell::cast 12815, Unit: 283
-[23:53:28] WORLD: Spell effect id = 6, damage = 0
-[23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12815, i = 0, apply = true
 [23:53:32] Spell::cast 29889, Unit: 283
 [23:53:32] WORLD: Spell effect id = 6, damage = 4
 [23:53:32] WORLD: Spell effect id = 6, damage = 0

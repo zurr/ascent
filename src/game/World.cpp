@@ -710,9 +710,11 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_RANGED_ATTACK;
 					if(strstr(desc,"whenever you deal melee damage"))
 						pr|=PROC_ON_MELEE_ATTACK;
-					if(strstr(desc,"whenever you deal melee damage"))
-						pr|=PROC_ON_MELEE_ATTACK;
 					if(strstr(desc,"your melee attacks"))
+						pr|=PROC_ON_MELEE_ATTACK;
+					if(strstr(desc,"damage with your Sword"))
+						pr|=PROC_ON_MELEE_ATTACK;
+					if(strstr(desc,"when struck in melee combat"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
 					if(strstr(desc,"any successful spell cast against the priest"))
 						pr|=PROC_ON_SPELL_HIT_VICTIM;
