@@ -4663,9 +4663,9 @@ void Aura::SpellAuraAddTargetTrigger(bool apply)
 void Aura::SpellAuraModPowerRegPerc(bool apply)
 {
 	if(apply)
-		m_target->PctPowerRegenModifier += ((float)(mod->m_amount))/100.0;
+		m_target->PctPowerRegenModifier[mod->m_miscValue] += ((float)(mod->m_amount))/100.0;
 	else
-		m_target->PctPowerRegenModifier -= ((float)(mod->m_amount))/100.0;
+		m_target->PctPowerRegenModifier[mod->m_miscValue] -= ((float)(mod->m_amount))/100.0;
 }
 
 void Aura::SpellAuraOverrideClassScripts(bool apply)

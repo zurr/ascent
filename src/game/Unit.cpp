@@ -42,7 +42,10 @@ Unit::Unit()
 	
 	//DK:modifiers
 	PctRegenModifier = 0;
-	PctPowerRegenModifier = 1;
+	for (uint32 x=0;x<4;x++)
+	{
+		PctPowerRegenModifier[x] = 1;
+	}
 	m_speedModifier = 0;
 	m_mountedspeedModifier=0;
 	VampEmbCaster=0;

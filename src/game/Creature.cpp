@@ -542,7 +542,7 @@ void Creature::RegenerateMana()
 	uint32 cur=GetUInt32Value(UNIT_FIELD_POWER1);
 	uint32 mm=GetUInt32Value(UNIT_FIELD_MAXPOWER1);
 	if(cur>=mm)return;
-	amt=(getLevel()+10)*PctPowerRegenModifier;
+	amt=(getLevel()+10)*PctPowerRegenModifier[POWER_TYPE_MANA];
 	
 	//Apply shit from conf file
 	amt*=sWorld.getRate(RATE_POWER1);
@@ -561,7 +561,7 @@ void Creature::RegenerateFocus()
 	uint32 cur=GetUInt32Value(UNIT_FIELD_POWER3);
 	uint32 mm=GetUInt32Value(UNIT_FIELD_MAXPOWER3);
 	if(cur>=mm)return;
-	float amt = 10.0 * PctPowerRegenModifier;
+	float amt = 10.0 * PctPowerRegenModifier[POWER_TYPE_FOCUS];
 	cur+=(uint32)amt;
 	SetUInt32Value(UNIT_FIELD_POWER3,(cur>=mm)?mm:cur);
 }

@@ -884,7 +884,7 @@ public:
 	int32 CreatureRangedAttackPowerMod[12];
 
 	float PctRegenModifier;//1.0 by default
-	float PctPowerRegenModifier;
+	float PctPowerRegenModifier[4];
 	inline uint32 GetPowerType(){ return (GetUInt32Value(UNIT_FIELD_BYTES_0)>> 24);}
 
 	void RemoveSoloAura(uint32 type);

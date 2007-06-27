@@ -5603,7 +5603,7 @@ void Player::RegenerateMana()
 			if(cur >= mm)return;
 			uint32 cl = getClass();
 			uint32 Spirit = GetUInt32Value(UNIT_FIELD_STAT4);
-			amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*PctPowerRegenModifier;
+			amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*PctPowerRegenModifier[POWER_TYPE_MANA];
 
 			//Apply shit from conf file
 			amt *= sWorld.getRate(RATE_POWER1);
@@ -5703,7 +5703,7 @@ void Player::RegenerateEnergy()
 	uint32 mh = GetUInt32Value(UNIT_FIELD_MAXPOWER4);
 	if(cur >= mh)
 		return;
-	float amt = 20.0 * PctPowerRegenModifier;
+	float amt = 20.0 * PctPowerRegenModifier[POWER_TYPE_ENERGY];
 
 	cur += float2int32(amt);
 	SetUInt32Value(UNIT_FIELD_POWER4,(cur>=mh) ? mh : cur);
