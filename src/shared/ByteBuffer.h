@@ -94,7 +94,7 @@ public:
 	template<typename T>
 		T Read()
 	{
-		if(m_readPos + sizeof(T) <= m_writePos)
+		if(m_readPos + sizeof(T) > m_writePos)
 			return (T)0;
 		T ret = *(T*)&m_buffer[m_readPos];
 		m_readPos += sizeof(T);
@@ -105,7 +105,7 @@ public:
 	 */
 	void read(uint8 * buffer, size_t len)
 	{
-		if(m_readPos + len <= m_writePos)
+		if(m_readPos + len > m_writePos)
 			len = (m_writePos - m_readPos);
 
 		memcpy(buffer, &m_buffer[m_readPos], len);
