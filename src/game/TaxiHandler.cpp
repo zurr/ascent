@@ -244,7 +244,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket & recvPacket)
 
 
 	for(uint32 i = 0; i < nodecount; ++i)
-		pathes.push_back( recvPacket.Read<uint32>() );
+		pathes.push_back( recvPacket.read<uint32>() );
 	
 
 	if( GetPlayer( )->GetUInt32Value( UNIT_FIELD_FLAGS ) & U_FIELD_FLAG_LOCK_PLAYER )

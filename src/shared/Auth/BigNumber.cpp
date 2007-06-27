@@ -173,7 +173,7 @@ uint8 *BigNumber::AsByteArray()
 ByteBuffer BigNumber::AsByteBuffer()
 {
 	ByteBuffer ret(GetNumBytes());
-	ret.Write(AsByteArray(), GetNumBytes());
+	ret.append(AsByteArray(), GetNumBytes());
 	return ret;
 }
 

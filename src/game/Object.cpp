@@ -368,7 +368,7 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2,
 
 	if(splinebuf)
 	{
-		data->Write(splinebuf->contents(), data->size());
+		data->append(*splinebuf);
 		delete splinebuf;
 	}
 
@@ -526,7 +526,7 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 	}
 
 	*data << (uint8)bc;
-	data->Write( updateMask->GetMask(), bc*4 );
+	data->append( updateMask->GetMask(), bc*4 );
 	  
 	for( uint32 index = 0; index < values_count; index ++ )
 	{

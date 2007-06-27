@@ -122,10 +122,18 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 	uint32 unk2;
 	_latency = getMSTime() - _latency;
 
-	*recvPacket >> mClientBuild;
-	*recvPacket >> unk2;
-	*recvPacket >> account;
-	*recvPacket >> mClientSeed;
+	try
+	{
+		*recvPacket >> mClientBuild;
+		*recvPacket >> unk2;
+		*recvPacket >> account;
+		*recvPacket >> mClientSeed;
+	}
+	catch(ByteBuffer::error &)
+	{
+		sLog.outDetail("Incomplete copy of AUTH_SESSION recieved.");
+		return;
+	}
 
 	// Send out a request for this account.
 	mRequestID = sLogonCommHandler.ClientConnected(account, this);

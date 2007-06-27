@@ -364,7 +364,7 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
 		if( namelen > 1 )   data << (uint32)0x00;
 		else				data << (uint32)0xFF; //When nothing/self selected, no name is displayed. (default text)
 		data << (uint32)namelen;
-		if( namelen > 1 )   data.Write((const uint8*)name, namelen);
+		if( namelen > 1 )   data.append(name, namelen);
 		else				data << (uint8)0x00;
 
 		GetPlayer()->SendMessageToSet(&data, true);

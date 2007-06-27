@@ -53,7 +53,7 @@ public:
 		{
 			WorldPacket data(100);
 			data.SetOpcode (SMSG_CHANNEL_NOTIFY);
-			data << (uint8)0x05 << std::string(name);
+			data << (uint8)0x05 << string(name);
 			p->GetSession()->SendPacket(&data);
 			return NULL;
 		}

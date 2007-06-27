@@ -5933,7 +5933,7 @@ void Player::PushUpdateData(ByteBuffer *data, uint32 updatecount)
 	_bufferS.Acquire();
 
 	mUpdateCount += updatecount;
-	bUpdateBuffer.Write(data->contents(), data->size());
+	bUpdateBuffer.append(*data);
 
 	// add to process queue
 	if(m_mapMgr && !bProcessPending)

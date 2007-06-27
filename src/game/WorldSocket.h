@@ -135,7 +135,7 @@ inline void FastGUIDPack(ByteBuffer & buf, const uint64 & oldguid)
 	}
 	guidfields[0] = guidmask;
 
-	buf.Write(guidfields,j);
+	buf.append(guidfields,j);
 }
 
 //!!! warning. This presumes that all guids can be compressed at least 1 byte
