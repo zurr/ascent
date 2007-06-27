@@ -170,12 +170,27 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 						pMapinfo = sWorld.GetMapInformation(pCorpse->GetMapId());
 						if(pMapinfo)
 						{
-							if(pMapinfo->type != INSTANCE_NULL && pMapinfo->type != INSTANCE_PVP  && pMapinfo->type != INSTANCE_NONRAID && GetPlayer()->GetMapId() != pCorpse->GetMapId() && pCorpse->GetMapId() == pAreaTrigger->Mapid  && !GetPlayer()->InGroup())
-							{
-								GetPlayer()->ResurrectPlayer();
-								return;
-							}
-							else if(pMapinfo->type != INSTANCE_NONRAID)
+							if(pMapinfo->type != INSTANCE_NULL && pMapinfo->type != INSTANCE_PVP ) // raid or nonraid type
+								if(GetPlayer()->GetMapId() != pCorpse->GetMapId() && pCorpse->GetMapId() == pAreaTrigger->Mapid )
+								{
+									GetPlayer()->ResurrectPlayer();
+									if(GetPlayer()->InGroup())
+									{
+										MapMgr * groupinstance = sWorldCreator.GetInstanceByGroup(GetPlayer()->GetGroup(), GetPlayer(), pMapinfo);
+										if (groupinstance)
+										{
+											if(groupinstance->GetPlayerCount() >= pMapinfo->playerlimit)
+												GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
+										}
+									}
+									return;
+								}
+								else
+								{
+									GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
+									return;
+								}
+							else
 							{
 								GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
 								return;
