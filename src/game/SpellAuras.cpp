@@ -1053,8 +1053,8 @@ void Aura::SpellAuraDummy(bool apply)
 		
 		if(apply)
 		{
-			if(!c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON))
-				c->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
+			if(!c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT))
+				c->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT);
 
 			if(!c->judgespell)
 				c->judgespell = mod->m_amount;
@@ -1063,8 +1063,8 @@ void Aura::SpellAuraDummy(bool apply)
 		}
 		else
 		{
-			if(c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON))
-				c->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
+			if(c->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT))
+				c->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_JUDGEMENT);
 
 			if(c->judgespell)
 				c->judgespell = 0;
@@ -1303,12 +1303,12 @@ void Aura::SpellAuraDummy(bool apply)
 					c->RemoveAura(c->Seal);
 					c->Seal = GetSpellId();
 					c->judgespell = mod->m_amount;
-					c->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_POISON);
+					c->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_JUDGEMENT);
 				}
 				else
 				{
 					c->Seal = 0;
-					c->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_POISON);
+					c->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_JUDGEMENT);
 				}
 			}
 		}break;*/
@@ -5149,10 +5149,8 @@ void Aura::SpellAuraResistPushback(bool apply)
 	if(GetSpellProto()->NameHash==36158091 && m_caster && m_caster->IsPlayer())
 	{
 		Unit* earthshielded=static_cast<Player*>(m_caster)->GetSoloSpellTarget(m_spellProto->Id);
-		//remove sap from old target before we set it to new
 		if(earthshielded && earthshielded!=m_target)
 			earthshielded->RemoveAuraByNameHash(GetSpellProto()->NameHash);//remove auras from target
-		//set new sap target if necesarry
 		if(apply)
 			static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,m_target->GetGUID());
 		else static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,(uint64)NULL);

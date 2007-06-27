@@ -41,15 +41,6 @@
 [23:53:28] Spell::cast 12815, Unit: 283
 [23:53:28] WORLD: Spell effect id = 6, damage = 0
 [23:53:28] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12815, i = 0, apply = true
-[23:53:32] Spell::cast 29888, Unit: 283
-[23:53:32] WORLD: Spell effect id = 6, damage = 2
-[23:53:32] WORLD: Spell effect id = 6, damage = 50
-[23:53:32] WORLD: target = 283 , Spell Aura id = 198, SpellId  = 29888, i = 0, apply = true
-[23:53:32] Unknown Aura id 198
-[23:53:32] WORLD: target = 283 , Spell Aura id = 117, SpellId  = 29888, i = 1, apply = true
-[23:53:32] WORLD: target = 283 , Spell Aura id = 198, SpellId  = 29888, i = 0, apply = false
-[23:53:32] Unknown Aura id 198
-[23:53:32] WORLD: target = 283 , Spell Aura id = 117, SpellId  = 29888, i = 1, apply = false
 [23:53:32] Spell::cast 29889, Unit: 283
 [23:53:32] WORLD: Spell effect id = 6, damage = 4
 [23:53:32] WORLD: Spell effect id = 6, damage = 0

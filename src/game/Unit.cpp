@@ -1076,11 +1076,18 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				vproc |= PROC_ON_CRIT_HIT_VICTIM;
 				aproc |= PROC_ON_CRIT_ATTACK;
 
+				if(this->IsPlayer())
+				{
+					this->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_CRITICAL);	//SB@L: Enables spells requiring critical strike
+				}
+
 				CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.full_damage);
 				CALL_SCRIPT_EVENT(this, OnCritHit)(pVictim, dmg.full_damage);
 			}
 			else
 			{
+				if(this->IsPlayer())
+					this->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_CRITICAL);	//SB@L: Enables spells requiring critical strike
 				//check for crushing hit			
 				if(!this->IsPlayer())
 				{	
