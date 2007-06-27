@@ -566,24 +566,30 @@ void Battleground::SetTeamStartLoc(uint32 TeamID, float X, float Y, float Z, flo
 
 void Battleground::SendPacketToAll(WorldPacket *packet)
 {
+	m_playerLock.Acquire();
 	for(std::list<Player*>::iterator itr=m_Players.begin();itr!=m_Players.end();++itr)
 	{
 		if((*itr)->GetSession())
 			(*itr)->GetSession()->SendPacket(packet);
 	}
+	m_playerLock.Release();
 }
 
 void Battleground::SendPacketToTeam(uint32 TeamID, WorldPacket *packet)
 {
+	m_playerLock.Acquire();
 	for(std::list<Player*>::iterator itr=m_Players.begin();itr!=m_Players.end();++itr)
 	{
 		if((*itr)->GetSession() /* && (*itr)->m_BattlegroundTeam == TeamID */)
 			(*itr)->GetSession()->SendPacket(packet);
 	}
+	m_playerLock.Release();
 }
 
 void Battleground::RemovePlayer(Player *plr, bool Transport, bool SendPacket, bool BeforeEnd)
 {
+	m_playerLock.Acquire();
+
 	std::map<uint64, BattlegroundScore>::iterator itr = m_PlayerScores.find(plr->GetGUID());
 	// Remove from lists/maps
 	if(itr != m_PlayerScores.end())
@@ -687,6 +693,8 @@ void Battleground::RemovePlayer(Player *plr, bool Transport, bool SendPacket, bo
 
 	OnPlayerLeft(plr);
 
+	m_playerLock.Release();
+
 	/*if(m_Players.size() == 0)
 	{
 		sEventMgr.RemoveEvents(this,EVENT_BATTLEGROUND_REVIVE_PLAYERS);
@@ -695,6 +703,7 @@ void Battleground::RemovePlayer(Player *plr, bool Transport, bool SendPacket, bo
 
 void Battleground::RemoveAllPlayers(bool Transport, bool SendPacket)
 {
+	m_playerLock.Acquire();
 	  
 	m_PlayerScores.clear();
 	m_QueuedPlayers.clear();
@@ -755,10 +764,12 @@ void Battleground::RemoveAllPlayers(bool Transport, bool SendPacket)
 
 	m_Active = false;
 	m_start = false;
+	m_playerLock.Acquire();
 }
 
 void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 {
+	m_playerLock.Acquire();
 	plr->m_bgInitialTeleport = true;
 	// We're in BG.
 	plr->m_bgLastBattlegroundID = plr->m_bgBattlegroundID = m_ID;
@@ -884,16 +895,19 @@ void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 	}
 
 	OnPlayerJoined(plr);
+	m_playerLock.Release();
 }
 
 bool Battleground::HasFreeSlots(uint32 Team)
 {
+	m_playerLock.Acquire();
 	uint32 TeamCounts[2];
 	TeamCounts[0] = 0;
 	TeamCounts[1] = 0;
 	for(std::list<Player*>::iterator i=m_Players.begin();i!=m_Players.end();++i)
 		TeamCounts[(*i)->m_bgTeam]++;
 
+	m_playerLock.Release();
 	if(TeamCounts[Team] < m_MaxPlayersPerTeam)
 		return true;
 	else
@@ -1080,6 +1094,7 @@ void Battleground::SendCMessageToPlayer(Player *plr, const char* szmsg, bool wid
 
 void Battleground::UpdatePVPData()
 {
+	m_playerLock.Acquire();
 	std::list<Player*>::iterator itr = m_Players.begin();
 	for(;itr!=m_Players.end();++itr)
 	{
@@ -1088,6 +1103,7 @@ void Battleground::UpdatePVPData()
 		delete data;
 	}
 	
+	m_playerLock.Release();
 	if(GetBattleGroundStatus() && m_Active) // The game ended lets call ending fuction
 	{
 		m_Active = false;
@@ -1147,6 +1163,7 @@ void Battleground::EventRemove()
 
 void Battleground::End()
 {
+	m_playerLock.Acquire();
 	// lets root all players :p
 	std::list<Player*>::iterator itr = m_Players.begin();
 	for(; itr != m_Players.end(); ++itr)
@@ -1154,6 +1171,7 @@ void Battleground::End()
 		(*itr)->SetMovement(MOVE_ROOT, 1);
 		(*itr)->m_bgInitialTeleport = true;
 	}
+	m_playerLock.Release();
 
 	uint32 teamspell[2] = {0,0};
 	uint32 teamwin = GetBattleGameWin() ? 0 : 1;
@@ -1184,6 +1202,7 @@ void Battleground::End()
 		
 		if(winproto && looseproto)
 		{
+			m_playerLock.Acquire();
 			for(std::list<Player*>::iterator i=m_Players.begin();i!=m_Players.end();++i)
 			{
 				if(!(*i)->IsInWorld())
@@ -1202,6 +1221,7 @@ void Battleground::End()
 				sp = new Spell(*i, endproto, true, NULL);
 				sp->prepare(&targets);
 			}
+			m_playerLock.Release();
 		}
 	}
 

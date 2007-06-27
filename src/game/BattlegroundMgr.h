@@ -277,6 +277,8 @@ class SERVER_DECL Battleground : public EventableObject
 {
 	friend class BattlegroundMgr;
 public:
+	Mutex m_playerLock;
+
 	/* Construction */
 	Battleground();
 	~Battleground();

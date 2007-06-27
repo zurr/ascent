@@ -97,6 +97,8 @@ public:
 /* Deletion */
 	void Delete();
 
+	inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
+
 private:
 
 	// We are deleted? Stop us from posting events.
@@ -146,8 +148,6 @@ public:
 			return true;
 		}
 	}
-
-	inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 
 private:
 	// Completion port socket is assigned to
