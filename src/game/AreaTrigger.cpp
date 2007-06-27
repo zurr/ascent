@@ -171,6 +171,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 						if(pMapinfo)
 						{
 							if(pMapinfo->type != INSTANCE_NULL && pMapinfo->type != INSTANCE_PVP ) // raid or nonraid type
+							{
 								if(GetPlayer()->GetMapId() != pCorpse->GetMapId() && pCorpse->GetMapId() == pAreaTrigger->Mapid )
 								{
 									GetPlayer()->ResurrectPlayer();
@@ -190,6 +191,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 									GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
 									return;
 								}
+							}
 							else
 							{
 								GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
