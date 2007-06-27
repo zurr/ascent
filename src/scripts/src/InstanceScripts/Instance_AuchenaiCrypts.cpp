@@ -25,16 +25,17 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(SHIRRAKTHEDEADWATCHERAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     SHIRRAKTHEDEADWATCHERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
-
 		} 
+
         spells[0].info = sSpellStore.LookupEntry(INHIBIT_MAGIC);
 		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
@@ -75,10 +76,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -89,7 +86,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -132,8 +129,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -151,12 +146,13 @@ class EXARCHMALADAARAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(EXARCHMALADAARAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     EXARCHMALADAARAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		SUMMON_AVATAR_OF_THE_MARTYR_LIMITER = 0;
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -247,10 +243,6 @@ public:
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This is... Where... I belong...");
 		_unit->PlaySoundToSet(10518);
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
 	   SUMMON_AVATAR_OF_THE_MARTYR_LIMITER = 0;
     }
 
@@ -273,7 +265,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -317,8 +309,6 @@ public:
 protected:
 
 	int SUMMON_AVATAR_OF_THE_MARTYR_LIMITER;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
