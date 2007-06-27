@@ -13,9 +13,7 @@ initialiseSingleton(SocketMgr);
 void SocketMgr::AddSocket(Socket * s)
 {
     //printf("adding fd %u\n", s->GetFd());
-    /*assert(fds[s->GetFd()] == 0);*/
-	if(fds[s->GetFd()] != 0)
-		RemoveSocket(fds[s->GetFd()]);
+    assert(fds[s->GetFd()] == 0);
 
     // add kevent
     struct kevent ev;
@@ -97,7 +95,7 @@ void SocketWorkerThread::run()
 
             if(ptr == NULL)
             {
-                /*printf("kqueue returned invalid fd (no pointer) of FD %u!!\n", events[i].ident);*/
+                printf("kqueue returned invalid fd (no pointer) of FD %u!!\n", events[i].ident);
                 continue;
             }
 

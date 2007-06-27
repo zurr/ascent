@@ -34,9 +34,6 @@ void SocketMgr::AddSocket(Socket * s)
 void SocketMgr::RemoveSocket(Socket * s)
 {
     //assert(fds[s->GetFd()] == s);
-	if(s->GetFd() > SOCKET_HOLDER_SIZE)
-		return;
-
     if(fds[s->GetFd()] != s)
         return;
 

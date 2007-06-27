@@ -38,11 +38,6 @@ Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_read
 	m_writeLock = 0;
 	sSocketMgr.AddSocket(this);
 #endif
-
-#ifdef CONFIG_USE_IOCP
-	m_writeLock = 0;
-	sSocketMgr.AddSocket(this);
-#endif
 }
 
 Socket::~Socket()
@@ -152,7 +147,7 @@ void Socket::RemoveReadBufferBytes(uint32 size, bool lock)
 
 void Socket::RemoveWriteBufferBytes(uint32 size, bool lock)
 {
-	/*if(lock)*/
+	if(lock)
 		m_writeMutex.Acquire();
 
 	if(m_writeByteCount < size)
@@ -171,7 +166,7 @@ void Socket::RemoveWriteBufferBytes(uint32 size, bool lock)
 		m_writeByteCount -= size;
 	}
 
-	/*if(lock)*/
+	if(lock)
 		m_writeMutex.Release();
 }
 
@@ -186,8 +181,6 @@ string Socket::GetRemoteIP()
 
 void Socket::Disconnect()
 {
-	if(!m_connected) return;
-
 	m_connected = false;
 
 	// remove from mgr
@@ -213,12 +206,7 @@ void Socket::Delete()
 	m_deleted = true;
 
 	if(m_connected) Disconnect();
-
 	sSocketGarbageCollector.QueueSocket(this);
-
-#ifdef CONFIG_USE_IOCP
-	sSocketMgr.RemoveSocket(this);
-#endif
 }
 
 void Socket::Read(uint32 size, uint8 * buffer)

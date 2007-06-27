@@ -229,7 +229,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 	for(uint32 i = 0; i < 8; ++i)
 		mSession->SetAccountData(i, NULL, true, 0);
 
-	sLog.outString("> %s authenticated from %s:%u [%ums]", AccountName.c_str(), inet_ntoa(GetRemoteAddress()), GetRemotePort(), _latency);
+	sLog.outString("> %s authenticated from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
 
 	// Check for queue.
 	if( (sWorld.GetNonGmSessionCount() < sWorld.GetPlayerLimit()) || mSession->HasGMPermissions() ) {

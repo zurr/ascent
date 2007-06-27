@@ -80,7 +80,6 @@ public:
 	string GetRemoteIP();
 	inline uint32 GetRemotePort() { return ntohs(m_client.sin_port); }
 	inline SOCKET GetFd() { return m_fd; }
-	inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 	
 /* Platform-specific methods */
 
@@ -147,6 +146,8 @@ public:
 			return true;
 		}
 	}
+
+	inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 
 private:
 	// Completion port socket is assigned to
@@ -229,17 +230,6 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 	map<Socket*, time_t> deletionQueue;
 	Mutex lock;
 public:
-	~SocketGarbageCollector()
-	{
-		// kill all the sockets :p
-		Socket * s;
-		while(deletionQueue.size())
-		{
-			s = deletionQueue.begin()->first;
-			delete s;
-			deletionQueue.erase(deletionQueue.begin());
-		}
-	}
 	void Update()
 	{
 		map<Socket*, time_t>::iterator i, i2;
