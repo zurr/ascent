@@ -70,7 +70,7 @@ GameObject::~GameObject()
 
 	if (m_summonedGo && m_summoner)
 		for(int i = 0; i < 4; i++)
-			if (m_summoner->m_ObjectSlots[i] == this)
+			if (m_summoner->m_ObjectSlots[i] == GetGUIDLow())
 				m_summoner->m_ObjectSlots[i] = NULL;
 }
 
@@ -154,9 +154,16 @@ void GameObject::Update(uint32 p_time)
 			{
 				pUnit = static_cast<Unit*>(*itr);
 
-				if(m_summonedGo && m_summoner)
-				if(!isAttackable(m_summoner,pUnit))continue;
-
+				if(m_summonedGo)
+				{
+					if(!m_summoner)
+					{
+						sEventMgr.AddEvent(this, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
+						return;
+					}
+					if(!isAttackable(m_summoner,pUnit))continue;
+				}
+				
 				Spell * sp=new Spell((Object*)this,spell,true,NULL);
 				SpellCastTargets tgt((*itr)->GetGUID());
 				tgt.m_destX = GetPositionX();
@@ -604,7 +611,7 @@ void GameObject::RemoveInRangeObject(Object* pObj)
 	if(m_summonedGo && m_summoner == pObj)
 	{
 		for(int i = 0; i < 4; i++)
-			if (m_summoner->m_ObjectSlots[i] == this)
+			if (m_summoner->m_ObjectSlots[i] == GetGUIDLow())
 				m_summoner->m_ObjectSlots[i] = NULL;
 
 		m_summoner = 0;

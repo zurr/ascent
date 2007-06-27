@@ -1770,12 +1770,17 @@ void Aura::SpellAuraModStun(bool apply)
 		if(m_caster && m_caster->IsPlayer())
 		{
 			Unit* saptarget=static_cast<Player*>(m_caster)->GetSoloSpellTarget(m_spellProto->Id);
+
 			//remove sap from old target before we set it to new
-			saptarget->RemoveAuraByNameHash(m_spellProto->NameHash);
+			if(saptarget && saptarget != m_target)
+			{
+				static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id, 0);
+				saptarget->RemoveAuraByNameHash(m_spellProto->NameHash);
+			}
+
 			//set new sap target if necesarry
 			if(apply)
 				static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,m_target->GetGUID());
-			else static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,(uint64)NULL);
 		}
 	}
 

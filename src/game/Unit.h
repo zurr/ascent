@@ -710,7 +710,7 @@ public:
    
 	uint32 m_addDmgOnce;
 	Creature *m_TotemSlots[4];
-	GameObject *m_ObjectSlots[4];
+	uint32 m_ObjectSlots[4];
 	uint32 m_triggerSpell;
 	uint32 m_triggerDamage;
 	uint32 m_canMove;

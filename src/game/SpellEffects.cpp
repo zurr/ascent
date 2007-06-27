@@ -3655,18 +3655,19 @@ void Spell::SpellEffectReputation(uint32 i)
 
 void Spell::SpellEffectSummonObjectSlot(uint32 i)
 {
-	if(!u_caster)
+	if(!u_caster || !u_caster->IsInWorld())
 		return;
+
 	GameObject *GoSummon = NULL;
 
 	uint32 slot=m_spellInfo->Effect[i]-SPELL_EFFECT_SUMMON_OBJECT_SLOT1;
-	GoSummon = u_caster->m_ObjectSlots[slot];
-	u_caster->m_ObjectSlots[slot] = NULL;
+	GoSummon = u_caster->m_ObjectSlots[slot] ? u_caster->GetMapMgr()->GetGameObject(u_caster->m_ObjectSlots[slot]) : 0;
+	u_caster->m_ObjectSlots[slot] = 0;
 	
 	if( GoSummon )
 	{
 		if(GoSummon->GetInstanceID() != u_caster->GetInstanceID())
-			sEventMgr.AddEvent(GoSummon, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1000, 1);
+			sEventMgr.AddEvent(GoSummon, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
 		else
 		{
 			if( GoSummon->IsInWorld() )
@@ -3703,7 +3704,7 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 	}
 	GoSummon->PushToWorld(m_caster->GetMapMgr());
 	GoSummon->SetSummoned(u_caster);
-	u_caster->m_ObjectSlots[slot] = GoSummon;
+	u_caster->m_ObjectSlots[slot] = GoSummon->GetGUIDLow();
 }
 
 void Spell::SpellEffectDispelMechanic(uint32 i)
@@ -3743,7 +3744,7 @@ void Spell::SpellEffectSummonDeadPet(uint32 i)
 
 void Spell::SpellEffectDestroyAllTotems(uint32 i)
 {
-	if(!p_caster) return;
+	if(!p_caster || !p_caster->IsInWorld()) return;
 
 	float RetreivedMana = 0.0f;
 	for(uint32 x=0;x<4;x++)
@@ -3763,7 +3764,16 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
 		}
 
 		if(p_caster->m_ObjectSlots[x])
-			p_caster->m_ObjectSlots[x]->Expire();
+		{
+			GameObject * obj = p_caster->GetMapMgr()->GetGameObject(p_caster->m_ObjectSlots[x]);
+			if(obj)
+			{
+				if(obj->GetInstanceID() != p_caster->GetInstanceID())
+					sEventMgr.AddEvent(obj, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
+				else
+					obj->Expire();
+			}
+		}
 	}
 
 	// get the current mana, get the max mana. Calc if we overflow

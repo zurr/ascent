@@ -2873,11 +2873,18 @@ void Unit::RemoveFromWorld()
 		dynObj->Remove();
 
 	for(uint32 i = 0; i < 4; ++i)
+	{
 		if(m_ObjectSlots[i] != 0)
 		{
-			sEventMgr.AddEvent(m_ObjectSlots[i], &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 100, 1);
+			GameObject * obj = m_mapMgr->GetGameObject(m_ObjectSlots[i]);
+			if(obj)
+			{
+				sEventMgr.AddEvent(obj, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
+			}
+
 			m_ObjectSlots[i] = 0;
 		}
+	}
 
 	Object::RemoveFromWorld();
 
