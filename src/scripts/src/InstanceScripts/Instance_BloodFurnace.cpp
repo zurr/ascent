@@ -3047,7 +3047,7 @@ void SetupBloodFurnace(ScriptMgr * mgr)
 	mgr->register_creature_script(CN_SHADOWMOON_SUMMONER, &SHADOWMOONSUMMONERAI::Create);
 	mgr->register_creature_script(CN_SHADOWMOON_CHANNELER, &SHADOWMOONCHANNELERAI::Create);
 	mgr->register_creature_script(CN_SHADOWMOON_ADEPT, &SHADOWMOONADEPTAI::Create);
-	mgr->register_creature_script(CN_KELIDAN_THE_BREAKER, &KELIDANTHEBREAKERAI::Create);
+	/*mgr->register_creature_script(CN_KELIDAN_THE_BREAKER, &KELIDANTHEBREAKERAI::Create);*/
 	mgr->register_creature_script(CN_BROGGOK, &BROGGOKAI::Create);
 	mgr->register_creature_script(CN_THE_MAKER, &THEMAKERAI::Create);
 }
