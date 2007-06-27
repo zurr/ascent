@@ -26,11 +26,12 @@ class VOIDREAVERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(VOIDREAVERAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     VOIDREAVERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -104,10 +105,6 @@ public:
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Systems... shutting... down...");
         _unit->PlaySoundToSet(11214);
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -128,7 +125,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -171,8 +168,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 	int Timer;
 };
@@ -198,12 +193,13 @@ class HIGHASTROMANCERSOLARIANAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(HIGHASTROMANCERSOLARIANAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     HIGHASTROMANCERSOLARIANAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		m_phase = 1;
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -273,10 +269,6 @@ public:
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Died... W00T?!");
         _unit->PlaySoundToSet(11135);
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -290,7 +282,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -333,8 +325,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 */
@@ -362,6 +352,9 @@ class HIGHASTROMANCERSOLARIANAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(HIGHASTROMANCERSOLARIANAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     HIGHASTROMANCERSOLARIANAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		//m_phase = 1;
@@ -369,8 +362,6 @@ public:
 		if (_unit->GetHealthPct() > 90 || _unit->GetHealthPct() <= 50)
 		{
 			nrspells = 3;
-			m_spellcheck = new bool[nrspells];
-			spells = new SP_AI_Spell[nrspells];
 			for(int i=0;i<nrspells;i++)
 			{
 				m_spellcheck[i] = false;
@@ -398,8 +389,6 @@ public:
 		if (_unit->GetHealthPct() <= 90 && _unit->GetHealthPct() > 50)
 		{
 			nrspells = 0;
-			m_spellcheck = new bool[nrspells];
-			spells = new SP_AI_Spell[nrspells];
 			for(int i=0;i<nrspells;i++)
 			{
 				m_spellcheck[i] = false;
@@ -409,8 +398,6 @@ public:
 		if (m_phase == 3)
 		{
 			nrspells = 0;
-			m_spellcheck = new bool[nrspells];
-			spells = new SP_AI_Spell[nrspells];
 			for(int i=0;i<nrspells;i++)
 			{
 				m_spellcheck[i] = false;
@@ -464,10 +451,6 @@ public:
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Died... W00T?!");
         _unit->PlaySoundToSet(11135);
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -505,8 +488,6 @@ public:
 	void PhaseOne()
 	{
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -533,8 +514,6 @@ public:
 	void PhaseTwo()
 	{
 		nrspells = 0;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -544,7 +523,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -587,8 +566,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 	int m_phase;
 };

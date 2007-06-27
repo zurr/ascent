@@ -23,12 +23,13 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(DoctorTheolenKrastinovAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     DoctorTheolenKrastinovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		FRENZY_LIMITER = 0;
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -71,10 +72,6 @@ public:
     {
 		FRENZY_LIMITER = 0;
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -94,7 +91,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -133,8 +130,6 @@ public:
 protected:
 
 	uint32 FRENZY_LIMITER;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -152,11 +147,12 @@ class InstructorMaliciaAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(InstructorMaliciaAI);
+	SP_AI_Spell spells[5];
+	bool m_spellcheck[5];
+
     InstructorMaliciaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 5;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -208,10 +204,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -221,7 +213,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -259,8 +251,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -277,11 +267,12 @@ class TheRavenianAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(TheRavenianAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     TheRavenianAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -327,10 +318,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -340,7 +327,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -378,8 +365,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -397,11 +382,12 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(LadyIlluciaBarovAI);
+	SP_AI_Spell spells[5];
+	bool m_spellcheck[5];
+
     LadyIlluciaBarovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 5;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -453,10 +439,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -466,7 +448,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -504,8 +486,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -524,11 +504,12 @@ class RasForstwhisperAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(RasForstwhisperAI);
+	SP_AI_Spell spells[6];
+	bool m_spellcheck[6];
+
     RasForstwhisperAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 6;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -587,10 +568,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -600,7 +577,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -638,8 +615,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -654,11 +629,12 @@ class JandiceBarovAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(JandiceBarovAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     JandiceBarovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -698,10 +674,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -711,7 +683,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -749,8 +721,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -766,11 +736,12 @@ class KormokAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(KormokAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     KormokAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -811,10 +782,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -824,7 +791,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -862,8 +829,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -879,12 +844,13 @@ class VectusAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(VectusAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     VectusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		FRENZY_LIMITER = 0;
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -928,10 +894,6 @@ public:
     {
 		FRENZY_LIMITER = 0;
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -946,7 +908,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -985,8 +947,6 @@ public:
 protected:
 
 	uint32 FRENZY_LIMITER;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1002,11 +962,12 @@ class LordAlexeiBarovAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(LordAlexeiBarovAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     LordAlexeiBarovAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1047,10 +1008,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -1060,7 +1017,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1098,8 +1055,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1116,11 +1071,12 @@ class LorekeeperPolkeltAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(LorekeeperPolkeltAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     LorekeeperPolkeltAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1167,10 +1123,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -1181,7 +1133,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1219,8 +1171,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1236,11 +1186,12 @@ class DarkmasterGandlingAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(DarkmasterGandlingAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     DarkmasterGandlingAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3; // 4 ?
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1281,10 +1232,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
 	void AIUpdate()
@@ -1294,7 +1241,7 @@ public:
     }
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1332,8 +1279,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 

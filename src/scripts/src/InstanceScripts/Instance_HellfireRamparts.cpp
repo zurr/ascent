@@ -17,11 +17,12 @@ class BLEEDINGHOLLOWARCHERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BLEEDINGHOLLOWARCHERAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     BLEEDINGHOLLOWARCHERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -47,7 +48,7 @@ public:
 		spells[2].perctrigger = 0.0f;
 		spells[2].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
+
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -78,10 +79,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -92,7 +89,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -137,8 +134,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -153,11 +148,12 @@ class BLEEDINGHOLLOWDARKCASTERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BLEEDINGHOLLOWDARKCASTERAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     BLEEDINGHOLLOWDARKCASTERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -177,7 +173,7 @@ public:
 		spells[1].perctrigger = 0.0f;
 		spells[1].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
+
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -208,10 +204,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -222,7 +214,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -267,8 +259,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -284,11 +274,12 @@ class BLEEDINGHOLLOWSCRYERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BLEEDINGHOLLOWSCRYERAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     BLEEDINGHOLLOWSCRYERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -314,7 +305,7 @@ public:
 		spells[2].perctrigger = 0.0f;
 		spells[2].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
+
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -345,10 +336,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -359,7 +346,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -404,8 +391,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -421,11 +406,12 @@ class BONECHEWERBEASTMASTERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BONECHEWERBEASTMASTERAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     BONECHEWERBEASTMASTERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -451,7 +437,7 @@ public:
 		spells[2].perctrigger = 0.0f;
 		spells[2].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
+
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -482,10 +468,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -496,7 +478,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -541,8 +523,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -559,11 +539,12 @@ class BONECHEWERDESTROYERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BONECHEWERDESTROYERAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     BONECHEWERDESTROYERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -596,7 +577,6 @@ public:
 		spells[3].perctrigger = 0.0f;
 		spells[3].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -627,10 +607,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -641,7 +617,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -686,8 +662,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -704,11 +678,12 @@ class BONECHEWERHUNGERERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BONECHEWERHUNGERERAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     BONECHEWERHUNGERERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -741,7 +716,6 @@ public:
 		spells[3].perctrigger = 0.0f;
 		spells[3].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -772,10 +746,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -786,7 +756,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -831,8 +801,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -847,11 +815,12 @@ class BONECHEWERRAVENERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BONECHEWERRAVENERAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     BONECHEWERRAVENERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -870,7 +839,6 @@ public:
 		spells[1].perctrigger = 0.0f;
 		spells[1].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -901,10 +869,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -915,7 +879,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -960,8 +924,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -976,11 +938,12 @@ class BONECHEWERRIPPERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(BONECHEWERRIPPERAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     BONECHEWERRIPPERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -999,7 +962,6 @@ public:
 		spells[1].perctrigger = 0.0f;
 		spells[1].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1030,10 +992,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1044,7 +1002,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1089,8 +1047,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1104,11 +1060,12 @@ class FIENDISHHOUNDAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(FIENDISHHOUNDAI);
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
+
     FIENDISHHOUNDAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 1;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1120,7 +1077,6 @@ public:
 		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1151,10 +1107,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1165,7 +1117,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1210,8 +1162,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1228,11 +1178,12 @@ class HELLFIREWATCHERAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(HELLFIREWATCHERAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     HELLFIREWATCHERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1258,7 +1209,6 @@ public:
 		spells[2].perctrigger = 0.0f;
 		spells[2].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1289,10 +1239,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1303,7 +1249,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1348,8 +1294,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1365,11 +1309,12 @@ class SHATTEREDHANDWARHOUNDAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(SHATTEREDHANDWARHOUNDAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     SHATTEREDHANDWARHOUNDAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1395,7 +1340,6 @@ public:
 		spells[2].perctrigger = 0.0f;
 		spells[2].attackstoptimer = 1000;
 */
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1426,10 +1370,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1440,7 +1380,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1485,8 +1425,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1509,12 +1447,13 @@ class WATCHKEEPERGARGOLMARAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(WATCHKEEPERGARGOLMARAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     WATCHKEEPERGARGOLMARAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		HEAL_SOUND_LIMITER = 0;
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1549,7 +1488,6 @@ public:
 		spells[3].perctrigger = 0.0f;
 		spells[3].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1620,10 +1558,6 @@ public:
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Hah..."); // needs corrections!
 		_unit->PlaySoundToSet(10336);
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1640,7 +1574,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1685,8 +1619,6 @@ public:
 protected:
 
 	int HEAL_SOUND_LIMITER;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1708,12 +1640,13 @@ class OMORTHEUNSCARREDAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(OMORTHEUNSCARREDAI);
+	SP_AI_Spell spells[7];
+	bool m_spellcheck[7];
+
     OMORTHEUNSCARREDAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		DEMONIC_SHIELDCooldown = 0; // not sure if this should be casted once or after some time
 		nrspells = 7;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1771,7 +1704,6 @@ public:
 		spells[6].speech = "<missing_text>";
 		spells[6].soundid = 10278;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1843,10 +1775,6 @@ public:
 		_unit->PlaySoundToSet(10284);
 		DEMONIC_SHIELDCooldown = 0;
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1867,7 +1795,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1912,8 +1840,6 @@ public:
 protected:
 
 	int DEMONIC_SHIELDCooldown;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1938,11 +1864,12 @@ class HELLFIRESENTRYAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(HELLFIRESENTRYAI);
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
+
     HELLFIRESENTRYAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 1;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1955,7 +1882,6 @@ public:
 		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -1986,10 +1912,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -2000,7 +1922,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -2045,8 +1967,6 @@ public:
 
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -2060,12 +1980,13 @@ class VAZRUDENAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(VAZRUDENAI);
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
+
     VAZRUDENAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		PHASE_LIMITER = 2;
 		nrspells = 1;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -2077,7 +1998,6 @@ public:
 		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -2110,10 +2030,6 @@ public:
     {
 		CastTime();
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -2129,7 +2045,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -2175,8 +2091,6 @@ public:
 protected:
 
 	uint32 PHASE_LIMITER;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -2223,6 +2137,9 @@ class NAZANAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(NAZANAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     NAZANAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		VAZRUDEN_THE_HERALD_EVENT_PHASE = 1;
@@ -2249,8 +2166,6 @@ public:
 		infoSummonVazruden = sSpellStore.LookupEntry(SUMMON_VAZRUDEN);
 
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -2283,7 +2198,6 @@ public:
 		_unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
 		_unit->GetAIInterface()->setWaypointToMove(1);
 
-		_unit->GetAIInterface()->setOutOfCombatRange(200000);
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -2331,10 +2245,6 @@ public:
 		VAZRUDEN_LAND = false;
 		NAZAN_LAND = false;
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -2385,7 +2295,7 @@ public:
 
 	void SpellCast(float val)
 	{
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -2673,8 +2583,6 @@ protected:
     uint32 m_fCastCount;
     uint32 m_currentWP;
     SpellEntry *infoConeOfFire, *infoLiquidFlame, *infoFireball, *infoSummonVazruden;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 

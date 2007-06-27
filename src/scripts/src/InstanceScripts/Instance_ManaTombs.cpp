@@ -16,11 +16,12 @@ class ETHEREALDARKCASTERAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALDARKCASTERAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     ETHEREALDARKCASTERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -55,10 +56,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -69,7 +66,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -105,8 +102,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -121,11 +116,12 @@ class ETHEREALPRIESTAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALPRIESTAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     ETHEREALPRIESTAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -160,10 +156,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -174,7 +166,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -210,8 +202,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -226,11 +216,12 @@ class ETHEREALTHEURGISTAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALTHEURGISTAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     ETHEREALTHEURGISTAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -265,10 +256,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -279,7 +266,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -315,8 +302,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -331,11 +316,12 @@ class ETHEREALSORCERERAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALSORCERERAI);
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
+
     ETHEREALSORCERERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 1;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -364,10 +350,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -378,7 +360,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -414,8 +396,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -431,11 +411,12 @@ class NEXUSSTALKERAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(NEXUSSTALKERAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     NEXUSSTALKERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -476,10 +457,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -490,7 +467,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -526,8 +503,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -541,11 +516,12 @@ class NEXUSTERRORAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(NEXUSTERRORAI);
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
+
     NEXUSTERRORAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 1;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -574,10 +550,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -588,7 +560,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -624,8 +596,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -640,11 +610,12 @@ class MANALEECHAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(MANALEECHAI);
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
+
     MANALEECHAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 1;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -674,10 +645,6 @@ public:
     {
 		_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -688,7 +655,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -724,8 +691,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -744,11 +709,12 @@ class ETHEREALSPELLBINDERAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALSPELLBINDERAI);
+	SP_AI_Spell spells[4];
+	bool m_spellcheck[4];
+
     ETHEREALSPELLBINDERAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 4;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -794,10 +760,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -808,7 +770,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -844,8 +806,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -861,11 +821,12 @@ class ETHEREALWRAITHAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(ETHEREALWRAITHAI);
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
+
     ETHEREALWRAITHAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 1;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -894,10 +855,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -908,7 +865,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -944,8 +901,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -969,11 +924,12 @@ class PANDEMONIUSAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(PANDEMONIUSAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     PANDEMONIUSAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 2;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1047,11 +1003,7 @@ public:
     {
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do the void... once... more.");
         _unit->PlaySoundToSet(10566);
-       RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
+		RemoveAIUpdateEvent();
     }
 
     void AIUpdate()
@@ -1062,7 +1014,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1111,8 +1063,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1131,11 +1081,12 @@ class TAVAROKAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(TAVAROKAI);
+	SP_AI_Spell spells[3];
+	bool m_spellcheck[3];
+
     TAVAROKAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		nrspells = 3;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1179,10 +1130,6 @@ public:
 	void OnDied(Unit * mKiller)
     {
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1193,7 +1140,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1236,8 +1183,6 @@ public:
     }
 protected:
 
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1258,12 +1203,13 @@ class NEXUSPRINCESHAFFARAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(NEXUSPRINCESHAFFARAI);
+	SP_AI_Spell spells[5];
+	bool m_spellcheck[5];
+
     NEXUSPRINCESHAFFARAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		SUMMON_ETEREAL_BECON_Cooldown = 10;
 		nrspells = 5;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -1359,10 +1305,6 @@ public:
 		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I must bid you... Farewell."); // I don't think it's correct.
         _unit->PlaySoundToSet(10546);
        RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -1381,7 +1323,7 @@ public:
 
     void SpellCast(float val)
     {
-        if(m_spellcheck && spells && _unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
         {
 			float comulativeperc = 0;
 		    Unit *target = NULL;
@@ -1425,8 +1367,6 @@ public:
 protected:
 
 	int SUMMON_ETEREAL_BECON_Cooldown;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
