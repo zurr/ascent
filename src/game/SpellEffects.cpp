@@ -1113,7 +1113,9 @@ void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 	if(pTarget->m_bgInBattleground)
 	{
 		if(!pTarget->m_bgInitialTeleport)
-			pTarget->GetCurrentBattleground()->RemovePlayer(pTarget, false);
+		{
+			sEventMgr.AddEvent(World::getSingletonPtr(), &World::RemovePlayerFromBattleground, pTarget->GetCurrentBattleground(), pTarget, EVENT_BATTLEGROUND_REMOVE, 1, 1);
+		}
 		else
 			pTarget->m_bgInitialTeleport = false;
 	}

@@ -1531,3 +1531,8 @@ void World::Rehash(bool load)
 
 	sMailSystem.config_flags = config_flags;
 }
+
+void World::RemovePlayerFromBattleground(Battleground * bg, Player * pPlayer)
+{
+	bg->RemovePlayer(pPlayer, false, false, true);
+}
