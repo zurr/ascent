@@ -31,6 +31,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	SetupTheShatteredHalls(mgr);
 	SetupHellfireRamparts(mgr);
 	SetupGuardAI(mgr);
+	SetupBlackTemple(mgr);
 }
 
 #ifdef WIN32

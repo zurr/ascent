@@ -179,6 +179,9 @@
 				RelativePath="..\src\InstanceScripts\Instance_TheUnderbog.cpp">
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Raid_BlackTemple.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Raid_BlackwingLair.cpp">
 			</File>
 			<File
