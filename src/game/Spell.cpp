@@ -2890,11 +2890,6 @@ int8 Spell::CheckItems()
 							if(proto->InventoryType != INVTYPE_FINGER)
 								return int8(SPELL_FAILED_BAD_TARGETS);
 						}
-						else if(m_spellInfo->RequiredItemFlags == 0)
-						{
-							if(proto->InventoryType != INVTYPE_SHIELD)
-								return int8(SPELL_FAILED_BAD_TARGETS);
-						}
 						else
 						{
 							if((m_spellInfo->EquippedItemClass != proto->Class)||
