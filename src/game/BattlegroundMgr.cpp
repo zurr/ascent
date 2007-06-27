@@ -672,6 +672,7 @@ void Battleground::RemovePlayer(Player *plr, bool Transport, bool SendPacket, bo
 		if(info)
 		{
 			aur = new Aura(info, 1200000, plr,plr);
+			aur->SetNegative();
 			plr->AddAura(aur);
 		}
 	}

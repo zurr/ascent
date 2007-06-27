@@ -110,7 +110,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 		{
 			if(GetPlayer()->GetPlayerStatus() != TRANSFER_PENDING) //only ports if player is out of pendings
 			{
-				GetPlayer()->SaveEntryPoint();
+				GetPlayer()->SaveEntryPoint(pAreaTrigger->Mapid);
+
 				//death system check.
 				Corpse *pCorpse = NULL;
 //					CorpseData *pCorpseData = NULL;
@@ -187,11 +188,11 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 						return;
 					}
 				}
-				bool result = sWorldCreator.CheckInstanceForObject(static_cast<Object*>(_player), pMapinfo);
+				bool result = sWorldCreator.CheckInstanceForObject(static_cast<Object*>(GetPlayer()), pMapinfo);
 				if(result)
 				{
-					_player->SaveEntryPoint();
-					_player->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
+					GetPlayer()->SaveEntryPoint(pAreaTrigger->Mapid);
+					GetPlayer()->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
 				}
 			}
 		}break;
@@ -208,8 +209,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 		{
 			if(GetPlayer()->GetPlayerStatus() != TRANSFER_PENDING) //only ports if player is out of pendings
 			{
-				_player->SaveEntryPoint();
-				_player->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
+				GetPlayer()->SaveEntryPoint(pAreaTrigger->Mapid);
+				GetPlayer()->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
 			}
 		}break;
 	case ATTYPE_NULL:

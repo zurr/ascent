@@ -1230,7 +1230,7 @@ bool ChatHandler::HandleGoInstanceCommand(const char* args, WorldSession* m_sess
 
 	if(mapid != 1000)
 	{
-		plr->SaveEntryPoint();
+		plr->SaveEntryPoint(mapid);
 		plr->RemoveFromWorld();
 		plr->SetInstanceID(instanceid);
 		plr->SetMapId(mapid);
@@ -1249,10 +1249,10 @@ bool ChatHandler::HandleGoInstanceCommand(const char* args, WorldSession* m_sess
 			BlueSystemMessage(m_session, "Invalid instance specified.");
 			return true;
 		}
-		plr->SaveEntryPoint();
+		mapid = instance->GetMapId();
+		plr->SaveEntryPoint(mapid);
 		plr->RemoveFromWorld();
 		plr->SetInstanceID(instanceid);
-		mapid = instance->GetMapId();
 		plr->SetMapId(mapid);
 		plr->SetPosition(x,y,z,0,true);
 		WorldPacket data(SMSG_TRANSFER_PENDING, 4);

@@ -961,7 +961,7 @@ public:
 	ByteBuffer* GetAndRemoveSplinePacket(uint64 guid);
 	void ClearSplinePackets();
 	bool ExitInstance();
-	void SaveEntryPoint();
+	void SaveEntryPoint(uint32 mapId);
 	bool CooldownCheat;
 	bool CastTimeCheat;
 	bool GodModeCheat;

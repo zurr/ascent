@@ -6140,18 +6140,31 @@ bool Player::ExitInstance()
 	return true;
 }
 
-void Player::SaveEntryPoint()
-{
-	if(GetInstanceID() > 2 || !IS_INSTANCE(GetMapId()))
+void Player::SaveEntryPoint(uint32 mapId)
+{	
+	if(IS_INSTANCE(GetMapId()))
 		return; // dont save if we're not on the main continent.
 	//otherwise we could end up in an endless loop :P
+	MapInfo * pMapinfo = sWorld.GetMapInformation(mapId);
 
-	m_bgEntryPointX = GetPositionX();
-	m_bgEntryPointY = GetPositionY();
-	m_bgEntryPointZ = GetPositionZ();
-	m_bgEntryPointO = GetOrientation();
-	m_bgEntryPointMap = GetMapId();
-	m_bgEntryPointInstance = GetInstanceID();
+	if(pMapinfo)
+	{
+		m_bgEntryPointX = pMapinfo->repopx;
+		m_bgEntryPointY = pMapinfo->repopy;
+		m_bgEntryPointZ = pMapinfo->repopz;
+		m_bgEntryPointO = GetOrientation();
+		m_bgEntryPointMap = pMapinfo->repopmapid;
+		m_bgEntryPointInstance = GetInstanceID();
+	}
+	else
+	{
+		m_bgEntryPointMap	 = 0;
+		m_bgEntryPointX		 = 0;	
+		m_bgEntryPointY		 = 0;
+		m_bgEntryPointZ		 = 0;
+		m_bgEntryPointO		 = 0;
+		m_bgEntryPointInstance  = 0;
+	}
 }
 
 void Player::CleanupGossipMenu()
