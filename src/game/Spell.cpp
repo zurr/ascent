@@ -981,7 +981,7 @@ void Spell::FillTargetMap(uint32 i)
 			range *= range;
 
 			firstTarget = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
-			if(firstTarget)
+			if(firstTarget && p_caster)
 			{
 				if(p_caster->InGroup())
 					if(p_caster->GetSubGroup()==((Player*)firstTarget)->GetSubGroup())
