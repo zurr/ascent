@@ -686,6 +686,7 @@ public:
 	bool RemoveAura(Aura *aur);
 	bool RemoveAura(uint32 spellId);
 	bool RemoveAura(uint32 spellId,uint64 guid);
+	bool RemoveAuraByNameHash(uint32 namehash);//required to remove weaker instances of a spell
 	void EventRemoveAura(uint32 SpellId)
 	{
 		RemoveAura(SpellId);
@@ -1012,8 +1013,7 @@ public:
 
 	//solo target auras
 	uint32 polySpell;
-	uint32 sapSpell;
-	uint32 fearSpell;
+//	uint32 fearSpell;
 	
 protected:
 	Unit ();

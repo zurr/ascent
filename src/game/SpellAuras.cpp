@@ -1769,14 +1769,13 @@ void Aura::SpellAuraModStun(bool apply)
 		Unit* m_caster = GetUnitCaster();
 		if(m_caster && m_caster->IsPlayer())
 		{
-			Unit* saptarget=static_cast<Player*>(m_caster)->GetSoloSpellTarget();
+			Unit* saptarget=static_cast<Player*>(m_caster)->GetSoloSpellTarget(m_spellProto->Id);
 			//remove sap from old target before we set it to new
-			if(saptarget && saptarget!=m_target && saptarget->sapSpell)
-				saptarget->RemoveSoloAura(((uint32)2));
+			saptarget->RemoveAuraByNameHash(m_spellProto->NameHash);
 			//set new sap target if necesarry
 			if(apply)
-				static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_target->GetGUID());
-			else static_cast<Player*>(m_caster)->SetSoloSpellTarget((uint64)NULL);
+				static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,m_target->GetGUID());
+			else static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,(uint64)NULL);
 		}
 	}
 
@@ -1809,8 +1808,6 @@ void Aura::SpellAuraModStun(bool apply)
 			m_target->m_currentSpell->cancel();
 			m_target->m_currentSpell = 0;
 		}
-		if(m_spellProto->NameHash == 1108982579)
-			m_target->sapSpell = m_spellProto->Id;
 	}
 	else
 	{
@@ -1837,9 +1834,6 @@ void Aura::SpellAuraModStun(bool apply)
 			if(!target) return;
 			m_target->GetAIInterface()->AttackReaction(target, 1, 0);
 		}
-
-		if(m_spellProto->NameHash == 1108982579)
-			m_target->sapSpell = 0;
 	}
 
 /*
@@ -3327,14 +3321,14 @@ void Aura::SpellAuraTransform(bool apply)
 			    Unit* m_caster = GetUnitCaster();
 				if(m_caster && m_caster->IsPlayer())
 				{
-					Unit* polytarget=static_cast<Player*>(m_caster)->GetSoloSpellTarget();
+					Unit* polytarget=static_cast<Player*>(m_caster)->GetSoloSpellTarget(m_spellProto->Id);
 					//remove poly from old target before we set it to new
 					if(polytarget && polytarget!=m_target && polytarget->polySpell)
 						polytarget->RemoveSoloAura(((uint32)1));
 					//set new poly target if necesarry
 					if(apply)
-						static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_target->GetGUID());
-					else static_cast<Player*>(m_caster)->SetSoloSpellTarget((uint64)NULL);
+						static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,m_target->GetGUID());
+					else static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,(uint64)NULL);
 				}
 				if(!displayId)
 				{
@@ -5149,6 +5143,21 @@ void Aura::SpellAuraResistPushback(bool apply)
 {
 	//DK:This is resist for spell casting delay
 	//Only use on players for now
+	
+	//check if we are casting earth shield and make sure we have it on only 1 target
+	Unit* m_caster = GetUnitCaster();
+	if(GetSpellProto()->NameHash==36158091 && m_caster && m_caster->IsPlayer())
+	{
+		Unit* earthshielded=static_cast<Player*>(m_caster)->GetSoloSpellTarget(m_spellProto->Id);
+		//remove sap from old target before we set it to new
+		if(earthshielded && earthshielded!=m_target)
+			earthshielded->RemoveAuraByNameHash(GetSpellProto()->NameHash);//remove auras from target
+		//set new sap target if necesarry
+		if(apply)
+			static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,m_target->GetGUID());
+		else static_cast<Player*>(m_caster)->SetSoloSpellTarget(m_spellProto->Id,(uint64)NULL);
+	}
+
 	if(m_target->IsPlayer())
 	{
 		int32 val;

@@ -204,8 +204,7 @@ Unit::Unit()
 	spellcritperc = 0;
 
 	polySpell = 0;
-	sapSpell = 0;
-	fearSpell = 0;
+//	fearSpell = 0;
 }
 
 Unit::~Unit()
@@ -1695,6 +1694,24 @@ bool Unit::RemoveAura(uint32 spellId, uint64 guid)
 	return false;
 }
 
+bool Unit::RemoveAuraByNameHash(uint32 namehash)
+{
+	bool res = false;
+	for(uint32 x=0;x<MAX_AURAS+MAX_PASSIVE_AURAS;x++)
+	{
+		if(m_auras[x])
+		{
+			if(m_auras[x]->GetSpellProto()->NameHash==namehash)
+			{
+				m_auras[x]->Remove();
+				res = true;
+				return res;
+			}
+		}
+	}
+	return true;
+}
+
 void Unit::RemoveNegativeAuras()
 {
 	for(uint32 x=MAX_POSITIVE_AURAS;x<MAX_AURAS;x++)
@@ -3165,7 +3182,7 @@ void Unit::RemoveSoloAura(uint32 type)
 			if(HasActiveAura(polySpell))
 				RemoveAura(polySpell);
 		}break;
-		case 2:// Sap
+/*		case 2:// Sap
 		{
 			if(!sapSpell) return;
 			if(HasActiveAura(sapSpell))
@@ -3176,6 +3193,10 @@ void Unit::RemoveSoloAura(uint32 type)
 			if(!fearSpell) return;
 			if(HasActiveAura(fearSpell))
 				RemoveAura(fearSpell);
-		}break;
+		}break;*/
+		default:
+			{
+			sLog.outDebug("Warning: we are trying to remove a soloauratype that has no handle");
+			}break;
 	}
 }

@@ -394,6 +394,7 @@ typedef std::map<uint64, ByteBuffer*> SplineMap;
 typedef std::map<uint32, ScriptOverrideList* > SpellOverrideMap;
 typedef std::map<uint32, uint32> SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*> ReputationMap;
+typedef std::map<uint32, uint64> SoloSpells;
 class SERVER_DECL Player : public Unit
 {
 	friend class WorldSession;
@@ -1120,8 +1121,8 @@ public:
 	}
 	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
 	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; UpdateComboPoints(); }
-	Unit *GetSoloSpellTarget();
-	void  SetSoloSpellTarget(uint64 newtarget) { solospelltarget = newtarget; }
+	Unit *GetSoloSpellTarget(uint32 spell_id);
+	void  SetSoloSpellTarget(uint32 spellid,uint64 newtarget);
 	uint32 m_speedChangeCounter;
 
 	void SendAreaTriggerMessage(const char * message, ...);
@@ -1311,7 +1312,7 @@ protected:
 	uint32 m_lastHonorResetTime;
 	uint32 _fields[PLAYER_END];
 	void JumpToEndTaxiNode(TaxiPath * path);
-	uint64	solospelltarget;
+	SoloSpells	solospelltarget;
 	uint32	chat_disabled_until;//force player to be silent. Yeah i'm pissed of on noobs
 
 	float m_lastRunSpeed;
