@@ -2878,7 +2878,7 @@ int8 Spell::CheckItems()
 			else
 			{
 				if(m_spellInfo->EquippedItemClass != -1)//all items
-					if(m_spellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM || m_spellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)
+					if(m_spellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM)
 					{
 						if(m_spellInfo->RequiredItemFlags == 0x10000)
 						{
