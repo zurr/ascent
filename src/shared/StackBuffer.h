@@ -127,33 +127,33 @@ public:
 
 	/** These are the default read/write operators.
 	 */
-#define DEFINE_BUFFER_READ_OPERATOR(type) void operator >> (type& dest) { dest = Read<type>(); }
-#define DEFINE_BUFFER_WRITE_OPERATOR(type) void operator << (type src) { Write<type>(src); }
+#define DEFINE_SB_BUFFER_READ_OPERATOR(type) void operator >> (type& dest) { dest = Read<type>(); }
+#define DEFINE_SB_BUFFER_WRITE_OPERATOR(type) void operator << (type src) { Write<type>(src); }
 
 	/** Fast read/write operators without using the templated read/write functions.
 	 */
-#define DEFINE_FAST_READ_OPERATOR(type, size) StackBuffer<Size>& operator >> (type& dest) { if(m_readPos + size > m_writePos) { dest = (type)0; } else { dest = *(type*)&m_bufferPointer[m_readPos]; m_readPos += size; return *this; } }
-#define DEFINE_FAST_WRITE_OPERATOR(type, size) StackBuffer<Size>& operator << (type src) { if(m_writePos + size > m_space) { ReallocateOnHeap(); } *(type*)&m_bufferPointer[m_writePos] = src; m_writePos += size; return *this; }
+#define DEFINE_SB_FAST_READ_OPERATOR(type, size) StackBuffer<Size>& operator >> (type& dest) { if(m_readPos + size > m_writePos) { dest = (type)0; } else { dest = *(type*)&m_bufferPointer[m_readPos]; m_readPos += size; return *this; } }
+#define DEFINE_SB_FAST_WRITE_OPERATOR(type, size) StackBuffer<Size>& operator << (type src) { if(m_writePos + size > m_space) { ReallocateOnHeap(); } *(type*)&m_bufferPointer[m_writePos] = src; m_writePos += size; return *this; }
 
 	/** Integer/float r/w operators
 	 */
-	DEFINE_FAST_READ_OPERATOR(uint64, 8);
-	DEFINE_FAST_READ_OPERATOR(uint32, 4);
-	DEFINE_FAST_READ_OPERATOR(uint16, 2);
-	DEFINE_FAST_READ_OPERATOR(uint8, 1);
-	DEFINE_FAST_READ_OPERATOR(float, 4);
-	DEFINE_FAST_READ_OPERATOR(double, 8);
+	DEFINE_SB_FAST_READ_OPERATOR(uint64, 8);
+	DEFINE_SB_FAST_READ_OPERATOR(uint32, 4);
+	DEFINE_SB_FAST_READ_OPERATOR(uint16, 2);
+	DEFINE_SB_FAST_READ_OPERATOR(uint8, 1);
+	DEFINE_SB_FAST_READ_OPERATOR(float, 4);
+	DEFINE_SB_FAST_READ_OPERATOR(double, 8);
 
-	DEFINE_FAST_WRITE_OPERATOR(uint64, 8);
-	DEFINE_FAST_WRITE_OPERATOR(uint32, 4);
-	DEFINE_FAST_WRITE_OPERATOR(uint16, 2);
-	DEFINE_FAST_WRITE_OPERATOR(uint8, 1);
-	DEFINE_FAST_WRITE_OPERATOR(float, 4);
-	DEFINE_FAST_WRITE_OPERATOR(double, 8);
+	DEFINE_SB_FAST_WRITE_OPERATOR(uint64, 8);
+	DEFINE_SB_FAST_WRITE_OPERATOR(uint32, 4);
+	DEFINE_SB_FAST_WRITE_OPERATOR(uint16, 2);
+	DEFINE_SB_FAST_WRITE_OPERATOR(uint8, 1);
+	DEFINE_SB_FAST_WRITE_OPERATOR(float, 4);
+	DEFINE_SB_FAST_WRITE_OPERATOR(double, 8);
 
 	/** boolean (1-byte) read/write operators
 	 */
-	DEFINE_FAST_WRITE_OPERATOR(bool, 1);
+	DEFINE_SB_FAST_WRITE_OPERATOR(bool, 1);
 	StackBuffer<Size>& operator >> (bool & dst) { dst = (Read<char>() > 0 ? true : false); return *this; }
 
 	/** string (null-terminated) operators
@@ -196,7 +196,7 @@ public:
 	 */
 	StackBuffer<Size>& operator << (LocationVector & val)
 	{
-		// espire: I would've done this as one memcpy.. but we don't know how the struct alignment is gonna come out :/
+		// burlex: I would've done this as one memcpy.. but we don't know how the struct alignment is gonna come out :/
 		Write<float>(val.x);
 		Write<float>(val.y);
 		Write<float>(val.z);

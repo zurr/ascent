@@ -210,7 +210,7 @@ void LogonCommClientSocket::SendChallenge()
 	uint8 * key = sLogonCommHandler.sql_passhash;
 
 	WorldPacket data(RCMSG_AUTH_CHALLENGE, 20);
-	data.append(key, 20);
+	data.Write(key, 20);
 	SendPacket(&data);
 
 	/* initialize rc4 keys */

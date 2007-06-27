@@ -104,15 +104,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket *source, uint32 pos, WorldSession
 	returnpacket.Initialize(SMSG_ADDON_INFO);	// SMSG_ADDON_INFO
 
 	uint32 realsize;
-	try
-	{
-		*source >> realsize;
-	}
-	catch (ByteBuffer::error &)
-	{
-		sLog.outDebug("Warning: Incomplete auth session sent.");
-		return;
-	}	
+	*source >> realsize;
 	uint32 position = source->rpos();
 
 	ByteBuffer unpacked;
@@ -151,7 +143,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket *source, uint32 pos, WorldSession
 		
 		// Hacky fix, Yea I know its a hacky fix I will make a proper handler one's I got the crc crap
 		if (crc != 0x4C1C776D) // CRC of public key version 2.0.1
-			returnpacket.append(PublicKey,264); // part of the hacky fix
+			returnpacket.Write(PublicKey,264); // part of the hacky fix
 		else
 			returnpacket << uint8(0x02) << uint8(0x01) << uint8(0x00) << uint32(0) << uint8(0);
 		/*if(!AppendPublicKey(returnpacket, name, crc))
@@ -169,7 +161,7 @@ bool AddonMgr::AppendPublicKey(WorldPacket& data, string AddonName, uint32 CRC)
 		// Open public key file with that addon
 		map<string, ByteBuffer>::iterator itr = AddonData.find(AddonName);
 		if(itr != AddonData.end())
-			data.append(itr->second);
+			data.Write(itr->second.contents(), itr->second.size());
 		else
 		{
 			// open the file
@@ -188,14 +180,14 @@ bool AddonMgr::AppendPublicKey(WorldPacket& data, string AddonName, uint32 CRC)
 				fclose(f);
 
 				AddonData[AddonName] = buf;
-				data.append(buf);
+				data.Write(buf.contents(), buf.size());
 			}
 			else
 			{
 				ByteBuffer buf;
-				buf.append(PublicKey, 264);
+				buf.Write(PublicKey, 264);
 				AddonData[AddonName] = buf;
-				data.append(buf);
+				data.Write(buf.contents(), buf.size());
 			}
 		}
 		return true;

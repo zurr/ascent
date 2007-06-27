@@ -116,7 +116,7 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 		delete result;
 	}
 
-	data.put<uint8>(0, num);
+	const_cast<uint8*>(data.contents())[0] = num;
 
 	sLog.outDetail("[Character Enum] Built in %u ms.", getMSTime() - start_time);
 	SendPacket( &data );

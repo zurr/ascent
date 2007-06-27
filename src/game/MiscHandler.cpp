@@ -991,7 +991,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
 			data.resize(destsize+8);
 		}
 		else 
-			data.append(	res->data,res->sz);	
+			data.Write(	(const uint8*)res->data,res->sz);	
 	}
 		
 	SendPacket(&data);	

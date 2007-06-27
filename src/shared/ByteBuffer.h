@@ -1,7 +1,7 @@
 /****************************************************************************
  *
- * General Object Type File
- * Copyright (c) 2007 Antrix Team
+ * ByteBuffer Class
+ * Copyright (c) 2007 Burlex, Antrix Team
  *
  * This file may be distributed under the terms of the Q Public License
  * as defined by Trolltech ASA of Norway and appearing in the file
@@ -19,340 +19,239 @@
 #include "WoWGuid.h"
 #include "LocationVector.h"
 
-class SERVER_DECL ByteBuffer {
+class SERVER_DECL ByteBuffer
+{
+#define DEFAULT_SIZE 0x1000
+#define DEFAULT_INCREASE_SIZE 200
+
+	uint8 * m_buffer;
+	size_t m_readPos;
+	size_t m_writePos;
+	uint32 m_buffersize;
+
 public:
-	class error {
-	};
-
-	const static size_t DEFAULT_SIZE = 0x1000;
-
-	ByteBuffer(): _rpos(0), _wpos(0) {
-		_storage.reserve(DEFAULT_SIZE);
-	}
-	ByteBuffer(size_t res): _rpos(0), _wpos(0) {
-		_storage.reserve(res);
-	}
-	ByteBuffer(const ByteBuffer &buf): _rpos(buf._rpos), _wpos(buf._wpos), _storage(buf._storage) { }
-	virtual ~ByteBuffer() {}
-
-	void clear() {
-		_storage.clear();
-		_rpos = _wpos = 0;
-	}
-
-	//template <typename T> void insert(size_t pos, T value) {
-	//  insert(pos, (uint8 *)&value, sizeof(value));
-	//}
-	template <typename T> void append(T value) {
-		append((uint8 *)&value, sizeof(value));
-	}
-	template <typename T> void put(size_t pos,T value) {
-		put(pos,(uint8 *)&value,sizeof(value));
-	}
-
-	// stream like operators for storing data
-	ByteBuffer &operator<<(bool value) {
-		append<char>((char)value);
-		return *this;
-	}
-	// unsigned
-	ByteBuffer &operator<<(uint8 value) {
-		append<uint8>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(uint16 value) {
-		append<uint16>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(uint32 value) {
-		append<uint32>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(uint64 value) {
-		append<uint64>(value);
-		return *this;
-	}
-	// signed as in 2e complement
-	ByteBuffer &operator<<(int8 value) {
-		append<int8>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(int16 value) {
-		append<int16>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(int32 value) {
-		append<int32>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(int64 value) {
-		append<int64>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(float value) {
-		append<float>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(double value) {
-		append<double>(value);
-		return *this;
-	}
-	ByteBuffer &operator<<(const std::string &value) {
-		append((uint8 *)value.c_str(), value.length());
-		append((uint8)0);
-		return *this;
-	}
-	ByteBuffer &operator<<(const char *str) {
-		append((uint8 *)str, strlen(str));
-		append((uint8)0);
-		return *this;
-	}
-	ByteBuffer &operator<<(const WoWGuid &value) {
-		append<uint8>(value.GetNewGuidMask());
-		append((uint8 *)value.GetNewGuid(), value.GetNewGuidLen());
-		return *this;
-	}
-
-	// stream like operators for reading data
-	ByteBuffer &operator>>(bool &value) {
-		value = read<char>() > 0 ? true : false;
-		return *this;
-	}
-	//unsigned
-	ByteBuffer &operator>>(uint8 &value) {
-		value = read<uint8>();
-		return *this;
-	}
-	ByteBuffer &operator>>(uint16 &value) {
-		value = read<uint16>();
-		return *this;
-	}
-	ByteBuffer &operator>>(uint32 &value) {
-		value = read<uint32>();
-		return *this;
-	}
-	ByteBuffer &operator>>(uint64 &value) {
-		value = read<uint64>();
-		return *this;
-	}
-	//signed as in 2e complement
-	ByteBuffer &operator>>(int8 &value) {
-		value = read<int8>();
-		return *this;
-	}
-	ByteBuffer &operator>>(int16 &value) {
-		value = read<int16>();
-		return *this;
-	}
-	ByteBuffer &operator>>(int32 &value) {
-		value = read<int32>();
-		return *this;
-	}
-	ByteBuffer &operator>>(int64 &value) {
-		value = read<int64>();
-		return *this;
-	}
-	ByteBuffer &operator>>(float &value) {
-		value = read<float>();
-		return *this;
-	}
-	ByteBuffer &operator>>(double &value) {
-		value = read<double>();
-		return *this;
-	}
-	ByteBuffer &operator>>(std::string& value) {
-		value.clear();
-		while (true) {
-			char c=read<char>();
-			if (c==0)
-				break;
-			value+=c;
-		}
-		return *this;
-	}
-	//! Only does X,Y,Z!
-	ByteBuffer & operator << (const LocationVector & vec)
+	/** Allocates/reallocates buffer with specified size.
+	 */
+	void reserve(size_t res)
 	{
-		append<float>(vec.x);
-		append<float>(vec.y);
-		append<float>(vec.z);
-		return *this;
+		if(m_buffer)
+			m_buffer = (uint8*)realloc(m_buffer, res);
+		else
+			m_buffer = (uint8*)malloc(res);
+
+		m_buffersize = res;
 	}
 
-	//! Only does X,Y,Z!
-	ByteBuffer & operator >> (LocationVector & vec)
+	/** Creates a bytebuffer with the default size
+	 */
+	ByteBuffer() : m_readPos(0), m_writePos(0), m_buffer(0)
 	{
-		vec.x = read<float>();
-		vec.y = read<float>();
-		vec.z = read<float>();
-		return * this;
+		reserve(DEFAULT_SIZE);
 	}
 
-	ByteBuffer &operator>>(WoWGuid &value) {
-		uint8 field, mask = read<uint8>();
-		value.Init((uint8)mask);
-		for(int i = 0; i < BitCount8(mask); i++)
-		{
-			field = read<uint8>();
-			value.AppendField(field);
-		}
-		return *this;
+	/** Creates a bytebuffer with the specified size
+	 */
+	ByteBuffer(size_t res) : m_readPos(0), m_writePos(0), m_buffer(0)
+	{
+        reserve(DEFAULT_SIZE);
 	}
 
-	uint8 operator[](size_t pos) {
-		return read<uint8>(pos);
+	/** Frees the allocated buffer
+	 */
+	~ByteBuffer()
+	{
+		free(m_buffer);
 	}
 
-	size_t rpos() {
-		return _rpos;
-	};
-
-	size_t rpos(size_t rpos) {
-		_rpos = rpos;
-		return _rpos;
-	};
-
-	size_t wpos() {
-		return _wpos;
+	/** Resets read/write indexes
+	 */
+	inline void clear()
+	{
+		m_readPos = m_writePos = 0;
 	}
 
-	size_t wpos(size_t wpos) {
-		_wpos = wpos;
-		return _wpos;
+	/** Sets write position
+	 */
+	inline void resize(size_t size)
+	{
+		m_writePos = size;
 	}
 
-	template <typename T> T read() {
-		T r=read<T>(_rpos);
-		_rpos += sizeof(T);
-		return r;
-	};
-	template <typename T> T read(size_t pos) const {
-		//ASSERT(pos + sizeof(T) <= size());
-		if(pos + sizeof(T) > size())
-		{
+	/** Returns the buffer pointer
+	 */
+	inline const uint8 * contents()
+	{
+		return m_buffer;
+	}
+
+	/** Gets the buffer size.
+	 */
+	uint32 GetBufferSize() { return m_writePos; }
+
+	/** Reads sizeof(T) bytes from the buffer
+	 * @return the bytes read
+	 */
+	template<typename T>
+		T Read()
+	{
+		if(m_readPos + sizeof(T) <= m_writePos)
 			return (T)0;
-		} else {
-			return *((T*)&_storage[pos]);
-		}
+		T ret = *(T*)&m_buffer[m_readPos];
+		m_readPos += sizeof(T);
+		return ret;
 	}
 
-	void read(uint8 *dest, size_t len) {
-		if (_rpos + len <= size()) {
-			memcpy(dest, &_storage[_rpos], len);
-		} else {
-			//throw error();
-			memset(dest, 0, len);
-		}
-		_rpos += len;
+	/** Reads x bytes from the buffer
+	 */
+	void read(uint8 * buffer, size_t len)
+	{
+		if(m_readPos + len <= m_writePos)
+			len = (m_writePos - m_readPos);
+
+		memcpy(buffer, &m_buffer[m_readPos], len);
+		m_readPos += len;
 	}
 
-	const uint8 *contents() const { return &_storage[0]; };
+	/** Writes sizeof(T) bytes to the buffer, while checking for overflows.
+	 * @param T data The data to be written
+	 */
+	template<typename T>
+		void Write(const T data)
+	{
+		if(m_writePos + sizeof(T) > m_buffersize)
+			reserve(m_buffersize + DEFAULT_INCREASE_SIZE);
 
-	inline size_t size() const { return _storage.size(); };
-	// one should never use resize probably
-	void resize(size_t newsize) {
-		_storage.resize(newsize);
-		_rpos = 0;
-		_wpos = size();
-	};
-	void reserve(size_t ressize) {
-		if (ressize > size()) _storage.reserve(ressize);
-	};
-
-		// appending to the end of buffer
-	void append(const std::string& str) {
-		append((uint8 *)str.c_str(),str.size() + 1);
-	}
-	void append(const char *src, size_t cnt) {
-		return append((const uint8 *)src, cnt);
-	}
-	void append(const uint8 *src, size_t cnt) {
-		if (!cnt) return;
-
-		// noone should even need uint8buffer longer than 10mb
-		// if you DO need, think about it
-		// then think some more
-		// then use something else
-		// -- qz
-		ASSERT(size() < 10000000);
-
-		if (_storage.size() < _wpos + cnt)
-			_storage.resize(_wpos + cnt);
-		memcpy(&_storage[_wpos], src, cnt);
-		_wpos += cnt;
-	}
-	void append(const ByteBuffer& buffer) {
-		if(buffer.size() > 0) append(buffer.contents(),buffer.size());
+		*(T*)&m_buffer[m_writePos] = data;
+		m_writePos += sizeof(T);
 	}
 
-	void put(size_t pos, const uint8 *src, size_t cnt) {
-		ASSERT(pos + cnt <= size());
-		memcpy(&_storage[pos], src, cnt);
-	}
-	//void insert(size_t pos, const uint8 *src, size_t cnt) {
-	//  std::copy(src, src + cnt, inserter(_storage, _storage.begin() + pos));
-	//}
+	/** writes x bytes to the buffer, while checking for overflows
+	 * @param ptr the data to be written
+	 * @param size byte count
+	*/
+	void Write(const uint8 * data, size_t size)
+	{
+		if(m_writePos + size > m_buffersize)
+			reserve(m_buffersize + DEFAULT_INCREASE_SIZE);
 
-	void hexlike()
+		memcpy(&m_buffer[m_writePos], data, size);
+		m_writePos += size;
+	}
+
+	/** Ensures the buffer is big enough to fit the specified number of bytes.
+	 * @param bytes number of bytes to fit
+	 */
+	inline void EnsureBufferSize(uint32 Bytes)
+	{
+		if(m_writePos + Bytes > m_buffersize)
+			reserve(m_buffersize + DEFAULT_INCREASE_SIZE);
+	}
+
+	/** These are the default read/write operators.
+	 */
+#define DEFINE_BUFFER_READ_OPERATOR(type) void operator >> (type& dest) { dest = Read<type>(); }
+#define DEFINE_BUFFER_WRITE_OPERATOR(type) void operator << (type src) { Write<type>(src); }
+
+	/** Fast read/write operators without using the templated read/write functions.
+	 */
+#define DEFINE_FAST_READ_OPERATOR(type, size) ByteBuffer& operator >> (type& dest) { if(m_readPos + size > m_writePos) { dest = (type)0; return *this; } else { dest = *(type*)&m_buffer[m_readPos]; m_readPos += size; return *this; } }
+#define DEFINE_FAST_WRITE_OPERATOR(type, size) ByteBuffer& operator << (type src) { if(m_writePos + size > m_buffersize) { reserve(m_buffersize + DEFAULT_INCREASE_SIZE); } *(type*)&m_buffer[m_writePos] = src; m_writePos += size; return *this; }
+
+	/** Integer/float r/w operators
+	*/
+	DEFINE_FAST_READ_OPERATOR(uint64, 8);
+	DEFINE_FAST_READ_OPERATOR(uint32, 4);
+	DEFINE_FAST_READ_OPERATOR(uint16, 2);
+	DEFINE_FAST_READ_OPERATOR(uint8, 1);
+	DEFINE_FAST_READ_OPERATOR(int64, 8);
+	DEFINE_FAST_READ_OPERATOR(int32, 4);
+	DEFINE_FAST_READ_OPERATOR(int16, 2);
+	DEFINE_FAST_READ_OPERATOR(int8, 1);
+	DEFINE_FAST_READ_OPERATOR(float, 4);
+	DEFINE_FAST_READ_OPERATOR(double, 8);
+
+	DEFINE_FAST_WRITE_OPERATOR(uint64, 8);
+	DEFINE_FAST_WRITE_OPERATOR(uint32, 4);
+	DEFINE_FAST_WRITE_OPERATOR(uint16, 2);
+	DEFINE_FAST_WRITE_OPERATOR(uint8, 1);
+	DEFINE_FAST_WRITE_OPERATOR(int64, 8);
+	DEFINE_FAST_WRITE_OPERATOR(int32, 4);
+	DEFINE_FAST_WRITE_OPERATOR(int16, 2);
+	DEFINE_FAST_WRITE_OPERATOR(int8, 1);
+	DEFINE_FAST_WRITE_OPERATOR(float, 4);
+	DEFINE_FAST_WRITE_OPERATOR(double, 8);
+
+	/** boolean (1-byte) read/write operators
+	 */
+	DEFINE_FAST_WRITE_OPERATOR(bool, 1);
+	ByteBuffer& operator >> (bool & dst) { dst = (Read<char>() > 0 ? true : false); return *this; }
+
+	/** string (null-terminated) operators
+	 */
+	ByteBuffer& operator << (std::string & value) { EnsureBufferSize(value.length() + 1); memcpy(&m_buffer[m_writePos], value.c_str(), value.length()+1); m_writePos += (value.length() + 1); return *this; }
+	ByteBuffer& operator >> (std::string & dest)
+	{
+		dest.clear();
+		char c;
+		for(;;)
 		{
-			uint32 j = 1, k = 1;
-			printf("STORAGE_SIZE: %u\n", size() );
-			for(uint32 i = 0; i < size(); i++)
-			{
-				if ((i == (j*8)) && ((i != (k*16))))
-				{
-					if (read<uint8>(i) < 0x0F)
-					{
-						printf("| 0%X ", read<uint8>(i) );
-					}
-					else
-					{
-						printf("| %X ", read<uint8>(i) );
-					}
-
-					j++;
-				}
-				else if (i == (k*16))
-				{
-					rpos(rpos()-16);	// move read pointer 16 places back
-					printf(" | ");	  // write split char
-
-					for (int x = 0; x < 16; x++)
-					{
-						printf("%c", read<uint8>(i-16 + x) );
-					}
-
-					if (read<uint8>(i) < 0x0F)
-					{
-						printf("\n0%X ", read<uint8>(i) );
-					}
-					else
-					{
-						printf("\n%X ", read<uint8>(i) );
-					}
-
-					k++;
-					j++;
-				}
-				else
-				{
-					if (read<uint8>(i) < 0x0F)
-					{
-						printf("0%X ", read<uint8>(i) );
-					}
-					else
-					{
-						printf("%X ", read<uint8>(i) );
-					}
-				}
-			}
-			printf("\n");
+			c = Read<char>();
+			if(c == 0) break;
+			dest += c;
 		}
+		return *this;
+	}
 
-protected:
-	// read and write positions
-	size_t _rpos, _wpos;
-	std::vector<uint8> _storage;
+	/** WoWGuid read/write operators
+	 */
+	ByteBuffer& operator << (const WoWGuid & value)
+	{
+		EnsureBufferSize(value.GetNewGuidLen() + 1);
+		Write<uint8>(value.GetNewGuidMask());
+		memcpy(&m_buffer[m_writePos], value.GetNewGuid(), value.GetNewGuidLen());
+		m_writePos += value.GetNewGuidLen();
+		return *this;
+	}
+
+	ByteBuffer& operator >> (WoWGuid & value)
+	{
+		uint8 mask = Read<uint8>();
+		value.Init(mask);
+		for(uint32 i = 0; i < BitCount8(mask); ++i)
+			value.AppendField(Read<uint8>());
+		return *this;
+	}
+
+	/** LocationVector read/write operators
+	 */
+	ByteBuffer& operator << (const LocationVector & val)
+	{
+		// burlex: I would've done this as one memcpy.. but we don't know how the struct alignment is gonna come out :/
+		Write<float>(val.x);
+		Write<float>(val.y);
+		Write<float>(val.z);
+		return *this;
+	}
+
+	ByteBuffer& operator >> (LocationVector & dst)
+	{
+		dst.x = Read<float>();
+		dst.y = Read<float>();
+		dst.z = Read<float>();
+		return *this;
+	}
+
+	/** Gets the write position
+	 * @return buffer size
+	 */
+	inline size_t size() { return m_writePos; }
+
+	/** read/write position setting/getting
+	 */
+	inline size_t rpos() { return m_readPos; }
+	inline size_t wpos() { return m_writePos; }
+	inline void rpos(size_t p) { ASSERT(p <= m_writePos); m_readPos = p; }
+	inline void wpos(size_t p) { ASSERT(p <= m_buffersize); m_writePos = p; }
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -186,7 +186,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 		data << acct->Username;
 		data << acct->GMFlags;
 		data << acct->AccountFlags;
-		data.append(sessionkey->AsByteArray(), 40);
+		data.Write(sessionkey->AsByteArray(), 40);
 	}
 	
 	SendPacket(&data);
