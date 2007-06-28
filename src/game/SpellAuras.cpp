@@ -2595,6 +2595,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 	//there can not be 2 slow downs only most powerfull is applied
 	if(apply)
 	{
+		SetNegative();
 		m_target->m_slowdown=this;
 		m_target->m_speedModifier += mod->m_amount;
 	}
