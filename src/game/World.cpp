@@ -764,11 +764,17 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM|PROC_ON_RANGED_ATTACK_VICTIM;				
 					if(strstr(desc, "a chance to deal additional"))
 						pr|=PROC_ON_MELEE_ATTACK;
-					if(strstr(desc, "gives your") && !strstr(desc, "melee"))
+					if(strstr(desc, "chance to get an extra attack"))
+						pr|=PROC_ON_MELEE_ATTACK;
+					if(strstr(desc, "gives your"))
 					{
-						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
-						//we should find that specific spell on what we will trigger
+						if(strstr(desc, "melee"))
+							pr|=PROC_ON_MELEE_ATTACK;
+						//we should find that specific spell (or group) on what we will trigger
+						else pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					}
+						
+					
 					if(strstr(desc, "victim of a melee or ranged critical strike"))
 						pr|=PROC_ON_CRIT_HIT_VICTIM;
 					if(strstr(desc, "getting a critical effect from"))
@@ -843,8 +849,8 @@ void World::SetInitialWorldSettings()
 	if(sp)	sp->procChance=50;
 
 	//improoved berserker stance should be triggered on berserker stance use
-	sp = sSpellStore.LookupEntry(12704);
-	if(sp)	sp->procFlags=PROC_ON_CAST_SPECIFIC_SPELL;
+//	sp = sSpellStore.LookupEntry(12704);
+//	if(sp)	sp->procFlags=PROC_ON_CAST_SPECIFIC_SPELL;
 
 	//fix for Predatory Strikes
 	uint32 mm=(1<<(FORM_BEAR-1))|(1<<(FORM_DIREBEAR-1))|(1<<(FORM_MOONKIN-1))|(1<<(FORM_CAT-1));

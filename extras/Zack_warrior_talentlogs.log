@@ -3,30 +3,6 @@
 [23:52:39] WORLD: Spell effect id = 6, damage = 1
 [23:52:39] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 5301, i = 0, apply = true
 
-test mace specialization
-test sword specialization
-
-test improoved hamstring 
-[23:53:33] Spell::cast 12289, Unit: 283
-[23:53:33] WORLD: Spell effect id = 6, damage = 0
-[23:53:33] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12289, i = 0, apply = true
-[23:53:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12289, i = 0, apply = false
-[23:53:34] Spell::cast 12668, Unit: 283
-[23:53:34] WORLD: Spell effect id = 6, damage = 0
-[23:53:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12668, i = 0, apply = true
-[23:53:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12668, i = 0, apply = false
-[23:53:34] Spell::cast 23695, Unit: 283
-[23:53:34] WORLD: Spell effect id = 6, damage = 0
-[23:53:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 23695, i = 0, apply = true
-[23:53:36] Spell::cast 29836, Unit: 283
-[23:53:36] WORLD: Spell effect id = 6, damage = 100
-[23:53:36] WORLD: target = 283 , Spell Aura id = 109, SpellId  = 29836, i = 0, apply = true
-[23:53:36] WORLD: target = 283 , Spell Aura id = 109, SpellId  = 29836, i = 0, apply = false
-[23:53:36] Spell::cast 29859, Unit: 283
-[23:53:36] WORLD: Spell effect id = 6, damage = 100
-[23:53:36] WORLD: target = 283 , Spell Aura id = 109, SpellId  = 29859, i = 0, apply = true
-
-
 [23:53:39] Spell::cast 29834, Unit: 283
 [23:53:39] WORLD: Spell effect id = 6, damage = 0
 [23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29834, i = 0, apply = true
@@ -35,62 +11,10 @@ test improoved hamstring
 [23:53:39] WORLD: Spell effect id = 6, damage = 0
 [23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29838, i = 0, apply = true
 
-test Unbridled Wrath
-[23:54:16] Spell::cast 12322, Unit: 283
-[23:54:16] WORLD: Spell effect id = 6, damage = 0
-[23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12322, i = 0, apply = true
-[23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12322, i = 0, apply = false
-[23:54:16] Spell::cast 12999, Unit: 283
-[23:54:16] WORLD: Spell effect id = 6, damage = 0
-[23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12999, i = 0, apply = true
-[23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12999, i = 0, apply = false
-[23:54:16] Spell::cast 13000, Unit: 283
-[23:54:16] WORLD: Spell effect id = 6, damage = 0
-[23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13000, i = 0, apply = true
-[23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13000, i = 0, apply = false
-[23:54:16] Spell::cast 13001, Unit: 283
-[23:54:16] WORLD: Spell effect id = 6, damage = 0
-[23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13001, i = 0, apply = true
-[23:54:17] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13001, i = 0, apply = false
-[23:54:17] Spell::cast 13002, Unit: 283
-[23:54:17] WORLD: Spell effect id = 6, damage = 0
-[23:54:17] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13002, i = 0, apply = true
-
-blood craze : should work
-[23:54:20] Spell::cast 16487, Unit: 283
-[23:54:20] WORLD: Spell effect id = 6, damage = 1
-[23:54:20] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16487, i = 0, apply = true
-[23:54:20] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16487, i = 0, apply = false
-[23:54:20] Spell::cast 16489, Unit: 283
-[23:54:20] WORLD: Spell effect id = 6, damage = 1
-[23:54:20] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16489, i = 0, apply = true
-[23:54:21] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16489, i = 0, apply = false
-[23:54:21] Spell::cast 16492, Unit: 283
-[23:54:21] WORLD: Spell effect id = 6, damage = 1
-[23:54:21] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16492, i = 0, apply = true
-
-enrage : should work
-[23:54:26] Spell::cast 12317, Unit: 283
-[23:54:26] WORLD: Spell effect id = 6, damage = 1
-[23:54:26] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12317, i = 0, apply = true
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12317, i = 0, apply = false
-[23:54:27] Spell::cast 13045, Unit: 283
-[23:54:27] WORLD: Spell effect id = 6, damage = 1
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13045, i = 0, apply = true
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13045, i = 0, apply = false
-[23:54:27] Spell::cast 13046, Unit: 283
-[23:54:27] WORLD: Spell effect id = 6, damage = 1
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13046, i = 0, apply = true
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13046, i = 0, apply = false
-[23:54:27] Spell::cast 13047, Unit: 283
-[23:54:27] WORLD: Spell effect id = 6, damage = 1
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13047, i = 0, apply = true
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13047, i = 0, apply = false
-[23:54:27] Spell::cast 13048, Unit: 283
-[23:54:27] WORLD: Spell effect id = 6, damage = 1
-[23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13048, i = 0, apply = true
-
-test imprroved berserker rage
+//the problem is actually that spell dbc does not contain the 3rd effect as in description. It must be added manually
+berserker stance - not working
+berserker rage - does not get triggered on struck. it does not even have an onstruck spell to get triggered.
+improved berserker rage - not triggered. Should only get triggered while we have aura "berserker rage" onstruck event
 [23:54:34] Spell::cast 20500, Unit: 283
 [23:54:34] WORLD: Spell effect id = 6, damage = 0
 [23:54:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 20500, i = 0, apply = true

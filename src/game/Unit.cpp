@@ -527,7 +527,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							if(it && it->GetProto())
 							{
 								uint32 reqskill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
-								if(!(reqskill==SKILL_MACES || reqskill==SKILL_2H_MACES))
+								if(reqskill!=SKILL_MACES && reqskill!=SKILL_2H_MACES)
 									continue;
 							}
 						}
@@ -542,7 +542,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							if(it && it->GetProto())
 							{
 								uint32 reqskill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
-								if(!(reqskill==SKILL_SWORDS || reqskill==SKILL_2H_SWORDS))
+								if(reqskill!=SKILL_SWORDS && reqskill!=SKILL_2H_SWORDS)
 									continue;
 							}
 						}

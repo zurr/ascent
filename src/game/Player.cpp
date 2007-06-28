@@ -1903,7 +1903,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	ss << "','";
 
 	// dump skill data
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*128;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(m_uint32Values[i])
 		{
@@ -3745,7 +3745,7 @@ void Player::CleanupChannels()
 // skilllines
 bool Player::HasSkillLine(uint32 id)
 {
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 			return true;
@@ -3755,7 +3755,7 @@ bool Player::HasSkillLine(uint32 id)
 
 float Player::GetSkillUpChance(uint32 id)
 {
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 		{
@@ -3777,7 +3777,7 @@ float Player::GetSkillUpChance(uint32 id)
 
 uint32 Player::GetSkillMax(uint32 id)
 {
-   for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+   for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 			return GetUInt32Value(i+1)>>16;
@@ -3787,7 +3787,7 @@ uint32 Player::GetSkillMax(uint32 id)
 
 uint32 Player::GetBaseSkillAmt(uint32 id)//return skill amount without bonus
 {
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 		{
@@ -3799,7 +3799,7 @@ uint32 Player::GetBaseSkillAmt(uint32 id)//return skill amount without bonus
 
 uint32 Player::GetSkillAmt(uint32 id)
 {
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*128;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 		{
@@ -3812,7 +3812,7 @@ uint32 Player::GetSkillAmt(uint32 id)
 void Player::AdvanceSkillLine(uint32 id)
 {
   
-   for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*128;i+=3)
+   for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
    {
 		if(((uint16)GetUInt32Value(i))==id)
 		if(((uint16)GetUInt32Value(i+1)) < (GetUInt32Value(i+1)>>16) ) // check if skill is not at the max
@@ -3825,7 +3825,7 @@ void Player::AdvanceSkillLine(uint32 id)
 
 void Player::ModSkillMax(uint32 id, uint32 amt, uint32 setcur /* = 0 */)
 {
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*128;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 		{
@@ -3850,7 +3850,7 @@ void Player::AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal)
 	skillid|=0x10000;
 
 
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(!GetUInt32Value(i))
 		{
@@ -3883,7 +3883,7 @@ void Player::AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal)
 }
 void Player::RemoveSkillLine(uint32 id)
 {
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 		{
@@ -3907,7 +3907,7 @@ void Player::RemoveSkillLine(uint32 id)
 
 void Player::ModSkillBonus(uint32 id,int32 bonus)
 {
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(((uint16)GetUInt32Value(i))==id)
 		{
@@ -3920,7 +3920,7 @@ void Player::ModSkillBonus(uint32 id,int32 bonus)
 void Player::ModSkillBonusType(uint32 type,int32 bonus)
 {
 	uint16 skillid;
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(skillid=GetUInt32Value(i))
 		{
@@ -3941,7 +3941,7 @@ void Player::ModSkillBonusType(uint32 type,int32 bonus)
 void Player::UpdateMaxSkills()
 {
 	uint16 skillid;
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_SKILL_INFO_1_1+3*127;i+=3)
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(skillid=GetUInt32Value(i))
 		{
@@ -5260,6 +5260,7 @@ void Player::Reset_Talents()
 		TalentEntry *tmpTalent = sTalentStore.LookupEntry(i);
 		if(!tmpTalent)
 			continue; //should not ocur
+		//this is a normal talent (i hope )
 		for (int j = 0; j < 5; j++)
 		{
 			if (tmpTalent->RankID[j] != 0)
@@ -5269,10 +5270,17 @@ void Player::Reset_Talents()
 				spellInfo = sSpellStore.LookupEntry( tmpTalent->RankID[j] );
 				if(spellInfo)
 				{
-					for(int j=0;j<3;j++)
-						if(spellInfo->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
-							removeSpell(spellInfo->EffectTriggerSpell[j], false, 0, 0);
-					
+					for(int k=0;k<3;k++)
+						if(spellInfo->Effect[k] == SPELL_EFFECT_LEARN_SPELL)
+						{
+							removeSpell(spellInfo->EffectTriggerSpell[k], false, 0, 0);
+							//remove higher ranks of this spell too (like earth shield lvl 1 is talent and the rest is thought from trainer) 
+							SpellEntry *spellInfo2;
+							spellInfo2 = sSpellStore.LookupEntry( spellInfo->EffectTriggerSpell[k] );
+							if(spellInfo2)
+								removeSpellByHashName(spellInfo2->NameHash);
+						}
+					//remove them all in 1 shot
 					removeSpellByHashName(spellInfo->NameHash);
 				}
 			}
