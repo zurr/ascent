@@ -2942,11 +2942,20 @@ void Player::RemoveFromWorld()
 			sEventMgr.AddEvent(m_SummonedObject, &Object::Delete, EVENT_GAMEOBJECT_EXPIRE, 100, 1);
 		}else
 		{
-			if(m_SummonedObject->IsInWorld())
+			if(m_SummonedObject->GetTypeId() == TYPEID_PLAYER)
 			{
-				m_SummonedObject->RemoveFromWorld();
+				Crash_Log->AddLine("SummonedObject = Player!\n");
+				CStackWalker ws;
+				ws.ShowCallstack();
 			}
-			delete m_SummonedObject;
+			else
+			{
+				if(m_SummonedObject->IsInWorld())
+				{
+					m_SummonedObject->RemoveFromWorld();
+				}
+				delete m_SummonedObject;
+			}
 		}
 		m_SummonedObject = NULL;
 	}

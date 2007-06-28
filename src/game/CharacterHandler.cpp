@@ -167,7 +167,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 			((pNewChar->GetTeam()== 1) && (_side&1))
 			)
 		{
-			pNewChar->ok_to_remove = false;
+			pNewChar->ok_to_remove = true;
 			delete pNewChar;
 			WorldPacket data;
 			data.SetOpcode(SMSG_CHAR_CREATE);
@@ -203,7 +203,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	pn->team = pNewChar->GetTeam ();
 	objmgr.AddPlayerInfo(pn);
 
-	pNewChar->ok_to_remove = false;
+	pNewChar->ok_to_remove = true;
 	delete  pNewChar;
 
 	// CHAR_CREATE_SUCCESS

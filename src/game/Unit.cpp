@@ -1675,6 +1675,8 @@ void Unit::AddAura(Aura *aur)
 	if(aur->GetDuration() > 0)
 		sEventMgr.AddEvent(aur, &Aura::Remove, EVENT_AURA_REMOVE, aur->GetDuration(), 1);
 
+	aur->RelocateEvents();
+
 	// Reaction from enemy AI
 	if(GetTypeId() == TYPEID_UNIT && !aur->IsPositive())	  // Creature
 	{
