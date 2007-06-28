@@ -101,6 +101,7 @@ void AddItemFromDisenchant(ItemPrototype *proto,Player*owner)
 		printf("Error whole trying to add disenchanted items to free slots");
 	}
 }
+
 /*
 Dusts usually are extracted from armors, but also occasionally found from weapons. 
 
@@ -140,3 +141,132 @@ Nexus Crystals are obtained by disenchanting Epic (purple) items, and sometimes 
 
 Nexus Crystal - Disenchanted from level 51-60 items [20725]
 */
+
+void AddItemFromProspecting(ItemPrototype *proto,Player*owner)
+{
+	uint32 count = 0,item = 0;
+	uint32 l=proto->ItemLevel;
+
+	switch (proto->ItemId)
+	{
+		case 2771: //thin ore
+		{
+			if(Rand(100))
+			{
+				uint32 addme_entry=24188; //tin powder = 100%
+				uint32 addme_count=1+rand() % 2;
+				Item * it=objmgr.CreateItem(item,owner);  
+				if(it)
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+					if(!result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+				}
+			}
+			
+			if(Rand(38.7))
+			{
+				uint32 addme_entry=1206; //mos agate
+				uint32 addme_count=1+rand() % 2;
+				Item * it=objmgr.CreateItem(item,owner);  
+				if(it)
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+					if(!result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+				}
+			}
+			if(Rand(37.6))
+			{
+				uint32 addme_entry=1705; //lesser moonstone
+				uint32 addme_count=1+rand() % 2;
+				Item * it=objmgr.CreateItem(item,owner);  
+				if(it)
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+					if(!result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+				}
+			}
+			if(Rand(36.8))
+			{
+				uint32 addme_entry=1210; //shadowgem
+				uint32 addme_count=1+rand() % 2;
+				Item * it=objmgr.CreateItem(item,owner);  
+				if(it)
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+					if(!result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+				}
+			}
+			if(Rand(3.5))
+			{
+				uint32 addme_entry=1529; //jade
+				uint32 addme_count=1+rand() % 2;
+				Item * it=objmgr.CreateItem(item,owner);  
+				if(it)
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+					if(!result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+				}
+			}
+			if(Rand(3.3))
+			{
+				uint32 addme_entry=3864; //citrin
+				uint32 addme_count=1+rand() % 2;
+				Item * it=objmgr.CreateItem(item,owner);  
+				if(it)
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+					if(!result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+				}
+			}
+			if(Rand(3.1))
+			{
+				uint32 addme_entry=7909; //aquamarine
+				uint32 addme_count=1+rand() % 2;
+				Item * it=objmgr.CreateItem(item,owner);  
+				if(it)
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
+					if(!result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+				}
+			}
+		}break;
+		case 10620: //thorium ore
+		{
+		}break;
+	}
+}

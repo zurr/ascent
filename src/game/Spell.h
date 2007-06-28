@@ -633,7 +633,7 @@ enum SpellEffects
 	SPELL_EFFECT_UNKNOWN3,				  //124
 	SPELL_EFFECT_UNKNOWN4,				  //125
 	SPELL_EFFECT_UNKNOWN5,				  //126
-	SPELL_EFFECT_UNKNOWN6,				  //127
+	SPELL_EFFECT_PROSPECTING,			  //127
 	SPELL_EFFECT_UNKNOWN7,				  //128
 	SPELL_EFFECT_UNKNOWN8,				  //129
 	SPELL_EFFECT_UNKNOWN9,				  //129
@@ -1227,6 +1227,7 @@ public:
 	void SpellEffectSkill(uint32 i);
 	void SpellEffectApplyPetAura(uint32 i);
 	void SpellEffectDummyMelee(uint32 i);
+	void SpellEffectProspecting(uint32 i);
 	void SpellEffectOpenLockItem(uint32 i);
 	void SpellEffectSelfResurrect(uint32 i);
 	void SpellEffectDisenchant(uint32 i);

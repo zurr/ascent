@@ -142,7 +142,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_PULL - 124 //http://www.thottbot.com/?sp=28337
 		&Spell::SpellEffectNULL,//unknown - 125 // Reduce Threat by % //http://www.thottbot.com/?sp=32835
 		&Spell::SpellEffectNULL,//unknown - 126 // Steal Beneficial Buff (Magic) //http://www.thottbot.com/?sp=30449
-		&Spell::SpellEffectNULL,//unknown - 127 // Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
+		&Spell::SpellEffectProspecting,//unknown - 127 // Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
 		&Spell::SpellEffectNULL,//unknown - 128 // Adjust a stats by %: Mod Stat // ITS FLAT
 		&Spell::SpellEffectNULL,//unknown - 129 // Mod Dmg % (Spells)
 		&Spell::SpellEffectNULL,//unknown - 130 // no spells
@@ -3953,6 +3953,66 @@ void Spell::SpellEffectDummyMelee(uint32 i) // Normalized Weapon damage +
    
 	u_caster->Strike(unitTarget,GetType() == SPELL_TYPE_RANGED ? SPELL_TYPE_RANGED:0,m_spellInfo,damage,0,0);
 
+}
+
+//1 spell is using it :S = 31252
+void Spell::SpellEffectProspecting(uint32 i)
+{
+	if(!p_caster || !m_targets.m_itemTarget)
+		return;
+
+	//damage is amount of items required
+	//stupid spell does not store the src item type :S nor the output
+	Item *src_item;
+	ItemPrototype *m_itemProto;
+	uint32 src_item_amt=5;
+	if(m_spellInfo->Id==31252)
+	{
+		src_item=p_caster->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
+		if(!src_item)
+			return;
+		uint32 entry=src_item->GetEntry();
+		uint32 itemsavailable=p_caster->GetItemInterface()->GetItemCount(entry,false);
+		//we need 5 items in order to perform this spell
+		if(itemsavailable<src_item_amt)
+		{
+			SendCastResult(SPELL_FAILED_ITEM_NOT_FOUND);
+			return;
+		}
+
+        //Check for required skill
+		uint32 req_skill = src_item->GetProto()->RequiredSkillRank; 
+		if(req_skill >p_caster->GetSkillAmt(SKILL_JEWELCRAFTING)) 
+		{
+			SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
+			return;
+		}
+		
+		//get the proto before we kick the original items
+		m_itemProto=src_item->GetProto();
+
+		//if we can cast it then we can remove items
+		if(!p_caster->GetItemInterface()->RemoveItemAmt(entry, src_item_amt))
+		{
+			//ugh something went very wrong, a few ns ago we had the items :S
+			return;
+		}
+   
+		AddItemFromProspecting(m_itemProto,p_caster);
+
+/*		//prospecting does not increase SKILL !!!
+		uint32 skill=caster->GetBaseSkillAmt(SKILL_JEWELCRAFTING);
+		if(skill < 350)//can up skill
+		if(Rand(float(100-skill*100.0/350.0)))
+			caster->AdvanceSkillLine(SKILL_JEWELCRAFTING);*/
+	}
+	else
+	{
+		sLog.outError("Trying to use prospect effect for spell %u that is not handled yet",m_spellInfo->Id);
+		//should also send some cast result failed or something
+		SendCastResult(SPELL_FAILED_CANT_BE_DISENCHANTED);
+		return;
+	}
 }
 
 void Spell::SpellEffectResurrectNew(uint32 i)
