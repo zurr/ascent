@@ -49,7 +49,7 @@ GameObject::GameObject(uint32 high, uint32 low)
 	spawnid = 0;
 	m_spawn = 0;
 	loot.gold = 0;
-	m_deleted = true;
+	m_deleted = false;
 }
 
 GameObject::~GameObject()
