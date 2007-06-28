@@ -1146,11 +1146,10 @@ Unit* AIInterface::FindTarget()
 			if(static_cast<Player*>(pUnit)->GetTaxiState())	  // skip players on taxi
 				continue;
 		}
-
-		if(pUnit->bInvincible)
+		else if(pUnit->GetTypeId() != TYPEID_UNIT)
 			continue;
 
-		if(!isHostile(m_Unit, pUnit))
+		if(pUnit->bInvincible)
 			continue;
 
 		// don't agro players on flying mounts

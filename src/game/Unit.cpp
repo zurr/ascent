@@ -2122,14 +2122,11 @@ void Unit::AddInRangeObject(Object* pObj)
 
 void Unit::RemoveInRangeObject(Object* pObj)
 {
-	/*set<Object*>::iterator itr = m_oppFactsInRange.find(pObj);
-	if(itr != m_oppFactsInRange.end())
-		m_oppFactsInRange.erase(itr);*/
-	if(m_objectTypeId == TYPEID_UNIT && pObj->IsUnit())
-		m_oppFactsInRange.erase(((Unit*)pObj));
-
 	if(pObj->GetTypeId() == TYPEID_UNIT || pObj->GetTypeId() == TYPEID_PLAYER)
 	{
+		if(m_objectTypeId == TYPEID_UNIT)
+			m_oppFactsInRange.erase(((Unit*)pObj));
+
 		/*if (m_useAI)*/
 		Unit *pUnit = static_cast<Unit*>(pObj);
 		GetAIInterface()->CheckTarget(pUnit);
@@ -3329,7 +3326,9 @@ void Unit::RemoveSoloAura(uint32 type)
 
 void Unit::UpdateOppFactionSet()
 {
-	m_oppFactsInRange.clear();
+	/* now i think about it, this is actually pretty dangerous :/ - burlex
+	 */
+	//m_oppFactsInRange.clear();
 
 	for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
 	{
@@ -3347,6 +3346,9 @@ void Unit::UpdateOppFactionSet()
 			{
 				if((*i)->GetTypeId() == TYPEID_UNIT)
 					((Unit*)*i)->m_oppFactsInRange.erase(this);
+
+				if(m_objectTypeId == TYPEID_UNIT)
+					m_oppFactsInRange.erase(((Unit*)*i));
 			}
 		}
 	}
