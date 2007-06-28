@@ -6092,7 +6092,7 @@ void Aura::SpellAuraIncreaseMaxHealth(bool apply)
 	if(!m_target->IsPlayer())
 		return;
 
-	uint32 amount;
+	int32 amount;
 	if(apply)
 		amount = mod->m_amount;
 	else
