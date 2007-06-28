@@ -6092,28 +6092,14 @@ void Aura::SpellAuraIncreaseMaxHealth(bool apply)
 	if(!m_target->IsPlayer())
 		return;
 
+	uint32 amount;
 	if(apply)
-	{
-		((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() + mod->m_amount);
-		((Player*)m_target)->UpdateStats();
-		m_target->ModUInt32Value(UNIT_FIELD_HEALTH, mod->m_amount);
-	}
+		amount = mod->m_amount;
 	else
-	{
-		//mod current health before its changed with UpdateStats()
-		uint32 newHealth;
-		if (!m_target->isAlive())
-			newHealth = 0;
-		else if(m_target->GetUInt32Value(UNIT_FIELD_HEALTH) < mod->m_amount)
-			newHealth = 1;
-		else
-			newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) - mod->m_amount;
+		amount = -mod->m_amount;
 
-		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, newHealth);
-
-		((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() - mod->m_amount);
-		((Player*)m_target)->UpdateStats();
-	}
+	((Player*)m_target)->SetHealthFromSpell(((Player*)m_target)->GetHealthFromSpell() + amount);
+	((Player*)m_target)->UpdateStats();
 }
 
 void Aura::SpellAuraSpiritOfRedemption(bool apply)
