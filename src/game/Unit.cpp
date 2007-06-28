@@ -2988,9 +2988,7 @@ void Unit::RemoveFromWorld()
 		{
 			GameObject * obj = m_mapMgr->GetGameObject(m_ObjectSlots[i]);
 			if(obj)
-			{
-				sEventMgr.AddEvent(obj, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
-			}
+				obj->ExpireAndDelete();
 
 			m_ObjectSlots[i] = 0;
 		}

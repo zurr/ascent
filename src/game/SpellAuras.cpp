@@ -2604,7 +2604,10 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 				break;
 
 			default:
-				SetNegative();
+				/* burlex: this would be better as a if(caster is hostile to target) then effect = negative) */
+				if(m_casterGuid != m_target->GetGUID())
+					SetNegative();
+
 				break;
 		}
 

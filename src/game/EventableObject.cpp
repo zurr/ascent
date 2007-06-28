@@ -278,6 +278,13 @@ void EventableObjectHolder::Update(uint32 time_difference)
 
 				continue;
 			}
+			else if(ev->deleted)
+			{
+				// event is now deleted
+				ev->DecRef();
+				m_events.erase(it2);
+				continue;
+			}
 
 			// event has to repeat again, reset the timer
 			ev->currTime = ev->msTime;

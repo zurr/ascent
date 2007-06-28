@@ -950,12 +950,11 @@ bool ChatHandler::HandleReviveStringcommand(const char* args, WorldSession* m_se
 
 	if(plr->isDead())
 	{
-		plr->ResurrectPlayer();
-		plr->SetMovement(MOVE_UNROOT, 5);
-		plr->SetPlayerSpeed(RUN, (float)7.5);
-		plr->SetPlayerSpeed(SWIM, (float)4.9);
-		plr->SetMovement(MOVE_LAND_WALK, 8);
-		plr->SetUInt32Value(UNIT_FIELD_HEALTH, plr->GetUInt32Value(UNIT_FIELD_MAXHEALTH) );
+		if(plr->GetInstanceID() == m_session->GetPlayer()->GetInstanceID())
+			plr->RemoteRevive();
+		else
+			sEventMgr.AddEvent(plr, &Player::RemoteRevive, EVENT_PLAYER_REST, 1, 1);
+
 		GreenSystemMessage(m_session, "Revived player %s.", args);
 	} else {
 		GreenSystemMessage(m_session, "Player %s is not dead.", args);

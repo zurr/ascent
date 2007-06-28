@@ -2518,7 +2518,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
 		go->CreateFromProto(entry,mapid,posx,posy,pz,orient);
 		go->SetUInt64Value(OBJECT_FIELD_CREATED_BY,m_caster->GetGUID());
 		go->PushToWorld(m_caster->GetMapMgr());	  
-		sEventMgr.AddEvent(go, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
+		sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
 		if(entry ==17032)//this is a portal
 		{//enable it for party only
 			go-> SetUInt32Value( GAMEOBJECT_STATE,0);
@@ -2973,7 +2973,7 @@ void Spell::SpellEffectSummonObjectWild(uint32 i)
 	GoSummon->PushToWorld(u_caster->GetMapMgr());
 	GoSummon->SetSummoned(u_caster);
 	
-	sEventMgr.AddEvent(GoSummon, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
+	sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
 }
 
 void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
@@ -3667,7 +3667,7 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 	if( GoSummon )
 	{
 		if(GoSummon->GetInstanceID() != u_caster->GetInstanceID())
-			sEventMgr.AddEvent(GoSummon, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
+			GoSummon->ExpireAndDelete();
 		else
 		{
 			if( GoSummon->IsInWorld() )
@@ -3700,7 +3700,7 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 	}
 	else
 	{
-		sEventMgr.AddEvent(GoSummon, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
+		sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
 	}
 	GoSummon->PushToWorld(m_caster->GetMapMgr());
 	GoSummon->SetSummoned(u_caster);
@@ -3768,11 +3768,9 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
 			GameObject * obj = p_caster->GetMapMgr()->GetGameObject(p_caster->m_ObjectSlots[x]);
 			if(obj)
 			{
-				if(obj->GetInstanceID() != p_caster->GetInstanceID())
-					sEventMgr.AddEvent(obj, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
-				else
-					obj->Expire();
+				obj->ExpireAndDelete();
 			}
+			p_caster->m_ObjectSlots[x] = 0;
 		}
 	}
 

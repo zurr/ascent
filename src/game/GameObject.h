@@ -159,7 +159,10 @@ public:
 		m_summoner = mob;
 		m_summonedGo = true;
 	}
-	void Expire();
+	void _Expire();
+	
+	void ExpireAndDelete();
+
 	void Deactivate();
 
 	inline bool isQuestGiver()
@@ -206,6 +209,7 @@ public:
 protected:
 
 	bool m_summonedGo;
+	bool m_deleted;
 	GameObjectInfo *pInfo;
 	GameObjectAIScript * myScript;
 	uint32 _fields[GAMEOBJECT_END];

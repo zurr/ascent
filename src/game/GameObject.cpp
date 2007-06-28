@@ -49,6 +49,7 @@ GameObject::GameObject(uint32 high, uint32 low)
 	spawnid = 0;
 	m_spawn = 0;
 	loot.gold = 0;
+	m_deleted = true;
 }
 
 GameObject::~GameObject()
@@ -133,6 +134,9 @@ void GameObject::TrapSearchTarget()
 
 void GameObject::Update(uint32 p_time)
 {
+	if(m_deleted)
+		return;
+
 	if(spell && (GetUInt32Value(GAMEOBJECT_STATE) == 1))
 	{
 		if(checkrate > 1)
@@ -158,7 +162,7 @@ void GameObject::Update(uint32 p_time)
 				{
 					if(!m_summoner)
 					{
-						sEventMgr.AddEvent(this, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
+						ExpireAndDelete();
 						return;
 					}
 					if(!isAttackable(m_summoner,pUnit))continue;
@@ -172,7 +176,7 @@ void GameObject::Update(uint32 p_time)
 				sp->prepare(&tgt);
 				if(m_summonedGo)
 				{
-					Expire();
+					ExpireAndDelete();
 					return;
 				}
 
@@ -491,7 +495,8 @@ void GameObject::EndFishing(Player* player, bool abort )
 				RemoveFromWorld();
 			delete this;*/
 
-			sEventMgr.AddEvent(this, &GameObject::Expire, EVENT_DELETE_TIMER, 10000, 1);
+			ExpireAndDelete();
+			return;
 		}
 	}
 	else // if this is called, and there is no spell so remove the gameobject
@@ -579,13 +584,26 @@ void GameObject::_LoadQuests()
 /////////////////
 // Summoned Go's
 
-void GameObject::Expire()
+void GameObject::_Expire()
 {
+	sEventMgr.RemoveEvents(this);
 	if(IsInWorld())
 		RemoveFromWorld();
 
 	//sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_DELETE_TIMER, 1000, 1);
 	delete this;
+}
+
+void GameObject::ExpireAndDelete()
+{
+	if(m_deleted)
+		return;
+
+	m_deleted = true;
+	
+	/* remove any events */
+	sEventMgr.RemoveEvents(this);
+	sEventMgr.AddEvent(this, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
 }
 
 void GameObject::Deactivate()
@@ -608,6 +626,7 @@ void GameObject::OnPushToWorld()
 
 void GameObject::RemoveInRangeObject(Object* pObj)
 {
+	Object::RemoveInRangeObject(pObj);
 	if(m_summonedGo && m_summoner == pObj)
 	{
 		for(int i = 0; i < 4; i++)
@@ -615,8 +634,6 @@ void GameObject::RemoveInRangeObject(Object* pObj)
 				m_summoner->m_ObjectSlots[i] = NULL;
 
 		m_summoner = 0;
-		sEventMgr.AddEvent(this, &GameObject::Expire, EVENT_GAMEOBJECT_EXPIRE, 5000, 1);
+		ExpireAndDelete();
 	}
-
-	Object::RemoveInRangeObject(pObj);
 }

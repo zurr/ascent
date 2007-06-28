@@ -106,7 +106,7 @@ void WarsongGulch::HandleBattlegroundAreaTrigger(Player *plr, uint32 TriggerID)
 	if(buffslot > -1 && gbuffs[buffslot])
 	{
 		spellid = gbuffs[buffslot]->GetInfo()->sound3;
-		gbuffs[buffslot]->Expire();
+		gbuffs[buffslot]->ExpireAndDelete();
 		gbuffs[buffslot] = NULL;
 		sEventMgr.AddEvent(this, &WarsongGulch::SpawnBuff,(uint32)0,(uint32)buffslot, EVENT_BATTLEGROUND_SPAWN_BUFF1+buffslot, BUFF_RESPAWN_TIME, 1);  
 	}	
