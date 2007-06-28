@@ -708,7 +708,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(desc,"whenever you deal ranged damage"))
 						pr|=PROC_ON_RANGED_ATTACK;
-					if(strstr(desc,"whenever you deal melee damage"))
+//					if(strstr(desc,"whenever you deal melee damage"))
+					if(strstr(desc,"you deal melee damage"))
 						pr|=PROC_ON_MELEE_ATTACK;
 					if(strstr(desc,"your melee attacks"))
 						pr|=PROC_ON_MELEE_ATTACK;
@@ -764,7 +765,10 @@ void World::SetInitialWorldSettings()
 					if(strstr(desc, "a chance to deal additional"))
 						pr|=PROC_ON_MELEE_ATTACK;
 					if(strstr(desc, "gives your") && !strstr(desc, "melee"))
+					{
 						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
+						//we should find that specific spell on what we will trigger
+					}
 					if(strstr(desc, "victim of a melee or ranged critical strike"))
 						pr|=PROC_ON_CRIT_HIT_VICTIM;
 					if(strstr(desc, "getting a critical effect from"))

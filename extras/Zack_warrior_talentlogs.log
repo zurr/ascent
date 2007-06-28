@@ -5,12 +5,8 @@
 
 test mace specialization
 test sword specialization
-[23:53:32] Spell::cast 29889, Unit: 283
-[23:53:32] WORLD: Spell effect id = 6, damage = 4
-[23:53:32] WORLD: Spell effect id = 6, damage = 0
-[23:53:32] WORLD: target = 283 , Spell Aura id = 198, SpellId  = 29889, i = 0, apply = true
-[23:53:32] Unknown Aura id 198
-[23:53:32] WORLD: target = 283 , Spell Aura id = 77, SpellId  = 29889, i = 1, apply = true
+
+test improoved hamstring 
 [23:53:33] Spell::cast 12289, Unit: 283
 [23:53:33] WORLD: Spell effect id = 6, damage = 0
 [23:53:33] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12289, i = 0, apply = true
@@ -29,6 +25,8 @@ test sword specialization
 [23:53:36] Spell::cast 29859, Unit: 283
 [23:53:36] WORLD: Spell effect id = 6, damage = 100
 [23:53:36] WORLD: target = 283 , Spell Aura id = 109, SpellId  = 29859, i = 0, apply = true
+
+
 [23:53:39] Spell::cast 29834, Unit: 283
 [23:53:39] WORLD: Spell effect id = 6, damage = 0
 [23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29834, i = 0, apply = true
@@ -36,10 +34,8 @@ test sword specialization
 [23:53:39] Spell::cast 29838, Unit: 283
 [23:53:39] WORLD: Spell effect id = 6, damage = 0
 [23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29838, i = 0, apply = true
-[23:53:42] Spell::cast 29623, Unit: 283
-[23:53:42] WORLD: Spell effect id = 6, damage = 25
-[23:53:42] WORLD: target = 283 , Spell Aura id = 213, SpellId  = 29623, i = 0, apply = true
-[23:53:57] WORLD: got use Item packet, data length = 5
+
+test Unbridled Wrath
 [23:54:16] Spell::cast 12322, Unit: 283
 [23:54:16] WORLD: Spell effect id = 6, damage = 0
 [23:54:16] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12322, i = 0, apply = true
