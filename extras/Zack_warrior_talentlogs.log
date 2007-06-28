@@ -55,6 +55,8 @@ test Unbridled Wrath
 [23:54:17] Spell::cast 13002, Unit: 283
 [23:54:17] WORLD: Spell effect id = 6, damage = 0
 [23:54:17] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13002, i = 0, apply = true
+
+blood craze : should work
 [23:54:20] Spell::cast 16487, Unit: 283
 [23:54:20] WORLD: Spell effect id = 6, damage = 1
 [23:54:20] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16487, i = 0, apply = true
@@ -66,6 +68,8 @@ test Unbridled Wrath
 [23:54:21] Spell::cast 16492, Unit: 283
 [23:54:21] WORLD: Spell effect id = 6, damage = 1
 [23:54:21] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 16492, i = 0, apply = true
+
+enrage : should work
 [23:54:26] Spell::cast 12317, Unit: 283
 [23:54:26] WORLD: Spell effect id = 6, damage = 1
 [23:54:26] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 12317, i = 0, apply = true
@@ -85,6 +89,8 @@ test Unbridled Wrath
 [23:54:27] Spell::cast 13048, Unit: 283
 [23:54:27] WORLD: Spell effect id = 6, damage = 1
 [23:54:27] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 13048, i = 0, apply = true
+
+test imprroved berserker rage
 [23:54:34] Spell::cast 20500, Unit: 283
 [23:54:34] WORLD: Spell effect id = 6, damage = 0
 [23:54:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 20500, i = 0, apply = true

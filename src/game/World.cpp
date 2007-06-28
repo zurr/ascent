@@ -842,6 +842,10 @@ void World::SetInitialWorldSettings()
 	sp = sSpellStore.LookupEntry(12704);
 	if(sp)	sp->procChance=50;
 
+	//improoved berserker stance should be triggered on berserker stance use
+	sp = sSpellStore.LookupEntry(12704);
+	if(sp)	sp->procFlags=PROC_ON_CAST_SPECIFIC_SPELL;
+
 	//fix for Predatory Strikes
 	uint32 mm=(1<<(FORM_BEAR-1))|(1<<(FORM_DIREBEAR-1))|(1<<(FORM_MOONKIN-1))|(1<<(FORM_CAT-1));
 	sSpellStore.LookupEntry(16972)->RequiredShapeShift = mm;

@@ -483,6 +483,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		uint32 origId = itr2->origId;
 		if(CastingSpell)
 		{
+			//this is to avoid spell proc on spellcast loop. We use dummy that is same for both spells
 			if(CastingSpell->Id == itr2->origId || CastingSpell->Id == itr2->spellId)
 			{
 				//printf("WOULD CRASH HERE ON PROC: CastingId: %u, OrigId: %u, SpellId: %u\n", CastingSpell->Id, itr2->origId, itr2->spellId);
