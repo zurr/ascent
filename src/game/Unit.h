@@ -1031,13 +1031,6 @@ public:
 	uint32 polySpell;
 //	uint32 fearSpell;
 	
-	void UpdateOppFactionSet();
-	set<Unit*> m_oppFactsInRange;
-
-	inline bool IsInRangeOppFactSet(Unit* pObj) { return (m_oppFactsInRange.find(pObj) != m_oppFactsInRange.end()); }
-	inline std::set<Unit*>::iterator GetInRangeOppFactsSetBegin() { return m_oppFactsInRange.begin(); }
-	inline std::set<Unit*>::iterator GetInRangeOppFactsSetEnd() { return m_oppFactsInRange.end(); }
-
 protected:
 	Unit ();
 

@@ -2091,9 +2091,8 @@ void Unit::AddInRangeObject(Object* pObj)
 {
 	if ((pObj->GetTypeId() == TYPEID_UNIT) || (pObj->GetTypeId() == TYPEID_PLAYER))
 	{
-		if (m_objectTypeId == TYPEID_UNIT && isHostile(this, (Unit*)pObj))
-			m_oppFactsInRange.insert(((Unit*)pObj));
-
+		if (isHostile(this, (Unit*)pObj))
+			m_oppFactsInRange.insert(pObj);
 		if (GetTypeId()==TYPEID_PLAYER)
 		{
 			if (((Player*)this)->InGroup())
@@ -2122,11 +2121,13 @@ void Unit::AddInRangeObject(Object* pObj)
 
 void Unit::RemoveInRangeObject(Object* pObj)
 {
+	/*set<Object*>::iterator itr = m_oppFactsInRange.find(pObj);
+	if(itr != m_oppFactsInRange.end())
+		m_oppFactsInRange.erase(itr);*/
+	m_oppFactsInRange.erase(pObj);
+
 	if(pObj->GetTypeId() == TYPEID_UNIT || pObj->GetTypeId() == TYPEID_PLAYER)
 	{
-		if(m_objectTypeId == TYPEID_UNIT)
-			m_oppFactsInRange.erase(((Unit*)pObj));
-
 		/*if (m_useAI)*/
 		Unit *pUnit = static_cast<Unit*>(pObj);
 		GetAIInterface()->CheckTarget(pUnit);
@@ -3321,35 +3322,5 @@ void Unit::RemoveSoloAura(uint32 type)
 			{
 			sLog.outDebug("Warning: we are trying to remove a soloauratype that has no handle");
 			}break;
-	}
-}
-
-void Unit::UpdateOppFactionSet()
-{
-	/* now i think about it, this is actually pretty dangerous :/ - burlex
-	 */
-	//m_oppFactsInRange.clear();
-
-	for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
-	{
-		if (((*i)->GetTypeId() == TYPEID_UNIT) || ((*i)->GetTypeId() == TYPEID_PLAYER))
-		{
-			if(isHostile(this, (*i)))
-			{
-				if(m_objectTypeId == TYPEID_UNIT)
-					m_oppFactsInRange.insert(((Unit*)*i));
-
-				if((*i)->GetTypeId() == TYPEID_UNIT)
-					((Unit*)*i)->m_oppFactsInRange.insert(this);
-			}
-			else
-			{
-				if((*i)->GetTypeId() == TYPEID_UNIT)
-					((Unit*)*i)->m_oppFactsInRange.erase(this);
-
-				if(m_objectTypeId == TYPEID_UNIT)
-					m_oppFactsInRange.erase(((Unit*)*i));
-			}
-		}
 	}
 }

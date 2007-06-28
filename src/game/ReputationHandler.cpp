@@ -198,7 +198,7 @@ void Player::SetStanding(uint32 Faction, int32 Value)
 		if(RankChangedFlat(itr->second->standing, Value))
 		{
 			itr->second->standing = Value;
-			//UpdateInrangeSetsBasedOnReputation();
+			UpdateInrangeSetsBasedOnReputation();
 		}
 		else
 		{
@@ -283,7 +283,7 @@ void Player::ModStanding(uint32 Faction, int32 Value)
 		if(RankChanged(itr->second->standing, Value))
 		{
 			itr->second->standing += Value;
-			/*UpdateInrangeSetsBasedOnReputation();*/
+			UpdateInrangeSetsBasedOnReputation();
 		}
 		else
 		{
@@ -324,14 +324,14 @@ void Player::SetAtWar(uint32 Faction, bool Set)
 		if(!AtWar(rep->flag))
 			SetFlagAtWar(rep->flag);
 
-		//UpdateInrangeSetsBasedOnReputation();
+		UpdateInrangeSetsBasedOnReputation();
 	}
 	else
 	{
 		if(AtWar(rep->flag))
 			UnsetFlagAtWar(rep->flag);
 
-		//UpdateInrangeSetsBasedOnReputation();
+		UpdateInrangeSetsBasedOnReputation();
 	}
 }
 
@@ -355,7 +355,7 @@ void WorldSession::HandleSetAtWarOpcode(WorldPacket& recv_data)
 		_player->SetAtWar(id, false);
 }
 
-/*void Player::UpdateInrangeSetsBasedOnReputation()
+void Player::UpdateInrangeSetsBasedOnReputation()
 {
 	// This function assumes that the opp faction set for player = the opp faction set for the unit.
 	InRangeSet::iterator itr;
@@ -379,7 +379,7 @@ void WorldSession::HandleSetAtWarOpcode(WorldPacket& recv_data)
 		else if(!rep_value && enemy_current)
 			m_oppFactsInRange.erase(pUnit);
 	}
-}*/
+}
 
 void Player::Reputation_OnKilledUnit(Unit * pUnit)
 {

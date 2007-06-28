@@ -314,13 +314,17 @@ public:
 	{
 		m_objectsInRange.clear();
 		m_inRangePlayers.clear();
-		/*m_oppFactsInRange.clear();*/
+		m_oppFactsInRange.clear();
 	}
 
 	inline uint32 GetInRangeCount() { return m_objectsInRange.size(); }
 	inline InRangeSet::iterator GetInRangeSetBegin() { return m_objectsInRange.begin(); }
 	inline InRangeSet::iterator GetInRangeSetEnd() { return m_objectsInRange.end(); }
 
+	bool IsInRangeOppFactSet(Object* pObj) { return (m_oppFactsInRange.count(pObj) > 0); }
+	void UpdateOppFactionSet();
+	inline std::set<Object*>::iterator GetInRangeOppFactsSetBegin() { return m_oppFactsInRange.begin(); }
+	inline std::set<Object*>::iterator GetInRangeOppFactsSetEnd() { return m_oppFactsInRange.end(); }
 	inline std::set<Player*>::iterator GetInRangePlayerSetBegin() { return m_inRangePlayers.begin(); }
 	inline std::set<Player*>::iterator GetInRangePlayerSetEnd() { return m_inRangePlayers.end(); }
 	inline std::set<Player*> * GetInRangePlayerSet() { return &m_inRangePlayers; };
@@ -442,7 +446,7 @@ protected:
 	//! TODO: that functionality should be moved into WorldServer.
 	std::set<Object*> m_objectsInRange;
 	std::set<Player*> m_inRangePlayers;
-	/*std::set<Object*> m_oppFactsInRange;*/
+	std::set<Object*> m_oppFactsInRange;
    
   
 	//! Remove object from map

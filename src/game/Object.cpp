@@ -1296,6 +1296,32 @@ void Object::_setFaction()
 	m_factionDBC = sFactionStore.LookupEntry(factT->Faction);
 }
 
+void Object::UpdateOppFactionSet()
+{
+	m_oppFactsInRange.clear();
+	for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
+	{
+		if (((*i)->GetTypeId() == TYPEID_UNIT) || ((*i)->GetTypeId() == TYPEID_PLAYER) || ((*i)->GetTypeId() == TYPEID_GAMEOBJECT))
+		{
+			if (isHostile(this, (*i)))
+			{
+				if(!(*i)->IsInRangeOppFactSet(this))
+					(*i)->m_oppFactsInRange.insert(this);
+				if (!IsInRangeOppFactSet((*i)))
+					m_oppFactsInRange.insert((*i));
+				
+			}
+			else
+			{
+				if((*i)->IsInRangeOppFactSet(this))
+					(*i)->m_oppFactsInRange.erase(this);
+				if (IsInRangeOppFactSet((*i)))
+					m_oppFactsInRange.erase((*i));
+			}
+		}
+	}
+}
+
 void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras)
 {
 	if(!pVictim || !pVictim->isAlive())
