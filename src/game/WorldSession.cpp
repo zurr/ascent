@@ -287,6 +287,8 @@ void WorldSession::LogoutPlayer(bool Save)
 		_player->load_mana = _player->GetUInt32Value(UNIT_FIELD_POWER1);
 		
 		objmgr.RemovePlayer(_player);		
+		_player->ok_to_remove = true;
+
 		if(_player->GetSummon() != NULL)
 			_player->GetSummon()->Remove(false, true, false);
 

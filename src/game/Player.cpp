@@ -327,11 +327,22 @@ Player::Player ( uint32 high, uint32 low )
 	UpdateLastSpeeds();
 
 	m_resist_critical[0]=m_resist_critical[1]=0;
+	ok_to_remove = false;
 }
 
 
 Player::~Player ( )
 {
+	if(!ok_to_remove)
+	{
+		printf("Player deleted from non-logoutplayer!\n");
+		Crash_Log->AddLine("Player deleted from non-logoutplayer!\n");
+		CStackWalker sw;
+		sw.ShowCallstack();
+
+		objmgr.RemovePlayer(this);
+	}
+
 	if(m_session)
 		m_session->SetPlayer(0);
 

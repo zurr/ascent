@@ -1531,7 +1531,7 @@ void Spell::SpellEffectDefense(uint32 i)
 
 void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
 {
-	if(m_AreaAura == true)
+	if(m_AreaAura == true || !m_caster->IsInWorld())
 		return;
 	//create only 1 dyn object
 	uint32 dur = GetDuration();

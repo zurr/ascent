@@ -106,7 +106,7 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 			plr->BuildEnumData( &data );
 			_side|=(plr->GetTeam()+1);
 
-			
+			plr->ok_to_remove = true;
 			delete plr;
 
 			num++;
@@ -153,6 +153,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	if(!pNewChar->Create( recv_data ))
 	{
 		// failed.
+		pNewChar->ok_to_remove = true;
 		delete pNewChar;
 		return;
 	}
@@ -166,6 +167,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 			((pNewChar->GetTeam()== 1) && (_side&1))
 			)
 		{
+			pNewChar->ok_to_remove = false;
 			delete pNewChar;
 			WorldPacket data;
 			data.SetOpcode(SMSG_CHAR_CREATE);
@@ -201,6 +203,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	pn->team = pNewChar->GetTeam ();
 	objmgr.AddPlayerInfo(pn);
 
+	pNewChar->ok_to_remove = false;
 	delete  pNewChar;
 
 	// CHAR_CREATE_SUCCESS
@@ -318,6 +321,7 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 			// Disconnect us
 			sCheatLog.writefromsession(this, "Tried to delete non-existant player %u\n", guid);
 			Disconnect();
+			plr->ok_to_remove = true;
 			delete plr;
 			//sObjHolder.Delete<Player>(plr);
 			return;
@@ -333,6 +337,7 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 			pGuild->DeleteGuildMember(plr->GetGUID());
 		}
 
+		plr->ok_to_remove = true;
 		delete plr;
 
 		/* remove player info */
@@ -418,6 +423,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		// kick em.
 		sCheatLog.writefromsession(this, "Tried to log in with invalid player guid %u.", playerGuid);
 		Disconnect();
+		plr->ok_to_remove = true;
 		delete plr;
 		return;
 	}

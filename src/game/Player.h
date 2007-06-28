@@ -401,6 +401,8 @@ class SERVER_DECL Player : public Unit
 public:
 	Player ( uint32 high, uint32 low );
 	~Player ( );
+	bool ok_to_remove;
+
 	void AddToWorld();
 	void RemoveFromWorld();
 	bool Create ( WorldPacket &data );
