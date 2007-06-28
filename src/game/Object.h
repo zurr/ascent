@@ -321,10 +321,6 @@ public:
 	inline InRangeSet::iterator GetInRangeSetBegin() { return m_objectsInRange.begin(); }
 	inline InRangeSet::iterator GetInRangeSetEnd() { return m_objectsInRange.end(); }
 
-	/*bool IsInRangeOppFactSet(Object* pObj) { return (m_oppFactsInRange.count(pObj) > 0); }
-	void UpdateOppFactionSet();
-	inline std::set<Object*>::iterator GetInRangeOppFactsSetBegin() { return m_oppFactsInRange.begin(); }
-	inline std::set<Object*>::iterator GetInRangeOppFactsSetEnd() { return m_oppFactsInRange.end(); }*/
 	inline std::set<Player*>::iterator GetInRangePlayerSetBegin() { return m_inRangePlayers.begin(); }
 	inline std::set<Player*>::iterator GetInRangePlayerSetEnd() { return m_inRangePlayers.end(); }
 	inline std::set<Player*> * GetInRangePlayerSet() { return &m_inRangePlayers; };

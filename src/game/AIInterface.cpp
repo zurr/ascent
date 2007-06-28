@@ -1126,8 +1126,7 @@ Unit* AIInterface::FindTarget()
 	float crange;
 	float z_diff;
 
-	std::set<Object*>::iterator itr, it2;
-	Object *pObj;
+	std::set<Unit*>::iterator itr, it2;
 	Unit *pUnit;
 	float dist;
 	//target is immune to all form of attacks, cant attack either.
@@ -1136,21 +1135,18 @@ Unit* AIInterface::FindTarget()
 		return 0;
 	}
 
-	for( itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); )
+	for( itr = m_Unit->m_oppFactsInRange.begin(); itr != m_Unit->m_oppFactsInRange.end(); )
 	{
 		it2 = itr;
 		++itr;
 
-		pObj = (*it2);
-		if(pObj->GetTypeId() == TYPEID_PLAYER)
+		pUnit = *it2;
+		if(pUnit->GetTypeId() == TYPEID_PLAYER)
 		{
-			if(static_cast<Player*>(pObj)->GetTaxiState())	  // skip players on taxi
+			if(static_cast<Player*>(pUnit)->GetTaxiState())	  // skip players on taxi
 				continue;
 		}
-		else if(pObj->GetTypeId() != TYPEID_UNIT)
-				continue;
 
-		pUnit = static_cast<Unit*>(pObj);
 		if(pUnit->bInvincible)
 			continue;
 

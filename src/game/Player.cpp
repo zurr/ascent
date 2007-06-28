@@ -7760,7 +7760,7 @@ void Player::Possess(Unit * pTarget)
 
 	/* update target faction set */
 	pTarget->_setFaction();
-	//pTarget->UpdateOppFactionSet();
+	pTarget->UpdateOppFactionSet();
 
 	list<uint32> avail_spells;
 	for(list<AI_Spell*>::iterator itr = pTarget->GetAIInterface()->m_spells.begin(); itr != pTarget->GetAIInterface()->m_spells.end(); ++itr)
@@ -7824,7 +7824,7 @@ void Player::UnPossess()
 	pTarget->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PLAYER_CONTROLLED_CREATURE);
 	pTarget->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, pTarget->GetCharmTempVal());
 	pTarget->_setFaction();
-	//pTarget->UpdateOppFactionSet();
+	pTarget->UpdateOppFactionSet();
 
 	/* send "switch mover" packet */
 	WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);

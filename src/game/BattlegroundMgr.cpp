@@ -714,6 +714,8 @@ void Battleground::RemoveAllPlayers(bool Transport, bool SendPacket)
 	for(std::list<Player*>::iterator itr=m_Players.begin();itr!=m_Players.end();++itr)
 	{		
 		plr = *itr;
+		if(plr->GetTypeId() != TYPEID_PLAYER)			// How the f*ck did this happen?
+			continue;
 		
 		if(m_MapId == 489 && plr->m_bgHasFlag)
 			((WarsongGulch*)this)->HandleBattlegroundEvent(plr, NULL, BGEVENT_WSG_PLAYER_DIED_WITH_FLAG);
@@ -770,6 +772,15 @@ void Battleground::RemoveAllPlayers(bool Transport, bool SendPacket)
 
 void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 {
+	if(plr->GetTypeId() != TYPEID_PLAYER)
+	{
+		printf("Adding non-plyaer to battleground\n");
+		Crash_Log->AddLine("Adding non-plyaer to battleground");
+#ifdef WIN32
+		CStackWalker sw;
+		sw.ShowCallstack();
+#endif
+	}
 	m_playerLock.Acquire();
 	plr->m_bgInitialTeleport = true;
 	// We're in BG.
