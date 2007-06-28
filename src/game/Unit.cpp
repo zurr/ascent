@@ -2504,7 +2504,10 @@ uint32 Unit::AbsorbDamage(uint32 School,uint32 * dmg)
 			j = i++;
 			// protect iterator
 			while(i != Absorbs[School].end() && (*i)->spellid == (*j)->spellid)
+			{
+				++i;
 				continue;
+			}
 
 			this->RemoveAura((*j)->spellid); //,(*j)->caster);
 			if(!*dmg)//absorbed all dmg

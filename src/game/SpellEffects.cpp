@@ -2058,6 +2058,9 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
 	}
 	if(playerTarget)
 	{
+		if(u_caster && isHostile(playerTarget, u_caster))
+			return;
+
 		uint32 spellToLearn = m_spellInfo->EffectTriggerSpell[i];
 		playerTarget->addSpell(spellToLearn);
 		//smth is wrong here, first we add this spell to player then we may cast it on player...
