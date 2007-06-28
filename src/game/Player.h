@@ -1024,7 +1024,7 @@ public:
 	bool stack_cheat;
 	bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
 	bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
-	void SafeTeleport(uint32 MapID, uint32 InstanceID, LocationVector vec);
+//	void SafeTeleport(uint32 MapID, uint32 InstanceID, LocationVector vec);
 	Guild * myGuild;
 	/*****************
 	  PVP Stuff

@@ -3,6 +3,8 @@
 [23:52:39] WORLD: Spell effect id = 6, damage = 1
 [23:52:39] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 5301, i = 0, apply = true
 
+test mace specialization
+test sword specialization
 [23:53:32] Spell::cast 29889, Unit: 283
 [23:53:32] WORLD: Spell effect id = 6, damage = 4
 [23:53:32] WORLD: Spell effect id = 6, damage = 0

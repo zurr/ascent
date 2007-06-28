@@ -2014,77 +2014,93 @@ void ObjectMgr::GenerateLevelUpInfo()
 				case WARRIOR:
 					if(Level<13)TotalHealthGain+=19;
 					else if(Level <36) TotalHealthGain+=Level+6;
-					else if(Level >60) TotalHealthGain+=Level+100;
+//					else if(Level >60) TotalHealthGain+=Level+100;
+					else if(Level >60) TotalHealthGain+=Level+206;
 					else TotalHealthGain+=2*Level-30;
 					break;
 				case HUNTER:
 					if(Level<13)TotalHealthGain+=17;
-					else if(Level >60) TotalHealthGain+=Level+45;
+//					else if(Level >60) TotalHealthGain+=Level+45;
+					else if(Level >60) TotalHealthGain+=Level+161;
 					else TotalHealthGain+=Level+4;
 
 					if(Level<11)TotalManaGain+=29;
 					else if(Level<27)TotalManaGain+=Level+18;
-					else if(Level>60)TotalManaGain+=Level+20;
+//					else if(Level>60)TotalManaGain+=Level+20;
+					else if(Level>60)TotalManaGain+=Level+150;
 					else TotalManaGain+=45;
 					break;
 				case ROGUE:
 					if(Level <15)TotalHealthGain+=17;
-					else if(Level >60) TotalHealthGain+=Level+110;
+//					else if(Level >60) TotalHealthGain+=Level+110;
+					else if(Level >60) TotalHealthGain+=Level+191;
 					else TotalHealthGain+=Level+2;
 					break;
 				case DRUID:
 					if(Level < 17)TotalHealthGain+=17;
-					else if(Level >60) TotalHealthGain+=Level+55;
+//					else if(Level >60) TotalHealthGain+=Level+55;
+					else if(Level >60) TotalHealthGain+=Level+176;
 					else TotalHealthGain+=Level;
 
 					if(Level < 26)TotalManaGain+=Level+20;
-					else if(Level>60)TotalManaGain+=Level+25;
+//					else if(Level>60)TotalManaGain+=Level+25;
+					else if(Level>60)TotalManaGain+=Level+150;
 					else TotalManaGain+=45;
 					break;
 				case MAGE:
 					if(Level < 23)TotalHealthGain+=15;
-					else if(Level >60) TotalHealthGain+=Level+40;
+//					else if(Level >60) TotalHealthGain+=Level+40;
+					else if(Level >60) TotalHealthGain+=Level+190;
 					else TotalHealthGain+=Level-8;
 
 					if(Level <28)TotalManaGain+=Level+23;
-					else if(Level>60)TotalManaGain+=Level+26;
+//					else if(Level>60)TotalManaGain+=Level+26;
+					else if(Level>60)TotalManaGain+=Level+115;
 					else TotalManaGain+=51;
 					break;
 				case SHAMAN:
 					if(Level <16)TotalHealthGain+=17;
-					else if(Level >60) TotalHealthGain+=Level+75;
+//					else if(Level >60) TotalHealthGain+=Level+75;
+					else if(Level >60) TotalHealthGain+=Level+157;
 					else TotalHealthGain+=Level+1;
 
 					if(Level<22)TotalManaGain+=Level+19;
-					else if(Level>60)TotalManaGain+=Level+70;
+//					else if(Level>60)TotalManaGain+=Level+70;
+					else if(Level>60)TotalManaGain+=Level+175;
 					else TotalManaGain+=49;
 					break;
 				case WARLOCK:
 					if(Level <17)TotalHealthGain+=17;
-					else if(Level >60) TotalHealthGain+=Level+50;
+//					else if(Level >60) TotalHealthGain+=Level+50;
+					else if(Level >60) TotalHealthGain+=Level+192;
 					else TotalHealthGain+=Level-2;
 
 					if(Level< 30)TotalManaGain+=Level+21;
-					else if(Level>60)TotalManaGain+=Level+25;
+//					else if(Level>60)TotalManaGain+=Level+25;
+					else if(Level>60)TotalManaGain+=Level+121;
 					else TotalManaGain+=51;
 					break;
 				case PALADIN:
 					if(Level < 14)TotalHealthGain+=18;
-					else if(Level >60) TotalHealthGain+=Level+55;
+//					else if(Level >60) TotalHealthGain+=Level+55;
+					else if(Level >60) TotalHealthGain+=Level+167;
 					else TotalHealthGain+=Level+4;
 
 					if(Level<30)TotalManaGain+=Level+17;
-					else if(Level>60)TotalManaGain+=Level+100;
+//					else if(Level>60)TotalManaGain+=Level+100;
+					else if(Level>60)TotalManaGain+=Level+131;
 					else TotalManaGain+=42;
 					break;
 				case PRIEST:
 					if(Level <21)TotalHealthGain+=15;
-					else if(Level >60) TotalHealthGain+=Level+40;
+//					else if(Level >60) TotalHealthGain+=Level+40;
+					else if(Level >60) TotalHealthGain+=Level+157;
 					else TotalHealthGain+=Level-6;
 
 					if(Level <22)TotalManaGain+=Level+22;
 					else if(Level <32)TotalManaGain+=Level+37;
-					else if(Level>60)TotalManaGain+=Level+35;
+//					else if(Level>60)TotalManaGain+=Level+35;
+					else if(Level>60)TotalManaGain+=Level+207;
 					else TotalManaGain+=54;
 					break;
 				}
