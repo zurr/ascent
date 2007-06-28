@@ -5252,24 +5252,26 @@ void Player::Reset_Spells()
 void Player::Reset_Talents()
 {
 	unsigned int numRows = sTalentStore.GetNumRows();
-	SpellEntry *spellInfo;
 	for (unsigned int i = 0; i < numRows; i++)		  // Loop through all talents.
 	{
 		TalentEntry *tmpTalent = sTalentStore.LookupEntry(i);
+		if(!tmpTalent)
+			continue; //should not ocur
 		for (int j = 0; j < 5; j++)
 		{
 			if (tmpTalent->RankID[j] != 0)
 			{
-			   m_SSSPecificSpells.erase(tmpTalent->RankID[j]);
-			   spellInfo = sSpellStore.LookupEntry( tmpTalent->RankID[j] );
-			   if(spellInfo)
-			   {
-				 for(int j=0;j<3;j++)
-					 if(spellInfo->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
-						removeSpell(spellInfo->EffectTriggerSpell[j], false, 0, 0);
-				 
-				 removeSpellByHashName(spellInfo->NameHash);
-			   }
+				m_SSSPecificSpells.erase(tmpTalent->RankID[j]);
+				SpellEntry *spellInfo;
+				spellInfo = sSpellStore.LookupEntry( tmpTalent->RankID[j] );
+				if(spellInfo)
+				{
+					for(int j=0;j<3;j++)
+						if(spellInfo->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+							removeSpell(spellInfo->EffectTriggerSpell[j], false, 0, 0);
+					
+					removeSpellByHashName(spellInfo->NameHash);
+				}
 			}
 			else
 				break;
