@@ -337,9 +337,10 @@ Player::~Player ( )
 	{
 		printf("Player deleted from non-logoutplayer!\n");
 		Crash_Log->AddLine("Player deleted from non-logoutplayer!\n");
+#ifdef WIN32
 		CStackWalker sw;
 		sw.ShowCallstack();
-
+#endif
 		objmgr.RemovePlayer(this);
 	}
 
