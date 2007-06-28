@@ -516,7 +516,7 @@ public:
 	bool IsAtWar(uint32 Faction);
 	Standing GetStandingRank(uint32 Faction);
 	bool IsHostileBasedOnReputation(FactionDBC * dbc);
-	void UpdateInrangeSetsBasedOnReputation();
+	/*void UpdateInrangeSetsBasedOnReputation();*/
 	void Reputation_OnKilledUnit(Unit * pUnit);
 	void Reputation_OnTalk(FactionDBC * dbc);
 	static Standing GetReputationRankFromStanding(int32 Standing_);
@@ -1024,7 +1024,12 @@ public:
 	bool stack_cheat;
 	bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
 	bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
-//	void SafeTeleport(uint32 MapID, uint32 InstanceID, LocationVector vec);
+	
+	void EventSafeTeleport(uint32 MapID, uint32 InstanceID, LocationVector vec)
+	{
+		SafeTeleport(MapID, InstanceID, vec);
+	}
+
 	Guild * myGuild;
 	/*****************
 	  PVP Stuff

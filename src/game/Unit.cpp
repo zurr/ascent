@@ -2089,8 +2089,8 @@ void Unit::AddInRangeObject(Object* pObj)
 {
 	if ((pObj->GetTypeId() == TYPEID_UNIT) || (pObj->GetTypeId() == TYPEID_PLAYER))
 	{
-		if (isHostile(this, (Unit*)pObj))
-			m_oppFactsInRange.insert(pObj);
+		/*if (isHostile(this, (Unit*)pObj))
+			m_oppFactsInRange.insert(pObj);*/
 		if (GetTypeId()==TYPEID_PLAYER)
 		{
 			if (((Player*)this)->InGroup())
@@ -2122,7 +2122,7 @@ void Unit::RemoveInRangeObject(Object* pObj)
 	/*set<Object*>::iterator itr = m_oppFactsInRange.find(pObj);
 	if(itr != m_oppFactsInRange.end())
 		m_oppFactsInRange.erase(itr);*/
-	m_oppFactsInRange.erase(pObj);
+	/*m_oppFactsInRange.erase(pObj);*/
 
 	if(pObj->GetTypeId() == TYPEID_UNIT || pObj->GetTypeId() == TYPEID_PLAYER)
 	{

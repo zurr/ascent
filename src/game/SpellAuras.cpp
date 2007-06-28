@@ -1520,7 +1520,7 @@ void Aura::SpellAuraModCharm(bool apply)
 		m_target->_setFaction();
 		m_target->GetAIInterface()->WipeHateList();
 		m_target->GetAIInterface()->WipeTargetList();
-		m_target->UpdateOppFactionSet();
+		//m_target->UpdateOppFactionSet();
 		m_target->GetAIInterface()->Init(m_target, AITYPE_PET, MOVEMENTTYPE_NONE, caster);
 		m_target->SetUInt64Value(UNIT_FIELD_CHARMEDBY, caster->GetGUID());
 		caster->SetUInt64Value(UNIT_FIELD_CHARM, target->GetGUID());
@@ -1547,7 +1547,7 @@ void Aura::SpellAuraModCharm(bool apply)
 		m_target->_setFaction();
 		m_target->GetAIInterface()->WipeHateList();
 		m_target->GetAIInterface()->WipeTargetList();
-		m_target->UpdateOppFactionSet();
+		//m_target->UpdateOppFactionSet();
 		m_target->GetAIInterface()->Init(m_target, AITYPE_AGRO, MOVEMENTTYPE_NONE);
 		m_target->SetUInt64Value(UNIT_FIELD_CHARMEDBY, 0);
 		caster->SetUInt64Value(UNIT_FIELD_CHARM, 0);
@@ -5079,7 +5079,7 @@ void Aura::SpellAuraForceReaction(bool apply)
 		m_target->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, GetCasterFaction() );
 	}
 	m_target->_setFaction();
-	m_target->UpdateOppFactionSet();
+	//m_target->UpdateOppFactionSet();
 }
 
 void Aura::SpellAuraModRangedHaste(bool apply)

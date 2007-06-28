@@ -454,7 +454,7 @@ void Creature::EnslaveExpire()
 	GetAIInterface()->Init(((Unit *)this), AITYPE_AGRO, MOVEMENTTYPE_NONE);
 
 	// Update InRangeSet
-	UpdateOppFactionSet();
+	//UpdateOppFactionSet();
 }
 
 bool Creature::RemoveEnslave()

@@ -1296,7 +1296,7 @@ void Object::_setFaction()
 	m_factionDBC = sFactionStore.LookupEntry(factT->Faction);
 }
 
-void Object::UpdateOppFactionSet()
+/*void Object::UpdateOppFactionSet()
 {
 	m_oppFactsInRange.clear();
 	for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
@@ -1320,7 +1320,7 @@ void Object::UpdateOppFactionSet()
 			}
 		}
 	}
-}
+}*/
 
 void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras)
 {

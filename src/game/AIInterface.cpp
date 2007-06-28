@@ -1136,7 +1136,7 @@ Unit* AIInterface::FindTarget()
 		return 0;
 	}
 
-	for( itr = m_Unit->GetInRangeOppFactsSetBegin(); itr != m_Unit->GetInRangeOppFactsSetEnd(); )
+	for( itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); )
 	{
 		it2 = itr;
 		++itr;
@@ -1152,6 +1152,9 @@ Unit* AIInterface::FindTarget()
 
 		pUnit = static_cast<Unit*>(pObj);
 		if(pUnit->bInvincible)
+			continue;
+
+		if(!isHostile(m_Unit, pUnit))
 			continue;
 
 		// don't agro players on flying mounts
