@@ -2062,6 +2062,8 @@ void Aura::SpellAuraModStealth(bool apply)
 				p_caster->CastSpell(p_caster, sSpellStore.LookupEntry(stealth_id), true);
 		}
 	}
+
+	m_target->UpdateVisibility();
 }
 
 void Aura::SpellAuraModDetect(bool apply)
@@ -2595,7 +2597,17 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 	//there can not be 2 slow downs only most powerfull is applied
 	if(apply)
 	{
-		SetNegative();
+		switch(m_spellProto->NameHash)
+		{
+			case 0x1931b37a:			// Stealth
+				SetPositive();
+				break;
+
+			default:
+				SetNegative();
+				break;
+		}
+
 		m_target->m_slowdown=this;
 		m_target->m_speedModifier += mod->m_amount;
 	}
@@ -2808,7 +2820,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 		}break;
 	case FORM_STEALTH:
 		{// rogue		
-			m_target->UpdateVisibility();
+			//m_target->UpdateVisibility();
 		} break;
 	case FORM_MOONKIN:
 		{//druid
