@@ -170,29 +170,32 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 						pMapinfo = sWorld.GetMapInformation(pCorpse->GetMapId());
 						if(pMapinfo)
 						{
-							if(pMapinfo->type != INSTANCE_NULL && pMapinfo->type != INSTANCE_PVP ) // raid or nonraid type
+                            if(GetPlayer()->InGroup())
 							{
-								if(GetPlayer()->GetMapId() != pCorpse->GetMapId() && pCorpse->GetMapId() == pAreaTrigger->Mapid )
+								MapMgr * groupinstance = sWorldCreator.GetInstanceByGroup(GetPlayer()->GetGroup(), GetPlayer(), pMapinfo);
+								if (groupinstance)
 								{
-									GetPlayer()->ResurrectPlayer();
-									if(GetPlayer()->InGroup())
-									{
-										MapMgr * groupinstance = sWorldCreator.GetInstanceByGroup(GetPlayer()->GetGroup(), GetPlayer(), pMapinfo);
-										if (groupinstance)
-										{
-											if(groupinstance->GetPlayerCount() >= pMapinfo->playerlimit)
-												GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
-										}
-									}
-									return;
-								}
-								else
-								{
-									GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
-									return;
-								}
+									if(groupinstance->GetPlayerCount() >= pMapinfo->playerlimit)
+                                    {
+                                        data.Initialize(SMSG_TRANSFER_ABORTED);
+								        data << uint32(INSTANCE_ABORT_FULL);
+								        _player->GetSession()->SendPacket(&data);
+                                        GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
+                                        GetPlayer()->ResurrectPlayer();
+								        return;
+                                    }
+
+                                }
 							}
-							else
+
+                            //if its a raid instance and corpse is inside and player is not in a group, ressurect
+							if(pMapinfo->type != INSTANCE_NULL && pMapinfo->type != INSTANCE_PVP  && pMapinfo->type != INSTANCE_NONRAID && pMapinfo->type != INSTANCE_MULTIMODE && GetPlayer()->GetMapId() != pCorpse->GetMapId() && pCorpse->GetMapId() == pAreaTrigger->Mapid  && !GetPlayer()->InGroup())
+							{
+								GetPlayer()->ResurrectPlayer();
+								return;
+							}
+                            //if its a instance and player is trying to enter when corpse is on a diferent instance, repop back
+                            else if(pMapinfo->type != INSTANCE_NULL && pMapinfo->type != INSTANCE_PVP &&  pCorpse->GetMapId() != pAreaTrigger->Mapid)
 							{
 								GetPlayer()->RepopAtGraveyard(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY(),GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
 								return;
