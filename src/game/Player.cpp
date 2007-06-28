@@ -2945,8 +2945,10 @@ void Player::RemoveFromWorld()
 			if(m_SummonedObject->GetTypeId() == TYPEID_PLAYER)
 			{
 				Crash_Log->AddLine("SummonedObject = Player!\n");
+#ifdef WIN32
 				CStackWalker ws;
 				ws.ShowCallstack();
+#endif
 			}
 			else
 			{
