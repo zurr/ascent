@@ -203,7 +203,9 @@ enum SpellCastTargetFlags
 	TARGET_FLAG_TRADE_ITEM			 = 0x1000,
 	TARGET_FLAG_SOURCE_LOCATION  = 0x0020,
 	TARGET_FLAG_DEST_LOCATION	= 0x0040,
-	TARGET_FLAG_STRING		   = 0x2000
+	TARGET_FLAG_STRING		   = 0x2000,
+	TARGET_FLAG_UNKNOWN			= 0x4000,
+	TARGET_FLAG_CORPSE2			= 0x8000
 };
 enum procFlags
 {
@@ -1404,6 +1406,7 @@ protected:
 	Item* itemTarget;
 	GameObject* gameObjTarget;
 	Player* playerTarget;
+	Corpse* corpseTarget;
 	uint32 add_damage;
 
 	int8 cancastresult;

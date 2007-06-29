@@ -872,6 +872,9 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket & recv_data)
 
 	// need to check guid
 	Player * pl = _player->GetMapMgr()->GetPlayer(guid);
+	if(!pl)
+		pl = objmgr.GetPlayer(guid);
+		
 	
 	if(pl == 0 || status != 1)
 	{

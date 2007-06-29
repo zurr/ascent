@@ -37,7 +37,7 @@ void SpellCastTargets::read ( WorldPacket & data,uint64 caster )
 		m_unitTarget = guid.GetOldGuid();
 	}
 
-	if(m_targetMask & TARGET_FLAG_CORPSE)
+	if(m_targetMask & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2))
 	{
 		data >> guid;
 		m_unitTarget = guid.GetOldGuid();
@@ -81,6 +81,9 @@ void SpellCastTargets::write ( WorldPacket& data)
 		data << newunit;
 
 	if(m_targetMask & TARGET_FLAG_UNIT)
+		data << newunit;
+
+	if(m_targetMask & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2))
 		data << newunit;
 
 	if(m_targetMask & TARGET_FLAG_OBJECT)
@@ -166,6 +169,7 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 	itemTarget = NULL;
 	gameObjTarget = NULL;
 	playerTarget = NULL;
+	corpseTarget = NULL;
 	judgement = false;
 	add_damage = 0;
 	m_delayed = false;
@@ -1360,7 +1364,6 @@ void Spell::cast(bool check)
 				return; 
 			}
 		}
-
 		SendCastResult(cancastresult);
 		if(!m_triggeredSpell)
 			AddCooldown();
@@ -1368,7 +1371,7 @@ void Spell::cast(bool check)
 		for(uint32 i=0;i<3;i++)
 			if(m_spellInfo->Effect[i] && m_spellInfo->Effect[i]!=27)
 				 FillTargetMap(i);
-		
+
 		if(p_caster && p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_REMAIN_STEALTHED))
 		{
 			p_caster->RemoveAura(p_caster->m_stealth);
@@ -2209,6 +2212,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 			playerTarget = 0;
 			itemTarget = 0;
 			gameObjTarget = 0;
+			corpseTarget = 0;
 		}
 		else if(m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
 		{
@@ -2240,6 +2244,9 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 				break;
 			case HIGHGUID_GAMEOBJECT:
 				gameObjTarget = m_caster->GetMapMgr()->GetGameObject(guid);
+				break;
+			case HIGHGUID_CORPSE:
+				corpseTarget = objmgr.GetCorpse(guid);
 				break;
 			}
 		}

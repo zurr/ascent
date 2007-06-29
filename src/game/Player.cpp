@@ -3448,7 +3448,8 @@ void Player::ResurrectPlayer()
 		resurrector=0;
 
 		if(p == 0) return;
-		_Relocate(p->GetMapMgr()->GetMapId(), p->GetPosition(),false,false);
+		//_Relocate(p->GetMapMgr()->GetMapId(), p->GetPosition(),false,false);
+		SafeTeleport(p->GetMapId(),p->GetInstanceID(),p->GetPosition());
 	}
 	SetMovement(MOVE_LAND_WALK, 1);
 }

@@ -3817,7 +3817,12 @@ void Spell::SpellEffectSummonDemon(uint32 i)
 void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
 {
 	if(!playerTarget)
-		return;
+	{
+		if(!corpseTarget) return;
+		playerTarget = objmgr.GetPlayer(corpseTarget->GetUInt64Value(CORPSE_FIELD_OWNER));
+		if(!playerTarget) return;
+	}
+
 	if(playerTarget->isAlive() || !playerTarget->IsInWorld())
 		return;
 
@@ -4022,7 +4027,12 @@ void Spell::SpellEffectResurrectNew(uint32 i)
 {
 	//base p =hp,misc mana
 	if(!playerTarget)
-		return;
+	{
+		if(!corpseTarget) return;
+		playerTarget = objmgr.GetPlayer(corpseTarget->GetUInt64Value(CORPSE_FIELD_OWNER));
+		if(!playerTarget) return;
+	}
+
 	if(playerTarget->isAlive() || !playerTarget->IsInWorld())
 		return;
    //resurr
