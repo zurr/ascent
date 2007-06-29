@@ -21,34 +21,33 @@ improved berserker rage - not triggered. Should only get triggered while we have
 [23:54:34] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 20500, i = 0, apply = true
 [23:54:35] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 20500, i = 0, apply = false
 
-# Sunder Armor nu este stackable des,i ar trebui
-# Disarm nu merge în PvE
-# orice dmg facut cu Execute nu apare în combat log s,i nici când te lupt,i, ceea ce este frustrant (put,in spus)
-# Shield Bash nu are efect în PvE
-# Pummel nu are efect în PvE
-# Demoralizing Shout nu are efect, papa( doar rage
-# Improved Rend nu merge
-# Improved Charge nu merge
-# Improved Mortal Strike nu merge
-# Sweeping Strikes nu are efect
+# Sunder Armor - not stackable
+# Disarm - not working in PvE - duh if it's only a visual thing
+# Execute does not show dmglog - needs some special packet or something
+# Shield Bash - not working in PvE
+# Pummel - no efect în PvE
+# Demoralizing Shout - no efect
+# Improved Rend 
+# Improved Charge
+# Improved Mortal Strike
+# Sweeping Strikes
 # Stance Mastery (warrior passive) nu are efect (pierzi tot rage când schimbi combat stances)
-# Blood Craze nu merge
-# Enrage nu merge
-# Commanding Presence nu merge
-# Improved Bloodrage nu merge
-# Tactical Mastery nu merge
-# Retaliation da( 0 dmg
-# Overpower nu merge
-# Second Wind nu merge
-# Improved Disciplines nu merge
+# Blood Craze 
+# Enrage 
+# Commanding Presence - should work
+# Improved Bloodrage
+# Tactical Mastery - retest
+# Retaliation - retest
+# Overpower - should work
+# Second Wind - retest. WTF is an immobilize spell ?
+# Improved Disciplines 
 # cum Overpower nu merge nici Improved Overpower nu merge
 # cum Demoralizing Shout nu are efect, nici Improved Demoralizing Shout nu merge
 # Improved Execute nu merge
-1. Commanding Persence
 2. Unbridled Wrath
 3. Improved Intercept
-4. Flurry
+4. Flurry - retest
 5. Improved Berseker Rage
-6. Bloodthirst
+6. Bloodthirst - this should work
 7. Improved Whirlwind
 8. Rampage

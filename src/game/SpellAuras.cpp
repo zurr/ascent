@@ -1156,9 +1156,9 @@ void Aura::SpellAuraDummy(bool apply)
 	case 12678:
 		{
 			if(apply)
-				((Player*)m_target)->m_retainedrage += mod->m_amount;
+				((Player*)m_target)->m_retainedrage += mod->m_amount*10; //don't really know if value is all value or needs to be multiplyed with 10
 			else
-				((Player*)m_target)->m_retainedrage -= mod->m_amount;
+				((Player*)m_target)->m_retainedrage -= mod->m_amount*10;
 		}break;
 	case 2096://MindVision
 		{

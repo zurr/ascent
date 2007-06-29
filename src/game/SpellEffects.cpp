@@ -2213,7 +2213,6 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 		p->m_faction = sFactionTmpStore.LookupEntry(proto->Faction);
 		if(p->m_faction)
 			p->m_factionDBC = sFactionStore.LookupEntry(p->m_faction->Faction);
-		p->SetOrientation(o);
 		p->PushToWorld(u_caster->GetMapMgr());
 		//make sure they will be desumonized (roxor)
 		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1);

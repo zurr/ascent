@@ -513,6 +513,21 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				//these are player talents. Fuckem they pull the emu speed down 
 				if(IsPlayer())
 				{
+					uint32 talentlevel=0;
+					switch(origId)
+					{
+						//mace specialization
+						case 12284:	{talentlevel=1;}break;
+						case 12701:	{talentlevel=2;}break;
+						case 12702:	{talentlevel=3;}break;
+						case 12703:	{talentlevel=4;}break;
+						case 12704:	{talentlevel=5;}break;
+						//Unbridled Wrath
+						case 12999:	{talentlevel=1;}break;
+						case 13000:	{talentlevel=2;}break;
+						case 13001:	{talentlevel=3;}break;
+						case 13002:	{talentlevel=4;}break;
+					}
 					switch(spellId)
 					{
 						case 31616:
@@ -524,7 +539,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						case 5530:
 						{
 							//warrior mace specialization can trigger only when using maces
-							//there is also a formula for prochance : 100% proc per minute, and weapon speed
 							Item *it;
 							if(static_cast<Player*>(this)->GetItemInterface())
 							{
@@ -540,19 +554,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							else continue; //no weapon no joy
 							//let's recalc chance to cast since we have a full 100 all time on this one
 							//how lame to get talentpointlevel for this spell :(
-							uint32 talentspoints=0;
-							if(origId==12284)
-								talentspoints=1;
-							else if(origId==12701)
-								talentspoints=2;
-							else if(origId==12702)
-								talentspoints=3;
-							else if(origId==12703)
-								talentspoints=4;
-							else if(origId==12704)
-								talentspoints=5;
-//							float chance=it->GetProto()->Delay*100*talentspoints/60000;
-							float chance=it->GetProto()->Delay*talentspoints/600;
+//							float chance=it->GetProto()->Delay*100*talentlevel/60000;
+							float chance=it->GetProto()->Delay*talentlevel/600;
 							if(!Rand(chance))
 								continue;
 						}break;
@@ -591,14 +594,39 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								else continue; //no weapon no joy
 							}
 							else continue; //no weapon no joy
-						}
+						}break;
+						//Unbridled Wrath
+						case 12964:
+						{
+							Item *it;
+							if(static_cast<Player*>(this)->GetItemInterface())
+							{
+								it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+								if(!(it && it->GetProto()))
+									continue; //no weapon no joy
+							}
+							else continue; //no weapon no joy
+							//let's recalc chance to cast since we have a full 100 all time on this one
+							//how lame to get talentpointlevel for this spell :(
+//							float chance=it->GetProto()->Delay*100*talentlevel/60000;
+							float chance=it->GetProto()->Delay*talentlevel/600;
+							if(!Rand(chance))
+								continue;
+						}break;
 					}
 				}
+				if(spellId==20230 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
+					continue;
 				SpellEntry *spellInfo = sSpellStore.LookupEntry(spellId );
 				if(!spellInfo)
 				{
 					continue;
 				}
+				//second wind triggers only on stun or Immobilize effects. WTF is immobilized anyway ?
+				if(spellId==20230 && !( spellInfo->EffectApplyAuraName[0]==SPELL_AURA_MOD_STUN ||
+										spellInfo->EffectApplyAuraName[1]==SPELL_AURA_MOD_STUN ||
+										spellInfo->EffectApplyAuraName[2]==SPELL_AURA_MOD_STUN))
+					continue;
 				Spell *spell = new Spell(this, spellInfo ,true, NULL);
 				//Spell *spell = new Spell(this,spellInfo,false,0,true,false);
 				if(itr2->spellId==974||itr2->spellId==32593||itr2->spellId==32594) // Earth Shield handler

@@ -731,8 +731,6 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK|PROC_ON_RANGED_ATTACK;
 					if(strstr(desc,"enemy that strikes you in melee"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
-					if(strstr(desc,"when struck in combat"))
-						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
 					if(strstr(desc,"after getting a critical strike"))
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(desc,"whenever damage is dealt to you"))
@@ -773,14 +771,19 @@ void World::SetInitialWorldSettings()
 						//we should find that specific spell (or group) on what we will trigger
 						else pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					}
-						
-					
 					if(strstr(desc, "victim of a melee or ranged critical strike"))
 						pr|=PROC_ON_CRIT_HIT_VICTIM;
 					if(strstr(desc, "getting a critical effect from"))
 						pr|=PROC_ON_SPELL_CRIT_HIT_VICTIM;
 					if(strstr(desc, "damaging attack is taken"))
 						pr|=PROC_ON_ANY_DAMAGE_VICTIM;
+					if(strstr(desc,"counterattack"))
+						if(strstr(desc,"melee"))
+							pr|=PROC_ON_MELEE_ATTACK_VICTIM;
+					if(strstr(desc, "struck by a Stun or Immobilize"))
+						pr|=PROC_ON_SPELL_HIT_VICTIM;
+					if(strstr(desc, "melee critical strike"))
+						pr|=PROC_ON_CRIT_ATTACK;
 				}
 				//dirty fix to remove auras that should expire on event and they are not
 //				else if((aura == SpellAuraAddFlatModifier || aura == SpellAuraAddPctMod) && sp->procCharges)
@@ -833,6 +836,28 @@ void World::SetInitialWorldSettings()
 	//remove stormstrike effect 0
 	if(sp && sp->Id==17364)
 		sp->Effect[0]=0;
+
+	//muhaha, rewriting Retaliation spell as old one :D
+	sp = sSpellStore.LookupEntry(20230);
+	if(sp)
+	{
+		sp->Effect[0] = 42; //force him to use procspell effect
+		sp->EffectTriggerSpell[0] = 22858; //evil , but this is good for us :D
+	}
+
+	//rewriting Second wind spell as old one
+	sp = sSpellStore.LookupEntry(29834);
+	if(sp)
+	{
+		sp->Effect[0] = 42; //force him to use procspell effect
+		sp->EffectTriggerSpell[0] = 29841; //evil , but this is good for us :D
+	}
+	sp = sSpellStore.LookupEntry(29838); //rank 2
+	if(sp)
+	{
+		sp->Effect[0] = 42; //force him to use procspell effect
+		sp->EffectTriggerSpell[0] = 29842; //evil , but this is good for us :D
+	}
 
 	//improoved berserker stance should be triggered on berserker stance use
 //	sp = sSpellStore.LookupEntry(12704);
