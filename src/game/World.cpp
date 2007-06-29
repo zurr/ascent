@@ -834,20 +834,6 @@ void World::SetInitialWorldSettings()
 	if(sp && sp->Id==17364)
 		sp->Effect[0]=0;
 
-	//forcing some change for warrior mace specialisation (there are no differences between the 5 talent levels :S )
-	//!!!! I soo invent these values. Please feel free to change them as you think it's right
-	// old one had each 100 chance to stun an enemy, but that is too much for me
-	sp = sSpellStore.LookupEntry(12284);
-	if(sp)	sp->procChance=10;
-	sp = sSpellStore.LookupEntry(12701);
-	if(sp)	sp->procChance=20;
-	sp = sSpellStore.LookupEntry(12702);
-	if(sp)	sp->procChance=30;
-	sp = sSpellStore.LookupEntry(12703);
-	if(sp)	sp->procChance=40;
-	sp = sSpellStore.LookupEntry(12704);
-	if(sp)	sp->procChance=50;
-
 	//improoved berserker stance should be triggered on berserker stance use
 //	sp = sSpellStore.LookupEntry(12704);
 //	if(sp)	sp->procFlags=PROC_ON_CAST_SPECIFIC_SPELL;
