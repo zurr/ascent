@@ -174,12 +174,12 @@ void ScriptEngine::ExecuteScriptFile(const char * filename)
 
 void ScriptEngine::DumpErrors()
 {
-	sLog.outString("Dumping errors from script action: ");
+	// sLog.outString("Dumping errors from script action: ");
 	const char * message;
 	bool first = true;
 	while(message = m_machine->GetLog().GetEntry(first))
-		printf("  %s", message);
-	sLog.outString("End of error dump.");
+		printf("GM_Debug:  %s", message);
+	// sLog.outString("End of error dump.");
 }
 
 void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount)
