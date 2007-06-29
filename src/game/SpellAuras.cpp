@@ -2245,7 +2245,13 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 		if(!m_caster)
 			return;
 
-		sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerSpell, spe, m_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT),
+
+		Unit *target = (m_target != 0) ? m_target : GetUnitCaster();
+		if(target)
+			sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerSpell, spe, target->GetGUID(),
+				EVENT_AURA_PERIODIC_TRIGGERSPELL,GetSpellProto()->EffectAmplitude[mod->i], 0);
+		//have no idea where is channeled object used. i thought eating is an animation or emote. Anyway it can be faked with sending some packet or something
+		else sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerSpell, spe, m_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT),
 			EVENT_AURA_PERIODIC_TRIGGERSPELL,GetSpellProto()->EffectAmplitude[mod->i], 0);	
 	}
 }
