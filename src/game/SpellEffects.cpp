@@ -2198,37 +2198,23 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 	}
 	for(int i=0;i<damage;i++)
 	{
-		//this sucks, there is no function to create from template and i'm not sure if i missed any fields
-		CreatureSpawn * sp = new CreatureSpawn;
 		float m_fallowAngle=-(M_PI/2*i);
-		sp->displayid = info->DisplayID;
-		sp->entry = cr_entry;
-		sp->form = 0;
-		sp->id = objmgr.GenerateCreatureSpawnID();
-		sp->movetype = 0;
-        sp->x = u_caster->GetPositionX()+(3*(cosf(m_fallowAngle+u_caster->GetOrientation())));
-        sp->y = u_caster->GetPositionY()+(3*(sinf(m_fallowAngle+u_caster->GetOrientation())));
-		sp->z = u_caster->GetPositionZ();
-		sp->o = u_caster->GetOrientation();
-		sp->emote_state =0;
-		sp->flags = 0;
-		sp->factionid = u_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE);
-		sp->bytes=0;
-		sp->bytes2=0;
-
+		float x = u_caster->GetPositionX()+(3*(cosf(m_fallowAngle+u_caster->GetOrientation())));
+		float y = u_caster->GetPositionY()+(3*(sinf(m_fallowAngle+u_caster->GetOrientation())));
+		float z = u_caster->GetPositionZ();
+		float o = m_fallowAngle;//maybe they will look in radius
 		Creature * p = u_caster->GetMapMgr()->CreateCreature();
 		ASSERT(p);
-        p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
+		p->Load(proto, x, y, z);
+		p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
         p->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_caster->GetGUID());
         p->SetZoneId(m_caster->GetZoneId());
-		p->Load(sp, (uint32)NULL, NULL);
+		p->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE,u_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+		p->m_faction = sFactionTmpStore.LookupEntry(proto->Faction);
+		if(p->m_faction)
+			p->m_factionDBC = sFactionStore.LookupEntry(p->m_faction->Faction);
+		p->SetOrientation(o);
 		p->PushToWorld(u_caster->GetMapMgr());
-
-		// Add spawn to map
-        uint32 cellx=((_maxX-sp->x)/_cellSize);
-        uint32 celly=((_maxY-sp->y)/_cellSize);
-		u_caster->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cellx,celly)->CreatureSpawns.insert(sp);
-
 		//make sure they will be desumonized (roxor)
 		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1);
 	}
