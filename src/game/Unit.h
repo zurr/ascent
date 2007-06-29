@@ -835,6 +835,7 @@ public:
 	inline void setEmoteState(uint8 emote) { m_emoteState = emote; };
 	inline uint32 GetOldEmote() { return m_oldEmote; }
 	void EventSummonPetExpire();
+	void EventAurastateExpire(uint32 aurastateflag){RemoveFlag(UNIT_FIELD_AURASTATE,aurastateflag);} //hmm this looks like so not necesary :S
 
 	void SetStandState (uint8 standstate);
 

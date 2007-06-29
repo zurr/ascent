@@ -1048,7 +1048,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		{
 			pVictim->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_DODGE_BLOCK);	//SB@L: Enables spells requiring dodge
 			if(!sEventMgr.HasEvent(this,EVENT_DODGE_BLOCK_FLAG_EXPIRE))
-				sEventMgr.AddEvent(this,&Object::RemoveFlag,AURASTATE_FLAG_DODGE_BLOCK,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000,1);
+				sEventMgr.AddEvent((Unit*)this,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_DODGE_BLOCK,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000,1);
 			else sEventMgr.ModifyEventTimeLeft(this,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000);
 		}
 	}
@@ -1063,7 +1063,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		{
 			pVictim->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_PARRY);	//SB@L: Enables spells requiring parry
 			if(!sEventMgr.HasEvent(this,EVENT_PARRY_FLAG_EXPIRE))
-				sEventMgr.AddEvent(this,&Object::RemoveFlag,AURASTATE_FLAG_PARRY,EVENT_PARRY_FLAG_EXPIRE,5000,1);
+				sEventMgr.AddEvent((Unit*)this,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_PARRY,EVENT_PARRY_FLAG_EXPIRE,5000,1);
 			else sEventMgr.ModifyEventTimeLeft(this,EVENT_PARRY_FLAG_EXPIRE,5000);
 		}
 	}
