@@ -15,6 +15,7 @@
 uint32 m_phase;
 uint32 AKAMA_DIALOG;
 uint32 FoADeaths;
+uint32 MAIEV_DIALOG2;
 
 #define WALK 0
 #define RUN 256
@@ -138,7 +139,8 @@ protected:
 
 // AkamaAI
 
-#define CN_AKAMA 21700	// Should be: 22990
+#define CN_AKAMA 22990 //21700	// Should be: 22990
+// faction 1858 (All Ashtongue Deathsworn factions in DBC: 1820, 1858, 1866)
 
 struct Coords
 {
@@ -278,8 +280,10 @@ public:
 					//_unit->GetAIInterface()->m_moveRun = true;
 					//_unit->GetAIInterface()->MoveTo(714.594788, 305.476044, 353.309204, 3.170653);	// it's just hack to prvent Akama to stand in place (as I have no idea now how to target and attack Illidan =S)
 					_unit->GetAIInterface()->m_canMove = true;
-					Unit * target = _unit->GetMapMgr()->GetInterface()->GetObjectNearestCoords<Creature, TYPEID_UNIT>(22917, 704.539001f, 305.282013f, 353.919006f);	// no idea if this works as I don't have right Akama (hostile with Illidan)
-					_unit->setAttackTarget(target);
+					//Unit * target = _unit->GetMapMgr()->GetInterface()->GetObjectNearestCoords<Creature, TYPEID_UNIT>(22917, 704.539001f, 305.282013f, 353.919006f);	// no idea if this works as I don't have right Akama (hostile with Illidan)
+					//Unit * target = _unit->GetMapMgr()->GetCreature(355093);
+					//_unit->setAttackTarget(target);
+					
 				}break;
 			};
 		}
@@ -438,6 +442,7 @@ protected:
 // Illidan StormrageAI
 
 #define CN_ILLIDAN_STORMRAGE 22917 //22083 // should be 22917
+// Faction: 1825 (All Demon factions in DBC: 90, 954, 1768, 1769, 1786, 1825)
 
 // Normal form spells
 #define SHEAR 41032				// +
@@ -484,13 +489,14 @@ class IllidanStormrageAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(IllidanStormrageAI);
+	SP_AI_Spell spells[11];
+	bool m_spellcheck[11];
+
     IllidanStormrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		DemonPhaseTimer = 60;
+		DemonPhaseTimer = 30;
 		m_phase = 1;	// must be 0 to use it with some other stuff, but it's good for tests.
 		nrspells = 8;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
@@ -557,15 +563,24 @@ public:
 
 		spells[8].info = sSpellStore.LookupEntry(DEMON_FORM1);
 		spells[8].instant = true;
+		spells[8].cooldown = -1;
+		spells[8].perctrigger = 0.0f;
+		spells[8].attackstoptimer = 1000;
 
 		spells[9].info = sSpellStore.LookupEntry(DEMON_FORM2);
 		spells[9].instant = true;
+		spells[9].cooldown = -1;
+		spells[9].perctrigger = 0.0f;
 
 		spells[10].info = sSpellStore.LookupEntry(DEMON_FORM3);
 		spells[10].instant = true;
+		spells[10].cooldown = -1;
+		spells[10].perctrigger = 0.0f;
 
 		spells[11].info = sSpellStore.LookupEntry(FIREBALL);
 		spells[11].instant = false;
+		spells[11].cooldown = -1;
+		spells[11].perctrigger = 0.0f;
 
 		_unit->SetUInt64Value(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT);
 		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
@@ -573,10 +588,10 @@ public:
 		_unit->GetAIInterface()->m_canMove = false;
 		DemonPhase = 0;
     }
-    
+
     void OnCombatStart(Unit* mTarget)
     {
-		DemonPhaseTimer = 60;
+		DemonPhaseTimer = 30;
 		DemonPhase = 0;
 		m_phase = 1;
 		_unit->GetAIInterface()->m_canMove = true;
@@ -615,7 +630,7 @@ public:
 
     void OnCombatStop(Unit *mTarget)
     {
-		DemonPhaseTimer = 60;
+		DemonPhaseTimer = 30;
 		DemonPhase = 0;
 		m_phase = 1;
 		CastTime();
@@ -626,16 +641,12 @@ public:
 
     void OnDied(Unit * mKiller)
     {
-		DemonPhaseTimer = 60;
+		DemonPhaseTimer = 30;
 		DemonPhase = 0;
 		m_phase = 1;
 		CastTime();
-       //RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
-		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.");
+       RemoveAIUpdateEvent();
+	   	_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.");
 		_unit->PlaySoundToSet(11478);
     }
 
@@ -707,17 +718,20 @@ public:
 		
 				if (m_phase == 4)	// Fourth Phase Demon Form
 				{
-					PhaseFourth();
+					PhaseFour();
 				}
 	
-				if (m_phase == 5) return;	// Fifth Phase with ability to change into Demon and Enrage
+				if (m_phase == 5)	// Fifth Phase with ability to change into Demon and Enrage
+				{
+					PhaseFive();
+				}
 			}
 		}
 	}
 
 	void PhaseOne()
 	{
-		if (_unit->GetHealthPct() <= 95)	// to change in future
+		if (_unit->GetHealthPct() <= 65)
 		{
 			//_unit->GetAIInterface()->WipeTargetList();
 			//_unit->GetAIInterface()->WipeHateList();
@@ -765,8 +779,8 @@ public:
 		{
 			Unit *target = NULL;
 			target = _unit->GetAIInterface()->GetNextTarget();
-			//_unit->CastSpell(target, spells[11].info, spells[11].instant);	// UNTESTED YET!
-			_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[11].info, spells[11].instant);
+			//_unit->CastSpell(target, spells[11].info, spells[11].instant);	// UNTESTED YET!	DISABLED BOTH AS THOSE CAN CAUSE CRASHES!
+			//_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[11].info, spells[11].instant);
 		}
 
 		if (!FoADeaths)
@@ -789,14 +803,18 @@ public:
 			data << uint32(0);
 			_unit->SendMessageToSet(&data, false);
 			m_phase = 3;
-			DemonPhaseTimer = 60;
+			DemonPhaseTimer = 30;
 		}
 	}
 
 	void PhaseThree()
 	{
-		if (_unit->GetHealthPct() <= 30)	// add more with maiev!
+		if (_unit->GetHealthPct() <= 30)	// add more stuff with maiev in future!
 		{
+			Maiev = true;
+			//sRand.randInt(1000);
+			//EnrageTimer=rand()%10+1;
+			EnrageTimer = 10;	// UNTESTED!
 			m_phase = 5;
 		}
 		
@@ -870,21 +888,26 @@ public:
 		if (DemonPhase == 16)
 		{
 			//_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-			if (_unit->GetHealthPct() > 30)
+			if (_unit->GetHealthPct() > 30)	// also can be if (Maiev == false)
 				m_phase = 3;
-			else 
+			else							// if (Maiev == true)
 				m_phase = 5;
 		}
 
 		DemonPhase++;
 	}
 
-	void PhaseFourth()
+	void PhaseFour()
 	{
 		DemonPhaseTimer++;
-		if (DemonPhaseTimer == 10)
+		if (DemonPhaseTimer == 30)
 		{
 			DemonPhase = 10;
+		}
+
+		if (_unit->GetHealthPct() <= 30 && Maiev == false)
+		{
+			DemonPhase = 10; // or DemonPhase = 10; or ... ?
 		}
 
 		else
@@ -911,6 +934,30 @@ public:
 			}
 
 			else return;
+		}
+	}
+
+	void PhaseFive()
+	{
+		DemonPhaseTimer--;
+		EnrageTimer--;
+		if (!DemonPhaseTimer)
+		{
+			DemonPhase = 1;
+		}
+
+		if (Enraged = false && !EnrageTimer)
+		{
+			_unit->CastSpell(_unit, spells[4].info, spells[4].instant);
+			_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You've wasted too much time mortals, now you shall fall!");
+			_unit->PlaySoundToSet(11474);
+			Enraged = true;
+		}
+
+		else
+		{
+			float val = sRand.rand(100.0f);
+			SpellCast(val);
 		}
 	}
 
@@ -961,10 +1008,11 @@ public:
 
 protected:
 
+	bool Maiev;
+	bool Enraged;
+	int EnrageTimer;
 	int DemonPhaseTimer;	// I know I could use one var, but it's easier in this way
 	int DemonPhase;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 

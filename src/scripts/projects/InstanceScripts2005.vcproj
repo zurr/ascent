@@ -279,6 +279,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Raid_Karazhan.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Raid_MoltenCore.cpp"
 				>
 			</File>
