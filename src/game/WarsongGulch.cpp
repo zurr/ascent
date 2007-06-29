@@ -739,9 +739,13 @@ void WarsongGulch::AutoReturnFlag(GameObject * flag, uint64 src)
 {
 	Player * plr = m_MapMgr->GetPlayer(src);
 	if(!plr)
-		return;
+	{
+		plr = objmgr.GetPlayer(src);
+		if(!plr) return;
+	}
 
-	uint32 flagteam = plr->m_bgTeam ? 0 : 1;
+	uint32 flagteam = sBattlegroundMgr.GenerateTeamByRace(plr->getRace()) ? 0 : 1;
+
 	// flag is the flag that has been dropped
 	if(flag->IsInWorld())
 	{

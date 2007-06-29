@@ -1109,15 +1109,10 @@ void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 		return;
 
 	Player* pTarget = (Player*)unitTarget;
-
-	if(pTarget->m_bgInBattleground)
+	
+	if(m_spellInfo->Id != 1 && playerTarget->m_bgInBattleground)
 	{
-		if(!pTarget->m_bgInitialTeleport)
-		{
-			sEventMgr.AddEvent(World::getSingletonPtr(), &World::RemovePlayerFromBattleground, pTarget->GetCurrentBattleground(), pTarget, EVENT_BATTLEGROUND_REMOVE, 1, 1);
-		}
-		else
-			pTarget->m_bgInitialTeleport = false;
+		sEventMgr.AddEvent(World::getSingletonPtr(), &World::RemovePlayerFromBattleground, playerTarget->GetCurrentBattleground(), playerTarget, EVENT_BATTLEGROUND_REMOVE, 1, 1);
 	}
 
 	// Try a dummy spell handler.

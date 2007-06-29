@@ -782,7 +782,6 @@ void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
 #endif
 	}
 	m_playerLock.Acquire();
-	plr->m_bgInitialTeleport = true;
 	// We're in BG.
 	plr->m_bgLastBattlegroundID = plr->m_bgBattlegroundID = m_ID;
 	plr->m_bgInBattleground = true;
@@ -1181,7 +1180,6 @@ void Battleground::End()
 	for(; itr != m_Players.end(); ++itr)
 	{
 		(*itr)->SetMovement(MOVE_ROOT, 1);
-		(*itr)->m_bgInitialTeleport = true;
 	}
 	m_playerLock.Release();
 

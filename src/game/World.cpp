@@ -1552,5 +1552,5 @@ void World::Rehash(bool load)
 
 void World::RemovePlayerFromBattleground(Battleground * bg, Player * pPlayer)
 {
-	bg->RemovePlayer(pPlayer, false, false, true);
+	bg->RemovePlayer(pPlayer, false, true, true);
 }
