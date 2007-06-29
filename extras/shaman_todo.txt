@@ -42,6 +42,7 @@ Disease Cleansing Totem - Doesn't work
 
 make lightningshield trigger only at intervals
 make Nature's grace to use SM variables. Preferably Spell:Calceffect
+make earth shield trigger only at 7 sec intervals
 
 [08:51:59] Spell::cast 3050, Unit: 7
 [08:51:59] WORLD: Spell effect id = 49, damage = 0

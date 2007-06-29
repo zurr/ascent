@@ -149,7 +149,74 @@ void AddItemFromProspecting(ItemPrototype *proto,Player*owner)
 
 	switch (proto->ItemId)
 	{
-		case 2771: //thin ore
+		case 2770: //copper ore
+		{
+			if( Rand(100) )
+			{
+				uint32 addme_entry = 24186; //copper powder = 100%
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(50.1) )
+			{
+				uint32 addme_entry = 774; //malachite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(49.9) )
+			{
+				uint32 addme_entry = 818; //tigerseye
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(9.8) )
+			{
+				uint32 addme_entry = 1210; //shadowgem
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+		}break;
+		case 2771: //tin ore
 		{
 			if(Rand(100))
 			{
@@ -265,8 +332,820 @@ void AddItemFromProspecting(ItemPrototype *proto,Player*owner)
 				}
 			}
 		}break;
+		case 2772: //iron ore
+		{
+			if( Rand(100) )
+			{
+				uint32 addme_entry = 24190; //iron powder = 100%
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(32.2) )
+			{
+				uint32 addme_entry = 1529; //jade
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(31.6) )
+			{
+				uint32 addme_entry = 3864; //citrine
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(30.8) )
+			{
+				uint32 addme_entry = 1705; //lesser moonstone
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(5.2) )
+			{
+				uint32 addme_entry = 7910; //star ruby
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(5.1) )
+			{
+				uint32 addme_entry = 7909; //aquamarine
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+		}break;
+		case 3858: //mithril ore
+		{
+			if( Rand(100) )
+			{
+				uint32 addme_entry = 24234; //mithril powder
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(31.7) )
+			{
+				uint32 addme_entry = 7919; //star ruby
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(31.3) )
+			{
+				uint32 addme_entry = 7909; //aquamarine
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(30.4) )
+			{
+				uint32 addme_entry = 3864; //citrine
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.7) )
+			{
+				uint32 addme_entry = 12799; //large opal
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.6) )
+			{
+				uint32 addme_entry = 12361; //blue sapphire
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.6) )
+			{
+				uint32 addme_entry = 12364; //huge emerald
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.5) )
+			{
+				uint32 addme_entry = 12800; //azerothian diamond
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+		}break;
 		case 10620: //thorium ore
 		{
+			if( Rand(100) )
+			{
+				uint32 addme_entry = 24235; //thorium powder
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(28.7) )
+			{
+				uint32 addme_entry = 7910; //star ruby
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(17.5) )
+			{
+				uint32 addme_entry = 12361; //blue sapphire
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(17.1) )
+			{
+				uint32 addme_entry = 12364; //huge emerald
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(17.1) )
+			{
+				uint32 addme_entry = 12800; //azerothian diamond
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(17.1) )
+			{
+				uint32 addme_entry = 12799; //large opal
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.4) )
+			{
+				uint32 addme_entry = 21929; //flame spessarite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.4) )
+			{
+				uint32 addme_entry = 23112; //golden draenite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.3) )
+			{
+				uint32 addme_entry = 23107; //shadow draenite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.3) )
+			{
+				uint32 addme_entry = 23079; //deep peridot
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.3) )
+			{
+				uint32 addme_entry = 23077; //blood garnet
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.2) )
+			{
+				uint32 addme_entry = 23117; //azure moonstone
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+		}break;
+		case 23424: //fel iron ore
+		{
+			if( Rand(16.8) )
+			{
+				uint32 addme_entry = 23079; //deep peridot
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(16.5) )
+			{
+				uint32 addme_entry = 23112; //golden draenite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(16.5) )
+			{
+				uint32 addme_entry = 21929; //flame spessarite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(16.4) )
+			{
+				uint32 addme_entry = 23077; //blood garnet
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(16.2) )
+			{
+				uint32 addme_entry = 23107; //shadow draenite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(15.9) )
+			{
+				uint32 addme_entry = 23117; //azure moonstone
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.0) )
+			{
+				uint32 addme_entry = 23439; //noble topaz
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.0) )
+			{
+				uint32 addme_entry = 23437; //talasite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(1.0) )
+			{
+				uint32 addme_entry = 23436; //living ruby
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(0.9) )
+			{
+				uint32 addme_entry = 23438; //star of elune
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(0.9) )
+			{
+				uint32 addme_entry = 23440; //dawnstone
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(0.9) )
+			{
+				uint32 addme_entry = 3864; //nightseye
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+		}break;
+		case 23425: //adamantite ore
+		{
+			if( Rand(18.9) )
+			{
+				uint32 addme_entry = 21929; //flame spessarite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(18.9) )
+			{
+				uint32 addme_entry = 23079; //deep peridot
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(18.8) )
+			{
+				uint32 addme_entry = 23117; //azure moonstone
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(18.8) )
+			{
+				uint32 addme_entry = 23112; //golden draenite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(18.7) )
+			{
+				uint32 addme_entry = 23077; //blood garnet
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(18.6) )
+			{
+				uint32 addme_entry = 23107; //shadow draenite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.9) )
+			{
+				uint32 addme_entry = 23437; //talasite
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.8) )
+			{
+				uint32 addme_entry = 23439; //noble topaz
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.8) )
+			{
+				uint32 addme_entry = 23440; //dawnstone
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.8) )
+			{
+				uint32 addme_entry = 23436; //living ruby
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.7) )
+			{
+				uint32 addme_entry = 23441; //nightseye
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
+			if( Rand(2.7) )
+			{
+				uint32 addme_entry = 23438; //star of elune
+				uint32 addme_count = 1 + rand() % 2;
+				Item * it = objmgr.CreateItem( item,owner );  
+				if( it )
+				{
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count );
+					bool result = owner->GetItemInterface()->AddItemToFreeSlot( it );
+					if( !result )
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
+						return;
+					}
+				}
+			}
 		}break;
 	}
 }
