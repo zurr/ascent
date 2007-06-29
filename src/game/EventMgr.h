@@ -171,7 +171,8 @@ enum EventTypes
 	EVENT_PLAYER_SOFT_DISCONNECT,		//Zack 2007 06 12: Kick AFK players to not eat resources
 	EVENT_BATTLEGROND_WSG_AUTO_RETURN_FLAG,
 	EVENT_CORPSE_SPAWN_BONES,
-
+	EVENT_DODGE_BLOCK_FLAG_EXPIRE,	//yeah, there are more then 1 flags
+	EVENT_PARRY_FLAG_EXPIRE,	//yeah, there are more then 1 flags
 };
 
 struct SERVER_DECL TimedEvent
