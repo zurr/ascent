@@ -52,5 +52,5 @@ public:
 	void SpawnSpiritGuides();
 	bool GetRepopCoordinates(Player * plr, LocationVector & vec);
 
-	void AutoReturnFlag(GameObject * flag, uint64 src);
+	void AutoReturnFlag(GameObject * flag, uint32 flagteam);
 };
