@@ -13,7 +13,6 @@
  */
 
 #include "LogonStdAfx.h"
-#include <zlib.h>
 
 typedef struct
 {
