@@ -26,6 +26,7 @@ void SetupTheShatteredHalls(ScriptMgr * mgr);
 void SetupHellfireRamparts(ScriptMgr * mgr);
 void SetupGuardAI(ScriptMgr * mgr);
 void SetupBlackTemple(ScriptMgr * mgr);
+void SetupArcatraz(ScriptMgr * mgr);
 
 struct SP_AI_Spell{
 	SpellEntry *info; // spell info

@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_Arcatraz.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_AuchenaiCrypts.cpp"
 				>
 			</File>

@@ -137,6 +137,9 @@
 				RelativePath="..\src\InstanceScripts\GuardAI.cpp">
 			</File>
 			<File
+				RelativePath="..\src\InstanceScripts\Instance_Arcatraz.cpp">
+			</File>
+			<File
 				RelativePath="..\src\InstanceScripts\Instance_AuchenaiCrypts.cpp">
 			</File>
 			<File
