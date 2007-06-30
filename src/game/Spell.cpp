@@ -2755,7 +2755,10 @@ int8 Spell::CanCast(bool rangetolerate)
 				GameObjectInfo *info = ((GameObject*)(*itr))->GetInfo();
 			//	GameObjectNameStorage.LookupEntry((*itr)->GetEntry());
 				if(!info)
+				{
+					sLog.outDebug("Warning: could not finfd info about gameobject %u",(*itr)->GetEntry());
 					continue;
+				}
 				if(info->SpellFocus == m_spellInfo->RequiresSpellFocus)
 				{
 					found = true;

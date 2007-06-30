@@ -145,7 +145,6 @@ Nexus Crystal - Disenchanted from level 51-60 items [20725]
 void AddItemFromProspecting(ItemPrototype *proto,Player*owner)
 {
 
-printf("!!!entered prospecting with proto id %u \n",proto->ItemId);
 	switch (proto->ItemId)
 	{
 		case 2770: //copper ore
@@ -155,7 +154,6 @@ printf("!!!entered prospecting with proto id %u \n",proto->ItemId);
 				uint32 addme_entry = 24186; //copper powder = 100%
 				uint32 addme_count = 1 + rand() % 2;
 				Item * it = objmgr.CreateItem( addme_entry,owner );  
-printf("!!!creating random copper powder  %u \n",proto->ItemId);
 				if( it )
 				{
 					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, addme_count);
