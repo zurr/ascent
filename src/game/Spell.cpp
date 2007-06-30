@@ -1225,6 +1225,11 @@ void Spell::prepare(SpellCastTargets * targets)
 		m_castPositionZ = m_caster->GetPositionZ();
 	
 		u_caster->castSpell( this );
+
+		//remove Aurastates required for this spell from caster and target
+		//not sure if this is the right spot for this
+//		if(m_spellInfo->CasterAuraState)
+//			u_caster->RemoveFlag(UNIT_FIELD_AURASTATE,m_spellInfo->CasterAuraState);
 	}
 	else
 		cast(false);
@@ -1562,8 +1567,24 @@ void Spell::cast(bool check)
 					if(m_spellInfo->Effect[x] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
 						HandleEffects(m_caster->GetGUID(),x);
 					else  
-						for(i= m_targetUnits[x].begin();i != m_targetUnits[x].end();i++)
-							HandleEffects((*i),x);
+					{
+/*						if(m_spellInfo->TargetAuraState)
+						{
+							for(i= m_targetUnits[x].begin();i != m_targetUnits[x].end();i++)
+							{
+								HandleEffects((*i),x);
+								//do not swap orders or unittarget will not be valid
+								Unit *ut=GetUnitTarget();
+								if(ut)
+									ut->RemoveFlag(UNIT_FIELD_AURASTATE,m_spellInfo->TargetAuraState);
+							}
+						}
+						else*/
+						{
+							for(i= m_targetUnits[x].begin();i != m_targetUnits[x].end();i++)
+								HandleEffects((*i),x);
+						}
+					}
 				}
 	
 				for(i= UniqueTargets.begin();i != UniqueTargets.end();i++)

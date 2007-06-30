@@ -31,7 +31,6 @@ improved berserker rage - not triggered. Should only get triggered while we have
 # Improved Charge
 # Improved Mortal Strike
 # Sweeping Strikes
-# Stance Mastery (warrior passive) nu are efect (pierzi tot rage când schimbi combat stances)
 # Blood Craze 
 # Enrage 
 # Commanding Presence - should work
@@ -40,14 +39,13 @@ improved berserker rage - not triggered. Should only get triggered while we have
 # Retaliation - retest
 # Overpower - should work
 # Second Wind - retest. WTF is an immobilize spell ?
-# Improved Disciplines 
+# Improved Disciplinses 
 # cum Overpower nu merge nici Improved Overpower nu merge
 # cum Demoralizing Shout nu are efect, nici Improved Demoralizing Shout nu merge
 # Improved Execute nu merge
 2. Unbridled Wrath
 3. Improved Intercept
-4. Flurry - retest
 5. Improved Berseker Rage
-6. Bloodthirst - this should work
+6. Bloodthirst - does not give the 10 health per strike thing
 7. Improved Whirlwind
-8. Rampage
+8. Rampage - does not have any effect. Should this use up aurastateflag ? If so then remove it from caster

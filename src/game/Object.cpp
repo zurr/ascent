@@ -528,6 +528,35 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 	*data << (uint8)bc;
 	data->append( updateMask->GetMask(), bc*4 );
 	  
+	//small healthed creatures have to wait an extra strike before the aurastate is sent to the client and die
+	//that is why it is placed before the loop ;)
+	if(IsUnit())
+	{
+		//maybe if we would test this on healthchange event it would be called less times ?
+		//maybe it would not be so safe as it is here
+		uint32 pct = uint32(float( float(m_uint32Values[UNIT_FIELD_HEALTH]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f))+1;
+		if(pct<35)
+		{
+			uint32 toset=AURASTATE_FLAG_HEALTH35;
+			if(pct<20)
+				toset |= AURASTATE_FLAG_HEALTH20;
+			else
+				RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20);
+			SetFlag(UNIT_FIELD_AURASTATE,toset);
+		}
+		else
+			RemoveFlag(UNIT_FIELD_AURASTATE , AURASTATE_FLAG_HEALTH35 | AURASTATE_FLAG_HEALTH20);
+/*		if(toset && (m_uint32Values[UNIT_FIELD_AURASTATE] & toset)!=toset)
+		{
+			updateMask->SetBit( UNIT_FIELD_AURASTATE );
+			m_uint32Values[UNIT_FIELD_AURASTATE] |= toset;
+printf("!!!!!setting it %u - %u\n",m_valuesCount,UNIT_FIELD_AURASTATE);
+		}
+		SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20|AURASTATE_FLAG_HEALTH35);
+if(updateMask->GetBit( UNIT_FIELD_AURASTATE ) )
+	printf("and we are sending it %u\n",m_uint32Values[UNIT_FIELD_AURASTATE]);*/
+	}
+
 	for( uint32 index = 0; index < values_count; index ++ )
 	{
 		if( updateMask->GetBit( index ) )
@@ -541,25 +570,6 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 						*data << m_uint32Values[index];
 					else
 					{
-						//maybe if we would test this on heathchange event it would be called less times ?
-						//maybe it would not be so safe as it is here
-						uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
-						if(pct == 0 && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
-							pct = 1;
-						else if(pct<35)
-						{
-							SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35); //ardent defender
-							if(pct<20)
-								SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20); //required for execute and other spells
-							else
-								RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20);
-						}
-						else
-						{
-							RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH35);
-							RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20);
-						}
-
 						switch(m_objectTypeId)
 						{
 						case TYPEID_PLAYER:
@@ -575,6 +585,7 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 								}
 								else
 								{
+									uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
 									*data << pct;	
 								}
 							}
@@ -1034,7 +1045,7 @@ void Object::SetFlag( const uint32 index, uint32 newFlag )
 {
 	ASSERT( index < m_valuesCount );
 
-	if(!(m_uint32Values[ index ] & newFlag))
+	if((m_uint32Values[ index ] & newFlag)!=newFlag)
 	{
 		m_uint32Values[ index ] |= newFlag;
 		if(IsInWorld())
@@ -1055,7 +1066,7 @@ void Object::RemoveFlag( const uint32 index, uint32 oldFlag )
 {
 	ASSERT( index < m_valuesCount );
 
-	if((m_uint32Values[ index ] & oldFlag))
+	if((m_uint32Values[ index ] & oldFlag)!=0)
 	{
 		m_uint32Values[ index ] &= ~oldFlag;
 		if(IsInWorld())

@@ -576,9 +576,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							}
 							else continue; //no weapon no joy
 						}break;
-						case 12162: //maybe we should use hasname for this
-						case 12850:
-						case 12868:
+						case 12721:
 						{
 							//deep wound requires a melee weapon
 							if(static_cast<Player*>(this)->GetItemInterface())
@@ -598,6 +596,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						//Unbridled Wrath
 						case 12964:
 						{
+							//let's recalc chance to cast since we have a full 100 all time on this one
 							Item *it;
 							if(static_cast<Player*>(this)->GetItemInterface())
 							{
@@ -606,8 +605,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									continue; //no weapon no joy
 							}
 							else continue; //no weapon no joy
-							//let's recalc chance to cast since we have a full 100 all time on this one
-							//how lame to get talentpointlevel for this spell :(
 //							float chance=it->GetProto()->Delay*100*talentlevel/60000;
 							float chance=it->GetProto()->Delay*talentlevel/600;
 							if(!Rand(chance))
@@ -1097,7 +1094,6 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	}
 	else//hit 
 	{
-//		pVictim->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_DODGE_BLOCK | AURASTATE_FLAG_PARRY); //SB@L: removes dodge and parry flag after a hit
 
 		hit_status |= HITSTATUS_HITANIMATION;//hit animation on victim
 
@@ -1190,6 +1186,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				if(this->IsPlayer())
 				{
 					this->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_CRITICAL);	//SB@L: Enables spells requiring critical strike
+					if(!sEventMgr.HasEvent(this,EVENT_CRIT_FLAG_EXPIRE))
+						sEventMgr.AddEvent((Unit*)this,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_CRITICAL,EVENT_CRIT_FLAG_EXPIRE,5000,1);
+					else sEventMgr.ModifyEventTimeLeft(this,EVENT_CRIT_FLAG_EXPIRE,5000);
 				}
 
 				CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.full_damage);
@@ -1197,8 +1196,6 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			}
 			else
 			{
-				if(this->IsPlayer())
-					this->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_CRITICAL);	//SB@L: Enables spells requiring critical strike
 				//check for crushing hit			
 				if(!this->IsPlayer())
 				{	
