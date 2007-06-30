@@ -327,6 +327,7 @@ Player::Player ( uint32 high, uint32 low )
 
 	m_resist_critical[0]=m_resist_critical[1]=0;
 	ok_to_remove = false;
+	trigger_on_stun = 0;
 }
 
 
@@ -7843,4 +7844,18 @@ void Player::UnPossess()
 	data.Initialize(SMSG_PET_SPELLS);
 	data << uint64(0);
 	m_session->SendPacket(&data);
+}
+
+//what is an Immobilize spell ? Have to add it later to spell effect handler
+void Player::EventStunOrImmobilize()
+{
+	if(trigger_on_stun)
+	{
+		SpellEntry *spellInfo = sSpellStore.LookupEntry(trigger_on_stun);
+		if(!spellInfo)
+			return;
+		Spell *spell = new Spell(this, spellInfo ,true, NULL);
+		SpellCastTargets targets(GetGUID());
+		spell->prepare(&targets);
+	}
 }

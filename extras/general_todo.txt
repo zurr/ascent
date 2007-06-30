@@ -10,3 +10,39 @@ SMT_RESIST_DISPEL - check if it is used
 - make a proper loading for auras. Should restore caster guid, charges, procflags....
 - in world.cpp,line 788 removed stormstrike effect 0 until find a solution for : spell is casted on target and should apply 1 aura, but it also adds the other 2 effects that should be aplied only to caster.
 - a lot of spells have wrong trigger spell id. Lightning shield, Parry Mastery ...Make a tool to find them all and see what can be done for them.
+
+- make prospecting use a loottable : changes in profesions.cpp
+
+Zack - test my shit :
+
+- after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
+- patch from splat for "well fed", some players did report error that can be related to this fix. Just can't remember what was the error :(
+
+maybe later :P
+[20:56] <Raziel> spell Translocate
+[20:57] <Raziel> SPELL_ID_TRANSLOCATE_*
+[20:57] <Raziel> its doesnt work
+[20:59] <Raziel> see
+[20:59] <Raziel> in sql queries
+[21:00] <Raziel> UPDATE gameobject_names SET Type = 22 , sound0 = 35376 WHERE entry = 184502;
+[21:00] <Raziel> INSERT INTO `teleport_coords` VALUES ('35376', 'Translocation: Undercity', '0', '1806,09', '334,559', '70,3974', '0');
+[21:00] <Raziel> and when I click on GO with entry 184502 (ne of Orbs of Translocation)
+[21:00] <Raziel> nothing to proceed
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_1 = 25143
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_2 = 25649
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_3 = 25650
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_4 = 25652
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_5 = 26566
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_6 = 26572
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_7 = 29128
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_8 = 29129
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_9 = 30141
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_10 = 32568
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_11 = 32569
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_12 = 32571
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_13 = 32572
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_14 = 34448
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_15 = 34452
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_16 = 35376
+[21:03] <Raziel> SPELL_ID_TRANSLOCATE_17 = 35727
+[21:04] <Raziel> SPELL_ID_TRANSLOCATE_18 = 35730

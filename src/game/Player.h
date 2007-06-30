@@ -454,6 +454,10 @@ public:
 		}
 		return false;
 	}
+
+	void SetTriggerStunOrImmobilize(uint32 newtrigger) {trigger_on_stun = newtrigger;}
+	void EventStunOrImmobilize();
+
 	int32 GetOpenQuestSlot();
 	QuestLogEntry* GetQuestLogForEntry(uint32 quest);
 	inline QuestLogEntry* GetQuestLogInSlot(uint32 slot) { return m_questlog[slot]; }
@@ -1330,6 +1334,7 @@ protected:
 	void JumpToEndTaxiNode(TaxiPath * path);
 	SoloSpells	solospelltarget;
 	uint32	chat_disabled_until;//force player to be silent. Yeah i'm pissed of on noobs
+	uint32	trigger_on_stun; //bah, warrior talent but this will not get triggered on trigered spells if used on proc so i'm forced to used a special variable
 
 	float m_lastRunSpeed;
 	float m_lastRunBackSpeed;

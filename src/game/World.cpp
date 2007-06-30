@@ -777,9 +777,6 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_SPELL_CRIT_HIT_VICTIM;
 					if(strstr(desc, "damaging attack is taken"))
 						pr|=PROC_ON_ANY_DAMAGE_VICTIM;
-					if(strstr(desc,"counterattack"))
-						if(strstr(desc,"melee"))
-							pr|=PROC_ON_MELEE_ATTACK_VICTIM;
 					if(strstr(desc, "struck by a Stun or Immobilize"))
 						pr|=PROC_ON_SPELL_HIT_VICTIM;
 					if(strstr(desc, "melee critical strike"))
@@ -841,22 +838,10 @@ void World::SetInitialWorldSettings()
 	sp = sSpellStore.LookupEntry(20230);
 	if(sp)
 	{
-		sp->Effect[0] = 42; //force him to use procspell effect
+		sp->Effect[0] = 6; //aura
+		sp->EffectApplyAuraName[0] = 42; //force him to use procspell effect
 		sp->EffectTriggerSpell[0] = 22858; //evil , but this is good for us :D
-	}
-
-	//rewriting Second wind spell as old one
-	sp = sSpellStore.LookupEntry(29834);
-	if(sp)
-	{
-		sp->Effect[0] = 42; //force him to use procspell effect
-		sp->EffectTriggerSpell[0] = 29841; //evil , but this is good for us :D
-	}
-	sp = sSpellStore.LookupEntry(29838); //rank 2
-	if(sp)
-	{
-		sp->Effect[0] = 42; //force him to use procspell effect
-		sp->EffectTriggerSpell[0] = 29842; //evil , but this is good for us :D
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM; //add procflag here since this was not processed with the others !
 	}
 
 	//improoved berserker stance should be triggered on berserker stance use

@@ -1459,6 +1459,19 @@ void Aura::SpellAuraDummy(bool apply)
 			tame->SafeDelete();
 			//delete tame;/
 		}break;
+		//Second Wind - triggers only on stun and Immobilize
+		case 29834:
+			{
+				Unit *caster = GetUnitCaster();
+				if(caster && caster->IsPlayer())
+					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29841);
+			}break;
+		case 29838:
+			{
+				Unit *caster = GetUnitCaster();
+				if(caster && caster->IsPlayer())
+					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29842);
+			}break;
 	}
 }
 
@@ -1795,6 +1808,7 @@ void Aura::SpellAuraModStun(bool apply)
 			m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
 		}
 
+
 		m_target->m_rooted++;
 		m_target->m_stunned++;
 
@@ -1811,6 +1825,10 @@ void Aura::SpellAuraModStun(bool apply)
 			m_target->m_currentSpell->cancel();
 			m_target->m_currentSpell = 0;
 		}
+
+		//warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
+		if(m_target->IsPlayer())//only players have talents
+			static_cast<Player*>(m_target)->EventStunOrImmobilize();
 	}
 	else
 	{
@@ -3044,7 +3062,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
 //		if(pts.procCharges==0)
 //			pts.procCharges=-1;
-//sLog.outDebug("%u is registering %u chance %u flags %u charges %u hasflag %u\n",pts.origId,pts.spellId,pts.procChance,pts.procFlags,pts.procCharges,pts.procFlags & PROC_ON_MELEE_ATTACK);
+sLog.outDebug("%u is registering %u chance %u flags %u charges %u hasflag %u\n",pts.origId,pts.spellId,pts.procChance,pts.procFlags,pts.procCharges,pts.procFlags & PROC_ON_MELEE_ATTACK);
 		pts.deleted = false;
 		m_target->m_procSpells.push_front(pts);
 	}
