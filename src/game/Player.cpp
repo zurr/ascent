@@ -328,6 +328,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_resist_critical[0]=m_resist_critical[1]=0;
 	ok_to_remove = false;
 	trigger_on_stun = 0;
+	m_modphyscritdmgPCT = 0;
 }
 
 

@@ -199,6 +199,7 @@ enum MOD_TYPES
 	SPELL_AURA_MOD_SIDE_REAR_PDAE_DAMAGE_TAKEN = 160,   // Mod Side/Rear PBAE Damage Taken 
 	SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT = 161,		// Mod Health Regen In Combat
 	SPELL_AURA_POWER_BURN = 162,						// Power Burn 
+	SPELL_AURA_MOD_CRIT_DAMAGE_BONUS_MELEE = 163,		// Mod Critical Damage Bonus (Physical)
 	SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS = 165,	// Melee AP Attacker Bonus
 	SPELL_AURA_MOD_ATTACK_POWER_PCT = 166,			  // Mod Attack Power
 	SPELL_AURA_INCREASE_DAMAGE = 168,				   // Increase Damage Type
@@ -483,6 +484,7 @@ public:
 	void SpellAuraNoPVPCredit(bool apply);
 	void SpellAuraModHealthRegInCombat(bool apply);
 	void SpellAuraPowerBurn(bool apply);
+	void SpellAuraModCritDmgPhysical(bool apply);
 	void SpellAuraModPAttackPower(bool apply);
 	void SpellAuraAPAttackerBonus(bool apply);
 	void SpellAuraIncreaseDamageTypePCT(bool apply);

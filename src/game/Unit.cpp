@@ -1171,9 +1171,16 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				if(ability && ability->SpellGroupType)
 					SM_FIValue(SM_PCriticalDamage,&dmgbonus,ability->SpellGroupType);
 				dmg.full_damage += dmgbonus;
-				if(!pVictim->IsPlayer())
 				if(IsPlayer())
-					dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);
+				{
+					if(damage_type != RANGED && !ability)
+					{
+						float critextra=static_cast<Player*>(this)->m_modphyscritdmgPCT;
+						dmg.full_damage += (dmg.full_damage*critextra/100.0f);
+					}
+					if(!pVictim->IsPlayer())
+						dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);
+				}
 				
 				// burlex: this causes huge damage increases. I'm not sure what it's meant to accompilsh either, so
 				//         i'm gonna comment it.

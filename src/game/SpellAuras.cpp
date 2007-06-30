@@ -178,7 +178,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//missing = 160 //Apply Aura: Mod Side/Rear PBAE Damage Taken %//used http://www.thottbot.com/?sp=23198
 		&Aura::SpellAuraModHealthRegInCombat,//SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT = 161,
 		&Aura::SpellAuraPowerBurn,//missing = 162 //used //Apply Aura: Power Burn (Mana) //http://www.thottbot.com/?sp=19659
-		&Aura::SpellAuraNULL,//missing = 163 //Apply Aura: Mod Crit Damage Bonus (Physical)
+		&Aura::SpellAuraModCritDmgPhysical,//missing = 163 //Apply Aura: Mod Crit Damage Bonus (Physical)
 		&Aura::SpellAuraNULL,//missing = 164 //used //test spell
 		&Aura::SpellAuraAPAttackerBonus,//SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS = 165,	// Melee AP Attacker Bonus
 		&Aura::SpellAuraModPAttackPower,//missing = 166 //used //Apply Aura: Mod Attack Power % // http://www.thottbot.com/?sp=30803
@@ -5405,6 +5405,22 @@ void Aura::SpellAuraPowerBurn(bool apply)
 	if(apply)
 		sEventMgr.AddEvent(this, &Aura::EventPeriodicBurn, uint32(mod->m_amount), (uint32)mod->m_miscValue, EVENT_AURA_PERIODIC_BURN, GetSpellProto()->EffectAmplitude[mod->i], 0);
 }
+
+void Aura::SpellAuraModCritDmgPhysical(bool apply)
+{
+	if(m_target->IsPlayer())
+	{
+		if(apply)
+		{
+			static_cast<Player*>(m_target)->m_modphyscritdmgPCT += (uint32)mod->m_amount;
+		}
+		else
+		{
+			static_cast<Player*>(m_target)->m_modphyscritdmgPCT -= (uint32)mod->m_amount;
+		}
+	}
+}
+
 
 void Aura::SpellAuraWaterBreathing(bool apply)
 {
