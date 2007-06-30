@@ -567,7 +567,8 @@ protected:
 #define MIND_REND 36924 // DBC: 36859, 36924;
 #define FEAR 39415
 #define DOMINATION 37162
-#define SUMMON_ILLUSION_66 36931	// those 2 don't work for me
+#define SUMMON_ILLUSION_66 36931	// those 2 don't work
+#define SUMMON_ILLUSION_33 36932
 // BLINK_VISUAL 36937 ?
 // SIMPLE_TELEPORT 12980 ?
 // Add sounds related to his dialog with mind controlled guy
