@@ -42,10 +42,14 @@ public:
 	void HandleSQLExecute(WorldPacket & recvData);
 	void HandleReloadAccounts(WorldPacket & recvData);
 	void HandleAuthChallenge(WorldPacket & recvData);
+	void HandleMappingReply(WorldPacket & recvData);
+	void HandleUpdateMapping(WorldPacket & recvData);
 
 	uint32 last_ping;
 	bool removed;
 	set<uint32> server_ids;
 };
+
+typedef void (LogonCommServerSocket::*logonpacket_handler)(WorldPacket&);
 
 #endif

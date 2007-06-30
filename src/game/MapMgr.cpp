@@ -641,7 +641,7 @@ void MapMgr::_UpdateObjects()
 		else if(!HasPlayers() && !reset_pending)
 		{
 			reset_pending = true;
-			ExpiryTime = time(NULL) + 1800;
+			ExpiryTime = time(NULL) + 600;
 		}
 	}
 

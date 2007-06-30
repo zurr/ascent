@@ -349,3 +349,15 @@ void LogonCommHandler::LoadRealmConfiguration()
 		sLog.outColor(TBLUE, "%u realms.\n", realmcount);
 	}
 }
+
+void LogonCommHandler::UpdateAccountCount(uint32 account_id, uint8 add)
+{
+	// Send request packet to server.
+	map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+	if(logons.size() == 0 || itr->second == 0)
+	{
+		// No valid logonserver is connected.
+		return;
+	}
+	itr->second->UpdateAccountCount(account_id, add);
+}

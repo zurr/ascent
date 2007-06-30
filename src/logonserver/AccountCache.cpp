@@ -266,9 +266,19 @@ void IPBanner::Remove(set<IPBan*>::iterator ban)
 	sLog.outDebug("[IPBanner] Removed expired IPBan for ip '%s'", strIp);
 }
 
-void InformationCore::AddRealm(uint32 realm_id, Realm * rlm)
+Realm * InformationCore::AddRealm(uint32 realm_id, Realm * rlm)
 {
 	m_realms.insert( make_pair( realm_id, *rlm ) );
+	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
+	return &itr->second;
+}
+
+Realm * InformationCore::GetRealm(uint32 realm_id)
+{
+	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
+	if(itr != m_realms.end())
+		return &itr->second;
+	return 0;
 }
 
 void InformationCore::RemoveRealm(uint32 realm_id)
@@ -285,7 +295,7 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	realmLock.Acquire();
 
 	// packet header
-	ByteBuffer data;
+	ByteBuffer data(m_realms.size() * 150 + 20);
 	data << uint8(0x10);
 	data << uint16(0);	  // Size Placeholder
 
@@ -297,6 +307,7 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	
 	// loop realms :/
 	map<uint32, Realm>::iterator itr = m_realms.begin();
+	map<uint32, uint8>::iterator it;
 	for(; itr != m_realms.end(); ++itr)
 	{
 		data << uint8(itr->second.Colour);
@@ -307,7 +318,10 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 		data << itr->second.Name;
 		data << itr->second.Address;
 		data << itr->second.Population;
-		data << uint8(0);					   // Character Count
+
+		/* Get our character count */
+		it = itr->second.CharacterMap.find(Socket->GetAccountID());
+		data << uint8( (it == itr->second.CharacterMap.end()) ? 0 : it->second );
 		data << uint8(itr->second.TimeZone);   // time zone
 		data << uint8(0);
 	}

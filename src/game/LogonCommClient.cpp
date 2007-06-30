@@ -81,28 +81,30 @@ void LogonCommClientSocket::OnRead()
 
 void LogonCommClientSocket::HandlePacket(WorldPacket & recvData)
 {
-	switch(recvData.GetOpcode())
+	static logonpacket_handler Handlers[RMSG_COUNT] = {
+		NULL,												// RMSG_NULL
+		NULL,												// RCMSG_REGISTER_REALM
+		&LogonCommClientSocket::HandleRegister,				// RSMSG_REALM_REGISTERED
+		NULL,												// RCMSG_REQUEST_SESSION
+		&LogonCommClientSocket::HandleSessionInfo,			// RSMSG_SESSION_RESULT
+		NULL,												// RCMSG_PING
+		&LogonCommClientSocket::HandlePong,					// RSMSG_PONG
+		NULL,												// RCMSG_SQL_EXECUTE
+		NULL,												// RCMSG_RELOAD_ACCOUNTS
+		NULL,												// RCMSG_AUTH_CHALLENGE
+		&LogonCommClientSocket::HandleAuthResponse,			// RSMSG_AUTH_RESPONSE
+		&LogonCommClientSocket::HandleRequestAccountMapping,// RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING
+		NULL,												// RCMSG_ACCOUNT_CHARACTER_MAPPING_REPLY
+		NULL,												// RCMSG_UPDATE_CHARACTER_MAPPING_COUNT
+	};
+
+	if(recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)
 	{
-	case RSMSG_REALM_REGISTERED:
-		HandleRegister(recvData);
-		break;
-
-	case RSMSG_SESSION_RESULT:
-		HandleSessionInfo(recvData);
-		break;
-
-	case RSMSG_PONG:
-		HandlePong(recvData);
-		break;
-
-	case RSMSG_AUTH_RESPONSE:
-		HandleAuthResponse(recvData);
-		break;
-
-	default:
 		printf("Got unknwon packet from logoncomm: %u\n", recvData.GetOpcode());
-		break;
+		return;
 	}
+
+	(this->*(Handlers[recvData.GetOpcode()]))(recvData);
 }
 
 void LogonCommClientSocket::HandleRegister(WorldPacket & recvData)
@@ -116,6 +118,7 @@ void LogonCommClientSocket::HandleRegister(WorldPacket & recvData)
 	sLog.outColor(TGREEN, "%u", realmlid);
 	
 	LogonCommHandler::getSingleton().AdditionAck(_id, realmlid);
+	realm_ids.insert(realmlid);
 }
 
 void LogonCommClientSocket::HandleSessionInfo(WorldPacket & recvData)
@@ -240,5 +243,110 @@ void LogonCommClientSocket::HandleAuthResponse(WorldPacket & recvData)
 	{
 		authenticated = 1;
 	}
+}
+
+void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
+{
+	WorldPacket data(RCMSG_UPDATE_CHARACTER_MAPPING_COUNT, 9);
+	set<uint32>::iterator itr = realm_ids.begin();
+
+	for(; itr != realm_ids.end(); ++itr)
+	{
+		data.clear();
+		data << (*itr) << account_id << add;
+		SendPacket(&data);
+	}
+}
+
+void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
+{
+	uint32 realm_id;
+	uint32 account_id;
+	QueryResult * result;
+	map<uint32, uint8> mapping_to_send;
+	map<uint32, uint8>::iterator itr;
+
+	// grab the realm id
+	recvData >> realm_id;
+
+	// fetch the character mapping
+	result = sDatabase.Query("SELECT acct FROM characters");
+
+	if(result)
+	{
+		do 
+		{
+			account_id = result->Fetch()[0].GetUInt32();
+			itr = mapping_to_send.find(account_id);
+			if(itr != mapping_to_send.end())
+				itr->second++;
+			else
+				mapping_to_send.insert( make_pair( account_id, 1 ) );
+		} while(result->NextRow());
+		delete result;
+	}
+
+	if(!mapping_to_send.size())
+	{
+		// no point sending empty shit
+		return;
+	}
+
+	// pump all the data out into our packet
+	ByteBuffer uncompressed(mapping_to_send.size() * 5 + 8);
+	uncompressed << uint32(realm_id);
+	uncompressed << uint32(mapping_to_send.size());
+	for(itr = mapping_to_send.begin(); itr != mapping_to_send.end(); ++itr)
+		uncompressed << uint32(itr->first) << uint8(itr->second);
+
+	// I still got no idea where this came from :p
+	uint32 destsize = uncompressed.size() + uncompressed.size()/10 + 16;
+
+	// w000t w000t kat000t for gzipped packets
+	WorldPacket data(RCMSG_ACCOUNT_CHARACTER_MAPPING_REPLY, destsize + 4);
+	data.resize(destsize + 4);
+
+	z_stream stream;
+	stream.zalloc = 0;
+	stream.zfree  = 0;
+	stream.opaque = 0;
+
+	if(deflateInit(&stream, 1) != Z_OK)
+	{
+		sLog.outError("deflateInit failed.");
+		return;
+	}
+
+	// set up stream pointers
+	stream.next_out  = (Bytef*)((uint8*)data.contents())+4;
+	stream.avail_out = destsize;
+	stream.next_in   = (Bytef*)uncompressed.contents();
+	stream.avail_in  = uncompressed.size();
+
+	// call the actual process
+	if(deflate(&stream, Z_NO_FLUSH) != Z_OK ||
+		stream.avail_in != 0)
+	{
+		sLog.outError("deflate failed.");
+		return;
+	}
+
+	// finish the deflate
+	if(deflate(&stream, Z_FINISH) != Z_STREAM_END)
+	{
+		sLog.outError("deflate failed: did not end stream");
+		return;
+	}
+
+	// finish up
+	if(deflateEnd(&stream) != Z_OK)
+	{
+		sLog.outError("deflateEnd failed.");
+		return;
+	}
+
+	*(uint32*)data.contents() = uncompressed.size();
+	data.resize(stream.total_out + 4);
+	SendPacket(&data);
 }
 

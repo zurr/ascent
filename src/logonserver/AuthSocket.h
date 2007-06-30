@@ -52,6 +52,7 @@ public:
 	void OnDisconnect();
 	inline time_t GetLastRecv() { return last_recv; }
 	bool removedFromSet;
+	inline uint32 GetAccountID() { return m_account ? m_account->AccountId : 0; }
 
 protected:
 

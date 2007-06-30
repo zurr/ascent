@@ -122,6 +122,7 @@ typedef struct
 	uint32 Icon;
 	uint32 TimeZone;
 	float Population;
+	map<uint32, uint8> CharacterMap;
 }Realm;
 
 class AuthSocket;
@@ -162,7 +163,8 @@ public:
 		return realmhigh;
 	}
 
-	void		  AddRealm(uint32 realm_id, Realm * rlm);
+	Realm*		  AddRealm(uint32 realm_id, Realm * rlm);
+	Realm*        GetRealm(uint32 realm_id);
 	void		  RemoveRealm(uint32 realm_id);
 
 	inline void   AddServerSocket(LogonCommServerSocket * sock) { serverSocketLock.Acquire(); m_serverSockets.insert( sock ); serverSocketLock.Release(); }

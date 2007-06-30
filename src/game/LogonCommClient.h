@@ -38,6 +38,8 @@ public:
 	void HandleRegister(WorldPacket & recvData);
 	void HandlePong(WorldPacket & recvData);
 	void HandleSessionInfo(WorldPacket & recvData);
+	void HandleRequestAccountMapping(WorldPacket & recvData);
+	void UpdateAccountCount(uint32 account_id, uint8 add);
 
 	void OnDisconnect();
 	uint32 last_ping;
@@ -48,7 +50,10 @@ public:
 	uint32 _id;
 	uint32 authenticated;
 	bool use_crypto;
+	set<uint32> realm_ids;
 };
+
+typedef void (LogonCommClientSocket::*logonpacket_handler)(WorldPacket&);
 
 #endif
 

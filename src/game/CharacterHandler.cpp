@@ -208,6 +208,8 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
 	// CHAR_CREATE_SUCCESS
 	OutPacket(SMSG_CHAR_CREATE, 1, "\x2E");
+
+	sLogonCommHandler.UpdateAccountCount(GetAccountId(), 1);
 }
 
 /* FOR 1.10.1

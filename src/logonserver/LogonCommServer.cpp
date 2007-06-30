@@ -13,6 +13,7 @@
  */
 
 #include "LogonStdAfx.h"
+#include <zlib.h>
 
 typedef struct
 {
@@ -106,36 +107,30 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 		return;
 	}
 
-	switch(recvData.GetOpcode())
+	static logonpacket_handler Handlers[RMSG_COUNT] = {
+		NULL,												// RMSG_NULL
+		&LogonCommServerSocket::HandleRegister,				// RCMSG_REGISTER_REALM
+		NULL,												// RSMSG_REALM_REGISTERED
+		&LogonCommServerSocket::HandleSessionRequest,		// RCMSG_REQUEST_SESSION
+		NULL,												// RSMSG_SESSION_RESULT
+		&LogonCommServerSocket::HandlePing,					// RCMSG_PING
+		NULL,												// RSMSG_PONG
+		&LogonCommServerSocket::HandleSQLExecute,			// RCMSG_SQL_EXECUTE
+		&LogonCommServerSocket::HandleReloadAccounts,		// RCMSG_RELOAD_ACCOUNTS
+		&LogonCommServerSocket::HandleAuthChallenge,		// RCMSG_AUTH_CHALLENGE
+		NULL,												// RSMSG_AUTH_RESPONSE
+		NULL,												// RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING
+		&LogonCommServerSocket::HandleMappingReply,			// RCMSG_ACCOUNT_CHARACTER_MAPPING_REPLY
+		&LogonCommServerSocket::HandleUpdateMapping,		// RCMSG_UPDATE_CHARACTER_MAPPING_COUNT
+	};
+
+	if(recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)
 	{
-	case RCMSG_REGISTER_REALM:
-		HandleRegister(recvData);
-		break;
-
-	case RCMSG_REQUEST_SESSION:
-		HandleSessionRequest(recvData);
-		break;
-
-	case RCMSG_PING:
-		HandlePing(recvData);
-		break;
-
-	case RCMSG_SQL_EXECUTE:
-		HandleSQLExecute(recvData);
-		break;
-
-	case RCMSG_RELOAD_ACCOUNTS:
-		HandleReloadAccounts(recvData);
-		break;
-
-	case RCMSG_AUTH_CHALLENGE:
-		HandleAuthChallenge(recvData);
-		break;
-
-	default:
 		printf("Got unknwon packet from logoncomm: %u\n", recvData.GetOpcode());
-		break;
+		return;
 	}
+
+	(this->*(Handlers[recvData.GetOpcode()]))(recvData);
 }
 
 void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
@@ -158,6 +153,11 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 	data << realm.Name;
 	SendPacket(&data);
 	server_ids.insert(my_id);
+
+	/* request character mapping for this realm */
+	data.Initialize(RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING);
+	data << my_id;
+	SendPacket(&data);
 }
 
 void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
@@ -266,4 +266,62 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 
 	/* set our general var */
 	authenticated = result;
+}
+
+void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
+{
+	/* this packet is gzipped, whee! :D */
+	uint32 real_size;
+	recvData >> real_size;
+
+	ByteBuffer buf(real_size);
+	buf.resize(real_size);
+
+	if(uncompress((uint8*)buf.contents(), &real_size, recvData.contents() + 4, recvData.size() - 4) != Z_OK)
+	{
+		printf("Uncompress of mapping failed.\n");
+		return;
+	}
+
+	uint32 account_id;
+	uint8 number_of_characters;
+	uint32 count;
+	uint32 realm_id;
+	buf >> realm_id;
+	Realm * realm = sInfoCore.GetRealm(realm_id);
+	if(!realm)
+		return;
+
+	map<uint32, uint8>::iterator itr;
+	buf >> count;
+	printf("Got mapping packet for realm %u, total of %u entries.\n", realm_id, count);
+	for(uint32 i = 0; i < count; ++i)
+	{
+		buf >> account_id >> number_of_characters;
+		itr = realm->CharacterMap.find(account_id);
+		if(itr != realm->CharacterMap.end())
+			itr->second = number_of_characters;
+		else
+			realm->CharacterMap.insert( make_pair( account_id, number_of_characters ) );
+	}
+}
+
+void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
+{
+	uint32 realm_id;
+	uint32 account_id;
+	uint8 chars_to_add;
+	recvData >> realm_id;
+
+	Realm * realm = sInfoCore.GetRealm(realm_id);
+	if(!realm)
+		return;
+	
+	recvData >> account_id >> chars_to_add;
+
+	map<uint32, uint8>::iterator itr = realm->CharacterMap.find(account_id);
+	if(itr != realm->CharacterMap.end())
+		itr->second += chars_to_add;
+	else
+		realm->CharacterMap.insert( make_pair( account_id, chars_to_add ) );
 }
