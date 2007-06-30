@@ -1265,6 +1265,16 @@ void Aura::SpellAuraDummy(bool apply)
 		else if(m_target->isAlive())
 			((Player*)m_target)->SoulStone = ((Player*)m_target)->SoulStoneReciever = 0;
 		break;
+	case 27239:
+		{
+			if(apply)
+			{
+				((Player*)m_target)->SoulStone = 27240;
+				((Player*)m_target)->SoulStoneReciever = GetUnitCaster()->GetGUID();
+			}
+			else if(m_target->isAlive())
+				((Player*)m_target)->SoulStone = ((Player*)m_target)->SoulStoneReciever = 0;
+		}break;
 	//case 20154://Soulstone Resurrecton
 	//case 20287:
 	//case 20288:

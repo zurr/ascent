@@ -3359,6 +3359,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
 	case 20759:
 	case 20760:
 	case 20761:
+	case 27240:
 		{
 			health = m_spellInfo->EffectMiscValue[i];
 			mana = -damage;

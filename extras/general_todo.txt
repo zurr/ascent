@@ -46,3 +46,10 @@ maybe later :P
 [21:03] <Raziel> SPELL_ID_TRANSLOCATE_16 = 35376
 [21:03] <Raziel> SPELL_ID_TRANSLOCATE_17 = 35727
 [21:04] <Raziel> SPELL_ID_TRANSLOCATE_18 = 35730
+
+sorry for this :P
+ toata lumea poate folosi cartile de rank 3 care ar trebui sa aiba clasa.. adica paladinii pot da prayer of healing rank 3, priestii pot face conjured glacier water..
+- unii pot folosi arme de 2h daca au skill de onehand - acum cred ca s-a reparat bugu, dar cei care-l aveau inca-l au
+- blind blocheaza bossii pe o perioada nelimitata, timp in care nu dau dmg si nu se misca
+- se poate trage cu arma de pe mount...not fair
+- bagu` cu speed la hunter ziceai ca repari sa mearga doar 1 bag sa fie activ
