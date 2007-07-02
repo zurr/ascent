@@ -106,7 +106,8 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt)
 	m_sourceY = un->GetPositionY();
 	m_sourceZ = un->GetPositionZ();
 	m_guardTimer = getMSTime();
-	m_hasWaypointEvents = ScriptSystem->HasEventType(m_Unit->GetEntry(), CREATURE_EVENT_ON_REACH_WP);
+	if(m_Unit->GetTypeId() == TYPEID_UNIT)
+		m_hasWaypointEvents = ScriptSystem->HasEventType(m_Unit->GetEntry(), CREATURE_EVENT_ON_REACH_WP);
 }
 
 AIInterface::~AIInterface()
@@ -131,7 +132,8 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt, Unit *owner)
 	m_sourceX = un->GetPositionX();
 	m_sourceY = un->GetPositionY();
 	m_sourceZ = un->GetPositionZ();
-	m_hasWaypointEvents = ScriptSystem->HasEventType(m_Unit->GetEntry(), CREATURE_EVENT_ON_REACH_WP);
+	if(m_Unit->GetTypeId() == TYPEID_UNIT)
+		m_hasWaypointEvents = ScriptSystem->HasEventType(m_Unit->GetEntry(), CREATURE_EVENT_ON_REACH_WP);
 }
 
 void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
