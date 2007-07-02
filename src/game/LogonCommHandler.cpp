@@ -278,8 +278,10 @@ void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
 	char query[1024];
 	vsnprintf(query, 1024, str, ap);
 	va_end(ap);
-	WorldPacket data(RCMSG_SQL_EXECUTE, strlen(query)+1);
-	data << query;
+	string q = sDatabase.EscapeString(query);
+
+	WorldPacket data(RCMSG_SQL_EXECUTE, q.size()+1);
+	data << q;
 	
 	// Send request packet to server.
 	map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();

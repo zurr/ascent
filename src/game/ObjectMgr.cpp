@@ -634,7 +634,7 @@ void ObjectMgr::SaveGMTicket(uint64 guid)
 	ss2 << ticket->posZ << ", '";
 	ss2 << ticket->message << "', ";
 	ss2 << ticket->timestamp << ");";
-	sDatabase.Execute(ss2.str( ).c_str( ));
+	sDatabase.ExecuteEscaped(ss2.str( ).c_str( ));
 }
 
 void ObjectMgr::SetHighestGuids()
@@ -2618,7 +2618,7 @@ void Charter::Destroy()
 
 void Charter::SaveToDB()
 {
-	sDatabase.Execute(
+	sDatabase.ExecuteEscaped(
 		"REPLACE INTO charters VALUES(%u,%u,'%s',"I64FMTD",%u,%u,%u,%u,%u,%u,%u,%u,%u)",
 		CharterId,LeaderGuid,GuildName.c_str(),ItemGuid,Signatures[0],Signatures[1],
 		Signatures[2],Signatures[3],Signatures[4],Signatures[5],

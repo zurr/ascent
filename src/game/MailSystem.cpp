@@ -225,7 +225,7 @@ void MailSystem::SaveMessageToSQL(MailMessage * message)
 		<< message->copy_made << ","
 		<< message->read_flag << ","
 		<< message->deleted_flag << ")";
-	sDatabase.Execute(ss.str().c_str());
+	sDatabase.ExecuteEscaped(ss.str().c_str());
 }
 
 void WorldSession::HandleSendMail(WorldPacket & recv_data )

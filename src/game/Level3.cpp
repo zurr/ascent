@@ -75,7 +75,7 @@ bool ChatHandler::HandleSecurityCommand(const char* args, WorldSession *m_sessio
 		//sLogonDatabase.Execute("UPDATE accounts SET gm='%s' WHERE acct=%u", pgm, chr->GetSession()->GetAccountId());
 		//sLogonCommHandler.LogonDatabaseSQLExecute(buf);
 		snprintf(buf, 256,"UPDATE accounts set gm='%s' WHERE acct=%u", pgm, chr->GetSession()->GetAccountId());
-		sLogonCommHandler.LogonDatabaseSQLExecute(buf);		
+		sLogonCommHandler.LogonDatabaseSQLExecute(buf);
 	}
 	else
 	{
@@ -568,9 +568,9 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession *m_se
 	}
 
 	// Ban in database
-	sDatabase.Execute("UPDATE characters SET banned = 4 WHERE name = '%s'", Character);
+	sDatabase.ExecuteEscaped("UPDATE characters SET banned = 4 WHERE name = '%s'", Character);
 	if(HasReason)
-		sDatabase.Execute("UPDATE characters SET bannedReason = \"%s\" WHERE name = '%s'", Character, Reason);
+		sDatabase.ExecuteEscaped("UPDATE characters SET bannedReason = \"%s\" WHERE name = '%s'", Character, Reason);
 
 	SystemMessage(m_session, "Banned character %s in database.", Character);
 	sGMLog.writefromsession(m_session, "used ban character on %s reason %s", Character, HasReason ? Reason : "NONE");
@@ -602,7 +602,7 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession *m_
 	}
 
 	// Ban in database
-	sDatabase.Execute("UPDATE characters SET banned = 0 WHERE name = '%s'", Character);
+	sDatabase.ExecuteEscaped("UPDATE characters SET banned = 0 WHERE name = '%s'", Character);
 
 	SystemMessage(m_session, "Unbanned character %s in database.", Character);
 	sGMLog.writefromsession(m_session, "used unban character on %s", Character);
@@ -2253,12 +2253,17 @@ bool ChatHandler::HandleIPBanCommand(const char * args, WorldSession * m_session
 	char ip[200];
 	uint32 duration;
 	int c = sscanf(args, "%s %u", ip, &duration);
-	if(c == 0)
-		return false;
-    if(c == -1)
-        return false;
 	if(c == 1)
 		duration = 0;
+	else
+		return false;
+
+	int o1, o2, o3, o4;
+	if(sscanf(ip, "%u.%u.%u.%u", &o1, &o2, &o3, &o4))
+	{
+		RedSystemMessage(m_session, "Invalid IP input.");
+		return true;
+	}
 
 	SystemMessage(m_session, "SQL Executed: INSERT INTO ipbans VALUES('%s', %u)", ip, duration);
 	sLogonCommHandler.LogonDatabaseSQLExecute("INSERT INTO ipbans VALUES('%s', %u)", ip, duration);
@@ -2352,46 +2357,6 @@ bool ChatHandler::HandleRemoveItemCommand(const char * args, WorldSession * m_se
 	sGMLog.writefromsession(m_session, "used remove item id %u count %u from %s", item_id, ocount, plr->GetName());
 	BlueSystemMessage(m_session, "Removing %u copies of item %u from %s's inventory.", ocount, item_id, plr->GetName());
 	BlueSystemMessage(plr->GetSession(), "%s removed %u copies of item %u from your inventory.", m_session->GetPlayer()->GetName(), ocount, item_id);
-	return true;
-}
-
-bool ChatHandler::HandleRenameCommand(const char * args, WorldSession * m_session)
-{
-	// prevent buffer overflow
-	if(strlen(args) > 100)
-		return false;
-
-	char name1[50];
-	char name2[50];
-
-	if(sscanf(args, "%s %s", name1, name2) != 2)
-		return false;
-
-	string new_name = name2;
-	string oldn = name1;//some crazy func, dunno who invented that shit...
-	PlayerInfo * pi = objmgr.GetPlayerInfoByName(oldn);
-	if(pi == 0)
-	{
-		RedSystemMessage(m_session, "Player not found with this name.");
-		return true;
-	}
-
-	pi->name = new_name;
-	
-	// look in world for him
-	Player * plr = objmgr.GetPlayer(pi->guid);
-	if(plr != 0)
-	{
-		plr->SetName(new_name);
-		BlueSystemMessageToPlr(plr, "%s changed your name to '%s'.", m_session->GetPlayer()->GetName(), new_name.c_str());
-		plr->SaveToDB(false);
-	}
-	else
-	{
-		sDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", new_name.c_str(), (uint32)pi->guid);
-	}
-
-	GreenSystemMessage(m_session, "Changed name of '%s' to '%s'.", name1, name2);
 	return true;
 }
 

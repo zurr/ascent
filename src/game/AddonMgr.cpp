@@ -245,7 +245,7 @@ void AddonMgr::SaveToDB()
 				<< itr->second->banned << "\",\""
 				<< itr->second->showinlist << "\");";
 
-			sDatabase.Execute(ss.str().c_str());
+			sDatabase.ExecuteEscaped(ss.str().c_str());
 		}
 	}
 }

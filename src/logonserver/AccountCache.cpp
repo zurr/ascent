@@ -227,10 +227,11 @@ void IPBanner::Load()
 			fields = result->Fetch();
 
 			ip_str = fields[0].GetString();
-			ban->ip.full.b1 = static_cast<uint8>( atol(strtok((char*)ip_str, ".")) );
-			ban->ip.full.b2 = static_cast<uint8>( atol(strtok(NULL, ".")) );
-			ban->ip.full.b3 = static_cast<uint8>( atol(strtok(NULL, ".")) );
-			ban->ip.full.b4 = static_cast<uint8>( atol(strtok(NULL, ".")) );
+			if(sscanf(ip_str, "%u.%u.%u.%u", &ban->ip.full.b1, &ban->ip.full.b2, &ban->ip.full.b3, &ban->ip.full.b4) != 4)
+			{
+				delete ban;
+				continue;
+			}
 
 			ban->ban_expire_time = fields[1].GetUInt32();
 

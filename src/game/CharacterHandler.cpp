@@ -678,3 +678,49 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	sInstanceSavingManager.BuildSavedInstancesForPlayer(plr);
 	objmgr.AddPlayer(_player);
 }
+
+bool ChatHandler::HandleRenameCommand(const char * args, WorldSession * m_session)
+{
+	// prevent buffer overflow
+	if(strlen(args) > 100)
+		return false;
+
+	char name1[100];
+	char name2[100];
+
+	if(sscanf(args, "%s %s", name1, name2) != 2)
+		return false;
+
+	if(VerifyName(name2, strlen(name2)) == false)
+	{
+		RedSystemMessage(m_session, "That name is invalid or contains invalid characters.");
+		return true;
+	}
+
+	string new_name = name2;
+	string oldn = name1;//some crazy func, dunno who invented that shit...
+	PlayerInfo * pi = objmgr.GetPlayerInfoByName(oldn);
+	if(pi == 0)
+	{
+		RedSystemMessage(m_session, "Player not found with this name.");
+		return true;
+	}
+
+	pi->name = new_name;
+
+	// look in world for him
+	Player * plr = objmgr.GetPlayer(pi->guid);
+	if(plr != 0)
+	{
+		plr->SetName(new_name);
+		BlueSystemMessageToPlr(plr, "%s changed your name to '%s'.", m_session->GetPlayer()->GetName(), new_name.c_str());
+		plr->SaveToDB(false);
+	}
+	else
+	{
+		sDatabase.WaitExecuteEscaped("UPDATE characters SET name = '%s' WHERE guid = %u", new_name.c_str(), (uint32)pi->guid);
+	}
+
+	GreenSystemMessage(m_session, "Changed name of '%s' to '%s'.", name1, name2);
+	return true;
+}

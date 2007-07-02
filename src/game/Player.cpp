@@ -1504,7 +1504,7 @@ void Player::_SavePet()
 			<< itr->second->summon << "','"
 			<< itr->second->autocastspell << "')";
 			
-		sDatabase.Execute(ss.str().c_str());
+		sDatabase.ExecuteEscaped(ss.str().c_str());
 	}
 }
 
