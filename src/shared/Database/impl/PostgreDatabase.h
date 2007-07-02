@@ -41,6 +41,13 @@ public:
 
 	void CheckConnections();
 
+	/** Burlex TODO: Implement these :P
+	 */
+	char * EscapeStringNew(const char * QueryString, ...) {}
+	string EscapeString(const char * QueryString, ...) {}
+	bool ExecuteEscaped(const char * QueryString, ...) {}
+	bool WaitExecuteEscaped(const char * Querystring, ...) {}
+
 protected:
 
 	bool Connect();

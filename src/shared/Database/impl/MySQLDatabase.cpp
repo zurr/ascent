@@ -160,6 +160,84 @@ MysqlCon * MySQLDatabase::GetFreeConnection()
 	}	
 }
 
+char * MySQLDatabase::EscapeStringNew(const char * QueryString, ...)
+{
+	char a1[16384] = {0};
+	char a2[16384] = {0};
+	va_list ap;
+	va_start(ap, QueryString);
+    vsnprintf(a1, 16384, QueryString, ap);
+	va_end(ap);
+
+	MysqlCon * con = GetFreeConnection();
+	char * ret;
+	if(mysql_real_escape_string(con->con, a2, a1, strlen(a1)) == 0)
+		ret = strnew(a1, false);
+	else
+		ret = strnew(a2, false);
+	con->busy = false;
+	return ret;
+}
+
+string MySQLDatabase::EscapeString(const char * QueryString, ...)
+{
+	char a1[16384] = {0};
+	char a2[16384] = {0};
+	va_list ap;
+	va_start(ap, QueryString);
+	vsnprintf(a1, 16384, QueryString, ap);
+	va_end(ap);
+
+	MysqlCon * con = GetFreeConnection();
+	char * ret;
+	if(mysql_real_escape_string(con->con, a2, a1, strlen(a1)) == 0)
+		ret = a1;
+	else
+		ret = a2;
+	con->busy = false;
+	return string(ret);
+}
+
+bool MySQLDatabase::ExecuteEscaped(const char * QueryString, ...)
+{
+	char a1[16384] = {0};
+	char a2[16384] = {0};
+	va_list ap;
+	va_start(ap, QueryString);
+	vsnprintf(a1, 16384, QueryString, ap);
+	va_end(ap);
+
+	MysqlCon * con = GetFreeConnection();
+	char * ret;
+	if(mysql_real_escape_string(con->con, a2, a1, strlen(a1)) == 0)
+		ret = a1;
+	else
+		ret = a2;
+	con->busy = false;
+	
+	return Execute(ret);
+}
+
+bool MySQLDatabase::WaitExecuteEscaped(const char * Querystring, ...)
+{
+	char a1[16384] = {0};
+	char a2[16384] = {0};
+	va_list ap;
+	va_start(ap, Querystring);
+	vsnprintf(a1, 16384, Querystring, ap);
+	va_end(ap);
+
+	MysqlCon * con = GetFreeConnection();
+	char * ret;
+	if(mysql_real_escape_string(con->con, a2, a1, strlen(a1)) == 0)
+		ret = a1;
+	else
+		ret = a2;
+	con->busy = false;
+
+	return WaitExecute(ret);
+}
+
 void MySQLDatabase::Shutdown()
 {
 	sLog.outString("sql: Closing all MySQLDatabase connections...");
