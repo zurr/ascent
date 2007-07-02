@@ -23,7 +23,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession *m_sessio
 	if(!*args)
 		return false;
 
-	char pAnnounce[256*50];
+	char pAnnounce[1024];
 	string input2;
 
 	input2 = "|cffff6060<";
@@ -31,7 +31,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession *m_sessio
 	input2+=">|r|c1f40af20";
 	input2+=m_session->GetPlayer()->GetName();
 	input2+="|r|cffffffff broadcasts: |r";
-	sprintf((char*)pAnnounce, "%s%s", input2.c_str(), args);   // Adds BROADCAST:
+	snprintf((char*)pAnnounce, 1024, "%s%s", input2.c_str(), args);   // Adds BROADCAST:
 	sWorld.SendWorldText(pAnnounce); // send message
 	sGMLog.writefromsession(m_session, "used announce command, [%s]", args);
 
@@ -45,7 +45,7 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession *m_sessi
 	if(!*args)
 		return false;
 
-	char pAnnounce[256];
+	char pAnnounce[1024];
 	string input2;
 
 	input2 = "|cffff6060<";
@@ -53,7 +53,7 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession *m_sessi
 	input2+=">|r|c1f40af20";
 	input2+=m_session->GetPlayer()->GetName();
 	input2+=":|r ";
-	sprintf((char*)pAnnounce, "%s%s", input2.c_str(), args);
+	snprintf((char*)pAnnounce, 1024, "%s%s", input2.c_str(), args);
 
 	sWorld.SendWorldWideScreenText(pAnnounce); // send message
 	sGMLog.writefromsession(m_session, "used wannounce command [%s]", args);
@@ -119,7 +119,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession *m_session)
 		obj = (Object*)m_session->GetPlayer();
 
 	char buf[256];
-	sprintf((char*)buf, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
+	snprintf((char*)buf, 256, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
 		obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
 	
 	
@@ -180,7 +180,7 @@ bool ChatHandler::HandleSetRankCommand(const char *args, WorldSession *m_session
 	if(strlen(args) < 1)
 	{
 		char buf[256];
-		sprintf((char*)buf,".setrank <rank> - Sets player PVP rank.");
+		snprintf((char*)buf, 256, ".setrank <rank> - Sets player PVP rank.");
 		SystemMessage(m_session, buf);
 		return true;
 	}
@@ -259,17 +259,17 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession *m_session)
 		char buf0[256];
 		if(chr->IsBeingTeleported()==true) 
 		{
-			sprintf((char*)buf,"%s is already being teleported.", chr->GetName());
+			snprintf((char*)buf,256, "%s is already being teleported.", chr->GetName());
 			SystemMessage(m_session, buf);
 			return true;
 		}
-		sprintf((char*)buf,"You are summoning %s.", chr->GetName());
+		snprintf((char*)buf,256, "You are summoning %s.", chr->GetName());
 		SystemMessage(m_session, buf);
 
 		if(!m_session->GetPlayer()->m_isGmInvisible)
 		{
 			// send message to player
-			sprintf((char*)buf0,"You are being summoned by %s.", m_session->GetPlayer()->GetName());
+			snprintf((char*)buf0,256, "You are being summoned by %s.", m_session->GetPlayer()->GetName());
 			SystemMessageToPlr(chr, buf0);
 		}
 
@@ -289,7 +289,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession *m_session)
 	else
 	{
 		char buf[256];
-		sprintf((char*)buf,"Player (%s) does not exist or is not logged in.", args);
+		snprintf((char*)buf,256,"Player (%s) does not exist or is not logged in.", args);
 		SystemMessage(m_session, buf);
 	}
 	return true;
@@ -306,17 +306,17 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession *m_session)
 	{
 		char buf[256];
 		if(chr->IsBeingTeleported()==true) {
-			sprintf((char*)buf,"%s is already being teleported.", chr->GetName());
+			snprintf((char*)buf,256, "%s is already being teleported.", chr->GetName());
 			SystemMessage(m_session, buf);
 			return true;
 		}
-		sprintf((char*)buf,"Appearing at %s's location.", chr->GetName());  // -- europa
+		snprintf((char*)buf,256, "Appearing at %s's location.", chr->GetName());  // -- europa
 		SystemMessage(m_session, buf);
 
 		if(!m_session->GetPlayer()->m_isGmInvisible)
 		{
 			char buf0[256];
-			sprintf((char*)buf0,"%s is appearing to your location.", m_session->GetPlayer()->GetName());
+			snprintf((char*)buf0,256, "%s is appearing to your location.", m_session->GetPlayer()->GetName());
 			SystemMessageToPlr(chr, buf0);
 		}
 
@@ -325,7 +325,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession *m_session)
 	else
 	{
 		char buf[256];
-		sprintf((char*)buf,"Player (%s) does not exist or is not logged in.", args);
+		snprintf((char*)buf,256, "Player (%s) does not exist or is not logged in.", args);
 		SystemMessage(m_session, buf);
 	}
 
@@ -347,23 +347,23 @@ bool ChatHandler::HandleTaxiCheatCommand(const char* args, WorldSession *m_sessi
 	// send message to user
 	if (flag != 0)
 	{
-		sprintf((char*)buf,"%s has all taxi nodes now.", chr->GetName());
+		snprintf((char*)buf,256, "%s has all taxi nodes now.", chr->GetName());
 	}
 	else
 	{
-		sprintf((char*)buf,"%s has no more taxi nodes now.", chr->GetName());
+		snprintf((char*)buf,256, "%s has no more taxi nodes now.", chr->GetName());
 	}
 	GreenSystemMessage(m_session, buf);
 	
 	// send message to player
 	if (flag != 0)
 	{
-		sprintf((char*)buf,"%s has given you all taxi nodes.",
+		snprintf((char*)buf,256, "%s has given you all taxi nodes.",
 			m_session->GetPlayer()->GetName());
 	}
 	else
 	{
-		sprintf((char*)buf,"%s has deleted all your taxi nodes.",
+		snprintf((char*)buf,256, "%s has deleted all your taxi nodes.",
 			m_session->GetPlayer()->GetName());
 	}
 	SystemMessage(m_session, buf);
@@ -627,7 +627,7 @@ bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession *m_se
 	int valcount = sscanf(args, "%u", &id);
 	if(valcount)
 	{
-		sprintf(sql, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", id, target->GetSQL_id());
+		snprintf(sql, 512, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", id, target->GetSQL_id());
 		sDatabase.Execute( sql );
 		BlueSystemMessage(m_session, "Spawn linking for this npc has been updated: %u", id);
 	}

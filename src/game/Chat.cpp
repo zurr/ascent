@@ -543,19 +543,19 @@ bool ChatHandler::hasStringAbbr(const char* s1, const char* s2)
 
 void ChatHandler::SendMultilineMessage(WorldSession *m_session, const char *str)
 {
-	char buf[256];
-	const char* line = str;
-	const char* pos = line;
-	while((pos = strchr(line, '\n')) != NULL)
+	const char * start = str, end;
+	for(;;)
 	{
-		strncpy(buf, line, pos-line);
-		buf[pos-line]=0;
+        end = strchr(start, '\n');
+		if(!end)
+			break;
 
-		SystemMessage(m_session, buf);
-		line = pos+1;
+		*end = '\0';
+		SystemMessage(m_session, start);
+		start = end + 1;
 	}
-
-	SystemMessage(m_session, line);
+	if(*start != '\0')
+		SystemMessage(m_session, start);
 }
 
 bool ChatHandler::ExecuteCommandInTable(ChatCommand *table, const char* text, WorldSession *m_session)
@@ -641,13 +641,14 @@ int ChatHandler::ParseCommands(const char* text, WorldSession *session)
 	if (!session)
 		return 0;
 
-	ASSERT(text);
-	ASSERT(*text);
+	/* skip '..' :P that pisses me off */
+	if(!*text)
+		return 0;
 
 	if(session->GetPermissionCount() == 0)
 		return 0;
 
-	if(text[0] != '!' && text[0] != '.') // let's not confuse users
+	if(text[0] != '!' && text[0] != '.' && text[1] != '.') // let's not confuse users
 		return 0;
 
 	text++;
