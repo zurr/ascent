@@ -63,3 +63,4 @@ Zack - test my shit :
 - patch from splat for "well fed", some players did report error that can be related to this fix. Just can't remember what was the error :(
 - creatures will clear tagger if attacker left them alone
 - RR looting.
+- channeled spell (spellaura.cpp line 2280)
