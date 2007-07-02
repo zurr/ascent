@@ -111,7 +111,7 @@ AC_ARG_ENABLE(gcov,
 
 AC_ARG_ENABLE(debug,
      AC_HELP_STRING([--enable-debug],[enable debug])],
-     [ if test "x$enable_gcov" = "xyes" ; then
+     [ if test "x$enable_debug" = "xyes" ; then
            CXXFLAGS="$CXXFLAGS -g"
        fi
      ],
