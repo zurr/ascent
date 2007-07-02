@@ -234,6 +234,7 @@ enum procFlags
 	PROC_ON_TRAP_TRIGGERED		  = 0x200000,
 	PROC_UNUSED1					= 0x400000,
 	PROC_UNUSED2					= 0x800000,
+	PROC_TAGRGET_SELF				= 0x80000000,//our custom flag to decide if proc target is self or victim
 };
 
 enum CastInterruptFlags

@@ -320,6 +320,10 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 					p_caster->smsg_AttackStop(unitTarget);
 				}break;
 			}
+		case 0xCBC738B8:	// Bloodthirst
+			{
+				damage = u_caster->GetAP()*damage / 100;
+			}
 		}
 	}
 

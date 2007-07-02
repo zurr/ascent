@@ -46,6 +46,6 @@ improved berserker rage - not triggered. Should only get triggered while we have
 2. Unbridled Wrath
 3. Improved Intercept
 5. Improved Berseker Rage
-6. Bloodthirst - does not give the 10 health per strike thing
+6. Bloodthirst - retest if gives health to self instead of target
 7. Improved Whirlwind
 8. Rampage - does not have any effect. Should this use up aurastateflag ? If so then remove it from caster

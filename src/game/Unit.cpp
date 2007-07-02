@@ -638,7 +638,9 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					continue;
 				}
 				SpellCastTargets targets;
-				targets.m_unitTarget = victim->GetGUID();
+				if(itr2->procFlags & PROC_TAGRGET_SELF)
+					targets.m_unitTarget = GetGUID();
+				else targets.m_unitTarget = victim->GetGUID();
 				spell->pSpellId=origId;
 				spell->prepare(&targets);
 			}//not always we have a spell to cast

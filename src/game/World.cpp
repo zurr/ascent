@@ -781,6 +781,16 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_SPELL_HIT_VICTIM;
 					if(strstr(desc, "melee critical strike"))
 						pr|=PROC_ON_CRIT_ATTACK;
+					if(strstr(nametext, "Bloodthirst"))
+						pr|=PROC_ON_MELEE_ATTACK;
+
+					//some procs require to target ourself. Rare case like bloodthirst
+					for(int tagetsel=0;tagetsel<3;tagetsel++)
+						if(sp->EffectImplicitTargetA[tagetsel]==1)
+							pr|=PROC_TAGRGET_SELF;
+					for(int tagetsel=0;tagetsel<3;tagetsel++)
+						if(sp->EffectImplicitTargetB[tagetsel]==1)
+							pr|=PROC_TAGRGET_SELF;
 				}
 				//dirty fix to remove auras that should expire on event and they are not
 //				else if((aura == SpellAuraAddFlatModifier || aura == SpellAuraAddPctMod) && sp->procCharges)
