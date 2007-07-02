@@ -1904,14 +1904,17 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	ss << "','";
 
 	// dump skill data
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
+	/*for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
 		if(m_uint32Values[i])
 		{
 			ss << m_uint32Values[i] << ","
 			  << m_uint32Values[i+1]<< ",";
 		}
-	}
+	}*/
+
+	for(uint32 i = PLAYER_SKILL_INFO_1_1; i < PLAYER_CHARACTER_POINTS1; ++i)
+		ss << m_uint32Values[i] << " ";
 	
 	uint32 player_flags = m_uint32Values[PLAYER_FLAGS];
 	{
@@ -2260,29 +2263,89 @@ bool Player::LoadFromDB(uint32 guid)
 	// Process skill data.
 	Counter = 0;
 	start = (char*)get_next_field.GetString();//buff;
-	do 
+	if(strchr(start, ',') != 0)
 	{
-		end = strchr(start,',');
-		if(!end)break;
-		*end=0;
-		uint32 skillid = atol(start);
-		start = end +1;
-		end = strchr(start,',');
-		if(!end)break;
-		*end=0;
-		uint32 val = atol(start);
-		start = end +1;
-
-		skilllineentry *en = sSkillLineStore.LookupEntry((uint16)skillid);
-		if(en->type == SKILL_TYPE_LANGUAGE)
+		/* old format */
+		do 
 		{
-			continue;
+			end = strchr(start,',');
+			if(!end)break;
+			*end=0;
+			uint32 skillid = atol(start);
+			start = end +1;
+			end = strchr(start,',');
+			if(!end)break;
+			*end=0;
+			uint32 val = atol(start);
+			start = end +1;
+
+			skilllineentry *en = sSkillLineStore.LookupEntry((uint16)skillid);
+			if(en->type == SKILL_TYPE_LANGUAGE)
+			{
+				continue;
+			}
+			SetUInt32Value(PLAYER_SKILL_INFO_1_1 + (Counter * 3), skillid);
+			SetUInt32Value(PLAYER_SKILL_INFO_1_01 + ((Counter++) * 3), val);
+			
+				const ItemProf * prof=GetProficiencyBySkill(skillid);
+			
+				if(prof)
+				{
+					if(prof->itemclass==4)
+						armor_proficiency|=prof->subclass;
+					else
+						weapon_proficiency|=prof->subclass;
+				}
+			
+		} while(true);
+	}
+	else
+	{
+		// new format
+		uint32 field = PLAYER_SKILL_INFO_1_1;
+		uint32 val;
+		skilllineentry *en;
+		const ItemProf * prof;
+
+		char * f = strdup(start);
+		start = f;
+		for(;;)
+		{
+            end = strchr(start, ' ');
+			if(!end)
+				break;
+            
+			*end = '\0';
+			val = atol(start);
+			start = end + 1;
+			m_uint32Values[field++] = val;
 		}
-		SetUInt32Value(PLAYER_SKILL_INFO_1_1 + (Counter * 3), skillid);
-		SetUInt32Value(PLAYER_SKILL_INFO_1_01 + ((Counter++) * 3), val);
-		
-			const ItemProf * prof=GetProficiencyBySkill(skillid);
-		
+		free(f);
+
+		/* process skills */
+		for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
+		{
+			if(!m_uint32Values[i])
+				continue;
+
+			/* check for languages */
+			if(::GetSpellForLanguage(uint16(m_uint32Values[i])) != 0)
+			{
+				m_uint32Values[i] = 0;
+				m_uint32Values[i+1] = 0;
+				m_uint32Values[i+2] = 0;
+				continue;
+			}
+
+			/*en = sSkillLineStore.LookupEntry((uint16)m_uint32Values[i]);
+			if(en->type == SKILL_TYPE_LANGUAGE)
+			{
+				m_uint32Values[i] = 0;
+				continue;
+			}*/
+
+			m_uint32Values[i+2] = 0;		// Nuke the bonus
+			prof = GetProficiencyBySkill((uint16)m_uint32Values[i]);
 			if(prof)
 			{
 				if(prof->itemclass==4)
@@ -2290,8 +2353,8 @@ bool Player::LoadFromDB(uint32 guid)
 				else
 					weapon_proficiency|=prof->subclass;
 			}
-		
-	} while(true);
+		}
+	}
 
 	// set the rest of the shit
 	m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX]  = get_next_field.GetUInt32();
