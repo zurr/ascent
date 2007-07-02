@@ -255,7 +255,7 @@ void IPBanner::Remove(set<IPBan*>::iterator ban)
 	setBusy.Acquire();
 
 	char strIp[16] = {0};
-	sprintf(strIp, "%u.%u.%u.%u", (*ban)->ip.full.b1, (*ban)->ip.full.b2, (*ban)->ip.full.b3,
+	snprintf(strIp, 16, "%u.%u.%u.%u", (*ban)->ip.full.b1, (*ban)->ip.full.b2, (*ban)->ip.full.b3,
 		(*ban)->ip.full.b4 );
 
 	sLogonSQL->Execute("DELETE FROM ipbans WHERE ip='%s'", strIp);

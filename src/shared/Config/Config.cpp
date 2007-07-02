@@ -487,7 +487,7 @@ int ConfigFile::GetIntVA(const char * block, int def, const char* name, ...)
 	va_list ap;
 	va_start(ap, name);
 	char str[150];
-	vsprintf(str, name, ap);
+	vsnprintf(str, 150, name, ap);
 	va_end(ap);
 	int val;
 	return GetInt(str, block, &val) ? val : def;
@@ -498,7 +498,7 @@ float ConfigFile::GetFloatVA(const char * block, float def, const char* name, ..
 	va_list ap;
 	va_start(ap, name);
 	char str[150];
-	vsprintf(str, name, ap);
+	vsnprintf(str, 150, name, ap);
 	va_end(ap);
 	float val;
 	return GetFloat(str, block, &val) ? val : def;
@@ -509,7 +509,7 @@ std::string ConfigFile::GetStringVA(const char * block, const char* def, const c
 	va_list ap;
 	va_start(ap, name);
 	char str[150];
-	vsprintf(str, name, ap);
+	vsnprintf(str, 150, name, ap);
 	va_end(ap);
 
 	return GetStringDefault(str, block, def);

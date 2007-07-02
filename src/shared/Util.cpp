@@ -41,7 +41,7 @@ void SetThreadName(const char* format, ...)
 #ifdef WIN32
 
 	char thread_name[200];
-	vsprintf(thread_name, format, ap);
+	vsnprintf(thread_name, 200, format, ap);
 
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;

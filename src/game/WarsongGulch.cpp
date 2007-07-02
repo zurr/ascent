@@ -195,7 +195,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 		{
 			char message[100];
 			Player *Source = (Player*)src;
-			sprintf(message, "The %s Flag was dropped by $N!", Source->m_bgTeam ? "Alliance" : "Horde" );
+			snprintf(message, 100, "The %s Flag was dropped by $N!", Source->m_bgTeam ? "Alliance" : "Horde" );
 			WorldPacket * data = sChatHandler.FillMessageData(0x53, 0, message, Source->GetGUID());
 			SendPacketToAll(data);
 			delete data;
@@ -250,7 +250,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 			SetWorldStateValue(Source->m_bgTeam ? WSG_ALLIANCE_FLAG_CAPTURED:WSG_HORDE_FLAG_CAPTURED,2);
 
 			char message[200];
-			sprintf(message, "The %s Flag was picked up by $n!", Source->m_bgTeam ? "Alliance" : "Horde");
+			snprintf(message, 200, "The %s Flag was picked up by $n!", Source->m_bgTeam ? "Alliance" : "Horde");
 			WorldPacket *data3 = sChatHandler.FillMessageData(0x53, 0, message, Source->GetGUID());
 			SendPacketToAll(data3);
 			delete data3;
@@ -286,16 +286,6 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 		{
 			Player *Source = ((Player*)src);
 			if(!Source || src->GetTypeId() != TYPEID_PLAYER) return;
-			/*char message[200];
-			sprintf(message, "The %s Flag was dropped by $n!", Source->m_bgTeam ? "Alliance" : "Horde");
-			WorldPacket *data2 = BuildMessageChat(0x53, 0x25, message, 0, Source->GetGUID());
-			SendPacketToAll(data2);
-			delete data2;
-
-			WorldPacket *data3 = sChatHandler.FillMessageData(0x53, 0, message, Source->GetGUID());
-			SendPacketToAll(data3);
-			delete data3; */
-			
 			SetWorldStateValue(Source->m_bgTeam ? WSG_ALLIANCE_FLAG_CAPTURED:WSG_HORDE_FLAG_CAPTURED,1);
 
 			// Create dropped flag
@@ -383,7 +373,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 
 			WorldPacket data(SMSG_PLAY_SOUND, 4);
 			char message[100];
-			sprintf(message, "%s captured the %s flag!", Source->GetName(), Source->m_bgTeam ? "Alliance" : "Horde" );
+			snprintf(message, 100, "%s captured the %s flag!", Source->GetName(), Source->m_bgTeam ? "Alliance" : "Horde" );
 			WorldPacket * data4 = sChatHandler.FillMessageData(0x53, 0, message, Source->GetGUID());
 			SendPacketToAll(data4);
 			delete data4;
@@ -417,7 +407,7 @@ void WarsongGulch::HandleBattlegroundEvent(Object *src, Object *dst, uint16 Even
 			delete flag;
 			
 			char message[200];
-			sprintf(message, "The %s Flag was returned to its base by $n!", Source->m_bgTeam ? "Horde" : "Alliance");
+			snprintf(message, 200, "The %s Flag was returned to its base by $n!", Source->m_bgTeam ? "Horde" : "Alliance");
 			WorldPacket *data3 = sChatHandler.FillMessageData(0x53, 0, message, Source->GetGUID());
 			SendPacketToAll(data3);
 			delete data3;
@@ -746,7 +736,7 @@ void WarsongGulch::AutoReturnFlag(GameObject * flag, uint32 flagteam)
 	delete flag;
 
 	char message[200];
-	sprintf(message, "The %s Flag was returned to its base", flagteam ? "Horde" : "Alliance");
+	snprintf(message, 200, "The %s Flag was returned to its base", flagteam ? "Horde" : "Alliance");
 	WorldPacket *data3 = sChatHandler.FillMessageData(0x53, 0, message, 0);
 	SendPacketToAll(data3);
 	delete data3;

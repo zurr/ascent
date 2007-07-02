@@ -1282,7 +1282,7 @@ void World::BroadcastExtendedMessage(WorldSession * self, const char* str, ...)
 	va_list ap;
 	va_start(ap, str);
 	char msg[1024];
-	vsprintf(msg, str, ap);
+	vsnprintf(msg, 1024, str, ap);
 	va_end(ap);
 	SessionSet::iterator itr = mExtendedSessions.begin();
 	WorldSession * s;

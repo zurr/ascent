@@ -950,10 +950,6 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				m_Unit->setAttackTarget(0);
 				m_Unit->clearAttackers(true);
 
-				// Send message
-				//char msg[200];
-				//sprintf(msg, "\%s attempts to run away in fear!");
-
 				WorldPacket data(SMSG_MESSAGECHAT, 100);
 				string msg = "%s attempts to run away in fear!";
 				data << (uint8)CHAT_MSG_MONSTER_EMOTE;

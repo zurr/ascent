@@ -211,7 +211,7 @@ void CConsole::Announce(char* str)
 		return;
 
 	char msg[500];
-	sprintf(msg, "%sConsole:%s%s", "|cff00ccff", "|r", str);
+	snprintf(msg, 500, "%sConsole:%s%s", "|cff00ccff", "|r", str);
 	sWorld.SendWorldText(msg, 0);
 }
 
@@ -300,7 +300,7 @@ void CConsole::WideAnnounce(char *str)
 		return;
 
 	char msg[500];
-	sprintf(msg, "%sConsole:%s%s", "|cff00ccff", "|r", str);
+	snprintf(msg, 500, "%sConsole:%s%s", "|cff00ccff", "|r", str);
 	sWorld.SendWorldText(msg, 0);
 	sWorld.SendWorldWideScreenText(msg, 0);
 }
@@ -321,7 +321,7 @@ void CConsole::SaveallPlayers(char *str)
 	}
 	objmgr._playerslock.ReleaseReadLock();
 	char msg[100];
-	sprintf(msg, "Saved all %d online players in %d msec.", count, (uint32)now() - stime);
+	snprintf(msg, 100, "Saved all %d online players in %d msec.", count, (uint32)now() - stime);
 	sWorld.SendWorldText(msg);
 	sWorld.SendWorldWideScreenText(msg);
 }

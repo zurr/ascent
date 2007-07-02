@@ -157,7 +157,7 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession *m_session)
 		}*/ // we might have to re-work this
 
 		char msg[200];
-		sprintf(msg, "%sGM: %s was kicked from the server by %s. Reason: %s", MSG_COLOR_RED, chr->GetName(), m_session->GetPlayer()->GetName(), kickreason.c_str());
+		snprintf(msg, 200, "%sGM: %s was kicked from the server by %s. Reason: %s", MSG_COLOR_RED, chr->GetName(), m_session->GetPlayer()->GetName(), kickreason.c_str());
 		sWorld.SendWorldText(msg, NULL);
 		//sWorld.SendIRCMessage(msg);
 		SystemMessageToPlr(chr, "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->GetName(), kickreason.c_str());
@@ -234,9 +234,9 @@ bool ChatHandler::HandleAddInvItemCommand(const char *args, WorldSession *m_sess
 		}
 
 		char messagetext[128];
-		sprintf(messagetext, "Adding item %d (%s) to %s's inventory.",it->ItemId,it->Name1, chr->GetName());
+		snprintf(messagetext, 128, "Adding item %d (%s) to %s's inventory.",it->ItemId,it->Name1, chr->GetName());
 		SystemMessage(m_session, messagetext);
-		sprintf(messagetext, "%s added item %d (%s) to your inventory.", m_session->GetPlayer()->GetName(), itemid, it->Name1);
+		snprintf(messagetext, 128, "%s added item %d (%s) to your inventory.", m_session->GetPlayer()->GetName(), itemid, it->Name1);
 		SystemMessageToPlr(chr,  messagetext);
 
 		return true;
@@ -407,7 +407,7 @@ bool ChatHandler::HandleModifySpeedCommand(const char* args, WorldSession *m_ses
 	BlueSystemMessage(m_session, "You set the speed to %2.2f of %s.", Speed, chr->GetName());
 
 	// send message to player
-	sprintf((char*)buf,"%s set your speed to %2.2f.", m_session->GetPlayer()->GetName(), Speed);
+	snprintf((char*)buf,256, "%s set your speed to %2.2f.", m_session->GetPlayer()->GetName(), Speed);
    SystemMessage(m_session, buf);
 
 	chr->SetPlayerSpeed(RUN, Speed);
@@ -652,7 +652,7 @@ bool ChatHandler::HandleGoStateLinkCommand(const char* args, WorldSession *m_ses
 	int valcount = sscanf(args, "%u", &id);
 	if(id)
 	{
-		sprintf(sql, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", id, GObj->GetSQL_id());
+		snprintf(sql, 512, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", id, GObj->GetSQL_id());
 		sDatabase.Execute( sql );
 	}
 	else

@@ -94,7 +94,7 @@ string FormatOutputString(const char * Prefix, const char * Description, bool us
 	if(useTimeStamp)
 	{
 		char ftime[100];
-		sprintf(ftime, "-%-4d-%02d-%02d %02d-%02d-%02d", a->tm_year+1900, a->tm_mon+1, a->tm_mday, a->tm_hour, a->tm_min, a->tm_sec);
+		snprintf(ftime, 100, "-%-4d-%02d-%02d %02d-%02d-%02d", a->tm_year+1900, a->tm_mon+1, a->tm_mday, a->tm_hour, a->tm_min, a->tm_sec);
 		strcat(p, ftime);
 	}
 

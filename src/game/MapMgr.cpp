@@ -912,7 +912,7 @@ void MapMgr::LoadAllCells()
 
 	MapCell * pCell;
 	char msg[50];
-	sprintf(msg, "Preload: Map%u", _mapId);
+	snprintf(msg,50, "Preload: Map%u", _mapId);
 	//uint32 count = _sizeX * _sizeY;
 	//uint32 c = 0;
 	CellSpawns * sp;

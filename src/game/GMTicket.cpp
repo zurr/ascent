@@ -60,7 +60,7 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket & recv_data)
 	if(chn)
 	{
 		char msg[100];
-		sprintf(msg, "GmTicket 5,%s", GetPlayer()->GetName());
+		snprintf(msg, 100, "GmTicket 5,%s", GetPlayer()->GetName());
 		chn->Say(_player, msg, 0);
 	}
 }

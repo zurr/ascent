@@ -397,7 +397,7 @@ public:
 		char txt[256];
 		va_list ap;
 		va_start(ap, text);
-		vsprintf(txt, text, ap);
+		vsnprintf(txt, 256, text, ap);
 		va_end(ap);
 		data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
 		data << (uint32)0 << txt << (uint8)0x00;

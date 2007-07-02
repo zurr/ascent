@@ -174,7 +174,7 @@ bool AddonMgr::AppendPublicKey(WorldPacket& data, string AddonName, uint32 CRC)
 		{
 			// open the file
 			char path[500];
-			sprintf(path, "addons\\%s.pub", AddonName.c_str());
+			snprintf(path, 500, "addons\\%s.pub", AddonName.c_str());
 			FILE * f = fopen(path, "rb");
 			if(f != 0)
 			{

@@ -143,7 +143,7 @@ void ArathiBasin::HandleBanner(Player *p_caster,GameObject *go,uint32 spellid)
 		char message[300];   
 		static char *resnames[5] = {"Stable","Farm","Blacksmith","Mine","Lumber Mill"};
 				
-		sprintf(message, "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", resnames[bannerslot] , p_caster->m_bgTeam ? "Horde" : "Alliance" );
+		snprintf(message, 300, "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", resnames[bannerslot] , p_caster->m_bgTeam ? "Horde" : "Alliance" );
 		
 		WorldPacket *data = BuildMessageChat(p_caster->m_bgTeam ? 0x54:0x53, 0, message, 0,p_caster->GetGUID());
 		SendPacketToAll(data);
@@ -299,7 +299,7 @@ void ArathiBasin::EventUpdateResourcesAlliance()
 		SendPacketToAll(&pkt);
 		
 		char message[300];		
-		sprintf(message, "The Alliance has gathered %d resources, and is near victory!", WorldStateVars[rfield] );
+		snprintf(message, 300, "The Alliance has gathered %d resources, and is near victory!", WorldStateVars[rfield] );
 		WorldPacket *data = BuildMessageChat(0x52, 0x29, message, 0);
 		SendPacketToAll(data);
 		delete data;
@@ -352,7 +352,7 @@ void ArathiBasin::EventUpdateResourcesHorde()
 		SendPacketToAll(&pkt);
 		
 		char message[300];		
-		sprintf(message, "The Horde has gathered %d resources, and is near victory!", WorldStateVars[rfield] );
+		snprintf(message, 300, "The Horde has gathered %d resources, and is near victory!", WorldStateVars[rfield] );
 		WorldPacket *data = BuildMessageChat(0x52, 0x29, message, 0);
 		SendPacketToAll(data);
 		delete data;
@@ -418,7 +418,7 @@ void ArathiBasin::EventResourcesCapture(uint64 srcguid,uint32 bannerslot)
 	
 	char message[300];
 	static char *Resnames[5] = {"Stable","Farm","Blacksmith","Mine","Lumber Mill"};			   
-	sprintf(message, "The %s has taken the %s!", src->m_bgTeam ? "Horde" : "Alliance" , Resnames[bannerslot] );
+	snprintf(message, 300, "The %s has taken the %s!", src->m_bgTeam ? "Horde" : "Alliance" , Resnames[bannerslot] );
 		
 	
 	WorldPacket *data = BuildMessageChat(src->m_bgTeam ? 0x54:0x53, 0x27, message, 0);

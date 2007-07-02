@@ -302,7 +302,7 @@ bool Master::Run()
 						time -= (mins*60);
 					secs = time;
 					char str[20];
-					sprintf(str, "%02u:%02u", mins, secs);
+					snprintf(str, 20, "%02u:%02u", mins, secs);
 					data << str;
 					sWorld.SendGlobalMessage(&data, NULL);
 				}

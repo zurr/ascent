@@ -39,9 +39,9 @@ bool ChatHandler::HandleInvincibleCommand(const char *args, WorldSession *m_sess
 	if(chr)
 	{
 		chr->bInvincible = !chr->bInvincible;
-		sprintf(msg, "Invincibility is now %s", chr->bInvincible ? "ON. You may have to leave and re-enter this zone for changes to take effect." : "OFF. Exit and re-enter this zone for this change to take effect.");
+		snprintf(msg, 100, "Invincibility is now %s", chr->bInvincible ? "ON. You may have to leave and re-enter this zone for changes to take effect." : "OFF. Exit and re-enter this zone for this change to take effect.");
 	} else {
-		sprintf(msg, "Select a player or yourself first.");
+		snprintf(msg, 100, "Select a player or yourself first.");
 	}
 	SystemMessage(m_session, msg);
 	return true;
@@ -52,21 +52,21 @@ bool ChatHandler::HandleInvisibleCommand(const char *args, WorldSession *m_sessi
 	char msg[256];
 	Player* pChar =m_session->GetPlayer();
 
-	sprintf(msg, "Invisibility and Invincibility are now ");
+	snprintf(msg, 256, "Invisibility and Invincibility are now ");
 	if(pChar->m_isGmInvisible)
 	{
 		pChar->m_isGmInvisible = false;
 		//pChar->m_invincible = false;
 		sSocialMgr.LoggedOut(pChar);
-		sprintf(msg, "%s OFF.", msg);
+		snprintf(msg, 256, "%s OFF.", msg);
 	} else {
 		pChar->m_isGmInvisible = true;
 		//pChar->m_invincible = true;
 		sSocialMgr.LoggedIn(pChar);
-		sprintf(msg, "%s ON.", msg);
+		snprintf(msg, 256, "%s ON.", msg);
 	}
 
-	sprintf(msg, "%s You may have to leave and re-enter this zone for changes to take effect.", msg);
+	snprintf(msg, 256, "%s You may have to leave and re-enter this zone for changes to take effect.", msg);
 
 	GreenSystemMessage(m_session, (const char*)msg);
 	return true;
@@ -83,7 +83,7 @@ bool ChatHandler::HandleGUIDCommand(const char* args, WorldSession *m_session)
 	}
 
 	char buf[256];
-	sprintf((char*)buf,"Object guid is: lowpart %u highpart %X", GUID_LOPART(guid), GUID_HIPART(guid));
+	snprintf((char*)buf,256,"Object guid is: lowpart %u highpart %X", GUID_LOPART(guid), GUID_HIPART(guid));
    SystemMessage(m_session,  buf);
 	return true;
 }
@@ -103,7 +103,7 @@ bool ChatHandler::CreateGuildCommand(const char* args, WorldSession *m_session)
 	{
 		// send message to user
 		char buf[256];
-		sprintf((char*)buf,"The name was too long by %i", strlen((char*)args)-75);
+		snprintf((char*)buf,256,"The name was too long by %i", strlen((char*)args)-75);
 		SystemMessage(m_session, buf);
 		return true;
 	}
@@ -352,7 +352,7 @@ bool ChatHandler::HandleRunCommand(const char* args, WorldSession *m_session)
 
 	char sql[512];
 
-	sprintf(sql, "UPDATE creatures SET running = '%i' WHERE id = '%u'", option, GUID_LOPART(guid));
+	snprintf(sql, 512, "UPDATE creatures SET running = '%i' WHERE id = '%u'", option, GUID_LOPART(guid));
 	sDatabase.Execute( sql );
 
 	pCreature->GetAIInterface()->setMoveRunFlag(option > 0);
@@ -408,7 +408,7 @@ bool ChatHandler::HandleSaveAllCommand(const char *args, WorldSession *m_session
 	}
 	objmgr._playerslock.ReleaseReadLock();
 	char msg[100];
-	sprintf(msg, "Saved all %d online players in %d msec.", count, (uint32)now() - stime);
+	snprintf(msg, 100, "Saved all %d online players in %d msec.", count, (uint32)now() - stime);
 	sWorld.SendWorldText(msg);
 	sWorld.SendWorldWideScreenText(msg);
 	//sWorld.SendIRCMessage(msg);

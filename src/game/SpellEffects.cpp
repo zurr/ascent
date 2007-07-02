@@ -805,7 +805,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 
 			// Send chat message
 			char msg[100];
-			sprintf(msg, "Ow! Ok, I'll get back to work, %s", p_caster->GetName());
+			snprintf(msg, 100, "Ow! Ok, I'll get back to work, %s", p_caster->GetName());
 			unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
 		}break;
 	case 7669:// Bethor's Potion

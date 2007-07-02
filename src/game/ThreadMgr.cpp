@@ -111,7 +111,7 @@ void ThreadMgr::AppendThreadStatus(CThread* thread, std::stringstream &stream)
 	strcpy(tmp, ctime(&stm));
 	//strncpy(tmp, tmp, strlen(tmp)-2);
 	tmp[strlen(tmp)-1] = 0;
-	sprintf(line, "| %4u | %16s | %14s | %30s |", thread->GetThreadId(),
+	snprintf(line, 400, "| %4u | %16s | %14s | %30s |", thread->GetThreadId(),
 		LookupName(thread->GetThreadType(), g_threadTypes),
 		LookupName(thread->GetThreadState(), g_threadStates),
 		tmp);

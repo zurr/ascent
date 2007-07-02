@@ -2304,7 +2304,6 @@ bool Player::LoadFromDB(uint32 guid)
 		// new format
 		uint32 field = PLAYER_SKILL_INFO_1_1;
 		uint32 val;
-		skilllineentry *en;
 		const ItemProf * prof;
 
 		char * f = strdup(start);
@@ -6632,7 +6631,7 @@ void Player::BroadcastMessage(const char* Format, ...)
 	va_list l;
 	va_start(l, Format);
 	char Message[1024];
-	vsprintf(Message, Format, l);
+	vsnprintf(Message, 1024, Format, l);
 	va_end(l);
 
 	WorldPacket * data = sChatHandler.FillSystemMessageData(Message);
@@ -7701,7 +7700,7 @@ void Player::SendAreaTriggerMessage(const char * message, ...)
 	va_list ap;
 	va_start(ap, message);
 	char msg[500];
-	vsprintf(msg, message, ap);
+	vsnprintf(msg, 500, message, ap);
 	va_end(ap);
 
 	WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 6 + strlen(msg));

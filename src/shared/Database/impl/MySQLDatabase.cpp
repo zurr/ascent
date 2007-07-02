@@ -213,7 +213,7 @@ QueryResult * MySQLDatabase::Query(const char* QueryString, ...)
 	char sql[16384];
 	va_list vlist;
 	va_start(vlist, QueryString);
-	vsprintf(sql, QueryString, vlist);
+	vsnprintf(sql, 16384, QueryString, vlist);
 	va_end(vlist);
 
 	// Send the query
@@ -249,7 +249,7 @@ bool MySQLDatabase::Execute(const char* QueryString, ...)
 
 	va_list vlist;
 	va_start(vlist, QueryString);
-	vsprintf(query, QueryString, vlist);
+	vsnprintf(query, 16384, QueryString, vlist);
 	va_end(vlist);
 
 	if(!ThreadRunning)
@@ -269,7 +269,7 @@ bool MySQLDatabase::WaitExecute(const char* QueryString, ...)
 	char sql[16384];
 	va_list vlist;
 	va_start(vlist, QueryString);
-	vsprintf(sql, QueryString, vlist);
+	vsnprintf(sql, 16384, QueryString, vlist);
 	va_end(vlist);
 
 	MysqlCon*con=GetFreeConnection();

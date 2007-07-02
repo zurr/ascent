@@ -373,7 +373,7 @@ public:
 			}
 		}
 		char str[200];
-		sprintf(str, "%d days, %d hours, %d minutes, %d seconds.", days, hours, mins, seconds);
+		snprintf(str, 200, "%d days, %d hours, %d minutes, %d seconds.", days, hours, mins, seconds);
 		return str;
 	}
 

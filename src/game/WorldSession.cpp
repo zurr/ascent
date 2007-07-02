@@ -448,7 +448,7 @@ void WorldSession::SendNotification(const char *message, ...)
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024, message,ap);
 	WorldPacket data(SMSG_NOTIFICATION, strlen(msg1) + 1);
 	data << msg1;
 	SendPacket(&data);
@@ -847,7 +847,7 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
 
 	time_t t = time(NULL);
 	tm* aTm = localtime(&t);
-	sprintf(out, "[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
+	snprintf(out, 32768, "[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
 	int l = strlen(out);
 
 	snprintf(&out[l], 32768 - l, "Account %u [%s], IP %s, Player %s :: ", session->GetAccountId(), session->GetAccountName().c_str(),

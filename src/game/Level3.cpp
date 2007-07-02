@@ -65,21 +65,21 @@ bool ChatHandler::HandleSecurityCommand(const char* args, WorldSession *m_sessio
 	if (chr)
 	{
 		// send message to user
-		sprintf((char*)buf,"You change security string of %s to [%s].", chr->GetName(), pgm);
+		snprintf((char*)buf,256,"You change security string of %s to [%s].", chr->GetName(), pgm);
 		SystemMessage(m_session, buf);
 
 		// send message to player
-		sprintf((char*)buf,"%s changed your security string to [%s].", m_session->GetPlayer()->GetName(), pgm);
+		snprintf((char*)buf,256,"%s changed your security string to [%s].", m_session->GetPlayer()->GetName(), pgm);
 		SystemMessage(chr->GetSession(),  buf);
 		chr->GetSession()->SetSecurity(pgm);
 		//sLogonDatabase.Execute("UPDATE accounts SET gm='%s' WHERE acct=%u", pgm, chr->GetSession()->GetAccountId());
 		//sLogonCommHandler.LogonDatabaseSQLExecute(buf);
-		sprintf(buf, "UPDATE accounts set gm='%s' WHERE acct=%u", pgm, chr->GetSession()->GetAccountId());
+		snprintf(buf, 256,"UPDATE accounts set gm='%s' WHERE acct=%u", pgm, chr->GetSession()->GetAccountId());
 		sLogonCommHandler.LogonDatabaseSQLExecute(buf);		
 	}
 	else
 	{
-		sprintf((char*)buf,"Player (%s) does not exist or is not logged in.", pName);
+		snprintf((char*)buf,256,"Player (%s) does not exist or is not logged in.", pName);
 		SystemMessage(m_session, buf);
 	}
 
@@ -461,23 +461,23 @@ bool ChatHandler::HandleExploreCheatCommand(const char* args, WorldSession *m_se
 	// send message to user
 	if (flag != 0)
 	{
-		sprintf((char*)buf,"%s has explored all zones now.", chr->GetName());
+		snprintf((char*)buf,256,"%s has explored all zones now.", chr->GetName());
 	}
 	else
 	{
-		sprintf((char*)buf,"%s has no more explored zones.", chr->GetName());
+		snprintf((char*)buf,256,"%s has no more explored zones.", chr->GetName());
 	}
 	SystemMessage(m_session, buf);
 
 	// send message to player
 	if (flag != 0)
 	{
-		sprintf((char*)buf,"%s has explored all zones for you.",
+		snprintf((char*)buf,256,"%s has explored all zones for you.",
 			m_session->GetPlayer()->GetName());
 	}
 	else
 	{
-		sprintf((char*)buf,"%s has hidden all zones from you.", 
+		snprintf((char*)buf,256,"%s has hidden all zones from you.", 
 			m_session->GetPlayer()->GetName());
 	}
 	SystemMessage(m_session,  buf);
@@ -738,7 +738,7 @@ bool ChatHandler::HandleAddSkillCommand(const char* args, WorldSession *m_sessio
 
 	target->AddSkillLine(skillline,cur,max);
 
-	sprintf(buf,"SkillLine: %u CurrentValue %u Max Value %u Added.",skillline,cur,max);
+	snprintf(buf,256,"SkillLine: %u CurrentValue %u Max Value %u Added.",skillline,cur,max);
 	SystemMessage(m_session, buf);
 
 	return true;
@@ -752,7 +752,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char *args, WorldSession *m_session
 	if(!crt) return false;
 	if(crt->GetCreatureName())
 		BlueSystemMessage(m_session, "Showing creature info for %s", crt->GetCreatureName()->Name);
-	sprintf(msg,"GUID: %d\nFaction: %d\nNPCFlags: %d\nDisplayID: %d", guid, crt->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE), crt->GetUInt32Value(UNIT_NPC_FLAGS), crt->GetUInt32Value(UNIT_FIELD_DISPLAYID));
+	snprintf(msg,512,"GUID: %d\nFaction: %d\nNPCFlags: %d\nDisplayID: %d", guid, crt->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE), crt->GetUInt32Value(UNIT_NPC_FLAGS), crt->GetUInt32Value(UNIT_FIELD_DISPLAYID));
 	SystemMessage(m_session, msg);
 	if(crt->m_faction)
 		GreenSystemMessage(m_session, "Combat Support: 0x%.3X", crt->m_faction->FriendlyMask);
@@ -1416,13 +1416,13 @@ bool ChatHandler::HandleDBReloadCommand(const char* args, WorldSession* m_sessio
 		return false;
 
 	uint32 mstime = getMSTime();
-	sprintf(str, "%s%s initiated server-side reload of table `%s`. The server may experience some lag while this occurs.",
+	snprintf(str, 200, "%s%s initiated server-side reload of table `%s`. The server may experience some lag while this occurs.",
 		MSG_COLOR_LIGHTRED, m_session->GetPlayer()->GetName(), args);
 	sWorld.SendWorldText(str, 0);
 	if(!Storage_ReloadTable(args))
-		sprintf(str, "%sDatabase reload failed.", MSG_COLOR_LIGHTRED);
+		snprintf(str, 256, "%sDatabase reload failed.", MSG_COLOR_LIGHTRED);
 	else
-		sprintf(str, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, getMSTime() - mstime);
+		snprintf(str, 256, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, getMSTime() - mstime);
 	sWorld.SendWorldText(str, 0);
 	return true;
 }
@@ -1707,7 +1707,7 @@ bool ChatHandler::HandleShutdownCommand(const char* args, WorldSession* m_sessio
 
 	shutdowntime *= 1000;
 	char msg[500];
-	sprintf(msg, "%sServer shutdown initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
+	snprintf(msg, 500, "%sServer shutdown initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
 		m_session->GetPlayer()->GetName(), shutdowntime);
 
 	sWorld.SendWorldText(msg);
@@ -1725,7 +1725,7 @@ bool ChatHandler::HandleShutdownRestartCommand(const char* args, WorldSession* m
 	shutdowntime *= 1000;
 
 	char msg[500];
-	sprintf(msg, "%sServer restart initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
+	snprintf(msg, 500, "%sServer restart initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
 		m_session->GetPlayer()->GetName(), shutdowntime);
 
 	sWorld.SendWorldText(msg);
@@ -2160,7 +2160,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession * m_session)
 			}
 		}
 	}
-	sprintf(playedLevel, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
+	snprintf(playedLevel, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
 
 	seconds = (plr->GetPlayedtime())[1];
 	mins=0;
@@ -2188,7 +2188,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession * m_session)
 			}
 		}
 	}
-	sprintf(playedTotal, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
+	snprintf(playedTotal, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
 
 	GreenSystemMessage(m_session, "%s is a %s %s %s", plr->GetName(),
 		(plr->getGender()?"Female":"Male"), races[plr->getRace()], classes[plr->getClass()]);
@@ -2457,11 +2457,11 @@ bool ChatHandler::HandleSetStandingCommand(const char * args, WorldSession * m_s
 
 void SendHighlightedName(WorldSession * m_session, char* full_name, string& lowercase_name, string& highlight, uint32 id, bool item)
 {
-	char message[500];
+	char message[1024];
 	char start[50];
 	start[0] = message[0] = 0;
 
-	sprintf(start, "%s %u: %s", item ? "Item" : "Creature", id, MSG_COLOR_WHITE);
+	snprintf(start, 50, "%s %u: %s", item ? "Item" : "Creature", id, MSG_COLOR_WHITE);
 
 	string::size_type hlen = highlight.length();
 	string fullname = string(full_name);
@@ -2704,7 +2704,7 @@ bool ChatHandler::HandleRehashCommand(const char * args, WorldSession * m_sessio
 {
 	/* rehashes */
 	char msg[250];
-	sprintf(msg, "%s is rehashing config file.", m_session->GetPlayer()->GetName());
+	snprintf(msg, 250, "%s is rehashing config file.", m_session->GetPlayer()->GetName());
 	sWorld.SendWorldWideScreenText(msg, 0);
 	sWorld.SendWorldText(msg, 0);
 	sWorld.Rehash(true);

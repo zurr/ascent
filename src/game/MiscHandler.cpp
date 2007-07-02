@@ -561,63 +561,6 @@ void WorldSession::HandleWhoOpcode( WorldPacket & recv_data )
 		delete [] zones;
 	if(names)
 		delete [] names;
-
-	/*WorldPacket data;
-	bool isGM ;
-	uint32 team;
-	uint32 clientcount = 0;
-
-	if(	CanUseCommand('p') )
-		isGM=true;
-	else
-	{
-		isGM=false;
-		team=_player->GetTeam();
-	}
-	
-	data.SetOpcode (SMSG_WHO);
-	data << uint64(0);//reserved for players count
-
-	HM_NAMESPACE::hash_map<uint32, Player*>::iterator itr;
-	
-	char tmp[100];
-
-	for (itr = sObjHolder.Begin<Player>(); itr != sObjHolder.End<Player>(); itr++)
-	{
-		Player *p=itr->second;
-		if(!p->IsInWorld() || !p->GetMapMgr() || !p->GetMapCell())
-			continue;
-
-		if( isGM || (p->GetTeam()==team && !p->m_isGmInvisible))
-		if(p->GetName())
-		{
-			if(p->bGMTagOn)
-			{
-				sprintf(tmp, "<GM>%s", p->GetName());
-				data << tmp;
-			}
-			else
-			{
-				data << p->GetName();
-			}
-			Guild* pguild = objmgr.GetGuild(p->GetGuildId());
-				
-			if(pguild) 
-				data << pguild->GetGuildName().c_str();
-			else   
-				data << uint8(0x00);
-
-			data << uint32( p->getLevel() );
-			data << uint32( p->getClass() );
-			data << uint32( p->getRace()  );
-			data << uint32( p->GetZoneId());
-			clientcount++;			
-		}
-	}
-	data.wpos (0) ;
-	data << clientcount;
-	data << clientcount;
-	SendPacket(&data);*/
 }
 
 void WorldSession::HandleLogoutRequestOpcode( WorldPacket & recv_data )
@@ -1682,7 +1625,7 @@ void EncodeHex(const char* source, char* dest, uint32 size)
 	char temp[5];
 	for(int i = 0; i < size; ++i)
 	{
-		sprintf(temp, "%02X", source[i]);
+		snprintf(temp, 5, "%02X", source[i]);
 		strcat(dest, temp);
 	}
 }

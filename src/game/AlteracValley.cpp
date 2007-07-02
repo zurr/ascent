@@ -119,7 +119,7 @@ void AlteracValley::HandleBanner(Player *p_caster,GameObject *go,uint32 spellid)
 									"Iceblood Tower","Stoneheart Bunker","Icewing Bunker",
 									"Stormpike North Bunker","Stormpike South Bunker"};
 				
-		sprintf(message, "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", resnames[bannerslot] , p_caster->m_bgTeam ? "Horde" : "Alliance" );
+		snprintf(message, 300, "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", resnames[bannerslot] , p_caster->m_bgTeam ? "Horde" : "Alliance" );
 		
 		WorldPacket *data = BuildMessageChat(p_caster->m_bgTeam ? 0x54:0x53, 0, message, 0,p_caster->GetGUID());
 		SendPacketToAll(data);
@@ -286,7 +286,7 @@ void AlteracValley::EventCaptureBase(Player *src,uint32 bannerslot)
 									"Iceblood Tower","Stoneheart Bunker","Icewing Bunker",
 									"Stormpike North Bunker","Stormpike South Bunker"};
 					
-	sprintf(message, "The %s has taken the %s!", src->m_bgTeam ? "Horde" : "Alliance" , resnames[bannerslot] );
+	snprintf(message, 300, "The %s has taken the %s!", src->m_bgTeam ? "Horde" : "Alliance" , resnames[bannerslot] );
 		
 	WorldPacket *data = BuildMessageChat(src->m_bgTeam ? 0x54:0x53, 0x27, message, 0);
 	SendPacketToAll(data);

@@ -276,7 +276,7 @@ void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
 	va_list ap;
 	va_start(ap, str);
 	char query[1024];
-	vsprintf(query, str, ap);
+	vsnprintf(query, 1024, str, ap);
 	va_end(ap);
 	WorldPacket data(RCMSG_SQL_EXECUTE, strlen(query)+1);
 	data << query;

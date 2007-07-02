@@ -131,7 +131,7 @@ bool ChatHandler::HandleWPMoveTypeCommand(const char* args, WorldSession *m_sess
 	}
 
 	char sql[512];
-	sprintf(sql, "UPDATE creatures SET moverandom = '%u' WHERE id = '%u'", option, GUID_LOPART(guid));
+	snprintf(sql, 512, "UPDATE creatures SET moverandom = '%u' WHERE id = '%u'", option, GUID_LOPART(guid));
 	sDatabase.Execute( sql );
 
 	pCreature->GetAIInterface()->setMoveType(option);

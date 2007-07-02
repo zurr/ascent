@@ -145,7 +145,7 @@ void AuctionHouse::RemoveAuction(Auction * auct)
 	case AUCTION_REMOVE_EXPIRED:
 		{
 			// ItemEntry:0:3
-			sprintf(subject, "%u:0:3", auct->pItem->GetEntry());
+			snprintf(subject, 100, "%u:0:3", auct->pItem->GetEntry());
 
 			// Auction expired, resend item, no money to owner.
 			sMailSystem.SendAutomatedMessage(AUCTION, dbc->id, auct->Owner, subject, "", 0, 0, auct->pItem->GetGUID(), 62);
@@ -154,10 +154,10 @@ void AuctionHouse::RemoveAuction(Auction * auct)
 	case AUCTION_REMOVE_WON:
 		{
 			// ItemEntry:0:1
-			sprintf(subject, "%u:0:1", auct->pItem->GetEntry());
+			snprintf(subject, 100, "%u:0:1", auct->pItem->GetEntry());
 
 			// <owner player guid>:bid:buyout
-			sprintf(body, "%X:%u:%u", auct->Owner, auct->HighestBid, auct->BuyoutPrice);
+			snprintf(body, 200, "%X:%u:%u", auct->Owner, auct->HighestBid, auct->BuyoutPrice);
 
 			// Auction won by highest bidder. He gets the item.
 			sMailSystem.SendAutomatedMessage(AUCTION, dbc->id, auct->HighestBidder, subject, body, 0, 0, auct->pItem->GetGUID(), 62);
@@ -169,20 +169,20 @@ void AuctionHouse::RemoveAuction(Auction * auct)
 				amount = 0;
 
 			// ItemEntry:0:2
-			sprintf(subject, "%u:0:2", auct->pItem->GetEntry());
+			snprintf(subject, 100, "%u:0:2", auct->pItem->GetEntry());
 
 			// <hex player guid>:bid:0:deposit:cut
 			if(auct->HighestBid == auct->BuyoutPrice)	   // Buyout
-				sprintf(body, "%X:%u:%u:%u:%u", auct->HighestBidder, auct->HighestBid, auct->BuyoutPrice, auct->DepositAmount, auction_cut);
+				snprintf(body, 200, "%X:%u:%u:%u:%u", auct->HighestBidder, auct->HighestBid, auct->BuyoutPrice, auct->DepositAmount, auction_cut);
 			else
-				sprintf(body, "%X:%u:0:%u:%u", auct->HighestBidder, auct->HighestBid, auct->DepositAmount, auction_cut);
+				snprintf(body, 200, "%X:%u:0:%u:%u", auct->HighestBidder, auct->HighestBid, auct->DepositAmount, auction_cut);
 
 			// send message away.
 			sMailSystem.SendAutomatedMessage(AUCTION, dbc->id, auct->Owner, subject, body, amount, 0, 0, 62);
 		}break;
 	case AUCTION_REMOVE_CANCELLED:
 		{
-			sprintf(subject, "%u:0:5", auct->pItem->GetEntry());
+			snprintf(subject, 100, "%u:0:5", auct->pItem->GetEntry());
 			uint32 cut = uint32(float(cut_percent * auct->HighestBid));
 			Player * plr = objmgr.GetPlayer(auct->Owner);
 			if(cut && plr && plr->GetUInt32Value(PLAYER_FIELD_COINAGE) >= cut)
@@ -375,7 +375,7 @@ void WorldSession::HandleAuctionPlaceBid( WorldPacket & recv_data )
 	{
 		// Return the money to the last highest bidder.
 		char subject[100];
-		sprintf(subject, "%u:0:0", auct->pItem->GetEntry());
+		snprintf(subject, 100, "%u:0:0", auct->pItem->GetEntry());
 		sMailSystem.SendAutomatedMessage(AUCTION, ah->GetID(), auct->HighestBidder, subject, "", auct->HighestBid,
 			0, 0, 62);
 	}
