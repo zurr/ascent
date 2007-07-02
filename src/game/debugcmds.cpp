@@ -35,7 +35,7 @@ bool ChatHandler::HandleDebugInFrontCommand(const char* args, WorldSession *m_se
 		obj = (Object*)m_session->GetPlayer();
 
 	char buf[256];
-	sprintf((char*)buf, "%d", m_session->GetPlayer()->isInFront((Unit *)obj));
+	snprintf((char*)buf, 256, "%d", m_session->GetPlayer()->isInFront((Unit *)obj));
 
 	SystemMessage(m_session, buf);
 
@@ -558,7 +558,7 @@ bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession *m_session)
 		return false;
 	}
 	chr->SetMovement(MOVE_LAND_WALK,8);
-	sprintf((char*)buf,"Land Walk Test Ran.");
+	snprintf((char*)buf,256, "Land Walk Test Ran.");
 	SystemMessage(m_session, buf);
 	return true;
 }
@@ -574,7 +574,7 @@ bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession *m_session
 		return false;
 	}
 	chr->SetMovement(MOVE_WATER_WALK, 4);
-	sprintf((char*)buf,"Water Walk Test Ran.");
+	snprintf((char*)buf,256, "Water Walk Test Ran.");
 	SystemMessage(m_session,  buf);
 	return true;
 }
@@ -592,7 +592,7 @@ bool ChatHandler::HandleDebugUnroot(const char* args, WorldSession *m_session)
 
 	chr->SetMovement(MOVE_UNROOT,5);
 
-	sprintf((char*)buf,"UnRoot Test Ran.");
+	snprintf((char*)buf,256, "UnRoot Test Ran.");
 	SystemMessage(m_session, buf);
 	return true;
 }
@@ -608,7 +608,7 @@ bool ChatHandler::HandleDebugRoot(const char* args, WorldSession *m_session)
 		return true;
 	}
 	chr->SetMovement(MOVE_ROOT,1);
-	sprintf((char*)buf,"Root Test Ran.");
+	snprintf((char*)buf,256, "Root Test Ran.");
 	SystemMessage(m_session, buf);
 	return true;
 }
@@ -850,12 +850,12 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
 	if ( obj->HasFlag( field, (1<<(bit-1)) ) )
 	{
 		obj->RemoveFlag( field, (1<<(bit-1)) );
-		sprintf((char*)buf,"Removed bit %i in field %i.", bit, field);
+		snprintf((char*)buf,256, "Removed bit %i in field %i.", bit, field);
 	}
 	else
 	{
 		obj->SetFlag( field, (1<<(bit-1)) );
-		sprintf((char*)buf,"Set bit %i in field %i.", bit, field);
+		snprintf((char*)buf,256, "Set bit %i in field %i.", bit, field);
 	}
 
 	SystemMessage(m_session, buf);
@@ -906,7 +906,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args,  WorldSession* m_se
 	uint32 oldValue = obj->GetUInt32Value(field);
 	obj->SetUInt32Value(field,value);
 
-	sprintf((char*)buf,"Set Field %i from %i to %i.", field, oldValue, value);
+	snprintf((char*)buf,256,"Set Field %i from %i to %i.", field, oldValue, value);
 
 
 	SystemMessage(m_session, buf);
