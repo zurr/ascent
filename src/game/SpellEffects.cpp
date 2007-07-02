@@ -3475,66 +3475,36 @@ void Spell::SpellEffectCharge(uint32 i)
 
 void Spell::SpellEffectSummonCritter(uint32 i)
 {
-	return;
-//	uint32 entryId = m_spellInfo->EffectMiscValue[i];
-	float size = 1.0f;
-	
+	if(!u_caster || u_caster->IsInWorld() == false)
+		return;
+
 	if(u_caster->critterPet)
 	{
-		u_caster->critterPet->m_BeingRemoved = true;
-		if(u_caster->critterPet->IsInWorld())
-			u_caster->critterPet->RemoveFromWorld(false);
+		u_caster->critterPet->RemoveFromWorld(false);
 		delete u_caster->critterPet;
 		u_caster->critterPet = NULL;
 		return;
-	}					
-  
-	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
-	if(ci)
-	{
-		Creature* NewSummon = m_caster->GetMapMgr()->CreateCreature();
-		// Create
-		NewSummon->SetInstanceID(m_caster->GetInstanceID());
-		NewSummon->Create( ci->Name, m_caster->GetMapId(), 
-			m_caster->GetPositionX()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionY()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionZ(), m_caster->GetOrientation());
+	}
 
-		// Fields
-		NewSummon->SetUInt32Value(UNIT_FIELD_LEVEL,m_caster->GetUInt32Value(UNIT_FIELD_LEVEL));
-		NewSummon->SetUInt32Value(UNIT_FIELD_DISPLAYID,  ci->DisplayID);
-		NewSummon->SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, ci->DisplayID);
-		NewSummon->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
-		NewSummon->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_caster->GetGUID());
-		NewSummon->SetUInt32Value(UNIT_NPC_FLAGS , 0);
-		NewSummon->SetUInt32Value(UNIT_FIELD_HEALTH , 1);
-		NewSummon->SetUInt32Value(UNIT_FIELD_MAXHEALTH , 1);
-		NewSummon->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, 35);//((Player *)m_caster)->getRace());//m_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
-		NewSummon->SetFloatValue(OBJECT_FIELD_SCALE_X,size);//m_caster->GetFloatValue(OBJECT_FIELD_SCALE_X));
+	CreatureInfo * ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
+	CreatureProto * cp = CreatureProtoStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 
-		NewSummon->SetUInt32Value(UNIT_FIELD_BYTES_0,2048); 
-		NewSummon->SetUInt32Value(UNIT_FIELD_BASEATTACKTIME, 2000);//ci->baseattacktime); 
-		NewSummon->SetUInt32Value(UNIT_FIELD_BASEATTACKTIME+1, 2000);//ci->rangeattacktime); 
-		NewSummon->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 0.1f);  
-		NewSummon->SetFloatValue(UNIT_FIELD_COMBATREACH,m_caster->GetFloatValue(UNIT_FIELD_COMBATREACH));					
+	if(!ci || !cp)
+		return;
 
-	  //  NewSummon->SetUInt32Value(UNIT_FIELD_BYTES_1,0); 
-		NewSummon->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id); 
-		NewSummon->SetUInt32Value(OBJECT_FIELD_ENTRY, ci->Id);
-		NewSummon->SetZoneId(m_caster->GetZoneId());
-
-		//Setting faction
-		NewSummon->_setFaction();
-
-		// Add To World
-		NewSummon->PushToWorld(m_caster->GetMapMgr());
-		
-		NewSummon->GetAIInterface()->Init(NewSummon,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
-		NewSummon->GetAIInterface()->SetUnitToFollow(u_caster);
-		NewSummon->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2));
-		NewSummon->GetAIInterface()->SetFollowDistance(3.0f);
-		
-		u_caster->critterPet = NewSummon;
-		u_caster->critterPet->m_BeingRemoved = false;
-	}	
+	Creature * pCreature = u_caster->GetMapMgr()->CreateCreature();
+	pCreature->SetInstanceID(u_caster->GetMapMgr()->GetInstanceID());
+	pCreature->Load(cp, m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ());
+	pCreature->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, u_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+	pCreature->_setFaction();
+	pCreature->GetAIInterface()->Init(pCreature,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
+	pCreature->GetAIInterface()->SetUnitToFollow(u_caster);
+	pCreature->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2));
+	pCreature->GetAIInterface()->SetFollowDistance(3.0f);
+	pCreature->GetAIInterface()->disable_melee = true;
+	pCreature->bInvincible = true;
+	pCreature->PushToWorld(u_caster->GetMapMgr());
+	u_caster->critterPet = pCreature;
 }
 
 void Spell::SpellEffectKnockBack(uint32 i)

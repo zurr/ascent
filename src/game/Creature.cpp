@@ -122,6 +122,9 @@ void Creature::SafeDelete()
 
 void Creature::DeleteMe()
 {
+	if(IsInWorld())
+		RemoveFromWorld(false);
+
 	delete this;
 }
 

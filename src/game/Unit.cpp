@@ -2218,6 +2218,12 @@ void Unit::RemoveInRangeObject(Object* pObj)
 
 	if(pObj->GetTypeId() == TYPEID_UNIT || pObj->GetTypeId() == TYPEID_PLAYER)
 	{
+		if(critterPet == pObj)
+		{
+			critterPet->SafeDelete();
+			critterPet = 0;
+		}
+
 		/*if (m_useAI)*/
 		Unit *pUnit = static_cast<Unit*>(pObj);
 		GetAIInterface()->CheckTarget(pUnit);
@@ -3078,6 +3084,13 @@ void Unit::OnPushToWorld()
 
 void Unit::RemoveFromWorld()
 {
+	if(critterPet != 0)
+	{
+		critterPet->RemoveFromWorld(false);
+		delete critterPet;
+		critterPet = 0;
+	}
+
 	if(dynObj != 0)
 		dynObj->Remove();
 

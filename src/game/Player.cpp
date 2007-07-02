@@ -4725,15 +4725,6 @@ void Player::RemoveInRangeObject(Object* pObj)
 		}
 		m_Summon = 0;
 	}
-
-	/*if(pObj == critterpet && !critterpet->m_BeingRemoved)
-	{
-		// removing critter pet
-		if(critterpet->IsInWorld())
-			critterpet->RemoveFromWorld();
-		sObjHolder.Delete<Creature>(critterpet);
-		critterpet = NULL;
-	}*/ // crashy
 }
 
 void Player::ClearInRangeSet()

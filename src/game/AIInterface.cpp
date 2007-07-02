@@ -463,11 +463,14 @@ void AIInterface::Update(uint32 p_time)
 	{
 		if(m_AIType == AITYPE_PET )
 		{
-			Pet * pPet = static_cast<Pet*>(m_Unit);
-
-			if(pPet->GetPetAction() == PET_ACTION_ATTACK || pPet->GetPetState() != PET_STATE_PASSIVE)
+			if(!m_Unit->bInvincible)
 			{
-				_UpdateCombat(p_time);
+				Pet * pPet = static_cast<Pet*>(m_Unit);
+	
+				if(pPet->GetPetAction() == PET_ACTION_ATTACK || pPet->GetPetState() != PET_STATE_PASSIVE)
+				{
+					_UpdateCombat(p_time);
+				}
 			}
 		}
 		else
