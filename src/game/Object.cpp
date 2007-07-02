@@ -2188,3 +2188,4 @@ void Object::SetByte(uint32 index, uint32 index1,uint8 value)
 	}
 
 }
+

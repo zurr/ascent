@@ -199,7 +199,6 @@ void Spell::SpellEffectInstantKill(uint32 i)
 			if(m_caster->GetTypeId() != TYPEID_UNIT)
 				break;
 			Unit *caster = m_caster->GetMapMgr()->GetPlayer(m_caster->GetUInt64Value(UNIT_FIELD_SUMMONEDBY));
-			caster->summonPet->m_BeingRemoved = true;
 			caster->summonPet->RemoveFromWorld(false);
 			delete caster->summonPet;
 			caster->summonPet = NULL;			
@@ -664,7 +663,6 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			//For 1 min
 			if(u_caster->summonPet)
 			{
-				u_caster->summonPet->m_BeingRemoved = true;
 				u_caster->summonPet->RemoveFromWorld(false);
 				delete u_caster->summonPet;
 				u_caster->summonPet = NULL;
@@ -715,7 +713,6 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				NewSummon->GetAIInterface()->SetFollowDistance(3.0f);
 				
 				u_caster->summonPet = NewSummon;
-				u_caster->summonPet->m_BeingRemoved = false;
 				u_caster->SetUInt64Value(UNIT_FIELD_PETNUMBER,NewSummon->GetGUID());
 				sEventMgr.AddEvent(u_caster, &Unit::EventSummonPetExpire, EVENT_SUMMON_PET_EXPIRE, 60000, 1);
 			}
@@ -1613,7 +1610,6 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 	
 	if(u_caster->summonPet)
 	{
-		u_caster->summonPet->m_BeingRemoved = true;
 		u_caster->summonPet->RemoveFromWorld(false);
 		delete u_caster->summonPet;
 		u_caster->summonPet = NULL;
@@ -1663,7 +1659,6 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 		NewSummon->GetAIInterface()->SetFollowDistance(3.0f);
 		
 		u_caster->summonPet = NewSummon;
-		u_caster->summonPet->m_BeingRemoved = false;
 		u_caster->SetUInt64Value(UNIT_FIELD_PETNUMBER,NewSummon->GetGUID());
 		sEventMgr.AddEvent(u_caster, &Unit::EventSummonPetExpire, EVENT_SUMMON_PET_EXPIRE, 60000, 1);
 	}

@@ -272,9 +272,23 @@ int Unit_SetStandState(gmThread * a_thread)
 }
 int Player_AddItem(gmThread * a_thread)
 {
-	GM_CHECK_NUM_PARAMS(2);
+	bool push = false;
+	if(a_thread->GetNumParams() == 2)
+	{
+		// Assume to send an item push
+		push = true;
+	}
+	else if(a_thread->GetNumParams() == 3)
+	{
+		// Choice for push
+		GM_CHECK_INT_PARAM(push_, 2);
+		push = (push_ > 0) ? true : false;
+	}
+	else
+        GM_CHECK_NUM_PARAMS(2);
+
 	GM_CHECK_INT_PARAM(itemid, 0);
-	GM_CHECK_INT_PARAM(count, 0);
+	GM_CHECK_INT_PARAM(count, 1);
 
 	Player * pPlayer = GetThisPointer<Player>(a_thread);
 	if(pPlayer->GetTypeId() != TYPEID_PLAYER)
@@ -284,7 +298,7 @@ int Player_AddItem(gmThread * a_thread)
 	if(!proto)
 		return GM_EXCEPTION;
 
-	if(pPlayer->GetItemInterface()->CanReceiveItem(proto, count))
+	if(pPlayer->GetItemInterface()->CanReceiveItem(proto, count) == 0)
 	{
 		int acount;
 		int bcount;
@@ -307,6 +321,13 @@ int Player_AddItem(gmThread * a_thread)
 				delete pItem;
 				break;
 			}
+		}
+
+		if(push)
+		{
+			WorldPacket data(50);
+			pPlayer->GetSession()->BuildItemPushResult(&data, pPlayer->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, count, itemid, 0);
+			pPlayer->GetSession()->SendPacket(&data);
 		}
 	}
 
@@ -447,6 +468,268 @@ int GM_RAND(gmThread * a_thread)
 		a_thread->PushInt(1);
 	else
 		a_thread->PushInt(0);
+	return GM_OK;
+}
+
+int Quest_GetID(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Quest * pThis = GetThisPointer<Quest>(a_thread);
+	a_thread->PushInt(pThis->id);
+	return GM_OK;
+}
+
+int GM_RegisterEvent(gmThread * a_thread)
+{
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	if(a_thread->GetNumParams() < 2)
+		return GM_EXCEPTION;
+
+	if(a_thread->ParamType(0) != GM_INT || a_thread->ParamType(1) != GM_FUNCTION)
+		return GM_EXCEPTION;
+
+	uint32 argc = a_thread->GetNumParams() - 2;
+	uint32 * argv = argc ? new uint32[argc] : 0;
+	uint32 * argt = argc ? new uint32[argc] : 0;
+	
+	/* see if any of the arguments are our user types -> if so we need to convert the pointers. */
+	for(uint32 i = 0; i < argc; ++i)
+	{
+		void * pointer = 0;
+		uint32 t;
+		for(list<gmType>::iterator itr = ScriptSystem->m_allowedTypes.begin(); itr != ScriptSystem->m_allowedTypes.end(); ++itr)
+		{
+			pointer = a_thread->Param(2+i).GetUserSafe((*itr));
+			if(pointer)
+			{
+				t = *itr;
+				break;
+			}
+		}
+
+		if(pointer)
+		{
+			argt[i] = uint32( (t << 16) | uint32(GM_USER) );
+			argv[i] = (uint32)pointer;
+		}
+		else
+		{
+			argt[i] = 0 | uint32( ( uint32(a_thread->ParamType(2+i)) << 16) );
+			argv[i] = *(uint32*)&a_thread->Param(2+i).m_value;
+		}
+	}
+
+	/* set up the event :) */
+	sEventMgr.AddEvent(pThis, &Object::GMScriptEvent, (void*)a_thread->ParamRef(1), argc, argv, argt, EVENT_GMSCRIPT_EVENT, a_thread->ParamInt(0), 1);
+	return GM_OK;
+}
+
+void Object::GMScriptEvent(void * function, uint32 argc, uint32 * argv, uint32 * argt)
+{
+	ScriptSystem->GetLock().Acquire();
+
+	gmFunctionObject * func = (gmFunctionObject*)function;
+	ASSERT(func->GetType() == GM_FUNCTION);
+	
+	/* strange if we had a function without any arguments, that means no 'this' pointer :P *shrugs* */
+	ScriptSystem->m_userObjectCounter = argc;
+	/*if(argc)
+	{
+		ASSERT((uint16)argt != 0);			// is a user pointer
+		ScriptSystem->SetVariable(0, (void*)argv[0], (gmType)(argt[0] >> 16));
+	}*/
+
+	gmCall call;
+	if(!call.BeginFunction(ScriptSystem->GetMachine(), func, /*argc ? ScriptSystem->m_variables[0] : */gmVariable::s_null, false))
+	{
+		printf("Could not execute delayed function.");
+		ScriptSystem->DumpErrors();
+	}
+	else
+	{
+        /* the rest of the arguments */
+		if(argc)
+		{
+			for(uint32 i = 0; i < argc; ++i)
+			{
+				if((uint16)argt[i] != 0)		// user pointer
+				{
+					ScriptSystem->SetVariable(i, (void*)argv[i], (gmType)(argt[i] >> 16));
+					call.AddParam(ScriptSystem->m_variables[i]);
+				}
+				else		// normal param
+				{
+					ScriptSystem->m_variables[i].m_type = UINT32_HIPART(argt[i]);
+					*(uint32*)&ScriptSystem->m_variables[i].m_value = argv[i];
+
+					// push it!
+					call.AddParam(ScriptSystem->m_variables[i]);
+				}
+			}
+		}
+
+		/* fly away! */
+		call.End();
+		ScriptSystem->DumpErrors();
+	}
+
+	ScriptSystem->GetLock().Release();
+	delete [] argt;
+	delete [] argv;
+}
+
+
+// Escort Quest System
+int Unit_CreateCustomWaypointMap(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+
+	Creature * pCreature = GetThisPointer<Creature>(a_thread);
+	if(pCreature->GetTypeId() != TYPEID_UNIT)
+		return GM_EXCEPTION;
+
+	if(pCreature->m_custom_waypoint_map)
+	{
+		for(WayPointMap::iterator itr = pCreature->m_custom_waypoint_map->begin(); itr != pCreature->m_custom_waypoint_map->end(); ++itr)
+			delete itr->second;
+		delete pCreature->m_custom_waypoint_map;
+	}
+
+	pCreature->m_custom_waypoint_map = new WayPointMap;
+	pCreature->GetAIInterface()->SetWaypointMap(pCreature->m_custom_waypoint_map);
+	return GM_OK;
+}
+
+int Unit_CreateWaypoint(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(7);
+	GM_CHECK_FLOAT_PARAM(x, 0);
+	GM_CHECK_FLOAT_PARAM(y, 1);
+	GM_CHECK_FLOAT_PARAM(z, 2);
+	GM_CHECK_FLOAT_PARAM(o, 3);
+	GM_CHECK_INT_PARAM(waittime, 4);
+	GM_CHECK_INT_PARAM(flags, 5);
+	GM_CHECK_INT_PARAM(modelid, 6);
+
+	Creature * pCreature = GetThisPointer<Creature>(a_thread);
+	if(pCreature->GetTypeId() != TYPEID_UNIT)
+		return GM_EXCEPTION;
+
+	if(!pCreature->m_custom_waypoint_map)
+	{
+		pCreature->m_custom_waypoint_map = new WayPointMap;
+		pCreature->GetAIInterface()->SetWaypointMap(pCreature->m_custom_waypoint_map);
+	}
+
+	if(!modelid)
+		modelid = pCreature->GetEntry();
+
+	WayPoint * wp = new WayPoint;
+	wp->id = pCreature->m_custom_waypoint_map->size() + 1;
+	wp->x = x;
+	wp->y = y;
+	wp->z = z;
+	wp->o = o;
+	wp->flags = flags;
+	wp->backwardskinid = modelid;
+	wp->forwardskinid = modelid;
+	wp->backwardemoteid = wp->forwardemoteid = 0;
+	wp->backwardemoteoneshot = wp->forwardemoteoneshot = false;
+	wp->waittime = waittime;
+
+	pCreature->m_custom_waypoint_map->insert( make_pair( wp->id, wp ) );
+	return GM_OK;
+}
+
+int Unit_SpawnWithoutWorld(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(4);
+	GM_CHECK_INT_PARAM(entry, 0);
+	GM_CHECK_FLOAT_PARAM(posX, 1);
+	GM_CHECK_FLOAT_PARAM(posY, 2);
+	GM_CHECK_FLOAT_PARAM(posZ, 3);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	CreatureProto * p = CreatureProtoStorage.LookupEntry(entry);
+	if(!p)
+		return GM_EXCEPTION;
+
+	Creature * pCreature = pThis->GetMapMgr()->CreateCreature();
+	pCreature->spawnid = 0;
+	pCreature->m_spawn = 0;
+	pCreature->Load(p, posX, posY, posZ);
+	pCreature->SetMapId(pThis->GetMapId());
+	pCreature->SetInstanceID(pThis->GetInstanceID());
+	
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)pCreature;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_unitType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+	return GM_OK;
+}
+
+int Unit_AddToWorld(gmThread * a_thread)
+{
+	/* we need to provide a mapmgr to "leech" from. */
+	GM_CHECK_NUM_PARAMS(1);
+	/*if(a_thread->ParamType(0) != ScriptSystem->m_unitType)
+	{
+		a_thread->GetMachine()->GetLog().LogEntry("expecting param %d as user type Unit", 0);
+		return GM_EXCEPTION;
+	}
+	
+	Object * leech = (Object*)a_thread->ParamUser_NoCheckTypeOrParam(0);*/
+	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, leech, 0);
+	
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(!pThis->IsInWorld())
+	{
+		pThis->PushToWorld(leech->GetMapMgr());
+	}
+
+	return GM_OK;
+}
+
+int Unit_MoveToWaypoint(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(wp, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		pThis->MoveToWaypoint(wp);
+
+	return GM_OK;
+}
+
+int Unit_Delete(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		((Creature*)pThis)->SafeDelete();
+
+	return GM_OK;
+}
+
+int Unit_SetCombatCapable(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(capable, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		pThis->GetAIInterface()->disable_melee = (capable > 0) ? true : false;
+
+	return GM_OK;
+}
+
+int Unit_HaltMovement(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(timer, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		pThis->GetAIInterface()->StopMovement(timer);
+
 	return GM_OK;
 }
 

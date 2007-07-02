@@ -57,6 +57,7 @@ enum CreatureEvents
 	CREATURE_EVENT_AI_TICK				= 5,
 	CREATURE_EVENT_ON_SPAWN				= 6,
 	CREATURE_EVENT_ON_GOSSIP_TALK		= 7,
+	CREATURE_EVENT_ON_REACH_WP			= 8,
 	CREATURE_EVENT_COUNT,
 };
 
@@ -92,6 +93,10 @@ public:
 	gmType m_areaTriggerType;
 	gmType m_scriptEngineType;
 	
+	/** Allowed pointer types
+	 */
+	list<gmType> m_allowedTypes;
+
 protected:
 	/** ScriptMap - binding of events to gm functions
 	 */
@@ -110,6 +115,11 @@ protected:
 	Mutex m_lock;
 
 public:
+
+	/** Lock Grabber
+	 */
+	inline Mutex & GetLock() { return m_lock; }
+
 	/** User objects, used in passing of arguments and used for 'this' pointer.
 	 */
 	gmVariable m_variables[10];
@@ -190,6 +200,7 @@ public:
 	 */
 	bool OnCreatureEvent(Creature * pCreature, gmFunctionObject * pointer);
 	bool OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint32 Event);
+	bool OnCreatureEventArg(Creature * pCreature, uint32 Argument, uint32 Event);
 
 	/** Looks up a script on a gameobject and executes it.
 	 */
@@ -198,6 +209,10 @@ public:
 	/** Returns the machine
 	 */
 	inline gmMachine * GetMachine() { return m_machine; }
+
+	/** Has event of type?
+	 */
+	bool HasEventType(uint32 Entry, uint32 Event);
 };
 
 /* gonna make one global scriptengine for testing */

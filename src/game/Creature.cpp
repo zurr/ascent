@@ -69,7 +69,6 @@ Creature::Creature(uint32 high, uint32 low)
 	totemSlot = -1;
 
 	m_PickPocketed = false;
-	m_BeingRemoved = true;
 	m_SellItems = NULL;
 	_myScriptClass = NULL;
 	m_TaxiNode = 0;
@@ -86,6 +85,7 @@ Creature::Creature(uint32 high, uint32 low)
 	has_waypoint_text = has_combat_text = false;
 	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
 	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
+	m_custom_waypoint_map = 0;
 }
 
 
@@ -101,6 +101,13 @@ Creature::~Creature()
 	
 	if(_myScriptClass != 0)
 		_myScriptClass->Destroy();
+
+	if(m_custom_waypoint_map != 0)
+	{
+		for(WayPointMap::iterator itr = m_custom_waypoint_map->begin(); itr != m_custom_waypoint_map->end(); ++itr)
+			delete itr->second;
+		delete m_custom_waypoint_map;
+	}
 }
 
 void Creature::Update( uint32 p_time )

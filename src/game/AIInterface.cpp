@@ -78,6 +78,7 @@ AIInterface::AIInterface()
 	b_isAttackableOld = false;
 	disable_melee = false;
 	next_spell_time = 0;
+	m_hasWaypointEvents = false;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
@@ -105,6 +106,7 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt)
 	m_sourceY = un->GetPositionY();
 	m_sourceZ = un->GetPositionZ();
 	m_guardTimer = getMSTime();
+	m_hasWaypointEvents = ScriptSystem->HasEventType(m_Unit->GetEntry(), CREATURE_EVENT_ON_REACH_WP);
 }
 
 AIInterface::~AIInterface()
@@ -129,6 +131,7 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt, Unit *owner)
 	m_sourceX = un->GetPositionX();
 	m_sourceY = un->GetPositionY();
 	m_sourceZ = un->GetPositionZ();
+	m_hasWaypointEvents = ScriptSystem->HasEventType(m_Unit->GetEntry(), CREATURE_EVENT_ON_REACH_WP);
 }
 
 void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
@@ -589,7 +592,7 @@ void AIInterface::_UpdateTimer(uint32 p_time)
 
 void AIInterface::_UpdateTargets()
 {
-	if(m_Unit->IsPlayer())
+	if(m_Unit->IsPlayer() || (m_AIType != AITYPE_PET && disable_melee))
 		return;
 	if(((Creature*)m_Unit)->GetCreatureName() && ((Creature*)m_Unit)->GetCreatureName()->Type == CRITTER)
 		return;
@@ -684,6 +687,9 @@ void AIInterface::_UpdateTargets()
 ///====================================================================
 void AIInterface::_UpdateCombat(uint32 p_time)
 {
+	if(m_AIType != AITYPE_PET && disable_melee)
+		return;
+
 	uint16 agent = m_aiCurrentAgent;
 
 	// If creature is very far from spawn point return to spawnpoint
@@ -2216,6 +2222,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 					if(wp)
 					{
 						CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wp->id, !m_moveBackward);
+						ScriptSystem->OnCreatureEventArg(((Creature*)m_Unit), wp->id, CREATURE_EVENT_ON_REACH_WP);
 
 						if(((Creature*)m_Unit)->has_waypoint_text)
 							objmgr.HandleMonsterSayEvent(((Creature*)m_Unit), MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
@@ -2388,6 +2395,14 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 						else
 							destpoint = -1;
 					}
+				}
+				else if(m_moveType == MOVEMENTTYPE_FORWARDTHANSTOP)// move to end, then stop
+				{
+					++m_currentWaypoint;
+					if(m_currentWaypoint > GetWayPointsCount())
+						destpoint = -1;
+					else
+						destpoint = m_currentWaypoint;
 				}
 				else if(m_moveType != MOVEMENTTYPE_QUEST && m_moveType != MOVEMENTTYPE_DONTMOVEWP)//4 Unused
 				{

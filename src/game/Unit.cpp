@@ -2346,11 +2346,13 @@ void Unit::MoveToWaypoint(uint32 wp_id)
 {
 	if(this->m_useAI && this->GetAIInterface() != NULL)
 	{
-		sLog.outString("WARNING: Cannot find AI Interface for MoveToWaypoint!");
 		AIInterface *ai = GetAIInterface();
 		WayPoint *wp = ai->getWayPoint(wp_id);
 		if(!wp)
+		{
 			sLog.outString("WARNING: Invalid WP specified in MoveToWaypoint.");
+			return;
+		}
 
 		ai->m_currentWaypoint = wp_id;
 		ai->MoveTo(wp->x, wp->y, wp->z, 0);
@@ -2899,7 +2901,6 @@ void Unit::EventSummonPetExpire()
 		}
 		else
 		{
-			summonPet->m_BeingRemoved = true;
 			summonPet->RemoveFromWorld(false);
 			delete summonPet;
 			summonPet = NULL;

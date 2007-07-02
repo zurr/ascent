@@ -368,7 +368,7 @@ public:
 
 	inline bool IsPickPocketed() { return m_PickPocketed; }
 	inline void SetPickPocketed(bool val = true) { m_PickPocketed = val; }
-	bool m_BeingRemoved;
+
 	inline CreatureAIScript * GetScript() { return _myScriptClass; }
 	void LoadScript();
 
@@ -407,6 +407,8 @@ public:
 
 	void DeleteMe();
 	bool CanAddToWorld();
+
+	WayPointMap * m_custom_waypoint_map;
 
 protected:
 	CreatureAIScript *_myScriptClass;

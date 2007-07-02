@@ -305,15 +305,6 @@ void WorldSession::LogoutPlayer(bool Save)
 		if ( GetPlayer( )->GetUInt32Value(UNIT_FIELD_FLAGS) & U_FIELD_FLAG_LOCK_PLAYER )
 			GetPlayer( )->RemoveFlag( UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER );
 
-		if(_player->critterPet)
-		{
-			_player->critterPet->m_BeingRemoved = true;
-			if(_player->critterPet->IsInWorld())
-				_player->critterPet->RemoveFromWorld(false);
-
-			delete _player->critterPet;
-			_player->critterPet = NULL;
-		}
 		// Save Honor Points
 		_player->SaveHonorFields();
 

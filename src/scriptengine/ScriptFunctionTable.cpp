@@ -48,6 +48,9 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "CastSpell",							Unit_CastSpell					},
 		{ "CastSpellOnTarget",					Unit_CastSpellOnTarget			},
 		{ "SpawnMonster",						Unit_SpawnMonster				},
+		{ "RegisterEvent",						GM_RegisterEvent				},
+		{ "SpawnWithoutWorld",					Unit_SpawnWithoutWorld			},
+		{ "StopMovement",						Unit_HaltMovement				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -66,6 +69,15 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "DeregisterTimer",					Unit_DeregisterTimer			},
 		{ "SpawnMonster",						Unit_SpawnMonster				},
 		{ "SetStandState",						Unit_SetStandState				},
+		{ "RegisterEvent",						GM_RegisterEvent				},
+		{ "SpawnWithoutWorld",					Unit_SpawnWithoutWorld			},
+		{ "AddToWorld",							Unit_AddToWorld					},
+		{ "CreateCustomWaypointMap",			Unit_CreateCustomWaypointMap	},
+		{ "CreateWaypoint",						Unit_CreateWaypoint				},
+		{ "MoveToWaypoint",						Unit_MoveToWaypoint				},
+		{ "Delete",								Unit_Delete						},
+		{ "SetCombatCapable",					Unit_SetCombatCapable			},
+		{ "StopMovement",						Unit_HaltMovement				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -74,16 +86,17 @@ void ScriptEngine::SetUnitFunctionTable()
 void ScriptEngine::SetQuestFunctionTable()
 {
 	static gmFunctionEntry table[] = {
-		{ "test", 0 },
+		{ "GetID",								Quest_GetID						},
 	};
 
-	//m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
+	m_machine->RegisterTypeLibrary(m_questType, table, sizeof(table) / sizeof(table[0]));
 }
 
 void ScriptEngine::SetGameObjectFunctionTable()
 {
 	static gmFunctionEntry table[] = {
 		{ "Despawn",							GameObject_Despawn				},
+		{ "RegisterEvent",						GM_RegisterEvent				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));

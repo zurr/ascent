@@ -174,6 +174,7 @@ enum EventTypes
 	EVENT_DODGE_BLOCK_FLAG_EXPIRE,	//yeah, there are more then 1 flags
 	EVENT_PARRY_FLAG_EXPIRE,		
 	EVENT_CRIT_FLAG_EXPIRE,		
+	EVENT_GMSCRIPT_EVENT,
 };
 
 struct SERVER_DECL TimedEvent

@@ -4951,7 +4951,7 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 					{
 						for(GroupMembersSet::iterator itr = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); itr != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
 						{
-							if((*itr)->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount))
+							if((*itr)->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
 							{
 								if((*itr)->m_rolls.count(iter->roll) == 0)
 								(*itr)->m_rolls.insert(iter->roll);

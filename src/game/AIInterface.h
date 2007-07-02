@@ -45,6 +45,7 @@ enum MovementType
 	MOVEMENTTYPE_WANTEDWP,
 	MOVEMENTTYPE_DONTMOVEWP,
 	MOVEMENTTYPE_QUEST = 10,
+	MOVEMENTTYPE_FORWARDTHANSTOP = 11,
 };
 
 
@@ -307,8 +308,11 @@ public:
 			m_nextSpell = 0;
 	}
 
+	inline void SetWaypointMap(WayPointMap * m) { m_waypoints = m; }
+
 private:
 	bool m_AllowedToEnterCombat;
+	bool m_hasWaypointEvents;
 
 	// Update
 	void _UpdateTargets();

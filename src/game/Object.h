@@ -395,6 +395,8 @@ public:
 		delete this;
 	}
 
+	void GMScriptEvent(void * function, uint32 argc, uint32 * argv, uint32 * argt);
+
 protected:
 	Object (  );
 

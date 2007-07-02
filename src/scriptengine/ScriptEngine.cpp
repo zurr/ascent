@@ -80,6 +80,15 @@ void ScriptEngine::Reload()
 	m_areaTriggerType	= m_machine->CreateUserType("AreaTrigger");
 	m_scriptEngineType	= m_machine->CreateUserType("ScriptEngine");
 
+	m_allowedTypes.push_back(m_playerType);
+	m_allowedTypes.push_back(m_unitType);
+	m_allowedTypes.push_back(m_gameObjectType);
+	m_allowedTypes.push_back(m_questType);
+	m_allowedTypes.push_back(m_spellType);
+	m_allowedTypes.push_back(m_auraType);
+	m_allowedTypes.push_back(m_areaTriggerType);
+	m_allowedTypes.push_back(m_scriptEngineType);
+
 	/* register all our functions inside the machine */
 	SetPlayerFunctionTable();
 	SetUnitFunctionTable();
@@ -301,6 +310,43 @@ bool ScriptEngine::OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint3
 	return true;
 }
 
+bool ScriptEngine::OnCreatureEventArg(Creature * pCreature, uint32 Argument, uint32 Event)
+{
+	if(!m_unitMap.size())
+		return false;
+
+	ScriptMap::iterator itr = m_unitMap.find(pCreature->GetEntry());
+	if(itr == m_unitMap.end())
+		return false;
+
+	map<uint32, gmFunctionObject*>::iterator it2 = itr->second.find(Event);
+	if(it2 == itr->second.end() )
+		return false;
+
+	gmFunctionObject * obj = it2->second;
+	m_lock.Acquire();
+
+	ASSERT(obj->GetType() == GM_FUNCTION);
+
+	SetVariable(0, pCreature, m_unitType);
+	gmCall call;
+	if(call.BeginFunction(m_machine, obj, m_variables[0], false))
+	{
+		call.AddParamInt(Argument);
+		m_userObjectCounter = 2;
+		call.End();
+		DumpErrors();
+	}
+	else
+	{
+		printf("Could not find function!");
+		DumpErrors();
+	}
+
+	m_lock.Release();
+	return true;
+}
+
 bool ScriptEngine::OnCreatureEvent(Creature * pCreature, gmFunctionObject * pointer)
 {
 	if(!m_unitMap.size())
@@ -332,5 +378,17 @@ bool ScriptEngine::OnGameObjectEvent(GameObject * pGameObject, Player * pUser, u
 
 	DoGMCall(it2->second, 1);
 	m_lock.Release();
+	return true;
+}
+
+bool ScriptEngine::HasEventType(uint32 Entry, uint32 Event)
+{
+	ScriptMap::iterator itr = m_unitMap.find(Entry);
+	if(itr == m_unitMap.end())
+		return false;
+
+	if(itr->second.find(Event) != itr->second.end())
+		return false;
+
 	return true;
 }
