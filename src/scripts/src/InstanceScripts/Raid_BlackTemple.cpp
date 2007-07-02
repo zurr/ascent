@@ -15,21 +15,14 @@
 
 #define CN_SUPREMUS 22898	
 
-#define MIND_REND 36924 // DBC: 36859, 36924;
-#define FEAR 39415
-#define DOMINATION 37162
-#define SUMMON_ILLUSION_66 36931	// those 2 don't work
-#define SUMMON_ILLUSION_33 36932
-// BLINK_VISUAL 36937 ?
-// SIMPLE_TELEPORT 12980 ?
-// Add sounds related to his dialog with mind controlled guy
+#define 
 
 class SupremusAI : public CreatureAIScript
 {
 public:
 	ADD_CREATURE_FACTORY_FUNCTION(SupremusAI);
-	SP_AI_Spell spells[5];
-	bool m_spellcheck[5];
+	SP_AI_Spell spells[1];
+	bool m_spellcheck[1];
 
     SupremusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
@@ -39,41 +32,12 @@ public:
 			m_spellcheck[i] = false;
 		}
 
-		spells[0].info = sSpellStore.LookupEntry(MIND_REND);
-		spells[0].targettype = TARGET_ATTACKING;
+		spells[0].info = sSpellStore.LookupEntry();
+		spells[0].targettype = TARGET_;
 		spells[0].instant = false;
 		spells[0].cooldown = -1;
-		spells[0].perctrigger = 15.0f;
+		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
-
-		spells[1].info = sSpellStore.LookupEntry(FEAR);
-		spells[1].targettype = TARGET_ATTACKING;
-		spells[1].instant = false;
-		spells[1].cooldown = -1;
-		spells[1].perctrigger = 8.0f;
-		spells[1].attackstoptimer = 1000;
-
-		spells[2].info = sSpellStore.LookupEntry(DOMINATION);
-		spells[2].targettype = TARGET_ATTACKING;
-		spells[2].instant = false;
-		spells[2].cooldown = -1;
-		spells[2].perctrigger = 6.0f;
-		spells[2].attackstoptimer = 1000;
-
-		spells[3].info = sSpellStore.LookupEntry(SUMMON_ILLUSION_66);
-		spells[3].targettype = TARGET_SELF;
-		spells[3].instant = true;
-		spells[3].cooldown = -1;
-		spells[3].perctrigger = 0.0f;
-		spells[3].attackstoptimer = 1000;
-
-		spells[4].info = sSpellStore.LookupEntry(SUMMON_ILLUSION_33);
-		spells[4].targettype = TARGET_SELF;
-		spells[4].instant = true;
-		spells[4].cooldown = -1;
-		spells[4].perctrigger = 0.0f;
-		spells[4].attackstoptimer = 1000;
-
     }
     
     void OnCombatStart(Unit* mTarget)
@@ -394,13 +358,13 @@ public:
 		_unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, WALK));
 		_unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, WALK));
 		_unit->GetAIInterface()->addWayPoint(CreateWaypoint(12, 0, WALK));
-
+/*							// don't know why, but when spells are initialized server crashes =O
 		nrspells = 2;
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
 		}
-
+*/
         spells[0].info = sSpellStore.LookupEntry(HEALING_POTION);
 		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
@@ -408,12 +372,12 @@ public:
 		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
 
-		spells[0].info = sSpellStore.LookupEntry(BLESSING_OF_KINGS);
-		spells[0].targettype = TARGET_SELF;
-		spells[0].instant = true;
-		spells[0].cooldown = -1;
-		spells[0].perctrigger = 15.0f;
-		spells[0].attackstoptimer = 1000;
+		spells[1].info = sSpellStore.LookupEntry(BLESSING_OF_KINGS);
+		spells[1].targettype = TARGET_SELF;
+		spells[1].instant = true;
+		spells[1].cooldown = -1;
+		spells[1].perctrigger = 15.0f;
+		spells[1].attackstoptimer = 1000;
 
 		WAY_START = 0;
 		_unit->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -424,16 +388,16 @@ public:
     
     void OnCombatStart(Unit* mTarget)
     {
-		CastTime();
+		//CastTime();
 		//RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
     }
-
+/*
 	void CastTime()
 	{
 		for(int i=0;i<nrspells;i++)
 			spells[i].casttime = spells[i].cooldown;
 	}
-
+*/
     void OnCombatStop(Unit *mTarget)
     {
 		if (m_phase > 0)
@@ -458,10 +422,10 @@ public:
 			_unit->GetAIInterface()->setWaypointToMove(1);
 			WAY_START = 1;
 		}
-
+/*
 		if (_unit->GetHealthPct() < 15)
 			_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-
+*/
 		if (AKAMA_DIALOG)
 		{
 			switch(AKAMA_DIALOG)
@@ -487,9 +451,10 @@ public:
 					_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
 					_unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
 					_unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+					_unit->GetAIInterface()->m_canMove = true;
+					AKAMA_DIALOG = 1;
 					//_unit->GetAIInterface()->m_moveRun = true;
 					//_unit->GetAIInterface()->MoveTo(714.594788, 305.476044, 353.309204, 3.170653);	// it's just hack to prvent Akama to stand in place (as I have no idea now how to target and attack Illidan =S)
-					_unit->GetAIInterface()->m_canMove = true;
 					//Unit * target = _unit->GetMapMgr()->GetInterface()->GetObjectNearestCoords<Creature, TYPEID_UNIT>(22917, 704.539001f, 305.282013f, 353.919006f);	// no idea if this works as I don't have right Akama (hostile with Illidan)
 					//Unit * target = _unit->GetMapMgr()->GetCreature(355093);
 					//_unit->setAttackTarget(target);
@@ -497,14 +462,14 @@ public:
 				}break;
 			};
 		}
-
+/*
 		if (m_phase)
 		{
 			float val = sRand.rand(100.0f);
 			SpellCast(val);
-		}
+		}*/
     }
-
+/*
 	void SpellCast(float val)
 	{
         if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
@@ -542,8 +507,8 @@ public:
 
 				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
 				{
-					if (i == 1 && !(_unit->HasActiveAura(20217))/*_unit->!HasAura(137)*/)	// added separated case to not cast spell when aura effect is still on target
-					{
+					if (i == 1 && !(_unit->HasActiveAura(20217)) *//*_unit->!HasAura(137)*/ //)	// added separated case to not cast spell when aura effect is still on target
+					/*{
 						_unit->setAttackTimer(spells[i].attackstoptimer, false);
 						m_spellcheck[i] = true;
 					}
@@ -557,7 +522,7 @@ public:
 				comulativeperc += spells[i].perctrigger;
 			}
 		}
-	}
+	}*/
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
@@ -711,8 +676,6 @@ public:
 
     IllidanStormrageAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-		DemonPhaseTimer = 30;
-		m_phase = 1;	// must be 0 to use it with some other stuff, but it's good for tests.
 		nrspells = 8;
 		for(int i=0;i<nrspells;i++)
 		{
@@ -799,11 +762,13 @@ public:
 		spells[11].cooldown = -1;
 		spells[11].perctrigger = 0.0f;
 
-		_unit->SetUInt64Value(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT);
 		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+		_unit->SetUInt64Value(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT);
 		_unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 		_unit->GetAIInterface()->m_canMove = false;
+		DemonPhaseTimer = 30;
 		DemonPhase = 0;
+		m_phase = 0;	// must be 0 to use it with some other stuff.
     }
 
     void OnCombatStart(Unit* mTarget)
@@ -849,7 +814,7 @@ public:
     {
 		DemonPhaseTimer = 30;
 		DemonPhase = 0;
-		m_phase = 1;
+		m_phase = 0;
 		CastTime();
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -860,9 +825,9 @@ public:
     {
 		DemonPhaseTimer = 30;
 		DemonPhase = 0;
-		m_phase = 1;
+		m_phase = 0;
 		CastTime();
-       RemoveAIUpdateEvent();
+		RemoveAIUpdateEvent();
 	   	_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.");
 		_unit->PlaySoundToSet(11478);
     }
@@ -879,20 +844,24 @@ public:
 					_unit->PlaySoundToSet(11463);
 					_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 378);	// EMOTE_STATE_TALK
 			    }break;
+
 			case 7:		// 8
 				{
-				_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+					_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
 				}break;
+
 			case 13:	// (12.5) I would give it 4.5 diff, but must check if this is possible to manipulate time between two AIUpdate voiding
 			    {
 			        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Boldly said. But I remain unconvinced.");
 					_unit->PlaySoundToSet(11464);
 					_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 378);
 			    }break;
+
 			case 16:	//17
 				{
-				_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+					_unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
 				}break;
+
 			case 18:
 				{
 					_unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
