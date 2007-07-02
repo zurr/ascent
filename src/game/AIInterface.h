@@ -309,10 +309,10 @@ public:
 	}
 
 	inline void SetWaypointMap(WayPointMap * m) { m_waypoints = m; }
+	bool m_hasWaypointEvents;
 
 private:
 	bool m_AllowedToEnterCombat;
-	bool m_hasWaypointEvents;
 
 	// Update
 	void _UpdateTargets();
