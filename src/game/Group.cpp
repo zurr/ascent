@@ -31,6 +31,7 @@ Group::Group()
 	//EventMgr::getSingleton().AddEvent(this, &Group::UpdatePositions, EVENT_GROUP_POSITION_UPDATE, 5000, 0);
 	m_Id = objmgr.GenerateGroupId();
 	ObjectMgr::getSingleton().AddGroup(this);
+	lastRRlooter = NULL;
 }
 
 Group::~Group()
@@ -345,6 +346,27 @@ void Group::SetLooter(Player *pPlayer, uint8 method, uint16 threshold)
 	m_Looter = pPlayer;
 	m_LootThreshold  = threshold;
 	Update();
+}
+
+//!! function is not fair. If new player pops in/out he might get a piece of the action to soon or let first player get more loots :)
+Player* Group::GetnextRRlooter()
+{
+	//another methode would be to directly store a node from list so we can jump directly to next one. But that is not safe :P
+	GroupMembersSet::iterator itr1;
+	Player *firsthit=NULL,*prevp=NULL;
+	for(int i = 0; i < m_SubGroupCount; i++)
+	{
+		for(itr1 = m_SubGroups[i]->GetGroupMembersBegin(); itr1 != m_SubGroups[i]->GetGroupMembersEnd(); ++itr1)
+		{
+			if(firsthit==NULL)
+				firsthit = (*itr1);
+			if(prevp==lastRRlooter)
+				return (*itr1);
+			prevp = (*itr1);
+		}
+	}
+	//if we got here it means player eighter exited group or it was last one
+	return firsthit;
 }
 
 void Group::UpdatePositions()

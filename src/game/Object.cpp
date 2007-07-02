@@ -1753,9 +1753,21 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 						// Check loot method.
 						switch(pGroup->GetMethod())
 						{
+						case PARTY_LOOT_RR:
+							{
+								//get new tagger for creature
+								Player *tp = pGroup->GetnextRRlooter();
+								if(tp)
+								{
+									//we force on creature a new tagger
+									victim->TaggerGuid = tp->GetGUID();
+									victim->Tagged = true;
+									if(tp->IsVisible(victim))  // Save updates for non-existant creatures
+										tp->PushUpdateData(&buf, 1);
+								}
+							}break;
 						case PARTY_LOOT_FFA:
 						case PARTY_LOOT_GROUP:
-						case PARTY_LOOT_RR:
 						case PARTY_LOOT_NBG:
 							{
 								// Loop party players and push update data.

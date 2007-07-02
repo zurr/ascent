@@ -100,6 +100,7 @@ public:
 	// Leaders and Looting
 	void SetLeader(Player* pPlayer);
 	void SetLooter(Player *pPlayer, uint8 method, uint16 threshold);
+	Player* GetnextRRlooter();
 
 	// Transferring data to clients
 	void Update();
@@ -151,6 +152,7 @@ protected:
 	
 	Player* m_Leader;
 	Player* m_Looter;
+	Player* lastRRlooter; //used to determine next RR looter
 	uint8 m_LootMethod;
 	uint16 m_LootThreshold;
 	uint8 m_GroupType;
