@@ -13,12 +13,6 @@ SMT_RESIST_DISPEL - check if it is used
 
 - make prospecting use a loottable : changes in profesions.cpp
 
-Zack - test my shit :
-
-- after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
-- patch from splat for "well fed", some players did report error that can be related to this fix. Just can't remember what was the error :(
-
-- find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
 
 maybe later :P
 [20:56] <Raziel> spell Translocate
@@ -49,11 +43,22 @@ maybe later :P
 [21:03] <Raziel> SPELL_ID_TRANSLOCATE_17 = 35727
 [21:04] <Raziel> SPELL_ID_TRANSLOCATE_18 = 35730
 
-sorry for this :P
- toata lumea poate folosi cartile de rank 3 care ar trebui sa aiba clasa.. adica paladinii pot da prayer of healing rank 3, priestii pot face conjured glacier water..
-- unii pot folosi arme de 2h daca au skill de onehand - acum cred ca s-a reparat bugu, dar cei care-l aveau inca-l au
-- blind blocheaza bossii pe o perioada nelimitata, timp in care nu dau dmg si nu se misca
-- se poate trage cu arma de pe mount...not fair
-- bagu` cu speed la hunter ziceai ca repari sa mearga doar 1 bag sa fie activ
+- blind block bosses for unlimited time
+- mounted players can shoot
+- make hunter to be able to use only 1 bag
 
 items modify this value PLAYER_FIELD_COMBAT_RATING_08 but nowhere else is used ?
+
+- imlement a sure way to test if server is crashed/blocked or simply get it's state. Status Xml is great but on crash there is no status update
+
+- find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
+
+- some players can't shoot with wand
+- channeled spells are not working
+
+
+Zack - test my shit :
+
+- after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
+- patch from splat for "well fed", some players did report error that can be related to this fix. Just can't remember what was the error :(
+- creatures will clear tagger if attacker left them alone

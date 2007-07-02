@@ -493,6 +493,13 @@ void AIInterface::Update(uint32 p_time)
 			{
 				//return to last position before attacking
 				MoveTo(m_returnX,m_returnY,m_returnZ,m_Unit->GetOrientation());
+				Creature *aiowner = static_cast<Creature*>(m_Unit);
+				if(aiowner)
+				{
+					//clear tagger
+					aiowner->Tagged = false;
+					aiowner->TaggerGuid = 0;
+				}
 			}
 		}
 		//else
