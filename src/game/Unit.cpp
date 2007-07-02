@@ -623,11 +623,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				{
 					continue;
 				}
-				//second wind triggers only on stun or Immobilize effects. WTF is immobilized anyway ?
-				if(spellId==20230 && !( spellInfo->EffectApplyAuraName[0]==SPELL_AURA_MOD_STUN ||
-										spellInfo->EffectApplyAuraName[1]==SPELL_AURA_MOD_STUN ||
-										spellInfo->EffectApplyAuraName[2]==SPELL_AURA_MOD_STUN))
-					continue;
 				Spell *spell = new Spell(this, spellInfo ,true, NULL);
 				//Spell *spell = new Spell(this,spellInfo,false,0,true,false);
 				if(itr2->spellId==974||itr2->spellId==32593||itr2->spellId==32594) // Earth Shield handler

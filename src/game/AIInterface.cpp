@@ -500,9 +500,10 @@ void AIInterface::Update(uint32 p_time)
 				Creature *aiowner = static_cast<Creature*>(m_Unit);
 				if(aiowner)
 				{
-					//clear tagger
+					//clear tagger.
 					aiowner->Tagged = false;
 					aiowner->TaggerGuid = 0;
+					aiowner->SetUInt32Value(UNIT_DYNAMIC_FLAGS,aiowner->GetUInt32Value(UNIT_DYNAMIC_FLAGS) & ~(U_DYN_FLAG_TAGGED_BY_OTHER |U_DYN_FLAG_LOOTABLE));
 				}
 			}
 		}

@@ -54,13 +54,9 @@ items modify this value PLAYER_FIELD_COMBAT_RATING_08 but nowhere else is used ?
 - find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
 
 - some players can't shoot with wand
-- channeled spells are not working
 - RR looting should be in Whole RAID group or only in smaller groups ? Currently RR is made in big group
 
 Zack - test my shit :
 
 - after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
-- patch from splat for "well fed", some players did report error that can be related to this fix. Just can't remember what was the error :(
-- creatures will clear tagger if attacker left them alone
 - RR looting.
-- channeled spell (spellaura.cpp line 2280)

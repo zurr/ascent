@@ -435,8 +435,8 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 			}
 
 			m_uint32Values[UNIT_DYNAMIC_FLAGS] = Flags;
-			if(updateMask->GetBit(UNIT_DYNAMIC_FLAGS) == false)
-				updateMask->SetBit(UNIT_DYNAMIC_FLAGS);
+
+			updateMask->SetBit(UNIT_DYNAMIC_FLAGS);
 			
 			reset = true;
 		}

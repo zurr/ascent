@@ -3057,8 +3057,6 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		pts.caster = m_casterGuid;
 		if(GetSpellProto()->EffectTriggerSpell[mod->i])
 			pts.spellId=GetSpellProto()->EffectTriggerSpell[mod->i];
-/*		else 
-			pts.spellId = GetSpellProto()->dummy;*/
 		else
 		{
 			sLog.outDebug("Warning,trigger spell is null for spell %u",GetSpellProto()->Id);
@@ -3070,7 +3068,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
 //		if(pts.procCharges==0)
 //			pts.procCharges=-1;
-//sLog.outDebug("%u is registering %u chance %u flags %u charges %u hasflag %u\n",pts.origId,pts.spellId,pts.procChance,pts.procFlags,pts.procCharges,pts.procFlags & PROC_ON_MELEE_ATTACK);
+//sLog.outDebug("%u is registering %u chance %u flags %u charges %u triggeronself %u\n",pts.origId,pts.spellId,pts.procChance,pts.procFlags & ~PROC_TAGRGET_SELF,pts.procCharges,pts.procFlags & PROC_TAGRGET_SELF);
 		pts.deleted = false;
 		m_target->m_procSpells.push_front(pts);
 	}

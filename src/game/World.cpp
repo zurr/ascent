@@ -782,15 +782,18 @@ void World::SetInitialWorldSettings()
 					if(strstr(desc, "melee critical strike"))
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(nametext, "Bloodthirst"))
-						pr|=PROC_ON_MELEE_ATTACK;
+						pr|=PROC_ON_MELEE_ATTACK | PROC_TAGRGET_SELF;
 
 					//some procs require to target ourself. Rare case like bloodthirst
-					for(int tagetsel=0;tagetsel<3;tagetsel++)
-						if(sp->EffectImplicitTargetA[tagetsel]==1)
-							pr|=PROC_TAGRGET_SELF;
-					for(int tagetsel=0;tagetsel<3;tagetsel++)
-						if(sp->EffectImplicitTargetB[tagetsel]==1)
-							pr|=PROC_TAGRGET_SELF;
+/*					for(int spind=0;spind<3;spind++)
+						if(sp->EffectTriggerSpell[spind])
+						{
+							SpellEntry * spt = sSpellStore.LookupEntry(sp->EffectTriggerSpell[spind]);
+							if(sp->EffectImplicitTargetA[spind]==1)
+								pr|=PROC_TAGRGET_SELF;
+							if(sp->EffectImplicitTargetB[spind]==1)
+								pr|=PROC_TAGRGET_SELF;
+						}*/
 				}
 				//dirty fix to remove auras that should expire on event and they are not
 //				else if((aura == SpellAuraAddFlatModifier || aura == SpellAuraAddPctMod) && sp->procCharges)
@@ -852,6 +855,47 @@ void World::SetInitialWorldSettings()
 		sp->EffectApplyAuraName[0] = 42; //force him to use procspell effect
 		sp->EffectTriggerSpell[0] = 22858; //evil , but this is good for us :D
 		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM; //add procflag here since this was not processed with the others !
+	}
+
+	//"bloodthirst" new version is ok but old version is wrong from now on :(
+	sp = sSpellStore.LookupEntry(23881);
+	if(sp)
+	{
+printf("namehash %u \n",sp->NameHash);
+		sp->Effect[1] = 64; //cast on us, it is good
+		sp->EffectTriggerSpell[1] = 23885; //evil , but this is good for us :D
+	}
+	sp = sSpellStore.LookupEntry(23892);
+	if(sp)
+	{
+		sp->procFlags |= PROC_TAGRGET_SELF;
+		sp->Effect[1] = 64;
+		sp->EffectTriggerSpell[1] = 23886; //evil , but this is good for us :D
+	}
+	sp = sSpellStore.LookupEntry(23893);
+	if(sp)
+	{
+		sp->Effect[1] = 64; //
+		sp->EffectTriggerSpell[1] = 23887; //evil , but this is good for us :D
+	}
+	sp = sSpellStore.LookupEntry(23894);
+	if(sp)
+	{
+		sp->Effect[1] = 64; //
+		sp->EffectTriggerSpell[1] = 23888; //evil , but this is good for us :D
+	}
+	sp = sSpellStore.LookupEntry(25251);
+	if(sp)
+	{
+		sp->Effect[1] = 64; //aura
+		sp->EffectTriggerSpell[1] = 25252; //evil , but this is good for us :D
+	}
+	sp = sSpellStore.LookupEntry(30335);
+	if(sp)
+	{
+		sp->Effect[1] = 6; //aura
+		sp->EffectApplyAuraName[1] = 42; //force him to use procspell effect
+		sp->EffectTriggerSpell[0] = 30339; //evil , but this is good for us :D
 	}
 
 	//improoved berserker stance should be triggered on berserker stance use

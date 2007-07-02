@@ -308,7 +308,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 				{
 					// random extra damage
 					uint32 extra_dmg = 111 + (m_spellInfo->RankNumber * 11) + sRand.randInt(m_spellInfo->RankNumber * 11);
-					damage += extra_dmg;
+					dmg += extra_dmg;
 				}
 			}break;
 		case 0xccc8a100:	// Gouge: turns off your combat
@@ -321,7 +321,8 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 			}
 		case 0xCBC738B8:	// Bloodthirst
 			{
-				damage = u_caster->GetAP()*damage / 100;
+//				dmg = u_caster->GetAP()*damage / 100;
+				dmg = u_caster->GetAP()*damage*4 / 100; //this is so wrong but it is made like thos to be aprox sincronized to client :|
 			}
 		}
 	}
