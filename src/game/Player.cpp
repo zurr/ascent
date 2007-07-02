@@ -1913,6 +1913,23 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 		}
 	}
 	
+	uint32 player_flags = m_uint32Values[PLAYER_FLAGS];
+	{
+		// Remove un-needed and problematic player flags from being saved :p
+		if(player_flags & PLAYER_FLAG_PARTY_LEADER)
+			player_flags &= ~PLAYER_FLAG_PARTY_LEADER;
+		if(player_flags & PLAYER_FLAG_AFK)
+			player_flags &= ~PLAYER_FLAG_AFK;
+		if(player_flags & PLAYER_FLAG_DND)
+			player_flags &= ~PLAYER_FLAG_DND;
+		if(player_flags & PLAYER_FLAG_GM)
+			player_flags &= ~PLAYER_FLAG_GM;
+		if(player_flags & PLAYER_FLAG_PVP_TOGGLE)
+			player_flags &= ~PLAYER_FLAG_PVP_TOGGLE;
+		if(player_flags & PLAYER_FLAG_FREE_FOR_ALL_PVP)
+			player_flags &= ~PLAYER_FLAG_FREE_FOR_ALL_PVP;
+	}
+
 	ss << "', "
 	<< m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] << ","
 	<< m_uint32Values[PLAYER_CHOSEN_TITLE] << ","
@@ -1926,7 +1943,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	<< uint32(GetPVPRank()) << ","
 	<< m_uint32Values[PLAYER_BYTES] << ","
 	<< m_uint32Values[PLAYER_BYTES_2] << ","
-	<< m_uint32Values[PLAYER_FLAGS] << ","
+	<< player_flags << ","
 	<< m_uint32Values[PLAYER_FIELD_BYTES] << ","
 
 	<< m_position.x << ", "
