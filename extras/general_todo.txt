@@ -18,6 +18,8 @@ Zack - test my shit :
 - after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
 - patch from splat for "well fed", some players did report error that can be related to this fix. Just can't remember what was the error :(
 
+- find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
+
 maybe later :P
 [20:56] <Raziel> spell Translocate
 [20:57] <Raziel> SPELL_ID_TRANSLOCATE_*
@@ -53,3 +55,5 @@ sorry for this :P
 - blind blocheaza bossii pe o perioada nelimitata, timp in care nu dau dmg si nu se misca
 - se poate trage cu arma de pe mount...not fair
 - bagu` cu speed la hunter ziceai ca repari sa mearga doar 1 bag sa fie activ
+
+items modify this value PLAYER_FIELD_COMBAT_RATING_08 but nowhere else is used ?

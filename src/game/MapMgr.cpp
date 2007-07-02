@@ -688,6 +688,8 @@ void MapMgr::_UpdateObjects()
 					update.clear();
 				}
 
+				if(pObj->IsUnit() && pObj->HasUpdateField(UNIT_FIELD_HEALTH))
+					((Unit*)pObj)->EventHealthChangeSinceLastUpdate();
 				// build the update
 				count = pObj->BuildValuesUpdateBlockForPlayer(&update, NULL);
 

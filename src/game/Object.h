@@ -240,6 +240,12 @@ public:
 		m_objectUpdated = false;
 	}
 
+	bool HasUpdateField(uint32 index)
+	{
+		ASSERT( index < m_valuesCount);
+		return m_updateMask.GetBit(index);
+	}
+
 	//use it to check if a object is in range of another
 	bool isInRange(Object* target, float range);
 

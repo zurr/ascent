@@ -304,6 +304,10 @@ void Unit::Update( uint32 p_time )
 			if(!count)
 				m_diminishActive = false;
 		}
+
+/*		//if health changed since last time. Would be perfect if it would work for creatures too :)
+		if(m_updateMask.GetBit(UNIT_FIELD_HEALTH))
+			EventHealthChangeSinceLastUpdate();*/
 	}
 }
 
@@ -3414,4 +3418,20 @@ void Unit::RemoveSoloAura(uint32 type)
 			sLog.outDebug("Warning: we are trying to remove a soloauratype that has no handle");
 			}break;
 	}
+}
+
+void Unit::EventHealthChangeSinceLastUpdate()
+{
+	int pct = GetHealthPct();
+	if(pct<35)
+	{
+		uint32 toset=AURASTATE_FLAG_HEALTH35;
+		if(pct<20)
+			toset |= AURASTATE_FLAG_HEALTH20;
+		else
+			RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_HEALTH20);
+		SetFlag(UNIT_FIELD_AURASTATE,toset);
+	}
+	else
+		RemoveFlag(UNIT_FIELD_AURASTATE , AURASTATE_FLAG_HEALTH35 | AURASTATE_FLAG_HEALTH20);
 }
