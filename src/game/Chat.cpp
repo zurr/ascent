@@ -543,7 +543,7 @@ bool ChatHandler::hasStringAbbr(const char* s1, const char* s2)
 
 void ChatHandler::SendMultilineMessage(WorldSession *m_session, const char *str)
 {
-	const char * start = str, end;
+	char * start = (char*)str, *end;
 	for(;;)
 	{
         end = strchr(start, '\n');
@@ -764,7 +764,7 @@ void ChatHandler::SystemMessage(WorldSession *m_session, const char* message, ..
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024, message,ap);
 	WorldPacket * data = FillSystemMessageData(msg1);
 	if(m_session != NULL) 
 		m_session->SendPacket(data);
@@ -777,9 +777,9 @@ void ChatHandler::ColorSystemMessage(WorldSession *m_session, const char* colorc
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024, message,ap);
 	char msg[1024];
-	sprintf(msg, "%s%s|r", colorcode, msg1);
+	snprintf(msg, 1024, "%s%s|r", colorcode, msg1);
 	WorldPacket * data = FillSystemMessageData(msg);
 	if(m_session != NULL) 
 		m_session->SendPacket(data);
@@ -792,9 +792,9 @@ void ChatHandler::RedSystemMessage(WorldSession *m_session, const char *message,
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024,message,ap);
 	char msg[1024];
-	sprintf(msg, "%s%s|r", MSG_COLOR_LIGHTRED/*MSG_COLOR_RED*/, msg1);
+	snprintf(msg, 1024,"%s%s|r", MSG_COLOR_LIGHTRED/*MSG_COLOR_RED*/, msg1);
 	WorldPacket * data = FillSystemMessageData(msg);
 	if(m_session != NULL) 
 		m_session->SendPacket(data);
@@ -807,9 +807,9 @@ void ChatHandler::GreenSystemMessage(WorldSession *m_session, const char *messag
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024, message,ap);
 	char msg[1024];
-	sprintf(msg, "%s%s|r", MSG_COLOR_GREEN, msg1);
+	snprintf(msg, 1024, "%s%s|r", MSG_COLOR_GREEN, msg1);
 	WorldPacket * data = FillSystemMessageData(msg);
 	if(m_session != NULL) 
 		m_session->SendPacket(data);
@@ -822,9 +822,9 @@ void ChatHandler::BlueSystemMessage(WorldSession *m_session, const char *message
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024, message,ap);
 	char msg[1024];
-	sprintf(msg, "%s%s|r", MSG_COLOR_LIGHTBLUE, msg1);
+	snprintf(msg, 1024,"%s%s|r", MSG_COLOR_LIGHTBLUE, msg1);
 	WorldPacket * data = FillSystemMessageData(msg);
 	if(m_session != NULL) 
 		m_session->SendPacket(data);
@@ -837,7 +837,7 @@ void ChatHandler::RedSystemMessageToPlr(Player* plr, const char *message, ...)
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024,message,ap);
 	RedSystemMessage(plr->GetSession(), (const char*)msg1);
 }
 
@@ -847,7 +847,7 @@ void ChatHandler::GreenSystemMessageToPlr(Player* plr, const char *message, ...)
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024,message,ap);
 	GreenSystemMessage(plr->GetSession(), (const char*)msg1);
 }
 
@@ -857,7 +857,7 @@ void ChatHandler::BlueSystemMessageToPlr(Player* plr, const char *message, ...)
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024,message,ap);
 	BlueSystemMessage(plr->GetSession(), (const char*)msg1);
 }
 
@@ -867,7 +867,7 @@ void ChatHandler::SystemMessageToPlr(Player *plr, const char* message, ...)
 	va_list ap;
 	va_start(ap, message);
 	char msg1[1024];
-	vsprintf(msg1,message,ap);
+	vsnprintf(msg1,1024,message,ap);
 	SystemMessage(plr->GetSession(), msg1);
 }
 
