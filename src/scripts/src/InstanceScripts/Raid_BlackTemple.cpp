@@ -10,6 +10,206 @@
 /*         Boss AIs          */
 /*                           */
 /*****************************/
+/*
+// SupremusAI
+
+#define CN_SUPREMUS 22898	
+
+#define MIND_REND 36924 // DBC: 36859, 36924;
+#define FEAR 39415
+#define DOMINATION 37162
+#define SUMMON_ILLUSION_66 36931	// those 2 don't work
+#define SUMMON_ILLUSION_33 36932
+// BLINK_VISUAL 36937 ?
+// SIMPLE_TELEPORT 12980 ?
+// Add sounds related to his dialog with mind controlled guy
+
+class SupremusAI : public CreatureAIScript
+{
+public:
+	ADD_CREATURE_FACTORY_FUNCTION(SupremusAI);
+	SP_AI_Spell spells[5];
+	bool m_spellcheck[5];
+
+    SupremusAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    {
+		nrspells = 5;
+		for(int i=0;i<nrspells;i++)
+		{
+			m_spellcheck[i] = false;
+		}
+
+		spells[0].info = sSpellStore.LookupEntry(MIND_REND);
+		spells[0].targettype = TARGET_ATTACKING;
+		spells[0].instant = false;
+		spells[0].cooldown = -1;
+		spells[0].perctrigger = 15.0f;
+		spells[0].attackstoptimer = 1000;
+
+		spells[1].info = sSpellStore.LookupEntry(FEAR);
+		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].instant = false;
+		spells[1].cooldown = -1;
+		spells[1].perctrigger = 8.0f;
+		spells[1].attackstoptimer = 1000;
+
+		spells[2].info = sSpellStore.LookupEntry(DOMINATION);
+		spells[2].targettype = TARGET_ATTACKING;
+		spells[2].instant = false;
+		spells[2].cooldown = -1;
+		spells[2].perctrigger = 6.0f;
+		spells[2].attackstoptimer = 1000;
+
+		spells[3].info = sSpellStore.LookupEntry(SUMMON_ILLUSION_66);
+		spells[3].targettype = TARGET_SELF;
+		spells[3].instant = true;
+		spells[3].cooldown = -1;
+		spells[3].perctrigger = 0.0f;
+		spells[3].attackstoptimer = 1000;
+
+		spells[4].info = sSpellStore.LookupEntry(SUMMON_ILLUSION_33);
+		spells[4].targettype = TARGET_SELF;
+		spells[4].instant = true;
+		spells[4].cooldown = -1;
+		spells[4].perctrigger = 0.0f;
+		spells[4].attackstoptimer = 1000;
+
+    }
+    
+    void OnCombatStart(Unit* mTarget)
+    {
+		CastTime();
+		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Bear witness to the agent of your demise!");	// used when he kills Warden Mellichar
+		_unit->PlaySoundToSet(11123);
+    }
+
+	void CastTime()
+	{
+		for(int i=0;i<nrspells;i++)
+			spells[i].casttime = spells[i].cooldown;
+	}
+
+	void OnTargetDied(Unit* mTarget)
+    {
+		if (_unit->GetHealthPct() > 0)
+		{
+			int RandomSpeach;
+			RandomSpeach=rand()%2;
+			switch (RandomSpeach)
+			{
+			case 0:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your fate is written!");	// this one needs verification
+				_unit->PlaySoundToSet(11124);
+				break;
+			case 1:
+				_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The chaos I have sown here is but a taste....");
+				_unit->PlaySoundToSet(11125);
+				break;
+			}
+		}
+    }
+
+    void OnCombatStop(Unit *mTarget)
+    {
+		CastTime();
+        _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        RemoveAIUpdateEvent();
+    }
+
+    void OnDied(Unit * mKiller)
+    {
+		CastTime();
+       RemoveAIUpdateEvent();
+		_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am merely one of... infinite multitudes.");
+		_unit->PlaySoundToSet(11126);
+    }
+
+    void AIUpdate()
+	{
+		if (_unit->GetHealthPct() <= 66 && !IllusionCount)
+		{
+			IllusionCount = 1;
+			_unit->CastSpell(_unit, spells[3].info, spells[3].instant);
+			//_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "We span the universe, as countless as the stars!");
+			_unit->PlaySoundToSet(11131);	// Idk if those texts shouldn't be told by clones and by org. so disabled MSG to make it harder to detect =P
+		}
+
+		if (_unit->GetHealthPct() <= 33 && IllusionCount == 1)
+		{
+			IllusionCount = 2;
+			_unit->CastSpell(_unit, spells[4].info, spells[4].instant);
+			//_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "We span the universe, as countless as the stars!");
+			_unit->PlaySoundToSet(11131);
+		}
+		
+		else
+		{
+			float val = sRand.rand(100.0f);
+			SpellCast(val);
+		}
+    }
+
+	void SpellCast(float val)
+	{
+        if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())
+        {
+			float comulativeperc = 0;
+		    Unit *target = NULL;
+			for(int i=0;i<nrspells;i++)
+			{
+				spells[i].casttime--;
+				
+				if (m_spellcheck[i])
+				{					
+					spells[i].casttime = spells[i].cooldown;
+					target = _unit->GetAIInterface()->GetNextTarget();
+					switch(spells[i].targettype)
+					{
+						case TARGET_SELF:
+						case TARGET_VARIOUS:
+							_unit->CastSpell(_unit, spells[i].info, spells[i].instant); break;
+						case TARGET_ATTACKING:
+							_unit->CastSpell(target, spells[i].info, spells[i].instant); break;
+						case TARGET_DESTINATION:
+							_unit->CastSpellAoF(target->GetPositionX(),target->GetPositionY(),target->GetPositionZ(), spells[i].info, spells[i].instant); break;
+					}
+
+					if (spells[i].speech != "")
+					{
+						_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+						_unit->PlaySoundToSet(spells[i].soundid); 
+					}
+
+					m_spellcheck[i] = false;
+					return;
+				}
+
+				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
+				{
+					_unit->setAttackTimer(spells[i].attackstoptimer, false);
+					m_spellcheck[i] = true;
+				}
+				comulativeperc += spells[i].perctrigger;
+			}
+		}
+	}
+
+protected:
+
+	uint32 m_phase;
+	int nrspells;
+};
+*/
+
+/**********************************/
+/*                                */
+/*       Illidan and stuff        */
+/*           related to him.      */
+/*                                */
+/**********************************/
+
 
 // Additional stuff
 uint32 m_phase;
@@ -142,6 +342,9 @@ protected:
 #define CN_AKAMA 22990 //21700	// Should be: 22990
 // faction 1858 (All Ashtongue Deathsworn factions in DBC: 1820, 1858, 1866)
 
+#define HEALING_POTION 40535
+#define BLESSING_OF_KINGS 20217
+
 struct Coords
 {
     float x;
@@ -172,6 +375,9 @@ class AkamaAI : public CreatureAIScript
 {
 public:
     ADD_CREATURE_FACTORY_FUNCTION(AkamaAI);
+	SP_AI_Spell spells[2];
+	bool m_spellcheck[2];
+
     AkamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
 		m_entry = pCreature->GetEntry();
@@ -189,21 +395,26 @@ public:
 		_unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, WALK));
 		_unit->GetAIInterface()->addWayPoint(CreateWaypoint(12, 0, WALK));
 
-		nrspells = 0;
-		m_spellcheck = new bool[nrspells];
-		spells = new SP_AI_Spell[nrspells];
+		nrspells = 2;
 		for(int i=0;i<nrspells;i++)
 		{
 			m_spellcheck[i] = false;
 		}
-/*
-        spells[0].info = sSpellStore.LookupEntry();
-		spells[0].targettype = TARGET_;
+
+        spells[0].info = sSpellStore.LookupEntry(HEALING_POTION);
+		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
 		spells[0].cooldown = -1;
 		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
-*/
+
+		spells[0].info = sSpellStore.LookupEntry(BLESSING_OF_KINGS);
+		spells[0].targettype = TARGET_SELF;
+		spells[0].instant = true;
+		spells[0].cooldown = -1;
+		spells[0].perctrigger = 15.0f;
+		spells[0].attackstoptimer = 1000;
+
 		WAY_START = 0;
 		_unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 		_unit->SetUInt64Value(UNIT_FIELD_FLAGS, U_FIELD_FLAG_UNIT_UNTACKABLE_SELECT);
@@ -235,10 +446,6 @@ public:
     void OnDied(Unit * mKiller)
     {
        //RemoveAIUpdateEvent();
-	   delete[] spells;
-	   delete[] m_spellcheck;
-	   spells = NULL;
-	   m_spellcheck = NULL;
     }
 
     void AIUpdate()
@@ -251,6 +458,9 @@ public:
 			_unit->GetAIInterface()->setWaypointToMove(1);
 			WAY_START = 1;
 		}
+
+		if (_unit->GetHealthPct() < 15)
+			_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
 
 		if (AKAMA_DIALOG)
 		{
@@ -332,8 +542,17 @@ public:
 
 				if ((val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger)) || !spells[i].casttime)
 				{
-					_unit->setAttackTimer(spells[i].attackstoptimer, false);
-					m_spellcheck[i] = true;
+					if (i == 1 && !(_unit->HasActiveAura(20217))/*_unit->!HasAura(137)*/)	// added separated case to not cast spell when aura effect is still on target
+					{
+						_unit->setAttackTimer(spells[i].attackstoptimer, false);
+						m_spellcheck[i] = true;
+					}
+
+					else
+					{
+						_unit->setAttackTimer(spells[i].attackstoptimer, false);
+						m_spellcheck[i] = true;
+					}
 				}
 				comulativeperc += spells[i].perctrigger;
 			}
@@ -434,8 +653,6 @@ protected:
 	uint32 WAY_START;
     uint32 m_entry;
     uint32 m_currentWP;
-    bool *m_spellcheck;
-    SP_AI_Spell *spells;
 	int nrspells;
 };
 
@@ -1018,6 +1235,7 @@ protected:
 
 void SetupBlackTemple(ScriptMgr * mgr)
 {
+	//mgr->register_creature_script(CN_SUPREMUS, &SupremusAI::Create);
 	mgr->register_creature_script(CN_FLAME_OF_AZZINOTH, &FlameOfAzzinothAI::Create);
 	mgr->register_creature_script(CN_AKAMA, &AkamaAI::Create);
 	mgr->register_creature_script(CN_ILLIDAN_STORMRAGE, &IllidanStormrageAI::Create);
