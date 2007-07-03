@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "Master.h"
 #include "../game/StdAfx.h"
+#include "../shared/svn_revision.h"
 
 
 createFileSingleton(CConsole);
@@ -135,7 +136,7 @@ void CConsole::TranslateVersion(char *str)
 }
 void CConsole::ProcessVersion()
 {
-	sLog.outString("Console: Server %s", _FULLVERSION);
+    sLog.outString("Console: Server %s, Rev: %s", _FULLVERSION, g_getRevision());
 }
 //------------------------------------------------------------------------------
 // quit | exit
