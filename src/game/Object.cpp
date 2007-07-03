@@ -584,6 +584,10 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 								else
 								{
 									uint32 pct = uint32(float( float(m_uint32Values[index]) / float(m_uint32Values[UNIT_FIELD_MAXHEALTH]) * 100.0f));
+
+									/* fix case where health value got rounded down and the client sees health as dead */
+									if(!pct && m_uint32Values[UNIT_FIELD_HEALTH] != 0)
+										++pct;
 									*data << pct;	
 								}
 							}
@@ -944,7 +948,6 @@ void Object::ModUInt32Value(uint32 index, int32 value )
 		return;
 
 	m_uint32Values[ index ] += value;
-
 	if(IsInWorld())
 	{
 		m_updateMask.SetBit( index );
