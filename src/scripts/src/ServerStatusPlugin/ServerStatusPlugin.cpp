@@ -329,6 +329,9 @@ void StatDumper::DumpStats()
                 fprintf(f, "      <level>%u</level>\n", plr->GetUInt32Value(UNIT_FIELD_LEVEL));
                 fprintf(f, "      <map>%u</map>\n", plr->GetMapId());
                 fprintf(f, "      <areaid>%u</areaid>\n", plr->GetAreaID());
+				//requested by Zdarkside for he's online map. I hope it does not scre up any parser. If so, then make a better one :P
+                fprintf(f, "      <xpos>%f</xpos>\n", plr->GetPositionX ());
+                fprintf(f, "      <ypos>%f</ypos>\n", plr->GetPositionY());
                 fprintf(f, "      <ontime>%s</ontime>\n", otime);
                 fprintf(f, "      <latency>%u</latency>\n", plr->GetSession()->GetLatency());
                 fprintf(f, "    </plr>\n");

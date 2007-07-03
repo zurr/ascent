@@ -1,3 +1,5 @@
+==========================================================================
+! test first then impelement if necesary !
 SMT_TREAT_REDUCED - this is not used anywhere. Threat formulas are kinda rough estimations ...
 SMT_DUMMY - work on this
 SMT_CAST_TIME - does not depend on charges, add this ability
@@ -6,13 +8,39 @@ SMT_RESIST - not used. There is only 1 spell what is veryrarely used
 SMT_TRIGGER - check if this is used
 SMT_EFFECT_BONUS - check if it is used 
 SMT_RESIST_DISPEL - check if it is used
+- items modify this value PLAYER_FIELD_COMBAT_RATING_08 but nowhere else is used ?
 
+==========================================================================
+! Features !
 - make a proper loading for auras. Should restore caster guid, charges, procflags....
 - in world.cpp,line 788 removed stormstrike effect 0 until find a solution for : spell is casted on target and should apply 1 aura, but it also adds the other 2 effects that should be aplied only to caster.
 - a lot of spells have wrong trigger spell id. Lightning shield, Parry Mastery ...Make a tool to find them all and see what can be done for them.
-
 - make prospecting use a loottable : changes in profesions.cpp
+- find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
+- imlement a sure way to test if server is crashed/blocked or simply get it's state. Status Xml is great but on crash there is no status update
+- RR looting should be in Whole RAID group or only in smaller groups ? Currently RR is made in big group
 
+==========================================================================
+! BUGS !
+- blind,scatter (dissorient spells) block creatures for unlimited time
+- mounted players can shoot
+- make hunter to be able to use only 1 bag
+- you can buyitems with honor points logout/login and have them all restored.
+- group quest does not share quest loot.
+- dead creatures keep attacking people. I think if creature has less health then 10% it enters dead state but will still keep attacking. If las dmg is greater then 10% it will die. Started in rev 635 ?
+- if BG is over and you are dead then you are teleported as dead.
+- there should be a cooldown for players who leave instance groups.
+- players can mute gms :D
+- pet instant spells make creature loop. They go to target and back.
+- some players can't shoot with wand
+
+==========================================================================
+Zack - test my shit :
+
+- after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
+- RR looting.
+
+==========================================================================
 
 maybe later :P
 [20:56] <Raziel> spell Translocate
@@ -42,21 +70,3 @@ maybe later :P
 [21:03] <Raziel> SPELL_ID_TRANSLOCATE_16 = 35376
 [21:03] <Raziel> SPELL_ID_TRANSLOCATE_17 = 35727
 [21:04] <Raziel> SPELL_ID_TRANSLOCATE_18 = 35730
-
-- blind block bosses for unlimited time
-- mounted players can shoot
-- make hunter to be able to use only 1 bag
-
-items modify this value PLAYER_FIELD_COMBAT_RATING_08 but nowhere else is used ?
-
-- imlement a sure way to test if server is crashed/blocked or simply get it's state. Status Xml is great but on crash there is no status update
-
-- find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
-
-- some players can't shoot with wand
-- RR looting should be in Whole RAID group or only in smaller groups ? Currently RR is made in big group
-
-Zack - test my shit :
-
-- after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
-- RR looting.
