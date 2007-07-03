@@ -287,7 +287,7 @@ void WorldSession::HandleLootMethodOpcode( WorldPacket & recv_data )
 	}
 	
 	Player *plyr = objmgr.GetPlayer(lootMaster);
-	if(!plyr)return;
+	//if(!plyr)return;
 	Group *pGroup = _player->GetGroup();
 	if(pGroup)
 		pGroup->SetLooter(plyr, lootMethod, threshold);

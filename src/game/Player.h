@@ -941,7 +941,6 @@ public:
 	Object * GetSummonedObject () {return m_SummonedObject;};
 	void SetSummonedObject (Object * t_SummonedObject) {m_SummonedObject = t_SummonedObject;};
 	uint32 roll;
-	std::set<LootRoll*> m_rolls;
 	void AddRecoverCooldown(SpellEntry * spellInfo);
 	void AddCooldown(uint32 spell,uint32 time);
 	void AddCategoryCooldown(uint32 cat, uint32 time);

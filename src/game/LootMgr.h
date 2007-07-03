@@ -15,23 +15,29 @@
 #ifndef _LOOTMGR_H
 #define _LOOTMGR_H
 
-class LootRoll
+class MapMgr;
+class LootRoll : public EventableObject
 {
 public:
-	LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, uint32 itemid, uint32 itemunk1, uint32 itemunk2);
+	LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, uint32 itemid, uint32 itemunk1, uint32 itemunk2, MapMgr * mgr);
 	~LootRoll();
 	void PlayerRolled(Player *player, uint8 choice);
 	void Finalize();
 
+	int32 event_GetInstanceID();
+
 private:
-	std::map<Player*, uint32> NeedRolls;
-	std::map<Player*, uint32> GreedRolls;
+	std::map<uint64, uint32> NeedRolls;
+	std::map<uint64, uint32> GreedRolls;
+	uint64 _passedGuid;
 	uint32 _groupcount;
 	uint32 _slotid;
 	uint32 _itemid;
 	uint32 _itemunk1;
 	uint32 _itemunk2;
+	uint32 _remaining;
 	uint64 _guid;
+	MapMgr * _mgr;
 };
 
 typedef struct
@@ -59,6 +65,7 @@ typedef struct
 	uint32 iItemsCount;
 	uint32 iRandomProperty;
 	LootRoll *roll;
+	bool passed;
 }__LootItem;
 
 

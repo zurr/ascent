@@ -4946,6 +4946,10 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 			{
 				slottype = 0;
 			}
+
+			/* if all people passed anyone can loot it? :P */
+			if(iter->passed)
+				slottype = 0;					// All players passed on the loot
 		}
 
 		data << uint8(x); 
@@ -4958,9 +4962,9 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 		
 		if(slottype == 1)
 		{
-			if(iter->roll == NULL)
+			if(iter->roll == NULL && !iter->passed)
 			{
-				iter->roll = new LootRoll(60000, (m_Group != NULL ? m_Group->MemberCount() : 1),  guid, x, iter->item.itemid, 0, iter->iRandomProperty);
+				iter->roll = new LootRoll(60000, (m_Group != NULL ? m_Group->MemberCount() : 1),  guid, x, iter->item.itemid, 0, iter->iRandomProperty, GetMapMgr());
 				data2.Initialize(SMSG_LOOT_START_ROLL);
 				data2 << guid;
 				data2 << x;
@@ -4977,9 +4981,6 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 						{
 							if((*itr)->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
 							{
-								if((*itr)->m_rolls.count(iter->roll) == 0)
-								(*itr)->m_rolls.insert(iter->roll);
-
 								(*itr)->GetSession()->SendPacket(&data2);
 							}
 						}
@@ -4987,7 +4988,6 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 				}
 				else
 				{
-					m_rolls.insert(iter->roll);
 					GetSession()->SendPacket(&data2);
 				}
 			}			

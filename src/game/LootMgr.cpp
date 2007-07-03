@@ -252,6 +252,7 @@ void LootMgr::PushLoot(StoreLootList *list,Loot * loot)
 			itm.iItemsCount =1;//(itemproto->MaxCount>1)?(1+rand()%itemproto->MaxCount):1;
 			itm.iRandomProperty=0;
 			itm.roll = NULL;
+			itm.passed = false;
 			
 			if (list->items[x].prop && itemproto->Quality > 1)
 			{
@@ -329,6 +330,8 @@ void LootMgr::FillProfessionLoot(LootStore * store,Loot * loot,uint32 loot_id)
 				__LootItem itm;
 				itm.item =list->items[x].item;
 				itm.iItemsCount=1;
+				itm.passed = false;
+				itm.roll = 0;
 				/*if(itemproto->MaxCount>1)
 				{
 					uint32 c=1 + sRand.randInt(itemproto->MaxCount);
@@ -382,33 +385,37 @@ bool LootMgr::IsFishable(uint32 zoneid)
 #define NEED 1
 #define GREED 2
 
-LootRoll::LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, uint32 itemid, uint32 itemunk1, uint32 itemunk2)
+LootRoll::LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, uint32 itemid, uint32 itemunk1, uint32 itemunk2, MapMgr * mgr) : _mgr(mgr), EventableObject()
 {
-	//sEventMgr.AddEvent(this, &LootRoll::Finalize, EVENT_LOOT_ROLL_FINALIZE, 60000, 1);
+	sEventMgr.AddEvent(this, &LootRoll::Finalize, EVENT_LOOT_ROLL_FINALIZE, 60000, 1);
 	_groupcount = groupcount;
 	_guid = guid;
 	_slotid = slotid;
 	_itemid = itemid;
 	_itemunk1 = itemunk1;
 	_itemunk2 = itemunk2;
+	_remaining = groupcount;
+	_passedGuid = 0;
 }
 
 LootRoll::~LootRoll()
 {
-
+	
 }
 
 void LootRoll::Finalize()
 {
+	sEventMgr.RemoveEvents(this);
+
 	// this we will have to finalize with groups types.. for now
 	// we'll just assume need before greed. person with highest roll
 	// in need gets the item.
 
 	uint32 highest = 0;
 	int8 hightype = -1;
-	Player *player = NULL;
+	uint64 player = 0;
 
-	for(std::map<Player*, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
+	for(std::map<uint64, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
 	{
 		if(itr->second > highest)
 		{
@@ -420,7 +427,7 @@ void LootRoll::Finalize()
 
 	if(highest == 0)
 	{
-		for(std::map<Player*, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
+		for(std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
 		{
 			if(itr->second > highest)
 			{
@@ -431,46 +438,157 @@ void LootRoll::Finalize()
 		}
 	}
 
-	if(!player)
+	Loot * pLoot = 0;
+	if(GUID_HIPART(_guid) == HIGHGUID_UNIT)
+	{
+		Creature * pc = _mgr->GetCreature(_guid);
+		if(pc) pLoot = &pc->loot;
+	}
+	else if(GUID_HIPART(_guid) == HIGHGUID_GAMEOBJECT)
+	{
+		GameObject * go = _mgr->GetGameObject(_guid);
+		if(go) pLoot = &go->loot;
+	}
+
+	if(!pLoot)
 	{
 		delete this;
 		return;
 	}
 
+	if(_slotid >= pLoot->items.size())
+	{
+		delete this;
+		return;
+	}
+
+	uint32 itemid = pLoot->items.at(_slotid).item.itemid;
+	uint32 amt = pLoot->items.at(_slotid).iItemsCount;
+	if(!amt)
+	{
+		delete this;
+		return;
+	}
+
+	Player * _player = (player) ? _mgr->GetPlayer(player) : 0;
+	if(!player || !_player)
+	{
+		_player = _mgr->GetPlayer(_passedGuid);
+		if(_player)
+		{
+			/* all passed */
+			WorldPacket data(34);
+			data.SetOpcode(SMSG_LOOT_ALL_PASSED);
+			data << _guid << _groupcount << _itemid << _itemunk1 << _itemunk2;
+			if(_player->InGroup())
+				_player->GetGroup()->SendPacketToAll(&data);
+			else
+				_player->GetSession()->SendPacket(&data);
+		}
+
+		/* item can now be looted by anyone :) */
+		pLoot->items.at(_slotid).passed = true;
+		delete this;
+		return;
+	}
+
+    pLoot->items.at(_slotid).roll = 0;
 	WorldPacket data(34);
 	data.SetOpcode(SMSG_LOOT_ROLL_WON);
 	data << _guid << _slotid << _itemid << _itemunk1 << _itemunk2;
-	data << player->GetGUID() << uint8(highest) << uint8(hightype);
-	if(player->InGroup())
-		player->GetGroup()->SendPacketToAll(&data);
+	data << _player->GetGUID() << uint8(highest) << uint8(hightype);
+	if(_player->InGroup())
+		_player->GetGroup()->SendPacketToAll(&data);
 	else
-		player->GetSession()->SendPacket(&data);
+		_player->GetSession()->SendPacket(&data);
 
-	// Distribute the item.. yes i am lazy:D
-	WorldPacket *tmp = new WorldPacket(1);
-	tmp->SetOpcode(CMSG_AUTOSTORE_LOOT_ITEM);
-	*tmp << uint8(_slotid);
-	player->GetSession()->QueuePacket(tmp);
+	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 
+	int8 error;
+	if(error = _player->GetItemInterface()->CanReceiveItem(it, 1))
+	{
+		_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+		return;
+	}
+
+	Item * add = _player->GetItemInterface()->FindItemLessMax(itemid, amt, false);
+
+	if (!add)
+	{
+		SlotResult slotresult = _player->GetItemInterface()->FindFreeInventorySlot(it);
+		if(!slotresult.Result)
+		{
+			_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+			return;
+		}
+
+		sLog.outDebug("AutoLootItem MISC");
+		Item *item = objmgr.CreateItem( itemid, _player);
+
+		item->SetUInt32Value(ITEM_FIELD_STACK_COUNT,amt);
+		uint32 rndprop=pLoot->items.at(_slotid).iRandomProperty;
+		if(rndprop)
+			item->SetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID,rndprop);
+		item->ApplyRandomProperties();
+
+		_player->GetItemInterface()->SafeAddItem(item,slotresult.ContainerSlot, slotresult.Slot);
+
+		if (it->Class == 12)		// Quest item
+			sQuestMgr.OnPlayerItemPickup(_player,item);
+	}
+	else 
+	{	
+		add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + amt);
+		add->m_isDirty = true;
+		if (it->Class == 12)		// Quest item
+			sQuestMgr.OnPlayerItemPickup(_player,add);
+	}
+
+	pLoot->items.at(_slotid).iItemsCount=0;
+	// this gets sent to all looters
+	data.Initialize(SMSG_LOOT_REMOVED);
+	data << uint8(_slotid);
+	Player * plr;
+	for(LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+	{
+		if(plr = _player->GetMapMgr()->GetPlayer(*itr))
+			plr->GetSession()->SendPacket(&data);
+	}
+
+	WorldPacket idata(100);
+	_player->GetSession()->BuildItemPushResult(&idata, _player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(_slotid).iRandomProperty);
+
+	if(_player->InGroup())
+		_player->GetGroup()->SendPacketToAll(&idata);
+	else
+		_player->GetSession()->SendPacket(&idata);
 	delete this;
 }
 
 void LootRoll::PlayerRolled(Player *player, uint8 choice)
 {
-	if(NeedRolls.find(player) != NeedRolls.end() || GreedRolls.find(player) != GreedRolls.end())
+	if(NeedRolls.find(player->GetGUID()) != NeedRolls.end() || GreedRolls.find(player->GetGUID()) != GreedRolls.end())
 		return; // dont allow cheaters
 
-	std::map<Player*, uint32>* rmap;
+	std::map<uint64, uint32>* rmap = 0;
 	
 	if(choice == NEED) {
 		rmap = &NeedRolls;
-	} else {
+	} else if(choice == GREED) {
 		rmap = &GreedRolls;
 	}
 
 	int roll = sRand.randInt(100);
 
-	rmap->insert ( std::make_pair(player, roll) );
+	if(rmap)
+		rmap->insert ( std::make_pair(player->GetGUID(), roll) );
+	else
+	{
+		roll = 128;
+		choice = 128;
+		if(!_passedGuid)
+			_passedGuid = player->GetGUID();
+	}
 
 	// create packet
 	WorldPacket data(34);
@@ -485,7 +603,7 @@ void LootRoll::PlayerRolled(Player *player, uint8 choice)
 		player->GetSession()->SendPacket(&data);
 	
 	// check for early completion
-	if(NeedRolls.size() + GreedRolls.size() == _groupcount)
+	if(!--_remaining)
 	{
 		// kill event early
 		//sEventMgr.RemoveEvents(this);
@@ -503,3 +621,7 @@ void LootMgr::FillItemLoot(Loot *loot, uint32 loot_id)
 	else PushLoot(&tab->second,loot);
 }
 
+int32 LootRoll::event_GetInstanceID()
+{
+	return _mgr->GetInstanceID();
+}

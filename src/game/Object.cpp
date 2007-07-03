@@ -598,6 +598,7 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 
 			default:
 				*data << m_uint32Values[ index ];
+				break;
 			}
 		}
 	}
