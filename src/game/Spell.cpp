@@ -1359,14 +1359,40 @@ void Spell::cast(bool check)
 
 	if(cancastresult == -1)
 	{
-		if(!m_triggeredSpell)
+		if(m_spellInfo->Attributes & ATTRIBUTE_ON_NEXT_ATTACK)
 		{
-			if(!TakePower()) //not enough mana
+			if(!m_triggeredSpell)
 			{
-				//sLog.outDebug("Spell::Not Enough Mana");
-				SendInterrupted(SPELL_FAILED_NO_POWER);
-				finish();
-				return; 
+				// on next attack - we don't take the mana till it actually attacks.
+				if(!HasPower())
+				{
+					SendInterrupted(SPELL_FAILED_NO_POWER);
+					finish();
+					return; 
+				}
+			}
+			else
+			{
+				// this is the actual spell cast
+				if(!TakePower())	// shouldn't happen
+				{
+					SendInterrupted(SPELL_FAILED_NO_POWER);
+					finish();
+					return;
+				}
+			}
+		}
+		else
+		{
+			if(!m_triggeredSpell)
+			{
+				if(!TakePower()) //not enough mana
+				{
+					//sLog.outDebug("Spell::Not Enough Mana");
+					SendInterrupted(SPELL_FAILED_NO_POWER);
+					finish();
+					return; 
+				}
 			}
 		}
 		SendCastResult(cancastresult);
@@ -2115,6 +2141,103 @@ void Spell::SendResurrectRequest(Player* target)
 	data << uint32(0) << uint8(0);
 
 	target->GetSession()->SendPacket(&data);
+}
+
+bool Spell::HasPower()
+{
+	int32 powerField;
+	if(u_caster)
+		if(u_caster->HasFlag(UNIT_NPC_FLAGS,UNIT_NPC_FLAG_TRAINER))
+			return true;
+
+	if(p_caster && p_caster->PowerCheat)
+		return true;
+
+	switch(m_spellInfo->powerType)
+	{
+	case POWER_TYPE_HEALTH:{
+		powerField = UNIT_FIELD_HEALTH;
+						   }break;
+	case POWER_TYPE_MANA:{
+		powerField = UNIT_FIELD_POWER1;
+		m_usesMana=true;
+						 }break;
+	case POWER_TYPE_RAGE:{
+		powerField = UNIT_FIELD_POWER2;
+						 }break;
+	case POWER_TYPE_FOCUS:{
+		powerField = UNIT_FIELD_POWER3;
+						  }break;
+	case POWER_TYPE_ENERGY:{
+		powerField = UNIT_FIELD_POWER4;
+						   }break;
+	default:{
+		sLog.outDebug("unknown power type");
+		// we should'nt be here to return
+		return false;
+			}break;
+	}
+
+	//FIXME: add handler for UNIT_FIELD_POWER_COST_MODIFIER
+	//UNIT_FIELD_POWER_COST_MULTIPLIER
+	if(u_caster)
+	{
+		if( m_spellInfo->AttributesEx & 2 ) // Uses %100 mana
+		{
+			m_caster->SetUInt32Value(powerField, 0);
+			return true;
+		}
+	}
+
+	uint32 currentPower = m_caster->GetUInt32Value(powerField);
+
+	int32 cost;
+	if(m_spellInfo->ManaCostPercentage)//Percentage spells cost % of !!!BASE!!! mana
+	{
+		if(m_spellInfo->powerType==POWER_TYPE_MANA)
+			cost = (m_caster->GetUInt32Value(UNIT_FIELD_BASE_MANA)*m_spellInfo->ManaCostPercentage)/100;
+		else
+			cost = (m_caster->GetUInt32Value(UNIT_FIELD_BASE_HEALTH)*m_spellInfo->ManaCostPercentage)/100;
+	}
+	else 
+	{
+		cost = m_spellInfo->manaCost;
+	}
+
+	if(m_spellInfo->powerType==POWER_TYPE_HEALTH)
+		cost -= m_spellInfo->baseLevel;//FIX for life tap	
+	else if(u_caster)
+	{
+		if(m_spellInfo->powerType==POWER_TYPE_MANA)
+			cost += u_caster->PowerCostMod[m_spellInfo->School];//this is not percent!
+		else
+			cost += u_caster->PowerCostMod[0];
+	}
+
+	//apply modifiers
+	if(m_spellInfo->SpellGroupType && u_caster)
+	{
+		SM_FIValue(u_caster->SM_FCost,&cost,m_spellInfo->SpellGroupType);
+		SM_PIValue(u_caster->SM_PCost,&cost,m_spellInfo->SpellGroupType);
+	}
+
+	if (cost <=0)
+		return true;
+
+	//FIXME:DK:if field value < cost what happens
+	if(powerField == UNIT_FIELD_HEALTH)
+	{
+		return true;
+	}
+	else
+	{
+		if(cost <= currentPower) // Unit has enough power (needed for creatures)
+		{
+			return true;
+		}
+		else
+			return false;	 
+	} 
 }
 
 bool Spell::TakePower()

@@ -1107,6 +1107,8 @@ public:
 	void HandleEffects(uint64 guid,uint32 i);
 	// Take Power from the caster based on spell power usage
 	bool TakePower();
+	// Has power?
+	bool HasPower();
 	// Trigger Spell function that triggers triggered spells
 	void TriggerSpell();
 	// Checks the caster is ready for cast
