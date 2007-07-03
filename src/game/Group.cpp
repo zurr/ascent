@@ -14,6 +14,37 @@
 
 #include "StdAfx.h"
 
+enum PartyUpdateFlags
+{
+	GROUP_UPDATE_FLAG_NONE						= 0,		// 0x00000000
+	GROUP_UPDATE_FLAG_ONLINE					= 1,		// 0x00000001  uint8
+	GROUP_UPDATE_FLAG_HEALTH					= 2,		// 0x00000002  uint16
+	GROUP_UPDATE_FLAG_MAXHEALTH					= 4,		// 0x00000004  uint16
+	GROUP_UPDATE_FLAG_POWER_TYPE				= 8,		// 0x00000008  uint16
+	GROUP_UPDATE_FLAG_POWER						= 16,		// 0x00000010  uint16
+	GROUP_UPDATE_FLAG_MAXPOWER					= 32,		// 0x00000020  uint16
+	GROUP_UPDATE_FLAG_LEVEL						= 64,		// 0x00000040  uint16
+	GROUP_UPDATE_FLAG_ZONEID					= 128,		// 0x00000080  uint16
+	GROUP_UPDATE_FLAG_POSITION					= 256,		// 0x00000100  uint16, uint16
+	GROUP_UPDATE_FLAG_UNK_STRANGE				= 512,		// 0x00000200  uint64, uint16 for each uint64
+	GROUP_UPDATE_FLAG_UNK_1						= 1024,		// 0x00000400  uint64
+	GROUP_UPDATE_FLAG_PET_NAME					= 2048,		// 0x00000800  string
+	GROUP_UPDATE_FLAG_PET_UNK_1					= 4096,		// 0x00001000  uint16
+	GROUP_UPDATE_FLAG_PET_UNK_2					= 8192,		// 0x00002000  uint16
+	GROUP_UPDATE_FLAG_PET_UNK_3					= 16384,	// 0x00004000  uint16
+	GROUP_UPDATE_FLAG_PET_UNK_4					= 32768,	// 0x00008000  uint8
+	GROUP_UPDATE_FLAG_UNK_3						= 65535,	// 0x00010000  uint16
+	GROUP_UPDATE_FLAG_UNK_4						= 131070,	// 0x00020000  uint16
+	GROUP_UPDATE_FLAG_UNK_5						= 262140,	// 0x00040000  uint64, uint16 for each uint64
+};
+
+enum PartyUpdateFlagGroups
+{
+	GROUP_UPDATE_TYPE_FULL_CREATE				=	GROUP_UPDATE_FLAG_ONLINE | GROUP_UPDATE_FLAG_HEALTH | GROUP_UPDATE_FLAG_MAXHEALTH |
+													GROUP_UPDATE_FLAG_POWER_TYPE | GROUP_UPDATE_FLAG_POWER | GROUP_UPDATE_FLAG_LEVEL |
+													GROUP_UPDATE_FLAG_MAXPOWER | GROUP_UPDATE_FLAG_POSITION,
+};
+
 Group::Group()
 {
 	m_GroupType = GROUP_TYPE_PARTY;	 // Always init as party
@@ -536,4 +567,53 @@ void Group::LoadFromDB(Field *fields)
 	}
 }
 
+void Group::UpdateOutOfRangePlayer(Player * pPlayer, WorldPacket & data, uint32 Flags)
+{
+	data.Initialize(SMSG_PARTY_MEMBER_STATS);
+	data << Flags;
 
+	if(Flags & GROUP_UPDATE_FLAG_ONLINE)
+		data << uint8(1);
+
+	if(Flags & GROUP_UPDATE_FLAG_HEALTH)
+		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_HEALTH));
+
+	if(Flags & GROUP_UPDATE_FLAG_MAXHEALTH)
+		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+
+	if(Flags & GROUP_UPDATE_FLAG_POWER_TYPE)
+		data << uint8(pPlayer->GetPowerType());
+
+	if(Flags & GROUP_UPDATE_FLAG_POWER)
+		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_POWER1 + pPlayer->GetPowerType()));
+
+	if(Flags & GROUP_UPDATE_FLAG_MAXPOWER)
+		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_MAXPOWER1 + pPlayer->GetPowerType()));
+
+	if(Flags & GROUP_UPDATE_FLAG_LEVEL)
+		data << uint16(pPlayer->getLevel());
+
+	if(Flags & GROUP_UPDATE_FLAG_ZONEID)
+		data << uint16(pPlayer->GetZoneId());
+
+	if(Flags & GROUP_UPDATE_FLAG_POSITION)
+		data << uint16(pPlayer->GetPositionX()) << uint16(pPlayer->GetPositionY());			// wtf packed floats? O.o
+}
+
+void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
+{
+	WorldPacket data(500);
+	Player * plr;
+	for(uint32 i = 0; i < m_SubGroupCount; ++i)
+	{
+		for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+		{
+            plr = *itr;
+			if(pPlayer->IsVisible(plr))
+				continue;
+
+            UpdateOutOfRangePlayer(plr, data, GROUP_UPDATE_TYPE_FULL_CREATE);			
+			pPlayer->GetSession()->SendPacket(&data);
+		}
+	}
+}

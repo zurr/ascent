@@ -20,7 +20,7 @@ typedef struct
 	uint16 size;
 }logonpacket;
 
-LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 32768, 65536)
+LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 524288, 65536)
 {
 	// do nothing
 	last_ping = last_pong = time(NULL);

@@ -148,6 +148,9 @@ public:
 	inline uint8 GetGroupType() { return m_GroupType; }
 	inline uint32 GetID() { return m_Id; }
 
+	void UpdateOutOfRangePlayer(Player * pPlayer, WorldPacket & data, uint32 Flags);
+	void UpdateAllOutOfRangePlayersFor(Player * pPlayer);
+
 protected:
 	
 	Player* m_Leader;
