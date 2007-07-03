@@ -470,6 +470,11 @@ public:
 	}
 
 	void LoadDisabledSpells();
+	vector<TrainerSpell*> * GetTrainerSpellsForLine(uint32 line)
+	{
+		TrainerSpellMap::iterator itr = mNormalSpells.find(line);
+		return (itr == mNormalSpells.end()) ? 0 : &itr->second;
+	}
 
 protected:
 	RWLock playernamelock;
