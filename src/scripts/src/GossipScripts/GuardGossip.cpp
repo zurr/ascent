@@ -551,6 +551,7 @@ public:
 	        break;
 
 	   case 6:     //Class Trainer
+		   {
 		   objmgr.CreateGossipMenuForPlayer(&Menu, pCreature->GetGUID(), 4264, Plr);
 
 	       Menu->AddItem( 0, "Druid",                8);
@@ -564,6 +565,7 @@ public:
 		   Menu->AddItem( 0, "Warrior",              16);
 
 			Menu->SendTo(Plr);
+		   }break;
 
 		case 7:		//Profession Trainer
 			{
@@ -991,11 +993,12 @@ public:
 		case 4:		// The Inn
 			Plr->Gossip_SendPOI(9821.49, 960.13, 6, 6, 0, "Dolanaar Inn");
 			SendQuickMenu(4320);
+			break;
 			
 		case 5:		// Stable Master
 			Plr->Gossip_SendPOI(9808.37, 931.1, 6, 6, 0, "Seriadne");
 			SendQuickMenu(5982);
-
+			break;
 
         case 6:    // Class Trainers
             {
