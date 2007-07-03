@@ -1629,7 +1629,10 @@ void ItemInterface::BuyItem(ItemPrototype *item, uint32 amount)
 		}
 		//just make sure we do not loop the value, Though we should have checked it before
 		if(m_pOwner->GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY) >= ex->honor)
+		{
 			m_pOwner->ModUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, -int32(ex->honor));
+			m_pOwner->m_honorPoints -=int32(ex->honor);
+		}
 		if(m_pOwner->GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY ) >= ex->arena)
 			m_pOwner->ModUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, -int32(ex->arena));
 	}
