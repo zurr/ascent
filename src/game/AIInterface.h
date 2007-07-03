@@ -339,6 +339,7 @@ private:
 	Unit *m_Unit;
 	Unit *m_PetOwner;
 	float FollowDistance;
+	float FollowDistance_backup;
 	float m_fallowAngle;
 
 	//std::set<AI_Target> m_aiTargets;
@@ -371,6 +372,7 @@ private:
 	float m_lastFollowY;
 	//typedef std::map<uint32, WayPoint*> WayPointMap;
 	Unit *UnitToFollow;
+	Unit *UnitToFollow_backup;//used unly when forcing creature to wander (blind spell) so when effect wears off we can follow our master again (guardian)
 	Unit *UnitToFear;
 	uint32 m_timeToMove;
 	uint32 m_timeMoved;

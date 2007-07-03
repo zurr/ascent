@@ -310,14 +310,17 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				// update speed
 				m_Unit->m_runSpeed *= 2;
 				getMoveFlags();
+				m_AIState = STATE_IDLE;
 			}break;
 		case EVENT_WANDER:
 			{   
 				//CALL_SCRIPT_EVENT(m_Unit, OnWander)(pUnit, 0); FIXME
 				m_AIState = STATE_WANDER;
 				StopMovement(1);
+				UnitToFollow_backup = UnitToFollow;
 				UnitToFollow = NULL;
 				m_lastFollowX = m_lastFollowY = 0;
+				FollowDistance_backup = FollowDistance;
 				FollowDistance = 0.0f;
 
 				m_aiTargets.clear();			
@@ -342,6 +345,9 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				// update speed
 				m_Unit->m_runSpeed *= 2;
 				getMoveFlags();
+				UnitToFollow = UnitToFollow_backup;
+				FollowDistance = FollowDistance_backup;
+				m_AIState = STATE_IDLE;
 			}break;	   
 		default:
 			{

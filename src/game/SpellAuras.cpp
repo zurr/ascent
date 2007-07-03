@@ -1509,6 +1509,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 			m_target->setAItoUse(false);
 		}
 		m_target->GetAIInterface()->HandleEvent(EVENT_UNWANDER, m_target, 0);
+		//somebody made us dizzy. It's paybacktime
 		Unit *m_caster = GetUnitCaster();
 		if(!m_caster)
 			return;
