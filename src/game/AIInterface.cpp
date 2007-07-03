@@ -315,6 +315,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 		case EVENT_WANDER:
 			{   
 				//CALL_SCRIPT_EVENT(m_Unit, OnWander)(pUnit, 0); FIXME
+				m_AIState_backup = m_AIState;
 				m_AIState = STATE_WANDER;
 				StopMovement(1);
 				UnitToFollow_backup = UnitToFollow;
@@ -323,7 +324,8 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				FollowDistance_backup = FollowDistance;
 				FollowDistance = 0.0f;
 
-				m_aiTargets.clear();			
+				//comented by Zack : why do we need to forget our old targets ?. Maybe this was put here with a reason
+//				m_aiTargets.clear();
 				m_fleeTimer = 0;
 				m_hasFleed = false;
 				m_hasCalledForHelp = false;
@@ -347,7 +349,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				getMoveFlags();
 				UnitToFollow = UnitToFollow_backup;
 				FollowDistance = FollowDistance_backup;
-				m_AIState = STATE_IDLE;
+				m_AIState = m_AIState_backup;
 			}break;	   
 		default:
 			{

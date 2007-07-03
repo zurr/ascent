@@ -725,7 +725,7 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM|PROC_ON_RANGED_ATTACK_VICTIM;
 					if(strstr(desc,"when damaging an enemy in melee"))
 						pr|=PROC_ON_MELEE_ATTACK;
-					if(strstr(desc,"after being the victim of a critical strike"))
+					if(strstr(desc,"victim of a critical strike"))
 						pr|=PROC_ON_CRIT_HIT_VICTIM;
 					if(strstr(desc,"on successful melee or ranged attack"))
 						pr|=PROC_ON_MELEE_ATTACK|PROC_ON_RANGED_ATTACK;
@@ -861,7 +861,6 @@ void World::SetInitialWorldSettings()
 	sp = sSpellStore.LookupEntry(23881);
 	if(sp)
 	{
-printf("namehash %u \n",sp->NameHash);
 		sp->Effect[1] = 64; //cast on us, it is good
 		sp->EffectTriggerSpell[1] = 23885; //evil , but this is good for us :D
 	}

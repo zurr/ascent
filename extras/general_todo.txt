@@ -38,7 +38,6 @@ Zack - test my shit :
 
 - after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
 - RR looting.
-- blind,scatter (dissorient spells) block creatures for unlimited time
 
 ==========================================================================
 

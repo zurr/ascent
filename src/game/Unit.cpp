@@ -616,7 +616,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						}break;
 					}
 				}
-				if(spellId==20230 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
+				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
 					continue;
 				SpellEntry *spellInfo = sSpellStore.LookupEntry(spellId );
 				if(!spellInfo)
