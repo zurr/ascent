@@ -2263,95 +2263,57 @@ bool Player::LoadFromDB(uint32 guid)
 	// Process skill data.
 	Counter = 0;
 	start = (char*)get_next_field.GetString();//buff;
-	if(strchr(start, ',') != 0)
-	{
-		/* old format */
-		do 
-		{
-			end = strchr(start,',');
-			if(!end)break;
-			*end=0;
-			uint32 skillid = atol(start);
-			start = end +1;
-			end = strchr(start,',');
-			if(!end)break;
-			*end=0;
-			uint32 val = atol(start);
-			start = end +1;
+	
+	// new format
+	uint32 field = PLAYER_SKILL_INFO_1_1;
+	uint32 val;
+	const ItemProf * prof;
 
-			skilllineentry *en = sSkillLineStore.LookupEntry((uint16)skillid);
-			if(en->type == SKILL_TYPE_LANGUAGE)
-			{
-				continue;
-			}
-			SetUInt32Value(PLAYER_SKILL_INFO_1_1 + (Counter * 3), skillid);
-			SetUInt32Value(PLAYER_SKILL_INFO_1_01 + ((Counter++) * 3), val);
-			
-				const ItemProf * prof=GetProficiencyBySkill(skillid);
-			
-				if(prof)
-				{
-					if(prof->itemclass==4)
-						armor_proficiency|=prof->subclass;
-					else
-						weapon_proficiency|=prof->subclass;
-				}
-			
-		} while(true);
+	char * f = strdup(start);
+	start = f;
+	for(;;)
+	{
+        end = strchr(start, ' ');
+		if(!end)
+			break;
+        
+		*end = '\0';
+		val = atol(start);
+		start = end + 1;
+		m_uint32Values[field++] = val;
 	}
-	else
+	free(f);
+
+	/* process skills */
+	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		// new format
-		uint32 field = PLAYER_SKILL_INFO_1_1;
-		uint32 val;
-		const ItemProf * prof;
+		if(!m_uint32Values[i])
+			continue;
 
-		char * f = strdup(start);
-		start = f;
-		for(;;)
+		/* check for languages */
+		if(::GetSpellForLanguage(uint16(m_uint32Values[i])) != 0)
 		{
-            end = strchr(start, ' ');
-			if(!end)
-				break;
-            
-			*end = '\0';
-			val = atol(start);
-			start = end + 1;
-			m_uint32Values[field++] = val;
+			m_uint32Values[i] = 0;
+			m_uint32Values[i+1] = 0;
+			m_uint32Values[i+2] = 0;
+			continue;
 		}
-		free(f);
 
-		/* process skills */
-		for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
+		/*en = sSkillLineStore.LookupEntry((uint16)m_uint32Values[i]);
+		if(en->type == SKILL_TYPE_LANGUAGE)
 		{
-			if(!m_uint32Values[i])
-				continue;
+			m_uint32Values[i] = 0;
+			continue;
+		}*/
 
-			/* check for languages */
-			if(::GetSpellForLanguage(uint16(m_uint32Values[i])) != 0)
-			{
-				m_uint32Values[i] = 0;
-				m_uint32Values[i+1] = 0;
-				m_uint32Values[i+2] = 0;
-				continue;
-			}
-
-			/*en = sSkillLineStore.LookupEntry((uint16)m_uint32Values[i]);
-			if(en->type == SKILL_TYPE_LANGUAGE)
-			{
-				m_uint32Values[i] = 0;
-				continue;
-			}*/
-
-			m_uint32Values[i+2] = 0;		// Nuke the bonus
-			prof = GetProficiencyBySkill((uint16)m_uint32Values[i]);
-			if(prof)
-			{
-				if(prof->itemclass==4)
-					armor_proficiency|=prof->subclass;
-				else
-					weapon_proficiency|=prof->subclass;
-			}
+		m_uint32Values[i+2] = 0;		// Nuke the bonus
+		prof = GetProficiencyBySkill((uint16)m_uint32Values[i]);
+		if(prof)
+		{
+			if(prof->itemclass==4)
+				armor_proficiency|=prof->subclass;
+			else
+				weapon_proficiency|=prof->subclass;
 		}
 	}
 
@@ -7673,6 +7635,8 @@ void Player::UpdateComboPoints()
 
 Unit *Player::GetSoloSpellTarget(uint32 spell_id)
 {
+	if(m_mapMgr == 0) return NULL;
+
 	SoloSpells::iterator iter=solospelltarget.find(spell_id);
 	if(iter!=solospelltarget.end())
 		return GetMapMgr()->GetUnit(iter->second);
