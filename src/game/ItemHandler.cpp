@@ -1399,8 +1399,8 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 					item->SetDurabilityToMax();
 					item->m_isDirty = true;
 					
-					
-					if(cDurability <= 0)
+					//only apply item mods if they are on char equiped
+					if(cDurability <= 0 && _player->GetItemInterface()->LastSearchItemBagSlot()==INVALID_BACKPACK_SLOT)
 						_player->ApplyItemMods(item, _player->GetItemInterface()->GetInventorySlotByGuid(itemguid), true);
 				}
 				else

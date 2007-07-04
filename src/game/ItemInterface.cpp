@@ -1832,6 +1832,8 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 		{
 			if( m_pItems[i]->GetGUID() == Guid)
 			{
+				result.ContainerSlot = INVALID_BACKPACK_SLOT;//not a containerslot. In 1.8 client marked wrong slot like this
+				result.Slot = i;
 				return m_pItems[i];
 			}
 		}
@@ -1842,7 +1844,12 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 	{
 		if(m_pItems[i] != NULL)
 		{
-			if(m_pItems[i]->GetGUID()==Guid) { return m_pItems[i]; }
+			if(m_pItems[i]->GetGUID()==Guid) 
+			{
+				result.ContainerSlot = INVALID_BACKPACK_SLOT;
+				result.Slot = i;
+				return m_pItems[i]; 
+			}
 
 			for (int8 j =0; j < m_pItems[i]->GetProto()->ContainerSlots;j++)
 			{
@@ -1851,6 +1858,8 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 				{
 					if (item2->GetGUID() == Guid)
 					{
+						result.ContainerSlot = i;
+						result.Slot = j;
 						return item2;
 					}
 				}

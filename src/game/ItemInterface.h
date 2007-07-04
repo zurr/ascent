@@ -15,6 +15,8 @@
 #ifndef _ITEMINTERFACE_H
 #define _ITEMINTERFACE_H
 
+#define INVALID_BACKPACK_SLOT ((int8)(0xFF)) //In 1.8 client marked wrong slot like this
+
 struct SlotResult
 {
 	SlotResult() { ContainerSlot = -1, Slot = -1, Result = false; }
@@ -73,6 +75,8 @@ public:
 
 	uint32 CalculateFreeSlots(ItemPrototype *proto);
 	void ReduceItemDurability();
+
+	uint8 LastSearchItemBagSlot(){return result.ContainerSlot;}
 
 	//Searching functions
 	SlotResult FindFreeInventorySlot(ItemPrototype *proto);
