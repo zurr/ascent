@@ -827,6 +827,10 @@ void World::SetInitialWorldSettings()
 			sp->proc_interval = 3000; //few seconds
 		else if(strstr(nametext, "Earth Shield"))
 			sp->proc_interval = 3000; //few seconds
+		else if(strstr(nametext, "Shadowguard"))
+			sp->proc_interval = 3000; //few seconds
+		else if(strstr(nametext, "Poison Shield"))
+			sp->proc_interval = 3000; //few seconds
 		sp->procFlags=pr;
 		//sp->dummy=result;
 		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
