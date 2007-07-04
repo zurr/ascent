@@ -515,12 +515,15 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 			if(spellId && Rand(itr2->procChance))
 			{
 				//check if we can trigger due to time limitation
-				if(itr2->TriggerInterval)
+				SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );
+				if(ospinfo->proc_interval)
 				{
 					uint32 now_in_ms=getMSTime();
-					if(itr2->LastTrigger+itr2->TriggerInterval>now_in_ms)
+					if(itr2->LastTrigger+ospinfo->proc_interval>now_in_ms)
 						continue; //we can't trigger it yet.
 					itr2->LastTrigger = now_in_ms; // consider it triggered
+					//since we did not allow to remove auras like these with interrupt flag we have to remove them manually. Sucks, fell free to come with a better idea
+					RemoveAura(origId);
 				}
 				//these are player talents. Fuckem they pull the emu speed down 
 				if(IsPlayer())
@@ -633,7 +636,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				}
 				Spell *spell = new Spell(this, spellInfo ,true, NULL);
 				//Spell *spell = new Spell(this,spellInfo,false,0,true,false);
-				if(spellId==38590||spellId==32593||spellId==32594) // Earth Shield handler
+				if(spellId==974||spellId==32593||spellId==32594) // Earth Shield handler
 				{
 					spell->pSpellId=itr2->spellId;
 					spell->SpellEffectDummy(0);
@@ -647,73 +650,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				spell->pSpellId=origId;
 				spell->prepare(&targets);
 			}//not always we have a spell to cast
-			/*if(itr2->procCharges)
-			{
-				if(origId)
-					remove.push_back(origId);
-				else 
-					m_procSpells.erase(itr2);
-			}*/
-		}
-	}
-	std::map<uint32,struct SpellCharge>::iterator iter,iter2;
-	iter=m_chargeSpells.begin();
-	while(iter!= m_chargeSpells.end())
-	{
-		iter2=iter++;
-		if(iter2->second.count)
-		{
-			if((iter2->second.ProcFlag&flag))
-			{
-				//Fixes for spells that dont lose charges when dmg is absorbd
-				if(iter2->second.ProcFlag==680&&dmg==0) continue;
-				if(CastingSpell)
-				{
-
-					SpellCastTime *sd = sCastTime.LookupEntry(CastingSpell->CastingTimeIndex);
-					if(!sd) continue; // this shouldnt happen though :P
-					switch(iter2->second.spellId)
-					{
-					case 12043:
-						{
-							//Presence of Mind and Nature's Swiftness should only get removed
-							//when a non-instant and bellow 10 sec. Also must be nature :>
-							if(!sd->CastTime||sd->CastTime>10000) continue;
-						}break;
-					case 16188:
-						{
-							if(CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
-						}break;
-					case 16166:
-						{
-							if(!(CastingSpell->School==SCHOOL_FIRE||CastingSpell->School==SCHOOL_FROST||CastingSpell->School==SCHOOL_NATURE))
-								continue;
-						}break;
-
-					}
-				}
-				if(iter2->second.lastproc!=0)
-				{
-					if(iter2->second.procdiff>3000)
-					{
-						--(iter2->second.count);
-						iter2->second.FromProc=true;
-						RemoveAura(iter2->second.spellId);
-						iter2->second.FromProc=false;
-					}
-				}
-				else
-				{
-					--(iter2->second.count);
-					iter2->second.FromProc=true;
-					this->RemoveAura(iter2->second.spellId);
-					iter2->second.FromProc=false;
-				}
-			}
-		}
-		if(!iter2->second.count)
-		{
-			m_chargeSpells.erase(iter2);
 		}
 	}
 	if(can_delete)
@@ -1639,7 +1575,7 @@ void Unit::AddAura(Aura *aur)
 		//uint32 aurName = aur->GetSpellProto()->Name;
 		//uint32 aurRank = aur->GetSpellProto()->Rank;
 		uint32 maxStack = aur->GetSpellProto()->maxstack;
-		if(aur->GetSpellProto()->procCharges)
+		if(aur->GetSpellProto()->procCharges>0)
 			maxStack=aur->GetSpellProto()->procCharges;
 		if(IsPlayer() && ((Player*)this)->stack_cheat)
 			maxStack = 999;
@@ -2705,8 +2641,9 @@ void Unit::RemoveAurasByInterruptFlag(uint32 flag)
 		a = m_auras[x];
 		if(a == NULL)
 			continue;
-
-		if(a->m_spellProto->AuraInterruptFlags & flag)
+		
+		//some spells do not get removed all the time only at specific intervals
+		if((a->m_spellProto->AuraInterruptFlags & flag) && a->m_spellProto->proc_interval==0)
 		{
 			a->Remove();
 			m_auras[x] = NULL;
@@ -3139,7 +3076,8 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
 		if(a == 0)
 			continue;
 
-		if(a->m_spellProto->AuraInterruptFlags & flag && a->m_spellProto->Id != skip)
+		//some spells do not get removed all the time only at specific intervals
+		if(a->m_spellProto->AuraInterruptFlags & flag && a->m_spellProto->Id != skip && a->m_spellProto->proc_interval==0)
 		{
 			// Fix for instant cast spell removing presence of mind and shit
 			if(flag==AURA_INTERRUPT_ON_CAST_SPELL&&a->m_spellProto->procCharges) continue;

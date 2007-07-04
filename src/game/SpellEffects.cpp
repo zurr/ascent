@@ -382,7 +382,6 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 	// INTERNAL HANDLERS
 	if(sScriptMgr.CallScriptedDummySpell(spellId, i, this))
 		return;
-	std::map<uint32,struct SpellCharge>::iterator iter;
 	switch(spellId)
 	{
 	case 34120:
@@ -432,46 +431,11 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			if(!pSpellId) return;
 			SpellEntry *spellInfo = sSpellStore.LookupEntry(pSpellId);
 			if(!spellInfo) return;
-			iter = u_caster->m_chargeSpells.find(pSpellId);
-			if(iter!=u_caster->m_chargeSpells.end())
-			{
-				if(iter->second.lastproc==0) iter->second.lastproc=getMSTime();
-				else
-				{
-					uint32 now = getMSTime();
-					iter->second.procdiff=now-iter->second.lastproc;
-					if(iter->second.procdiff<3000) return;
-					iter->second.lastproc=now;
-				}
-				uint32 heal32 = CalculateEffect(i);
-				unitTarget=u_caster; // Should heal caster :p
-				if(heal32)
-					Heal(heal32);
-			}
+			uint32 heal32 = CalculateEffect(i);
+			unitTarget=u_caster; // Should heal caster :p
+			if(heal32)
+				Heal(heal32);
 		}break;
-/*	case 26545: // Lightning Shield
-		{
-			if(!pSpellId) return;
-			SpellEntry *spellInfo = sSpellStore.LookupEntry(pSpellId);
-			if(!spellInfo) return;
-			Spell * tmpspell = new Spell(m_caster,spellInfo,false,NULL);
-			iter = u_caster->m_chargeSpells.find(pSpellId);
-			if(iter!=u_caster->m_chargeSpells.end())
-			{
-			if(iter->second.lastproc==0) iter->second.lastproc=getMSTime();
-			else
-			{
-				uint32 now = getMSTime();
-				iter->second.procdiff=now-iter->second.lastproc;
-				if(iter->second.procdiff<3000) return;
-				iter->second.lastproc=now;
-			}
-			uint32 dmg32 = tmpspell->CalculateEffect(i);
-			if(dmg32)
-				m_caster->SpellNonMeleeDamageLog(unitTarget,pSpellId,dmg32, false);
-			delete tmpspell;
-			}
-		}break;*/
 	case 28730:
 		{
 			// for each mana tap, gives you 12 mana
@@ -1707,22 +1671,6 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
 {
 	if(!unitTarget || !unitTarget->isAlive())
 		return;
-	if(m_spellInfo->Id==23575||m_spellInfo->Id==33737) // Water Shield Proc on every few seconds
-	{
-		std::map<uint32,struct SpellCharge>::iterator iter;
-		iter = u_caster->m_chargeSpells.find(pSpellId);
-		if(iter!=u_caster->m_chargeSpells.end())
-		{
-			if(iter->second.lastproc==0) iter->second.lastproc=getMSTime();
-			else
-			{
-				uint32 now = getMSTime();
-				iter->second.procdiff=now-iter->second.lastproc;
-				if(iter->second.procdiff<3000) return;
-				iter->second.lastproc=now;
-			}
-		}
-	}
 
 	uint32 POWER_TYPE=UNIT_FIELD_POWER1+m_spellInfo->EffectMiscValue[i];
 

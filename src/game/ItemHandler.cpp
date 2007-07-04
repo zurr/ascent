@@ -1387,6 +1387,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 		Item *item = _player->GetItemInterface()->GetItemByGUID(itemguid);
 		if(item)
 		{
+			SlotResult *searchres=_player->GetItemInterface()->LastSearchResult();//this never gets null since we get a pointer to the inteface internal var
 			uint32 dDurability = item->GetDurabilityMax() - item->GetDurability();
 
 			if (dDurability)
@@ -1400,8 +1401,9 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 					item->m_isDirty = true;
 					
 					//only apply item mods if they are on char equiped
-					if(cDurability <= 0 && _player->GetItemInterface()->LastSearchItemBagSlot()==INVALID_BACKPACK_SLOT)
-						_player->ApplyItemMods(item, _player->GetItemInterface()->LastSearchItemSlot(), true);
+	printf("we are fixing a single item in inventory at bagslot %u and slot %u\n",searchres->ContainerSlot,searchres->Slot);
+					if(cDurability <= 0 && searchres->ContainerSlot==INVALID_BACKPACK_SLOT && searchres->Slot<INVENTORY_SLOT_BAG_END)
+						_player->ApplyItemMods(item, searchres->Slot, true);
 				}
 				else
 				{

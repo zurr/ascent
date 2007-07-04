@@ -19,7 +19,9 @@ SMT_RESIST_DISPEL - check if it is used
 - find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
 - imlement a sure way to test if server is crashed/blocked or simply get it's state. Status Xml is great but on crash there is no status update
 - some creatures should not enter or exit water. ex : spider - fish.
-- client showes twice the AP server holds. This would be a bug if you would have it inverse :S
+- handleproc is getting huge, maybe we should break it into pieces
+- on server load a lot of spell.dbc data is processed. Maybe make an external tool
+- you do not gain resurection sicness after using spirit healer. WTF ? this was working before. Oh, well, next.
 
 ==========================================================================
 ! BUGS !
@@ -42,6 +44,8 @@ Zack - test my shit :
 - implement a general way for procspells to trigger at intervals.Cooldown is slow. (Nature's guardian, lighning shield, earth shield ...)
 - if you have an equiped broken item that modify stats, you put it inventory and repair it with hammer. You get twice the item affects.
 - pet instant spells make creature loop. They go to target and back.
+- client showes twice the AP server holds. This would be a bug if you would have it inverse :S
+- water shield
 
 ==========================================================================
 

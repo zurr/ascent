@@ -469,6 +469,8 @@ void World::SetInitialWorldSettings()
 		// get spellentry
 		SpellEntry * sp = sSpellStore.LookupEntry(spellid);
 
+		sp->proc_interval = 0;//trigger at each event
+
 		// grep: this is a _very_ hacky fix for presence of mind and alike spells.
 		if(sp->procFlags == 0x00015550 && sp->procCharges == 1 && sp->procChance == 100)
 			sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
@@ -783,17 +785,6 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(nametext, "Bloodthirst"))
 						pr|=PROC_ON_MELEE_ATTACK | PROC_TAGRGET_SELF;
-
-					//some procs require to target ourself. Rare case like bloodthirst
-/*					for(int spind=0;spind<3;spind++)
-						if(sp->EffectTriggerSpell[spind])
-						{
-							SpellEntry * spt = sSpellStore.LookupEntry(sp->EffectTriggerSpell[spind]);
-							if(sp->EffectImplicitTargetA[spind]==1)
-								pr|=PROC_TAGRGET_SELF;
-							if(sp->EffectImplicitTargetB[spind]==1)
-								pr|=PROC_TAGRGET_SELF;
-						}*/
 				}
 				//dirty fix to remove auras that should expire on event and they are not
 //				else if((aura == SpellAuraAddFlatModifier || aura == SpellAuraAddPctMod) && sp->procCharges)
@@ -812,14 +803,16 @@ void World::SetInitialWorldSettings()
 				startofid += strlen("for $");
 				sp->EffectTriggerSpell[0]=atoi(startofid); //get new lightning shield trigger id
 			}
+			sp->proc_interval = 3000; //few seconds
 		}
 		//more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
-		if( //strstr(nametext, "Nature's Guardian") && 
-			sp->EffectTriggerSpell[0]==18350
-			)
+		else if( strstr(nametext, "Nature's Guardian"))
+		{
 			sp->EffectTriggerSpell[0]=31616;
+			sp->proc_interval = 5000;
+		}
 		//this starts to be an issue for trigger spell id : Deep Wounds
-		if(strstr(nametext, "Deep Wounds") && sp->EffectTriggerSpell[0])
+		else if(strstr(nametext, "Deep Wounds") && sp->EffectTriggerSpell[0])
 		{
 			//check if we can find in the desription
 			char *startofid=strstr(desc, "over $");
@@ -829,8 +822,16 @@ void World::SetInitialWorldSettings()
 				sp->EffectTriggerSpell[0]=atoi(startofid); //get new lightning shield trigger id
 			}
 		}
+		//some procs trigger at intervals
+		else if(strstr(nametext, "Water Shield"))
+			sp->proc_interval = 3000; //few seconds
+		else if(strstr(nametext, "Earth Shield"))
+			sp->proc_interval = 3000; //few seconds
 		sp->procFlags=pr;
 		//sp->dummy=result;
+		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
+		if(sp->procCharges==0)
+			sp->procCharges=-1;
 	}
 	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
 	SpellEntry * parentsp = sSpellStore.LookupEntry(30823);

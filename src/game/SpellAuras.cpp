@@ -385,13 +385,7 @@ void Aura::Remove()
 			RemoveAA();
 		}
 	}
-	std::map<uint32,struct SpellCharge>::iterator iter;
-	iter = m_target->m_chargeSpells.find(GetSpellId());
-	if(iter!=m_target->m_chargeSpells.end())
-	{
-		if(!(iter->second).FromProc)
-		m_target->m_chargeSpells.erase(iter);
-	}
+
 	m_target->m_auras[m_auraSlot] = NULL;
 
 	if(GetSpellProto()->SpellGroupType && m_target->GetTypeId() == TYPEID_PLAYER)
@@ -510,7 +504,7 @@ void Aura::ApplyModifiers(bool apply)
 			pts.procChance = GetSpellProto()->procChance;
 			pts.procFlags = GetSpellProto()->procFlags;
 			pts.procCharges = GetSpellProto()->procCharges;
-			pts.TriggerInterval = 0; //we shuld decide triggerinterval correctly. Try not using this function
+			pts.LastTrigger = 0;
 			pts.deleted = false;
 			m_target->m_procSpells.push_front(pts);
 		}
@@ -1103,8 +1097,7 @@ void Aura::SpellAuraDummy(bool apply)
 			pts.procChance = GetSpellProto()->procChance;
 			pts.procFlags = GetSpellProto()->procFlags;
 			pts.procCharges = GetSpellProto()->procCharges;
-			pts.LastTrigger = getMSTime();
-			pts.TriggerInterval = 3000; // few sec
+			pts.LastTrigger = 0;
 			pts.deleted = false;
 			m_target->m_procSpells.push_front(pts);
 			}
@@ -3070,30 +3063,8 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		pts.procChance = GetSpellProto()->procChance;
 		pts.procFlags = GetSpellProto()->procFlags;
 		pts.procCharges = GetSpellProto()->procCharges;
-		pts.LastTrigger = getMSTime();
-		switch(pts.spellId)
-		{
-			//Nature's grace
-			case 31616:		{	pts.TriggerInterval = 5000;		}break;
-			//lightning shield
-			case 26363:
-			case 26364:
-			case 26365:
-			case 26366:
-			case 26367:
-			case 26371:
-			case 26372:
-			case 26373:
-				{	pts.TriggerInterval = 3000;		}break; //what does few seconds mean anyway ?
-			default:
-			{
-				pts.TriggerInterval = 0;//trigger at each event
-			}break;
-		}
-		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
-//		if(pts.procCharges==0)
-//			pts.procCharges=-1;
-sLog.outDebug("%u is registering %u chance %u flags %u charges %u triggeronself %u\n",pts.origId,pts.spellId,pts.procChance,pts.procFlags & ~PROC_TAGRGET_SELF,pts.procCharges,pts.procFlags & PROC_TAGRGET_SELF);
+		pts.LastTrigger = 0;
+		sLog.outDebug("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u\n",pts.origId,pts.spellId,pts.procChance,pts.procFlags & ~PROC_TAGRGET_SELF,pts.procCharges,pts.procFlags & PROC_TAGRGET_SELF,GetSpellProto()->proc_interval);
 		pts.deleted = false;
 		m_target->m_procSpells.push_front(pts);
 	}

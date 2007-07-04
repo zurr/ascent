@@ -33,7 +33,5 @@ improved berserker rage - not triggered. Should only get triggered while we have
 8. Rampage - does not have any effect. Should this use up aurastateflag ? If so then remove it from caster
 
 mocking blow - not working
-taunt - should call even agroed mobs to warrior
-
-rechecked this and seems to be allright
-	blood thirst level 1 makes huge amount of dmg (stronger then lvl 5). I tested lvl 5 ...
+taunt - should pull creatures even if they are already attacking
+shield block - should increase block chance to 75%- block does not ocure ?

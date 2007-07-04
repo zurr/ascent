@@ -3028,9 +3028,7 @@ void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 	{
 		return;
 	}
-	//check slot to make sure we do not apply item stats from backpack: issue reported with durability loss
-	if(slot>=INVENTORY_SLOT_BAG_END)
-		return;
+
 	//check for rnd prop
 	uint32 rndprop=item->GetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID);
 	if(rndprop)

@@ -1874,6 +1874,8 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 		{
 			if(m_pItems[i]->GetGUID() == Guid)
 			{
+				result.ContainerSlot = INVALID_BACKPACK_SLOT;
+				result.Slot = i;
 				return m_pItems[i];
 			}
 		}
@@ -1886,6 +1888,8 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 		{
 			if(m_pItems[i]->GetGUID() == Guid)
 			{
+				result.ContainerSlot = INVALID_BACKPACK_SLOT;
+				result.Slot = i;
 				return m_pItems[i];
 			}
 		}

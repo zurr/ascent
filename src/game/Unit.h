@@ -724,7 +724,6 @@ public:
 	std::list<struct ReflectSpellSchool*> m_reflectSpellSchool;
  
 	std::list<struct ProcTriggerSpell> m_procSpells;
-	std::map<uint32,struct SpellCharge> m_chargeSpells;
 	inline void SetOnMeleeSpell(uint32 spell ) { m_meleespell = spell; }
 	inline uint32 GetOnMeleeSpell() { return m_meleespell; }
 

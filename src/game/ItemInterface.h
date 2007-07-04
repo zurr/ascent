@@ -78,6 +78,7 @@ public:
 
 	uint8 LastSearchItemBagSlot(){return result.ContainerSlot;}
 	uint8 LastSearchItemSlot(){return result.Slot;}
+	SlotResult *LastSearchResult(){return &result;}
 
 	//Searching functions
 	SlotResult FindFreeInventorySlot(ItemPrototype *proto);

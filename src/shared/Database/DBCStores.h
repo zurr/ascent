@@ -309,7 +309,8 @@ struct SpellEntry
 	uint32 BuffDescriptionAlt12;			//187
 	uint32 BuffDescriptionAlt13;			//188
 	uint32 BuffDescriptionAlt14;			//189
-	uint32 BuffDescriptionAlt15;			//190
+//	uint32 BuffDescriptionAlt15;			//190
+	uint32 proc_interval;				//190 - !!! Using it instead of BuffDescriptionAlt15 !!!
 	uint32 buffdescflags;				   //191
 	uint32 ManaCostPercentage;			  //192
 	uint32 unkflags;						//193 
@@ -339,7 +340,8 @@ struct SpellEntry
 	uint32 RankNumber;					  //210
 	uint32 NameHash;						//211
 
-	uint32 DiminishStatus;
+	uint32 DiminishStatus;				//212
+
 };
 
 struct ItemExtendedCostEntry

@@ -1,4 +1,11 @@
 Shaman:
+
+1. Please fix Tremor Totem ? This totem dispells Stun and it's bug. Tremor only dispells Fear,Charm and Sleep.
+
+2. Searing totem is attacking players in Stealth mode (rogue,shadowmelded etc.)
+
+3. Windfury seems to bugged when using Stormstrike - every crit for 2k + 
+
 Talents
 
 Elemental:

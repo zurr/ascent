@@ -1,5 +1,10 @@
 1) Winter's Chill (Mage)
 2) Chill (Mage)
+5) Frostbite (Mage)
+6) Improved scorch (Mage)
+7) Shatter (Mage)
+8) Ice lance (is not affected by ice shard on antrix and it duplicate damage, not 3x - Mage)
+9) Summon water elemental (Mage)
 
 Mage:
 
