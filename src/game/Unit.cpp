@@ -514,6 +514,14 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 
 			if(spellId && Rand(itr2->procChance))
 			{
+				//check if we can trigger due to time limitation
+				if(itr2->TriggerInterval)
+				{
+					uint32 now_in_ms=getMSTime();
+					if(itr2->LastTrigger+itr2->TriggerInterval>now_in_ms)
+						continue; //we can't trigger it yet.
+					itr2->LastTrigger = now_in_ms; // consider it triggered
+				}
 				//these are player talents. Fuckem they pull the emu speed down 
 				if(IsPlayer())
 				{
@@ -625,7 +633,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				}
 				Spell *spell = new Spell(this, spellInfo ,true, NULL);
 				//Spell *spell = new Spell(this,spellInfo,false,0,true,false);
-				if(itr2->spellId==974||itr2->spellId==32593||itr2->spellId==32594) // Earth Shield handler
+				if(spellId==38590||spellId==32593||spellId==32594) // Earth Shield handler
 				{
 					spell->pSpellId=itr2->spellId;
 					spell->SpellEffectDummy(0);

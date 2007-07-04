@@ -1552,7 +1552,7 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
 	}
 
 	LootRoll *li = NULL;
-	if(slotid > pCreature->loot.items.size() || pCreature->loot.items.size()==0)
+	if(slotid >= pCreature->loot.items.size() || pCreature->loot.items.size()==0)
 	{
 		return;
 	} else {

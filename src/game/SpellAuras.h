@@ -281,6 +281,8 @@ struct ProcTriggerSpell
 	uint32 procChance;
 	uint32 procFlags;
 	uint32 procCharges;
+	uint32 TriggerInterval; //usually they trigger at each event, but there are exceptions ofcourse
+	uint32 LastTrigger;
 	bool deleted;
 };
 struct SpellCharge

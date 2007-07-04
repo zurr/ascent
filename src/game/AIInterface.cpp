@@ -283,6 +283,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 		case EVENT_FEAR:
 			{   
 				CALL_SCRIPT_EVENT(m_Unit, OnFear)(pUnit, 0);
+				m_AIState_backup = m_AIState;
 				m_AIState = STATE_FEAR;
 				StopMovement(1);
 				UnitToFollow_backup = UnitToFollow;
@@ -312,7 +313,9 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				// update speed
 				m_Unit->m_runSpeed *= 2;
 				getMoveFlags();
-				m_AIState = STATE_IDLE;
+//				m_AIState = STATE_IDLE;
+				//maybe we were not idle before fear. Like a guardian could have been doing something
+				m_AIState = m_AIState_backup;
 				UnitToFollow = UnitToFollow_backup;
 				FollowDistance = FollowDistance_backup;
 			}break;

@@ -452,6 +452,7 @@ void Aura::AddMod(uint32 t, int32 a,uint32 miscValue,uint32 i)
 	//ASSERT(m_modcount<=3);
 }
 
+//!!! this is not safe. We should not add only auras, instead try casting the whole spell
 void Aura::ApplyModifiers(bool apply)
 { 
 	
@@ -1101,6 +1102,8 @@ void Aura::SpellAuraDummy(bool apply)
 			pts.procChance = GetSpellProto()->procChance;
 			pts.procFlags = GetSpellProto()->procFlags;
 			pts.procCharges = GetSpellProto()->procCharges;
+			pts.LastTrigger = getMSTime();
+			pts.TriggerInterval = 3000; // few sec
 			pts.deleted = false;
 			m_target->m_procSpells.push_front(pts);
 			}
@@ -3066,6 +3069,26 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		pts.procChance = GetSpellProto()->procChance;
 		pts.procFlags = GetSpellProto()->procFlags;
 		pts.procCharges = GetSpellProto()->procCharges;
+		pts.LastTrigger = getMSTime();
+		switch(pts.spellId)
+		{
+			//Nature's grace
+			case 31616:		{	pts.TriggerInterval = 5000;		}break;
+			//lightning shield
+			case 26363:
+			case 26364:
+			case 26365:
+			case 26366:
+			case 26367:
+			case 26371:
+			case 26372:
+			case 26373:
+				{	pts.TriggerInterval = 3000;		}break; //what does few seconds mean anyway ?
+			default:
+			{
+				pts.TriggerInterval = 0;//trigger at each event
+			}break;
+		}
 		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times.Ok -1 is not infinite :P
 //		if(pts.procCharges==0)
 //			pts.procCharges=-1;
