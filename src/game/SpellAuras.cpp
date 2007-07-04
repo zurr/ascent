@@ -510,6 +510,7 @@ void Aura::ApplyModifiers(bool apply)
 			pts.procChance = GetSpellProto()->procChance;
 			pts.procFlags = GetSpellProto()->procFlags;
 			pts.procCharges = GetSpellProto()->procCharges;
+			pts.TriggerInterval = 0; //we shuld decide triggerinterval correctly. Try not using this function
 			pts.deleted = false;
 			m_target->m_procSpells.push_front(pts);
 		}

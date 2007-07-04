@@ -1232,17 +1232,22 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 		{
 			if(unitTarget && unitTarget->IsPlayer() && pSpellId && unitTarget->GetHealthPct()<30)
 			{
-				//heal value is receivad by the level of current active talent :s
-				//maybe we should use CalculateEffect(uint32 i) to gain SM benefits
-				int32 value = 0;
-				int32 basePoints = spellInfo->EffectBasePoints[i]+1;//+(m_caster->getLevel()*basePointsPerLevel);
-				int32 randomPoints = spellInfo->EffectDieSides[i];
-				if(randomPoints <= 1)
-					value = basePoints;
-				else
-					value = basePoints + rand() % randomPoints;
-				//the value is in percent. Until now it's a fixed 10%
-				Heal(unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)*value/100);
+				//check for that 10 second cooldown
+				SpellEntry *spellInfo = sSpellStore.LookupEntry(pSpellId );
+				if(spellInfo)
+				{
+					//heal value is receivad by the level of current active talent :s
+					//maybe we should use CalculateEffect(uint32 i) to gain SM benefits
+					int32 value = 0;
+					int32 basePoints = spellInfo->EffectBasePoints[i]+1;//+(m_caster->getLevel()*basePointsPerLevel);
+					int32 randomPoints = spellInfo->EffectDieSides[i];
+					if(randomPoints <= 1)
+						value = basePoints;
+					else
+						value = basePoints + rand() % randomPoints;
+					//the value is in percent. Until now it's a fixed 10%
+					Heal(unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH)*value/100);
+				}
 			}
 		}
 		else Heal((int32)damage);
