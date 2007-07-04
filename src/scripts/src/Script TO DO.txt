@@ -1,6 +1,38 @@
+/************************************** Header ****************************************/
+/*										      */
+/*			       Antrix Script Development			      */
+/*			           						      */
+/*			Brings completely new view on WoW reality.		      */
+/*										      */
+/*										      */
+/*				Documentation includes:				      */
+/*										      */
+/*				     *TO DO LIST*				      */
+/*				 *WHAT'S DONE SO FAR*				      */
+/*				      *ROAD-MAP*				      */
+/*				     *MILESTONES*				      */
+/*				       *LEGEND*					      */
+/*										      */
+/*										      */
+/************************************ Header End **************************************/
+
+
+
 *TO DO LIST*
 
-MAIN TASKS *FOR NOW*:
+MAIN TASK: Finish Outland Instances (Instances not Raids!)
+
+WHAT LEFT TO FINISH MAIN TASK:
+- Check all instances
+- Rewrite all instances to fit cooldowns as well as percent chance to cast spell
+- Write proper documentations what must be done when:
+                                       - There will be additional core support
+                                       - When someone will gather data for other mobs/bosses
+                                       - Others?
+
+Note: Documentation will be in HTML or in PDF or (eventually) wiki style.
+
+TASKS *FOR NOW*:
 -> Rewrite The Shattered Halls Script to fit new coding style (also add missing [*]
    mobs scripts, check spells and fully done it).				
 -> Rewrite Blood Furnace script bosses and add all trash mobs. 			[*]
@@ -12,7 +44,8 @@ MAIN TASKS *FOR NOW*:
 
 
 GossipScripts:
-   - Fix Shaman Gossip in Stormwind [+]
+   - Fix Shaman Gossip in Stormwind 	[+]
+   - Fix missing "break;" in switches 	[+]
    - More?
 
 InstanceScripts:
@@ -24,12 +57,24 @@ InstanceScripts:
     - The Underbog		[*] Note: Rewrite to new coding style, add rest of stuff
     - The Steamvault		[-] Note: Rewrite to new coding style, add rest of stuff
 
+
+
+*WHAT'S DONE SO FAR*
+
 Done:
  *Outland: Instances*
    - None fully done
 
+
+
+*ROAD-MAP*
+
 RoadMap:
  *Outland Instances* - > *?* - > *?* - > ...
+
+
+
+*MILESTONES*
 
 Milestones:
  *Milestone 0.1 - OutlandN00bZ0R*
@@ -46,6 +91,10 @@ Milestones:
 
  *Milestone 1.0*
     - *?*
+
+
+
+*LEGEND*
 
 [-] - not started
 [*] - done partially (leave notes!)
