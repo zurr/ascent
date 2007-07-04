@@ -630,21 +630,8 @@ public:
 	//void SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage);
 	void HandleProc(uint32 flag, Unit* Victim, SpellEntry* CastingSpell,uint32 dmg=-1);
 
-	int32 GetAP()
-	{
-		int32 temp=(GetUInt32Value(UNIT_FIELD_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS))*float2int32(GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER));
-		if(temp>=0)
-			return temp;
-		return	0;
-	}
-		
-	int32 GetRAP()
-	{
-		int32 temp=(GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER)+(int32)GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS))*float2int32(GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER));
-		if(temp>=0)
-			return temp;
-		return	0;
-	}
+	int32 GetAP();
+	int32 GetRAP();
 
 	void CastSpell(Unit* Target, uint32 SpellID, bool triggered);
 	void CastSpell(Unit* Target, SpellEntry* Sp, bool triggered);

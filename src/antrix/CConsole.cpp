@@ -136,7 +136,7 @@ void CConsole::TranslateVersion(char *str)
 }
 void CConsole::ProcessVersion()
 {
-    sLog.outString("Console: Server %s, Rev: %s", _FULLVERSION, g_getRevision());
+    sLog.outString("Console: Server %s, Rev: %d", _FULLVERSION, g_getRevision());
 }
 //------------------------------------------------------------------------------
 // quit | exit

@@ -507,7 +507,7 @@ inline uint32 GainStat(uint16 level, uint8 playerclass,uint8 Stat)
 //TODO: Some awesome formula to determine how much damage to deal
 //consider this is melee damage
 //damage type =0 --melee, 1--dual wield, 2 - ranged
-inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type, uint32 spellgroup)//spellid is used only for 2-3 spells, that have AP bonus
+inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type, uint32 spellgroup, SpellEntry *ability)//spellid is used only for 2-3 spells, that have AP bonus
 {
 	// Attack Power increases your base damage-per-second (DPS) by 1 for every 14 attack power. 
 	// (c) wowwiki
@@ -572,12 +572,22 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 			else
 				wspeed = (float)pAttacker->GetUInt32Value(UNIT_FIELD_RANGEDATTACKTIME);
 
+            ap += pAttacker->GetRAP();
 			ap += pVictim->RAPvModifier;
 		}
 		else
 		{
 			wspeed = (float)pAttacker->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
 		}
+
+        //ranged weapon normalization.
+        if(pAttacker->IsPlayer() && ability)
+        {
+            if(ability->Effect[0] == SPELL_EFFECT_DUMMYMELEE || ability->Effect[1] == SPELL_EFFECT_DUMMYMELEE || ability->Effect[2] == SPELL_EFFECT_DUMMYMELEE)
+            { 
+                wspeed = 2800;
+            }
+        }
 
 		bonus = (wspeed*ap)/14000.0f;
 
@@ -620,7 +630,10 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 
 				int32 apb=0;
 				SM_FIValue(pAttacker->SM_PAPBonus,&apb,spellgroup);
-				ap += apall*((float)apb/100);
+                if(apb)
+				    ap += apall*((float)apb/100);
+                else
+                    ap = apall;
 			}
 		}
 		else
@@ -628,6 +641,23 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 			wspeed = (float)pAttacker->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
 		}
 
+        //Normalized weapon damage checks.
+        if(pAttacker->IsPlayer() && ability)
+        {
+            if(ability->Effect[0] == SPELL_EFFECT_DUMMYMELEE || ability->Effect[1] == SPELL_EFFECT_DUMMYMELEE || ability->Effect[2] == SPELL_EFFECT_DUMMYMELEE)
+            {
+                it = static_cast<Player*>(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                if(it)
+                {
+                    if(it->GetProto()->Class == 2) //weapon
+                    {
+                        if(it->GetProto()->InventoryType == INVTYPE_2HWEAPON) wspeed = 3300;
+                        else if(it->GetProto()->SubClass == 15) wspeed = 1700;
+                        else wspeed = 2400;
+                    }
+                }
+            }
+        }
 		bonus = (wspeed*ap)/14000.0f;
 
 		min_damage += bonus;

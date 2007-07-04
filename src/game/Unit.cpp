@@ -1130,9 +1130,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			else
 			{
 				if(damage_type == MELEE && ability)
-					dmg.full_damage = CalculateDamage(this, pVictim, damage_type, ability->SpellGroupType);
+					dmg.full_damage = CalculateDamage(this, pVictim, damage_type, ability->SpellGroupType, ability);
 				else			
-					dmg.full_damage = CalculateDamage(this, pVictim, damage_type, 0);
+					dmg.full_damage = CalculateDamage(this, pVictim, damage_type, 0, ability);
 			}
 
 			if(ability && ability->SpellGroupType)
@@ -3462,4 +3462,22 @@ void Unit::EventHealthChangeSinceLastUpdate()
 	}
 	else
 		RemoveFlag(UNIT_FIELD_AURASTATE , AURASTATE_FLAG_HEALTH35 | AURASTATE_FLAG_HEALTH20);
+}
+
+int32 Unit::GetAP()
+{
+    int32 baseap = GetUInt32Value(UNIT_FIELD_ATTACK_POWER) + GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
+    float totalap = float(baseap)*(GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER)+1);
+	if(totalap>=0)
+		return float2int32(totalap);
+	return	0;
+}
+
+int32 Unit::GetRAP()
+{
+    int32 baseap = GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER) + GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
+    float totalap = float(baseap)*(GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER)+1);
+	if(totalap>=0)
+		return float2int32(totalap);
+	return	0;
 }

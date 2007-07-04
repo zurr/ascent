@@ -321,8 +321,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 			}
 		case 0xCBC738B8:	// Bloodthirst
 			{
-//				dmg = u_caster->GetAP()*damage / 100;
-				dmg = u_caster->GetAP()*damage*4 / 100; //this is so wrong but it is made like thos to be aprox sincronized to client :|
+                dmg = u_caster->GetAP()*(m_spellInfo->EffectBasePoints[0]+1) / 100;
 			}
 		}
 	}

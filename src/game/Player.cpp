@@ -320,8 +320,8 @@ Player::Player ( uint32 high, uint32 low )
 	m_comboPoints = 0;
 
 	chat_disabled_until		= 0;
-	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
-	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
+	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, 0.0f);
+	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, 0.0f);
 
 	UpdateLastSpeeds();
 
@@ -4308,9 +4308,7 @@ void Player::UpdateStats()
 	if(RAP <0) RAP=0;
 	if(AP < 0) AP=0;
 	SetUInt32Value(UNIT_FIELD_ATTACK_POWER, AP);
-	SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, RAP);
-//	SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, 1.0f);	 
-   
+	SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, RAP); 
 	
 	int32 hp=GetUInt32Value(UNIT_FIELD_BASE_HEALTH);
 	int32 bonus=(GetUInt32Value(UNIT_FIELD_POSSTAT2)-GetUInt32Value(UNIT_FIELD_NEGSTAT2))*10+m_healthfromspell+m_healthfromitems;
