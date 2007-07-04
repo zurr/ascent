@@ -285,8 +285,10 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				CALL_SCRIPT_EVENT(m_Unit, OnFear)(pUnit, 0);
 				m_AIState = STATE_FEAR;
 				StopMovement(1);
+				UnitToFollow_backup = UnitToFollow;
 				UnitToFollow = NULL;
 				m_lastFollowX = m_lastFollowY = 0;
+				FollowDistance_backup = FollowDistance;
 				FollowDistance = 0.0f;
 
 				m_aiTargets.clear();			
@@ -311,6 +313,8 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				m_Unit->m_runSpeed *= 2;
 				getMoveFlags();
 				m_AIState = STATE_IDLE;
+				UnitToFollow = UnitToFollow_backup;
+				FollowDistance = FollowDistance_backup;
 			}break;
 		case EVENT_WANDER:
 			{   
@@ -909,7 +913,12 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					return;  // this shouldnt happen
 
 				/* stop moving so we don't interrupt the spell */
-				StopMovement(0);
+				//this the way justly suggested
+//				if(m_nextSpell->spell->CastingTimeIndex != 1)
+				//do not stop for instant spells
+				SpellCastTime *sd = sCastTime.LookupEntry(m_nextSpell->spell->CastingTimeIndex);
+				if(GetCastTime(sd) != 0)
+					StopMovement(0);
 
 				float distance = m_Unit->GetDistanceSq(m_nextTarget);
 				if((distance <= powf(m_nextSpell->maxrange,2)  && distance >= powf(m_nextSpell->minrange,2)) || m_nextSpell->maxrange == 0) // Target is in Range -> Attack
