@@ -4294,9 +4294,9 @@ void Player::UpdateStats()
 		break;
 
 		case WARRIOR:
-		//AP = lev * 3 + str * 2 - 20;
+		AP = lev * 3 + str * 2 - 20;
 		//RAP = (lev+agi)*2 - 20;
-		AP = str * 2 - 20;
+//		AP = str * 2 - 20;
 		RAP = lev + agi - 20;
 		break;
 		default://mage,priest,warlock
