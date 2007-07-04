@@ -4,14 +4,6 @@
 [23:52:39] WORLD: Spell effect id = 6, damage = 1
 [23:52:39] WORLD: target = 283 , Spell Aura id = 42, SpellId  = 5301, i = 0, apply = true
 
-[23:53:39] Spell::cast 29834, Unit: 283
-[23:53:39] WORLD: Spell effect id = 6, damage = 0
-[23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29834, i = 0, apply = true
-[23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29834, i = 0, apply = false
-[23:53:39] Spell::cast 29838, Unit: 283
-[23:53:39] WORLD: Spell effect id = 6, damage = 0
-[23:53:39] WORLD: target = 283 , Spell Aura id = 4, SpellId  = 29838, i = 0, apply = true
-
 //the problem is actually that spell dbc does not contain the 3rd effect as in description. It must be added manually
 berserker stance - not working
 berserker rage - does not get triggered on struck. it does not even have an onstruck spell to get triggered.
@@ -39,4 +31,9 @@ improved berserker rage - not triggered. Should only get triggered while we have
 5. Improved Berseker Rage
 7. Improved Whirlwind
 8. Rampage - does not have any effect. Should this use up aurastateflag ? If so then remove it from caster
-blood thirst level 1 makes huge amount of dmg (stronger then lvl 5). I tested lvl 5 ...
+
+mocking blow - not working
+taunt - should call even agroed mobs to warrior
+
+rechecked this and seems to be allright
+	blood thirst level 1 makes huge amount of dmg (stronger then lvl 5). I tested lvl 5 ...

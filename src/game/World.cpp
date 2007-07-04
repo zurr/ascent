@@ -867,7 +867,6 @@ void World::SetInitialWorldSettings()
 	sp = sSpellStore.LookupEntry(23892);
 	if(sp)
 	{
-		sp->procFlags |= PROC_TAGRGET_SELF;
 		sp->Effect[1] = 64;
 		sp->EffectTriggerSpell[1] = 23886; //evil , but this is good for us :D
 	}

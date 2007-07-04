@@ -77,6 +77,7 @@ public:
 	void ReduceItemDurability();
 
 	uint8 LastSearchItemBagSlot(){return result.ContainerSlot;}
+	uint8 LastSearchItemSlot(){return result.Slot;}
 
 	//Searching functions
 	SlotResult FindFreeInventorySlot(ItemPrototype *proto);

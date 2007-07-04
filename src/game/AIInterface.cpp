@@ -2826,6 +2826,7 @@ bool AIInterface::taunt(Unit* caster, bool apply)
 		}
 		isTaunted = true;
 		tauntedBy = caster;
+		//now let us run to the taunter and start hitting him
 	}
 	else
 	{

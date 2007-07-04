@@ -1401,7 +1401,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 					
 					//only apply item mods if they are on char equiped
 					if(cDurability <= 0 && _player->GetItemInterface()->LastSearchItemBagSlot()==INVALID_BACKPACK_SLOT)
-						_player->ApplyItemMods(item, _player->GetItemInterface()->GetInventorySlotByGuid(itemguid), true);
+						_player->ApplyItemMods(item, _player->GetItemInterface()->LastSearchItemSlot(), true);
 				}
 				else
 				{
