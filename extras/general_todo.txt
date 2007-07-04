@@ -19,25 +19,29 @@ SMT_RESIST_DISPEL - check if it is used
 - find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
 - imlement a sure way to test if server is crashed/blocked or simply get it's state. Status Xml is great but on crash there is no status update
 - RR looting should be in Whole RAID group or only in smaller groups ? Currently RR is made in big group
+- some creatures should not enter or exit water. ex : spider - fish.
+- client showes twice the xp server holds. This would be a bug if you would have it inverse :S
 
 ==========================================================================
 ! BUGS !
 - mounted players can shoot
 - make hunter to be able to use only 1 bag
-- you can buyitems with honor points logout/login and have them all restored.
 - group quest does not share quest loot.
 - dead creatures keep attacking people. I think if creature has less health then 10% it enters dead state but will still keep attacking. If las dmg is greater then 10% it will die. Started in rev 635 ?
 - if BG is over and you are dead then you are teleported as dead.
 - there should be a cooldown for players who leave instance groups.
-- players can mute gms :D
 - pet instant spells make creature loop. They go to target and back.
 - some players can't shoot with wand
+- if you have an equiped broken item that modify stats, you put it inventory and repair it with hammer. You get twice the item affects.
 
 ==========================================================================
 Zack - test my shit :
 
 - after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
 - RR looting.
+- you can buyitems with honor points logout/login and have them all restored.
+- players can mute gms :D. Stop giving them rights to do so :P
+- skinning patch from Onemore
 
 ==========================================================================
 

@@ -1326,7 +1326,7 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 		{
 			int32 basePoints = m_spellInfo->EffectBasePoints[i];
 			int32 randomPoints = m_spellInfo->EffectDieSides[i];
-			if (randomPoints)
+			if (randomPoints>1)
 				item_count = basePoints + rand() % randomPoints;
 			else
 				item_count = basePoints + 1;
@@ -1848,7 +1848,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 			uint32 v=GetGOReqSkill(gameObjTarget);
 			bool bAlreadyUsed = false;
 		 
-			if(Rand(97.0f)) // 3% chance to fail
+			if(Rand(100.0f)) // 3% chance to fail//why?
 			{
 				if(((Player*)m_caster)->GetSkillAmt(SKILL_HERBALISM) < v)
 				{
@@ -1890,7 +1890,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 		{
 			if(!gameObjTarget ) return;
 			uint32 v = GetGOReqSkill(gameObjTarget);
-			if(Rand(97.0f)) // 3% chance to fail
+			if(Rand(100.0f)) // 3% chance to fail//why?
 			{
 				if(((Player*)m_caster)->GetSkillAmt(SKILL_MINING) < v)
 				{
@@ -1900,8 +1900,9 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 				else
 				if(gameObjTarget->loot.items.size() == 0)
 				{
-					lootmgr.FillProfessionLoot(&lootmgr.GOLoot,&gameObjTarget->loot,
-						gameObjTarget->GetEntry());
+//					lootmgr.FillProfessionLoot(&lootmgr.GOLoot,&gameObjTarget->loot,
+//						gameObjTarget->GetEntry());
+					lootmgr.FillGOLoot(&gameObjTarget->loot,gameObjTarget->GetEntry());
 				}	
 				loottype=2;
 			}
@@ -3391,8 +3392,9 @@ void Spell::SpellEffectSkinning(uint32 i)
 {
 	if(!unitTarget)
 		return;
-		
-	if( ((Player*)m_caster)->GetSkillAmt(SKILL_SKINNING) >= unitTarget->getLevel()*5)
+	uint32 sk=((Player*)m_caster)->GetSkillAmt(SKILL_SKINNING);
+	uint32 lvl=unitTarget->getLevel();
+	if( (sk >= lvl*5)||((sk+100) >= lvl*10) )
 	{
 		//Fill loot for Skinning
 		lootmgr.FillProfessionLoot(&lootmgr.SkinningLoot,&((Creature*)unitTarget)->loot,unitTarget->GetEntry());
@@ -3406,13 +3408,14 @@ void Spell::SpellEffectSkinning(uint32 i)
 		//pkt=unitTarget->BuildFieldUpdatePacket(UNIT_DYNAMIC_FLAGS,U_DYN_FLAG_LOOTABLE);
 		//((Player*)m_caster)->GetSession()->SendPacket(pkt);
 		//delete pkt;	 
+		DetermineSkillUp(SKILL_SKINNING,sk<lvl*5?sk/5:lvl);
 	}
 	else
 	{
 		SendCastResult(SPELL_FAILED_TARGET_UNSKINNABLE);
 	}   
 			
-	DetermineSkillUp(SKILL_SKINNING,unitTarget->getLevel());
+//	DetermineSkillUp(SKILL_SKINNING,unitTarget->getLevel());
 }
 
 void Spell::SpellEffectCharge(uint32 i)

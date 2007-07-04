@@ -39,3 +39,4 @@ improved berserker rage - not triggered. Should only get triggered while we have
 5. Improved Berseker Rage
 7. Improved Whirlwind
 8. Rampage - does not have any effect. Should this use up aurastateflag ? If so then remove it from caster
+blood thirst level 1 makes huge amount of dmg (stronger then lvl 5). I tested lvl 5 ...

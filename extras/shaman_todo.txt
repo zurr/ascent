@@ -16,7 +16,7 @@ Restorative Totem - Doesn't work
 Healing Way - Doesn't work
 Focused Mind - Doesn't work
 Earth Shield - can be casted on multiple targets
-
+Bloodlost - retest and fix
 
 Spells
 
