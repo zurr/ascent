@@ -4273,7 +4273,8 @@ void Player::UpdateStats()
 		case ROGUE:
 		//AP = lev * 2 + str + agi - 20;
 		//RAP = lev + agi * 2 - 20;
-		AP = str + agi - 20;
+//		AP = str + agi - 20;
+		AP = lev * 2 + str + agi - 20;
 		RAP = lev + agi - 10;
 		break;
 		
@@ -4290,13 +4291,15 @@ void Player::UpdateStats()
 	
 		case PALADIN:
 		//AP = lev * 3 + str * 2 - 20;
-		AP = str * 2 - 20;
+//		AP = str * 2 - 20;
+		AP = lev * 3 + str * 2 - 20;
 		break;
 
 		case WARRIOR:
-		AP = lev * 3 + str * 2 - 20;
+//		AP = lev * 3 + str * 2 - 20;
 		//RAP = (lev+agi)*2 - 20;
 //		AP = str * 2 - 20;
+		AP = lev * 3 + str * 2 - 20;
 		RAP = lev + agi - 20;
 		break;
 		default://mage,priest,warlock
