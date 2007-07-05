@@ -2618,7 +2618,7 @@ void Charter::Destroy()
 
 void Charter::SaveToDB()
 {
-	sDatabase.ExecuteEscaped(
+	sDatabase.Execute(
 		"REPLACE INTO charters VALUES(%u,%u,'%s',"I64FMTD",%u,%u,%u,%u,%u,%u,%u,%u,%u)",
 		CharterId,LeaderGuid,GuildName.c_str(),ItemGuid,Signatures[0],Signatures[1],
 		Signatures[2],Signatures[3],Signatures[4],Signatures[5],
