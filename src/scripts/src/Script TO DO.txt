@@ -33,6 +33,9 @@ WHAT LEFT TO FINISH MAIN TASK:
 Note: Documentation will be in HTML or in PDF or (eventually) wiki style.
 
 TASKS *FOR NOW*:
+-> Add all trash (or nearly all) mobs from Mechanar instance 			[+]
+-> Add all trash (or nearly all) mobs from Arcatraz instance			[-]
+-> Add all trash (or nearly all) mobs from Botanica instance			[-]
 -> Rewrite The Shattered Halls Script to fit new coding style (also add missing [*]
    mobs scripts, check spells and fully done it).				
 -> Rewrite Blood Furnace script bosses and add all trash mobs. 			[*]
