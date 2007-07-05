@@ -130,9 +130,9 @@ void AccountMgr::UpdateAccount(Account * acct, Field * field)
 	transform(acct->Password.begin(), acct->Password.end(), acct->Password.begin(), towupper);
 
 	Sha1Hash hash;
-	hash.UpdateData((acct.Username + ":" + acct.Password));
+	hash.UpdateData((acct->Username + ":" + acct->Password));
 	hash.Finalize();
-	memcpy(acct.SrpHash, hash.GetDigest(), 20);
+	memcpy(acct->SrpHash, hash.GetDigest(), 20);
 }
 
 bool AccountMgr::LoadAccount(string Name)
