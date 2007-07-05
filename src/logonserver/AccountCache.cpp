@@ -128,6 +128,11 @@ void AccountMgr::UpdateAccount(Account * acct, Field * field)
 	// Convert username/password to uppercase. this is needed ;)
 	transform(acct->Username.begin(), acct->Username.end(), acct->Username.begin(), towupper);
 	transform(acct->Password.begin(), acct->Password.end(), acct->Password.begin(), towupper);
+
+	Sha1Hash hash;
+	hash.UpdateData((acct.Username + ":" + acct.Password));
+	hash.Finalize();
+	memcpy(acct.SrpHash, hash.GetDigest(), 20);
 }
 
 bool AccountMgr::LoadAccount(string Name)
