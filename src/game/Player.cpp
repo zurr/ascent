@@ -244,6 +244,7 @@ Player::Player ( uint32 high, uint32 low )
 
 	for(uint32 x = 0; x < 12; x++)
 	{
+		IncreaseDamageByType[x] = 0;
 		IncreaseDamageByTypePCT[x] = 0;
 		IncreaseCricticalByTypePCT[x] = 0;
 	}

@@ -46,6 +46,7 @@ Zack - test my shit :
 - pet instant spells make creature loop. They go to target and back.
 - client showes twice the AP server holds. This would be a bug if you would have it inverse :S
 - water shield
+- test sboil patch for extra_dmg_for_creature_type
 
 ==========================================================================
 

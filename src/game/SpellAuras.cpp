@@ -74,7 +74,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraTransform,//SPELL_AURA_TRANSFORM = 56,
 		&Aura::SpellAuraModSpellCritChance,//SPELL_AURA_MOD_SPELL_CRIT_CHANCE = 57,
 		&Aura::SpellAuraIncreaseSwimSpeed,//SPELL_AURA_MOD_INCREASE_SWIM_SPEED = 58,
-		&Aura::SpellAuraNULL,//SPELL_AURA_MOD_DAMAGE_DONE_CREATURE = 59,
+		&Aura::SpellAuraModCratureDmgDone,//SPELL_AURA_MOD_DAMAGE_DONE_CREATURE = 59, 
 		&Aura::SpellAuraPacifySilence,//SPELL_AURA_MOD_PACIFY_SILENCE = 60,
 		&Aura::SpellAuraModScale,//SPELL_AURA_MOD_SCALE = 61,
 		&Aura::SpellAuraPeriodicHealthFunnel,//SPELL_AURA_PERIODIC_HEALTH_FUNNEL = 62,
@@ -3504,6 +3504,25 @@ void Aura::SpellAuraIncreaseSwimSpeed(bool apply)
 		data << m_target->m_swimSpeed;
 		static_cast<Player*>(m_target)->GetSession()->SendPacket(&data);
 	}   
+}
+
+void Aura::SpellAuraModCratureDmgDone(bool apply)
+{
+	if(m_target->GetTypeId() == TYPEID_PLAYER)
+	{
+		if(apply)
+		{
+			for(uint32 x = 0; x < 11; x++)
+				if(mod->m_miscValue & (((uint32)1)<<x))
+					static_cast<Player*>(m_target)->IncreaseDamageByType[x+1] += mod->m_amount;		
+
+			mod->m_amount < 0 ? SetNegative() : SetPositive();
+		}
+		else
+			for(uint32 x = 0; x < 11; x++)
+				if(mod->m_miscValue & (((uint32)1)<<x) )
+					static_cast<Player*>(m_target)->IncreaseDamageByType[x+1] -= mod->m_amount;
+	}	
 }
 
 void Aura::SpellAuraPacifySilence(bool apply)

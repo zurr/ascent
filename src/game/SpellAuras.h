@@ -386,6 +386,7 @@ public:
 	void SpellAuraTransform(bool apply);
 	void SpellAuraModSpellCritChance(bool apply);
 	void SpellAuraIncreaseSwimSpeed(bool apply);	
+	void SpellAuraModCratureDmgDone(bool apply);
 	void SpellAuraPacifySilence(bool apply);
 	void SpellAuraModScale(bool apply);
 	void SpellAuraPeriodicHealthFunnel(bool apply);	

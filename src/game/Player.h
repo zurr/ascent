@@ -885,6 +885,7 @@ public:
 	uint32 StatModPctNeg[5];
 	uint32 TotalStatModPctPos[5];
 	uint32 TotalStatModPctNeg[5];
+	int32 IncreaseDamageByType[12]; //mod dmg by creature type
 	float IncreaseDamageByTypePCT[12];
 	float IncreaseCricticalByTypePCT[12];
 	int32 DetectedRange;

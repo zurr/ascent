@@ -551,11 +551,17 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())
 		{
-			ap += (float)pAttacker->CreatureRangedAttackPowerMod[((Creature*)pVictim)->GetCreatureName()->Type];
+//			ap += (float)pAttacker->CreatureRangedAttackPowerMod[((Creature*)pVictim)->GetCreatureName()->Type];
+
+			uint32 creatType = ((Creature*)pVictim)->GetCreatureName()->Type;
+			ap += (float)pAttacker->CreatureRangedAttackPowerMod[creatType];
+
 			if(pAttacker->IsPlayer())
 			{
-				min_damage += min_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
-				max_damage += max_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
+//				min_damage += min_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
+//				max_damage += max_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
+				min_damage = (min_damage + static_cast<Player*>(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+				max_damage = (max_damage + static_cast<Player*>(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[creatType]);
 			}
 		}
 	 
@@ -604,11 +610,17 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 		if(!pVictim->IsPlayer())
 		if(((Creature*)pVictim)->GetCreatureName())
 		{
-			ap += (float)pAttacker->CreatureAttackPowerMod[((Creature*)pVictim)->GetCreatureName()->Type];
+//			ap += (float)pAttacker->CreatureAttackPowerMod[((Creature*)pVictim)->GetCreatureName()->Type];
+
+			uint32 creatType = ((Creature*)pVictim)->GetCreatureName()->Type;
+			ap += (float)pAttacker->CreatureAttackPowerMod[creatType];
+
 			if(pAttacker->IsPlayer())
 			{
-				min_damage += min_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
-				max_damage += max_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
+//				min_damage += min_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
+//				max_damage += max_damage*static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[((Creature*)pVictim)->GetCreatureName()->Type];
+				min_damage = (min_damage + static_cast<Player*>(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+				max_damage = (max_damage + static_cast<Player*>(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast<Player*>(pAttacker)->IncreaseDamageByTypePCT[creatType]);
 			}
 		}
 		if(pAttacker->IsPlayer())

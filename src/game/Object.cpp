@@ -1946,6 +1946,11 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		}
 		
 		int32 plus_damage = static_cast<Unit*>(this)->GetDamageDoneMod(school);
+
+		if(((Creature*)pVictim)->GetCreatureName() && IsPlayer()&& !pVictim->IsPlayer())
+			plus_damage += static_cast<Player*>(this)->IncreaseDamageByType[((Creature*)pVictim)->GetCreatureName()->Type];
+
+
 		int32 bonus_damage = float2int32(plus_damage * dmgdoneaffectperc);
 		if(spellInfo->SpellGroupType)
 		{
