@@ -6821,7 +6821,8 @@ void Player::LoginPvPSetup()
 	// Make sure we know our area ID.
 	_EventExploration();
 
-    CastSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
+    if(isAlive())
+        CastSpell(this, PLAYER_HONORLESS_TARGET_SPELL, true);
 }
 
 void Player::PvPToggle()
