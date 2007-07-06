@@ -3,7 +3,7 @@
 5) Frostbite (Mage)
 6) Improved scorch (Mage)
 7) Shatter (Mage)
-8) Ice lance (is not affected by ice shard on antrix and it duplicate damage when the damage would be 3x on frozen target...)
+8) Ice lance (is not affected by ice shard on antrix and it duplicate damage when the damage would be 3x on frozen target...).without the gear (0 spell damage) the dmg on frozen target is ok..(160-187)with the gear (880+ spll dmg) i make 400-500 dmg on target without frozen effect... and 800 on frozen target( and crit 1200)... is not correct i think... i have a pg on official server and with 550 spell dmg and i hit for 800 on frozen target and crit 1600..
 9) Summon water elemental (Mage)
 10) Arcane fortitude (if you take it and type .resettalent or reset talent from the trainer it incresease the armor. Every time you learn it and unlearning increase the armor. - mage)
 

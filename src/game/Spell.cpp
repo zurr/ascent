@@ -1346,7 +1346,7 @@ void Spell::AddStartCooldown()
 
 void Spell::cast(bool check)
 {
-	sLog.outDebug("Spell::cast %u, Unit: %u", m_spellInfo->Id, m_caster->GetGUID());
+	sLog.outDebug("Spell::cast %u, Unit: %u", m_spellInfo->Id, m_caster->GetGUIDLow());
 	if(check)
 	{
 		/*if(m_caster->IsPet())

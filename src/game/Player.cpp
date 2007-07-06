@@ -7389,6 +7389,12 @@ void Player::SaveAuras(stringstream &ss)
 //				sLog.outDebug("skipping aura %d because has flags %d",aur->GetSpellId(),aur->GetSpellProto()->procFlags);
 				skip = true;
 			}
+			//disabled proc spells until proper loading is fixed. We cannot recover the charges that were used up. Will implement later
+			if(aur->GetSpellProto()->procCharges)
+			{
+//				sLog.outDebug("skipping aura %d because has proccharges %d",aur->GetSpellId(),aur->GetSpellProto()->procCharges);
+				skip = true;
+			}
 			//we are going to cast passive spells anyway on login so no need to save auras for them
 			if(aur->IsPassive())
 				skip = true;

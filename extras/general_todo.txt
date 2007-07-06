@@ -22,6 +22,8 @@ SMT_RESIST_DISPEL - check if it is used
 - handleproc is getting huge, maybe we should break it into pieces
 - on server load a lot of spell.dbc data is processed. Maybe make an external tool
 - you do not gain resurection sicness after using spirit healer. WTF ? this was working before. Oh, well, next.
+- add conditioned aura removal. Ex: presence of mind should not be removed on instant cast spell (RemoveAurasByInterruptFlag)
+- flurry does not loose charges anymore. Some special handle for it or what ? Check interruptflags and stuff
 
 ==========================================================================
 ! BUGS !

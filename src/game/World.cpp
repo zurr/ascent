@@ -471,10 +471,6 @@ void World::SetInitialWorldSettings()
 
 		sp->proc_interval = 0;//trigger at each event
 
-		// grep: this is a _very_ hacky fix for presence of mind and alike spells.
-		if(sp->procFlags == 0x00015550 && sp->procCharges == 1 && sp->procChance == 100)
-			sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
-
 		// parse rank text
 		if(!sscanf(ranktext, "Rank %d", &rank))
 			rank = 0;
@@ -785,13 +781,29 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(nametext, "Bloodthirst"))
 						pr|=PROC_ON_MELEE_ATTACK | PROC_TAGRGET_SELF;
-				}
+				}//end "if procspellaura"
 				//dirty fix to remove auras that should expire on event and they are not
-//				else if((aura == SpellAuraAddFlatModifier || aura == SpellAuraAddPctMod) && sp->procCharges)
-				else if((aura == 107 || aura == 108) && sp->procCharges==1)
-					sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
-			}			
-		}
+				else if(sp->procCharges>0)
+				{
+					//there are at least 185 spells that should loose charge uppon some event.Be prepared to add more here !
+					// ! watch it cause this might conflict with our custom modified spells like : lighning shield !
+
+					//spells like : Presence of Mind,Nature's Swiftness, Inner Focus,Amplify Curse,Coup de Grace
+					//SELECT * FROM dbc_spell where proc_charges!=0 and (effect_aura_1=108 or effect_aura_2=108 and effect_aura_3=108) and description!=""
+					if(aura == SPELL_AURA_ADD_PCT_MODIFIER)
+						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
+					//most of them probably already have these flags...not sure if we should add to all of them without checking
+/*					if(strstr(desc, "melee"))
+						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;
+					if(strstr(desc, "ranged"))
+						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;*/
+				}
+			}//end "if aura"
+		}//end "for each effect"
+		sp->procFlags=pr;
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		// procintervals
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//omg lighning shield trigger spell id's are all wrong ?
 		//if you are bored you could make thiese by hand but i guess we might find other spells with this problem..and this way it's safe
 		if(strstr(nametext, "Lightning Shield") && sp->EffectTriggerSpell[0])
@@ -831,11 +843,10 @@ void World::SetInitialWorldSettings()
 			sp->proc_interval = 3000; //few seconds
 		else if(strstr(nametext, "Poison Shield"))
 			sp->proc_interval = 3000; //few seconds
-		sp->procFlags=pr;
 		//sp->dummy=result;
-		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
+/*		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
 		if(sp->procCharges==0)
-			sp->procCharges=-1;
+			sp->procCharges=-1;*/
 	}
 	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
 	SpellEntry * parentsp = sSpellStore.LookupEntry(30823);

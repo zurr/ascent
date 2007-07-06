@@ -3079,10 +3079,8 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
 			continue;
 
 		//some spells do not get removed all the time only at specific intervals
-		if(a->m_spellProto->AuraInterruptFlags & flag && a->m_spellProto->Id != skip && a->m_spellProto->proc_interval==0)
+		if((a->m_spellProto->AuraInterruptFlags & flag) && (a->m_spellProto->Id != skip) && a->m_spellProto->proc_interval==0)
 		{
-			// Fix for instant cast spell removing presence of mind and shit
-			if(flag==AURA_INTERRUPT_ON_CAST_SPELL&&a->m_spellProto->procCharges) continue;
 			a->Remove();
 		}
 	}
