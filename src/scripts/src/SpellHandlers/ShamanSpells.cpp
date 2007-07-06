@@ -54,9 +54,11 @@ bool RockbiterWeapon(uint32 i, Spell* pSpell)
         item->ModifyEnchantmentTime(Slot, 1800);
     else
     {
+		//check if enchantment slot 1 is taken. If there was no enchantment there function will quit
+		item->RemoveEnchantment(1);
+		//this will also apply bonuses for us
         Slot = item->AddEnchantment(enchant, 1800, false, true, false, 1);   // 5min
         if(Slot < 0) return true;
-        item->ApplyEnchantmentBonus(Slot, APPLY);
     }
 
     sLog.outDebug("ShamanSpells.cpp :: Rockbiter Weapon Rank %u, enchant %u, slot %u", pSpell->m_spellInfo->RankNumber,

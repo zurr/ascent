@@ -578,117 +578,133 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 	uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 16;
 	uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + ItemSlot;
 	m_owner->SetUInt32Value(VisibleBase + 1 + Slot, Apply ? Entry->Id : 0);
+
 	for(uint32 c=0;c<3;c++)
 	if(Entry->type[c])
-	// Depending on the enchantment type, take the appropriate course of action.
-	switch(Entry->type[c])
 	{
-	case 1:		 // Trigger spell on melee attack.
+		// Depending on the enchantment type, take the appropriate course of action.
+		switch(Entry->type[c])
 		{
-			if(Apply)
+		case 1:		 // Trigger spell on melee attack.
 			{
-				// Create a proc trigger spell
+				if(Apply)
+				{
+					// Create a proc trigger spell
 
-				ProcTriggerSpell TS;
-				TS.caster = m_owner->GetGUID();
-				TS.origId = 0;
-				TS.procFlags = PROC_ON_MELEE_ATTACK;
-				TS.procCharges = 0;
-				TS.procChance = Entry->min[c] ? Entry->min[c] : 35;
-				TS.deleted = false;
+					ProcTriggerSpell TS;
+					TS.caster = m_owner->GetGUID();
+					TS.origId = 0;
+					TS.procFlags = PROC_ON_MELEE_ATTACK;
+					TS.procCharges = 0;
+					TS.procChance = Entry->min[c] ? Entry->min[c] : 35;
+					TS.deleted = false;
 
-				
+					
+						if(Entry->spell[c] != 0)
+						{
+							TS.spellId = Entry->spell[c];
+							m_owner->m_procSpells.push_back(TS);
+						}
+					
+				}
+				else
+				{
+					// Remove the proctriggerspell
+					uint32 SpellId;
+					list<struct ProcTriggerSpell>::iterator itr/*, itr2*/;
+					for(itr = m_owner->m_procSpells.begin();
+						itr != m_owner->m_procSpells.end();)
+					{
+						SpellId = itr->spellId;
+						/*itr2 = itr++;*/
+						
+						if(SpellId == Entry->spell[c] )
+						{
+							//m_owner->m_procSpells.erase(itr2);
+							itr->deleted = true;
+						}
+						itr++;
+					}
+				}
+			}break;
+
+		case 2:		 // Mod damage done.
+			{
+				if(Apply)
+					m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, Entry->min[c]);
+				else m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, -Entry->min[c]);
+				m_owner->CalcDamage();
+			}break;
+
+		case 3:		 // Cast spell (usually means apply aura)
+			{
+				if(Apply)
+				{
+					SpellCastTargets targets(m_owner->GetGUID());
+					SpellEntry * sp;
+					Spell * spell;
+					
 					if(Entry->spell[c] != 0)
 					{
-						TS.spellId = Entry->spell[c];
-						m_owner->m_procSpells.push_back(TS);
+						sp = sSpellStore.LookupEntry(Entry->spell[c]);
+						if(!sp) continue;
+
+						spell = new Spell(m_owner, sp, true, 0);
+						spell->prepare(&targets);
 					}
-				
-			}
-			else
-			{
-				// Remove the proctriggerspell
-				uint32 SpellId;
-				list<struct ProcTriggerSpell>::iterator itr/*, itr2*/;
-				for(itr = m_owner->m_procSpells.begin();
-					itr != m_owner->m_procSpells.end();)
-				{
-					SpellId = itr->spellId;
-					/*itr2 = itr++;*/
-					
-					if(SpellId == Entry->spell[c] )
-					{
-						//m_owner->m_procSpells.erase(itr2);
-						itr->deleted = true;
-					}
-					itr++;
 				}
-			}
-		}break;
-
-	case 2:		 // Mod damage done.
-		{
-			   m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, Apply?Entry->min[c]:-Entry->min[c]);
-			m_owner->CalcDamage();
-		}break;
-
-	case 3:		 // Cast spell (usually means apply aura)
-		{
-			if(Apply)
-			{
-				SpellCastTargets targets(m_owner->GetGUID());
-				SpellEntry * sp;
-				Spell * spell;
-				
-				if(Entry->spell[c] != 0)
+				else
 				{
-					sp = sSpellStore.LookupEntry(Entry->spell[c]);
-					if(!sp) continue;
-
-					spell = new Spell(m_owner, sp, true, 0);
-					spell->prepare(&targets);
+					if(Entry->spell[c] != 0)
+							m_owner->RemoveAura(Entry->spell[c]);
 				}
-			}
-			else
+
+			}break;
+
+		case 4:		 // Modify physical resistance
 			{
-				if(Entry->spell[c] != 0)
-						m_owner->RemoveAura(Entry->spell[c]);
-			}
+				if(Apply)
+				{
+					m_owner->FlatResistanceModifierPos[0] += Entry->min[c];
+				}
+				else
+				{
+					m_owner->FlatResistanceModifierPos[0] -= Entry->min[c];
+				}
+				m_owner->CalcResistance(0);
+			}break;
 
-		}break;
-
-	case 4:		 // Modify physical resistance
-		{
-			if(Apply)
+		case 5:	 //Modify rating ...order is PLAYER_FIELD_COMBAT_RATING_1 and above
 			{
-				m_owner->FlatResistanceModifierPos[0] += Entry->min[c];
-			}
-			else
+				//spellid is enum ITEM_STAT_TYPE
+				//min=max is amount
+				m_owner->ModifyBonuses(Entry->spell[c],
+					Apply ? Entry->min[c] : -Entry->min[c]);
+				m_owner->UpdateStats();
+			}break;
+
+		case 6:	 // Rockbiter weapon (increase damage per second... how the hell do you calc that)
 			{
-				m_owner->FlatResistanceModifierPos[0] -= Entry->min[c];
-			}
-			m_owner->CalcResistance(0);
-		}break;
+				if(Apply)
+				{
+	//				m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, Entry->min[c]);
+					//if i'm not wrong then we should apply DMPS formula for this. This will have somewhat a larger value 28->34
+					int32 value=GetProto()->Delay*Entry->min[c]/1000;
+					m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, value);
+				}
+				else
+				{
+					int32 value=-(int32)(GetProto()->Delay*Entry->min[c]/1000);
+					m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, value);
+				}
+				m_owner->CalcDamage();
+			}break;
 
-	case 5:	 //Modify rating ...order is PLAYER_FIELD_COMBAT_RATING_1 and above
-		{
-			//spellid is enum ITEM_STAT_TYPE
-			//min=max is amount
-			m_owner->ModifyBonuses(Entry->spell[c],
-				Apply ? Entry->min[c] : -Entry->min[c]);
-			m_owner->UpdateStats();
-		}break;
-
-	case 6:	 // Rockbiter weapon (increase damage per second... how the hell do you calc that)
-		{
-			m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, Apply?Entry->min[c]:-Entry->min[c]);
-			m_owner->CalcDamage();
-		}break;
-
-	default:
-		{
-			sLog.outError("Unknown enchantment type: %u (%u)", Entry->type[c], Entry->Id);
-		}break;
+		default:
+			{
+				sLog.outError("Unknown enchantment type: %u (%u)", Entry->type[c], Entry->Id);
+			}break;
+		}
 	}
 }
 

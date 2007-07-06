@@ -912,9 +912,28 @@ void World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 30339; //evil , but this is good for us :D
 	}
 
+/*	//add remove event to flurry
+	for(int i=12966;i<=12970;i++)
+	{
+		sp = sSpellStore.LookupEntry(i);
+		if(sp) sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;
+	}
+	for(int i=16277;i<=16280;i++)
+	{
+		sp = sSpellStore.LookupEntry(i);
+		if(sp) sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;
+	}
+	sp = sSpellStore.LookupEntry(16257);
+	if(sp) sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;*/
+
 	//improoved berserker stance should be triggered on berserker stance use
 //	sp = sSpellStore.LookupEntry(12704);
 //	if(sp)	sp->procFlags=PROC_ON_CAST_SPECIFIC_SPELL;
+
+//	sp = sSpellStore.LookupEntry(16280);
+//	if(sp)	printf("!!Interrupt flags %u interval %u charges %u\n",sp->AuraInterruptFlags,sp->proc_interval,sp->procCharges);
+//	sp = sSpellStore.LookupEntry(16284);
+//	if(sp)	printf("Interrupt flags %u\n",sp->AuraInterruptFlags);
 
 	//fix for Predatory Strikes
 	uint32 mm=(1<<(FORM_BEAR-1))|(1<<(FORM_DIREBEAR-1))|(1<<(FORM_MOONKIN-1))|(1<<(FORM_CAT-1));

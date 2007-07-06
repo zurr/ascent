@@ -57,7 +57,6 @@ Pyromaniac:Not tested yet
 Combustion:Doesn't work
 Molten Fury:Not tested yet
 Empowered Fireball:Not tested yet
-Dragon's Breath:Working. But when you use this. it will cooldown cone of cold too
 
 Frost:
 Frost Warding:Doesn't work
@@ -126,7 +125,6 @@ Frostbolt:Working
 Frost Nova:Working Side Effect: 100% chance to break it on hit
 Blizzard:Working
 Frost Ward:Working
-Cone of Cold:Working. But when used causes cooldown on dragon's breath
 Ice Lance:Working
 
 Problems not related with only one spell/talent:

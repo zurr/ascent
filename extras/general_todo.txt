@@ -16,38 +16,30 @@ SMT_RESIST_DISPEL - check if it is used
 - in world.cpp,line 788 removed stormstrike effect 0 until find a solution for : spell is casted on target and should apply 1 aura, but it also adds the other 2 effects that should be aplied only to caster.
 - a lot of spells have wrong trigger spell id. Lightning shield, Parry Mastery ...Make a tool to find them all and see what can be done for them.
 - make prospecting use a loottable : changes in profesions.cpp
-- find out if there is a "beautifull" way to ask Unit if health changed on end of "turn". Unit::Update gets executed at beggining of the turn 
-- imlement a sure way to test if server is crashed/blocked or simply get it's state. Status Xml is great but on crash there is no status update
 - some creatures should not enter or exit water. ex : spider - fish.
 - handleproc is getting huge, maybe we should break it into pieces
 - on server load a lot of spell.dbc data is processed. Maybe make an external tool
 - you do not gain resurection sicness after using spirit healer. WTF ? this was working before. Oh, well, next.
 - add conditioned aura removal. Ex: presence of mind should not be removed on instant cast spell (RemoveAurasByInterruptFlag)
-- flurry does not loose charges anymore. Some special handle for it or what ? Check interruptflags and stuff
+- players can moderate channels and they should not do so : trade ...
 
 ==========================================================================
 ! BUGS !
 - mounted players can shoot
 - make hunter to be able to use only 1 bag
 - group quest does not share quest loot.
-- dead creatures keep attacking people. I think if creature has less health then 10% it enters dead state but will still keep attacking. If las dmg is greater then 10% it will die. Started in rev 635 ?
 - if BG is over and you are dead then you are teleported as dead.
 - there should be a cooldown for players who leave instance groups.
 - some players can't shoot with wand
+- chargespells are not loosing charges anymore (flurry,inner fire..)
 
 ==========================================================================
 Zack - test my shit :
 
 - after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
 - RR looting.
-- you can buyitems with honor points logout/login and have them all restored.
-- players can mute gms :D. Stop giving them rights to do so :P
 - skinning patch from Onemore
-- implement a general way for procspells to trigger at intervals.Cooldown is slow. (Nature's guardian, lighning shield, earth shield ...)
-- if you have an equiped broken item that modify stats, you put it inventory and repair it with hammer. You get twice the item affects.
 - pet instant spells make creature loop. They go to target and back.
-- client showes twice the AP server holds. This would be a bug if you would have it inverse :S
-- water shield
 - test sboil patch for extra_dmg_for_creature_type
 
 ==========================================================================
