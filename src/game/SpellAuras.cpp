@@ -386,6 +386,17 @@ void Aura::Remove()
 		}
 	}
 
+	if(m_spellProto->procCharges>0 && m_spellProto->proc_interval==0)
+	{
+		std::map<uint32,struct SpellCharge>::iterator iter;
+		iter = m_target->m_chargeSpells.find(GetSpellId());
+		if(iter!=m_target->m_chargeSpells.end())
+		{
+			if(!(iter->second).FromProc)
+			m_target->m_chargeSpells.erase(iter);
+		}
+	}
+
 	m_target->m_auras[m_auraSlot] = NULL;
 
 	if(GetSpellProto()->SpellGroupType && m_target->GetTypeId() == TYPEID_PLAYER)

@@ -285,6 +285,16 @@ struct ProcTriggerSpell
 	bool deleted;
 };
 
+struct SpellCharge
+{
+	uint32 spellId;
+	uint32 count;
+	uint32 ProcFlag;
+	uint32 lastproc;
+	uint32 procdiff;
+	bool FromProc;
+};
+
 typedef set<uint64> AreaAuraList;
 
 class SERVER_DECL Aura : public EventableObject

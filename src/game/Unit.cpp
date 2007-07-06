@@ -652,6 +652,66 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 			}//not always we have a spell to cast
 		}
 	}
+	std::map<uint32,struct SpellCharge>::iterator iter,iter2;
+	iter=m_chargeSpells.begin();
+	while(iter!= m_chargeSpells.end())
+	{
+		iter2=iter++;
+		if(iter2->second.count)
+		{
+			if((iter2->second.ProcFlag&flag))
+			{
+				//Fixes for spells that dont lose charges when dmg is absorbd
+				if(iter2->second.ProcFlag==680&&dmg==0) continue;
+				if(CastingSpell)
+				{
+
+					SpellCastTime *sd = sCastTime.LookupEntry(CastingSpell->CastingTimeIndex);
+					if(!sd) continue; // this shouldnt happen though :P
+					switch(iter2->second.spellId)
+					{
+					case 12043:
+						{
+							//Presence of Mind and Nature's Swiftness should only get removed
+							//when a non-instant and bellow 10 sec. Also must be nature :>
+							if(!sd->CastTime||sd->CastTime>10000) continue;
+						}break;
+					case 16188:
+						{
+							if(CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
+						}break;
+					case 16166:
+						{
+							if(!(CastingSpell->School==SCHOOL_FIRE||CastingSpell->School==SCHOOL_FROST||CastingSpell->School==SCHOOL_NATURE))
+								continue;
+						}break;
+
+					}
+				}
+				if(iter2->second.lastproc!=0)
+				{
+					if(iter2->second.procdiff>3000)
+					{
+						--(iter2->second.count);
+						iter2->second.FromProc=true;
+						RemoveAura(iter2->second.spellId);
+						iter2->second.FromProc=false;
+					}
+				}
+				else
+				{
+					--(iter2->second.count);
+					iter2->second.FromProc=true;
+					this->RemoveAura(iter2->second.spellId);
+					iter2->second.FromProc=false;
+				}
+			}
+		}
+		if(!iter2->second.count)
+		{
+			m_chargeSpells.erase(iter2);
+		}
+	}
 	if(can_delete)
 		bProcInUse = false;
 }

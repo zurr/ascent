@@ -31,7 +31,7 @@ SMT_RESIST_DISPEL - check if it is used
 - if BG is over and you are dead then you are teleported as dead.
 - there should be a cooldown for players who leave instance groups.
 - some players can't shoot with wand
-- chargespells are not loosing charges anymore (flurry,inner fire..)
+- test water shield proc to be trigered on intervals and do not loose charges due to chargelist
 
 ==========================================================================
 Zack - test my shit :
@@ -41,6 +41,7 @@ Zack - test my shit :
 - skinning patch from Onemore
 - pet instant spells make creature loop. They go to target and back.
 - test sboil patch for extra_dmg_for_creature_type
+- water shield
 
 ==========================================================================
 
