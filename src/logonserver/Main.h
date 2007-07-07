@@ -24,7 +24,7 @@ class LogonServer : public Singleton< LogonServer >
 {
 public:
 	void CheckForDeadSockets();
-	void Run();
+	void Run(int argc, char ** argv);
 	void Stop();
 	uint32 max_build;
 	uint32 min_build;

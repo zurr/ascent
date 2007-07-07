@@ -19,6 +19,7 @@
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
+#include "../shared/antrix_getopt.h"
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
@@ -87,7 +88,7 @@ int main(int argc, char** argv)
 	new LogonServer;
 
 	// Run!
-	LogonServer::getSingleton( ).Run();
+	LogonServer::getSingleton( ).Run(argc, argv);
 }
 
 bool startdb()
@@ -128,12 +129,62 @@ bool startdb()
 	return true;
 }
 
-void LogonServer::Run()
+#define DEF_VALUE_NOT_SET 0xDEADBEEF
+
+void LogonServer::Run(int argc, char ** argv)
 {
-	launch_thread(new TextLoggerThread);
-	sLog.Init(-1, 3);
-	Crash_Log = new TextLogger(FormatOutputString("logs", "logonCrashLog", true).c_str(), false);
-	
+#ifdef WIN32
+	char * config_file = "logonserver.conf";
+#else
+	char * config_file = CONFDIR "/logonserver.conf";
+#endif
+	int file_log_level = DEF_VALUE_NOT_SET;
+	int screen_log_level = DEF_VALUE_NOT_SET;
+	int do_check_conf = 0;
+	int do_version = 0;
+
+	struct antrix_option longopts[] =
+	{
+		{ "checkconf",			antrix_no_argument,				&do_check_conf,			1		},
+		{ "screenloglevel",		antrix_required_argument,		&screen_log_level,		1		},
+		{ "fileloglevel",		antrix_required_argument,		&file_log_level,		1		},
+		{ "version",			antrix_no_argument,				&do_version,			1		},
+		{ "conf",				antrix_required_argument,		NULL,					'c'		},
+		{ 0, 0, 0, 0 }
+	};
+
+	char c;
+	while ((c = antrix_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
+	{
+		switch (c)
+		{
+		case 'c':
+			/* Log filename was set */
+			config_file = new char[strlen(optarg)];
+			strcpy(config_file, optarg);
+			break;
+		case 0:
+			break;
+		default:
+			sLog.m_fileLogLevel = -1;
+			sLog.m_screenLogLevel = 3;
+			printf("Usage: %s [--checkconf] [--screenloglevel <level>] [--fileloglevel <level>] [--conf <filename>] [--version]\n", argv[0]);
+			return;
+		}
+	}
+
+	// Startup banner
+	if(!do_version && !do_check_conf)
+	{
+		launch_thread(new TextLoggerThread);
+		sLog.Init(-1, 3);
+	}
+	else
+	{
+		sLog.m_fileLogLevel = -1;
+		sLog.m_screenLogLevel = 3;
+	}
+
 	sLog.outString("==============================================================================");
 	sLog.outString(BANNER, g_getRevision());
 	sLog.outString("");
@@ -141,18 +192,32 @@ void LogonServer::Run()
 	sLog.outString("more information look under the COPYING file in this distribution.");
 	sLog.outString("==============================================================================");
 	sLog.outString("");
+	if(do_version)
+		return;
+
+	if(do_check_conf)
+	{
+		printf("Checking config file: %s\n", config_file);
+		if(Config.MainConfig.SetSource(config_file, true))
+			printf("  Passed without errors.\n");
+		else
+			printf("  Encountered one or more errors.\n");
+		/* test for die variables */
+		string die;
+		if(Config.MainConfig.GetString("die", "msg", &die) || Config.MainConfig.GetString("die2", "msg", &die))
+			printf("Die directive received: %s", die.c_str());
+
+		return;
+	}
+	
+	Crash_Log = new TextLogger(FormatOutputString("logs", "logonCrashLog", true).c_str(), false);
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
 	sLog.outString("");
 	sLog.outString("Initializing Random Number Generators...");
 
 	sLog.outColor(TNORMAL, "Loading Config Files...\n");
-#ifdef WIN32
-	sLog.outColor(TYELLOW, "  >> logonserver.conf :: ");
-	if(Config.MainConfig.SetSource("logonserver.conf"))
-#else
-	sLog.outColor(TYELLOW, "  >> " CONFDIR "/logonserver.conf :: ");
-	if(Config.MainConfig.SetSource(CONFDIR "/logonserver.conf"))
-#endif
+	sLog.outColor(TYELLOW, "  >> %s :: ", config_file);
+	if(Config.MainConfig.SetSource(config_file))
 	{
 		sLog.outColor(TGREEN, "ok!");
 		sLog.outColor(TNORMAL, "\n\n");

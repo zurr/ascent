@@ -19,6 +19,7 @@
 #include "../game/LogonCommClient.h"
 #include "../game/LogonCommHandler.h"
 #include "../scriptengine/ScriptEngine.h"
+#include "../shared/antrix_getopt.h"
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
@@ -102,12 +103,71 @@ struct Addr
 	unsigned long unusedB;
 };
 
+#define DEF_VALUE_NOT_SET 0xDEADBEEF
 
-bool Master::Run()
+bool Master::Run(int argc, char ** argv)
 {
+#ifdef WIN32
+	char * config_file = "antrix.conf";
+	char * realm_config_file = "realms.conf";
+#else
+	char * config_file = CONFDIR "/antrix.conf";
+	char * realm_config_file = CONFDIR "/realms.conf";
+#endif
+
+	int file_log_level = DEF_VALUE_NOT_SET;
+	int screen_log_level = DEF_VALUE_NOT_SET;
+	int do_check_conf = 0;
+	int do_version = 0;
+
+	struct antrix_option longopts[] =
+	{
+		{ "checkconf",			antrix_no_argument,				&do_check_conf,			1		},
+		{ "screenloglevel",		antrix_required_argument,		&screen_log_level,		1		},
+		{ "fileloglevel",		antrix_required_argument,		&file_log_level,		1		},
+		{ "version",			antrix_no_argument,				&do_version,			1		},
+		{ "conf",				antrix_required_argument,		NULL,					'c'		},
+		{ "realmconf",			antrix_required_argument,		NULL,					'r'		},
+		{ 0, 0, 0, 0 }
+	};
+
+	char c;
+	while ((c = antrix_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
+	{
+		switch (c)
+		{
+		case 'c':
+			config_file = new char[strlen(optarg)];
+			strcpy(config_file, optarg);
+			break;
+
+		case 'r':
+			realm_config_file = new char[strlen(optarg)];
+			strcpy(realm_config_file, optarg);
+			break;
+
+		case 0:
+			break;
+		default:
+			sLog.m_fileLogLevel = -1;
+			sLog.m_screenLogLevel = 3;
+			printf("Usage: %s [--checkconf] [--screenloglevel <level>] [--fileloglevel <level>] [--conf <filename>] [--realmconf <filename>] [--version]\n", argv[0]);
+			return true;
+		}
+	}
+
 	// Startup banner
-	launch_thread(new TextLoggerThread);
-	sLog.Init(-1, 3);
+	if(!do_version && !do_check_conf)
+	{
+		launch_thread(new TextLoggerThread);
+		sLog.Init(-1, 3);
+	}
+	else
+	{
+		sLog.m_fileLogLevel = -1;
+		sLog.m_screenLogLevel = 3;
+	}
+
 	sLog.outString("==============================================================================");
 	sLog.outString(BANNER, g_getRevision());
 	sLog.outString("");
@@ -115,6 +175,31 @@ bool Master::Run()
 	sLog.outString("more information look under the COPYING file in this distribution.");
 	sLog.outString("==============================================================================");
 	sLog.outString("");
+	if(do_version)
+		return true;
+
+	if(do_check_conf)
+	{
+		printf("Checking config file: %s\n", config_file);
+		if(Config.MainConfig.SetSource(config_file, true))
+			printf("  Passed without errors.\n");
+		else
+			printf("  Encountered one or more errors.\n");
+
+		printf("\nChecking config file: %s\n", realm_config_file);
+		if(Config.RealmConfig.SetSource(realm_config_file, true))
+			printf("  Passed without errors.\n");
+		else
+			printf("  Encountered one or more errors.\n");
+
+		/* test for die variables */
+		string die;
+		if(Config.MainConfig.GetString("die", "msg", &die) || Config.MainConfig.GetString("die2", "msg", &die))
+			printf("Die directive received: %s", die.c_str());
+
+		return true;
+	}
+
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
 	sLog.outString("");
 	sLog.outString("Initializing File Loggers...");
@@ -130,13 +215,8 @@ bool Master::Run()
 	uint32 LoadingTime = getMSTime();
 
 	sLog.outColor(TNORMAL, "Loading Config Files...\n");
-#ifdef WIN32
-	sLog.outColor(TYELLOW, "  >> antrix.conf :: ");
-	if(Config.MainConfig.SetSource("antrix.conf"))
-#else
-	sLog.outColor(TYELLOW, "  >> " CONFDIR "/antrix.conf :: ");
-	if(Config.MainConfig.SetSource(CONFDIR "/antrix.conf"))
-#endif
+	sLog.outColor(TYELLOW, "  >> %s :: ", config_file);
+	if(Config.MainConfig.SetSource(config_file))
 	{
 		sLog.outColor(TGREEN, "ok!");
 		sLog.outColor(TNORMAL, "\n");
@@ -156,13 +236,9 @@ bool Master::Run()
 		return false;
 	}	
 
-#ifdef WIN32
-	sLog.outColor(TYELLOW, "  >> realms.conf :: ");
-	if(Config.RealmConfig.SetSource("realms.conf"))
-#else
-	sLog.outColor(TYELLOW, "  >> " CONFDIR "/realms.conf :: ");
-	if(Config.RealmConfig.SetSource(CONFDIR "/realms.conf"))
-#endif
+
+	sLog.outColor(TYELLOW, "  >> %s :: ", realm_config_file);
+	if(Config.RealmConfig.SetSource(realm_config_file))
 	{
 		sLog.outColor(TGREEN, "ok!");
 		sLog.outColor(TNORMAL, "\n\n");
@@ -193,6 +269,13 @@ bool Master::Run()
 
 	/* load the config file */
 	sWorld.Rehash(false);
+
+	/* set new log levels */
+	if(screen_log_level != DEF_VALUE_NOT_SET)
+		sLog.SetScreenLoggingLevel(screen_log_level);
+	
+	if(file_log_level != DEF_VALUE_NOT_SET)
+		sLog.SetFileLoggingLevel(file_log_level);
 
 	// Initialize Opcode Table
 	WorldSession::InitPacketHandlerTable();

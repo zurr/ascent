@@ -302,6 +302,12 @@
 			Name="Util"
 			Filter="">
 			<File
+				RelativePath="..\..\src\shared\antrix_getopt.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\antrix_getopt.h">
+			</File>
+			<File
 				RelativePath="..\..\src\shared\ByteBuffer.h">
 			</File>
 			<File

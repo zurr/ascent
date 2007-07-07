@@ -26,7 +26,9 @@ libshared_a_SOURCES = \
     TextLogger.h \
     TextLogger.cpp \
     Threading/Mutex.cpp \
-    Storage.h
+    Storage.h \
+    antrix_getopt.h \
+    antrix_getopt.cpp
 
 libauth_a_SOURCES = \
     Auth/BigNumber.cpp \

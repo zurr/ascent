@@ -41,7 +41,7 @@ class Master : public Singleton<Master>
 public:
 	Master();
 	~Master();
-	bool Run();
+	bool Run(int argc, char ** argv);
 	bool m_ShutdownEvent;
 	uint32 m_ShutdownTimer;
 

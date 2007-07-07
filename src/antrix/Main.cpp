@@ -15,7 +15,7 @@
 #endif
 
 uint8 loglevel = DEFAULT_LOG_LEVEL;
-int main( void )
+int main(int argc, char ** argv)
 {
 #ifndef WIN32
 	rlimit rl;
@@ -36,18 +36,18 @@ int main( void )
 	// Activate Crash Handler
 	StartCrashHandler();
 
-	THREAD_TRY_EXECUTION
-	{
+	/*THREAD_TRY_EXECUTION
+	{*/
 #endif
-		if(!sMaster.Run())
+		if(!sMaster.Run(argc, argv))
 		{
 			sLog.outString("\nStartup failed for some reason. Please review the error messages above and hit any key to exit.");
 		} else {
 			sLog.outString("Server exited without failure. Hit any key to close this window.");
 		}
 #ifdef WIN32
-	}
-	THREAD_HANDLE_CRASH;
+	/*}
+	THREAD_HANDLE_CRASH;*/
 #endif
 
 	exit(0);
