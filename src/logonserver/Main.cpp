@@ -160,8 +160,8 @@ void LogonServer::Run(int argc, char ** argv)
 		{
 		case 'c':
 			/* Log filename was set */
-			config_file = new char[strlen(optarg)];
-			strcpy(config_file, optarg);
+			config_file = new char[strlen(antrix_optarg)];
+			strcpy(config_file,antrix_optarg);
 			break;
 		case 0:
 			break;

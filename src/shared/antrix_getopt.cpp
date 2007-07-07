@@ -16,7 +16,7 @@
 #include "antrix_getopt.h"
 
 int arg_counter = 1;
-char optarg[514];
+char antrix_optarg[514];
 int antrix_getopt_long_only(int ___argc, char *const *___argv, const char *__shortopts, const struct antrix_option *__longopts, int *__longind)
 {
 	// burlex todo: handle the shortops, at the moment it only works with longopts.
@@ -71,7 +71,7 @@ int antrix_getopt_long_only(int ___argc, char *const *___argv, const char *__sho
 
 			// store argument in optarg
 			if (par)
-				strncpy(optarg, par, 514);
+				strncpy(antrix_optarg, par, 514);
 
 			if (__longopts[i].flag != 0)
 			{
