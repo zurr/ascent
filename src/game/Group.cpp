@@ -43,6 +43,7 @@ enum PartyUpdateFlagGroups
 	GROUP_UPDATE_TYPE_FULL_CREATE				=	GROUP_UPDATE_FLAG_ONLINE | GROUP_UPDATE_FLAG_HEALTH | GROUP_UPDATE_FLAG_MAXHEALTH |
 													GROUP_UPDATE_FLAG_POWER | GROUP_UPDATE_FLAG_LEVEL |
 													GROUP_UPDATE_FLAG_ZONEID | GROUP_UPDATE_FLAG_MAXPOWER | GROUP_UPDATE_FLAG_POSITION,
+	GROUP_UPDATE_TYPE_FULL_REQUEST_REPLY		=   0x7FFC1800,
 };
 
 Group::Group()
@@ -538,7 +539,7 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribu
 		pPlayer->m_last_group_position = pPlayer->GetPosition();
 	}
 
-	if(Flags & 0x7FFC0000)
+	if(Flags & GROUP_UPDATE_TYPE_FULL_REQUEST_REPLY)
 	{
 		// Full update - we have to put some weird extra shit on the end :/
         
@@ -729,7 +730,7 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket & recv_data)
 	if(!_player->GetGroup()->HasMember(plr))
 		return;			// invalid player
 
-	_player->GetGroup()->UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE | 0x7FFC0000, false, &data);
+	_player->GetGroup()->UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE | GROUP_UPDATE_TYPE_FULL_REQUEST_REPLY, false, &data);
 	data.SetOpcode(CMSG_PET_UNLEARN);
 	SendPacket(&data);
 }
