@@ -4135,7 +4135,7 @@ void Player::UpdateChances()
 {
 	int clss = (int)getClass();
 	const float baseDodge[12] = { 0, 0, 0.75, 0.64, 0, 3, 0, 1.75, 3.25, 2, 0, 0.75 };
-	const float dodgeRatio[12] = { 0, 20, 20, 26.5, 14.5, 20, 0, 20, 20, 20, 0, 20 };
+	const float dodgeRatio[12] = { 0, 30, 30, 40, 21, 30, 0, 30, 30, 30, 0, 30 };
  
 	float tmp = baseDodge[clss] + (GetUInt32Value( UNIT_FIELD_STAT1) / dodgeRatio[clss]) + (GetSkillAmt(SKILL_DEFENSE)*.04) + this->GetDodgeFromSpell();
 	tmp+=CalcRating(2);//dodge rating
@@ -4152,29 +4152,32 @@ void Player::UpdateChances()
 
 [agility] / [crit constant*] + [skill modifier] + [bonuses]
 
-The crit constant is class and level dependent and for a level 60 character (patch 2.0) as follows:
+The crit constant is class and level dependent and for a level 70 character as follows:
 
-	* Rogue [29]
-	* Druid [20]
-	* Hunter [33]
-	* Mage [19.44]
-	* Paladin [19.77]
-	* Priest [20]
-	* Shaman [19.7]
-	* Warlock [20]
-	* Warrior [20] 
+	* Rogue [40]
+	* Druid [25.00]
+	* Hunter [40]
+	* Mage [25.00]
+	* Paladin [25.00]
+	* Priest [25.00]
+	* Shaman [25.00]
+	* Warlock [24.69]
+	* Warrior [33] 
 */
 
 	switch(clss)
 	{
 	case ROGUE: 
-		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 29.00);
+		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 40.00);
 		break;
 	case HUNTER: 
-		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 29.00);
+		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 40.00);
+		break;
+	case WARRIOR: 
+		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 33.00);
 		break;
 	default: 
-		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 20.00);
+		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 25.00);
 		break;
 	}
 	//std::list<WeaponModifier>::iterator i = tocritchance.begin();
