@@ -1515,3 +1515,8 @@ bool Battleground::GetRepopCoordinates(Player * plr, LocationVector & vec)
 {
 	return false;
 }
+
+void Battleground::RemovePlayerFromBattleground(Player * pPlayer)
+{
+	RemovePlayer(pPlayer, false, true, true);
+}

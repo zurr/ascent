@@ -494,8 +494,6 @@ public:
 	static time_t UNIXTIME;
 	static time_t MSTIME;
 
-	void RemovePlayerFromBattleground(Battleground * bg, Player * pPlayer);
-
 protected:
 	MapInfoMap m_mapinfo;
 	Mutex SessionsMutex;//FOR GLOBAL !
