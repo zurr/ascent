@@ -611,9 +611,7 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribu
 
 void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 {
-	WorldPacket data(500);
-	WorldPacket data2(500);
-	bool update = false;
+	WorldPacket data(150);
 
 	/* tell the other players about us */
 	UpdateOutOfRangePlayer(pPlayer, GROUP_UPDATE_TYPE_FULL_CREATE, true, &data2);
@@ -631,26 +629,6 @@ void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 			{
 				UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE, false, &data);
 				pPlayer->GetSession()->SendPacket(&data);
-
-				/* send an a9 create for him, this will allow us to move (weird!) */
-				//plr->BuildCreateUpdateBlockForPlayer(&data, pPlayer);
-				//pPlayer->PushUpdateData(&data, 1);
-
-				/* send the create for us to the other player */
-				/*pPlayer->BuildCreateUpdateBlockForPlayer(&data, plr);
-				plr->PushUpdateData(&data, 1);
-				plr->ProcessPendingUpdates();
-				pPlayer->GetSession()->SendPacket(&data2);
-
-				update = true;*/
-
-				/* let's try a heartbeat :/ */
-				/*WorldPacket * data3 = new WorldPacket(100);
-				WorldPacket * data4 = new WorldPacket(100);
-
-				plr->BuildHeartBeatMsg(data3);
-				pPlayer->BuildHeartBeatMsg(data4);*/
-
 			}
 		}
 	}
@@ -726,7 +704,7 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket & recv_data)
 	if(!_player->GetGroup() || !plr)
 		return;
 
-	WorldPacket data(500);
+	WorldPacket data(200);
 	if(!_player->GetGroup()->HasMember(plr))
 		return;			// invalid player
 
