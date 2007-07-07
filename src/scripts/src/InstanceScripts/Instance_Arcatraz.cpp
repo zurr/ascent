@@ -163,7 +163,7 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = true;
 		spells[0].cooldown = -1;
-		spells[0].perctrigger = 5.0f;
+		spells[0].perctrigger = 8.0f;
 		spells[0].attackstoptimer = 1000;
 
         spells[1].info = sSpellStore.LookupEntry(EXPLODE);
@@ -495,6 +495,7 @@ public:
     
     void OnCombatStart(Unit* mTarget)
     {
+		_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
 		CastTime();
 		RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
     }
@@ -604,14 +605,14 @@ public:
 		spells[0].targettype = TARGET_ATTACKING;
 		spells[0].instant = false;
 		spells[0].cooldown = -1;
-		spells[0].perctrigger = 7.0f;
+		spells[0].perctrigger = 10.0f;
 		spells[0].attackstoptimer = 1000;
 
         spells[1].info = sSpellStore.LookupEntry(FIRE_SHIELD);
 		spells[1].targettype = TARGET_SELF;
 		spells[1].instant = true;
 		spells[1].cooldown = -1;
-		spells[1].perctrigger = 8.0f;
+		spells[1].perctrigger = 7.0f;
 		spells[1].attackstoptimer = 1000;
     }
     
@@ -724,7 +725,7 @@ public:
 			m_spellcheck[i] = false;
 		}
         spells[0].info = sSpellStore.LookupEntry(TENTACLE_CLEAVE);
-		spells[0].targettype = TARGET_VARIOUS;
+		spells[0].targettype = TARGET_ATTACKING;	// to prevent crashes changed from VARIOUS
 		spells[0].instant = true;
 		spells[0].cooldown = -1;
 		spells[0].perctrigger = 10.0f;
@@ -1150,7 +1151,7 @@ public:
 		spells[2].attackstoptimer = 1000;
 
 		spells[3].info = sSpellStore.LookupEntry(TANTACLE_CLEAVE_EYE);
-		spells[3].targettype = TARGET_VARIOUS;
+		spells[3].targettype = TARGET_ATTACKING;	// changed from VAR. to prevent crashes
 		spells[3].instant = true;
 		spells[3].cooldown = -1;
 		spells[3].perctrigger = 12.0f;
@@ -1280,7 +1281,7 @@ public:
 		spells[1].attackstoptimer = 1000;
 
 		spells[2].info = sSpellStore.LookupEntry(FORCEFUL_CLEAVE);
-		spells[2].targettype = TARGET_VARIOUS;
+		spells[2].targettype = TARGET_ATTACKING;	// to prevent crashes changed
 		spells[2].instant = true;
 		spells[2].cooldown = -1;
 		spells[2].perctrigger = 13.0f;
@@ -2022,7 +2023,7 @@ protected:
 #define FIRE_SHIELD_GFE 13376
 #define FIRE_NOVA 12470
 #define FIRE_BLAST 13339
-#define MARK_OF_DEATH 37128	// SSS
+#define MARK_OF_DEATH 37128	// SSS	// should be applied on target
 
 class GreaterFireElementalAI : public CreatureAIScript
 {
@@ -2042,7 +2043,7 @@ public:
 		spells[0].targettype = TARGET_SELF;
 		spells[0].instant = true;
 		spells[0].cooldown = -1;
-		spells[0].perctrigger = 7.0f;
+		spells[0].perctrigger = 0.0f;
 		spells[0].attackstoptimer = 1000;
 
 		spells[1].info = sSpellStore.LookupEntry(FIRE_NOVA);
@@ -2053,7 +2054,7 @@ public:
 		spells[1].attackstoptimer = 1000;
 
 		spells[2].info = sSpellStore.LookupEntry(FIRE_BLAST);
-		spells[2].targettype = TARGET_DESTINATION;
+		spells[2].targettype = TARGET_ATTACKING;
 		spells[2].instant = true;
 		spells[2].cooldown = -1;
 		spells[2].perctrigger = 9.0f;
@@ -2065,6 +2066,8 @@ public:
 		spells[3].cooldown = -1;
 		spells[3].perctrigger = 5.0f;
 		spells[3].attackstoptimer = 1000;
+
+		_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
 
     }
     
@@ -2157,15 +2160,15 @@ protected:
 // IronjawAI	// spells verification, coz some of those are for sure pet spells? :| :| :|
 
 #define CN_IRONJAW 18670
-
-#define FURIOUS_HOWL 24597
+// I couldn't force Ironjaw to cast spells with "?"
+#define FURIOUS_HOWL 24597	// ?
 #define DASH 23110
 #define BITE 27050
-#define GROWL 14921
-#define FEROCIOUS_INSPIRATION 34456
+#define GROWL 14921			// ?
+#define FEROCIOUS_INSPIRATION 34456	// ?
 #define FRENZY_EFFECT 19615
 #define KILL_COMMAND 34027
-#define BESTIAL_WRATH 24395	// DBC: 24395, 24396, 24397, 26592 (all are diffrent)
+#define BESTIAL_WRATH 24395	// DBC: 24395, 24396, 24397, 26592 (all are diffrent)	// ?
 #define SNARL 32919
 #define CHILLING_HOWL 32918
 
@@ -2470,13 +2473,15 @@ public:
     }
 
     void OnCombatStop(Unit *mTarget)
-    {
+    {/*
 		CastTime();
 		if (_unit->GetUInt32Value(UNIT_FIELD_POWER1) < _unit->GetUInt32Value(UNIT_FIELD_BASE_MANA))
 		{
 			_unit->CastSpell(_unit, spells[1].info, spells[1].instant);
 			_unit->CastSpell(_unit, spells[4].info, spells[4].instant);
-		}
+		}*/
+		_unit->CastSpell(_unit, spells[1].info, spells[1].instant);
+		_unit->CastSpell(_unit, spells[4].info, spells[4].instant);
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->SetAIState(STATE_IDLE);
         RemoveAIUpdateEvent();
@@ -2544,7 +2549,7 @@ protected:
 	int nrspells;
 };
 
-// Negaton ScreamerAI
+// Negaton ScreamerAI	// this one needs some more work for dmg taken dmg type, but I don't have time for it...
 
 #define CN_NEGATON_SCREAMER 20875		// I need to add missing about 15 mobs (w00t? More? =() and to this script
 										// OnDamageTaken function with check of spell dmg type and correc spell casts in diff cases
@@ -3044,7 +3049,7 @@ protected:
 
 #define SIMPLE_TELEPORT_PH 12980
 #define BACK_ATTACK 36909
-#define WARP 36908
+#define WARP 36908	// lack of core support?
 #define PHASE_BURST 36910
 
 class PhaseHunterAI : public CreatureAIScript
@@ -3715,7 +3720,7 @@ protected:
 #define CN_SOUL_DEVOURER 20866
 
 #define SIGHTLESS_EYE 36644
-#define LAVA_BREATH 21333
+#define LAVA_BREATH 21333	// doesn't have animation?
 #define FEL_BREATH 36654
 #define FRENZY 33958
 
@@ -3984,7 +3989,7 @@ protected:
 
 // Skulking WitchAI
 
-#define CN_SKULKING_WITCH 20882	
+#define CN_SKULKING_WITCH 20882	// works really cool as assassin :)
 
 #define CHASTISE 36863
 #define GOUGE 36862
@@ -4389,10 +4394,10 @@ protected:
 
 // Unbound DevastatorAI
 
-#define CN_UNBOUND_DEVASTATOR 20881	
+#define CN_UNBOUND_DEVASTATOR 20881
 
 #define DEAFENING_ROAR 36887
-#define DEVASTATE 36891	// DBC: 36891, 36894;
+#define DEVASTATE 36894	// DBC: 36891, 36894;
 
 class UnboundDevastatorAI : public CreatureAIScript
 {
@@ -4906,12 +4911,6 @@ public:
 				{
 					_unit->CastSpell(target, spells[4].info, spells[4].instant);
 					_unit->setAttackTimer(spells[4].attackstoptimer, false);
-				}
-
-				if (RangedSpell > 50 && RangedSpell <= 100)
-				{
-					_unit->CastSpell(target, spells[0].info, spells[0].instant);
-					_unit->setAttackTimer(spells[0].attackstoptimer, false);
 				}
 
 				else

@@ -1044,12 +1044,13 @@ public:
 
                   	m_spellcheck[i] = false;
 					return;
-				}
+					
+					if(spells[i].soundid) 
+					{
+						_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
+						_unit->PlaySoundToSet(spells[i].soundid); 
+					}
 
-				if(spells[i].soundid) 
-				{
-					_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[i].speech.c_str());
-					_unit->PlaySoundToSet(spells[i].soundid); 
 				}
 
 				if(val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
