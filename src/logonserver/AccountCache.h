@@ -18,7 +18,6 @@
 #include "../shared/Common.h"
 #include "../shared/Database/DatabaseEnv.h"
 
-struct Realm;
 typedef struct
 {
 	uint32 AccountId;
@@ -28,24 +27,6 @@ typedef struct
 	uint32 AccountFlags;
 	uint32 Banned;
 	uint8 SrpHash[20];
-	Realm * LoggedInRealm;
-	BigNumber * SessionKey;
-
-	void SetSessionKey(BigNumber * s)
-	{
-		if(SessionKey)
-			delete SessionKey;
-
-		SessionKey = s;
-	}
-
-	void ClearSessionKey()
-	{
-		if(SessionKey)
-			delete SessionKey;
-		SessionKey = 0;
-	}
-
 } Account;
 
 typedef struct 
@@ -106,7 +87,6 @@ public:
 	bool LoadAccount(string Name);	
 	void ReloadAccounts(bool silent);
 	void ReloadAccountsCallback();
-	void RemoveReferencesTo(Realm * realm);
 
 	inline uint32 GetCount() { return AccountDatabase.size(); }
 
@@ -134,9 +114,8 @@ protected:
 	Mutex setBusy;
 };
 
-struct Realm
+typedef struct
 {
-	uint32 ID;
 	string Name;
 	string Address;
 	uint32 Colour;
@@ -144,16 +123,16 @@ struct Realm
 	uint32 TimeZone;
 	float Population;
 	HM_NAMESPACE::hash_map<uint32, uint8> CharacterMap;
-};
+}Realm;
 
 class AuthSocket;
 class LogonCommServerSocket;
 
 class InformationCore : public Singleton<InformationCore>
 {
+	Mutex m_sessionKeyLock;
+	map<uint32, BigNumber*>	 m_sessionkeys;
 	map<uint32, Realm*>		  m_realms;
-	map<Account*, uint32>     m_deletionQueue;
-	Mutex m_deletionQueueLock;
 	set<LogonCommServerSocket*> m_serverSockets;
 	Mutex serverSocketLock;
 	Mutex realmLock;
@@ -173,7 +152,11 @@ public:
 
 	// Packets
 	void		  SendRealms(AuthSocket * Socket);
-	LogonCommServerSocket * GetSocketForRealm(uint32 RealmId);
+	
+	// Sessionkey Management
+	BigNumber*	GetSessionKey(uint32 account_id);
+	void		  DeleteSessionKey(uint32 account_id);
+	void		  SetSessionKey(uint32 account_id, BigNumber * key);
 
 	// Realm management
 	inline uint32 GenerateRealmID()
@@ -190,14 +173,6 @@ public:
 	inline void   RemoveServerSocket(LogonCommServerSocket * sock) { serverSocketLock.Acquire(); m_serverSockets.erase( sock ); serverSocketLock.Release(); }
 
 	void		  TimeoutSockets();
-	void          TimeoutSessionKeys();
-
-	void AddKey(Account * a)
-	{
-		m_deletionQueueLock.Acquire();
-		m_deletionQueue[a] = time(NULL) + 30;
-		m_deletionQueueLock.Release();
-	}
 };
 
 #define sIPBanner IPBanner::getSingleton()

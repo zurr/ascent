@@ -121,7 +121,6 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 		NULL,												// RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING
 		&LogonCommServerSocket::HandleMappingReply,			// RCMSG_ACCOUNT_CHARACTER_MAPPING_REPLY
 		&LogonCommServerSocket::HandleUpdateMapping,		// RCMSG_UPDATE_CHARACTER_MAPPING_COUNT
-		&LogonCommServerSocket::HandleRemoveSessionKey,		// RCMSG_REMOVE_SESSIONKEY
 	};
 
 	if(recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)
@@ -170,39 +169,10 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 	// get sessionkey!
 	uint32 error = 0;
 	Account * acct = sAccountMgr.GetAccount(account_name);
-	Realm * realm = 0;
-	if(!acct)
-		error = 1;
-	else
-	{
-		// Find the realm we're registered to, and assign it to this account.
-		for(set<uint32>::iterator itr = server_ids.begin(); itr != server_ids.end(); ++itr)
-		{
-			realm = sInfoCore.GetRealm(*itr);
-			if(realm)
-				break;
-		}
-
-		if(!realm)
-			error = 2;
-		else
-		{
-			if(!acct->SessionKey)
-				error = 3;
-			else
-			{
-				if(acct->LoggedInRealm && acct->LoggedInRealm != realm)
-				{
-					// We are already logged into another realm -> disconnect the client on the server
-					// we're connected to, and allow access.
-					LogonCommServerSocket * s = sInfoCore.GetSocketForRealm(acct->LoggedInRealm->ID);
-					if(s)
-						s->SendDisconnectRequestFor(acct->AccountId);
-				}
-				acct->LoggedInRealm = realm;
-			}
-		}
-	}
+	BigNumber * sessionkey = acct ? sInfoCore.GetSessionKey(acct->AccountId) : 0;
+	
+	if(sessionkey == 0 || acct == 0)
+		error = 1;		  // Unauthorized user.
 
 	// build response packet
 	WorldPacket data(RSMSG_SESSION_RESULT, 150);
@@ -215,7 +185,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 		data << acct->Username;
 		data << acct->GMFlags;
 		data << acct->AccountFlags;
-		data.append(acct->SessionKey->AsByteArray(), 40);
+		data.append(sessionkey->AsByteArray(), 40);
 	}
 	
 	SendPacket(&data);
@@ -360,20 +330,4 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
 		realm->CharacterMap.insert( make_pair( account_id, chars_to_add ) );
 
 	sInfoCore.getRealmLock().Release();
-}
-
-void LogonCommServerSocket::HandleRemoveSessionKey(WorldPacket & recvData)
-{
-	string account_name;
-	recvData >> account_name;
-	Account * acct = sAccountMgr.GetAccount(account_name);
-	if(acct)
-		sInfoCore.AddKey(acct);
-}
-
-void LogonCommServerSocket::SendDisconnectRequestFor(uint32 AccountId)
-{
-	WorldPacket data(RSMSG_DISCONNECT_USER, 4);
-	data << AccountId;
-	SendPacket(&data);
 }
