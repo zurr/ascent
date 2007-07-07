@@ -152,6 +152,8 @@ class LogonCommServerSocket;
 class InformationCore : public Singleton<InformationCore>
 {
 	map<uint32, Realm*>		  m_realms;
+	map<Account*, uint32>     m_deletionQueue;
+	Mutex m_deletionQueueLock;
 	set<LogonCommServerSocket*> m_serverSockets;
 	Mutex serverSocketLock;
 	Mutex realmLock;
@@ -188,6 +190,14 @@ public:
 	inline void   RemoveServerSocket(LogonCommServerSocket * sock) { serverSocketLock.Acquire(); m_serverSockets.erase( sock ); serverSocketLock.Release(); }
 
 	void		  TimeoutSockets();
+	void          TimeoutSessionKeys();
+
+	void AddKey(Account * a)
+	{
+		m_deletionQueueLock.Acquire();
+		m_deletionQueue[a] = time(NULL) + 30;
+		m_deletionQueueLock.Release();
+	}
 };
 
 #define sIPBanner IPBanner::getSingleton()

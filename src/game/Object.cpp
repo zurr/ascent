@@ -1594,7 +1594,9 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		pVictim->DropAurasOnDeath();
 
 		/* Stop victim from attacking */
-		pVictim->smsg_AttackStop(((Unit*)this));
+		if(this->IsUnit())
+			pVictim->smsg_AttackStop(((Unit*)this));
+
 		if(pVictim->GetTypeId() == TYPEID_PLAYER)
 			((Player*)pVictim)->EventAttackStop();
 

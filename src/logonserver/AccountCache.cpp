@@ -418,7 +418,30 @@ void AccountMgr::RemoveReferencesTo(Realm * realm)
 	
 	for(; itr != AccountDatabase.end(); ++itr)
 		if(itr->second.LoggedInRealm == realm)
+		{
 			itr->second.LoggedInRealm = 0;
+			sInfoCore.AddKey(&itr->second);
+		}
 
 	setBusy.Release();
+}
+
+void InformationCore::TimeoutSessionKeys()
+{
+	uint32 t = time(NULL);
+	m_deletionQueueLock.Acquire();
+	map<Account*, uint32>::iterator itr, it2;
+	for(itr = m_deletionQueue.begin(); itr != m_deletionQueue.end();) {
+		if(itr->second <= t)
+		{
+			if(!itr->first->LoggedInRealm)
+				itr->first->ClearSessionKey();
+
+			it2 = itr++;
+			m_deletionQueue.erase(it2);
+		}
+		else
+			++itr;
+	}
+	m_deletionQueueLock.Release();
 }

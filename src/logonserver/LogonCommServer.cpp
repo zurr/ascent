@@ -368,10 +368,7 @@ void LogonCommServerSocket::HandleRemoveSessionKey(WorldPacket & recvData)
 	recvData >> account_name;
 	Account * acct = sAccountMgr.GetAccount(account_name);
 	if(acct)
-	{
-		acct->ClearSessionKey();
-		acct->LoggedInRealm = 0;
-	}
+		sInfoCore.AddKey(acct);
 }
 
 void LogonCommServerSocket::SendDisconnectRequestFor(uint32 AccountId)
