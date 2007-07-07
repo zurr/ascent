@@ -173,7 +173,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraModUnderwaterBreathing,//SPELL_AURA_MOD_WATER_BREATHING = 155,//	Mod Water Breathing
 		&Aura::SpellAuraModReputationAdjust,//SPELL_AURA_MOD_REPUTATION_ADJUST = 156,//	Mod Reputation Gain
 		&Aura::SpellAuraNULL,//SPELL_AURA_PET_DAMAGE_MULTI = 157,//	Mod Pet Damage
-		&Aura::SpellAuraNULL,//missing = 158 //used Apply Aura: Mod Shield Block //http://www.thottbot.com/?sp=25036
+		&Aura::SpellAuraModBlockValue,//SPELL_AURA_MOD_SHIELD_BLOCKVALUE = 158//used Apply Aura: Mod Shield Block //http://www.thottbot.com/?sp=25036
 		&Aura::SpellAuraNoPVPCredit,//missing = 159 //used Apply Aura: No PVP Credit http://www.thottbot.com/?sp=2479
 		&Aura::SpellAuraNULL,//missing = 160 //Apply Aura: Mod Side/Rear PBAE Damage Taken %//used http://www.thottbot.com/?sp=23198
 		&Aura::SpellAuraModHealthRegInCombat,//SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT = 161,
@@ -6214,7 +6214,7 @@ void Aura::SpellAuraIncreaseRepGainPct(bool apply)
 	}
 }
 
-void Aura::SpellAuraRAPAttackerBonus(bool apply)
+void Aura::SpellAuraIncreaseRangedAPStatPCT(bool apply)
 {
 	if(p_target)
 	{
@@ -6231,5 +6231,28 @@ void Aura::SpellAuraRAPAttackerBonus(bool apply)
 			p_target->m_rap_mod_pct -= mod->m_amount;
 
 		p_target->UpdateStats();
+	}
+}
+
+void Aura::SpellAuraModRangedDamageTakenPCT(bool apply)
+{
+	if(apply)
+		m_target->RangedDamageTakenPct += mod->m_amount;
+	else
+		m_target->RangedDamageTakenPct -= mod->m_amount;  
+}
+
+void Aura::SpellAuraModBlockValue(bool apply)
+{
+	if(p_target)
+	{
+		if(apply)
+		{
+			p_target->m_modblockvalue += (uint32)mod->m_amount;
+		}
+		else
+		{
+			p_target->m_modblockvalue -= (uint32)mod->m_amount;
+		}
 	}
 }

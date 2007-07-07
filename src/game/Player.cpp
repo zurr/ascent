@@ -331,6 +331,7 @@ Player::Player ( uint32 high, uint32 low )
 	trigger_on_stun = 0;
 	m_modphyscritdmgPCT = 0;
 	m_rap_mod_pct = 0;
+	m_modblockvalue = 0;
 }
 
 

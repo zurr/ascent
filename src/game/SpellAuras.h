@@ -517,6 +517,8 @@ public:
 	void SpellAuraSpiritOfRedemption(bool apply);
 	void SpellAuraIncreaseRepGainPct(bool apply);
 	void SpellAuraIncreaseRangedAPStatPCT(bool apply);
+	void SpellAuraModRangedDamageTakenPCT(bool apply);
+	void SpellAuraModBlockValue(bool apply);
 
 	void SendModifierLog(int32 ** m,int32 v,uint32 mask,uint8 type,bool pct = false);
 	// Events

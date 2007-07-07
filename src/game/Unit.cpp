@@ -204,6 +204,7 @@ Unit::Unit()
 	spellcritperc = 0;
 
 	polySpell = 0;
+	RangedDamageTaken = 0;
 //	fearSpell = 0;
 }
 
@@ -1148,7 +1149,10 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			
 			dmg.full_damage += pVictim->DamageTakenMod[0]+add_damage;
 			if(dmg.damage_type == RANGED)
-				dmg.full_damage += pVictim->RangedDamageTaken;
+			{
+				//dmg.full_damage += pVictim->RangedDamageTaken;
+				dmg.full_damage += (((dmg.full_damage/100)*pVictim->RangedDamageTakenPct) + pVictim->RangedDamageTaken);
+			}
 			
 			if(dmg.full_damage < 0)
 				dmg.full_damage = 0;
@@ -1162,7 +1166,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 					pVictim->Emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
 //					blocked_damage = shield->GetProto()->Block+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
 					//patch from Onemore
-					blocked_damage = shield->GetProto()->Block*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
+					//blocked_damage = shield->GetProto()->Block*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
+					blocked_damage = (shield->GetProto()->Block + ((Player*)pVictim)->m_modblockvalue)*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
+
 					if(dmg.full_damage <= blocked_damage)
 					{
 						CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, blocked_damage);
