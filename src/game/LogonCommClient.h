@@ -42,6 +42,7 @@ public:
 	void UpdateAccountCount(uint32 account_id, uint8 add);
 
 	void OnDisconnect();
+	void CompressAndSend(ByteBuffer & uncompressed);
 	uint32 last_ping;
 	uint32 last_pong;
 

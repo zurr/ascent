@@ -292,13 +292,36 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 		return;
 	}
 
-	// pump all the data out into our packet
-	ByteBuffer uncompressed(mapping_to_send.size() * 5 + 8);
-	uncompressed << uint32(realm_id);
-	uncompressed << uint32(mapping_to_send.size());
-	for(itr = mapping_to_send.begin(); itr != mapping_to_send.end(); ++itr)
-		uncompressed << uint32(itr->first) << uint8(itr->second);
+	ByteBuffer uncompressed(40000 * 5 + 8);
+	uint32 Count = 0;
+	uint32 Remaining = mapping_to_send.size();
+	for(;;)
+	{
+		// Send no more than 40000 characters at once.
+		uncompressed << realm_id;
+		
+		if(Remaining > 40000)
+			uncompressed << uint32(40000);
+		else
+			uncompressed << Remaining;
 
+		for(uint32 i = 0; i < 40000; ++i, ++itr)
+		{
+            uncompressed << uint32(itr->first) << uint8(itr->second);
+			if(!--Remaining)
+				break;
+		}
+
+		CompressAndSend(uncompressed);
+		if(!Remaining)
+			break;
+
+		uncompressed.clear();
+	}	
+}
+
+void LogonCommClientSocket::CompressAndSend(ByteBuffer & uncompressed)
+{
 	// I still got no idea where this came from :p
 	uint32 destsize = uncompressed.size() + uncompressed.size()/10 + 16;
 
@@ -349,4 +372,3 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 	data.resize(stream.total_out + 4);
 	SendPacket(&data);
 }
-
