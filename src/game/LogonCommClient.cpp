@@ -312,8 +312,6 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
             uncompressed << uint32(itr->first) << uint8(itr->second);
 			if(!--Remaining)
 				break;
-
-			++itr;
 		}
 
 		CompressAndSend(uncompressed);
