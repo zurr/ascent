@@ -26,10 +26,10 @@ WorldPacket* BuildQuestQueryResponse(Quest *qst)
    
 	*data << uint32(qst->id);					   // Quest ID
 	*data << uint32(2);							 // Unknown, always seems to be 2
-	*data << uint32(qst->min_level);				// Quest level, we'll use "min" for this.
+	*data << uint32(qst->max_level);				// Quest level
 
 	if(qst->quest_sort > 0)
-		*data << uint32(qst->quest_sort * -1);	  // Negative if pointing to a sort.
+		*data << uint32(qst->quest_sort);	  // Negative if pointing to a sort.
 	else
 		*data << uint32(qst->zone_id);			  // Positive if pointing to a zone.
 
