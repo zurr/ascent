@@ -607,6 +607,7 @@ protected:
 	void SendMailError(uint32 error);
 
 	void HandleCharRenameOpcode(WorldPacket & recv_data);
+	void HandlePartyMemberStatsOpcode(WorldPacket & recv_data);
 
 public:
 

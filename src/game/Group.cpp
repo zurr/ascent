@@ -1,4 +1,4 @@
-/****************************************************************************
+/*
  *
  * Group System
  * Copyright (c) 2007 Antrix Team
@@ -35,14 +35,14 @@ enum PartyUpdateFlags
 	GROUP_UPDATE_FLAG_PET_UNK_4					= 32768,	// 0x00008000  uint8
 	GROUP_UPDATE_FLAG_UNK_3						= 65535,	// 0x00010000  uint16
 	GROUP_UPDATE_FLAG_UNK_4						= 131070,	// 0x00020000  uint16
-	GROUP_UPDATE_FLAG_UNK_5						= 262140,	// 0x00040000  uint64, uint16 for each uint64
+	GROUP_UPDATE_FLAG_UNK_5						= 262144,	// 0x00040000  uint64, uint16 for each uint64
 };
 
 enum PartyUpdateFlagGroups
 {
 	GROUP_UPDATE_TYPE_FULL_CREATE				=	GROUP_UPDATE_FLAG_ONLINE | GROUP_UPDATE_FLAG_HEALTH | GROUP_UPDATE_FLAG_MAXHEALTH |
-													GROUP_UPDATE_FLAG_POWER_TYPE | GROUP_UPDATE_FLAG_POWER | GROUP_UPDATE_FLAG_LEVEL |
-													GROUP_UPDATE_FLAG_MAXPOWER | GROUP_UPDATE_FLAG_POSITION,
+													GROUP_UPDATE_FLAG_POWER | GROUP_UPDATE_FLAG_LEVEL |
+													GROUP_UPDATE_FLAG_ZONEID | GROUP_UPDATE_FLAG_MAXPOWER | GROUP_UPDATE_FLAG_POSITION,
 };
 
 Group::Group()
@@ -157,8 +157,8 @@ bool Group::AddMember(Player* pPlayer)
 			SetLeader(pPlayer);
 		}		
 
-		Update();	// Send group update
 		UpdateAllOutOfRangePlayersFor(pPlayer);
+		Update();	// Send group update
 
 		return true;
 
@@ -487,54 +487,175 @@ void Group::LoadFromDB(Field *fields)
 	}
 }
 
-void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags)
+void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribute, WorldPacket * Packet)
 {
-	WorldPacket data(SMSG_PARTY_MEMBER_STATS, 500);
-	data << pPlayer->GetNewGUID();
-	data << Flags;
+	WorldPacket * data = Packet;
+	if(!Packet)
+		data = new WorldPacket(SMSG_PARTY_MEMBER_STATS, 500);
+
+	if(pPlayer->GetPowerType() != POWER_TYPE_MANA)
+		Flags |= GROUP_UPDATE_FLAG_POWER_TYPE;
+
+	/*Flags |= GROUP_UPDATE_FLAG_PET_NAME;
+	Flags |= GROUP_UPDATE_FLAG_PET_UNK_1;*/
+
+	data->Initialize(SMSG_PARTY_MEMBER_STATS);
+	*data << pPlayer->GetNewGUID();
+	*data << Flags;
 
 	if(Flags & GROUP_UPDATE_FLAG_ONLINE)
-		data << uint8(1);
+	{
+		if(pPlayer->IsPvPFlagged())
+			*data << uint8(3);
+		else
+			*data << uint8(1);
+	}
 
 	if(Flags & GROUP_UPDATE_FLAG_HEALTH)
-		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_HEALTH));
+		*data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_HEALTH));
 
 	if(Flags & GROUP_UPDATE_FLAG_MAXHEALTH)
-		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+		*data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 
 	if(Flags & GROUP_UPDATE_FLAG_POWER_TYPE)
-		data << uint8(pPlayer->GetPowerType());
+		*data << uint8(pPlayer->GetPowerType());
 
 	if(Flags & GROUP_UPDATE_FLAG_POWER)
-		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_POWER1 + pPlayer->GetPowerType()));
+		*data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_POWER1 + pPlayer->GetPowerType()));
 
 	if(Flags & GROUP_UPDATE_FLAG_MAXPOWER)
-		data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_MAXPOWER1 + pPlayer->GetPowerType()));
+		*data << uint16(pPlayer->GetUInt32Value(UNIT_FIELD_MAXPOWER1 + pPlayer->GetPowerType()));
 
 	if(Flags & GROUP_UPDATE_FLAG_LEVEL)
-		data << uint16(pPlayer->getLevel());
+		*data << uint16(pPlayer->getLevel());
 
 	if(Flags & GROUP_UPDATE_FLAG_ZONEID)
-		data << uint16(pPlayer->GetZoneId());
+		*data << uint16(pPlayer->GetZoneId());
 
 	if(Flags & GROUP_UPDATE_FLAG_POSITION)
-		data << uint16(pPlayer->GetPositionX()) << uint16(pPlayer->GetPositionY());			// wtf packed floats? O.o
+	{
+		*data << int16(pPlayer->GetPositionX()) << int16(pPlayer->GetPositionY());			// wtf packed floats? O.o
+		pPlayer->m_last_group_position = pPlayer->GetPosition();
+	}
 
+	if(Flags & 0x7FFC0000)
+	{
+		// Full update - we have to put some weird extra shit on the end :/
+        
+		/*
+		{SERVER} Packet: (0x02F2) CMSG_PET_UNLEARN PacketSize = 46
+
+		07 EB BB 69 - guid
+		F7 1B FC 7F - mask - 1111111111111000001101111110111 - full
+		// known parts
+		0000000000000000000000000000001 - online
+		0000000000000000000000000000010 - health
+		0000000000000000000000000000100 - max health
+		0000000000000000000000000010000 - power
+		0000000000000000000000000100000 - max power
+		0000000000000000000000001000000 - level
+		0000000000000000000000010000000 - zoneid
+		0000000000000000000000100000000 - level
+		0000000000000000000001000000000 - position
+
+		// unknown parts
+		1111111111111000001101111110111 - full
+		0000000000001000000000000000000 - GROUP_UPDATE_FLAG_UNK_5 = 262144,	// 0x00040000  uint64, uint16 for each uint64
+		1111111111111000000000000000000 - 
+
+		03 - online
+		7D 02 - health
+		0E 04 - max health
+		37 05 - power
+		BA|07 - max power
+		1B 00 - level
+		28 00 - zoneid
+		39 D8 B9 03 - position
+
+		-- this is what we append on the end of a full update.. no idea what is is
+		01 00 00 00
+		00 00 00 FF
+		4A 78 00 58
+		26 00 00 00
+		00 00 00 00
+		FF
+		-------------------------------------------------------------------
+
+		*/
+		*data << uint32(0x00000001);
+		*data << uint32(0xFF000000);
+		*data << uint32(0x5800784A);
+		*data << uint32(0x00000026);
+		*data << uint32(0x00000000);
+		*data << uint8(0xFF);
+	}
+
+	if(Distribute)
+	{
+		Player * plr;
+		for(uint32 i = 0; i < m_SubGroupCount; ++i)
+		{
+			for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+			{
+				plr = *itr;
+				if(plr != pPlayer && !plr->IsVisible(pPlayer))
+					plr->GetSession()->SendPacket(data);
+			}
+		}
+	}
+
+	if(!Packet)
+		delete data;
+}
+
+void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
+{
+	WorldPacket data(500);
+	WorldPacket data2(500);
+	bool update = false;
+
+	/* tell the other players about us */
+	UpdateOutOfRangePlayer(pPlayer, GROUP_UPDATE_TYPE_FULL_CREATE, true, &data2);
+
+	/* tell us any other players we don't know about */
 	Player * plr;
 	for(uint32 i = 0; i < m_SubGroupCount; ++i)
 	{
 		for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
 		{
 			plr = *itr;
+			if(plr == pPlayer) continue;
+
 			if(!plr->IsVisible(pPlayer))
-				plr->GetSession()->SendPacket(&data);
+			{
+				UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE, false, &data);
+				pPlayer->GetSession()->SendPacket(&data);
+
+				/* send an a9 create for him, this will allow us to move (weird!) */
+				//plr->BuildCreateUpdateBlockForPlayer(&data, pPlayer);
+				//pPlayer->PushUpdateData(&data, 1);
+
+				/* send the create for us to the other player */
+				/*pPlayer->BuildCreateUpdateBlockForPlayer(&data, plr);
+				plr->PushUpdateData(&data, 1);
+				plr->ProcessPendingUpdates();
+				pPlayer->GetSession()->SendPacket(&data2);
+
+				update = true;*/
+
+				/* let's try a heartbeat :/ */
+				/*WorldPacket * data3 = new WorldPacket(100);
+				WorldPacket * data4 = new WorldPacket(100);
+
+				plr->BuildHeartBeatMsg(data3);
+				pPlayer->BuildHeartBeatMsg(data4);*/
+
+			}
 		}
 	}
-}
-
-void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
-{
-	UpdateOutOfRangePlayer(pPlayer, GROUP_UPDATE_TYPE_FULL_CREATE);
+	
+	if(update)
+		pPlayer->ProcessPendingUpdates();
 }
 
 void Group::HandleUpdateFieldChange(uint32 Index, Player * pPlayer)
@@ -570,7 +691,7 @@ void Group::HandleUpdateFieldChange(uint32 Index, Player * pPlayer)
 	}
 
 	if(Flags)
-		UpdateOutOfRangePlayer(pPlayer, Flags);
+		UpdateOutOfRangePlayer(pPlayer, Flags, true, 0);
 }
 
 void Group::HandlePartialChange(uint32 Type, Player * pPlayer)
@@ -588,6 +709,28 @@ void Group::HandlePartialChange(uint32 Type, Player * pPlayer)
 	}
 
 	if(Flags)
-		UpdateOutOfRangePlayer(pPlayer, Flags);
+		UpdateOutOfRangePlayer(pPlayer, Flags, true, 0);
+}
+
+void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket & recv_data)
+{
+	if(!_player->IsInWorld())
+		return;
+
+	uint64 guid;
+	recv_data >> guid;
+
+	Player * plr = _player->GetMapMgr()->GetPlayer(guid);
+
+	if(!_player->GetGroup() || !plr)
+		return;
+
+	WorldPacket data(500);
+	if(!_player->GetGroup()->HasMember(plr))
+		return;			// invalid player
+
+	_player->GetGroup()->UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE | 0x7FFC0000, false, &data);
+	data.SetOpcode(CMSG_PET_UNLEARN);
+	SendPacket(&data);
 }
 

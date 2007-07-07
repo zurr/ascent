@@ -696,6 +696,12 @@ bool Object::SetPosition( float newX, float newY, float newZ, float newOrientati
 	if (IsInWorld() && updateMap)
 	{
 		m_mapMgr->ChangeObjectLocation(this);
+
+		if(m_objectTypeId == TYPEID_PLAYER && ((Player*)this)->GetGroup() &&
+			((Player*)this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)			// distance of 5.0
+		{
+            ((Player*)this)->GetGroup()->HandlePartialChange(PARTY_UPDATE_FLAG_POSITION, ((Player*)this));
+		}	
 	}
 
 	return result;

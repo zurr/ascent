@@ -153,7 +153,7 @@ public:
 	inline uint8 GetGroupType() { return m_GroupType; }
 	inline uint32 GetID() { return m_Id; }
 
-	void UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags);
+	void UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribute, WorldPacket * Packet);
 	void UpdateAllOutOfRangePlayersFor(Player * pPlayer);
 	void HandleUpdateFieldChange(uint32 Index, Player * pPlayer);
 	void HandlePartialChange(uint32 Type, Player * pPlayer);

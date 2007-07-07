@@ -616,6 +616,7 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_REQUEST_RAID_INFO].handler						 = &WorldSession::HandleRequestRaidInfoOpcode;
 	WorldPacketHandlers[CMSG_RAID_READYCHECK].handler						   = &WorldSession::HandleReadyCheckOpcode;
 	WorldPacketHandlers[MSG_GROUP_SET_PLAYER_ICON].handler					  = &WorldSession::HandleSetPlayerIconOpcode;
+	WorldPacketHandlers[CMSG_REQUEST_PARTY_MEMBER_STATS].handler				= &WorldSession::HandlePartyMemberStatsOpcode;
 
 	// LFG System
 	WorldPacketHandlers[CMSG_SET_LOOKING_FOR_GROUP_COMMENT].handler			 = &WorldSession::HandleSetLookingForGroupComment;

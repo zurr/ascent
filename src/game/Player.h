@@ -1180,6 +1180,8 @@ public:
 		SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH) );
 	}
 
+	LocationVector m_last_group_position;
+
 protected:
 	uint32 iActivePet;
 	void _SetCreateBits(UpdateMask *updateMask, Player *target) const;
