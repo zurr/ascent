@@ -79,6 +79,7 @@ struct CreatureProto
 	float BoundingRadius;
 	char * aura_string;
 	uint32 boss;
+	uint32 money;
 
 	/* AI Stuff */
 	bool m_canRangedAttack;

@@ -221,11 +221,24 @@ void Creature::CreateWayPoint (uint32 WayPointID, uint32 mapid, float x, float y
 void Creature::generateLoot()
 {
 	lootmgr.FillCreatureLoot(&loot,GetEntry());
-	//For now let fill according to entry
-	CreatureInfo *info=GetCreatureName();
-	if (info && info->Type != BEAST)
-		loot.gold = (uint32)((info->Rank+1)*getLevel()*(rand()%5 + 1)*sWorld.getRate(RATE_MONEY)); //generate copper
+	
+	loot.gold = proto ? proto->money : 0;
 
+	//For now let fill according to entry
+	if(!loot.gold)
+	{
+		CreatureInfo *info=GetCreatureName();
+		if (info && info->Type != BEAST)
+		{
+			if(m_uint32Values[UNIT_FIELD_MAXHEALTH] <= 1667)
+				loot.gold = (uint32)((info->Rank+1)*getLevel()*(rand()%5 + 1)); //generate copper
+			else
+				loot.gold = (uint32)((info->Rank+1)*getLevel()*(rand()%5 + 1)*(this->GetUInt32Value(UNIT_FIELD_MAXHEALTH)*0.0006)); //generate copper
+		}
+	}
+	
+	if(loot.gold)
+		loot.gold *= sWorld.getRate(RATE_MONEY);
 }
 
 void Creature::SaveToDB()
