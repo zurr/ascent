@@ -275,11 +275,10 @@ void IPBanner::Remove(set<IPBan*>::iterator ban)
 Realm * InformationCore::AddRealm(uint32 realm_id, Realm * rlm)
 {
 	realmLock.Acquire();
-	m_realms.insert( make_pair( realm_id, *rlm ) );
-	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
-	Realm * ret = &itr->second;
+	m_realms.insert( make_pair( realm_id, rlm ) );
+	map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
 	realmLock.Release();
-	return ret;
+	return rlm;
 }
 
 Realm * InformationCore::GetRealm(uint32 realm_id)
@@ -287,10 +286,10 @@ Realm * InformationCore::GetRealm(uint32 realm_id)
 	Realm * ret = 0;
 
 	realmLock.Acquire();
-	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
+	map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
 	if(itr != m_realms.end())
 	{
-		ret = &itr->second;
+		ret = itr->second;
 	}
 	realmLock.Release();
 	return ret;
@@ -299,10 +298,11 @@ Realm * InformationCore::GetRealm(uint32 realm_id)
 void InformationCore::RemoveRealm(uint32 realm_id)
 {
 	realmLock.Acquire();
-	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
+	map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
 	if(itr != m_realms.end())
 	{
-		sLog.outString("Removing realm `%s` (%u) due to socket close.", itr->second.Name.c_str(), realm_id);
+		sLog.outString("Removing realm `%s` (%u) due to socket close.", itr->second->Name.c_str(), realm_id);
+		delete itr->second;
 		m_realms.erase(itr);
 	}
 	realmLock.Release();
@@ -324,23 +324,23 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	data << uint16(m_realms.size());
 	
 	// loop realms :/
-	map<uint32, Realm>::iterator itr = m_realms.begin();
+	map<uint32, Realm*>::iterator itr = m_realms.begin();
 	map<uint32, uint8>::iterator it;
 	for(; itr != m_realms.end(); ++itr)
 	{
-		data << uint8(itr->second.Colour);
+		data << uint8(itr->second->Colour);
 		data << uint8(0);				   // Locked Flag
-		data << uint8(itr->second.Icon);
+		data << uint8(itr->second->Icon);
 
 		// This part is the same for all.
-		data << itr->second.Name;
-		data << itr->second.Address;
-		data << itr->second.Population;
+		data << itr->second->Name;
+		data << itr->second->Address;
+		data << itr->second->Population;
 
 		/* Get our character count */
-		it = itr->second.CharacterMap.find(Socket->GetAccountID());
-		data << uint8( (it == itr->second.CharacterMap.end()) ? 0 : it->second );
-		data << uint8(itr->second.TimeZone);   // time zone
+		it = itr->second->CharacterMap.find(Socket->GetAccountID());
+		data << uint8( (it == itr->second->CharacterMap.end()) ? 0 : it->second );
+		data << uint8(itr->second->TimeZone);   // time zone
 		data << uint8(0);
 	}
 	realmLock.Release();

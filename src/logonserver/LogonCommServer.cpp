@@ -134,22 +134,22 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 {
-	Realm realm;
+	Realm * realm = new Realm;
 
-	recvData >> realm.Name >> realm.Address;
-	recvData >> realm.Colour >> realm.Icon >> realm.TimeZone >> realm.Population;
+	recvData >> realm->Name >> realm->Address;
+	recvData >> realm->Colour >> realm->Icon >> realm->TimeZone >> realm->Population;
 
 	uint32 my_id = sInfoCore.GenerateRealmID();
-	sLog.outString("Registering realm `%s` under ID %u.", realm.Name.c_str(), my_id);
+	sLog.outString("Registering realm `%s` under ID %u.", realm->Name.c_str(), my_id);
 
 	// Add to the main realm list
-	sInfoCore.AddRealm(my_id, &realm);
+	sInfoCore.AddRealm(my_id, realm);
 
 	// Send back response packet.
 	WorldPacket data(RSMSG_REALM_REGISTERED, 4);
 	data << uint32(0);	  // Error
 	data << my_id;		  // Realm ID
-	data << realm.Name;
+	data << realm->Name;
 	SendPacket(&data);
 	server_ids.insert(my_id);
 
@@ -269,6 +269,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 {
+	return;
 	/* this packet is gzipped, whee! :D */
 	uint32 real_size;
 	recvData >> real_size;
@@ -311,6 +312,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
 {
+	return;
 	uint32 realm_id;
 	uint32 account_id;
 	uint8 chars_to_add;

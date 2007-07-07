@@ -123,7 +123,6 @@ typedef struct
 	uint32 TimeZone;
 	float Population;
 	map<uint32, uint8> CharacterMap;
-	Mutex RealmLock;
 }Realm;
 
 class AuthSocket;
@@ -133,7 +132,7 @@ class InformationCore : public Singleton<InformationCore>
 {
 	Mutex m_sessionKeyLock;
 	map<uint32, BigNumber*>	 m_sessionkeys;
-	map<uint32, Realm>		  m_realms;
+	map<uint32, Realm*>		  m_realms;
 	set<LogonCommServerSocket*> m_serverSockets;
 	Mutex serverSocketLock;
 	Mutex realmLock;
