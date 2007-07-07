@@ -274,26 +274,38 @@ void IPBanner::Remove(set<IPBan*>::iterator ban)
 
 Realm * InformationCore::AddRealm(uint32 realm_id, Realm * rlm)
 {
+	realmLock.Acquire();
 	m_realms.insert( make_pair( realm_id, *rlm ) );
 	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
-	return &itr->second;
+	Realm * ret = &itr->second;
+	realmLock.Release();
+	return ret;
 }
 
 Realm * InformationCore::GetRealm(uint32 realm_id)
 {
+	Realm * ret = 0;
+
+	realmLock.Acquire();
 	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
 	if(itr != m_realms.end())
-		return &itr->second;
-	return 0;
+	{
+		ret = &itr->second;
+	}
+	realmLock.Release();
+	return ret;
 }
 
 void InformationCore::RemoveRealm(uint32 realm_id)
 {
+	realmLock.Acquire();
 	map<uint32, Realm>::iterator itr = m_realms.find(realm_id);
-	if(itr == m_realms.end()) return;
-
-	sLog.outString("Removing realm `%s` (%u) due to socket close.", itr->second.Name.c_str(), realm_id);
-	m_realms.erase(itr);
+	if(itr != m_realms.end())
+	{
+		sLog.outString("Removing realm `%s` (%u) due to socket close.", itr->second.Name.c_str(), realm_id);
+		m_realms.erase(itr);
+	}
+	realmLock.Release();
 }
 
 void InformationCore::SendRealms(AuthSocket * Socket)
@@ -345,26 +357,35 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 
 BigNumber * InformationCore::GetSessionKey(uint32 account_id)
 {
+	m_sessionKeyLock.Acquire();
+	BigNumber * bn = 0;
 	map<uint32, BigNumber*>::iterator itr = m_sessionkeys.find(account_id);
-	if(itr == m_sessionkeys.end())
-		return 0;
-	else
-		return itr->second;
+	if(itr != m_sessionkeys.end())
+	{
+		bn = itr->second;
+	}
+
+	m_sessionKeyLock.Release();
+	return bn;
 }
 
 void InformationCore::DeleteSessionKey(uint32 account_id)
 {
+	m_sessionKeyLock.Acquire();
 	map<uint32, BigNumber*>::iterator itr = m_sessionkeys.find(account_id);
-	if(itr == m_sessionkeys.end())
-		return;
-	
-	delete itr->second;
-	m_sessionkeys.erase(itr);
+	if(itr != m_sessionkeys.end())
+	{
+		delete itr->second;
+		m_sessionkeys.erase(itr);
+	}
+	m_sessionKeyLock.Release();
 }
 
 void InformationCore::SetSessionKey(uint32 account_id, BigNumber * key)
 {
+	m_sessionKeyLock.Acquire();
 	m_sessionkeys[account_id] = key;
+	m_sessionKeyLock.Release();
 }
 
 void InformationCore::TimeoutSockets()
