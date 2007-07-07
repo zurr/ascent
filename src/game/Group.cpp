@@ -612,6 +612,7 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribu
 void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 {
 	WorldPacket data(150);
+	WorldPacket data2(150);
 
 	/* tell the other players about us */
 	UpdateOutOfRangePlayer(pPlayer, GROUP_UPDATE_TYPE_FULL_CREATE, true, &data2);
@@ -632,9 +633,6 @@ void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 			}
 		}
 	}
-	
-	if(update)
-		pPlayer->ProcessPendingUpdates();
 }
 
 void Group::HandleUpdateFieldChange(uint32 Index, Player * pPlayer)
