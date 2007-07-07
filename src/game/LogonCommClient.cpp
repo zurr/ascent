@@ -167,7 +167,7 @@ void LogonCommClientSocket::SendPacket(WorldPacket * data)
 	bool rv;
 
 	BurstBegin();
-	if((4 + data->size() + GetWriteBufferSize()) >= 32768)
+	if((4 + data->size() + GetWriteBufferSize()) >= 524288)
 	{
 		BurstEnd();
 		Disconnect();
@@ -260,6 +260,7 @@ void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
 
 void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 {
+	uint32 t= getMSTime();
 	uint32 realm_id;
 	uint32 account_id;
 	QueryResult * result;
@@ -295,6 +296,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 	ByteBuffer uncompressed(40000 * 5 + 8);
 	uint32 Count = 0;
 	uint32 Remaining = mapping_to_send.size();
+	itr = mapping_to_send.begin();
 	for(;;)
 	{
 		// Send no more than 40000 characters at once.
@@ -310,6 +312,8 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
             uncompressed << uint32(itr->first) << uint8(itr->second);
 			if(!--Remaining)
 				break;
+
+			++itr;
 		}
 
 		CompressAndSend(uncompressed);
@@ -318,6 +322,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 
 		uncompressed.clear();
 	}	
+	sLog.outString("Took %u msec to build character mapping list for realm %u", getMSTime() - t, realm_id);
 }
 
 void LogonCommClientSocket::CompressAndSend(ByteBuffer & uncompressed)
