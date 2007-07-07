@@ -293,7 +293,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
 	sInfoCore.getRealmLock().Acquire();
 
-	map<uint32, uint8>::iterator itr;
+	HM_NAMESPACE::hash_map<uint32, uint8>::iterator itr;
 	buf >> count;
 	printf("Got mapping packet for realm %u, total of %u entries.\n", realm_id, count);
 	for(uint32 i = 0; i < count; ++i)
@@ -323,7 +323,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
 	sInfoCore.getRealmLock().Acquire();
 	recvData >> account_id >> chars_to_add;
 
-	map<uint32, uint8>::iterator itr = realm->CharacterMap.find(account_id);
+	HM_NAMESPACE::hash_map<uint32, uint8>::iterator itr = realm->CharacterMap.find(account_id);
 	if(itr != realm->CharacterMap.end())
 		itr->second += chars_to_add;
 	else

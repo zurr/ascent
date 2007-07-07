@@ -325,7 +325,7 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	
 	// loop realms :/
 	map<uint32, Realm*>::iterator itr = m_realms.begin();
-	map<uint32, uint8>::iterator it;
+	HM_NAMESPACE::hash_map<uint32, uint8>::iterator it;
 	for(; itr != m_realms.end(); ++itr)
 	{
 		data << uint8(itr->second->Colour);

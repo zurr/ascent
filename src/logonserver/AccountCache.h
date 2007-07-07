@@ -122,7 +122,7 @@ typedef struct
 	uint32 Icon;
 	uint32 TimeZone;
 	float Population;
-	map<uint32, uint8> CharacterMap;
+	HM_NAMESPACE::hash_map<uint32, uint8> CharacterMap;
 }Realm;
 
 class AuthSocket;
