@@ -208,7 +208,12 @@ void FillOnlineTime(uint32 Time, char * Dest)
 
 void StatDumper::DumpStats()
 {
+    if (!Filename)
+        return;
     FILE * f = fopen(Filename, "w");
+    if (!f)
+        return;
+
     // Dump Header
     fprintf(f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     fprintf(f, "<?xml-stylesheet type=\"text/xsl\" href=\"server_stats.xsl\"?>\n");
