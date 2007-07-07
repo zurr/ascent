@@ -1181,6 +1181,7 @@ public:
 	}
 
 	LocationVector m_last_group_position;
+	int32 m_rap_mod_pct;
 
 protected:
 	uint32 iActivePet;

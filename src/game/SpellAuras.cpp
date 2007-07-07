@@ -205,7 +205,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraReduceEnemyMCritChance,//missing = 187 //used //Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?) //http://www.thottbot.com/?sp=30893
 		&Aura::SpellAuraReduceEnemyRCritChance,//missing = 188 //used //Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?) //http://www.thottbot.com/?sp=30893
 		&Aura::SpellAuraIncreaseRating,//missing = 189 //Apply Aura: Increases Rating
-		&Aura::SpellAuraNULL,//missing = 190 //used // Apply Aura: Increases Reputation Gained by % //http://www.thottbot.com/?sp=30754
+		&Aura::SpellAuraIncreaseRepGainPct,//SPELL_AURA_MOD_FACTION_REPUTATION_GAIN //used // Apply Aura: Increases Reputation Gained by % //http://www.thottbot.com/?sp=30754
 		&Aura::SpellAuraNULL,//missing = 191 //used // noname //http://www.thottbot.com/?sp=29894
 		&Aura::SpellAuraNULL,//192 Apply Aura: Melee Slow %
 		&Aura::SpellAuraIncreaseTimeBetweenAttacksPCT,//193 Apply Aura: Increase Time Between Attacks (Melee, Ranged and Spell) by %
@@ -227,7 +227,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//209
 		&Aura::SpellAuraNULL,//210
 		&Aura::SpellAuraIncreaseFlightSpeed,//211
-		&Aura::SpellAuraNULL,//212 Apply Aura: Increase Ranged Atk Power by % of Intellect
+		&Aura::SpellAuraIncreaseRangedAPStatPCT,//SPELL_AURA_MOD_RANGED_ATTACK_POWER_OF_INTELLECT //212 Apply Aura: Increase Ranged Atk Power by % of Intellect
 		&Aura::SpellAuraIncreaseRageFromDamageDealtPCT, //213 Apply Aura: Increase Rage from Damage Dealt by %
 		&Aura::SpellAuraNULL,//214
 		&Aura::SpellAuraNULL,//215
@@ -321,6 +321,10 @@ Aura::Aura(SpellEntry *proto, int32 duration,Object* caster, Unit *target)
 
 	m_casterGuid = caster->GetGUID();
 	m_target = target;
+	if(m_target->GetTypeId() == TYPEID_PLAYER)
+		p_target = ((Player*)m_target);
+	else
+		p_target = 0;
 
 	//SetCasterFaction(caster->_getFaction());
 
@@ -6195,5 +6199,37 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
 		m_target->SetFloatValue(OBJECT_FIELD_SCALE_X, 1);
 		m_target->RemoveAura(27792);
 		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
+	}
+}
+
+void Aura::SpellAuraIncreaseRepGainPct(bool apply)
+{
+	if(p_target)
+	{
+		SetPositive();
+		if(apply)
+			p_target->pctReputationMod += mod->m_amount;//re use
+		else
+			p_target->pctReputationMod -= mod->m_amount;//re use
+	}
+}
+
+void Aura::SpellAuraRAPAttackerBonus(bool apply)
+{
+	if(p_target)
+	{
+		if(apply)
+		{
+			if(mod->m_amount > 0)
+				SetPositive();
+			else
+				SetNegative();
+
+			p_target->m_rap_mod_pct += mod->m_amount;
+		}
+		else
+			p_target->m_rap_mod_pct -= mod->m_amount;
+
+		p_target->UpdateStats();
 	}
 }

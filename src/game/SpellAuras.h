@@ -515,6 +515,8 @@ public:
 	void SpellAuraSpellHealingStatPCT(bool apply);
 	void SpellAuraIncreaseMaxHealth(bool apply);
 	void SpellAuraSpiritOfRedemption(bool apply);
+	void SpellAuraIncreaseRepGainPct(bool apply);
+	void SpellAuraIncreaseRangedAPStatPCT(bool apply);
 
 	void SendModifierLog(int32 ** m,int32 v,uint32 mask,uint8 type,bool pct = false);
 	// Events
@@ -608,6 +610,7 @@ private:
 	}   
 	
 	Unit* m_target;
+	Player * p_target;
 	uint32 timeleft;
 	int32 m_duration; // in msecs
 	bool m_positive;

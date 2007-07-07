@@ -330,6 +330,7 @@ Player::Player ( uint32 high, uint32 low )
 	ok_to_remove = false;
 	trigger_on_stun = 0;
 	m_modphyscritdmgPCT = 0;
+	m_rap_mod_pct = 0;
 }
 
 
@@ -4306,6 +4307,9 @@ void Player::UpdateStats()
 		default://mage,priest,warlock
 		AP = str-10;
 	}
+
+	/* modifiers */
+	RAP += int32(float(float(m_rap_mod_pct) * float(float(m_uint32Values[UNIT_FIELD_STAT3]) / 100.0f)));
 
 	if(RAP <0) RAP=0;
 	if(AP < 0) AP=0;
