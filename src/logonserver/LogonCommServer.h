@@ -44,6 +44,9 @@ public:
 	void HandleAuthChallenge(WorldPacket & recvData);
 	void HandleMappingReply(WorldPacket & recvData);
 	void HandleUpdateMapping(WorldPacket & recvData);
+	void HandleRemoveSessionKey(WorldPacket & recvData);
+
+	void SendDisconnectRequestFor(uint32 AccountId);
 
 	uint32 last_ping;
 	bool removed;

@@ -38,7 +38,9 @@ public:
 	//////////////////////////
 
 	void HandleChallenge();
+	void HandleReconnectChallenge();
 	void HandleProof();
+	void HandleReconnectProof();
 	void HandleRealmlist();
 
 	///////////////////////////////////////////////////
@@ -71,7 +73,6 @@ protected:
 	// Session Key
 	/////////////////////////
 
-	BigNumber m_sessionkey;
 	time_t last_recv;
 };
 

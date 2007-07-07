@@ -13,6 +13,7 @@
  */
 
 #include "LogonStdAfx.h"
+#include <openssl/md5.h>
 
 enum _errors
 {
@@ -49,8 +50,8 @@ AuthSocket::~AuthSocket()
 
 void AuthSocket::OnDisconnect()
 {
-	if(m_authenticated && m_account)
-		sInfoCore.DeleteSessionKey(m_account->AccountId);
+	if(m_authenticated && m_account && !m_account->LoggedInRealm)
+		m_account->ClearSessionKey();
 
 	if(!removedFromSet)
 	{
@@ -185,6 +186,144 @@ void AuthSocket::HandleChallenge()
 	Send(response, c);
 }
 
+void AuthSocket::HandleReconnectChallenge()
+{
+	// No header
+	if(GetReadBufferSize() < 4)
+		return;	
+
+	// Check the rest of the packet is complete.
+	uint8 * ReceiveBuffer = GetReadBuffer(0);
+	uint16 full_size = *(uint16*)&ReceiveBuffer[2];
+	sLog.outDetail("[AuthChallenge] got header, body is 0x%02X bytes", full_size);
+
+	if(GetReadBufferSize() < full_size+4)
+		return;
+
+	// Copy the data into our cached challenge structure
+	if(full_size > sizeof(sAuthLogonChallenge_C))
+	{
+		Disconnect();
+		return;
+	}
+
+	sLog.outDebug("[AuthChallenge] got full packet.");
+
+	memcpy(&m_challenge, ReceiveBuffer, full_size + 4);
+	RemoveReadBufferBytes(full_size + 4, false);
+
+	// Check client build.
+	if(m_challenge.build > LogonServer::getSingleton().max_build ||
+		m_challenge.build < LogonServer::getSingleton().min_build)
+	{
+		SendChallengeError(CE_WRONG_BUILD_NUMBER);
+		return;
+	}
+
+	/** Burlex TODO: This fucks up bad on freebsd systems, I have got NO IDEA why.
+	*/
+#ifdef WIN32
+	// Check for a possible IP ban on this client.
+	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
+
+	switch(ipb)
+	{
+	case BAN_STATUS_PERMANANT_BAN:
+		SendChallengeError(CE_ACCOUNT_CLOSED);
+		return;
+
+	case BAN_STATUS_TIME_LEFT_ON_BAN:
+		SendChallengeError(CE_ACCOUNT_FREEZED);
+		return;
+	}
+#endif
+
+	// Null-terminate the account string
+	m_challenge.I[m_challenge.I_len] = 0;
+
+	// Look up the account information
+	string AccountName = (char*)&m_challenge.I;
+	sLog.outDebug("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
+
+	m_account = AccountMgr::getSingleton().GetAccount(AccountName);
+	if(m_account == 0)
+	{
+		sLog.outDebug("[AuthChallenge] Invalid account.");
+
+		// Non-existant account
+		SendChallengeError(CE_NO_ACCOUNT);
+		return;
+	}
+
+	sLog.outDebug("[AuthChallenge] Account banned state = %u", m_account->Banned);
+
+	/** Burlex TODO: This fucks up bad on freebsd systems, I have got NO IDEA why.
+	*/
+#ifndef WIN32
+	// Don't update when IP banned, but update anyway if it's an account ban
+	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", inet_ntoa(GetRemoteAddress()), m_account->AccountId);
+#endif
+
+	// Check that the account isn't banned.
+	if(m_account->Banned == 1)
+	{
+		SendChallengeError(CE_ACCOUNT_CLOSED);
+		return;
+	}
+	else if(m_account->Banned > 0)
+	{
+		SendChallengeError(CE_ACCOUNT_FREEZED);
+		return;
+	}
+
+	if(!m_account->SessionKey)
+	{
+		SendChallengeError(CE_SERVER_FULL);
+		return;
+	}
+
+	/** burlex: this is pure speculation, I really have no idea what this does :p
+	 * just guessed the md5 because it was 16 byte blocks.
+	 */
+
+	MD5_CTX ctx;
+	MD5_Init(&ctx);
+	MD5_Update(&ctx, m_account->SessionKey->AsByteArray(), 40);
+	uint8 buffer[20];
+	MD5_Final(buffer, &ctx);
+	ByteBuffer buf;
+	buf << uint16(2);
+	buf.append(buffer, 20);
+	buf << uint64(0);
+	buf << uint64(0);
+	Send(buf.contents(), 34);
+}
+
+void AuthSocket::HandleReconnectProof()
+{
+	/*
+	printf("Len: %u\n", this->GetReadBufferSize());
+	ByteBuffer buf(58);
+	buf.resize(58);
+	Read(58, const_cast<uint8*>(buf.contents()));
+	buf.hexlike();*/
+
+	if(!m_account->SessionKey)
+	{
+		uint8 buffer[4];
+		buffer[0] = 3;
+		buffer[1] = 0;
+		buffer[2] = 1;
+		buffer[3] = 0;
+		Send(buffer, 4);
+	}
+	else
+	{
+		uint32 x = 3;
+		Send((const uint8*)&x, 4);
+	}
+}
+
 void AuthSocket::HandleProof()
 {
 	if(!m_account || GetReadBufferSize() < sizeof(sAuthLogonProof_C))
@@ -232,7 +371,9 @@ void AuthSocket::HandleProof()
 	{
 		vK[i*2+1] = sha.GetDigest()[i];
 	}
-	m_sessionkey.SetBinary(vK, 40);
+
+	m_account->SetSessionKey(new BigNumber);
+	m_account->SessionKey->SetBinary(vK, 40);
 
 	uint8 hash[20];
 
@@ -258,7 +399,7 @@ void AuthSocket::HandleProof()
 	t4.SetBinary(sha.GetDigest(), 20);
 
 	sha.Initialize();
-	sha.UpdateBigNumbers(&t3, &t4, &s, &A, &B, &m_sessionkey, NULL);
+	sha.UpdateBigNumbers(&t3, &t4, &s, &A, &B, m_account->SessionKey, NULL);
 	sha.Finalize();
 
 	BigNumber M;
@@ -274,13 +415,9 @@ void AuthSocket::HandleProof()
 		return;
 	}
 
-	// Store sessionkey
-	BigNumber * bs = new BigNumber(m_sessionkey);
-	sInfoCore.SetSessionKey(m_account->AccountId, bs);
-
 	// let the client know
 	sha.Initialize();
-	sha.UpdateBigNumbers(&A, &M, &m_sessionkey, 0);
+	sha.UpdateBigNumbers(&A, &M, m_account->SessionKey, 0);
 	sha.Finalize();
 
 	SendProofError(0, sha.GetDigest());
@@ -326,6 +463,7 @@ void AuthSocket::OnRead()
 		return;
 
 	uint8 Command = GetReadBuffer(0)[0];
+	printf("Command: 0x%.2X\n", Command);
 
 	// Handle depending on command
 	switch(Command)
@@ -338,6 +476,16 @@ void AuthSocket::OnRead()
 	case 1:	 // AUTH_PROOF
 		last_recv = time(NULL);
 		HandleProof();
+		break;
+
+	case 2:	// AUTH_RECHALLENGE
+		last_recv = time(NULL);
+		HandleReconnectChallenge();
+		break;
+
+	case 3:	// AUTH_RECHALLENGE_PROOF
+		last_recv = time(NULL);
+		HandleReconnectProof();
 		break;
 
 	case 0x10:  // REALM_LIST

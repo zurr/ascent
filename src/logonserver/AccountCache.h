@@ -18,6 +18,7 @@
 #include "../shared/Common.h"
 #include "../shared/Database/DatabaseEnv.h"
 
+struct Realm;
 typedef struct
 {
 	uint32 AccountId;
@@ -27,6 +28,24 @@ typedef struct
 	uint32 AccountFlags;
 	uint32 Banned;
 	uint8 SrpHash[20];
+	Realm * LoggedInRealm;
+	BigNumber * SessionKey;
+
+	void SetSessionKey(BigNumber * s)
+	{
+		if(SessionKey)
+			delete SessionKey;
+
+		SessionKey = s;
+	}
+
+	void ClearSessionKey()
+	{
+		if(SessionKey)
+			delete SessionKey;
+		SessionKey = 0;
+	}
+
 } Account;
 
 typedef struct 
@@ -87,6 +106,7 @@ public:
 	bool LoadAccount(string Name);	
 	void ReloadAccounts(bool silent);
 	void ReloadAccountsCallback();
+	void RemoveReferencesTo(Realm * realm);
 
 	inline uint32 GetCount() { return AccountDatabase.size(); }
 
@@ -114,8 +134,9 @@ protected:
 	Mutex setBusy;
 };
 
-typedef struct
+struct Realm
 {
+	uint32 ID;
 	string Name;
 	string Address;
 	uint32 Colour;
@@ -123,15 +144,13 @@ typedef struct
 	uint32 TimeZone;
 	float Population;
 	HM_NAMESPACE::hash_map<uint32, uint8> CharacterMap;
-}Realm;
+};
 
 class AuthSocket;
 class LogonCommServerSocket;
 
 class InformationCore : public Singleton<InformationCore>
 {
-	Mutex m_sessionKeyLock;
-	map<uint32, BigNumber*>	 m_sessionkeys;
 	map<uint32, Realm*>		  m_realms;
 	set<LogonCommServerSocket*> m_serverSockets;
 	Mutex serverSocketLock;
@@ -152,11 +171,7 @@ public:
 
 	// Packets
 	void		  SendRealms(AuthSocket * Socket);
-	
-	// Sessionkey Management
-	BigNumber*	GetSessionKey(uint32 account_id);
-	void		  DeleteSessionKey(uint32 account_id);
-	void		  SetSessionKey(uint32 account_id, BigNumber * key);
+	LogonCommServerSocket * GetSocketForRealm(uint32 RealmId);
 
 	// Realm management
 	inline uint32 GenerateRealmID()

@@ -301,6 +301,7 @@ void InformationCore::RemoveRealm(uint32 realm_id)
 	map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
 	if(itr != m_realms.end())
 	{
+		sAccountMgr.RemoveReferencesTo(itr->second);
 		sLog.outString("Removing realm `%s` (%u) due to socket close.", itr->second->Name.c_str(), realm_id);
 		delete itr->second;
 		m_realms.erase(itr);
@@ -355,39 +356,6 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	Socket->Send((const uint8*)data.contents(), data.size());
 }
 
-BigNumber * InformationCore::GetSessionKey(uint32 account_id)
-{
-	m_sessionKeyLock.Acquire();
-	BigNumber * bn = 0;
-	map<uint32, BigNumber*>::iterator itr = m_sessionkeys.find(account_id);
-	if(itr != m_sessionkeys.end())
-	{
-		bn = itr->second;
-	}
-
-	m_sessionKeyLock.Release();
-	return bn;
-}
-
-void InformationCore::DeleteSessionKey(uint32 account_id)
-{
-	m_sessionKeyLock.Acquire();
-	map<uint32, BigNumber*>::iterator itr = m_sessionkeys.find(account_id);
-	if(itr != m_sessionkeys.end())
-	{
-		delete itr->second;
-		m_sessionkeys.erase(itr);
-	}
-	m_sessionKeyLock.Release();
-}
-
-void InformationCore::SetSessionKey(uint32 account_id, BigNumber * key)
-{
-	m_sessionKeyLock.Acquire();
-	m_sessionkeys[account_id] = key;
-	m_sessionKeyLock.Release();
-}
-
 void InformationCore::TimeoutSockets()
 {
 	if(!usepings)
@@ -421,4 +389,36 @@ void InformationCore::TimeoutSockets()
 	}
 
 	serverSocketLock.Release();
+}
+
+LogonCommServerSocket* InformationCore::GetSocketForRealm(uint32 RealmId)
+{
+	LogonCommServerSocket * ret = 0;
+	serverSocketLock.Acquire();
+	set<LogonCommServerSocket*>::iterator itr = m_serverSockets.begin();
+	for(; itr != m_serverSockets.end(); ++itr) {
+		if((*itr)->server_ids.find(RealmId) != (*itr)->server_ids.end())
+		{
+			ret = *itr;
+			break;
+		}
+	}
+	serverSocketLock.Release();
+    return ret;
+}
+
+void AccountMgr::RemoveReferencesTo(Realm * realm)
+{
+	setBusy.Acquire();
+#ifdef WIN32
+	HM_NAMESPACE::hash_map<string, Account>::iterator itr = AccountDatabase.begin();
+#else
+	map<string, Account>::iterator itr = AccountDatabase.begin();
+#endif
+	
+	for(; itr != AccountDatabase.end(); ++itr)
+		if(itr->second.LoggedInRealm == realm)
+			itr->second.LoggedInRealm = 0;
+
+	setBusy.Release();
 }

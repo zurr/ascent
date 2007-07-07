@@ -44,8 +44,16 @@ enum RealmListOpcodes
 	// Update Character->Account Mapping
 	RCMSG_UPDATE_CHARACTER_MAPPING_COUNT		= 13,
 
+	// My client logged out of the world
+	// server, so remove his sessionkey (no
+	// need to reauth)
+	RCMSG_REMOVE_SESSIONKEY						= 14,
+
+	// disconnect this client
+	RSMSG_DISCONNECT_USER						= 15,
+
 	// count
-	RMSG_COUNT									= 14,
+	RMSG_COUNT									= 16,
 };
 
 #endif
