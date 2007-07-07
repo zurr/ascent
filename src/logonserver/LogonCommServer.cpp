@@ -269,7 +269,6 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 {
-	return;
 	/* this packet is gzipped, whee! :D */
 	uint32 real_size;
 	recvData >> real_size;
@@ -312,7 +311,6 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
 {
-	return;
 	uint32 realm_id;
 	uint32 account_id;
 	uint8 chars_to_add;
