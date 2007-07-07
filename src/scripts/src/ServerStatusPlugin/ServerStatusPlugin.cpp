@@ -26,6 +26,7 @@ extern "C" SCRIPT_DECL uint32 _exp_get_version()
 bool m_bFirstTime = true;
 LONGLONG		m_lnOldValue = 0;
 LARGE_INTEGER	m_OldPerfTime100nSec;
+uint32 number_of_cpus;
 #endif
 
 #ifdef WIN32
@@ -54,6 +55,9 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 
 #ifdef WIN32
 memset(&m_OldPerfTime100nSec, 0, sizeof(m_OldPerfTime100nSec));
+SYSTEM_INFO si;
+GetSystemInfo(&si);
+number_of_cpus = si.dwNumberOfProcessors;
 #endif
     dumper.DumpStats();
 
@@ -137,7 +141,7 @@ float GetCPUUsageWin32()
     m_OldPerfTime100nSec = NewPerfTime100nSec;
 
     double a = (double)lnValueDelta / DeltaPerfTime100nSec;
-    a /= 2.0;
+    a /= double(number_of_cpus);
     return (a * 100);
 }
 
