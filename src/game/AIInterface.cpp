@@ -195,7 +195,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 					ScriptSystem->OnCreatureEvent(((Creature*)m_Unit), pUnit, CREATURE_EVENT_ON_LEAVE_COMBAT);
 				}
 
-				if(m_AIType == AITYPE_PET)
+				if(m_AIType == AITYPE_PET && m_Unit->GetGUIDHigh() == HIGHGUID_PET)
 				{
 					m_AIState = STATE_FOLLOWING;
 					UnitToFollow = m_PetOwner;
@@ -479,7 +479,7 @@ void AIInterface::Update(uint32 p_time)
 	{
 		if(m_AIType == AITYPE_PET )
 		{
-			if(!m_Unit->bInvincible)
+			if(!m_Unit->bInvincible && m_Unit->GetGUIDHigh() == HIGHGUID_PET) 
 			{
 				Pet * pPet = static_cast<Pet*>(m_Unit);
 	
@@ -677,7 +677,7 @@ void AIInterface::_UpdateTargets()
 				HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
 			}*/
 		}
-		else if(m_aiTargets.size() == 0 && m_AIType == AITYPE_PET && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)
+		else if(m_aiTargets.size() == 0 && m_AIType == AITYPE_PET && m_Unit->GetGUIDHigh() == HIGHGUID_PET && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)
 		{
 			 Unit* target = FindTarget();
 			 if(target)
