@@ -40,6 +40,12 @@ enum MaxGroupCount
 	MAX_GROUP_SIZE_RAID				 = 40,
 };
 
+enum QuickGroupUpdateFlags
+{
+	PARTY_UPDATE_FLAG_POSITION			= 1,
+	PARTY_UPDATE_FLAG_ZONEID			= 2,
+};
+
 class Group;
 class Player;
 
@@ -104,7 +110,6 @@ public:
 
 	// Transferring data to clients
 	void Update();
-	void UpdatePositions();
 
 	void SendPacketToAll(WorldPacket *packet);
 	void SendPacketToAllButOne(WorldPacket *packet, Player *pSkipTarget);
@@ -148,8 +153,10 @@ public:
 	inline uint8 GetGroupType() { return m_GroupType; }
 	inline uint32 GetID() { return m_Id; }
 
-	void UpdateOutOfRangePlayer(Player * pPlayer, WorldPacket & data, uint32 Flags);
+	void UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags);
 	void UpdateAllOutOfRangePlayersFor(Player * pPlayer);
+	void HandleUpdateFieldChange(uint32 Index, Player * pPlayer);
+	void HandlePartialChange(uint32 Type, Player * pPlayer);
 
 protected:
 	

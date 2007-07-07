@@ -173,7 +173,7 @@ public:
 	inline MapMgr* GetMapMgr() const { return m_mapMgr; }
 
 	inline void SetMapId(uint32 newMap) { m_mapId = newMap; }
-	inline void SetZoneId(uint32 newZone) { m_zoneId = newZone; }
+	void SetZoneId(uint32 newZone);
 
 	inline const uint32 GetMapId( ) const { return m_mapId; }
 	inline const uint32& GetZoneId( ) const { return m_zoneId; }

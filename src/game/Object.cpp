@@ -911,6 +911,14 @@ void Object::SetUInt32Value( const uint32 index, const uint32 value )
 			m_objectUpdated = true;
 		}
 	}
+
+	// Group update handling
+	if(m_objectTypeId == TYPEID_PLAYER)
+	{
+		Group * pGroup = ((Player*)this)->GetGroup();
+		if(pGroup)
+			pGroup->HandleUpdateFieldChange(index, ((Player*)this));
+	}
 }
 /*
 //must be in %
@@ -2198,3 +2206,9 @@ void Object::SetByte(uint32 index, uint32 index1,uint8 value)
 
 }
 
+void Object::SetZoneId(uint32 newZone)
+{
+	m_zoneId = newZone;
+	if(m_objectTypeId == TYPEID_PLAYER && ((Player*)this)->GetGroup())
+		((Player*)this)->GetGroup()->HandlePartialChange(PARTY_UPDATE_FLAG_ZONEID, ((Player*)this));
+}

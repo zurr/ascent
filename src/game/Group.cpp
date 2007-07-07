@@ -157,11 +157,9 @@ bool Group::AddMember(Player* pPlayer)
 			SetLeader(pPlayer);
 		}		
 
-		UpdatePositions();   // Send create object for any players that don't know who we are.
-		//EventMgr::getSingleton().ModifyEventTimeLeft(this, EVENT_GROUP_POSITION_UPDATE, 5000);
-
 		Update();	// Send group update
-		
+		UpdateAllOutOfRangePlayersFor(pPlayer);
+
 		return true;
 
 	}
@@ -400,84 +398,6 @@ Player* Group::GetnextRRlooter()
 	return firsthit;
 }
 
-void Group::UpdatePositions()
-{
-	uint8 i=0,j=0;
-
-	WorldPacket data;
-	Player *plr1 = NULL;
-	Player *plr2 = NULL;
-
-	GroupMembersSet::iterator itr1, itr2;
-
-	for(i = 0; i < m_SubGroupCount; i++)
-	{
-		for(itr1 = m_SubGroups[i]->GetGroupMembersBegin(); itr1 != m_SubGroups[i]->GetGroupMembersEnd(); ++itr1)
-		{
-			plr1 = (*itr1);
-			for(j = 0; j < m_SubGroupCount; j++)
-			{
-				for(itr2 = m_SubGroups[j]->GetGroupMembersBegin(); itr2 != m_SubGroups[j]->GetGroupMembersEnd(); ++itr2)
-				{
-					plr2 = (*itr2);
-					if(plr1 == plr2) continue;
-
-					if(plr1->m_CurrentTransporter && plr1->m_CurrentTransporter == plr2->m_CurrentTransporter && 
-						(plr1->GetMapMgr() == NULL || plr2->GetMapMgr() == NULL) ||
-						(plr1->GetMapMgr() != plr2->GetMapMgr()) || 
-						!plr2->IsInWorld())
-						continue;
-
-					bool bInRange = plr1->IsInRangeSet(plr2);
-					bool bKnowsHim = plr1->KnowsGroupMember(plr2); 
-					if(bInRange && !bKnowsHim)
-					{
-						bKnowsHim = true;
-						plr1->m_KnownGroupMembers.insert(plr2);
-						continue;   // we can skip the rest, as mapmgr handles updates here.
-					}
-
-					if(!bInRange && bKnowsHim)   // player 1 cannot see player 2
-					{
-						// this _should_ work.. but VERY hacky
-
-						data.Initialize(SMSG_MONSTER_MOVE);
-						data << plr2->GetNewGUID();
-						data << plr2->GetPositionX();
-						data << plr2->GetPositionY();
-						data << plr2->GetPositionZ();
-						data << getMSTime();
-						data << uint8(0x00);
-						data << uint32(0x00000100);
-
-						data << uint32(100);
-						data << uint32(1);
-						data << plr2->GetPositionX() << plr2->GetPositionY() << plr2->GetPositionZ();
-
-						plr1->GetSession()->SendPacket(&data);
-
-					}
-					else if(!bInRange && !bKnowsHim)
-					{
-						// Send A9 Create
-						//udata.Clear();
-						/*plr2->BuildCreateUpdateBlockForPlayer(&udata, plr1);
-						data.clear();
-						udata.BuildPacket(&data);
-						plr1->GetSession()->SendPacket(&data);*/
-						ByteBuffer buf(2500);
-						uint32 count;
-						count = plr2->BuildCreateUpdateBlockForPlayer(&buf, plr1);
-						plr1->PushUpdateData(&buf, count);
-
-						plr1->m_KnownGroupMembers.insert(plr2);
-					}
-				}
-			}
-		}
-	}
-}
-
 void Group::SendPacketToAllButOne(WorldPacket *packet, Player *pSkipTarget)
 {
 	GroupMembersSet::iterator itr;
@@ -567,9 +487,10 @@ void Group::LoadFromDB(Field *fields)
 	}
 }
 
-void Group::UpdateOutOfRangePlayer(Player * pPlayer, WorldPacket & data, uint32 Flags)
+void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags)
 {
-	data.Initialize(SMSG_PARTY_MEMBER_STATS);
+	WorldPacket data(SMSG_PARTY_MEMBER_STATS, 500);
+	data << pPlayer->GetNewGUID();
 	data << Flags;
 
 	if(Flags & GROUP_UPDATE_FLAG_ONLINE)
@@ -598,22 +519,75 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, WorldPacket & data, uint32 
 
 	if(Flags & GROUP_UPDATE_FLAG_POSITION)
 		data << uint16(pPlayer->GetPositionX()) << uint16(pPlayer->GetPositionY());			// wtf packed floats? O.o
-}
 
-void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
-{
-	WorldPacket data(500);
 	Player * plr;
 	for(uint32 i = 0; i < m_SubGroupCount; ++i)
 	{
 		for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
 		{
-            plr = *itr;
-			if(pPlayer->IsVisible(plr))
-				continue;
-
-            UpdateOutOfRangePlayer(plr, data, GROUP_UPDATE_TYPE_FULL_CREATE);			
-			pPlayer->GetSession()->SendPacket(&data);
+			plr = *itr;
+			if(!plr->IsVisible(pPlayer))
+				plr->GetSession()->SendPacket(&data);
 		}
 	}
 }
+
+void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
+{
+	UpdateOutOfRangePlayer(pPlayer, GROUP_UPDATE_TYPE_FULL_CREATE);
+}
+
+void Group::HandleUpdateFieldChange(uint32 Index, Player * pPlayer)
+{
+	uint32 Flags = 0;
+	switch(Index)
+	{
+	case UNIT_FIELD_HEALTH:
+		Flags = GROUP_UPDATE_FLAG_HEALTH;
+		break;
+		
+	case UNIT_FIELD_MAXHEALTH:
+		Flags = GROUP_UPDATE_FLAG_MAXHEALTH;
+		break;
+
+	case UNIT_FIELD_POWER1:
+	case UNIT_FIELD_POWER2:
+	case UNIT_FIELD_POWER3:
+	case UNIT_FIELD_POWER4:
+		Flags = GROUP_UPDATE_FLAG_POWER;
+		break;
+
+	case UNIT_FIELD_MAXPOWER1:
+	case UNIT_FIELD_MAXPOWER2:
+	case UNIT_FIELD_MAXPOWER3:
+	case UNIT_FIELD_MAXPOWER4:
+		Flags = GROUP_UPDATE_FLAG_MAXPOWER;
+		break;
+
+	case UNIT_FIELD_LEVEL:
+		Flags = GROUP_UPDATE_FLAG_LEVEL;
+		break;
+	}
+
+	if(Flags)
+		UpdateOutOfRangePlayer(pPlayer, Flags);
+}
+
+void Group::HandlePartialChange(uint32 Type, Player * pPlayer)
+{
+	uint32 Flags = 0;
+	switch(Type)
+	{
+	case PARTY_UPDATE_FLAG_POSITION:
+		Flags = GROUP_UPDATE_FLAG_POSITION;
+		break;
+
+	case PARTY_UPDATE_FLAG_ZONEID:
+		Flags = GROUP_UPDATE_FLAG_ZONEID;
+		break;
+	}
+
+	if(Flags)
+		UpdateOutOfRangePlayer(pPlayer, Flags);
+}
+
