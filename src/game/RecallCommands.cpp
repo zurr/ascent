@@ -65,15 +65,15 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession *m_sessi
 	Player* plr = m_session->GetPlayer();
 	std::stringstream ss;
 	
-	const char * rc_locname = args;
+	string rc_locname = string(args);
 
 	ss << "INSERT INTO recall (locname, mapid, positionX, positionY, positionZ) VALUES ('"
-	<< rc_locname << "' , "
+	<< sDatabase.EscapeString(rc_locname).c_str() << "' , "
 	<< plr->GetMapId() << ", "
 	<< plr->GetPositionX() << ", " 
 	<< plr->GetPositionY() << ", "
 	<< plr->GetPositionZ() << ");";
-	sDatabase.ExecuteEscaped( ss.str( ).c_str( ) );
+	sDatabase.Execute( ss.str( ).c_str( ) );
 
 	char buf[256]; 
 	snprintf((char*)buf, 256, "Added location to DB with MapID: %d, X: %f, Y: %f, Z: %f",
@@ -101,7 +101,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession *m_sessi
 		{
 			std::stringstream ss;
 			ss << "DELETE FROM recall WHERE id = "<< (int)id <<";";
-			sDatabase.ExecuteEscaped( ss.str( ).c_str( ) );
+			sDatabase.Execute( ss.str( ).c_str( ) );
 			GreenSystemMessage(m_session, "Recall location removed.");
 			sGMLog.writefromsession(m_session, "used recall delete, removed \"%s\" location from database.", args);
 			delete result;

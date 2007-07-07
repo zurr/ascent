@@ -718,7 +718,7 @@ bool ChatHandler::HandleRenameCommand(const char * args, WorldSession * m_sessio
 	}
 	else
 	{
-		sDatabase.WaitExecuteEscaped("UPDATE characters SET name = '%s' WHERE guid = %u", new_name.c_str(), (uint32)pi->guid);
+		sDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", sDatabase.EscapeString(new_name).c_str(), (uint32)pi->guid);
 	}
 
 	GreenSystemMessage(m_session, "Changed name of '%s' to '%s'.", name1, name2);

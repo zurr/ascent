@@ -46,10 +46,7 @@ public:
 	virtual QueryResult* Query(const char* QueryString, ...) = 0;
 	virtual bool WaitExecute(const char* QueryString, ...) = 0;
 	virtual bool Execute(const char* QueryString, ...) = 0;
-	virtual char * EscapeStringNew(const char * QueryString, ...) = 0;
-	virtual string EscapeString(const char * QueryString, ...) = 0;
-	virtual bool ExecuteEscaped(const char * QueryString, ...) = 0;
-	virtual bool WaitExecuteEscaped(const char * Querystring, ...) = 0;
+	virtual string EscapeString(string Escape) = 0;
 
 	virtual void CheckConnections() = 0;
 

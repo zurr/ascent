@@ -423,7 +423,7 @@ void WorldSession::SetSecurity(std::string securitystring)
 	LoadSecurity(securitystring);
 
 	// update db
-	sDatabase.ExecuteEscaped("UPDATE accounts SET gm=\"%s\" WHERE acct=%u", permissions, _accountId);
+	sDatabase.Execute("UPDATE accounts SET gm=\"%s\" WHERE acct=%u", sDatabase.EscapeString(string(permissions)).c_str(), _accountId);
 }
 
 bool WorldSession::CanUseCommand(char cmdstr)

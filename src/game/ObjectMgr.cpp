@@ -626,7 +626,7 @@ void ObjectMgr::SaveGMTicket(uint64 guid)
 
 	ss2 << "INSERT INTO gm_tickets (guid, name, level, type, posX, posY, posZ, message, timestamp) VALUES(";
 	ss2 << ticket->guid << ", '";
-	ss2 << ticket->name << "', ";
+	ss2 << sDatabase.EscapeString(ticket->name) << "', ";
 	ss2 << ticket->level << ", ";
 	ss2 << ticket->type << ", ";
 	ss2 << ticket->posX << ", ";
@@ -634,7 +634,7 @@ void ObjectMgr::SaveGMTicket(uint64 guid)
 	ss2 << ticket->posZ << ", '";
 	ss2 << ticket->message << "', ";
 	ss2 << ticket->timestamp << ");";
-	sDatabase.ExecuteEscaped(ss2.str( ).c_str( ));
+	sDatabase.Execute(ss2.str( ).c_str( ));
 }
 
 void ObjectMgr::SetHighestGuids()

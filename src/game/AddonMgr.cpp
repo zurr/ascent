@@ -240,12 +240,12 @@ void AddonMgr::SaveToDB()
 			sLog.outDetail("Saving new addon %s", itr->second->name.c_str());
 			std::stringstream ss;
 			ss << "INSERT INTO clientaddons (name, crc, banned, showinlist) VALUES(\""
-				<< itr->second->name << "\",\""
+				<< sDatabase.EscapeString(itr->second->name) << "\",\""
 				<< itr->second->crc << "\",\""
 				<< itr->second->banned << "\",\""
 				<< itr->second->showinlist << "\");";
 
-			sDatabase.ExecuteEscaped(ss.str().c_str());
+			sDatabase.Execute(ss.str().c_str());
 		}
 	}
 }

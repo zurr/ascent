@@ -214,8 +214,8 @@ void MailSystem::SaveMessageToSQL(MailMessage * message)
 		<< message->message_type << ","
 		<< message->player_guid << ","
 		<< message->sender_guid << ",\""
-		<< message->subject << "\",\""
-		<< message->body << "\","
+		<< sDatabase.EscapeString(message->subject) << "\",\""
+		<< sDatabase.EscapeString(message->body) << "\","
 		<< message->money << ",'"
 		<< message->attached_item_guid << "',"
 		<< message->cod << ","
@@ -225,7 +225,7 @@ void MailSystem::SaveMessageToSQL(MailMessage * message)
 		<< message->copy_made << ","
 		<< message->read_flag << ","
 		<< message->deleted_flag << ")";
-	sDatabase.ExecuteEscaped(ss.str().c_str());
+	sDatabase.Execute(ss.str().c_str());
 }
 
 void WorldSession::HandleSendMail(WorldPacket & recv_data )

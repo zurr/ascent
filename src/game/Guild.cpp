@@ -105,7 +105,7 @@ bool Guild::DeleteGuildMember(string name)
 		if (!strcmp((*i)->name.c_str(), name.c_str()))
 		{
 			m_guildMembers.erase(i);
-			sDatabase.ExecuteEscaped("UPDATE characters SET guildid=0,guildRank=0 WHERE name='%s' AND guildid=%u",name.c_str(), m_guildId);
+			sDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0 WHERE name='%s' AND guildid=%u",sDatabase.EscapeString(name).c_str(), m_guildId);
 			return true;
 		}
 	}
@@ -425,17 +425,17 @@ void Guild::SaveToDb()
 
 	query << "INSERT INTO guilds VALUES (";
 	query << m_guildId << ",'";
-	query << m_guildName << "', ";
+	query << sDatabase.EscapeString(m_guildName) << "', ";
 	query << m_leaderGuid << ", ";
 	query << m_emblemStyle << ", ";
 	query << m_emblemColor << ", ";
 	query << m_borderStyle << ", ";
 	query << m_borderColor << ", ";
 	query << m_backgroundColor << ", ";
-	query << "'" << m_guildInfo << "', ";
-	query << "'" << m_motd << "', NOW())";
+	query << "'" << sDatabase.EscapeString(m_guildInfo) << "', ";
+	query << "'" << sDatabase.EscapeString(m_motd) << "', NOW())";
 
-	sDatabase.ExecuteEscaped( query.str().c_str() );
+	sDatabase.Execute( query.str().c_str() );
 }
 
 void Guild::UpdateGuildToDb()
@@ -448,10 +448,10 @@ void Guild::UpdateGuildToDb()
 	query << "borderStyle = " << m_borderStyle << ", ";
 	query << "borderColor = " << m_borderColor << ", ";
 	query << "backgroundColor = " << m_backgroundColor << ", ";
-	query << "guildInfo = '" << m_guildInfo << "', ";
-	query << "motd = '" << m_motd << "' ";
+	query << "guildInfo = '" << sDatabase.EscapeString(m_guildInfo) << "', ";
+	query << "motd = '" << sDatabase.EscapeString(m_motd) << "' ";
 	query << "WHERE guildId = " << m_guildId;
-	sDatabase.ExecuteEscaped( query.str( ).c_str( ) );
+	sDatabase.Execute( query.str( ).c_str( ) );
 }
 
 void Guild::SaveRanksToDb()
@@ -468,10 +468,10 @@ void Guild::SaveRanksToDb()
 		query << "INSERT INTO guild_ranks VALUES (";
 		query << m_guildId << ", ";
 		query << (*itr)->rankid << ", ";
-		query << "'" << (*itr)->name << "', ";
+		query << "'" << sDatabase.EscapeString((*itr)->name) << "', ";
 		query << (*itr)->rights;
 		query << ")";
-		sDatabase.ExecuteEscaped( query.str().c_str() );
+		sDatabase.Execute( query.str().c_str() );
 	}
 }
 
@@ -499,9 +499,9 @@ break;
 
 void Guild::UpdateGuildMembersDB(PlayerInfo *Member)
 {
-  sDatabase.ExecuteEscaped(
+  sDatabase.Execute(
 		"UPDATE characters SET publicNote='%s',officerNote='%s',guildid=%u,guildRank=%u WHERE guid=%u",
-		Member->publicNote.c_str(),Member->officerNote.c_str(),m_guildId,Member->Rank, (uint32)Member->guid );
+		sDatabase.EscapeString(Member->publicNote).c_str(),sDatabase.EscapeString(Member->officerNote).c_str(),m_guildId,Member->Rank, (uint32)Member->guid );
 }
 
 void Guild::SaveAllGuildMembersToDb()
@@ -509,9 +509,9 @@ void Guild::SaveAllGuildMembersToDb()
 	std::list<PlayerInfo*>::iterator i;
 
 	for (i = m_guildMembers.begin(); i != m_guildMembers.end();++i) 
-		sDatabase.ExecuteEscaped(
+		sDatabase.Execute(
 		"UPDATE characters SET publicNote='%s',officerNote='%s',guildid=%u,guildRank=%u WHERE guid=%u",
-		(*i)->publicNote.c_str(),(*i)->officerNote.c_str(),m_guildId,(*i)->Rank,(uint32)( (*i)->guid) );
+		sDatabase.EscapeString((*i)->publicNote).c_str(),sDatabase.EscapeString((*i)->officerNote).c_str(),m_guildId,(*i)->Rank,(uint32)( (*i)->guid) );
 	  
 }
 

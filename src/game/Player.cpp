@@ -1493,7 +1493,7 @@ void Player::_SavePet()
 		ss << "INSERT INTO playerpets VALUES('"
 			<< GetGUIDLow() << "','"
 			<< itr->second->number << "','"
-			<< itr->second->name << "','"
+			<< sDatabase.EscapeString(itr->second->name) << "','"
 			<< itr->second->entry << "','"
 			<< itr->second->fields << "','"
 			<< itr->second->xp << "','"
@@ -1505,7 +1505,7 @@ void Player::_SavePet()
 			<< itr->second->summon << "','"
 			<< itr->second->autocastspell << "')";
 			
-		sDatabase.ExecuteEscaped(ss.str().c_str());
+		sDatabase.Execute(ss.str().c_str());
 	}
 }
 

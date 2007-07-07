@@ -278,7 +278,7 @@ void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
 	char query[1024];
 	vsnprintf(query, 1024, str, ap);
 	va_end(ap);
-	string q = sDatabase.EscapeString(query);
+	string q = string(query);
 
 	WorldPacket data(RCMSG_SQL_EXECUTE, q.size()+1);
 	data << q;

@@ -52,10 +52,7 @@ public:
 	inline string GetDatabaseName() { return mDatabaseName; }
 	inline uint32 GetQueueSize() { return queries_queue.get_size(); }
 
-	char * EscapeStringNew(const char * QueryString, ...);
-	string EscapeString(const char * QueryString, ...);
-	bool ExecuteEscaped(const char * QueryString, ...);
-	bool WaitExecuteEscaped(const char * Querystring, ...);
+	string EscapeString(string Escape);
 
 protected:
 
