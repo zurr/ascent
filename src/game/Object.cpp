@@ -1934,7 +1934,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 
 	SpellEntry *spellInfo = sSpellStore.LookupEntry( spellID );
 	if(!spellInfo)
-			return;
+        return;
 	SpellCastTime *sd = sCastTime.LookupEntry(spellInfo->CastingTimeIndex);
 
 	// affect the plus damage by duration

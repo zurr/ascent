@@ -3373,8 +3373,11 @@ void Spell::Heal(int32 amount)
 
 		// affect the plus damage by duration
 		float castaff = GetCastTime(sd);
-		if(castaff > 3500) castaff = 3500;
-		else if(castaff < 1500) castaff = 1500;
+		if(castaff > 3500) 
+            castaff = 3500;
+		else if(castaff < 1500) 
+            castaff = 1500;
+
 		float healdoneaffectperc = castaff / 3500;
 		
 		amount += float2int32(u_caster->HealDoneMod[m_spellInfo->School] * healdoneaffectperc);

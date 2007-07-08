@@ -5764,7 +5764,7 @@ void Player::RegenerateHealth(bool inCombat)
 	{
 		if(amt > 0)
 		{
-			if(amt <= 1.0)//this fixes regen like 0.98
+			if(amt <= 1.0f)//this fixes regen like 0.98
 				cur++;
 			else
 				cur += float2int32(amt);
