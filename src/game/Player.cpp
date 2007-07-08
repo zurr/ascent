@@ -332,6 +332,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_modphyscritdmgPCT = 0;
 	m_rap_mod_pct = 0;
 	m_modblockvalue = 0;
+	m_summoner = m_summonInstanceId = m_summonMapId = 0;
 }
 
 
@@ -4690,9 +4691,12 @@ bool Player::CanSee(Object* obj)
 						uint64 owner = obj->GetUInt64Value(OBJECT_FIELD_CREATED_BY);
 						if(this->GetGUID() == owner)
 							return true;
-						
-						if(this->GetSubGroup())
-							return this->GetSubGroup()->HasMember(owner);		
+
+						SubGroup * pGroup = GetGroup() ?
+							GetGroup()->GetSubGroup(GetSubGroup()) : 0;
+
+						if(pGroup)
+							return pGroup->HasMember(owner);
 						else
 						{
 							float r = GetInvisibiltyDetection(static_cast<GameObject*>(obj)->invisibilityFlag)/sWorld.LevelCap;
@@ -7916,4 +7920,16 @@ void Player::EventStunOrImmobilize()
 		SpellCastTargets targets(GetGUID());
 		spell->prepare(&targets);
 	}
+}
+
+void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position)
+{
+	m_summonInstanceId = InstanceID;
+	m_summonPos = Position;
+	m_summoner = Requestor;
+	m_summonMapId = MapID;
+
+	WorldPacket data(SMSG_SUMMON_REQUEST, 50);
+	data << uint64(Requestor) << ZoneID << uint32(120000);		// 2 minutes
+	m_session->SendPacket(&data);
 }

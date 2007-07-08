@@ -676,59 +676,64 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 		if(pGroup)
 		{
 			uint32 pguid = _player->GetGUID();
-			SubGroup *sgr = _player->GetSubGroup();
-			GroupMembersSet::iterator itr;
-			for(itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+			SubGroup * sgr = _player->GetGroup() ?
+				_player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
+
+			if(sgr)
 			{
-				Player *pPlayer = (*itr);
-				if(pPlayer->GetGUID() !=  pguid)
+				GroupMembersSet::iterator itr;
+				for(itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
 				{
-					WorldPacket data( MSG_QUEST_PUSH_RESULT, 13 );
-					data << pPlayer->GetGUID();
-					data << uint32(QUEST_SHARE_MSG_SHARING_QUEST);
-					data << uint8(0);
-					_player->GetSession()->SendPacket(&data);
+					Player *pPlayer = (*itr);
+					if(pPlayer->GetGUID() !=  pguid)
+					{
+						WorldPacket data( MSG_QUEST_PUSH_RESULT, 13 );
+						data << pPlayer->GetGUID();
+						data << uint32(QUEST_SHARE_MSG_SHARING_QUEST);
+						data << uint8(0);
+						_player->GetSession()->SendPacket(&data);
 
-					uint32 response = 0;
-					if(_player->GetDistance2dSq(pPlayer) > 100)
-					{
-						response = QUEST_SHARE_MSG_TOO_FAR;
-						continue;
-					}
-					QuestLogEntry *qst = pPlayer->GetQuestLogForEntry(questid);
-					if(qst)
-					{
-						response = QUEST_SHARE_MSG_HAVE_QUEST;
-						continue;
-					}
-					if(sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest) != QMGR_QUEST_AVAILABLE)
-					{
-						response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
-						continue;
-					}
-					if(pPlayer->HasFinishedQuest(questid))
-					{
-						response = QUEST_SHARE_MSG_FINISH_QUEST;
-						continue;
-					}
-					if(pPlayer->GetOpenQuestSlot() == -1)
-					{
-						response = QUEST_SHARE_MSG_LOG_FULL;
-						continue;
-					}
-					//Anything more?
-					if(pPlayer->DuelingWith)
-					{
-						response = QUEST_SHARE_MSG_BUSY;
-						continue;
-					}
-					if(response > 0)
-						sQuestMgr.SendPushToPartyResponse(_player, pPlayer, response);
+						uint32 response = 0;
+						if(_player->GetDistance2dSq(pPlayer) > 100)
+						{
+							response = QUEST_SHARE_MSG_TOO_FAR;
+							continue;
+						}
+						QuestLogEntry *qst = pPlayer->GetQuestLogForEntry(questid);
+						if(qst)
+						{
+							response = QUEST_SHARE_MSG_HAVE_QUEST;
+							continue;
+						}
+						if(sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest) != QMGR_QUEST_AVAILABLE)
+						{
+							response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
+							continue;
+						}
+						if(pPlayer->HasFinishedQuest(questid))
+						{
+							response = QUEST_SHARE_MSG_FINISH_QUEST;
+							continue;
+						}
+						if(pPlayer->GetOpenQuestSlot() == -1)
+						{
+							response = QUEST_SHARE_MSG_LOG_FULL;
+							continue;
+						}
+						//Anything more?
+						if(pPlayer->DuelingWith)
+						{
+							response = QUEST_SHARE_MSG_BUSY;
+							continue;
+						}
+						if(response > 0)
+							sQuestMgr.SendPushToPartyResponse(_player, pPlayer, response);
 
-					data.clear();
-					sQuestMgr.BuildQuestDetails(&data, pQuest, pPlayer, 1);
-					pPlayer->GetSession()->SendPacket(&data);
-					pPlayer->SetQuestSharer(pguid);
+						data.clear();
+						sQuestMgr.BuildQuestDetails(&data, pQuest, pPlayer, 1);
+						pPlayer->GetSession()->SendPacket(&data);
+						pPlayer->SetQuestSharer(pguid);
+					}
 				}
 			}
 		}

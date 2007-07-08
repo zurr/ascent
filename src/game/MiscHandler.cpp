@@ -1690,3 +1690,18 @@ void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recv_data)
     _player->iInstanceType = data;
     sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
 }
+
+void WorldSession::HandleSummonResponseOpcode(WorldPacket & recv_data)
+{
+	if(!_player->m_summoner)
+	{
+		SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+		return;
+	}
+
+	_player->SafeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, 
+		_player->m_summonPos);
+
+	_player->m_summoner = _player->m_summonInstanceId = _player->m_summonMapId = 0;
+}
+

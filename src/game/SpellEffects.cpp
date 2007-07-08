@@ -2455,9 +2455,13 @@ void Spell::SpellEffectSummonObject(uint32 i)
 			go-> SetUInt32Value( GAMEOBJECT_STATE,0);
 			//disable by default
 			WorldPacket *pkt = go->BuildFieldUpdatePacket(GAMEOBJECT_STATE, 1);
-			if(SubGroup* subgroup = ((Player*)m_caster)-> GetSubGroup())
+			SubGroup * pGroup = p_caster->GetGroup() ?
+				p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : 0;
+
+			if(pGroup)
 			{
-				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
+				for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
+					itr != pGroup->GetGroupMembersEnd(); ++itr)
 				{
 					if(m_caster != (*itr))
 					(*itr)->GetSession()->SendPacket(pkt);
@@ -3176,7 +3180,8 @@ void Spell::SpellEffectSummonPlayer(uint32 i)
 	if(!playerTarget)
 		return;
 	
-	playerTarget->SafeTeleport(m_caster->GetMapId(), m_caster->GetInstanceID(), m_caster->GetPosition());
+	playerTarget->SummonRequest(m_caster->GetGUIDLow(), m_caster->GetZoneId(), m_caster->GetMapId(),
+		m_caster->GetInstanceID(), m_caster->GetPosition());
 }
 
 void Spell::SpellEffectActivateObject(uint32 i) // Activate Object

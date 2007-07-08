@@ -109,7 +109,9 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(type == CHAT_MSG_PARTY && pGroup->GetGroupType() == GROUP_TYPE_RAID)
 			{
 				// only send to that subgroup
-				SubGroup *sgr = _player->GetSubGroup();
+				SubGroup * sgr = _player->GetGroup() ?
+					_player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
+
 				if(sgr)
 				{
 					for(GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)

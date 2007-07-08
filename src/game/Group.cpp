@@ -124,7 +124,7 @@ void SubGroup::AddPlayer(Player* pPlayer)
 		m_SubGroupLeader = pPlayer;
 
 	m_GroupMembers.insert(pPlayer);
-	pPlayer->SetSubGroup(this);
+	pPlayer->SetSubGroup(GetID());
 	m_Parent->m_MemberCount++;
 }
 
@@ -315,7 +315,7 @@ void Group::RemovePlayer(Player* pPlayer)
 {
 	WorldPacket data;
 	
-	SubGroup *sg = pPlayer->GetSubGroup();
+	SubGroup *sg = GetSubGroup(pPlayer->GetSubGroup());
 	ASSERT(sg); // something wrong here if that isn't right
 
 	sg->RemovePlayer(pPlayer);
@@ -422,7 +422,7 @@ bool Group::HasMember(Player * pPlayer)
 void Group::MovePlayer(Player *pPlayer, uint8 subgroup)
 {
 	ASSERT(subgroup < m_SubGroupCount);
-	SubGroup *sgr = pPlayer->GetSubGroup();
+	SubGroup *sgr = GetSubGroup(pPlayer->GetSubGroup());
 	
 	sgr->RemovePlayer(pPlayer);
 
@@ -438,7 +438,7 @@ void Group::SetSubGroupLeader(Player *pPlayer, uint8 subgroup)
 	sLog.outString("Set subgroup %d leader to %s", (uint32)subgroup, pPlayer->GetName());
 	ASSERT(subgroup < m_SubGroupCount);
 	SubGroup *group = m_SubGroups[subgroup];
-	if(group != pPlayer->GetSubGroup())
+	if(group->GetID() != pPlayer->GetSubGroup())
 	{
 		sLog.outString("GROUP: Tried to set leader of subgroup %d and player %s is not in that group", group->GetID(), pPlayer->GetName());
 		return;

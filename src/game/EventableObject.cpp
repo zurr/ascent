@@ -240,7 +240,6 @@ void EventableObjectHolder::Update(uint32 time_difference)
 	EventList::iterator itr = m_events.begin();
 	EventList::iterator it2;
 	TimedEvent * ev;
-	//EventableObject * obj;
 
 	while(itr != m_events.end())
 	{

@@ -550,10 +550,10 @@ public:
 		return false;
 	}
 	int HasBeenInvited() { return m_GroupInviter != 0; }
-	Group* GetGroup() { return m_Group; }
+	inline Group* GetGroup() { return m_Group; }
 	void SetGroup(Group* grp) { m_Group = grp; }
-	SubGroup* GetSubGroup() { return m_SubGroup; }
-	void SetSubGroup(SubGroup* group) { m_SubGroup = group; }
+	uint32 GetSubGroup() { return m_SubGroup; }
+	void SetSubGroup(uint32 group) { m_SubGroup = group; }
 	std::set<uint32> OnMeleeAuras;
 	// DK isGroupMember(plyr)
 	bool IsGroupMember(Player *plyr);
@@ -1183,8 +1183,14 @@ public:
 
 	LocationVector m_last_group_position;
 	int32 m_rap_mod_pct;
+	void SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position);
 
 protected:
+	LocationVector m_summonPos;
+	uint32 m_summonInstanceId;
+	uint32 m_summonMapId;
+	uint32 m_summoner;
+
 	uint32 iActivePet;
 	void _SetCreateBits(UpdateMask *updateMask, Player *target) const;
 	void _SetUpdateBits(UpdateMask *updateMask, Player *target) const;
@@ -1322,7 +1328,7 @@ protected:
 	std::set<Object*> m_visibleObjects;
 	// Groups/Raids
 	Group* m_Group;
-	SubGroup* m_SubGroup;
+	uint32 m_SubGroup;
 	uint64 m_GroupInviter;
 	uint8 m_StableSlotCount;
 	std::set<uint32> m_QuestGOInProgress;

@@ -512,12 +512,18 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 						}
 						float r= range;
 						r*=r;
+						if(!p)
+							break;
+
 						if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
 						{
 							store_buff->m_unitTarget = m_caster->GetGUID();
 							break;
 						}
-						if(SubGroup* subgroup = p->GetSubGroup())
+						SubGroup * subgroup = p->GetGroup() ?
+							p->GetGroup()->GetSubGroup(p->GetSubGroup()) : 0;
+
+						if(subgroup)
 							for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 							{
 								if(m_caster == (*itr)) 
@@ -588,8 +594,12 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								store_buff->m_unitTarget = p->GetGUID();
 								break;
 							}
-							if( p->GetSubGroup())
-								for(GroupMembersSet::iterator itr = p->GetSubGroup()->GetGroupMembersBegin(); itr != p->GetSubGroup()->GetGroupMembersEnd(); ++itr)
+							SubGroup * pGroup = p_caster->GetGroup() ?
+								p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : 0;
+
+							if( pGroup )
+								for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
+									itr != pGroup->GetGroupMembersEnd(); ++itr)
 								{
 									if(p == (*itr)) 
 										continue;
@@ -777,8 +787,11 @@ void Spell::FillTargetMap(uint32 i)
 			r*=r;
 			if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
 				SafeAddTarget(tmpMap,p->GetGUID());	 
-			
-			if(SubGroup* subgroup = p->GetSubGroup())
+
+			SubGroup * subgroup = p->GetGroup() ?
+				p->GetGroup()->GetSubGroup(p->GetSubGroup()) : 0;
+
+			if(subgroup)
 			{				
 				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 				  {
@@ -906,13 +919,19 @@ void Spell::FillTargetMap(uint32 i)
 						r*=r;
 
 						Player*p=(Player*) ((Creature*)u_caster)->GetTotemOwner();
+						if(!p)
+							break;
 
 						if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
 							SafeAddTarget(tmpMap,p->GetGUID());
 						
-						if( p->GetSubGroup())
+						SubGroup * pGroup = p->GetGroup() ?
+							p->GetGroup()->GetSubGroup(p->GetSubGroup()) : 0;
+
+						if(pGroup)
 						{
-							for(GroupMembersSet::iterator itr = p->GetSubGroup()->GetGroupMembersBegin(); itr != p->GetSubGroup()->GetGroupMembersEnd(); ++itr)
+							for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
+								itr != pGroup->GetGroupMembersEnd(); ++itr)
 							{
 								if(p == (*itr)) 
 									continue;
@@ -937,8 +956,11 @@ void Spell::FillTargetMap(uint32 i)
 			Player * Target = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
 			if(!Target)
 				break;
-			
-			if(SubGroup* subgroup = Target->GetSubGroup())
+
+			SubGroup * subgroup = Target->GetGroup() ?
+				Target->GetGroup()->GetSubGroup(Target->GetSubGroup()) : 0;
+
+			if(subgroup)
 			{
 				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 					  SafeAddTarget(tmpMap,(*itr)->GetGUID());
@@ -1010,15 +1032,22 @@ void Spell::FillTargetMap(uint32 i)
 			if(PartyOnly)
 			{
 				GroupMembersSet::iterator itr;
-				for(itr = p_caster->GetSubGroup()->GetGroupMembersBegin(); itr != p_caster->GetSubGroup()->GetGroupMembersEnd(); ++itr)
+				SubGroup * pGroup = p_caster->GetGroup() ?
+					p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : 0;
+
+				if(pGroup)
 				{
-					if((*itr)==u_caster)
-						continue;
-					if(IsInrange(u_caster->GetPositionX(),u_caster->GetPositionY(),u_caster->GetPositionZ(),(*itr), range))
+					for(itr = pGroup->GetGroupMembersBegin();
+						itr != pGroup->GetGroupMembersEnd(); ++itr)
 					{
-						SafeAddTarget(tmpMap,(*itr)->GetGUID());
-						if(!--jumps)
-							break;
+						if((*itr)==u_caster)
+							continue;
+						if(IsInrange(u_caster->GetPositionX(),u_caster->GetPositionY(),u_caster->GetPositionZ(),(*itr), range))
+						{
+							SafeAddTarget(tmpMap,(*itr)->GetGUID());
+							if(!--jumps)
+								break;
+						}
 					}
 				}
 			}//find nearby friendly target
@@ -1102,7 +1131,10 @@ void Spell::FillTargetMap(uint32 i)
 			if(!Target)
 				break;
 			
-			if(SubGroup* subgroup = Target->GetSubGroup())
+			SubGroup * subgroup = Target->GetGroup() ?
+				Target->GetGroup()->GetSubGroup(Target->GetSubGroup()) : 0;
+
+			if(subgroup)
 				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 				{
 					if(Target->getClass() != (*itr)->getClass()) 

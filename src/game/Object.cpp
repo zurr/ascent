@@ -866,8 +866,6 @@ void Object::PushToWorld(MapMgr*mgr)
 
 	m_mapMgr = mgr;
 	mgr->PushObject(this);
-	if(m_mapMgr == 0)
-		return;
 
 	// correct incorrect instance id's
 	mSemaphoreTeleport = false;

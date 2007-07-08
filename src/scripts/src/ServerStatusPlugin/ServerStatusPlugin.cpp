@@ -281,8 +281,8 @@ void StatDumper::DumpStats()
         fprintf(f, "  <instances>\n");
         
         // need a big buffer..
-        static char buf[50000];
-        memset(buf, 0, 50000);
+        static char buf[500000];
+        memset(buf, 0, 500000);
 
         // Dump Instance Information
         sWorldCreator.BuildXMLStats(buf);

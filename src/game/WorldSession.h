@@ -608,6 +608,7 @@ protected:
 
 	void HandleCharRenameOpcode(WorldPacket & recv_data);
 	void HandlePartyMemberStatsOpcode(WorldPacket & recv_data);
+	void HandleSummonResponseOpcode(WorldPacket & recv_data);
 
 public:
 

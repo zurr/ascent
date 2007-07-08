@@ -2504,7 +2504,10 @@ void Unit::VampiricEmbrace(uint32 dmg,Unit* tgt)
 	}
 	this->SendMessageToSet(&data, true);
 
-	if(SubGroup* pGroup = static_cast<Player*>(this)->GetSubGroup())
+	SubGroup * pGroup = ((Player*)this)->GetGroup() ?
+		((Player*)this)->GetGroup()->GetSubGroup(((Player*)this)->GetSubGroup()) : 0;
+
+	if(pGroup)
 	{
 		GroupMembersSet::iterator itr;
 		for(itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)
@@ -2559,7 +2562,10 @@ void Unit::VampiricTouch(uint32 dmg,Unit* tgt)
                         this->SetUInt32Value(UNIT_FIELD_POWER1, cm);
         }
     
-        if(SubGroup* pGroup = static_cast<Player*>(this)->GetSubGroup())
+		SubGroup * pGroup = ((Player*)this)->GetGroup() ?
+			((Player*)this)->GetGroup()->GetSubGroup(((Player*)this)->GetSubGroup()) : 0;
+
+		if(pGroup)
         {
                 GroupMembersSet::iterator itr;
                 for(itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)

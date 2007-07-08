@@ -687,7 +687,9 @@ void Aura::EventUpdateAA(float r)
 		}
 	}
 
-	SubGroup * group = plr->GetSubGroup();
+	SubGroup * group = plr->GetGroup() ?
+		plr->GetGroup()->GetSubGroup(plr->GetSubGroup()) : 0;
+
 	if(group)
 	{
 		GroupMembersSet::iterator itr = group->GetGroupMembersBegin();
