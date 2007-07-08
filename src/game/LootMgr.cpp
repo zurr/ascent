@@ -462,6 +462,8 @@ void LootRoll::Finalize()
 		return;
 	}
 
+	pLoot->items.at(_slotid).roll = NULL;
+
 	uint32 itemid = pLoot->items.at(_slotid).item.itemid;
 	uint32 amt = pLoot->items.at(_slotid).iItemsCount;
 	if(!amt)

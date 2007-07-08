@@ -319,10 +319,8 @@ void MapMgr::RemoveObject(Object *obj)
 
 	if(!obj->GetMapCell())
 	{
-#ifdef WIN32
-	CStackWalker sw;
-		sw.ShowCallstack();
-#endif
+		/* set the map cell correctly */
+		obj->SetMapCell(this->GetCellByCoords(obj->GetPositionX(), obj->GetPositionY()));
 	}
 	ASSERT(obj->GetMapCell());
 

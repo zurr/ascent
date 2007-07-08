@@ -72,6 +72,21 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 			i2->SetUInt32Value(ITEM_FIELD_STACK_COUNT,c);
 			i1->m_isDirty = true;
 
+			if(DstSlot == -1)
+			{
+				// Find a free slot
+				SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(i2->GetProto());
+				if(!res.Result)
+				{
+					SendNotification("Internal Error");
+					return;
+				}
+				else
+				{
+					DstSlot = res.Slot;
+					DstInvSlot = res.ContainerSlot;
+				}
+			}
 			result = _player->GetItemInterface()->SafeAddItem(i2,DstInvSlot,DstSlot);
 			if(!result)
 			{

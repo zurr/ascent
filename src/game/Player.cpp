@@ -3423,6 +3423,12 @@ void Player::BuildPlayerRepop()
 
 void Player::RepopRequestedPlayer()
 {
+	if(myCorpse)
+	{
+		GetSession()->SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+		return;
+	}
+
 	MapInfo * pMapinfo;
 
 	sEventMgr.RemoveEvents(this,EVENT_PLAYER_FORECED_RESURECT); //in case somebody resurected us before this event happened
