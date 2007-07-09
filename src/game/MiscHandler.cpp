@@ -1397,14 +1397,8 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket &recv_data)
 	// append to packet, and guid
 	data << roll << _player->GetGUID();
 
-	// if we're in a party -> send to party. otherwise -> to self
-	if(_player->InGroup())
-		_player->GetGroup()->SendPacketToAll(&data);
-	else
-		SendPacket(&data);
-
-	// save for loot etc
-	_player->roll = roll;
+	// send to set
+	GetPlayer()->SendMessageToSet(&data, true, true);
 }
 
 void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
