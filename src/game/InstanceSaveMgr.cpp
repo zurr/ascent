@@ -156,7 +156,7 @@ void InstanceSavingManagement::ResetSavedInstancesForPlayer(Player *pPlayer)
 		Instance_Map_Info_Holder *p = itr->second;
 		MapInfo *pMapInfo = p->GetMapInfo();
 		if(!pMapInfo)
-			return;
+			continue;
         if(pMapInfo->type == INSTANCE_RAID)
 			continue;
 
@@ -193,7 +193,10 @@ void InstanceSavingManagement::RemoveSavedInstance(uint32 mapid, uint32 instance
 		Instance_Map_Info_Holder *p1 = itr->second;
 		MapInfo * pMapInfo = sWorld.GetMapInformation(mapid);
 		if(!pMapInfo)
+        {
+            instanceInfoListMutex.Release();
 			return;
+        }
         if(bHardReset && pMapInfo && pMapInfo->type == INSTANCE_RAID || bHardReset && pMapInfo && pMapInfo->type == INSTANCE_MULTIMODE)
 		{
 			p1->RemoveInstanceId(instanceid);
@@ -221,7 +224,7 @@ bool InstanceSavingManagement::IsPlayerSavedToMap(uint32 mapid, Player *pPlayer)
 	{
 		Instance_Map_Info_Holder *p = itr->second;
 		MapInfo *pMapInfo = p->GetMapInfo();
-        if(pMapInfo->type == INSTANCE_RAID || pMapInfo->type == INSTANCE_MULTIMODE)
+        if(pMapInfo && pMapInfo->type == INSTANCE_RAID || pMapInfo->type == INSTANCE_MULTIMODE)
 		{
             bool result = p->FindPlayer(pPlayer->GetGUID(), (uint32)NULL, pPlayer->iInstanceType);
 			if(result)
@@ -244,7 +247,10 @@ bool InstanceSavingManagement::IsPlayerSavedToInstanceId(uint32 mapid, uint32 in
 		Instance_Map_Info_Holder *p = itr->second;
 		MapInfo *pMapInfo = p->GetMapInfo();
 		if(!pMapInfo)
+        {
+            instanceInfoListMutex.Release();
 			return false;
+        }
         if(pMapInfo->type == INSTANCE_RAID || pMapInfo->type == INSTANCE_MULTIMODE)
 		{
 			bool result = p->IsPlayerSavedToInstanceId(pPlayer->GetGUID(), instanceid);
@@ -408,7 +414,10 @@ Instance_Map_InstanceId_Holder *InstanceSavingManagement::GetRaidAndMMInstance(u
 		Instance_Map_Info_Holder *p = itr->second;
 		MapInfo *pMapInfo = p->GetMapInfo();
 		if(!pMapInfo)
+        {
+            instanceInfoListMutex.Release();
 			return NULL;
+        }
         if(pMapInfo->type == INSTANCE_RAID || pMapInfo->type == INSTANCE_MULTIMODE)
 		{
             Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType);
@@ -440,7 +449,7 @@ void InstanceSavingManagement::BuildRaidSavedInstancesForPlayer(Player *pPlayer)
 		Instance_Map_Info_Holder *p = itr->second;
 		MapInfo *pMapInfo = p->GetMapInfo();
 		if(!pMapInfo)
-			return;
+			continue;
         if(pMapInfo->type == INSTANCE_RAID || pMapInfo->type == INSTANCE_MULTIMODE)
 		{
             Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType, true);
@@ -553,7 +562,10 @@ void Instance_Map_Info_Holder::AddInstanceId(InactiveInstance * ia)
 
 		MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
 		if(!pMapInfo)
+        {
+            instanceIdListMutex.Release();
 			return;
+        }
 		pIdList->SetMapInfo(pMapInfo);
 		pIdList->SetCreationTime(ia->Creator);
 		pIdList->SetRaidExpireTime(ia->ExpireTime);
@@ -952,7 +964,10 @@ void InstanceSavingManagement::SaveInstance(InactiveInstance *ia)
 		mapholder = new Instance_Map_Info_Holder;
 		MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
 		if(!pMapInfo)
+        {
+            inactiveInstancesMutex.Release();
 			return;
+        }
 		mapholder->SetMapInfo(pMapInfo);
 		mapholder->AddInstanceId(ia);
 
@@ -963,7 +978,10 @@ void InstanceSavingManagement::SaveInstance(InactiveInstance *ia)
 		Instance_Map_Info_Holder *mapholder = itr->second;
 		MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
 		if(!pMapInfo)
+        {
+            inactiveInstancesMutex.Release();
 			return;
+        }
 		mapholder->SetMapInfo(pMapInfo);
 		mapholder->AddInstanceId(ia);
 	}
