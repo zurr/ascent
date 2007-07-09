@@ -452,6 +452,13 @@ void World::SetInitialWorldSettings()
 	dbc.open("DBC/Spell.dbc");
 	uint32 cnt = dbc.getRecordCount();
 	uint32 effect;
+
+/*	char nametext[500];
+	uint32 namehash;
+	strcpy(nametext,"Backstab");
+    namehash = crc32((const unsigned char*)nametext, strlen(nametext));
+	printf("spellname %s, namehash %u\n",nametext,namehash);
+/**/
 	for(uint32 x=0; x < cnt; x++)
 	{
 		uint32 result = 0;
@@ -766,6 +773,12 @@ void World::SetInitialWorldSettings()
 					{
 						if(strstr(desc, "melee"))
 							pr|=PROC_ON_MELEE_ATTACK;
+						else if(strstr(desc,"Frost damage spells"))
+							pr|=PROC_ON_CAST_SPELL;
+						else if(strstr(desc,"sinister strike, backstab, gouge and shiv"))
+							pr|=PROC_ON_CAST_SPELL;
+						else if(strstr(desc,"fire spells"))
+							pr|=PROC_ON_CAST_SPELL;
 						//we should find that specific spell (or group) on what we will trigger
 						else pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					}
@@ -785,12 +798,6 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_GAIN_EXPIERIENCE;
 					if(strstr(desc,"your next offensive ability"))
 						pr|=PROC_ON_CAST_SPELL;
-					if(strstr(desc,"Gives your Fire spells") && strstr(desc,"chance to stun the target"))
-						pr|=PROC_ON_CAST_SPELL;
-					if(strstr(desc,"Gives your Frost damage spells"))
-						pr|=PROC_ON_CAST_SPELL;
-					if(strstr(desc,"Gives your Sinister Strike, Backstab, Gouge and Shiv"))
-						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					if(strstr(desc,"hit by a melee or ranged attack"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
 					if(strstr(desc,"enemy strikes the caster"))
@@ -840,14 +847,14 @@ void World::SetInitialWorldSettings()
 			sp->proc_interval = 3000; //few seconds
 		}
 		//mage ignite talent should proc only on some chances
-		if(strstr(nametext, "Ignite") && sp->EffectTriggerSpell[0])
+		if(strstr(nametext, "Ignite") && sp->Id>=11119 && sp->Id<=12848 && sp->EffectApplyAuraName[0]==4)
 		{
 			//check if we can find in the desription
 			char *startofid=strstr(desc, "an additional ");
 			if(startofid)
 			{
 				startofid += strlen("an additional ");
-				sp->procChance=atoi(startofid); //get new chance. This is actually level*8 ;)
+				sp->EffectBasePoints[0]=atoi(startofid); //get new chance. This is actually level*8 ;)
 			}
 			sp->Effect[0] = 6; //aura
 			sp->EffectApplyAuraName[0] = 42; //force him to use procspell effect
@@ -868,7 +875,7 @@ void World::SetInitialWorldSettings()
 			if(startofid)
 			{
 				startofid += strlen("over $");
-				sp->EffectTriggerSpell[0]=atoi(startofid); //get new lightning shield trigger id
+				sp->EffectTriggerSpell[0]=atoi(startofid);
 			}
 		}
 		//some procs trigger at intervals
@@ -975,6 +982,14 @@ void World::SetInitialWorldSettings()
 	sp = sSpellStore.LookupEntry(12497);
 	if(sp)	sp->EffectApplyAuraName[0]=4;
 
+	//for test only
+	sp = sSpellStore.LookupEntry(12360);
+	if(sp)
+	{
+//		sp->procChance=100;
+//		SpellDuration *sd=sSpellDuration.LookupEntry(sp->DurationIndex);
+//printf("iterruptflag %u, duration %u",sp->AuraInterruptFlags,GetDuration(sd));
+	}
 	//improoved berserker stance should be triggered on berserker stance use
 //	sp = sSpellStore.LookupEntry(12704);
 //	if(sp)	sp->procFlags=PROC_ON_CAST_SPECIFIC_SPELL;

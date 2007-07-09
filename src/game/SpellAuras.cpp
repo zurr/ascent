@@ -461,15 +461,14 @@ void Aura::AddMod(uint32 t, int32 a,uint32 miscValue,uint32 i)
 	//ASSERT(m_modcount<=3);
 }
 
-//!!! this is not safe. We should not add only auras, instead try casting the whole spell
 void Aura::ApplyModifiers(bool apply)
 { 
 	
 	for (uint32 x=0;x<m_modcount; x++)
 	{
 		mod = &m_modList[x];
-		sLog.outDebug( "WORLD: target = %u , Spell Aura id = %u, SpellId  = %u, i = %u, apply = %s",
-			m_target->GetGUIDLow(),mod->m_type, m_spellProto->Id, mod->i, apply ? "true" : "false"); 
+		sLog.outDebug( "WORLD: target = %u , Spell Aura id = %u, SpellId  = %u, i = %u, apply = %s, duration = %u",
+			m_target->GetGUIDLow(),mod->m_type, m_spellProto->Id, mod->i, apply ? "true" : "false",GetDuration()); 
 
 		/*if(m_target->SchoolImmunityList[m_spellProto->School] &&
 			m_target->GetGUID() != m_casterGuid)	// make sure that we dont block self spells
@@ -873,21 +872,40 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 {
 	if(apply)
 	{
+		uint32 dmg	= mod->m_amount;
 		Unit *c = GetUnitCaster();
 		switch(m_spellProto->Id)
 		{
-		case 703:
-		case 8631:
-		case 8632:
-		case 8633:
-		case 8818:
-		case 11289:
-		case 11290:
-			if(c)
-				c->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
-			break;
+			case 703:
+			case 8631:
+			case 8632:
+			case 8633:
+			case 8818:
+			case 11289:
+			case 11290:
+				if(c)
+					c->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
+				break;
+			//mage talent ignite
+			case 12654:
+			{
+				if(!pSpellId) //we need a parent spell and should always have one since it procs on it
+					break;
+				SpellEntry * parentsp = sSpellStore.LookupEntry(pSpellId);
+				if(!parentsp)
+					return;
+				Spell *spell = new Spell(GetUnitCaster(), parentsp ,false,NULL);
+				SpellCastTargets targets(m_target->GetGUID());
+				//this is so not good, maybe parent spell has more then dmg effect and we use it to calc our new dmg :(
+				dmg = 0;
+				for(int i=0;i<3;i++)
+				{
+//					dmg +=parentsp->EffectBasePoints[i]*m_spellProto->EffectBasePoints[0];
+					dmg +=spell->CalculateEffect(i)*parentsp->EffectBasePoints[0]/100;
+				}
+				delete spell;
+			}
 		};
-		uint32 dmg	= mod->m_amount;
 		//this is warrior : Deep Wounds
 		if(c && c->IsPlayer() && pSpellId)
 		{

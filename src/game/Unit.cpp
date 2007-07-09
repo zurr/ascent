@@ -486,6 +486,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		}
 
 		uint32 origId = itr2->origId;
+
 		if(CastingSpell)
 		{
 			//this is to avoid spell proc on spellcast loop. We use dummy that is same for both spells
@@ -628,12 +629,24 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						}break;
 						// Mage ignite talent only for fire dmg
 						case 12654:
+						// Mage talent "Impact"
+						case 12355:
 						{
 							if(!CastingSpell)
 								continue;
 							if(CastingSpell->School!=SCHOOL_FIRE)
 								continue;
 						}break;
+						//rogue - blade twisting
+						case 31125:
+							{
+								//only trigger effect for specified spells
+								if(!( ospinfo->NameHash!=3553831941 || //backstab
+									ospinfo->NameHash!=3900082058 || //sinister strike
+									ospinfo->NameHash!=2451914291 || //shiv
+									ospinfo->NameHash!=3435700480 )) //gouge
+									continue;
+							}break;
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
