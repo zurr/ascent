@@ -286,6 +286,9 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 		}
 	}	
 	
+	if(qst_giver->GetTypeId() == TYPEID_UNIT && !ScriptSystem->OnQuestRequireEvent(qst, ((Creature*)qst_giver), _player, QUEST_EVENT_CAN_ACCEPT))
+		return;
+
 	QuestLogEntry *qle = new QuestLogEntry();
 	qle->Init(qst, _player, log_slot);
 	qle->UpdatePlayerFields();

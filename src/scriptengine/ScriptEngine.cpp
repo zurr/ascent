@@ -191,7 +191,7 @@ void ScriptEngine::DumpErrors()
 	// sLog.outString("End of error dump.");
 }
 
-void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount)
+void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount, int * return_value)
 {
 	ASSERT(obj->GetType() == GM_FUNCTION);
 
@@ -203,6 +203,16 @@ void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount)
 
 		m_userObjectCounter = ArgumentCount + 1;
 		call.End();
+
+		if(return_value != 0)
+		{
+			int v;
+			if(call.GetReturnedInt(v))
+				*return_value = v;
+			else
+				*return_value = 1;
+		}
+
 		DumpErrors();
 	}
 	else
@@ -283,9 +293,33 @@ bool ScriptEngine::OnQuestEvent(Quest * quest, Creature * pQuestGiver, Player * 
 	SetVariable(1, pQuestGiver, m_unitType);
 	SetVariable(2, plr, m_playerType);
 
-	DoGMCall(it2->second, 2);
+	DoGMCall(it2->second, 2, 0);
 	m_lock.Release();
 	return true;
+}
+
+bool ScriptEngine::OnQuestRequireEvent(Quest * quest, Creature * pQuestGiver, Player * plr, uint32 Event)
+{
+	if(!m_questMap.size())
+		return true;;
+
+	ScriptMap::iterator itr = m_questMap.find(quest->id);
+	if(itr == m_questMap.end())
+		return true;
+
+	map<uint32, gmFunctionObject*>::iterator it2 = itr->second.find(Event);
+	if(it2 == itr->second.end() )
+		return true;
+
+	m_lock.Acquire();
+	SetVariable(0, quest, m_questType);
+	SetVariable(1, pQuestGiver, m_unitType);
+	SetVariable(2, plr, m_playerType);
+
+	int ret;
+	DoGMCall(it2->second, 2, &ret);
+	m_lock.Release();
+	return (ret > 0) ? true : false;
 }
 
 bool ScriptEngine::OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint32 Event)
@@ -305,7 +339,7 @@ bool ScriptEngine::OnCreatureEvent(Creature * pCreature, Unit * pAttacker, uint3
 	SetVariable(0, pCreature, m_unitType);
 	SetVariable(1, pAttacker, m_playerType);
 
-	DoGMCall(it2->second, 1);
+	DoGMCall(it2->second, 1, 0);
 	m_lock.Release();
 	return true;
 }
@@ -354,7 +388,7 @@ bool ScriptEngine::OnCreatureEvent(Creature * pCreature, gmFunctionObject * poin
 
 	m_lock.Acquire();
 	SetVariable(0, pCreature, m_unitType);
-	DoGMCall(pointer, 0);
+	DoGMCall(pointer, 0, 0);
 	m_lock.Release();
 	return true;
 }
@@ -376,7 +410,7 @@ bool ScriptEngine::OnGameObjectEvent(GameObject * pGameObject, Player * pUser, u
 	SetVariable(0, pGameObject, m_gameObjectType);
 	SetVariable(1, pUser, m_playerType);
 
-	DoGMCall(it2->second, 1);
+	DoGMCall(it2->second, 1, 0);
 	m_lock.Release();
 	return true;
 }

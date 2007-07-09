@@ -57,6 +57,9 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Player_RemoveSpell(gmThread * a_thread);
 	int GM_CDECL Player_AddItem(gmThread * a_thread);
 	int GM_CDECL Player_RemoveItem(gmThread * a_thread);
+	int GM_CDECL Player_MarkQuestObjectiveAsComplete(gmThread * a_thread);
+	int GM_CDECL Player_SendNotification(gmThread * a_thread);
+	int GM_CDECL Player_SendSystemMessage(gmThread * a_thread);
 
 /* AreaTrigger Functions */
 	int GM_CDECL AreaTrigger_GetEntry(gmThread * a_thread);
@@ -82,6 +85,13 @@ T * GetThisPointer(gmThread * a_thread)
 		int GM_CDECL Unit_Delete(gmThread * a_thread);
 		int GM_CDECL Unit_SetCombatCapable(gmThread * a_thread);
 		int GM_CDECL Unit_HaltMovement(gmThread * a_thread);
+		int GM_CDECL Unit_SetMovementType(gmThread * a_thread);
+		int GM_CDECL Unit_SetEscortTarget(gmThread * a_thread);
+		int GM_CDECL Unit_HasEscortTarget(gmThread * a_thread);
+		int GM_CDECL Unit_GetEscortTarget(gmThread * a_thread);
+		int GM_CDECL Unit_ClearEscortTarget(gmThread * a_thread);
+		int GM_CDECL Unit_SetNPCFlags(gmThread * a_thread);
+		int GM_CDECL Unit_DestroyCustomWaypointMap(gmThread * a_thread);
 
 /* GameObject Functions */
 	int GM_CDECL GameObject_Despawn(gmThread * a_thread);

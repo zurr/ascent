@@ -410,6 +410,8 @@ public:
 	bool CanAddToWorld();
 
 	WayPointMap * m_custom_waypoint_map;
+	Player * m_escorter;
+	void DestroyCustomWaypointMap();
 
 protected:
 	CreatureAIScript *_myScriptClass;

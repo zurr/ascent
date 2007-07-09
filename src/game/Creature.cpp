@@ -86,6 +86,7 @@ Creature::Creature(uint32 high, uint32 low)
 	SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,1);
 	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
 	m_custom_waypoint_map = 0;
+	m_escorter = 0;
 }
 
 
@@ -173,6 +174,12 @@ void Creature::OnRespawn()
 		sLog.outDetail("Respawning "I64FMT"...", GetGUID());
 		SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 		SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shiat
+		if(proto && m_spawn)
+		{
+			SetUInt32Value(UNIT_NPC_FLAGS, proto->NPCFLags);
+			SetUInt32Value(UNIT_NPC_EMOTESTATE, m_spawn->emote_state);
+		}
+
 		RemoveFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
 		Skinned = false;
 		Tagged = false;
@@ -496,6 +503,14 @@ void Creature::RemoveInRangeObject(Object* pObj)
 	{
 		// Expire next loop.
 		event_ModifyTimeLeft(EVENT_TOTEM_EXPIRE, 1);
+	}
+
+	if(m_escorter == pObj)
+	{
+		// we lost our escorter, return to the spawn.
+		m_aiInterface->StopMovement(10000);
+		DestroyCustomWaypointMap();
+		Despawn(1000, 1000);
 	}
 
 	Unit::RemoveInRangeObject(pObj);
@@ -1077,6 +1092,7 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 	}
 
 	RemoveFromWorld(false);
+	m_position = m_spawnLocation;
 	if(respawntime)
 		sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, respawntime, 1);
 }
@@ -1084,4 +1100,18 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 void Creature::TriggerScriptEvent(void * func)
 {
 	ScriptSystem->OnCreatureEvent(this, (gmFunctionObject*)func);
+}
+
+void Creature::DestroyCustomWaypointMap()
+{
+	if(m_custom_waypoint_map)
+	{
+		for(WayPointMap::iterator itr = m_custom_waypoint_map->begin(); itr != m_custom_waypoint_map->end(); ++itr)
+		{
+			delete itr->second;
+		}
+		delete m_custom_waypoint_map;
+		m_custom_waypoint_map = 0;
+		m_aiInterface->SetWaypointMap(0);
+	}
 }

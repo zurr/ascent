@@ -914,3 +914,15 @@ bool ChatHandler::HandleModifyValueCommand(const char* args,  WorldSession* m_se
 	return true;
 }
 
+bool ChatHandler::HandleDebugDumpCoordsCommmand(const char * args, WorldSession * m_session)
+{
+	Player* p = m_session->GetPlayer();
+	char buffer[200] = {0};
+	FILE * f = fopen("C:\\script_dump.txt", "a");
+	if(!f) return true;
+
+	fprintf(f, "mob.CreateWaypoint(%f, %f, %f, %f, 0, 0, 0);\n", p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(),
+		p->GetOrientation());
+	fclose(f);
+	return true;
+}

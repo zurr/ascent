@@ -622,7 +622,7 @@ int Unit_CreateWaypoint(gmThread * a_thread)
 	}
 
 	if(!modelid)
-		modelid = pCreature->GetEntry();
+		modelid = pCreature->GetUInt32Value(UNIT_FIELD_DISPLAYID);
 
 	WayPoint * wp = new WayPoint;
 	wp->id = pCreature->m_custom_waypoint_map->size() + 1;
@@ -732,6 +732,121 @@ int Unit_HaltMovement(gmThread * a_thread)
 
 	return GM_OK;
 }
+
+int Player_MarkQuestObjectiveAsComplete(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(questId, 0);
+	GM_CHECK_INT_PARAM(objective, 1);
+
+	Player * pThis = GetThisPointer<Player>(a_thread);
+	QuestLogEntry * qle = pThis->GetQuestLogForEntry(questId);
+	if(!qle)
+		return GM_OK;
+
+	Quest * q = qle->GetQuest();
+	qle->SetMobCount(objective, q->required_mobcount[objective]);
+	qle->SendUpdateAddKill(objective);
+	if(qle->CanBeFinished())
+		qle->SendQuestComplete();
+
+	return GM_OK;
+}
+
+int Unit_SetMovementType(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(mtype, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		pThis->GetAIInterface()->setMoveType(mtype);
+
+	return GM_OK;
+}
+
+int Unit_SetEscortTarget(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_USER_PARAM(Player*, ScriptSystem->m_playerType, leech, 0);
+
+	Creature * pThis = GetThisPointer<Creature>(a_thread);
+	pThis->m_escorter = leech;
+	return GM_OK;
+}
+
+int Unit_HasEscortTarget(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Creature * pThis = GetThisPointer<Creature>(a_thread);
+	if(pThis->m_escorter != 0)
+		a_thread->PushInt(1);
+	else
+		a_thread->PushInt(0);
+	return GM_OK;
+}
+
+int Unit_GetEscortTarget(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Creature * pThis = GetThisPointer<Creature>(a_thread);
+	if(pThis->m_escorter == 0)
+		return GM_EXCEPTION;
+
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)pThis->m_escorter;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_playerType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+	return GM_OK;
+}
+
+int Player_SendNotification(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_STRING_PARAM(msg, 0);
+	Player * pThis = GetThisPointer<Player>(a_thread);
+	pThis->GetSession()->SendNotification(msg);
+	return GM_OK;
+}
+
+int Player_SendSystemMessage(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_STRING_PARAM(msg, 0);
+	Player * pThis = GetThisPointer<Player>(a_thread);
+	sChatHandler.SystemMessage(pThis->GetSession(), msg);
+	return GM_OK;
+}
+
+int Unit_SetNPCFlags(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(mtype, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		pThis->SetUInt32Value(UNIT_NPC_FLAGS, mtype);
+
+	return GM_OK;
+}
+
+int Unit_DestroyCustomWaypointMap(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		((Creature*)pThis)->DestroyCustomWaypointMap();
+	return GM_OK;
+}
+
+
+int Unit_ClearEscortTarget(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(pThis->GetTypeId() == TYPEID_UNIT)
+		((Creature*)pThis)->m_escorter = 0;
+	return GM_OK;
+}
+
 
 /*int Player_GetSelectedCreature(gmThread * a_thread)
 {

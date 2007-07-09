@@ -209,6 +209,7 @@ protected:
 	bool HandleNpcSpawnLinkCommand(const char* args, WorldSession *m_session);
 	bool HandleGoStateLinkCommand(const char* args, WorldSession *m_session);
 	bool HandleSilentPlayerCommand(const char* args, WorldSession *m_session);
+	bool HandleDebugDumpCoordsCommmand(const char * args, WorldSession * m_session);
 
 	//WayPoint Commands
 	bool HandleWPAddCommand(const char* args, WorldSession *m_session);

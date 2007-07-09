@@ -43,6 +43,7 @@ enum QuestEvents
 {
 	QUEST_EVENT_ON_COMPLETE		= 1,
 	QUEST_EVENT_ON_ACCEPT		= 2,
+	QUEST_EVENT_CAN_ACCEPT		= 3,
 	QUEST_EVENT_COUNT,
 };
 
@@ -174,7 +175,7 @@ public:
 
 	/** Sets up a gm call with the specified number of arguments
 	 */
-	void DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount);
+	void DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount, int * return_value);
 
 	/** Sets up a userobject and variable to this type and pointer.
 	 */
@@ -195,6 +196,7 @@ public:
 	/** Looks up a script on quest event and executes it.
 	 */
 	bool OnQuestEvent(Quest * quest, Creature * pQuestGiver, Player * plr, uint32 Event);
+	bool OnQuestRequireEvent(Quest * quest, Creature * pQuestGiver, Player * plr, uint32 Event);
 
 	/** Looks up a script on creature event and executes it.
 	 */
