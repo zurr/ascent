@@ -516,7 +516,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 			if(spellId && Rand(itr2->procChance))
 			{
 				//check if we can trigger due to time limitation
-				SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );
+				SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 				if(ospinfo->proc_interval)
 				{
 					uint32 now_in_ms=getMSTime();
@@ -626,6 +626,14 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							if(!Rand(chance))
 								continue;
 						}break;
+						// Mage ignite talent only for fire dmg
+						case 12654:
+						{
+							if(!CastingSpell)
+								continue;
+							if(CastingSpell->School!=SCHOOL_FIRE)
+								continue;
+						}break;
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
@@ -675,15 +683,23 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						{
 							//Presence of Mind and Nature's Swiftness should only get removed
 							//when a non-instant and bellow 10 sec. Also must be nature :>
-							if(!sd->CastTime||sd->CastTime>10000) continue;
+//							if(!sd->CastTime||sd->CastTime>10000) continue;
+							if(sd->CastTime==0)
+								continue;
 						}break;
 					case 16188:
 						{
-							if(CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
+//							if(CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
+							if(CastingSpell->School!=SCHOOL_NATURE||(sd->CastTime==0)) continue;
 						}break;
 					case 16166:
 						{
 							if(!(CastingSpell->School==SCHOOL_FIRE||CastingSpell->School==SCHOOL_FROST||CastingSpell->School==SCHOOL_NATURE))
+								continue;
+						}break;
+					case 14177: //cold blood will get removed on offensive spell
+						{
+							if(victim==this || isFriendly(this, victim))
 								continue;
 						}break;
 

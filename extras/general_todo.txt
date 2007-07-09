@@ -42,6 +42,11 @@ Zack - test my shit :
 - pet instant spells make creature loop. They go to target and back.
 - test sboil patch for extra_dmg_for_creature_type
 - water shield
+- 36314 - cast on specific target
+- presence of mind to be removed only if spell is not instant
+- added trigger mage talent "Impact" to stun enemy
+- added trigger for mage talent "Ignite" to burn enemy
+- added trigger for rogue "Blade Twisting" = 31124
 
 ==========================================================================
 

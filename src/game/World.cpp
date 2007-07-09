@@ -783,6 +783,14 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK | PROC_TAGRGET_SELF;
 					if(strstr(desc, "experience or honor"))
 						pr|=PROC_ON_GAIN_EXPIERIENCE;
+					if(strstr(desc,"your next offensive ability"))
+						pr|=PROC_ON_CAST_SPELL;
+					if(strstr(desc,"Gives your Fire spells") && strstr(desc,"chance to stun the target"))
+						pr|=PROC_ON_CAST_SPELL;
+					if(strstr(desc,"Gives your Sinister Strike, Backstab, Gouge and Shiv"))
+						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
+//					if(strstr(desc,"Your critical strikes from Fire damage"))
+//						pr|=PROC_ON_SPELL_CRIT_HIT;
 				}//end "if procspellaura"
 				//dirty fix to remove auras that should expire on event and they are not
 				else if(sp->procCharges>0)
@@ -792,8 +800,8 @@ void World::SetInitialWorldSettings()
 
 					//spells like : Presence of Mind,Nature's Swiftness, Inner Focus,Amplify Curse,Coup de Grace
 					//SELECT * FROM dbc_spell where proc_charges!=0 and (effect_aura_1=108 or effect_aura_2=108 and effect_aura_3=108) and description!=""
-					if(aura == SPELL_AURA_ADD_PCT_MODIFIER)
-						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
+//					if(aura == SPELL_AURA_ADD_PCT_MODIFIER)
+//						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_CAST_SPELL;
 					//most of them probably already have these flags...not sure if we should add to all of them without checking
 /*					if(strstr(desc, "melee"))
 						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;
@@ -818,6 +826,21 @@ void World::SetInitialWorldSettings()
 				sp->EffectTriggerSpell[0]=atoi(startofid); //get new lightning shield trigger id
 			}
 			sp->proc_interval = 3000; //few seconds
+		}
+		//mage ignite talent should proc only on some chances
+		if(strstr(nametext, "Ignite") && sp->EffectTriggerSpell[0])
+		{
+			//check if we can find in the desription
+			char *startofid=strstr(desc, "an additional ");
+			if(startofid)
+			{
+				startofid += strlen("an additional ");
+				sp->procChance=atoi(startofid); //get new chance. This is actually level*8 ;)
+			}
+			sp->Effect[0] = 6; //aura
+			sp->EffectApplyAuraName[0] = 42; //force him to use procspell effect
+			sp->EffectTriggerSpell[0] = 12654; //evil , but this is good for us :D
+			sp->procFlags = PROC_ON_SPELL_CRIT_HIT; //add procflag here since this was not processed with the others !
 		}
 		//more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
 		else if( strstr(nametext, "Nature's Guardian"))
