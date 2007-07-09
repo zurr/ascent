@@ -329,6 +329,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_resist_critical[0]=m_resist_critical[1]=0;
 	ok_to_remove = false;
 	trigger_on_stun = 0;
+	trigger_on_stun_chance = 100;
 	m_modphyscritdmgPCT = 0;
 	m_rap_mod_pct = 0;
 	m_modblockvalue = 0;
@@ -7914,6 +7915,8 @@ void Player::EventStunOrImmobilize()
 {
 	if(trigger_on_stun)
 	{
+		if(trigger_on_stun_chance<100 && !Rand(trigger_on_stun_chance))
+			return;
 		SpellEntry *spellInfo = sSpellStore.LookupEntry(trigger_on_stun);
 		if(!spellInfo)
 			return;

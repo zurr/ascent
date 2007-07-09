@@ -455,7 +455,11 @@ public:
 		return false;
 	}
 
-	void SetTriggerStunOrImmobilize(uint32 newtrigger) {trigger_on_stun = newtrigger;}
+	void SetTriggerStunOrImmobilize(uint32 newtrigger,uint32 new_chance)
+	{
+		trigger_on_stun = newtrigger;
+		trigger_on_stun_chance = new_chance;
+	}
 	void EventStunOrImmobilize();
 
 	int32 GetOpenQuestSlot();
@@ -1346,6 +1350,7 @@ protected:
 	SoloSpells	solospelltarget;
 	uint32	chat_disabled_until;//force player to be silent. Yeah i'm pissed of on noobs
 	uint32	trigger_on_stun; //bah, warrior talent but this will not get triggered on trigered spells if used on proc so i'm forced to used a special variable
+	uint32	trigger_on_stun_chance; //also using this for mage "Frostbite" talent
 
 	float m_lastRunSpeed;
 	float m_lastRunBackSpeed;

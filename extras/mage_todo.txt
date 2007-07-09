@@ -1,6 +1,3 @@
-1) Winter's Chill (Mage)
-2) Chill (Mage)
-5) Frostbite (Mage)
 6) Improved scorch (Mage)
 7) Shatter (Mage)
 8) Ice lance (is not affected by ice shard on antrix and it duplicate damage when the damage would be 3x on frozen target...).without the gear (0 spell damage) the dmg on frozen target is ok..(160-187)with the gear (880+ spll dmg) i make 400-500 dmg on target without frozen effect... and 800 on frozen target( and crit 1200)... is not correct i think... i have a pg on official server and with 550 spell dmg and i hit for 800 on frozen target and crit 1600..
@@ -28,21 +25,17 @@ Arcane Potency:Since there's no Clearcasting state (Arcane Concentration), Arcan
 Empowered Arcane Missiles:Doesn't work
 Arcane Power:Doesn't work
 Spell Power:Doesn't work
-Mind Mastery:Working
 
 Fire:
 Improved Fire Blast:Doesn't Work. It's only visual
 Incineration:Doesn't work
 Improved Flamestrike:Doesn't Work
-Pyroblast:Working
 Burning Soul:Not tested yet
 Improved Scorch:Doesn't work
 Improved Fire Ward:Not tested yet
 Master of Elements:Not tested yet
 Playing with Fire:Not tested yet
 Critical Mass:Not tested yet
-Blastwave:Working
-Blazing Speed:[color=#BF0000]Doesn't work
 Fire Power:Not tested yet
 Pyromaniac:Not tested yet
 Combustion:Doesn't work
@@ -51,55 +44,32 @@ Empowered Fireball:Not tested yet
 
 Frost:
 Frost Warding:Doesn't work
-Improved Frostbolt:Working
 Elemental Precision:Doesn't work
-Ice Shards:Working
-Frostbite:Doesn't work
 Improved Frost Nova:Doesn't work, it's only visual
 Permafrost:Doesn't work
 Piercing Ice:Doesn't work
 Cold Snap:You can learn the spell and it visually stops the cooldown but when you try to use the spell it says that it isn't ready yet.
 Improved Blizzard:Doesn't work
-Arctic Reach:Working
 Frost Channeling:Threat part works. Mana cost part doesn't
 Shatter:Not working
 Frozen Core:Not tested yet
-Ice Block:Working
-Improved Cone of Cold:Working
 Ice Floes:Doesn't work
-Winter's Chill:Not working
-Ice Barrier:Works as it should
 Arctic Winds:[color=#FFBF40]Not tested yet
 Empowered Frostbolt:Doesn't work
 Summon Water Elemental:Doesn't work
 
 Spells:
 Armors:
-Frost Armor:Working
-Ice Armor:Working
 Mage armor:Mage armor does not allow you to regenerate mana when casting, it only increases the resistances.
 Molter Armor:Partially working. Crit chance is incrised. but the rest doens't work
 
 Arcane:
-Arcane Intellect:Working
 Arcane Missiles:Don't shot the last missile (or first?)
-Arcane Explosion:Working
-Arcane Brilliance:Working
-Conjure Water:Working
-Conjure Food:Working
-Conjure Mana *stone*:Working
-Polymorph:Working
 Dampen Magic:Works fine, but do not remove Amplify Magic
 Amplify Magic:Works fine, but do not remove Dampen Magic
-Slow Fall:Working
 Detect Magic:Not tested yet
-Remove lesser curse:Working
 Blink: Doesn't release you from stun, just from bonds.
 Mana Shield:Working, but only for physical damage, because in 2.0.3 or later it has been changed to absorb spell damage too.
-Teleports:Working
-CounterSpell:Working (with talent at least, not tested without)
-Evocation:Working
-Portals:Working
 Invisibility:Not tested yet
 Arcane Blast:Working but the buff (stacks three times, lasts 8 sec) that increases mana cost but decreases casting time doesn't work.
 Spellsteal:Doesn't work

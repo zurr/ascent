@@ -787,8 +787,12 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc,"Gives your Fire spells") && strstr(desc,"chance to stun the target"))
 						pr|=PROC_ON_CAST_SPELL;
+					if(strstr(desc,"Gives your Frost damage spells"))
+						pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc,"Gives your Sinister Strike, Backstab, Gouge and Shiv"))
 						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
+					if(strstr(desc,"hit by a melee or ranged attack"))
+						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
 //					if(strstr(desc,"Your critical strikes from Fire damage"))
 //						pr|=PROC_ON_SPELL_CRIT_HIT;
 				}//end "if procspellaura"
@@ -949,19 +953,19 @@ void World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 30339; //evil , but this is good for us :D
 	}
 
-/*	//add remove event to flurry
-	for(int i=12966;i<=12970;i++)
-	{
-		sp = sSpellStore.LookupEntry(i);
-		if(sp) sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;
-	}
-	for(int i=16277;i<=16280;i++)
-	{
-		sp = sSpellStore.LookupEntry(i);
-		if(sp) sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;
-	}
-	sp = sSpellStore.LookupEntry(16257);
-	if(sp) sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;*/
+	//mage talent "Blazing Speed"
+	sp = sSpellStore.LookupEntry(31641);
+	if(sp)	sp->EffectTriggerSpell[0]=31643;
+	sp = sSpellStore.LookupEntry(31642);
+	if(sp)	sp->EffectTriggerSpell[0]=31643;
+
+	//mage talent frostbyte. we make it to be dummy
+	sp = sSpellStore.LookupEntry(11071);
+	if(sp)	sp->EffectApplyAuraName[0]=4;
+	sp = sSpellStore.LookupEntry(12496);
+	if(sp)	sp->EffectApplyAuraName[0]=4;
+	sp = sSpellStore.LookupEntry(12497);
+	if(sp)	sp->EffectApplyAuraName[0]=4;
 
 	//improoved berserker stance should be triggered on berserker stance use
 //	sp = sSpellStore.LookupEntry(12704);

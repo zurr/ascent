@@ -1488,13 +1488,22 @@ void Aura::SpellAuraDummy(bool apply)
 			{
 				Unit *caster = GetUnitCaster();
 				if(caster && caster->IsPlayer())
-					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29841);
+					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29841,100);//fixed 100% chance
 			}break;
 		case 29838:
 			{
 				Unit *caster = GetUnitCaster();
 				if(caster && caster->IsPlayer())
-					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29842);
+					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29842,100);//fixed 100% chance
+			}break;
+		//mage Frostbite talent
+		case 11071:
+		case 12496:
+		case 12497:
+			{
+				Unit *caster = GetUnitCaster();
+				if(caster && caster->IsPlayer())
+					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(12494,mod->m_amount);
 			}break;
 	}
 }
@@ -2656,6 +2665,14 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 					SetNegative();
 
 				break;
+		}
+
+		//let's check Mage talents if we proc anythig 
+		Unit *caster=GetUnitCaster();
+		if(m_spellProto->School==SCHOOL_FROST && caster->IsPlayer())
+		{
+			//yes we are freezing the bastard, so can we proc anything on this ?
+			static_cast<Player*>(m_target)->EventStunOrImmobilize();
 		}
 
 		m_target->m_slowdown=this;

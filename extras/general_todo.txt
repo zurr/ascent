@@ -47,6 +47,8 @@ Zack - test my shit :
 - added trigger mage talent "Impact" to stun enemy
 - added trigger for mage talent "Ignite" to burn enemy
 - added trigger for rogue "Blade Twisting" = 31124
+- mage "Blazing Speed" = 31642 - talent
+- mage "Frostbite" = 12497 - talent
 
 ==========================================================================
 
