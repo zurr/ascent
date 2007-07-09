@@ -869,6 +869,14 @@ void World::SetInitialWorldSettings()
 	if(sp && sp->Id==17364)
 		sp->Effect[0]=0;
 
+	//fix for the right Enchant ID for Enchant Cloak - Major Resistance
+	sp = sSpellStore.LookupEntry(27962);
+	if(sp)
+		sp->EffectMiscValue[0] = 2998;
+	sp = sSpellStore.LookupEntry(36285);
+	if(sp)
+		sp->EffectMiscValue[0] = 2998;
+
 	//muhaha, rewriting Retaliation spell as old one :D
 	sp = sSpellStore.LookupEntry(20230);
 	if(sp)
