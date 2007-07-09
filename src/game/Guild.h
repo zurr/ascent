@@ -168,7 +168,7 @@ enum typecommand
 	GUILD_INVITE_S	= 0x01,
 	GUILD_QUIT_S	= 0x02,
 	GUILD_FOUNDER_S = 0x0C,
-	GUILD_OFFICER_S = 0x0D,
+	GUILD_MEMBER_S = 0x0D,
 };
 
 enum GuildRankRights

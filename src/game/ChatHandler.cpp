@@ -141,7 +141,16 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 				Guild *pGuild = objmgr.GetGuild( GetPlayer()->GetGuildId() );
 				if(pGuild)
 				{
-					pGuild->BroadCastToGuild(this, msg);
+					if(pGuild->HasRankRight(GetPlayer()->GetGuildRank(), GR_RIGHT_GCHATSPEAK))
+						pGuild->BroadCastToGuild(this, msg);
+					else
+					{
+						WorldPacket data2(SMSG_GUILD_COMMAND_RESULT, 100);
+						data2 << uint32(GUILD_MEMBER_S);
+						data2 << pGuild->GetGuildName();
+						data2 << uint32(C_R_DONT_HAVE_PERMISSION);
+						SendPacket(&data2);
+					}
 				}
 			}
 			//sLog.outString("[guild] %s: %s", _player->GetName(), msg.c_str());
@@ -164,7 +173,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 					else
 					{
 						WorldPacket data2(SMSG_GUILD_COMMAND_RESULT, 100);
-						data2 << uint32(GUILD_OFFICER_S);
+						data2 << uint32(GUILD_MEMBER_S);
 						data2 << pGuild->GetGuildName();
 						data2 << uint32(C_R_DONT_HAVE_PERMISSION);
 						SendPacket(&data2);
