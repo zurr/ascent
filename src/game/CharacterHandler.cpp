@@ -675,6 +675,8 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		}
 	}
 
+	_player->ResetPVPTitles();
+
 	sInstanceSavingManager.BuildSavedInstancesForPlayer(plr);
 	objmgr.AddPlayer(_player);
 }

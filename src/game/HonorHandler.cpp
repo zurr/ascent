@@ -22,6 +22,9 @@ void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 	uint32 ChosenRank;
 	recv_data >> ChosenRank;
 
+	if(!_player->GetPVPRank() >= ChosenRank)
+		return;
+
 	_player->SetUInt32Value(PLAYER_CHOSEN_TITLE, ChosenRank);
 }
 

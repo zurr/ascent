@@ -470,6 +470,14 @@ public:
 	{
 		m_removequests.insert(questid);
 	}
+	void ResetPVPTitles()
+	{
+			uint32 rank = GetPVPRank();
+			if(rank > 0)
+				SetUInt32Value(PLAYER_CHOSEN_TITLE, rank);
+			else
+				SetUInt32Value(PLAYER_CHOSEN_TITLE, 0xFFFFFFFF); // No rank
+	}
 	//void ResetQuestSlots();
 	void AddToFinishedQuests(uint32 quest_id);
 	bool HasFinishedQuest(uint32 quest_id);
