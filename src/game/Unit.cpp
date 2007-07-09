@@ -1189,7 +1189,8 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 					{
 						CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, blocked_damage);
 						CALL_SCRIPT_EVENT(this, OnBlocked)(pVictim, blocked_damage);
-						vstate = BLOCK;			
+						vstate = BLOCK;
+						vproc |= PROC_ON_BLOCK_VICTIM;
 					}
 				}
 			}

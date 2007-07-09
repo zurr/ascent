@@ -795,8 +795,12 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
 					if(strstr(desc,"enemy strikes the caster"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
-					if(strstr(desc,"when you shapeshift"))
-						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
+					if(strstr(desc,"melee and ranged attacks against you"))
+						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
+					if(strstr(desc,"when a block occurs"))
+						pr|=PROC_ON_BLOCK_VICTIM;
+					if(strstr(desc,"dealing a critical strike from a weapon swing, spell, or ability"))
+						pr|=PROC_ON_CRIT_ATTACK|PROC_ON_SPELL_CRIT_HIT;
 //					if(strstr(desc,"Your critical strikes from Fire damage"))
 //						pr|=PROC_ON_SPELL_CRIT_HIT;
 				}//end "if procspellaura"
@@ -970,18 +974,6 @@ void World::SetInitialWorldSettings()
 	if(sp)	sp->EffectApplyAuraName[0]=4;
 	sp = sSpellStore.LookupEntry(12497);
 	if(sp)	sp->EffectApplyAuraName[0]=4;
-
-	//druid talent "Furor"
-	sp = sSpellStore.LookupEntry(17056);
-	if(sp){	sp->EffectApplyAuraName[0]=42; sp->EffectTriggerSpell[0]=17057;}
-	sp = sSpellStore.LookupEntry(17058);
-	if(sp){	sp->EffectApplyAuraName[0]=42; sp->EffectTriggerSpell[0]=17057;}
-	sp = sSpellStore.LookupEntry(17059);
-	if(sp){	sp->EffectApplyAuraName[0]=42; sp->EffectTriggerSpell[0]=17057;}
-	sp = sSpellStore.LookupEntry(17060);
-	if(sp){	sp->EffectApplyAuraName[0]=42; sp->EffectTriggerSpell[0]=17057;}
-	sp = sSpellStore.LookupEntry(17061);
-	if(sp){	sp->EffectApplyAuraName[0]=42; sp->EffectTriggerSpell[0]=17057;}
 
 	//improoved berserker stance should be triggered on berserker stance use
 //	sp = sSpellStore.LookupEntry(12704);

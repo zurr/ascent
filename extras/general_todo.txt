@@ -49,9 +49,11 @@ Zack - test my shit :
 - added trigger for rogue "Blade Twisting" = 31124
 - mage "Blazing Speed" = 31642 - talent
 - mage "Frostbite" = 12497 - talent
-- druid "Faerie Fire" to block stealth
+- druid "Faerie Fire" to block stealth ! add to remove stealth if target already has it
 - added trigger for "Nature's Grasp"
-- added handle for "Furor"
+- trigger for "Redoubt"
+- added rage generation on block with "Shield Specialization" talent. Just donno what clas uses it :D
+- added trigger for "vengeance" - 20057
 
 ==========================================================================
 
