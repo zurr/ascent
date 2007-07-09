@@ -49,7 +49,7 @@ enum ChatMsg
 	CHAT_MSG_SKILL								= 0x18,
 	CHAT_MSG_LOOT								 = 0x19,
 	CHAT_MSG_RAIDLEADER						   = 0x57,
-	CHAT_MSG_RAID_WARNING
+	CHAT_MSG_RAIDWARNING						= 0x58,
 };
 
 
