@@ -158,7 +158,18 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			{
 				Guild *pGuild = objmgr.GetGuild( GetPlayer()->GetGuildId() );
 				if(pGuild)
-					pGuild->OfficerChannelChat(this, msg);
+				{
+					if(pGuild->HasRankRight(GetPlayer()->GetGuildRank(), GR_RIGHT_OFFCHATSPEAK))
+						pGuild->OfficerChannelChat(this, msg);
+					else
+					{
+						WorldPacket data2(SMSG_GUILD_COMMAND_RESULT, 100);
+						data2 << uint32(GUILD_OFFICER_S);
+						data2 << pGuild->GetGuildName();
+						data2 << uint32(C_R_DONT_HAVE_PERMISSION);
+						SendPacket(&data2);
+					}
+				}
 			}
 			sLog.outString("[officer] %s: %s", _player->GetName(), msg.c_str());
 		} break;
@@ -274,11 +285,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			else
 			{
 				GetPlayer()->SetFlag(PLAYER_FLAGS, 0x02);
-				data = sChatHandler.FillMessageData(CHAT_MSG_AFK, LANG_UNIVERSAL, reason.c_str(),_player->GetGUID());
-				GetPlayer()->SendMessageToSet(data, false);
 				if(sWorld.GetKickAFKPlayerTime())
 					sEventMgr.AddEvent(GetPlayer(),&Player::SoftDisconnect,EVENT_PLAYER_SOFT_DISCONNECT,sWorld.GetKickAFKPlayerTime(),1);
-				delete data;
 			}			
 		} break;
 	case CHAT_MSG_DND:
@@ -291,9 +299,6 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			else
 			{
 				GetPlayer()->SetFlag(PLAYER_FLAGS, 0x04);
-				data = sChatHandler.FillMessageData(CHAT_MSG_DND, LANG_UNIVERSAL, reason.c_str(),_player->GetGUID());
-				GetPlayer()->SendMessageToSet(data, false);
-				delete data;
 			}		  
 		} break;
 	default:
