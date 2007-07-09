@@ -1398,7 +1398,10 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket &recv_data)
 	data << roll << _player->GetGUID();
 
 	// send to set
-	GetPlayer()->SendMessageToSet(&data, true, true);
+    if(_player->InGroup())
+		_player->GetGroup()->SendPacketToAll(&data);
+	else
+	    GetPlayer()->SendMessageToSet(&data, true, true);
 }
 
 void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)

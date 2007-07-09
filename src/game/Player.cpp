@@ -1083,7 +1083,30 @@ void Player::_EventExploration()
 	}
 	else
 	{
-		if(m_isResting) ApplyPlayerRestState(false);
+        //second AT check for subzones.
+        if(at->ZoneId)
+        {
+            AreaTable * at2 = sAreaStore.LookupEntry(at->ZoneId);
+            if(at2 && at2->AreaFlags & AREA_CITY_AREA || at2 && at2->AreaFlags & AREA_CITY)
+            {
+                if((at2->category == AREAC_ALLIANCE_TERRITORY && GetTeam() == 0) || (at2->category == AREAC_HORDE_TERRITORY && GetTeam() == 1) )
+		        {
+			        if(!m_isResting) ApplyPlayerRestState(true);
+		        }
+                else if(at2->category != AREAC_ALLIANCE_TERRITORY && at2->category != AREAC_HORDE_TERRITORY)
+		        {
+			        if(!m_isResting) ApplyPlayerRestState(true);
+		        }
+                else
+                {
+                    if(m_isResting) ApplyPlayerRestState(false);
+                }
+            }
+        }
+        else
+        {
+		    if(m_isResting) ApplyPlayerRestState(false);
+        }
 	}
 
 	if( !(currFields & val) && !GetTaxiState() && !m_TransporterGUID)//Unexplored Area		// bur: we dont want to explore new areas when on taxi

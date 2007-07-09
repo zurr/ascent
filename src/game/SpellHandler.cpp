@@ -209,6 +209,15 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 			sChatHandler.SystemMessageToPlr(_player, "%sSpell Cast:%s %s %s[Group %u, family %u]", MSG_COLOR_LIGHTBLUE,
 			MSG_COLOR_SUBWHITE, name, MSG_COLOR_YELLOW, spellInfo->SpellGroupType, spellInfo->SpellFamilyName);*/
 
+        if(GetPlayer()->m_currentSpell && GetCastTime(sCastTime.LookupEntry(spellInfo->CastingTimeIndex)))
+        {
+            StackWorldPacket<9> data(SMSG_CAST_RESULT);
+            data << spellInfo->Id;
+		    data << (uint8)SPELL_FAILED_SPELL_IN_PROGRESS;
+            _player->GetSession()->SendPacket(&data);
+            return;
+
+        }
 		Spell *spell = new Spell(GetPlayer(), spellInfo, false, NULL);
 	
 		SpellCastTargets targets(recvPacket,GetPlayer()->GetGUID());
