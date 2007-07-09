@@ -2011,7 +2011,8 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				res += b;
 
 				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
-				vproc |=  PROC_ON_SPELL_CRIT_HIT_VICTIM;
+				aproc |= PROC_ON_SPELL_CRIT_HIT;
+				vproc |= PROC_ON_SPELL_CRIT_HIT_VICTIM;
 			}
 		}
 	}
