@@ -646,6 +646,6 @@ void GameObject::RemoveInRangeObject(Object* pObj)
 
 void GameObject::RemoveFromWorld()
 {
-	sEventMgr.RemoveEvents(EVENT_GAMEOBJECT_TRAP_SEARCH_TARGET);
+	sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_TRAP_SEARCH_TARGET);
 	Object::RemoveFromWorld();
 }
