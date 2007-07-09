@@ -2896,6 +2896,9 @@ int8 Spell::CanCast(bool rangetolerate)
 			case 5215:
 			case 6783:
 			case 9913:
+			case 1856:
+			case 1857:
+			case 26889:
 				{
 					// Player has the flag in WSG, he cant stealth now.
 					return SPELL_FAILED_SPELL_UNAVAILABLE;
