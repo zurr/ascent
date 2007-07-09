@@ -781,6 +781,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(nametext, "Bloodthirst"))
 						pr|=PROC_ON_MELEE_ATTACK | PROC_TAGRGET_SELF;
+					if(strstr(desc, "yields experience or honor"))
+						pr|=PROC_ON_GAIN_EXPIERIENCE;
 				}//end "if procspellaura"
 				//dirty fix to remove auras that should expire on event and they are not
 				else if(sp->procCharges>0)

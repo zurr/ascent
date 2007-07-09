@@ -1326,6 +1326,7 @@ void Player::GiveXP(uint32 xp, const uint64 &guid, bool allowbonus)
 	}
 	// Set the update bit
 	SetUInt32Value(PLAYER_XP, newxp);
+	HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, NULL);
 }
 
 void Player::smsg_InitialSpells()
