@@ -200,6 +200,12 @@ void Guild::FillGuildRosterData(WorldPacket *data)
 	}
 }
 
+void Guild::SetGuildInfo(std::string guildinfo)
+{
+	m_guildInfo = guildinfo;
+	sDatabase.Execute("UPDATE guilds SET guildinfo = '%s' WHERE guildId = %u", sDatabase.EscapeString(guildinfo), GetGuildId());
+}
+
 void Guild::BroadCastToGuild(WorldSession *session, std::string msg)
 {
 
