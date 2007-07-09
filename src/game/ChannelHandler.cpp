@@ -19,7 +19,6 @@ initialiseSingleton( ChannelMgr );
 void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
 {
 	CHECK_PACKET_SIZE(recvPacket, 1);
-	if(GetPlayer()->GetTaxiState()) return;	 // dont allow join while on taxi
 	string channelname,pass;
 	uint32 code = 0;
 	uint8 crap;
