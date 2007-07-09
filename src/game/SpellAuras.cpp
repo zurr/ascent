@@ -2073,6 +2073,13 @@ void Aura::SpellAuraDamageShield(bool apply)
 
 void Aura::SpellAuraModStealth(bool apply)
 {
+	//check if we have "Faerie Fire". It should block invisibility
+	if(m_target->HasAurasWithNameHash(2787586002))
+	{
+		//report broken cast and exit
+//		SendCastResult(SPELL_FAILED_CANT_STEALTH);
+		return;
+	}
 	if(apply)
 	{
 		SetPositive();
@@ -2131,6 +2138,13 @@ void Aura::SpellAuraModDetect(bool apply)
 
 void Aura::SpellAuraModInvisibility(bool apply)
 {
+	//check if we have "Faerie Fire". It should block invisibility
+	if(m_target->HasAurasWithNameHash(2787586002))
+	{
+		//report broken cast and exit
+//		SendCastResult(SPELL_FAILED_CANT_STEALTH);
+		return;
+	}
 	SetPositive();
 	m_target->m_invisible = apply;
 	m_target->UpdateVisibility();

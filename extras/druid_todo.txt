@@ -1,9 +1,8 @@
 Druid:
 
 Skills
-Faerie Fire - doesnt work
-Tranquility - doesnt work
-Nature Grasp - doesnt work
+Tranquility - doesnt work. are you sure ?
+Nature Grasp - doesnt work. have to check to be outdors (cancast)
 Entangling Roots - may need break chance changed to be damage dependant
 Shared - does only the plus dmg not the 225% dmg from normal atack (I think this skill its eazy fixable becoz Rogue skills like this work)
 Revange - same as shared
@@ -13,7 +12,6 @@ Feline Grace - Is totaly bagged its should reduse dmg from falling but instead u
 
 Talents
 Hearth of the Wild - Only adds you 20% intelect... while in cat and bear forms its doesnt add anything
-Moonkin aura - doesnt work
-Furor - doent work
+Moonkin aura - doesnt work. 2 maybe it works now ?
 Stun and fear are 100% so all talents that reduse stun and fear effects are bugged
 11) Heart of th wild (Druid) ==> Do not add strength in cat form

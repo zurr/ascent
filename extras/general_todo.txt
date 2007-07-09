@@ -49,6 +49,9 @@ Zack - test my shit :
 - added trigger for rogue "Blade Twisting" = 31124
 - mage "Blazing Speed" = 31642 - talent
 - mage "Frostbite" = 12497 - talent
+- druid "Faerie Fire" to block stealth
+- added trigger for "Nature's Grasp"
+- added handle for "Furor"
 
 ==========================================================================
 
