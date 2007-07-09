@@ -2853,7 +2853,7 @@ bool AIInterface::GetIsTaunted()
 {
 	if(isTaunted)
 	{
-		if(!tauntedBy || tauntedBy->isAlive())
+		if(!tauntedBy || !tauntedBy->isAlive())
 		{
 			isTaunted = false;
 			tauntedBy = NULL;

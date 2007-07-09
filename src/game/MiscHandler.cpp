@@ -969,14 +969,19 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 		if(button >= 120)
 			return;
 
-		if(type == 64 || type == 128) 
+		if(type == 64 || type == 65) 
 		{
 			sLog.outDebug( "MISC: Added Macro %u into button %u", action, button );
 			GetPlayer()->setAction(button,action,misc,type);
-		} 
+		}
+		else if(type == 128)
+		{
+			sLog.outDebug( "MISC: Added Item %u into button %u", action, button );
+			GetPlayer()->setAction(button,action,misc,type);
+		}
 		else if(type == 0)
 		{
-			sLog.outDebug( "MISC: Added Action %u into button %u", action, button );
+			sLog.outDebug( "MISC: Added Spell %u into button %u", action, button );
 			GetPlayer()->setAction(button,action,type,misc);
 		} 
 	}
