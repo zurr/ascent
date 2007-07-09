@@ -2656,6 +2656,15 @@ int8 Spell::CanCast(bool rangetolerate)
 					// do not allow spell to be cast
 					return SPELL_FAILED_SPELL_UNAVAILABLE;
 				}
+			case 36314: //The Seer's Presence
+				{
+					// this spell can be cast only on socrethar. Otherwife cool exploit
+					if(target->IsPlayer() || !target->IsUnit())
+						return SPELL_FAILED_BAD_TARGETS;
+					// this spell should be used only for a specific quest on specific monster = "Socrethar"
+					if(target->GetEntry()!=20132) //nasty fixed numbers :(
+						return SPELL_FAILED_BAD_TARGETS;
+				}
 			}
 			
 			if(target != u_caster && !m_caster->IsPet())

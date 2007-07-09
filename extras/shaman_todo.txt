@@ -1,9 +1,7 @@
 Shaman:
 
 1. Please fix Tremor Totem ? This totem dispells Stun and it's bug. Tremor only dispells Fear,Charm and Sleep.
-
 2. Searing totem is attacking players in Stealth mode (rogue,shadowmelded etc.)
-
 3. Windfury seems to bugged when using Stormstrike - every crit for 2k + 
 
 Talents
@@ -21,9 +19,6 @@ Restoration:
 Imp Reincarnation - Doesn't work
 Restorative Totem - Doesn't work
 Healing Way - Doesn't work
-Focused Mind - Doesn't work
-Earth Shield - can be casted on multiple targets
-Bloodlost - retest and fix
 
 Spells
 
@@ -34,7 +29,6 @@ Purge - Works well enough, in some cases it removes things it shouldent (Palidin
 Enhancement:
 Stoneclaw Totem - Doesn't work
 Flametongue Weapon - Doesn't work
-Rockbiter Weapon (Rank 2+) - Doesn't work
 Windfury Totem (Rank 4+) - Doesn't work
 Winfury Weapon - Doesn't work
 Far Sight - recheck
@@ -47,9 +41,7 @@ Tremor Totem - Doesn't work
 Poison Cleansing Totem - Doesn't work
 Disease Cleansing Totem - Doesn't work
 
-make lightningshield trigger only at intervals
 make Nature's grace to use SM variables. Preferably Spell:Calceffect
-make earth shield trigger only at 7 sec intervals
 
 [08:51:59] Spell::cast 3050, Unit: 7
 [08:51:59] WORLD: Spell effect id = 49, damage = 0
