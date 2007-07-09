@@ -781,7 +781,7 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CRIT_ATTACK;
 					if(strstr(nametext, "Bloodthirst"))
 						pr|=PROC_ON_MELEE_ATTACK | PROC_TAGRGET_SELF;
-					if(strstr(desc, "yields experience or honor"))
+					if(strstr(desc, "experience or honor"))
 						pr|=PROC_ON_GAIN_EXPIERIENCE;
 				}//end "if procspellaura"
 				//dirty fix to remove auras that should expire on event and they are not
@@ -845,6 +845,10 @@ void World::SetInitialWorldSettings()
 			sp->proc_interval = 3000; //few seconds
 		else if(strstr(nametext, "Poison Shield"))
 			sp->proc_interval = 3000; //few seconds
+		else if(strstr(nametext, "Infused Mushroom"))
+			sp->proc_interval = 10000; //10 seconds
+		else if(strstr(nametext, "Aviana's Purpose"))
+			sp->proc_interval = 10000; //10 seconds
 		//sp->dummy=result;
 /*		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
 		if(sp->procCharges==0)
