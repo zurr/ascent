@@ -384,8 +384,8 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 void Player::Reputation_OnKilledUnit(Unit * pUnit)
 {
 	// add rep for on kill
-	if(pUnit->m_factionDBC->RepListId < 0)
-		return;
+	/*if(pUnit->m_factionDBC->RepListId < 0)
+		return;*/
 
 	int team = GetTeam();
 	ReputationModifier * modifier = objmgr.GetReputationModifier(pUnit->GetEntry(), pUnit->m_factionDBC->ID);
