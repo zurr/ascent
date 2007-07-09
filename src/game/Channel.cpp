@@ -16,6 +16,8 @@
 
 bool Channel::Join(Player *p, const char *pass)
 {	
+	m_Lock.Acquire();
+	bool ret = false;
 	WorldPacket data(100);
 	if(IsOn(p))
 	{
@@ -64,13 +66,15 @@ bool Channel::Join(Player *p, const char *pass)
 				players[p].moderator = true;
 			}
 		}
-		return true;
+		ret = true;
 	}
-	return false;
+	m_Lock.Release();
+	return ret;
 }
 
 void Channel::Leave(Player *p, bool send)
 {
+	m_Lock.Acquire();
 	WorldPacket data(100);
 	if(!IsOn(p))
 	{
@@ -100,10 +104,12 @@ void Channel::Leave(Player *p, bool send)
 			SetOwner(newowner);
 		}
 	}
+	m_Lock.Release();
 }
 
 void Channel::KickOrBan(Player *good, const char *badname, bool ban)
 {
+	m_Lock.Acquire();
 	WorldPacket data(100);
 	if(!IsOn(good))
 	{
@@ -150,10 +156,12 @@ void Channel::KickOrBan(Player *good, const char *badname, bool ban)
 			}
 		}
 	}
+	m_Lock.Release();
 }
 
 void Channel::UnBan(Player *good, const char *badname)
 {
+	m_Lock.Acquire();
 	WorldPacket data(100);
 	if(!IsOn(good))
 	{
@@ -180,10 +188,12 @@ void Channel::UnBan(Player *good, const char *badname)
 			SendToAll(&data);
 		}
 	}
+	m_Lock.Release();
 }
 
 void Channel::Password(Player *p, const char *pass)
 {
+	m_Lock.Acquire();
 	WorldPacket data(100);
 	if(!IsOn(p))
 	{
@@ -201,10 +211,12 @@ void Channel::Password(Player *p, const char *pass)
 		MakeSetPassword(&data,p);
 		SendToAll(&data);
 	}
+	m_Lock.Release();
 }
 
 void Channel::SetMode(Player *p, const char *p2n, bool mod, bool set)
 {
+	m_Lock.Acquire();
 	WorldPacket data(100);
 	if(!IsOn(p))
 	{
@@ -240,10 +252,12 @@ void Channel::SetMode(Player *p, const char *p2n, bool mod, bool set)
 				SetMute(newp,set);
 		}
 	}
+	m_Lock.Release();
 }
 
 void Channel::SetOwner(Player *p, const char *newname)
 {
+	m_Lock.Acquire();
 	WorldPacket data(100);
 	if(!IsOn(p))
 	{
@@ -272,6 +286,7 @@ void Channel::SetOwner(Player *p, const char *newname)
 			owner = newp;
 		}
 	}
+	m_Lock.Release();
 }
 
 void Channel::GetOwner(Player *p)
@@ -291,6 +306,7 @@ void Channel::GetOwner(Player *p)
 
 void Channel::List(Player *p)
 {
+	m_Lock.Acquire();
 	WorldPacket data(100);
 	if(!IsOn(p))
 	{
@@ -315,6 +331,7 @@ void Channel::List(Player *p)
 		}
 		SendToOne(&data,p);
 	}
+	m_Lock.Release();
 }
 
 void Channel::Announce(Player *p)

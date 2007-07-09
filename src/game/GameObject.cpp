@@ -137,6 +137,9 @@ void GameObject::Update(uint32 p_time)
 	if(m_event_Instanceid != m_instanceId)
 		event_Relocate();
 
+	if(!IsInWorld())
+		return;
+
 	if(m_deleted)
 		return;
 
@@ -639,4 +642,10 @@ void GameObject::RemoveInRangeObject(Object* pObj)
 		m_summoner = 0;
 		ExpireAndDelete();
 	}
+}
+
+void GameObject::RemoveFromWorld()
+{
+	sEventMgr.RemoveEvents(EVENT_GAMEOBJECT_TRAP_SEARCH_TARGET);
+	Object::RemoveFromWorld();
 }

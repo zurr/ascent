@@ -205,6 +205,7 @@ public:
 	GOSpawn * m_spawn;
 	void OnPushToWorld();
 	void RemoveInRangeObject(Object* pObj);
+	void RemoveFromWorld();
 
 protected:
 

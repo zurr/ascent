@@ -19,6 +19,7 @@ using namespace std;
 
 class Channel
 {
+	Mutex m_Lock;
 	struct PlayerInfo
 	{
 		Player *player;
@@ -85,19 +86,25 @@ private:
 
 	void SendToAll(WorldPacket *data)
 	{
+		m_Lock.Acquire();
 		PlayerList::iterator i;
 		for(i = players.begin(); i!=players.end(); i++)
 		{
 			i->first->GetSession()->SendPacket(data);
 		}
+		m_Lock.Release();
 	}
 
 	void SendToAllButOne(WorldPacket *data, Player *who)
 	{
+		m_Lock.Acquire();
 		PlayerList::iterator i;
 		for(i = players.begin(); i!=players.end(); i++)
+		{
 			if(i->first != who)
 				i->first->GetSession()->SendPacket(data);
+		}
+		m_Lock.Release();
 	}
 
 	inline void SendToOne(WorldPacket *data, Player *who)
@@ -112,16 +119,25 @@ private:
 
 	bool IsBanned(const uint64 guid)
 	{
+		m_Lock.Acquire();
+		bool ret = false;
+
 		list<uint64>::iterator i;
 		for(i = banned.begin(); i!=banned.end(); i++)
+		{
 			if(*i == guid)
-				return true;
-		return false;
+				ret = true;
+		}
+		m_Lock.Release();
+		return ret;
 	}
 
 	inline bool IsFirst()
 	{
-		return !(players.size() > 1);
+		m_Lock.Acquire();
+		bool res = !(players.size() > 1);
+		m_Lock.Release();
+		return res;
 	}
 
 	void SetOwner(Player *p)
