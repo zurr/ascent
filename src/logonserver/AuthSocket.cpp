@@ -133,7 +133,7 @@ void AuthSocket::HandleChallenge()
 
 	/** Burlex TODO: This fucks up bad on freebsd systems, I have got NO IDEA why.
 	 */
-#ifndef WIN32
+#ifdef WIN32
 	// Don't update when IP banned, but update anyway if it's an account ban
 	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", inet_ntoa(GetRemoteAddress()), m_account->AccountId);
 #endif
