@@ -14,6 +14,11 @@
 #include "SocketOps.h"
 #include "Socket.h"
 
+#ifdef CONFIG_USE_POLL
+#include "SocketMgrPoll.h"
+#include "ListenSocketPoll.h"
+#endif
+
 #ifdef CONFIG_USE_SELECT
 #include "SocketMgrSelect.h"
 #include "ListenSocketSelect.h"
