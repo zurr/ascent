@@ -649,6 +649,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 			plr->AddRestXP(RestXP);
 		}
 	}
+	_player->ResetPVPTitles();
 
 	if(enter_world)
 	{
@@ -674,8 +675,6 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 			battleground->AddPlayer(_player, false, true);
 		}
 	}
-
-	_player->ResetPVPTitles();
 
 	sInstanceSavingManager.BuildSavedInstancesForPlayer(plr);
 	objmgr.AddPlayer(_player);
