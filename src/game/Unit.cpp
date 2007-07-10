@@ -3536,9 +3536,8 @@ void Unit::GetSpeedDecrease()
 	m_speedModifier -= m_slowdown;
 	m_slowdown = 0;
 	std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
-	while(itr!= speedReductionMap.end())
-	{
-		m_slowdown = min(m_slowdown, itr++->second);
-	}
+	for(; itr != speedReductionMap.end(); ++itr)
+		m_slowdown = min(m_slowdown, itr->second);
+
 	m_speedModifier += m_slowdown;
 }
