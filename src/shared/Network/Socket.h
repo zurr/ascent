@@ -1,6 +1,6 @@
 /*
  * Multiplatform Async Network Library
- * Copyright (c) 2007 grep
+ * Copyright (c) 2007 Burlex
  *
  * Socket implementable class.
  *
@@ -193,6 +193,33 @@ private:
 
 /* FreeBSD - kqueue specific calls */
 #ifdef CONFIG_USE_KQUEUE
+public:
+	// Atomic wrapper functions for increasing read/write locks
+	inline void IncSendLock() { m_writeLockMutex.Acquire(); m_writeLock++; m_writeLockMutex.Release(); }
+	inline void DecSendLock() { m_writeLockMutex.Acquire(); m_writeLock--; m_writeLockMutex.Release(); }
+	inline bool HasSendLock() { bool res; m_writeLockMutex.Acquire(); res = (m_writeLock != 0); m_writeLockMutex.Release(); return res; }
+	bool AcquireSendLock()
+	{
+		bool rv;
+		m_writeLockMutex.Acquire();
+		if(m_writeLock != 0)
+			rv = false;
+		else
+		{
+			rv = true;
+			m_writeLock++;
+		}
+		m_writeLockMutex.Release();
+		return rv;
+	}
+
+private:
+	unsigned int m_writeLock;
+	Mutex m_writeLockMutex;
+#endif
+
+/* Select() Specific Calls */
+#ifdef CONFIG_USE_SELECT
 public:
 	// Posts a epoll event with the specifed arguments.
 	void PostEvent(int events, bool oneshot);

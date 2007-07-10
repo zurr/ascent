@@ -110,6 +110,12 @@ enum MsTimeVariables
 #ifdef USE_KQUEUE
 	#define CONFIG_USE_KQUEUE
 #endif
+#ifdef USE_SELECT
+	#define CONFIG_USE_SELECT
+#endif
+#ifdef USE_POLL
+	#define CONFIG_USE_POLL
+#endif
 
 #include <set>
 #include <list>
@@ -154,8 +160,10 @@ enum MsTimeVariables
 #include <hash_set>
 #endif
 
+#ifdef CONFIG_USE_SELECT
 #undef FD_SETSIZE
-#define FD_SETSIZE 200  // 200 per thread should be plenty :p
+#define FD_SETSIZE 2048 
+#endif
 
 #if PLATFORM == PLATFORM_WIN32
 #include <winsock2.h>

@@ -1,6 +1,6 @@
 /*
  * Multiplatform Async Network Library
- * Copyright (c) 2007 grep
+ * Copyright (c) 2007 Burlex
  *
  * SocketOpsWin32.cpp - Win32 implementation of SocketOps.
  *

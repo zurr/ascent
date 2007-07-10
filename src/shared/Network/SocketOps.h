@@ -1,6 +1,6 @@
 /*
  * Multiplatform Async Network Library
- * Copyright (c) 2007 grep
+ * Copyright (c) 2007 Burlex
  *
  * SocketOps - wrapper for any specific socket operations that may be platform-dependant.
  *

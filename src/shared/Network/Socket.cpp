@@ -1,6 +1,6 @@
 /*
  * Multiplatform Async Network Library
- * Copyright (c) 2007 grep
+ * Copyright (c) 2007 Burlex
  *
  * Socket implementable class.
  *
@@ -29,12 +29,7 @@ Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_read
 		m_fd = SocketOps::CreateTCPFileDescriptor();
 
 	// epoll stuff
-#ifdef CONFIG_USE_EPOLL
-	m_writeLock = 0;
-	sSocketMgr.AddSocket(this);
-#endif
-
-#ifdef CONFIG_USE_KQUEUE
+#ifndef CONFIG_USE_IOCP
 	m_writeLock = 0;
 	sSocketMgr.AddSocket(this);
 #endif
@@ -78,10 +73,10 @@ void Socket::Accept(sockaddr_in * address)
 void Socket::_OnConnect()
 {
 	// set common parameters on the file descriptor
-	//SocketOps::Nonblocking(m_fd);
+	SocketOps::Nonblocking(m_fd);
 	SocketOps::DisableBuffering(m_fd);
-	//SocketOps::SetRecvBufferSize(m_fd, m_writeBufferSize);
-	//SocketOps::SetSendBufferSize(m_fd, m_writeBufferSize);
+	SocketOps::SetRecvBufferSize(m_fd, m_writeBufferSize);
+	SocketOps::SetSendBufferSize(m_fd, m_writeBufferSize);
 	m_connected = true;
 
 	// IOCP stuff
@@ -184,11 +179,7 @@ void Socket::Disconnect()
 	m_connected = false;
 
 	// remove from mgr
-#ifdef CONFIG_USE_EPOLL
-	sSocketMgr.RemoveSocket(this);
-#endif
-
-#ifdef CONFIG_USE_KQUEUE
+#ifndef CONFIG_USE_IOCP
 	sSocketMgr.RemoveSocket(this);
 #endif
 

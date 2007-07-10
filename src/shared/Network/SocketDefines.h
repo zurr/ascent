@@ -1,6 +1,6 @@
 /*
  * Multiplatform Async Network Library
- * Copyright (c) 2007 grep
+ * Copyright (c) 2007 Burlex
  *
  * SocketDefines.h - Any platform-specific defines/includes go here.
  *
@@ -15,6 +15,7 @@ using namespace std;
 /* Implementation Selection */
 #ifdef WIN32		// Easy
 #define CONFIG_USE_IOCP
+//#define CONFIG_USE_SELECT
 #else
 
 // unix defines

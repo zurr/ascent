@@ -1,6 +1,6 @@
 /*
  * Multiplatform Async Network Library
- * Copyright (c) 2007 grep
+ * Copyright (c) 2007 Burlex
  *
  * Network.h - Include this file in your .cpp files to gain access
  *			 to features offered by this library.
@@ -13,6 +13,11 @@
 #include "SocketDefines.h"
 #include "SocketOps.h"
 #include "Socket.h"
+
+#ifdef CONFIG_USE_SELECT
+#include "SocketMgrSelect.h"
+#include "ListenSocketSelect.h"
+#endif
 
 #ifdef CONFIG_USE_IOCP
 #include "SocketMgrWin32.h"
