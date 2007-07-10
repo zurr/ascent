@@ -20,6 +20,8 @@ bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession *m_sessio
 		return false;
 
 	QueryResult *result = sDatabase.Query( "SELECT * FROM recall" );
+	if(!result)
+		return false;
 
 	do
 	{
@@ -49,6 +51,8 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession *m_sessi
 		return false;
 	
 	QueryResult *result = sDatabase.Query( "SELECT locname FROM recall" );
+	if(!result)
+		return false;
 	do
 	{
 		Field *fields = result->Fetch();
@@ -90,6 +94,8 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession *m_sessi
 		return false;
 
 	QueryResult *result = sDatabase.Query( "SELECT id,locname FROM recall" );
+	if(!result)
+		return false;
 
 	do
 	{
@@ -117,6 +123,8 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession *m_sessi
 bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession *m_session)
 {
 	QueryResult *result = sDatabase.Query( "SELECT id,locname FROM recall" );
+	if(!result)
+		return false;
 	std::string recout;
 	uint32 count = 0;
 
@@ -154,6 +162,8 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession *
 	if(!plr) return false;
 
 	QueryResult *result = sDatabase.Query( "SELECT * FROM recall" );
+	if(!result)
+		return false;
 
 	do
 	{
