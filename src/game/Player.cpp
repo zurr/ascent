@@ -3399,7 +3399,7 @@ void Player::SetPlayerSpeed(uint8 SpeedType, float value)
 			if(value == m_lastFlySpeed)
 				return;
 
-			data.SetOpcode(SMSG_MOVE_SET_FLY_SPEED);
+			data.SetOpcode(SMSG_FORCE_MOVE_SET_FLY_SPEED);
 			m_flySpeed = value;
 			m_lastFlySpeed = value;
 		}break;
