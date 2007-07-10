@@ -267,7 +267,7 @@ public:
 	std::string GetGuildMotd() { return m_motd; }
 	void SetGuildMotd( std::string motd ) { m_motd = motd; }
 	std::string GetGuildInfo() { return m_guildInfo; }
-	void SetGuildInfo( std::string guldinfo );
+	void SetGuildInfo( std::string guildinfo ) { m_guildInfo = guildinfo; }
 	uint32 GetCreatedDay() { return m_createdDay; }
 	uint32 GetCreatedMonth() { return m_createdMonth; }
 	uint32 GetCreatedYear() { return m_createdYear; }
