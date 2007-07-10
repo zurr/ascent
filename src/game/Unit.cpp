@@ -507,10 +507,13 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				
 				//this is wrong, dumy is too common to be based on this, we should use spellgroup or something
 				SpellEntry *sp=sSpellStore.LookupEntry(spellId);
-				if(sp->dummy != CastingSpell->dummy && sp->School != CastingSpell->School)
-					continue;
+				if(sp->dummy != CastingSpell->dummy)
+					if(!sp->School)
+						continue;
+					if(sp->School != CastingSpell->School)
+						continue;
 				else
-					if(sp->dummy == 1 && sp->Category == 0)
+					if(sp->dummy == 1)
 						continue;
 			}			
 
@@ -3527,7 +3530,7 @@ void Unit::GetSpeedDecrease()
 	std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
 	while(itr!= speedReductionMap.end())
 	{
-		m_slowdown = max(m_slowdown, itr++->second);
+		m_slowdown = min(m_slowdown, itr++->second);
 	}
 	m_speedModifier += m_slowdown;
 }
