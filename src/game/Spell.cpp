@@ -1616,12 +1616,13 @@ void Spell::cast(bool check)
 						break;
 				}
 			}
-
+			bool isDuelEffect = false;
 			if(!reflected)
 			{
 				for(uint32 x=0;x<3;x++)
 				if(m_spellInfo->Effect[x])
 				{
+					isDuelEffect = isDuelEffect ||  m_spellInfo->Effect[x] == SPELL_EFFECT_DUEL;
 					if(m_spellInfo->Effect[x] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
 						HandleEffects(m_caster->GetGUID(),x);
 					else  
@@ -1649,7 +1650,6 @@ void Spell::cast(bool check)
 				{
 					HandleAddAura((*i));
 				}
-				
 			}
 			// we're much better to remove this here, because otherwise spells that change powers etc,
 			// don't get applied.
@@ -2431,13 +2431,6 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	damage = CalculateEffect(i);  
 
 	sLog.outDebug( "WORLD: Spell effect id = %u, damage = %d", m_spellInfo->Effect[i], damage); 
-
-	if(m_spellInfo->Effect[i] != SPELL_EFFECT_DUEL)
-	{
-		// Handle proc effects on this target
-		if(unitTarget && u_caster && !m_triggeredSpell && unitTarget != u_caster)
-			u_caster->HandleProc(PROC_ON_CAST_SPELL | PROC_ON_CAST_SPECIFIC_SPELL, unitTarget, m_spellInfo);
-	}
 	
 	if(m_spellInfo->Effect[i]<TOTAL_SPELL_EFFECTS)
 	{
@@ -2473,8 +2466,9 @@ void Spell::HandleAddAura(uint64 guid)
 	if(m_spellInfo->buffType > 0)
 		Target->RemoveAurasByBuffType(m_spellInfo->buffType, m_caster->GetGUID());
 	// spells that proc on spell cast, some talents
-	if(p_caster)
-		p_caster->HandleProc(PROC_ON_CAST_SPECIFIC_SPELL,Target, m_spellInfo);
+	if(p_caster && !m_triggeredSpell)
+		p_caster->HandleProc(PROC_ON_CAST_SPECIFIC_SPELL | PROC_ON_CAST_SPELL,Target, m_spellInfo);
+
 	std::map<uint32,Aura*>::iterator itr=Target->tmpAura.find(m_spellInfo->Id);
 	if(itr!=Target->tmpAura.end())
 	{
