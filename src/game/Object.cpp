@@ -2061,7 +2061,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	if(school == SHADOW_DAMAGE)
 	{
                 //VampiricEmbrace
-		if(this->GetGUID() == pVictim->VampEmbCaster && IsUnit())
+		if(pVictim->VampEmbCaster.find(this->GetGUID()) != pVictim->VampEmbCaster.end() && IsUnit())
 		{
 			if(static_cast<Unit*>(this)->isAlive())
 				static_cast<Unit*>(this)->VampiricEmbrace(float2int32(res), pVictim);

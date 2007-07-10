@@ -1035,7 +1035,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 
 		if(school == SHADOW_DAMAGE)
 		{
-			if(m_casterGuid == m_target->VampEmbCaster)
+			if(m_target->VampEmbCaster.find(m_casterGuid) != m_target->VampEmbCaster.end())
 			{
 				if(GetUnitCaster() && GetUnitCaster()->isAlive())
 				{
@@ -1216,11 +1216,13 @@ void Aura::SpellAuraDummy(bool apply)
 			if(apply)
 			{
 				SetNegative();
-				m_target->VampEmbCaster = this->GetUnitCaster()->GetGUID();
+				m_target->VampEmbCaster.insert(this->GetUnitCaster()->GetGUID());
 			}
 			else
 			{
-				m_target->VampEmbCaster = 0;  // may need to change this around some as VE can be stacked by muliple priests :/
+				std:set<uint64>::iterator itr = m_target->VampEmbCaster.find(this->GetUnitCaster()->GetGUID());
+				if(itr != m_target->VampEmbCaster.end())
+					m_target->VampEmbCaster.erase(itr);
 			}
 		}break;
 	case 34914://Vampiric Touch

@@ -49,7 +49,6 @@ Unit::Unit()
 	m_speedModifier = 0;
 	m_slowdown = 0;
 	m_mountedspeedModifier=0;
-	VampEmbCaster=0;
 	VampTchCaster=0;
 	for(uint32 x=0;x<27;x++)
 	{
