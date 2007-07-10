@@ -509,10 +509,12 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				//this is wrong, dumy is too common to be based on this, we should use spellgroup or something
 				SpellEntry *sp=sSpellStore.LookupEntry(spellId);
 				if(sp->dummy != CastingSpell->dummy)
+				{
 					if(!ospinfo->School)
 						continue;
 					if(ospinfo->School != CastingSpell->School)
 						continue;
+				}
 				else
 					if(sp->dummy == 1)
 						continue;
