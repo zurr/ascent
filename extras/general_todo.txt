@@ -11,6 +11,7 @@ SMT_RESIST_DISPEL - check if it is used
 - test if cooldown reduciotn is showed client side too. If not then force cooldown update on spells that have cooldown change (+ use cooldown cheat here - needed for tests)
 - rogue trainers train you lower level spell then the one you have ?
 - if you use some items while on taxi it will remove mount and animate as swim. Maybe this was made with a hack
+- redoubt(paladin talent) description says that aura=51 shoul dhave effect of increase block chance by percent. Are we mixing this up ? We use different meaning for it
 
 ==========================================================================
 ! Features !
@@ -24,6 +25,7 @@ SMT_RESIST_DISPEL - check if it is used
 - you do not gain resurection sicness after using spirit healer. WTF ? this was working before. Oh, well, next.
 - add conditioned aura removal. Ex: presence of mind should not be removed on instant cast spell (RemoveAurasByInterruptFlag)
 - players can moderate channels and they should not do so : trade ...
+- trainers should not train spells with 0 cost ? Maybe this will remove talents from them
 
 ==========================================================================
 ! BUGS !
@@ -44,13 +46,8 @@ Zack - test my shit :
 - test sboil patch for extra_dmg_for_creature_type
 - water shield
 - mage "Blazing Speed" = 31642 - talent
-- mage "Frostbite" = 12497 - talent
 - druid "Faerie Fire" to block stealth
 - added trigger for "Nature's Grasp"
-- trigger for "Redoubt"
-- added rage generation on block with "Shield Specialization" talent. Just donno what clas uses it :D
-- added trigger for "vengeance" - 20057
-- shaman reincarnation with 20% health
 - Holy Shield=20928,Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
 - 
 

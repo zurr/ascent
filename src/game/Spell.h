@@ -234,6 +234,7 @@ enum procFlags
 	PROC_ON_TRAP_TRIGGERED		  = 0x200000,
 	PROC_UNUSED1					= 0x400000,
 	PROC_UNUSED2					= 0x800000,
+	PROC_TAGRGET_ATTACKER			= 0x10000000,//our custom flag to decide if proc target is self or victim
 	PROC_ON_BLOCK_VICTIM			= 0x20000000,//added it as custom, maybe already exists in another form ?
 	PROC_ON_SPELL_CRIT_HIT			= 0x40000000,//added it as custom, maybe already exists in another form ?
 	PROC_TAGRGET_SELF				= 0x80000000,//our custom flag to decide if proc target is self or victim

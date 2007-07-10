@@ -7934,7 +7934,7 @@ void Player::UnPossess()
 }
 
 //what is an Immobilize spell ? Have to add it later to spell effect handler
-void Player::EventStunOrImmobilize()
+void Player::EventStunOrImmobilize(Unit *attacker)
 {
 	if(trigger_on_stun)
 	{
@@ -7944,7 +7944,14 @@ void Player::EventStunOrImmobilize()
 		if(!spellInfo)
 			return;
 		Spell *spell = new Spell(this, spellInfo ,true, NULL);
-		SpellCastTargets targets(GetGUID());
+		SpellCastTargets targets;
+		if(spellInfo->procFlags & PROC_TAGRGET_ATTACKER)
+		{
+			if(!attacker)
+				return;
+			targets.m_unitTarget = attacker->GetGUID();
+		}
+		else targets.m_unitTarget = GetGUID();
 		spell->prepare(&targets);
 	}
 }

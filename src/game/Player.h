@@ -460,7 +460,7 @@ public:
 		trigger_on_stun = newtrigger;
 		trigger_on_stun_chance = new_chance;
 	}
-	void EventStunOrImmobilize();
+	void EventStunOrImmobilize(Unit *attacker);
 
 	int32 GetOpenQuestSlot();
 	QuestLogEntry* GetQuestLogForEntry(uint32 quest);
