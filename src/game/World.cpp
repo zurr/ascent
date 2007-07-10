@@ -773,11 +773,7 @@ void World::SetInitialWorldSettings()
 					{
 						if(strstr(desc, "melee"))
 							pr|=PROC_ON_MELEE_ATTACK;
-						else if(strstr(desc,"Frost damage spells"))
-							pr|=PROC_ON_CAST_SPELL;
 						else if(strstr(desc,"sinister strike, backstab, gouge and shiv"))
-							pr|=PROC_ON_CAST_SPELL;
-						else if(strstr(desc,"fire spells"))
 							pr|=PROC_ON_CAST_SPELL;
 						//we should find that specific spell (or group) on what we will trigger
 						else pr|=PROC_ON_CAST_SPECIFIC_SPELL;
