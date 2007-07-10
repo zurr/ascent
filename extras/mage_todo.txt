@@ -48,7 +48,6 @@ Elemental Precision:Doesn't work
 Improved Frost Nova:Doesn't work, it's only visual
 Permafrost:Doesn't work
 Piercing Ice:Doesn't work
-Cold Snap:You can learn the spell and it visually stops the cooldown but when you try to use the spell it says that it isn't ready yet.
 Improved Blizzard:Doesn't work
 Frost Channeling:Threat part works. Mana cost part doesn't
 Shatter:Not working

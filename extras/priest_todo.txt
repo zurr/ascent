@@ -2,7 +2,6 @@ Priest:
 
 Shadow talents:
 Talents:
-Blackout; should give shadow damage spells 10% chance to stun the target for 3 seconds; does not work at all.
 
 Shadow Weaving; should give shadow damage spells 100% chance to cause target to become vulnerable to shadow damage, increasing shadow damage caused to target by 3% for 15 seconds, stacks up to 5 times; does not work at all.
 
