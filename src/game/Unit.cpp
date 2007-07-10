@@ -643,6 +643,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						//rogue - blade twisting
 						case 31125:
 							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
 								//only trigger effect for specified spells
 								if( CastingSpell->NameHash!=3553831941 && //backstab
 									CastingSpell->NameHash!=3900082058 && //sinister strike
@@ -756,24 +758,21 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 {
 	//make sure we do not loop dmg procs
-	if(this==victim)
+	if(this==victim || !victim)
 		return;
 	//charges are already removed in handleproc
 	WorldPacket data;
 	std::list<DamageProc>::iterator i;
-	std::list<DamageProc>::iterator i2 = victim->m_damageShields.begin();
+	std::list<DamageProc>::iterator i2;
 	for(i = victim->m_damageShields.begin();i != victim->m_damageShields.end();)     // Deal Damage to Attacker
+	{
+		i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
 		if(	(flag & (*i2).m_flags) )
 		{
-			i2 = i++;
-			data.Initialize(SMSG_SPELLDAMAGESHIELD);
-			data << victim->GetGUID();
-			data << this->GetGUID();
-			data << (*i2).m_damage;
-			data << (*i2).m_school;
-			SendMessageToSet(&data,true);
-			victim->DealDamage(this,(*i2).m_damage,0,0,(*i2).m_spellId);
+			SpellEntry	*ability=sSpellStore.LookupEntry((*i2).m_spellId);
+			victim->Strike(this,(*i2).m_school,ability,0,0,(*i2).m_damage);
 		}
+	}
 }
 
 bool Unit::isCasting()

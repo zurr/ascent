@@ -642,7 +642,9 @@ void World::SetInitialWorldSettings()
 			if(effect==SPELL_EFFECT_APPLY_AURA)
 			{
 				uint32 aura = dbc.getRecord(x).getUInt(94+y); // 58+30+3 = 91
-				if(aura == SPELL_AURA_PROC_TRIGGER_SPELL)//search for spellid in description
+				if( aura == SPELL_AURA_PROC_TRIGGER_SPELL ||
+					aura == SPELL_AURA_PROC_TRIGGER_DAMAGE
+					)//search for spellid in description
 				{
 					const char *p=desc;
 					while(p=strstr(p,"$"))
@@ -903,7 +905,10 @@ void World::SetInitialWorldSettings()
 		}
 		//some procs trigger at intervals
 		else if(strstr(nametext, "Water Shield"))
+		{
 			sp->proc_interval = 3000; //few seconds
+			sp->procFlags |= PROC_TAGRGET_SELF;
+		}
 		else if(strstr(nametext, "Earth Shield"))
 			sp->proc_interval = 3000; //few seconds
 		else if(strstr(nametext, "Shadowguard"))
