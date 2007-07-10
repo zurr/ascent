@@ -294,6 +294,7 @@ protected:
 	void HandleSetTargetOpcode(WorldPacket& recvPacket);
 	void HandleSetSelectionOpcode(WorldPacket& recvPacket);
 	void HandleStandStateChangeOpcode(WorldPacket& recvPacket);
+	void HandleDismountOpcode(WorldPacket & recvPacket);
 	void HandleFriendListOpcode(WorldPacket& recvPacket);
 	void HandleAddFriendOpcode(WorldPacket& recvPacket);
 	void HandleDelFriendOpcode(WorldPacket& recvPacket);

@@ -555,6 +555,7 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_SET_TARGET_OBSOLETE].handler					   = &WorldSession::HandleSetTargetOpcode;
 	WorldPacketHandlers[CMSG_SET_SELECTION].handler							 = &WorldSession::HandleSetSelectionOpcode;
 	WorldPacketHandlers[CMSG_STANDSTATECHANGE].handler						  = &WorldSession::HandleStandStateChangeOpcode;
+	WorldPacketHandlers[CMSG_DISMOUNT].handler								= &WorldSession::HandleDismountOpcode;
 	
 	// Friends
 	WorldPacketHandlers[CMSG_FRIEND_LIST].handler							   = &WorldSession::HandleFriendListOpcode;

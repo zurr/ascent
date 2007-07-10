@@ -9,6 +9,8 @@ SMT_EFFECT_BONUS - check if it is used
 SMT_RESIST_DISPEL - check if it is used
 - items modify this value PLAYER_FIELD_COMBAT_RATING_08 but nowhere else is used ?
 - test if cooldown reduciotn is showed client side too. If not then force cooldown update on spells that have cooldown change (+ use cooldown cheat here - needed for tests)
+- rogue trainers train you lower level spell then the one you have ?
+- if you use some items while on taxi it will remove mount and animate as swim. Maybe this was made with a hack
 
 ==========================================================================
 ! Features !

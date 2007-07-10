@@ -1707,3 +1707,14 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket & recv_data)
 	_player->m_summoner = _player->m_summonInstanceId = _player->m_summonMapId = 0;
 }
 
+void WorldSession::HandleDismountOpcode(WorldPacket& recv_data)
+{
+	sLog.outDebug( "WORLD: Received CMSG_DISMOUNT"  );
+
+	if( !_player->IsInWorld() )
+		return;
+
+	if( _player->m_MountSpellId )
+		_player->RemoveAura( _player->m_MountSpellId );
+}
+
