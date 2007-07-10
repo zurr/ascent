@@ -135,7 +135,10 @@ void GameObject::TrapSearchTarget()
 void GameObject::Update(uint32 p_time)
 {
 	if(m_event_Instanceid != m_instanceId)
+	{
 		event_Relocate();
+		return;
+	}
 
 	if(!IsInWorld())
 		return;

@@ -233,7 +233,10 @@ void Channel::SetMode(Player *p, const char *p2n, bool mod, bool set)
 		Player *newp = objmgr.GetPlayer(p2n);
 //		PlayerInfo inf = players[newp];
 		if(p == owner && newp == owner && mod)
+		{
+			m_Lock.Release();
 			return;
+		}
 		if(newp == NULL || !IsOn(newp))
 		{
 			MakeNotOn(&data,p2n);
