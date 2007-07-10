@@ -643,11 +643,12 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						//rogue - blade twisting
 						case 31125:
 							{
+printf("ready to proc twisting blade for spell %u and hash %u \n",CastingSpell->Id,CastingSpell->NameHash);
 								//only trigger effect for specified spells
-								if( ospinfo->NameHash!=3553831941 && //backstab
-									ospinfo->NameHash!=3900082058 && //sinister strike
-									ospinfo->NameHash!=2451914291 && //shiv
-									ospinfo->NameHash!=3435700480 ) //gouge
+								if( CastingSpell->NameHash!=3553831941 && //backstab
+									CastingSpell->NameHash!=3900082058 && //sinister strike
+									CastingSpell->NameHash!=2451914291 && //shiv
+									CastingSpell->NameHash!=3435700480 ) //gouge
 									continue;
 							}break;
 					}
