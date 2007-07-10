@@ -2514,6 +2514,7 @@ void Aura::SpellAuraModRoot(bool apply)
 void Aura::SpellAuraModSilence(bool apply)
 {
 	if(apply)
+	{
 		m_target->m_silenced++;
 
 		// remove the current spell (for channelers)
@@ -2523,6 +2524,7 @@ void Aura::SpellAuraModSilence(bool apply)
 			m_target->m_currentSpell->cancel();
 			m_target->m_currentSpell = 0;
 		}
+	}
 	else
 		m_target->m_silenced--;
 }
