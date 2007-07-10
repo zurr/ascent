@@ -48,6 +48,7 @@ Zack - test my shit :
 - trigger for "Redoubt"
 - added rage generation on block with "Shield Specialization" talent. Just donno what clas uses it :D
 - added trigger for "vengeance" - 20057
+- shaman reincarnation with 20% health
 
 ==========================================================================
 
