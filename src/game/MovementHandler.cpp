@@ -193,10 +193,10 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 					SendPacket(&data);
 					_player->DealDamage(GetPlayer(), damage, 0, 0, 0);
 				}
-				GetPlayer()->m_fallTime = 0;
-				_player->blinked = false;
-				_player->ResetHeartbeatCoords();
-			}			
+			}
+			GetPlayer()->m_fallTime = 0;
+			_player->blinked = false;
+			_player->ResetHeartbeatCoords();
 		}
 		else
 		{

@@ -1559,7 +1559,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		else
 			pVictim->setDeathState(JUST_DIED);
 
-		if(pVictim->IsPlayer() && !IsPlayer())
+		if(pVictim->IsPlayer() && (!IsPlayer() || pVictim == this))
 		{
 			((Player*)pVictim)->DeathDurabilityLoss(0.10);
 		}
