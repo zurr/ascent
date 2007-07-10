@@ -486,6 +486,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		}
 
 		uint32 origId = itr2->origId;
+		SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 
 		if(CastingSpell)
 		{
@@ -508,9 +509,9 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				//this is wrong, dumy is too common to be based on this, we should use spellgroup or something
 				SpellEntry *sp=sSpellStore.LookupEntry(spellId);
 				if(sp->dummy != CastingSpell->dummy)
-					if(!sp->School)
+					if(!ospinfo->School)
 						continue;
-					if(sp->School != CastingSpell->School)
+					if(ospinfo->School != CastingSpell->School)
 						continue;
 				else
 					if(sp->dummy == 1)
@@ -520,7 +521,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 			if(spellId && Rand(itr2->procChance))
 			{
 				//check if we can trigger due to time limitation
-				SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 				if(ospinfo->proc_interval)
 				{
 					uint32 now_in_ms=getMSTime();
