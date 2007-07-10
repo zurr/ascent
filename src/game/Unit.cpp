@@ -677,6 +677,9 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 			}//not always we have a spell to cast
 		}
 	}
+
+	HandleProcDmgShield(flag,victim);
+
 	std::map<uint32,struct SpellCharge>::iterator iter,iter2;
 	iter=m_chargeSpells.begin();
 	while(iter!= m_chargeSpells.end())
@@ -747,6 +750,30 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 	}
 	if(can_delete)
 		bProcInUse = false;
+}
+
+
+void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
+{
+	//make sure we do not loop dmg procs
+	if(this==victim)
+		return;
+	//charges are already removed in handleproc
+	WorldPacket data;
+	std::list<DamageProc>::iterator i;
+	std::list<DamageProc>::iterator i2;
+	for(i = victim->m_damageShields.begin();i != victim->m_damageShields.end();)     // Deal Damage to Attacker
+		if(	(flag & (*i2).m_flags) )
+		{
+			i2 = i++;
+			data.Initialize(SMSG_SPELLDAMAGESHIELD);
+			data << victim->GetGUID();
+			data << this->GetGUID();
+			data << (*i2).m_damage;
+			data << (*i2).m_school;
+			SendMessageToSet(&data,true);
+			victim->DealDamage(this,(*i2).m_damage,0,0,(*i2).m_spellId);
+		}
 }
 
 bool Unit::isCasting()
@@ -1458,27 +1485,6 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		setAttackTarget(pVictim);
 	}
 	
-	if(damage_type != RANGED)
-	{
-		if(hit_status & HITSTATUS_HITANIMATION)//really hit
-		{
-			std::list<DamageShield>::iterator i;
-			std::list<DamageShield>::iterator i2;
-			   for(i = pVictim->m_damageShields.begin();i != pVictim->m_damageShields.end();)	  // Deal Damage to Attacker
-			{
-				i2 = i++;
-				data.Initialize(SMSG_SPELLDAMAGESHIELD);
-				data << pVictim->GetGUID();
-				data << this->GetGUID();
-				data << (*i2).m_damage;
-				data << (*i2).m_school;
-				SendMessageToSet(&data,true);
-
-				pVictim->DealDamage(this,(*i2).m_damage,0,0,(*i2).m_spellId);
-			}
-		}
-	}
-
 	if(pVictim->IsPlayer())
 	{
 		static_cast<Player*>(pVictim)->GetItemInterface()->ReduceItemDurability();

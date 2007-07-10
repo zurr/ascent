@@ -1114,7 +1114,7 @@ public:
 	// Trigger Spell function that triggers triggered spells
 	void TriggerSpell();
 	// Checks the caster is ready for cast
-	int8 CanCast(bool);
+	uint8 CanCast(bool);
 	// Checks the caster has needed items on it 
 	int8 CheckItems();
 	// Removes Reagents if cast is successful

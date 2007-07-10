@@ -45,12 +45,14 @@ Zack - test my shit :
 - water shield
 - mage "Blazing Speed" = 31642 - talent
 - mage "Frostbite" = 12497 - talent
-- druid "Faerie Fire" to block stealth ! add to remove stealth if target already has it
+- druid "Faerie Fire" to block stealth
 - added trigger for "Nature's Grasp"
 - trigger for "Redoubt"
 - added rage generation on block with "Shield Specialization" talent. Just donno what clas uses it :D
 - added trigger for "vengeance" - 20057
 - shaman reincarnation with 20% health
+- Holy Shield=20928,Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
+- 
 
 ==========================================================================
 

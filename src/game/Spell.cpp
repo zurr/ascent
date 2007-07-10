@@ -2594,7 +2594,7 @@ bool Spell::IsSeal()
 		(m_spellInfo->Id == 20915) || (m_spellInfo->Id == 20918) || (m_spellInfo->Id == 20919) || (m_spellInfo->Id == 20920) || (m_spellInfo->Id == 21082) || (m_spellInfo->Id == 21084)); 
 }
 
-int8 Spell::CanCast(bool rangetolerate)
+uint8 Spell::CanCast(bool rangetolerate)
 {
 	if(objmgr.IsSpellDisabled(m_spellInfo->Id))
 		return SPELL_FAILED_ERROR;

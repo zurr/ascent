@@ -629,6 +629,7 @@ public:
 //	void PeriodicAuraLog(Unit *pVictim, SpellEntry* spellID, uint32 damage, uint32 damageType);
 	//void SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage);
 	void HandleProc(uint32 flag, Unit* Victim, SpellEntry* CastingSpell,uint32 dmg=-1);
+	void HandleProcDmgShield(uint32 flag, Unit* Victim);//almost the same as handleproc :P
 
 	int32 GetAP();
 	int32 GetRAP();
@@ -720,7 +721,7 @@ public:
 	
 	// Spell Effect Variables
 	uint16 m_silenced;
-	std::list<struct DamageShield> m_damageShields;
+	std::list<struct DamageProc> m_damageShields;
 	std::list<struct ReflectSpellSchool*> m_reflectSpellSchool;
  
 	std::list<struct ProcTriggerSpell> m_procSpells;

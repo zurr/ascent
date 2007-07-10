@@ -263,12 +263,14 @@ struct Modifier
 
 
 
-struct DamageShield
+struct DamageProc
 {
 	uint32 m_spellId;
 	uint32 m_damage;
   //  uint64 m_caster;//log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
 	uint32 m_school;
+	uint32 m_flags;
+	void  *owner;//mark the owner of this proc to know which one to delete
 };
 
 struct ProcTriggerSpell

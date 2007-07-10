@@ -2071,18 +2071,19 @@ void Aura::SpellAuraDamageShield(bool apply)
 	if(apply)
 	{
 		SetPositive();
-		DamageShield ds;// = new DamageShield();
-	  //  ds.m_caster = m_casterGuid;
+		DamageProc ds;// = new DamageShield();
 		ds.m_damage = mod->m_amount;
 		ds.m_spellId = GetSpellProto()->Id;
 		ds.m_school = GetSpellProto()->School;
+		ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM; //maybe later we might want to add other flags too here
+		ds.owner = (void*)this;
 		m_target->m_damageShields.push_back(ds);
 	}
 	else
 	{
-		for(std::list<struct DamageShield>::iterator i = m_target->m_damageShields.begin();i != m_target->m_damageShields.end();i++)
+		for(std::list<struct DamageProc>::iterator i = m_target->m_damageShields.begin();i != m_target->m_damageShields.end();i++)
 		{
-			if(i->m_spellId == GetSpellId())
+			if(i->owner==this)
 			{
 				 m_target->m_damageShields.erase(i);
 				 return;
@@ -2711,11 +2712,12 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 		}
 
 		//let's check Mage talents if we proc anythig 
-		Unit *caster=GetUnitCaster();
-		if(m_spellProto->School==SCHOOL_FROST && caster->IsPlayer())
+		if(m_spellProto->School==SCHOOL_FROST)
 		{
+			Unit *caster=GetUnitCaster();
 			//yes we are freezing the bastard, so can we proc anything on this ?
-			static_cast<Player*>(caster)->EventStunOrImmobilize();
+			if(caster->IsPlayer())
+				static_cast<Player*>(caster)->EventStunOrImmobilize();
 		}
 		m_target->speedReductionMap.insert(make_pair(m_spellProto->Id, mod->m_amount));
 		//m_target->m_slowdown=this;
@@ -3165,26 +3167,27 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 
 void Aura::SpellAuraProcTriggerDamage(bool apply)
 {
-	/*
 	if(apply)
 	{
-		DamageShield* ds = new DamageShield();
-		ds->m_caster = m_casterGuid;
-		ds->m_damage = mod->m_amount;
-		ds->m_spellId = GetSpellProto()->Id;
-		m_target->m_damageShields.push_back((*ds));
+		DamageProc ds;
+		ds.m_damage = mod->m_amount;
+		ds.m_spellId = GetSpellProto()->Id;
+		ds.m_school = GetSpellProto()->School;
+		ds.m_flags = m_spellProto->procFlags;
+		ds.owner = (void*)this;
+		m_target->m_damageShields.push_back(ds);
 	}
 	else
 	{
-		for(std::list<struct DamageShield>::iterator i = m_target->m_damageShields.begin();i != m_target->m_damageShields.end();i++)
+		for(std::list<struct DamageProc>::iterator i = m_target->m_damageShields.begin();i != m_target->m_damageShields.end();i++)
 		{
-			if(i->m_spellId == GetSpellProto()->Id && i->m_caster == m_casterGuid)
+			if(i->owner == this)
 			{
 				m_target->m_damageShields.erase(i);
 				break;
 			}
 		}
-	}*/	
+	}
 }
 
 void Aura::SpellAuraTrackCreatures(bool apply)

@@ -804,12 +804,39 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_BLOCK_VICTIM;
 					if(strstr(desc,"dealing a critical strike from a weapon swing, spell, or ability"))
 						pr|=PROC_ON_CRIT_ATTACK|PROC_ON_SPELL_CRIT_HIT;
+					//////////////////////////////////////////////////
+					//proc dmg flags
+					//////////////////////////////////////////////////
+					if(strstr(desc,"each attack blocked"))
+						pr|=PROC_ON_BLOCK_VICTIM;
+					if(strstr(desc,"into flame, causing an additional"))
+						pr|=PROC_ON_MELEE_ATTACK;
+					if(strstr(desc,"victim of a critical melee strike"))
+						pr|=PROC_ON_CRIT_HIT_VICTIM;
+					if(strstr(desc,"damage to melee attackers"))
+						pr|=PROC_ON_MELEE_ATTACK;
+					if(strstr(desc,"target blocks a melee attack"))
+						pr|=PROC_ON_BLOCK_VICTIM;
+					if(strstr(desc,"ranged and melee attacks to deal"))
+						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
+					if(strstr(desc,"damage on hit"))
+						pr|=PROC_ON_ANY_DAMAGE_VICTIM;
+					if(strstr(desc,"striking melee or ranged attackers"))
+						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
+					if(strstr(desc,"damage to attackers when hit"))
+						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
+					if(strstr(desc,"striking melee attackers"))
+						pr|=PROC_ON_MELEE_ATTACK_VICTIM;
+					if(strstr(desc,"whenever the caster takes damage"))
+						pr|=PROC_ON_ANY_DAMAGE_VICTIM;
+					if(strstr(desc,"damage on every attack"))
+						pr|=PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
 //					if(strstr(desc,"Your critical strikes from Fire damage"))
 //						pr|=PROC_ON_SPELL_CRIT_HIT;
 				}//end "if procspellaura"
 				//dirty fix to remove auras that should expire on event and they are not
-				else if(sp->procCharges>0)
-				{
+//				else if(sp->procCharges>0)
+//				{
 					//there are at least 185 spells that should loose charge uppon some event.Be prepared to add more here !
 					// ! watch it cause this might conflict with our custom modified spells like : lighning shield !
 
@@ -822,7 +849,7 @@ void World::SetInitialWorldSettings()
 						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;
 					if(strstr(desc, "ranged"))
 						sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_START_ATTACK;*/
-				}
+//				}
 			}//end "if aura"
 		}//end "for each effect"
 		sp->procFlags=pr;
