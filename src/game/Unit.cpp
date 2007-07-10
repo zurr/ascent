@@ -761,7 +761,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 	//charges are already removed in handleproc
 	WorldPacket data;
 	std::list<DamageProc>::iterator i;
-	std::list<DamageProc>::iterator i2;
+	std::list<DamageProc>::iterator i2 = victim->m_damageShields.begin();
 	for(i = victim->m_damageShields.begin();i != victim->m_damageShields.end();)     // Deal Damage to Attacker
 		if(	(flag & (*i2).m_flags) )
 		{
