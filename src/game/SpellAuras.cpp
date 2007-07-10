@@ -2703,7 +2703,6 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 				/* burlex: this would be better as a if(caster is hostile to target) then effect = negative) */
 				if(m_casterGuid != m_target->GetGUID())
 					SetNegative();
-
 				break;
 		}
 
@@ -2770,10 +2769,10 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
 void Aura::SpellAuraModIncreaseEnergy(bool apply)
 {
 	SetPositive();
-	uint32 powerField,maxField ;
-	uint8 powerType = m_target->GetPowerType();
-	
-	if(powerType == POWER_TYPE_MANA) // Mana
+	//uint32 powerField,maxField ;
+	//uint8 powerType = m_target->GetPowerType();
+
+	/*if(powerType == POWER_TYPE_MANA) // Mana
 	{
 		powerField = UNIT_FIELD_POWER1;
 		maxField = UNIT_FIELD_MAXPOWER1;
@@ -2788,14 +2787,14 @@ void Aura::SpellAuraModIncreaseEnergy(bool apply)
 		powerField = UNIT_FIELD_POWER4;
 		maxField = UNIT_FIELD_MAXPOWER4;
 	}
-    else // Capt: if we can not use identify the type: do nothing
-        return;
-    
+	else // Capt: if we can not use identify the type: do nothing
+		return; */
+	uint32 powerField = UNIT_FIELD_POWER1 + mod->m_miscValue;
 
 	m_target->ModUInt32Value(powerField,apply?mod->m_amount:-mod->m_amount);
-	m_target->ModUInt32Value(maxField,apply?mod->m_amount:-mod->m_amount);
+	m_target->ModUInt32Value(powerField+6,apply?mod->m_amount:-mod->m_amount);
 
-	if(!powerType && m_target->GetTypeId() == TYPEID_PLAYER)
+	if(powerField == UNIT_FIELD_POWER1 && m_target->GetTypeId() == TYPEID_PLAYER)
 	{
 		int32 amt = apply ? mod->m_amount : -mod->m_amount;
 		static_cast<Player*>(m_target)->SetManaFromSpell(static_cast<Player*>(m_target)->GetManaFromSpell() + amt);
@@ -5069,19 +5068,19 @@ void Aura::SpellAuraModIncreaseSpeedAlways(bool apply)
 void Aura::SpellAuraModIncreaseEnergyPerc(bool apply)
 {
 	SetPositive();
-	uint32 maxField = UNIT_FIELD_MAXPOWER1 + m_target->GetPowerType();
+	uint32 maxField = UNIT_FIELD_MAXPOWER1 + mod->m_miscValue;
 
 	if(apply)
 	{
 		mod->fixed_amount[0] = m_target->GetModPUInt32Value(maxField,mod->m_amount);
 		m_target->ModUInt32Value(maxField,mod->fixed_amount[0]);
-		if(m_target->IsPlayer())
+		if(m_target->IsPlayer() && maxField == UNIT_FIELD_MAXPOWER1)
 			((Player*)m_target)->SetManaFromSpell(((Player*)m_target)->GetManaFromSpell() + mod->fixed_amount[0]); 
 	}
 	else
 	{
 		m_target->ModUInt32Value(maxField,-mod->fixed_amount[0]);
-		if(m_target->IsPlayer())
+		if(m_target->IsPlayer() && maxField == UNIT_FIELD_MAXPOWER1)
 			((Player*)m_target)->SetManaFromSpell(((Player*)m_target)->GetManaFromSpell() + mod->fixed_amount[0]); 
 	}
 }
