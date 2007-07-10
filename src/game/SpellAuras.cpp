@@ -2713,15 +2713,19 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 			//yes we are freezing the bastard, so can we proc anything on this ?
 			static_cast<Player*>(m_target)->EventStunOrImmobilize();
 		}
-
-		m_target->m_slowdown=this;
-		m_target->m_speedModifier += mod->m_amount;
+		m_target->speedReductionMap.insert(make_pair(m_spellProto->Id, mod->m_amount));
+		//m_target->m_slowdown=this;
+		//m_target->m_speedModifier += mod->m_amount;
 	}
 	else
 	{
-		m_target->m_speedModifier -= mod->m_amount;
-		m_target->m_slowdown=NULL;
+		std::map<uint32,int32>::iterator itr = m_target->speedReductionMap.find(m_spellProto->Id);
+		if(itr != m_target->speedReductionMap.end())
+			m_target->speedReductionMap.erase(itr);
+		//m_target->m_speedModifier -= mod->m_amount;
+		//m_target->m_slowdown=NULL;
 	}
+	m_target->GetSpeedDecrease();
 	m_target->UpdateSpeed();
 
 }

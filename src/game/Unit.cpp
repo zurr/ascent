@@ -47,9 +47,10 @@ Unit::Unit()
 		PctPowerRegenModifier[x] = 1;
 	}
 	m_speedModifier = 0;
+	m_slowdown = 0;
 	m_mountedspeedModifier=0;
 	VampEmbCaster=0;
-        VampTchCaster=0;
+	VampTchCaster=0;
 	for(uint32 x=0;x<27;x++)
 	{
 		MechanicsDispels[x]=0;
@@ -641,10 +642,10 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						case 31125:
 							{
 								//only trigger effect for specified spells
-								if(!( ospinfo->NameHash!=3553831941 || //backstab
-									ospinfo->NameHash!=3900082058 || //sinister strike
-									ospinfo->NameHash!=2451914291 || //shiv
-									ospinfo->NameHash!=3435700480 )) //gouge
+								if( ospinfo->NameHash!=3553831941 && //backstab
+									ospinfo->NameHash!=3900082058 && //sinister strike
+									ospinfo->NameHash!=2451914291 && //shiv
+									ospinfo->NameHash!=3435700480 ) //gouge
 									continue;
 							}break;
 					}
@@ -3520,4 +3521,16 @@ int32 Unit::GetRAP()
 	if(totalap>=0)
 		return float2int32(totalap);
 	return	0;
+}
+
+void Unit::GetSpeedDecrease()
+{
+	m_speedModifier -= m_slowdown;
+	m_slowdown = 0;
+	std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
+	while(itr!= speedReductionMap.end())
+	{
+		m_slowdown = max(m_slowdown, itr++->second);
+	}
+	m_speedModifier += m_slowdown;
 }

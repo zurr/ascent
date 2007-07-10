@@ -769,9 +769,9 @@ public:
 	float BaseOffhandDamage[2];
 	float BaseRangedDamage[2];
 	uint64 VampEmbCaster;
-        uint64 VampTchCaster;
+	uint64 VampTchCaster;
 	void VampiricEmbrace(uint32 dmg,Unit* tgt);
-        void VampiricTouch(uint32 dmg,Unit* tgt);
+	void VampiricTouch(uint32 dmg,Unit* tgt);
 	SchoolAbsorb Absorbs[7];
 	uint32 AbsorbDamage(uint32 School,uint32 * dmg);//returns amt of absorbed dmg, decreases dmg by absorbed value
 	int32 RAPvModifier;
@@ -916,6 +916,9 @@ public:
 	int32  m_detectRangeMOD[5];
 	// Affect Speed
 	int32 m_speedModifier;
+	int32 m_slowdown;
+	map<uint32,int32> speedReductionMap;
+	void GetSpeedDecrease();
 	int32 m_mountedspeedModifier;
 	int32 m_flyspeedModifier;
 	void UpdateSpeed(bool delay = false);
@@ -998,7 +1001,6 @@ public:
 	}
 
 	DynamicObject * dynObj;
-	Aura * m_slowdown;
 
 	uint32 AddAuraVisual(uint32 spellid, uint32 count, bool positive);
 	void SetAuraSlotLevel(uint32 slot, bool positive);
