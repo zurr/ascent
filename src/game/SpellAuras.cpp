@@ -2513,8 +2513,16 @@ void Aura::SpellAuraModSilence(bool apply)
 {
 	if(apply)
 		m_target->m_silenced++;
+
+		// remove the current spell (for channelers)
+		if(m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid && 
+			m_target->m_currentSpell->getState() == SPELL_STATE_CASTING )
+		{
+			m_target->m_currentSpell->cancel();
+			m_target->m_currentSpell = 0;
+		}
 	else
-		m_target->m_silenced--;	
+		m_target->m_silenced--;
 }
 
 void Aura::SpellAuraReflectSpells(bool apply)
@@ -2972,7 +2980,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 				if(furorSpell)
 				{
 					SpellEntry *spellInfo = sSpellStore.LookupEntry(furorSpell);
-		
+
 					Spell *sp = new Spell(m_target, spellInfo, true, NULL);
 					SpellCastTargets tgt;
 					tgt.m_unitTarget = m_target->GetGUID();
@@ -3468,6 +3476,13 @@ void Aura::SpellAuraTransform(bool apply)
 					m_target->SetUInt32Value(UNIT_FIELD_DISPLAYID, displayId);
 					m_target->m_silenced++;
 					m_target->m_pacified++;
+					// remove the current spell (for channelers)
+					if(m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid && 
+						m_target->m_currentSpell->getState() == SPELL_STATE_CASTING )
+					{
+						m_target->m_currentSpell->cancel();
+						m_target->m_currentSpell = 0;
+					}
 					sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1,(uint32)1000,EVENT_AURA_PERIODIC_HEAL,1000,0);
 					m_target->polySpell = GetSpellProto()->Id;
 				}
@@ -3602,6 +3617,12 @@ void Aura::SpellAuraPacifySilence(bool apply)
 			SetNegative();
 		m_target->m_silenced++;
 		m_target->m_pacified++;
+		if(m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid && 
+			m_target->m_currentSpell->getState() == SPELL_STATE_CASTING )
+			{
+				m_target->m_currentSpell->cancel();
+				m_target->m_currentSpell = 0;
+			}
 	}
 	else
 	{
