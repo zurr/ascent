@@ -600,6 +600,9 @@ bool ChatHandler::HandleLevelUpCommand(const char* args, WorldSession *m_session
 	else
 		levels = atoi(args);
 
+	if(levels <= 0)
+		return false;
+
 	Player *plr = getSelectedChar(m_session, true);
 	if(!plr) plr = m_session->GetPlayer();
 	if(!plr) return false;
