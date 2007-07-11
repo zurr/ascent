@@ -17,15 +17,12 @@
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 {
 	CHECK_PACKET_SIZE(recv_data, 4);
-	//TODO: Check if the player can actually _have_ this rank.
-
 	uint32 ChosenRank;
-	recv_data >> ChosenRank;
-
-	if(!_player->GetPVPRank() >= ChosenRank)
-		return;
-
-	_player->SetUInt32Value(PLAYER_CHOSEN_TITLE, ChosenRank);
+	recv_data >> ChosenRank; 
+	if(ChosenRank == 0xFFFFFFFF)
+		_player->SetUInt32Value(PLAYER_CHOSEN_TITLE, 0);
+	else
+		_player->SetUInt32Value(PLAYER_CHOSEN_TITLE, ChosenRank);
 }
 
 void HonorHandler::AddHonorPointsToPlayer(Player *pPlayer, uint32 uAmount)

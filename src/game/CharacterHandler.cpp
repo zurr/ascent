@@ -649,7 +649,6 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 			plr->AddRestXP(RestXP);
 		}
 	}
-	_player->ResetPVPTitles();
 
 	if(enter_world)
 	{
