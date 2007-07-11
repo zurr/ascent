@@ -918,7 +918,7 @@ public:
 	// Affect Speed
 	int32 m_speedModifier;
 	int32 m_slowdown;
-	map<uint32,int32> speedReductionMap;
+	map< uint32, pair<SpellEntry*, uint32> > speedReductionMap;
 	void GetSpeedDecrease();
 	int32 m_mountedspeedModifier;
 	int32 m_flyspeedModifier;

@@ -3534,9 +3534,9 @@ void Unit::GetSpeedDecrease()
 {
 	m_speedModifier -= m_slowdown;
 	m_slowdown = 0;
-	std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
+	map< uint32, pair<SpellEntry*, uint32> >::iterator itr = speedReductionMap.begin();
 	for(; itr != speedReductionMap.end(); ++itr)
-		m_slowdown = min(m_slowdown, itr->second);
+		m_slowdown = min(m_slowdown, (itr->second.first->EffectBasePoints[itr->second.second] + 1));
 
 	m_speedModifier += m_slowdown;
 }

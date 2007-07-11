@@ -2710,7 +2710,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 					if (m_spellInfo->Spell_Dmg_Type == 3) // 3 is ranged so we do not need to check, we just need inface
 					{   // our spell is a ranged spell
 						if (!u_caster->isInFront(target))
-							return SPELL_FAILED_UNIT_NOT_INFRONT;
+							return (uint8)SPELL_FAILED_UNIT_NOT_INFRONT;
 					}
 					else
 					{   // our spell is not a ranged spell
@@ -2723,7 +2723,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 							// Spell extra infront check
 							if (GetType() == SPELL_TYPE_MAGIC && SpellExtra->ExtraFlags & SPELL_EXTRA_INFRONT) // only do spells
 								if (!u_caster->isInFront(target))
-									return SPELL_FAILED_NOT_INFRONT;
+									return (uint8)SPELL_FAILED_UNIT_NOT_INFRONT;
 							// Spell extra Behind check
 							if(SpellExtra->ExtraFlags & SPELL_EXTRA_BEHIND)
 								if(target->isInFront(u_caster))
