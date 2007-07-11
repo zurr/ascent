@@ -2028,8 +2028,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	if(GetGuildId() && (pGuild = objmgr.GetGuild(GetGuildId())) && (pMember = pGuild->GetGuildMember( GetGUID() )))
 	{
 	
-		ss << ",'" << pMember->publicNote << "','";
-		ss << pMember->officerNote << "'," << GetGuildId() << "," << GetGuildRank();
+		ss << ",'" << sDatabase.EscapeString(pMember->publicNote) << "','";
+		ss << sDatabase.EscapeString(pMember->officerNote) << "'," << GetGuildId() << "," << GetGuildRank();
 
 	   }else
 	{
