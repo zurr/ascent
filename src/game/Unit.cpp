@@ -514,7 +514,9 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						continue;
 					if(ospinfo->School != CastingSpell->School)
 						continue;
-					if(victim->GetGUID() == this->GetGUID()) //Prevents school based procs affecting caster when self buffing
+					if(ospinfo->EffectImplicitTargetA[0] == 1 || 
+						ospinfo->EffectImplicitTargetA[1] == 1 || 
+						ospinfo->EffectImplicitTargetA[2] == 1) //Prevents school based procs affecting caster when self buffing
 						continue;
 				}
 				else
