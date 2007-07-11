@@ -777,6 +777,8 @@ void World::SetInitialWorldSettings()
 							pr|=PROC_ON_MELEE_ATTACK;
 						else if(strstr(desc,"sinister strike, backstab, gouge and shiv"))
 							pr|=PROC_ON_CAST_SPELL;
+						else if(strstr(desc,"chance to daze the target"))
+							pr|=PROC_ON_CAST_SPELL;
 //						else if(strstr(desc,"shadow bolt, shadowburn, soul fire, incinerate, searing pain and conflagrate"))
 //							pr|=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
 						//we should find that specific spell (or group) on what we will trigger
@@ -811,9 +813,7 @@ void World::SetInitialWorldSettings()
 					if(strstr(desc,"dealing a critical strike from a weapon swing, spell, or ability"))
 						pr|=PROC_ON_CRIT_ATTACK|PROC_ON_SPELL_CRIT_HIT;
 					if(strstr(desc,"shadow bolt critical strikes increase shadow damage"))
-						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
-					if(strstr(desc,"chance to daze the target"))
-						pr|=PROC_ON_CAST_SPELL;
+						pr|=PROC_ON_SPELL_CRIT_HIT;
 					if(strstr(desc,"next offensive ability"))
 						pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc,"after being hit with a shadow or fire spell"))

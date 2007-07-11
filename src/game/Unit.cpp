@@ -487,8 +487,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		}
 
 		uint32 origId = itr2->origId;
-		SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
-
 		if(CastingSpell)
 		{
 			//this is to avoid spell proc on spellcast loop. We use dummy that is same for both spells
@@ -498,12 +496,14 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				continue;
 			}
 		}
+		SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 		//this requires some specific spell check,not yet implemented
 		if(itr2->procFlags & flag)
 		{
 			uint32 spellId = itr2->spellId;
 			if(itr2->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
 			{
+
 				if(!CastingSpell)
 					continue;
 				
@@ -667,9 +667,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!CastingSpell)
 									continue;//this should not ocur unless we made a fuckup somewhere
 								//only trigger effect for specified spells
-								if( CastingSpell->NameHash!=3748693209)//shadow bolt
+								if( CastingSpell->NameHash!=2054907731)//shadow bolt								
 									continue;
-								//should test is castingspell will have critical effect
 							}break;
 						//warlock - Aftermath
 						case 18118:
@@ -677,7 +676,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!CastingSpell)
 									continue;//this should not ocur unless we made a fuckup somewhere
 								//only trigger effect for specified spells
-								skilllinespell* skillability = objmgr.GetSpellSkill(spellId);
+								skilllinespell* skillability = objmgr.GetSpellSkill(CastingSpell->Id);
 								if (!skillability)
 									continue;
 								if(skillability->skilline!=SKILL_DESTRUCTION)
@@ -709,11 +708,11 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									case 3592853585: //Searing Pain
 									case 3077005839: //Conflagrate
 									{
-										amount = CastingSpell->EffectBasePoints[0];
+										amount = CastingSpell->EffectBasePoints[0]+1;
 									}break;
 									case 275158380: //Shadowburn
 									{
-										amount = CastingSpell->EffectBasePoints[1];
+										amount = CastingSpell->EffectBasePoints[1]+1;
 									}break;
 									default:
 										amount=0;
@@ -724,8 +723,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!spellInfo)
 									continue;
 								Spell *spell = new Spell(this, spellInfo ,true, NULL);
-								SpellCastTargets targets(GetGUID());
-								spell->Heal(amount*ospinfo->EffectBasePoints[0]/100);
+								spell->SetUnitTarget(this);
+								spell->Heal(amount*(ospinfo->EffectBasePoints[0]+1)/100);
 								delete spell;
 								continue;
 							}break;

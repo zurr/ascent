@@ -12,6 +12,7 @@ SMT_RESIST_DISPEL - check if it is used
 - rogue trainers train you lower level spell then the one you have ?
 - if you use some items while on taxi it will remove mount and animate as swim. Maybe this was made with a hack
 - redoubt(paladin talent) description says that aura=51 shoul dhave effect of increase block chance by percent. Are we mixing this up ? We use different meaning for it
+- rogue - cold blood - need a log why does not trigger cooldown decrease
 
 ==========================================================================
 ! Features !
@@ -50,13 +51,6 @@ Zack - test my shit :
 - druid "Faerie Fire" to block stealth
 - added trigger for "Nature's Grasp"
 - !help : Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
-- warlock talent - "Improved Shadow Bolt" - also add to test if trigger_sp had critical effect, and if it removed correctly and if trigger spell effect has implementation :D
-- rogue - shiv 
-- warlock - aftermath
-- rogue - cold blood - gets removed on any spell cast
-- warlock - Nether Protection
-- warlock - soul leech - very nasty
-- warlock - pyroclasm
 - paladin seal of justice trigger
 - deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
 

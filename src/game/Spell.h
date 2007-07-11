@@ -1133,6 +1133,7 @@ public:
 	bool reflect(Unit *refunit);
 
 	inline uint32 getState() { return m_spellState; }
+	inline SetUnitTarget(Unit *punit){unitTarget=punit;}
 
 	// Send Packet functions
 	void SendCastResult(int16 result);

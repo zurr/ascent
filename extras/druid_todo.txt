@@ -1,4 +1,5 @@
 Druid:
+Omen of Clarity (druid)
 
 Skills
 Tranquility - doesnt work. are you sure ?
