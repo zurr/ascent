@@ -434,6 +434,7 @@ public:
 
 	void SaveAllPlayers();
 	uint32 LevelCap;
+	uint32 Expansion1LevelCap;
 	string MapPath;
 	bool UnloadMapFiles;
 	bool BreathingEnabled;

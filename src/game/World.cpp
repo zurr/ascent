@@ -1654,7 +1654,8 @@ void World::Rehash(bool load)
 	SpeedhackProtection = Config.MainConfig.GetBoolDefault("Server", "SpeedhackProtection", false);
 	SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
 	compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
-	LevelCap = Config.MainConfig.GetIntDefault("Server", "LevelCap", 70);
+	LevelCap = Config.MainConfig.GetIntDefault("Server", "LevelCap", 60);
+	Expansion1LevelCap = Config.MainConfig.GetIntDefault("Server", "Expansion1LevelCap", 70);
 
 	// load regeneration rates.
 	setRate(RATE_HEALTH,Config.MainConfig.GetFloatDefault("Rates", "Health",1));

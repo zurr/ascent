@@ -1290,12 +1290,12 @@ void Player::GiveXP(uint32 xp, const uint64 &guid, bool allowbonus)
 		if(level > 9)
 			ModUInt32Value(PLAYER_CHARACTER_POINTS1, 1);
 
-		if(level >= sWorld.LevelCap)
+		if(level >= GetUInt32Value(PLAYER_FIELD_MAX_LEVEL))
 			break;
 	}
 
-	if(level > sWorld.LevelCap)
-		level = sWorld.LevelCap;
+	if(level > GetUInt32Value(PLAYER_FIELD_MAX_LEVEL))
+		level = GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
 
 	if(levelup)
 	{
@@ -2416,7 +2416,7 @@ bool Player::LoadFromDB(uint32 guid)
 	}
 
 	SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
-	SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld.LevelCap);
+	SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, (GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01)?sWorld.Expansion1LevelCap:sWorld.LevelCap));
 	SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, info->factiontemplate);
  
 	LoadTaxiMask( get_next_field.GetString() );
