@@ -351,6 +351,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 		ApplyStatsForLevel();
 	}
 	
+	// Nuke auras
+	for(uint32 x = UNIT_FIELD_AURA_01; x <= UNIT_FIELD_AURA_55; x++)
+		SetUInt32Value(x, 0);
 }
 
 void Pet::InitializeMe(bool first)
