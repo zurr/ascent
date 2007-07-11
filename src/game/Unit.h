@@ -557,7 +557,7 @@ enum AURA_CHECK_RESULT
 };
 
 typedef std::set<uint64> AttackerSet;
-
+typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 //====================================================================
 //  Unit
 //  Base object for Players and Creatures
@@ -630,6 +630,7 @@ public:
 	//void SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage);
 	void HandleProc(uint32 flag, Unit* Victim, SpellEntry* CastingSpell,uint32 dmg=-1);
 	void HandleProcDmgShield(uint32 flag, Unit* Victim);//almost the same as handleproc :P
+//	void HandleProcSpellOnSpell(Unit* Victim,uint32 damage,bool critical);//nasty, some spells proc other spells
 
 	int32 GetAP();
 	int32 GetRAP();
@@ -725,6 +726,7 @@ public:
 	std::list<struct ReflectSpellSchool*> m_reflectSpellSchool;
  
 	std::list<struct ProcTriggerSpell> m_procSpells;
+//	std::map<uint32,ProcTriggerSpellOnSpellList> m_procSpellonSpell; //index is namehash
 	std::map<uint32,struct SpellCharge> m_chargeSpells;
 	inline void SetOnMeleeSpell(uint32 spell ) { m_meleespell = spell; }
 	inline uint32 GetOnMeleeSpell() { return m_meleespell; }

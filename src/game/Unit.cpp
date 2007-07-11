@@ -670,6 +670,75 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									continue;
 								//should test is castingspell will have critical effect
 							}break;
+						//warlock - Aftermath
+						case 18118:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								skilllinespell* skillability = objmgr.GetSpellSkill(spellId);
+								if (!skillability)
+									continue;
+								if(skillability->skilline!=SKILL_DESTRUCTION)
+									continue;
+							}break;
+						//warlock - Nether Protection
+						case 30300:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								if( CastingSpell->School!=SCHOOL_FIRE &&
+									CastingSpell->School!=SCHOOL_SHADOW)
+									continue;
+							}break;
+						//warlock - Soul Leech
+						//this whole spell should get rewriten. Uses bad formulas, bad trigger method, spell is rewriten ...
+						case 30294:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								uint32 amount;
+								switch(CastingSpell->NameHash)
+								{
+									case 2054907731: //Shadow Bolt
+									case 2602281440: //Soul Fire
+									case 734047744: //Incinerate
+									case 3592853585: //Searing Pain
+									case 3077005839: //Conflagrate
+									{
+										amount = CastingSpell->EffectBasePoints[0];
+									}break;
+									case 275158380: //Shadowburn
+									{
+										amount = CastingSpell->EffectBasePoints[1];
+									}break;
+									default:
+										amount=0;
+								}
+								if(!amount)
+									continue;
+								SpellEntry *spellInfo = sSpellStore.LookupEntry(spellId );
+								if(!spellInfo)
+									continue;
+								Spell *spell = new Spell(this, spellInfo ,true, NULL);
+								SpellCastTargets targets(GetGUID());
+								spell->Heal(amount*ospinfo->EffectBasePoints[0]/100);
+								delete spell;
+								continue;
+							}break;
+						//warlock - pyroclasm
+						case 18093:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								if( CastingSpell->NameHash!=3120897043 && //Rain of Fire
+									CastingSpell->NameHash!=2040019364 && //Hellfire
+									CastingSpell->NameHash!=2602281440 ) //Soul Fire
+									continue;
+							}break;
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
@@ -772,7 +841,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		bProcInUse = false;
 }
 
-
 void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 {
 	//make sure we do not loop dmg procs
@@ -806,6 +874,11 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 	}
 }
 
+/*
+void Unit::HandleProcSpellOnSpell(Unit* Victim,uint32 damage,bool critical)
+{
+}
+*/
 bool Unit::isCasting()
 {
 	return (m_currentSpell != NULL);

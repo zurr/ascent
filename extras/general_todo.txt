@@ -26,6 +26,7 @@ SMT_RESIST_DISPEL - check if it is used
 - add conditioned aura removal. Ex: presence of mind should not be removed on instant cast spell (RemoveAurasByInterruptFlag)
 - players can moderate channels and they should not do so : trade ...
 - trainers should not train spells with 0 cost ? Maybe this will remove talents from them
+- maybe rewrite procspell on spell. There are like 140 spells who use this, and to function correctly most of them would need this
 
 ==========================================================================
 ! BUGS !
@@ -51,6 +52,11 @@ Zack - test my shit :
 - !help : Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
 - warlock talent - "Improved Shadow Bolt" - also add to test if trigger_sp had critical effect, and if it removed correctly and if trigger spell effect has implementation :D
 - rogue - shiv 
+- warlock - aftermath
+- rogue - cold blood - gets removed on any spell cast
+- warlock - Nether Protection
+- warlock - soul leech - very nasty
+- warlock - pyroclasm
 
 Performs an instant off-hand weapon attack that automatically applies the poison from your off-hand weapon to the target.  Slower weapons require more Energy.  Awards 1 combo point.
 

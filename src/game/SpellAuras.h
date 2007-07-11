@@ -262,6 +262,17 @@ struct Modifier
 };
 
 
+struct ProcTriggerSpellOnSpell
+{
+	uint32 origId;
+	uint32 spellId;
+	uint64 caster;
+	uint32 procChance;
+	uint32 procFlags;
+	uint32 RemainingCharges;
+	uint32 LastTrigger;
+	void  *owner;//mark the owner of this proc to know which one to delete
+};
 
 struct DamageProc
 {

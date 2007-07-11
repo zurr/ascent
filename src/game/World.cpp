@@ -777,6 +777,8 @@ void World::SetInitialWorldSettings()
 							pr|=PROC_ON_MELEE_ATTACK;
 						else if(strstr(desc,"sinister strike, backstab, gouge and shiv"))
 							pr|=PROC_ON_CAST_SPELL;
+//						else if(strstr(desc,"shadow bolt, shadowburn, soul fire, incinerate, searing pain and conflagrate"))
+//							pr|=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
 						//we should find that specific spell (or group) on what we will trigger
 						else pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					}
@@ -808,8 +810,14 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CRIT_ATTACK|PROC_ON_SPELL_CRIT_HIT;
 					if(strstr(desc,"dealing a critical strike from a weapon swing, spell, or ability"))
 						pr|=PROC_ON_CRIT_ATTACK|PROC_ON_SPELL_CRIT_HIT;
-					if(strstr(desc,"Shadow Bolt critical strikes increase Shadow damage"))
+					if(strstr(desc,"shadow bolt critical strikes increase shadow damage"))
 						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
+					if(strstr(desc,"chance to daze the target"))
+						pr|=PROC_ON_CAST_SPELL;
+					if(strstr(desc,"next offensive ability"))
+						pr|=PROC_ON_CAST_SPELL;
+					if(strstr(desc,"after being hit with a shadow or fire spell"))
+						pr|=PROC_ON_SPELL_HIT_VICTIM;
 					//////////////////////////////////////////////////
 					//proc dmg flags
 					//////////////////////////////////////////////////
@@ -996,8 +1004,7 @@ void World::SetInitialWorldSettings()
 	if(sp)
 	{
 		sp->Effect[1] = 6; //aura
-		sp->EffectApplyAuraName[1] = 42; //force him to use procspell effect
-		sp->EffectTriggerSpell[0] = 30339; //evil , but this is good for us :D
+		sp->EffectTriggerSpell[1] = 30339; //evil , but this is good for us :D
 	}
 
 	//mage talent "Blazing Speed"
@@ -1017,6 +1024,50 @@ void World::SetInitialWorldSettings()
 	//rogue-shiv -> add 1 combo point
 	sp = sSpellStore.LookupEntry(5938);
 	if(sp)	sp->Effect[1]=80;
+
+	//warlock - soul leech
+	sp = sSpellStore.LookupEntry(30293);
+	if(sp)
+	{
+		sp->Effect[0] = 6; //aura
+		sp->EffectApplyAuraName[0] = 42;
+		sp->EffectTriggerSpell[0] = 30294;
+		sp->procFlags=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
+	}
+	sp = sSpellStore.LookupEntry(30295);
+	if(sp)
+	{
+		sp->Effect[0] = 6; //aura
+		sp->EffectApplyAuraName[0] = 42;
+		sp->EffectTriggerSpell[0] = 30294;
+		sp->procFlags=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
+	}
+	sp = sSpellStore.LookupEntry(30296);
+	if(sp)
+	{
+		sp->Effect[0] = 6; //aura
+		sp->EffectApplyAuraName[0] = 42;
+		sp->EffectTriggerSpell[0] = 30294;
+		sp->procFlags=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
+	}
+
+	//warlock - Pyroclasm
+	sp = sSpellStore.LookupEntry(18073);
+	if(sp)
+	{
+		sp->Effect[0] = 0; //delete this owerride effect :P
+		sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
+		sp->procFlags=PROC_ON_CAST_SPELL;
+		sp->procChance = 13; //god, save us from fixed values !
+	}
+	sp = sSpellStore.LookupEntry(18096);
+	if(sp)
+	{
+		sp->Effect[0] = 0; //delete this owerride effect :P
+		sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
+		sp->procFlags=PROC_ON_CAST_SPELL;
+		sp->procChance = 26; //god, save us from fixed values !
+	}
 
 	//for test only
 	sp = sSpellStore.LookupEntry(12360);
