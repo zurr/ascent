@@ -1009,8 +1009,6 @@ void World::SetInitialWorldSettings()
 	if(sp)	sp->EffectApplyAuraName[0]=4;
 	sp = sSpellStore.LookupEntry(12497);
 	if(sp)	sp->EffectApplyAuraName[0]=4;
-	sp = sSpellStore.LookupEntry(12494);
-	if(sp)	sp->procFlags = PROC_TAGRGET_ATTACKER;
 
 	//for test only
 	sp = sSpellStore.LookupEntry(12360);

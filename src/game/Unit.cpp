@@ -773,8 +773,21 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 		i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
 		if(	(flag & (*i2).m_flags) )
 		{
-			SpellEntry	*ability=sSpellStore.LookupEntry((*i2).m_spellId);
-			victim->Strike(this,(*i2).m_school,ability,0,0,(*i2).m_damage);
+			if(PROC_MISC & (*i2).m_flags)
+			{
+				data.Initialize(SMSG_SPELLDAMAGESHIELD);
+				data << victim->GetGUID();
+				data << this->GetGUID();
+				data << (*i2).m_damage;
+				data << (*i2).m_school;
+				SendMessageToSet(&data,true);
+				victim->DealDamage(this,(*i2).m_damage,0,0,(*i2).m_spellId);
+			}
+			else
+			{
+				SpellEntry	*ability=sSpellStore.LookupEntry((*i2).m_spellId);
+				victim->Strike(this,(*i2).m_school,ability,0,0,(*i2).m_damage);
+			}
 		}
 	}
 }

@@ -2075,7 +2075,7 @@ void Aura::SpellAuraDamageShield(bool apply)
 		ds.m_damage = mod->m_amount;
 		ds.m_spellId = GetSpellProto()->Id;
 		ds.m_school = GetSpellProto()->School;
-		ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM; //maybe later we might want to add other flags too here
+		ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; //maybe later we might want to add other flags too here
 		ds.owner = (void*)this;
 		m_target->m_damageShields.push_back(ds);
 	}
