@@ -57,8 +57,8 @@ Zack - test my shit :
 - warlock - Nether Protection
 - warlock - soul leech - very nasty
 - warlock - pyroclasm
-
-Performs an instant off-hand weapon attack that automatically applies the poison from your off-hand weapon to the target.  Slower weapons require more Energy.  Awards 1 combo point.
+- paladin seal of justice trigger
+- deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
 
 ==========================================================================
 

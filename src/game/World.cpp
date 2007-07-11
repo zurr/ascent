@@ -818,6 +818,10 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc,"after being hit with a shadow or fire spell"))
 						pr|=PROC_ON_SPELL_HIT_VICTIM;
+					if(strstr(desc,"giving each melee attack"))
+						pr|=PROC_ON_MELEE_ATTACK;
+					if(strstr(desc,"each strike has"))
+						pr|=PROC_ON_MELEE_ATTACK;					
 					//////////////////////////////////////////////////
 					//proc dmg flags
 					//////////////////////////////////////////////////

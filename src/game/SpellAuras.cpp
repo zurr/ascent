@@ -952,11 +952,21 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 		{
 			m_target->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_IMMOLATE);
 		}
+		//maybe poison aurastate should get triggered on other spells too ?
+		else if(m_spellProto->NameHash==226259356)//deadly poison
+		{
+			m_target->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_POISON);
+		}
 	}
 	else
 	{
 		if(m_spellProto->buffType & SPELL_TYPE_WARLOCK_IMMOLATE)
 			m_target->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_IMMOLATE);
+		//maybe poison aurastate should get triggered on other spells too ?
+		else if(m_spellProto->NameHash==226259356)//deadly poison
+		{
+			m_target->RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_POISON);
+		}
 	}
 }
 
