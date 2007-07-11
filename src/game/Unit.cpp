@@ -167,6 +167,7 @@ Unit::Unit()
 		SpellCritChanceSchool[x] = 0;
 		PowerCostMod[x] = 0;
 		PowerCostPctMod[x] = 0;
+		AttackerSpellCritChanceMod[x]=0;
 	}
 	DamageTakenPctModOnHP = 1;
 	RangedDamageTaken = 0;

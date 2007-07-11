@@ -194,7 +194,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraSpiritOfRedemption,//missing = 176 //used // Apply Aura: Spirit of Redemption
 		&Aura::SpellAuraNULL,//missing = 177 //used //Apply Aura: Area Charm // http://www.thottbot.com/?sp=26740
 		&Aura::SpellAuraNULL,//missing = 178 //Apply Aura: Increase Debuff Resistance 
-		&Aura::SpellAuraNULL,//missing = 179 //used //Apply Aura: Increase Attacker Spell Crit % *type* //http://www.thottbot.com/?sp=12579
+		&Aura::SpellAuraIncreaseAttackerSpellCrit,//SPELL_AURA_INCREASE_ATTACKER_SPELL_CRIT//Apply Aura: Increase Attacker Spell Crit % *type* //http://www.thottbot.com/?sp=12579
 		&Aura::SpellAuraNULL,//missing = 180 //used //Apply Aura: Increase Spell Damage *type* //http://www.thottbot.com/?sp=29113
 		&Aura::SpellAuraNULL,//missing = 181
 		&Aura::SpellAuraIncreaseArmorByPctInt,//missing = 182 //used //Apply Aura: Increase Armor by % of Intellect //http://www.thottbot.com/?sp=28574  SPELL_AURA_INC_ARMOR_BY_PCT_INT
@@ -6293,6 +6293,18 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
 		m_target->RemoveAura(27792);
 		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
 	}
+}
+
+void Aura::SpellAuraIncreaseAttackerSpellCrit(bool apply)
+{
+	int32 val = (apply) ? mod->m_amount : -mod->m_amount;
+	if (m_target->IsUnit())
+	{
+		for(uint32 x=0;x<7;x++)
+			if (mod->m_miscValue & (((uint32)1)<<x))
+				static_cast<Unit*>(m_target)->AttackerSpellCritChanceMod[x] += val;
+	}
+
 }
 
 void Aura::SpellAuraIncreaseRepGainPct(bool apply)

@@ -528,6 +528,7 @@ public:
 	void SpellAuraSpellHealingStatPCT(bool apply);
 	void SpellAuraIncreaseMaxHealth(bool apply);
 	void SpellAuraSpiritOfRedemption(bool apply);
+	void SpellAuraIncreaseAttackerSpellCrit(bool apply);
 	void SpellAuraIncreaseRepGainPct(bool apply);
 	void SpellAuraIncreaseRangedAPStatPCT(bool apply);
 	void SpellAuraModRangedDamageTakenPCT(bool apply);

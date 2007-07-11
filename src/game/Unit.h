@@ -889,6 +889,7 @@ public:
 	float SpellCritChanceSchool[7];
 	int32 PowerCostMod[7];
 	float PowerCostPctMod[7];
+	int32 AttackerSpellCritChanceMod[7];
 	uint32 SpellDelayResist[7];
 	int32 CreatureAttackPowerMod[12];
 	int32 CreatureRangedAttackPowerMod[12];
