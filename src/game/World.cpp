@@ -806,6 +806,10 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_BLOCK_VICTIM;
 					if(strstr(desc,"dealing a critical strike from a weapon swing, spell, or ability"))
 						pr|=PROC_ON_CRIT_ATTACK|PROC_ON_SPELL_CRIT_HIT;
+					if(strstr(desc,"dealing a critical strike from a weapon swing, spell, or ability"))
+						pr|=PROC_ON_CRIT_ATTACK|PROC_ON_SPELL_CRIT_HIT;
+					if(strstr(desc,"Shadow Bolt critical strikes increase Shadow damage"))
+						pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					//////////////////////////////////////////////////
 					//proc dmg flags
 					//////////////////////////////////////////////////
@@ -1009,6 +1013,10 @@ void World::SetInitialWorldSettings()
 	if(sp)	sp->EffectApplyAuraName[0]=4;
 	sp = sSpellStore.LookupEntry(12497);
 	if(sp)	sp->EffectApplyAuraName[0]=4;
+
+	//rogue-shiv -> add 1 combo point
+	sp = sSpellStore.LookupEntry(5938);
+	if(sp)	sp->Effect[1]=80;
 
 	//for test only
 	sp = sSpellStore.LookupEntry(12360);

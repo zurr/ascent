@@ -656,6 +656,20 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									CastingSpell->NameHash!=3435700480 ) //gouge
 									continue;
 							}break;
+						//warlock - Improved Shadow Bolt
+						case 17794:
+						case 17798:
+						case 17797:
+						case 17799:
+						case 17800:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								if( CastingSpell->NameHash!=3748693209)//shadow bolt
+									continue;
+								//should test is castingspell will have critical effect
+							}break;
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
