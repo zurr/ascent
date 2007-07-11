@@ -2001,8 +2001,8 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
 	}
 	if(playerTarget)
 	{
-		if(u_caster && isHostile(playerTarget, u_caster))
-			return;
+		/*if(u_caster && isHostile(playerTarget, u_caster))
+			return;*/
 
 		uint32 spellToLearn = m_spellInfo->EffectTriggerSpell[i];
 		playerTarget->addSpell(spellToLearn);

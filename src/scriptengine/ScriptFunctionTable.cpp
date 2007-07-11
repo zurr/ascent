@@ -43,6 +43,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "MarkQuestObjectiveAsComplete",		Player_MarkQuestObjectiveAsComplete	},
 		{ "SendSystemMessage",					Player_SendSystemMessage			},
 		{ "SendNotification",					Player_SendNotification				},
+		{ "Knockback",							Player_Knockback					},
 
 		// Imported Unit Functions
 		{ "Emote",								Unit_Emote							},
@@ -54,6 +55,11 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "RegisterEvent",						GM_RegisterEvent					},
 		{ "SpawnWithoutWorld",					Unit_SpawnWithoutWorld				},
 		{ "StopMovement",						Unit_HaltMovement					},
+
+		{ "GetUnit",							Unit_GetUnit						},
+		{ "GetGameObject",						Unit_GetGameObject					},
+		{ "GetPlayer",							Unit_GetPlayer						},
+		{ "GetGuid",							Unit_GetGuid						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -88,6 +94,10 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "SetNPCFlags",						Unit_SetNPCFlags				},
 		{ "DestroyCustomWaypointMap",			Unit_DestroyCustomWaypointMap	},
 		{ "ClearEscortTarget",					Unit_ClearEscortTarget			},
+		{ "GetUnit",							Unit_GetUnit						},
+		{ "GetGameObject",						Unit_GetGameObject					},
+		{ "GetPlayer",							Unit_GetPlayer						},
+		{ "GetGuid",							Unit_GetGuid						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -105,8 +115,14 @@ void ScriptEngine::SetQuestFunctionTable()
 void ScriptEngine::SetGameObjectFunctionTable()
 {
 	static gmFunctionEntry table[] = {
-		{ "Despawn",							GameObject_Despawn				},
-		{ "RegisterEvent",						GM_RegisterEvent				},
+		{ "Despawn",							GameObject_Despawn					},
+		{ "SetActive",							GameObject_SetActive				},
+		{ "PlayCustomAnim",						GameObject_PlayCustomAnim			},
+		{ "GetUnit",							Unit_GetUnit						},
+		{ "GetGameObject",						Unit_GetGameObject					},
+		{ "GetPlayer",							Unit_GetPlayer						},
+		{ "GetGuid",							Unit_GetGuid						},
+		{ "RegisterEvent",						GM_RegisterEvent					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));

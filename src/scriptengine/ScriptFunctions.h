@@ -60,6 +60,7 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Player_MarkQuestObjectiveAsComplete(gmThread * a_thread);
 	int GM_CDECL Player_SendNotification(gmThread * a_thread);
 	int GM_CDECL Player_SendSystemMessage(gmThread * a_thread);
+	int GM_CDECL Player_Knockback(gmThread * a_thread);
 
 /* AreaTrigger Functions */
 	int GM_CDECL AreaTrigger_GetEntry(gmThread * a_thread);
@@ -75,6 +76,11 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Unit_RegisterTimer(gmThread * a_thread);
 	int GM_CDECL Unit_DeregisterTimer(gmThread * a_thread);
 	int GM_CDECL Unit_SpawnMonster(gmThread * a_thread);
+	
+	int GM_CDECL Unit_GetGuid(gmThread * a_thread);
+	int GM_CDECL Unit_GetPlayer(gmThread * a_thread);
+	int GM_CDECL Unit_GetGameObject(gmThread * a_thread);
+	int GM_CDECL Unit_GetUnit(gmThread * a_thread);
 	
 	// Escort Quest System
 		int GM_CDECL Unit_SpawnWithoutWorld(gmThread * a_thread);
@@ -95,6 +101,8 @@ T * GetThisPointer(gmThread * a_thread)
 
 /* GameObject Functions */
 	int GM_CDECL GameObject_Despawn(gmThread * a_thread);
+	int GM_CDECL GameObject_PlayCustomAnim(gmThread * a_thread);
+	int GM_CDECL GameObject_SetActive(gmThread * a_thread);
 
 /* Misc Helper Functions */
 	int GM_CDECL GM_RAND(gmThread * a_thread);

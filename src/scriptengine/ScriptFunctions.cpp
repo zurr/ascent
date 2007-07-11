@@ -847,6 +847,101 @@ int Unit_ClearEscortTarget(gmThread * a_thread)
 	return GM_OK;
 }
 
+int GameObject_PlayCustomAnim(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(anim, 0);
+	GameObject * pThis = GetThisPointer<GameObject>(a_thread);
+	WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 12);
+	data << pThis->GetGUID() << uint32(anim);
+	pThis->SendMessageToSet(&data, true, false);
+	return GM_OK;
+}
+
+int GameObject_SetActive(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(state, 0);
+	GameObject * pThis = GetThisPointer<GameObject>(a_thread);
+	pThis->SetUInt32Value(GAMEOBJECT_DYN_FLAGS, state);
+	return GM_OK;
+}
+
+int Player_Knockback(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(4);
+	GM_CHECK_FLOAT_PARAM(dx, 0);
+	GM_CHECK_FLOAT_PARAM(dy, 1);
+	GM_CHECK_FLOAT_PARAM(affect1, 2);
+	GM_CHECK_FLOAT_PARAM(affect2, 3);
+
+	Player * pThis = GetThisPointer<Player>(a_thread);
+	WorldPacket data(SMSG_MOVE_KNOCK_BACK, 30);
+	data << pThis->GetNewGUID();
+	data << getMSTime();
+	data << dx << dy << affect1 << affect2;
+	pThis->SendMessageToSet(&data, true);
+	return GM_OK;
+}
+
+int Unit_GetGuid(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	a_thread->PushInt(pThis->GetGUIDLow());
+	return GM_OK;
+}
+
+int Unit_GetPlayer(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(guid, 0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	Player * plr = pThis->GetMapMgr() ? pThis->GetMapMgr()->GetPlayer(guid) : 0;
+	if(!plr)
+		return GM_EXCEPTION;
+
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)plr;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_playerType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+
+	return GM_OK;
+}
+
+int Unit_GetUnit(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(guid, 0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	Unit * plr = pThis->GetMapMgr() ? pThis->GetMapMgr()->GetUnit(guid) : 0;
+	if(!plr)
+		return GM_EXCEPTION;
+
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)plr;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_unitType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+
+	return GM_OK;
+}
+
+int Unit_GetGameObject(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(guid, 0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	GameObject * plr = pThis->GetMapMgr() ? pThis->GetMapMgr()->GetGameObject(guid) : 0;
+	if(!plr)
+		return GM_EXCEPTION;
+
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)plr;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_gameObjectType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+
+	return GM_OK;
+}
 
 /*int Player_GetSelectedCreature(gmThread * a_thread)
 {

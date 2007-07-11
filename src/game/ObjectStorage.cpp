@@ -127,6 +127,14 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 				delete sp;
 				continue;
 			}
+			
+			if(sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
+				sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
+			{
+				printf("Teaching spell %u in ai_agent for %u\n", fields[5].GetUInt32(), sp->entryId);
+				delete sp;
+				continue;
+			}
 
 			/*sp->minrange = GetMinRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));*/
 			// burlex: minimum range? you can go f*ck yourself. it causes really strange shit in movement.
