@@ -519,7 +519,7 @@ void Guild::RemoveFromDb()
 {
 	sDatabase.Execute("DELETE FROM guilds WHERE guildId =%u",m_guildId );
 	sDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_guildId );
-	sDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0 WHERE guildid=%u",m_guildId);
+	sDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0,publicNote='',officerNote='' WHERE guildid=%u",m_guildId);
 }
 
 uint32 Guild::GetFreeGuildIdFromDb()
