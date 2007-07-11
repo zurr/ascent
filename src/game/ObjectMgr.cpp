@@ -632,7 +632,7 @@ void ObjectMgr::SaveGMTicket(uint64 guid)
 	ss2 << ticket->posX << ", ";
 	ss2 << ticket->posY << ", ";
 	ss2 << ticket->posZ << ", '";
-	ss2 << ticket->message << "', ";
+	ss2 << sDatabase.EscapeString(ticket->message) << "', ";
 	ss2 << ticket->timestamp << ");";
 	sDatabase.Execute(ss2.str( ).c_str( ));
 }
