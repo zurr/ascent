@@ -1173,6 +1173,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		else 
 			SubClassSkill=SKILL_UNARMED;
 
+		if(SubClassSkill == SKILL_FIST_WEAPONS)
+			SubClassSkill=SKILL_UNARMED;
+
 		self_skill += pr->GetSkillAmt(SubClassSkill);
 		
 		crit = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
