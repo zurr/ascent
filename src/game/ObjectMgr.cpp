@@ -1231,7 +1231,7 @@ void ObjectMgr::CorpseCollectorUnload()
 	_corpseslock.Release();
 }
 
-GossipMenu::GossipMenu(uint64 Creature_Guid, uint32 Text_Id) : CreatureGuid(Creature_Guid), TextId(Text_Id)
+GossipMenu::GossipMenu(uint64 Creature_Guid, uint32 Text_Id) : TextId(Text_Id), CreatureGuid(Creature_Guid)
 {
 
 }
@@ -1478,7 +1478,7 @@ void ObjectMgr::GenerateTrainerSpells()
 			// Convert rank name into a number
 			int32 RankNumber = -1;
 
-			if(sscanf(RankName, "Rank %d", &RankNumber) != 1)  // Not a ranked spell
+			if(sscanf(RankName, "Rank %d", (int*)&RankNumber) != 1)  // Not a ranked spell
 				continue;
 
 			SpellRanks[Sp->Id] = RankNumber;
@@ -2852,7 +2852,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVict
 		is_boss = 1;
 
 	// Apply the bonuses as normal.
-	uint32 replimit;
+	int32 replimit;
 	int32 value;
 
 	for(vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i !=  itr->second->mods.end(); ++i)

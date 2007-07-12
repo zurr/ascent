@@ -220,14 +220,14 @@ void LootMgr::LoadLootTables(const char * szTableName,LootStore * LootTable)
 
 void LootMgr::PushLoot(StoreLootList *list,Loot * loot)
 {
-	int i;
+	uint32 i;
 	for(uint32 x =0; x<list->count;x++)
 	if(list->items[x].item.itemid)// this check is needed until loot DB is fixed
 	{
 		ItemPrototype *itemproto = ItemPrototypeStorage.LookupEntry(list->items[x].item.itemid);
 		if(Rand(list->items[x].chance * sWorld.getRate(RATE_DROP)) )//|| itemproto->Class == ITEM_CLASS_QUEST)
 		{
-			for(i = 0; i < loot->items.size(); ++i)
+			for(uint32 i = 0; i < loot->items.size(); ++i)
 			{
 				//itemid rand match a already placed item, if item is stackable and unique(stack), increment it, otherwise skips
 				if((loot->items[i].item.itemid == list->items[x].item.itemid) && itemproto->MaxCount && (loot->items[i].iItemsCount < itemproto->MaxCount))
@@ -385,8 +385,9 @@ bool LootMgr::IsFishable(uint32 zoneid)
 #define NEED 1
 #define GREED 2
 
-LootRoll::LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, uint32 itemid, uint32 itemunk1, uint32 itemunk2, MapMgr * mgr) : _mgr(mgr), EventableObject()
+LootRoll::LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, uint32 itemid, uint32 itemunk1, uint32 itemunk2, MapMgr * mgr) : EventableObject()
 {
+	mgr = 0;
 	sEventMgr.AddEvent(this, &LootRoll::Finalize, EVENT_LOOT_ROLL_FINALIZE, 60000, 1);
 	_groupcount = groupcount;
 	_guid = guid;
@@ -507,7 +508,7 @@ void LootRoll::Finalize()
 	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 
 	int8 error;
-	if(error = _player->GetItemInterface()->CanReceiveItem(it, 1))
+	if((error = _player->GetItemInterface()->CanReceiveItem(it, 1)))
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
 		return;
@@ -553,7 +554,7 @@ void LootRoll::Finalize()
 	Player * plr;
 	for(LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
 	{
-		if(plr = _player->GetMapMgr()->GetPlayer(*itr))
+		if((plr = _player->GetMapMgr()->GetPlayer(*itr)))
 			plr->GetSession()->SendPacket(&data);
 	}
 

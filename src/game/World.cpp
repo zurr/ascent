@@ -502,7 +502,7 @@ void World::SetInitialWorldSettings()
 	strcpy(nametext,"Backstab");
     namehash = crc32((const unsigned char*)nametext, strlen(nametext));
 	printf("spellname %s, namehash %u\n",nametext,namehash);
-/**/
+*/
 	for(uint32 x=0; x < cnt; x++)
 	{
 		uint32 result = 0;
@@ -523,7 +523,7 @@ void World::SetInitialWorldSettings()
 		sp->proc_interval = 0;//trigger at each event
 
 		// parse rank text
-		if(!sscanf(ranktext, "Rank %d", &rank))
+		if(!sscanf(ranktext, "Rank %d", (unsigned int*)&rank))
 			rank = 0;
 
         // hash the name
@@ -693,7 +693,7 @@ void World::SetInitialWorldSettings()
 					)//search for spellid in description
 				{
 					const char *p=desc;
-					while(p=strstr(p,"$"))
+					while((p=strstr(p,"$")))
 					{
 						p++;
 						//got $  -> check if spell
@@ -1403,7 +1403,7 @@ void World::UpdateSessions(uint32 diff)
 			continue;
 		}
 
-		if(result = session->Update(0))
+		if((result = session->Update(0)))
 		{
 			if(result == 1)
 			{

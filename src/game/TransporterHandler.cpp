@@ -195,7 +195,7 @@ bool Transporter::GenerateWaypoints()
 					newZ = keyFrames[i].z + (keyFrames[i + 1].z - keyFrames[i].z) * d / keyFrames[i + 1].distFromPrev;
 
 					bool teleport = false;
-					if (keyFrames[i].mapid != cM)
+					if ((int)keyFrames[i].mapid != cM)
 					{
 						teleport = true;
 						cM = keyFrames[i].mapid;

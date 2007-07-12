@@ -97,10 +97,10 @@ void Player::smsg_InitialFactions()
 		rep = reputationByListId[i];
 		if(rep)
 		{
-			if(rep->flag & 2 && rep->standing >= 0)
+			/*if(rep->flag & 2 && rep->standing >= 0)
 			{
 				printf("listid %u\n", i);
-			}
+			}*/
 			data << rep->flag << rep->CalcStanding();
 		}
 		else
@@ -402,7 +402,7 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 			/* rep limit? */
 			if((*itr).replimit)
 			{
-				if(GetStanding((*itr).faction[team]) >= (*itr).replimit)
+				if(GetStanding((*itr).faction[team]) >= (int32)(*itr).replimit)
 					continue;
 			}
 

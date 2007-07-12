@@ -1767,12 +1767,12 @@ void Spell::update(uint32 difftime)
 	{
 	case SPELL_STATE_PREPARING:
 		{
-			if(difftime >= m_timer)
+			if((int32)difftime >= m_timer)
 				cast(true);
 			else 
 			{
 				m_timer -= difftime;
-				if(difftime >= m_timer)
+				if((int32)difftime >= m_timer)
 				{
 					m_timer = 0;
 					cast(true);
@@ -1785,7 +1785,7 @@ void Spell::update(uint32 difftime)
 		{
 			if(m_timer > 0)
 			{
-				if(difftime >= m_timer)
+				if((int32)difftime >= m_timer)
 					m_timer = 0;
 				else
 					m_timer -= difftime;
@@ -2221,7 +2221,7 @@ bool Spell::HasPower()
 		}
 	}
 
-	uint32 currentPower = m_caster->GetUInt32Value(powerField);
+	int32 currentPower = m_caster->GetUInt32Value(powerField);
 
 	int32 cost;
 	if(m_spellInfo->ManaCostPercentage)//Percentage spells cost % of !!!BASE!!! mana
@@ -2318,7 +2318,7 @@ bool Spell::TakePower()
 		}
 	}
 	   
-	uint32 currentPower = m_caster->GetUInt32Value(powerField);
+	int32 currentPower = m_caster->GetUInt32Value(powerField);
 
 	int32 cost;
 	if(m_spellInfo->ManaCostPercentage)//Percentage spells cost % of !!!BASE!!! mana
@@ -2627,7 +2627,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 
 			if(m_spellInfo->EffectApplyAuraName[0]==2)//mind control
 			if(m_spellInfo->EffectBasePoints[0])//got level req;
-				if(target->getLevel() > m_spellInfo->EffectBasePoints[0])
+				if((int32)target->getLevel() > m_spellInfo->EffectBasePoints[0])
 					return SPELL_FAILED_HIGHLEVEL;
 
 			// scripted spell stuff
@@ -2698,11 +2698,11 @@ uint8 Spell::CanCast(bool rangetolerate)
 
 
 				/***********************************************************
-				/* Inface checks, these are checked in 2 ways
-				/* 1e way is check for damage type, as 3 is always ranged
-				/* 2e way is trough the data in the extraspell db
-				/*
-				/**********************************************************/
+				* Inface checks, these are checked in 2 ways
+				* 1e way is check for damage type, as 3 is always ranged
+				* 2e way is trough the data in the extraspell db
+				*
+				**********************************************************/
 
 				/* burlex: units are always facing the target! */
 				if(p_caster && !(m_spellInfo->buffType & SPELL_TYPE_CURSE))
@@ -3072,7 +3072,7 @@ int8 Spell::CheckItems()
 			}
 			else
 			{
-				if(m_spellInfo->EquippedItemClass != -1)//all items
+				if(m_spellInfo->EquippedItemClass != (uint32)-1)//all items
 					if(m_spellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM)
 					{
 						if(m_spellInfo->RequiredItemFlags == 0x10000)
@@ -3588,7 +3588,7 @@ bool Spell::reflect(Unit *refunit)
 			return false;
 	for(std::list<struct ReflectSpellSchool*>::iterator i = refunit->m_reflectSpellSchool.begin();i != refunit->m_reflectSpellSchool.end();i++)
 	{
-		if((*i)->school == -1 || (*i)->school == m_spellInfo->School)
+		if((*i)->school == -1 || (*i)->school == (int32)m_spellInfo->School)
 		{
 			if(Rand((float)(*i)->chance))
 				refspell = m_spellInfo;

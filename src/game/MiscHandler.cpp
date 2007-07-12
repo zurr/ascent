@@ -77,7 +77,7 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 	itemid = pLoot->items.at(lootSlot).item.itemid;
 	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 
-	if(error = _player->GetItemInterface()->CanReceiveItem(it, 1))
+	if((error = _player->GetItemInterface()->CanReceiveItem(it, 1)))
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
 		return;
@@ -129,7 +129,7 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 	Player * plr;
 	for(LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
 	{
-		if(plr = _player->GetMapMgr()->GetPlayer(*itr))
+		if((plr = _player->GetMapMgr()->GetPlayer(*itr)))
 			plr->GetSession()->SendPacket(&data);
 	}
 
@@ -208,7 +208,7 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 	Player * plr;
 	for(LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
 	{
-		if(plr = _player->GetMapMgr()->GetPlayer(*itr))
+		if((plr = _player->GetMapMgr()->GetPlayer(*itr)))
 			plr->GetSession()->SendPacket(&data);
 	}
 
@@ -279,7 +279,7 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 				uint32 real_count = 0;
 				SubGroup *s;
 				GroupMembersSet::iterator itr;
-				for(int i = 0; i < party->GetSubGroupCount(); ++i)
+				for(uint32 i = 0; i < party->GetSubGroupCount(); ++i)
 				{
 					s = party->GetSubGroup(i);
 					for(itr = s->GetGroupMembersBegin(); itr != s->GetGroupMembersEnd(); ++itr)
@@ -1120,7 +1120,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	case GAMEOBJECT_TYPE_RITUAL: 
 		{
 			// store the members in the ritual, cast sacrifice spell, and summon.
-			int i = 0;
+			uint32 i = 0;
 			if(!obj->m_ritualmembers || !obj->m_ritualspell || !obj->m_ritualcaster /*|| !obj->m_ritualtarget*/)
 				return;
 
@@ -1468,7 +1468,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 	itemid = pLoot->items.at(slotid).item.itemid;
 	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 
-	if(error = player->GetItemInterface()->CanReceiveItem(it, 1))
+	if((error = player->GetItemInterface()->CanReceiveItem(it, 1)))
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
 		return;
@@ -1507,7 +1507,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 	Player * plr;
 	for(LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
 	{
-		if(plr = _player->GetMapMgr()->GetPlayer(*itr))
+		if((plr = _player->GetMapMgr()->GetPlayer(*itr)))
 			plr->GetSession()->SendPacket(&data);
 	}
 
@@ -1635,7 +1635,7 @@ void WorldSession::HandleResetInstanceOpcode(WorldPacket& recv_data)
 void EncodeHex(const char* source, char* dest, uint32 size)
 {
 	char temp[5];
-	for(int i = 0; i < size; ++i)
+	for(uint32 i = 0; i < size; ++i)
 	{
 		snprintf(temp, 5, "%02X", source[i]);
 		strcat(dest, temp);
@@ -1646,7 +1646,7 @@ void DecodeHex(const char* source, char* dest, uint32 size)
 {
 	char temp;
 	char* acc = const_cast<char*>(source);
-	for(int i = 0; i < size; ++i)
+	for(uint32 i = 0; i < size; ++i)
 	{
 		sscanf("%02X", &temp);
 		acc = ((char*)&source[2]);

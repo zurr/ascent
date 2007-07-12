@@ -330,10 +330,10 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 	if(!dmg) return;
 
 	/**************************************************************************
-	/* This handles the correct damage of "Judgement of Command" (all ranks)
-	/*
-	/* note: "unkne" contains flags related to aura's and other scripted stuff
-	/**************************************************************************/
+	* This handles the correct damage of "Judgement of Command" (all ranks)
+	*
+	* note: "unkne" contains flags related to aura's and other scripted stuff
+	**************************************************************************/
 	if (m_spellInfo->unkne == 520)
 	{
 		if (!unitTarget->IsStunned())
@@ -1073,8 +1073,6 @@ void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 	if(!unitTarget || unitTarget->GetTypeId()!= TYPEID_PLAYER)
 		return;
 
-	Player* pTarget = (Player*)unitTarget;
-	
 	if(m_spellInfo->Id != 1 && playerTarget->m_bgInBattleground)
 	{
 		Battleground * bg = playerTarget->GetCurrentBattleground();
@@ -1704,8 +1702,8 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
 	if(!m_caster)
 		return;
 
-	uint32 spellid;
-	if(spellid = m_spellInfo->EffectTriggerSpell[i] == 0)
+	uint32 spellid = m_spellInfo->EffectTriggerSpell[i];
+	if(spellid == 0)
 		return;
 
 	SpellEntry *spInfo = sSpellStore.LookupEntry(spellid);
@@ -2150,9 +2148,9 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 		float x = u_caster->GetPositionX()+(3*(cosf(m_fallowAngle+u_caster->GetOrientation())));
 		float y = u_caster->GetPositionY()+(3*(sinf(m_fallowAngle+u_caster->GetOrientation())));
 		float z = u_caster->GetPositionZ();
-		float o = m_fallowAngle;//maybe they will look in radius
+		//float o = m_fallowAngle;//maybe they will look in radius
 		Creature * p = u_caster->GetMapMgr()->CreateCreature();
-		ASSERT(p);
+		//ASSERT(p);
 		p->Load(proto, x, y, z);
 		p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
         p->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_caster->GetGUID());
@@ -2599,7 +2597,7 @@ void Spell::SpellEffectPowerBurn(uint32 i) // power burn
 	if(!unitTarget->isAlive())
 		return;
 
-	int32 mana=min(unitTarget->GetUInt32Value(UNIT_FIELD_POWER1),damage);
+	int32 mana=min((int32)unitTarget->GetUInt32Value(UNIT_FIELD_POWER1),damage);
 	unitTarget->ModUInt32Value(UNIT_FIELD_POWER1,-mana);
 	
 	m_caster->SpellNonMeleeDamageLog(unitTarget,m_spellInfo->Id, (uint32)(mana * m_spellInfo->Effectunknown[i]), true);   
@@ -4038,7 +4036,7 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
 	if(!Enchantment) return;
 
 	item->RemoveEnchantment(1);
-	int32 Slot = item->AddEnchantment(Enchantment, Duration, false, true, false, 1);
+	item->AddEnchantment(Enchantment, Duration, false, true, false, 1);
 }
 
 void Spell::SpellEffectAddHonor(uint32 i)

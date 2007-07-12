@@ -420,11 +420,11 @@ void Aura::Remove()
 		m_target->removeAttacker(caster);
 
 	/**********************Cooldown**************************
-	/* this is only needed for some spells
-	/* for now only spells that have:
-	/* (m_spellInfo->Attributes == 0x2050000) && !(m_spellInfo->AttributesEx) ||
-	/* m_spellProto->Attributes == 0x2040100
-	/* are handled. Its possible there are more spells like this
+	* this is only needed for some spells
+	* for now only spells that have:
+	* (m_spellInfo->Attributes == 0x2050000) && !(m_spellInfo->AttributesEx) ||
+	* m_spellProto->Attributes == 0x2040100
+	* are handled. Its possible there are more spells like this
 	*************************************************************/
 	if ( caster && caster->IsPlayer() && caster->IsInWorld() && (m_spellProto->Attributes&ATTRIBUTES_UNK27) && (!m_spellProto->AttributesEx || m_spellProto->AttributesEx&0x20000))
 	{
@@ -1234,7 +1234,7 @@ void Aura::SpellAuraDummy(bool apply)
 				Unit * caster =this->GetUnitCaster();
 				if(caster)
 				{
-					std:set<uint64>::iterator itr = m_target->VampEmbCaster.find(caster->GetGUID());
+					std::set<uint64>::iterator itr = m_target->VampEmbCaster.find(caster->GetGUID());
 					if(itr != m_target->VampEmbCaster.end())
 						m_target->VampEmbCaster.erase(itr);
 				}
@@ -1587,7 +1587,7 @@ void Aura::SpellAuraModCharm(bool apply)
 	Player * caster = ((Player*)ucaster);
 	Creature * target = ((Creature*)m_target);
   
-	if(!ucaster || ucaster->GetTypeId() != TYPEID_PLAYER || m_target->getLevel() > mod->m_amount || m_target->IsPet() || m_target->GetTypeId() != TYPEID_UNIT)
+	if(!ucaster || ucaster->GetTypeId() != TYPEID_PLAYER || (int32)m_target->getLevel() > mod->m_amount || m_target->IsPet() || m_target->GetTypeId() != TYPEID_UNIT)
 		return;
 
 	// this should be done properly
@@ -2431,7 +2431,7 @@ void Aura::EventPeriodicEnergize(uint32 amount,uint32 type)
 		
 	if(m_target->isAlive() && m_caster->isAlive())
 	{
-			/*uint32 powerField;
+			uint32 powerField;
 			uint32 currentPower;
 			switch(GetSpellProto()->powerType)
 			{
@@ -2784,7 +2784,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
 			m_target->ModUInt32Value(UNIT_FIELD_HEALTH,amt);
 		else
 		{
-			if(m_target->GetUInt32Value(UNIT_FIELD_HEALTH)>-amt)//watch it on remove value is negative
+			if((int32)m_target->GetUInt32Value(UNIT_FIELD_HEALTH)>-amt)//watch it on remove value is negative
 				m_target->ModUInt32Value(UNIT_FIELD_HEALTH,amt);
 			else m_target->SetUInt32Value(UNIT_FIELD_HEALTH,1); //do not kill player but do strip him good
 		}
@@ -3140,7 +3140,7 @@ void Aura::SpellAuraModDispelImmunity(bool apply)
 		for(uint32 x=0;x<MAX_AURAS;x++)
 		{
 			if(m_target->m_auras[x])
-				if(m_target->m_auras[x]->GetSpellProto()->DispelType==mod->m_miscValue)
+				if(m_target->m_auras[x]->GetSpellProto()->DispelType==(uint32)mod->m_miscValue)
 					m_target->m_auras[x]->Remove();
 		}
 	}
@@ -4000,7 +4000,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
 			for(uint32 x=MAX_POSITIVE_AURAS;x<MAX_AURAS;x++)
 				if(m_target->m_auras[x])
 				{
-					if(m_target->m_auras[x]->GetSpellProto()->MechanicsType == mod->m_miscValue)
+					if(m_target->m_auras[x]->GetSpellProto()->MechanicsType == (uint32)mod->m_miscValue)
 						m_target->m_auras[x]->Remove();
 					else if(mod->m_miscValue == 11) // if got immunity for slow, remove some that are not in the mechanics
 					{
@@ -4901,9 +4901,9 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
 					ScriptOverrideList::iterator itrSO;
 					for(itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
 					{
-						if((*itrSO)->id == mod->m_miscValue)
+						if((*itrSO)->id == (uint32)mod->m_miscValue)
 						{
-							if((*itrSO)->damage > mod->m_amount)
+							if((int32)(*itrSO)->damage > mod->m_amount)
 							{
 								(*itrSO)->damage = mod->m_amount;
 							}

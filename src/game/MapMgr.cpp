@@ -19,7 +19,7 @@
 #include "StdAfx.h"
 #define MAP_MGR_UPDATE_PERIOD 100
 
-MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : _mapId(mapId), CellHandler<MapCell>(map), eventHolder(instanceid)
+MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>(map), _mapId(mapId), eventHolder(instanceid)
 {
 	ThreadType = THREADTYPE_MAPMGR;
 	_shutdown = false;
@@ -910,7 +910,7 @@ void MapMgr::LoadAllCells()
 
 	MapCell * pCell;
 	char msg[50];
-	snprintf(msg,50, "Preload: Map%u", _mapId);
+	snprintf(msg,50, "Preload: Map%u", (unsigned int)_mapId);
 	//uint32 count = _sizeX * _sizeY;
 	//uint32 c = 0;
 	CellSpawns * sp;
@@ -975,7 +975,8 @@ void MapMgr::Do()
 	// always declare local variables outside of the loop!
 	// otherwise theres a lot of sub esp; going on.
 
-	uint32 exec_time, t = 0, exec_start;
+	uint32 exec_time, exec_start;
+	time_t t = 0;
 	while((ThreadState != THREADSTATE_TERMINATE) && !_shutdown)
 	{
 		t = time(NULL);
@@ -1213,7 +1214,7 @@ void MapMgr::_PerformObjectDuties()
 				continue;
 			}
 
-			if(result = session->Update(m_instanceID))
+			if((result = session->Update(m_instanceID)))
 			{
 				if(result == 1)
 				{

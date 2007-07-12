@@ -83,7 +83,7 @@ bool ChatHandler::HandleGUIDCommand(const char* args, WorldSession *m_session)
 	}
 
 	char buf[256];
-	snprintf((char*)buf,256,"Object guid is: lowpart %u highpart %X", GUID_LOPART(guid), GUID_HIPART(guid));
+	snprintf((char*)buf,256,"Object guid is: lowpart %u highpart %X", (unsigned int)GUID_LOPART(guid), (unsigned int)GUID_HIPART(guid));
    SystemMessage(m_session,  buf);
 	return true;
 }
@@ -108,7 +108,7 @@ bool ChatHandler::CreateGuildCommand(const char* args, WorldSession *m_session)
 		return true;
 	}
 
-	for (int i = 0; i < strlen(args); i++) {
+	for (uint32 i = 0; i < strlen(args); i++) {
 		if(!isalpha(args[i]) && args[i]!=' ') {
 			SystemMessage(m_session, "Error, name can only contain chars A-Z and a-z.");
 			return true;
@@ -352,7 +352,7 @@ bool ChatHandler::HandleRunCommand(const char* args, WorldSession *m_session)
 
 	char sql[512];
 
-	snprintf(sql, 512, "UPDATE creatures SET running = '%i' WHERE id = '%u'", option, GUID_LOPART(guid));
+	snprintf(sql, 512, "UPDATE creatures SET running = '%i' WHERE id = '%u'", (int)option, (unsigned int)GUID_LOPART(guid));
 	WorldDatabase.Execute( sql );
 
 	pCreature->GetAIInterface()->setMoveRunFlag(option > 0);
@@ -408,7 +408,7 @@ bool ChatHandler::HandleSaveAllCommand(const char *args, WorldSession *m_session
 	}
 	objmgr._playerslock.ReleaseReadLock();
 	char msg[100];
-	snprintf(msg, 100, "Saved all %d online players in %d msec.", count, (uint32)now() - stime);
+	snprintf(msg, 100, "Saved all %d online players in %d msec.", (int)count, int((uint32)now() - stime));
 	sWorld.SendWorldText(msg);
 	sWorld.SendWorldWideScreenText(msg);
 	//sWorld.SendIRCMessage(msg);

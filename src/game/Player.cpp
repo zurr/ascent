@@ -2214,7 +2214,7 @@ bool Player::LoadFromDB(uint32 guid)
 	QueryResult *result = CharacterDatabase.Query("SELECT * FROM characters WHERE guid=%u AND banned=0 AND forced_rename_pending = 0",guid);
 	if(!result)
 	{
-		printf("Player login query failed., guid %u\n", guid);
+		printf("Player login query failed., guid %u\n", (unsigned int)guid);
 		return false;
 	}
 
@@ -2244,7 +2244,7 @@ bool Player::LoadFromDB(uint32 guid)
 	if(!myClass || !myRace)
 	{
 		// bad character
-		printf("guid %u failed to login, no race or class dbc found. (race %u class %u)\n", guid, getRace(), getClass());
+		printf("guid %u failed to login, no race or class dbc found. (race %u class %u)\n", (unsigned int)guid, (unsigned int)getRace(), (unsigned int)getClass());
 		return false;
 	}
 
@@ -2267,7 +2267,7 @@ bool Player::LoadFromDB(uint32 guid)
 	
 	if(!lvlinfo)
 	{
-		printf("guid %u level %u class %u race %u levelinfo not found!\n", guid, getLevel(), getClass(), getRace());
+		printf("guid %u level %u class %u race %u levelinfo not found!\n", (unsigned int)guid, (unsigned int)getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
 		return false;
 	}
 	
@@ -2675,7 +2675,7 @@ bool Player::LoadFromDB(uint32 guid)
 //		uint32 spell;
 		for(; itr != info->skills.end(); ++itr)
 		{
-			if(sk = sSkillLineStore.LookupEntry(itr->skillid))
+			if((sk = sSkillLineStore.LookupEntry(itr->skillid)))
 			{
 				if(sk->type == SKILL_TYPE_LANGUAGE)
 				{
@@ -2694,6 +2694,7 @@ bool Player::LoadFromDB(uint32 guid)
 
 	OnlineTime	= time(NULL);
 	return true;
+#undef get_next_field
    
 }
 
@@ -2749,7 +2750,11 @@ void Player::LoadFromDB_Light(Field *fields, uint32 guid)
 	// Load name
 	m_name = get_next_field.GetString();
 
-	m_position.ChangeCoords(get_next_field.GetFloat(), get_next_field.GetFloat(), get_next_field.GetFloat());
+	float x = get_next_field.GetFloat();
+	float y = get_next_field.GetFloat();
+	float z = get_next_field.GetFloat();
+
+	m_position.ChangeCoords(x, y, z);
 	m_mapId = get_next_field.GetUInt32();
 	m_zoneId = get_next_field.GetUInt32();
 
@@ -2762,6 +2767,7 @@ void Player::LoadFromDB_Light(Field *fields, uint32 guid)
 	myRace = sCharRaceStore.LookupEntry(getRace());
 	myClass = sCharClassStore.LookupEntry(getClass());
 	rename_pending = get_next_field.GetBool();
+#undef get_next_field
 }
 
 void Player::LoadPropertiesFromDB()
@@ -3943,7 +3949,7 @@ void Player::AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal)
 			if(IsInWorld())
 			{
 				//Add to proficeincy
-				if(prof=(ItemProf *)GetProficiencyBySkill(id))
+				if((prof=(ItemProf *)GetProficiencyBySkill(id)))
 				{
 					WorldPacket data(SMSG_SET_PROFICIENCY, 8);
 					data << prof->itemclass;
@@ -4004,7 +4010,7 @@ void Player::ModSkillBonusType(uint32 type,int32 bonus)
 	uint16 skillid;
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(skillid=GetUInt32Value(i))
+		if((skillid=GetUInt32Value(i)))
 		{
 			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
 			if(!sp)
@@ -4025,7 +4031,7 @@ void Player::UpdateMaxSkills()
 	uint16 skillid;
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(skillid=GetUInt32Value(i))
+		if((skillid=GetUInt32Value(i)))
 		{
 			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
 			if(!sp) continue;
@@ -4223,7 +4229,7 @@ The crit constant is class and level dependent and for a level 70 character as f
 	for(;i!=tocritchance.end();++i)
 	{
         //-1 = any weapon
-		if((i->second.wclass==-1) || (it && (1 << it->GetProto()->SubClass & i->second.subclass)))
+		if((i->second.wclass==(uint32)-1) || (it && (1 << it->GetProto()->SubClass & i->second.subclass)))
 		{
 			b+=i->second.value;
 		}
@@ -4362,7 +4368,7 @@ void Player::UpdateStats()
 	if(res<hp)res=hp;
 	SetUInt32Value(UNIT_FIELD_MAXHEALTH, res  );
 	
-	if(GetUInt32Value(UNIT_FIELD_HEALTH)>res)
+	if((int32)GetUInt32Value(UNIT_FIELD_HEALTH)>res)
 		SetUInt32Value(UNIT_FIELD_HEALTH,res);
 	
 		
@@ -4375,7 +4381,7 @@ void Player::UpdateStats()
 		if(res<mana)res=mana;	
 		SetUInt32Value(UNIT_FIELD_MAXPOWER1, res);
 
-		if(GetUInt32Value(UNIT_FIELD_POWER1)>res)
+		if((int32)GetUInt32Value(UNIT_FIELD_POWER1)>res)
 			SetUInt32Value(UNIT_FIELD_POWER1,res);
 	}
 /////////////////////RATINGS STUFF/////////////////
@@ -4875,7 +4881,7 @@ void Player::LoadTaxiMask(const char* data)
 bool Player::HasQuestForItem(uint32 itemid)
 {
 	Quest *qst;
-	for(int i = 0; i < 25; ++i)
+	for(uint32 i = 0; i < 25; ++i)
 	{
 		if(m_questlog[i] != NULL)
 		{
@@ -4883,7 +4889,7 @@ bool Player::HasQuestForItem(uint32 itemid)
 			if(!qst->count_required_item)
 				continue;
 
-			for(int j = 0; j < qst->count_required_item && j < 4; ++j)
+			for(uint32 j = 0; j < qst->count_required_item && j < 4; ++j)
 				if(qst->required_item[j] == itemid && (GetItemInterface()->GetItemCount(itemid) < qst->required_itemcount[j]))
 					return true;
 		}
@@ -5024,7 +5030,7 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 
 				if(m_Group)
 				{
-					for(int i = 0; i < m_Group->GetSubGroupCount(); ++i)
+					for(uint32 i = 0; i < m_Group->GetSubGroupCount(); ++i)
 					{
 						for(GroupMembersSet::iterator itr = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); itr != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
 						{
@@ -5465,9 +5471,9 @@ void Player::UpdateNearbyGameObjects()
 					itr != go->GetInfo()->goMap.end();
 					++itr)
 				{
-					if(qle = GetQuestLogForEntry(itr->first->id))
+					if((qle = GetQuestLogForEntry(itr->first->id)))
 					{
-						for(int i = 0; i < qle->GetQuest()->count_required_mob; ++i)
+						for(uint32 i = 0; i < qle->GetQuest()->count_required_mob; ++i)
 						{
 							if(qle->GetQuest()->required_mob[i] == go->GetEntry() &&
 								qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
@@ -5588,7 +5594,7 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 		lastx = pn->x;
 		lasty = pn->y;
 		lastz = pn->z;
-		for(int i = 1; i <= start_node; ++i)
+		for(uint32 i = 1; i <= start_node; ++i)
 		{
 			pn = path->GetPathNode(i);
 			if(!pn)
@@ -5605,7 +5611,7 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 		add_time = uint32( dist * TAXI_TRAVEL_SPEED );
 		lastx = lasty = lastz = 0;
 	}
-	for(int i = start_node; i < path->GetNodeCount(); ++i)
+	for(uint32 i = start_node; i < path->GetNodeCount(); ++i)
 	{
 		TaxiPathNode *pn = path->GetPathNode(i);
 		if(!pn)
@@ -5920,7 +5926,7 @@ void Player::AddItemsToWorld()
 
 			if(GetItemInterface()->GetInventoryItem(i)->IsContainer() && GetItemInterface()->IsBagSlot(i))
 			{
-				for(int8 e=0; e < GetItemInterface()->GetInventoryItem(i)->GetProto()->ContainerSlots; e++)
+				for(uint32 e=0; e < GetItemInterface()->GetInventoryItem(i)->GetProto()->ContainerSlots; e++)
 				{
 					Item *item = ((Container*)GetItemInterface()->GetInventoryItem(i))->GetItem(e);
 					if(item)
@@ -5951,7 +5957,7 @@ void Player::RemoveItemsFromWorld()
 		
 			if(GetItemInterface()->GetInventoryItem(i)->IsContainer() && GetItemInterface()->IsBagSlot(i))
 			{
-				for(int8 e=0; e < GetItemInterface()->GetInventoryItem(i)->GetProto()->ContainerSlots; e++)
+				for(uint32 e=0; e < GetItemInterface()->GetInventoryItem(i)->GetProto()->ContainerSlots; e++)
 				{
 					Item *item = ((Container*)GetItemInterface()->GetInventoryItem(i))->GetItem(e);
 					if(item && item->IsInWorld())
@@ -6701,7 +6707,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, flo
 bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec)
 {
 	bool instance = false;
-	if(InstanceID && m_instanceId != InstanceID)
+	if(InstanceID && (uint32)m_instanceId != InstanceID)
 	{
 		instance = true;
 		this->SetInstanceID(InstanceID);
@@ -7534,7 +7540,7 @@ void Player::CalcDamage()
 		map<uint32, WeaponModifier>::iterator i;
 		for(i = damagedone.begin();i!=damagedone.end();i++)
 		{
-			if((i->second.wclass == -1) || //any weapon
+			if((i->second.wclass == (uint32)-1) || //any weapon
 				(it && ((1 << it->GetProto()->SubClass) & i->second.subclass) )
 				)
 					tmp+=i->second.value/100.0;
@@ -7576,7 +7582,7 @@ void Player::CalcDamage()
 			tmp = 1;
 			for(;i!=damagedone.end();i++)
 			{
-				if((i->second.wclass==-1) || //any weapon
+				if((i->second.wclass==(uint32)-1) || //any weapon
 					(( (1 << it->GetProto()->SubClass) & i->second.subclass)  )
 					)
 					tmp+=i->second.value/100.0;
@@ -7600,14 +7606,14 @@ void Player::CalcDamage()
 /////////////second hand end
 ///////////////////////////RANGED
 		cr=0;
-		if(it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
+		if((it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)))
 		{
 			i = damagedone.begin();
 			tmp = 1;
 			for(;i != damagedone.end();i++)
 			{
 				if( 
-					(i->second.wclass == -1) || //any weapon
+					(i->second.wclass == (uint32)-1) || //any weapon
 					( ((1 << it->GetProto()->SubClass) & i->second.subclass)  )
 					)
 				{
@@ -7652,7 +7658,7 @@ void Player::CalcDamage()
 /////////////////////////////////RANGED end
 		tmp = 1;
 		for(i = damagedone.begin();i != damagedone.end();i++)
-		if(i->second.wclass==-1)  //any weapon
+		if(i->second.wclass==(uint32)-1)  //any weapon
 			tmp += i->second.value/100.0;
 		
 		//display only modifiers for any weapon

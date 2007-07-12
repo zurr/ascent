@@ -1352,7 +1352,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 					//blocked_damage = shield->GetProto()->Block*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
 					blocked_damage = uint32((shield->GetProto()->Block + ((Player*)pVictim)->m_modblockvalue)*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20);
 
-					if(dmg.full_damage <= blocked_damage)
+					if(dmg.full_damage <= (int32)blocked_damage)
 					{
 						CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, blocked_damage);
 						CALL_SCRIPT_EVENT(this, OnBlocked)(pVictim, blocked_damage);
@@ -1439,7 +1439,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			uint32 dm = dmg.full_damage;
 			abs = pVictim->AbsorbDamage(0,(uint32*)&dm);
 		
-			if(dmg.full_damage > blocked_damage)
+			if(dmg.full_damage > (int32)blocked_damage)
 			{
 				dmg.full_damage -= blocked_damage;
 				uint32 sh = pVictim->ManaShieldAbsorb(dmg.full_damage);
@@ -1559,7 +1559,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	if(!ability)
 	{
 		if(dmg.full_damage)
-			if(dmg.full_damage == dmg.resisted_damage)
+			if(dmg.full_damage == (int32)dmg.resisted_damage)
 				hit_status |= HITSTATUS_ABSORBED;
 
 		data << (uint32)hit_status;   
@@ -1761,7 +1761,7 @@ void Unit::RemoveBySpecialType(uint32 id, uint64 caster)
 			SpellExtraInfo* aur = SpellExtraStorage.LookupEntry(m_auras[x]->GetSpellId());
 			if(aur)
 			{
-				int type = aur->specialtype;
+				uint32 type = aur->specialtype;
 				if(type == id)
 				{
 					if(((type == STING) || (type == BLESSING) || (type == CURSE)) && (m_auras[x]->m_casterGuid==caster))
@@ -2622,11 +2622,11 @@ uint32 Unit::ManaShieldAbsorb(uint32 dmg)
 	uint32 mana = GetUInt32Value(UNIT_FIELD_POWER1);
 	int32 effectbonus = SM_PEffectBonus ? SM_PEffectBonus[16] : 0;
 
-	uint32 potential = (mana*50)/((100+effectbonus));
+	int32 potential = (mana*50)/((100+effectbonus));
 	if(potential>m_manashieldamt)
 		potential = m_manashieldamt;
 
-	if(dmg<potential)
+	if((int32)dmg<potential)
 		potential = dmg;
 
 	uint32 cost = (potential*(100+effectbonus))/50;
@@ -2780,7 +2780,7 @@ uint32 Unit::AbsorbDamage(uint32 School,uint32 * dmg)
 	uint32 abs=0;
 	for(i=Absorbs[School].begin();i!=Absorbs[School].end();)
 	{
-		if (*dmg >= (*i)->amt)//remove this absorb
+		if ((int32)(*dmg) >= (*i)->amt)//remove this absorb
 		{
 			*dmg -= (*i)->amt;
 			abs += (*i)->amt;

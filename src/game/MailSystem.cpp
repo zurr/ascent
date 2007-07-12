@@ -70,7 +70,7 @@ MailError MailSystem::DeliverMessage(uint64 recipent, MailMessage* message)
 		return MAIL_ERR_INTERNAL_ERROR;
 
 	box->AddMessage(message);
-	if(time(NULL)>=message->delivery_time)// this is still wrong this must be sent on mail recieve
+	if((uint32)time(NULL)>=message->delivery_time)// this is still wrong this must be sent on mail recieve
 	//but some1 fucked system.... and delivery is not ever used
 	{
 		// If the player is online, send SMSG_RECEIVED_MAIL to make the letter show up
@@ -278,7 +278,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
 		cost += msg.money;
 
 	// check that we have enough in our backpack
-	if(_player->GetUInt32Value(PLAYER_FIELD_COINAGE) < cost)
+	if((int32)_player->GetUInt32Value(PLAYER_FIELD_COINAGE) < cost)
 	{
 		SendMailError(MAIL_ERR_NOT_ENOUGH_MONEY);
 		return;

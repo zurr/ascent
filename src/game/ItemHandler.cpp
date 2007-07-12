@@ -37,7 +37,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 		{
 			//check if player has the required stacks to avoid exploiting.
 			//safe exploit check
-			if(c < i1->GetUInt32Value(ITEM_FIELD_STACK_COUNT))
+			if(c < (int32)i1->GetUInt32Value(ITEM_FIELD_STACK_COUNT))
 			{
 				//check if there is room on the other item.
 				if(((c + i2->GetUInt32Value(ITEM_FIELD_STACK_COUNT)) <= i2->GetProto()->MaxCount))
@@ -64,7 +64,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 	}
 	else
 	{
-		if(c < i1->GetUInt32Value(ITEM_FIELD_STACK_COUNT))
+		if(c < (int32)i1->GetUInt32Value(ITEM_FIELD_STACK_COUNT))
 		{
 			i1->ModUInt32Value(ITEM_FIELD_STACK_COUNT,-c);
 
@@ -152,7 +152,7 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 
 			if(SrcSlot <  INVENTORY_KEYRING_END)
 			{
-				if(error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(SrcInvSlot, SrcSlot, DstItem->GetProto()))
+				if((error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(SrcInvSlot, SrcSlot, DstItem->GetProto())))
 				{
 					_player->GetItemInterface()->BuildInventoryChangeError(SrcItem, DstItem, error);
 					return;
@@ -170,7 +170,7 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 				}
 			}
 
-			if(error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(SrcInvSlot, SrcInvSlot, DstItem->GetProto()))
+			if((error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(SrcInvSlot, SrcInvSlot, DstItem->GetProto())))
 			{
 				_player->GetItemInterface()->BuildInventoryChangeError(SrcItem, DstItem, error);
 				return;
@@ -196,7 +196,7 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 
 			if(DstSlot <  INVENTORY_KEYRING_END)
 			{
-				if(error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(DstInvSlot, DstSlot, SrcItem->GetProto()))
+				if((error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(DstInvSlot, DstSlot, SrcItem->GetProto())))
 				{
 					_player->GetItemInterface()->BuildInventoryChangeError(SrcItem, DstItem, error);
 					return;
@@ -214,7 +214,7 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 				}
 			}
 
-			if(error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(DstInvSlot, DstInvSlot, SrcItem->GetProto()))
+			if((error=GetPlayer()->GetItemInterface()->CanEquipItemInSlot(DstInvSlot, DstInvSlot, SrcItem->GetProto())))
 			{
 				_player->GetItemInterface()->BuildInventoryChangeError(SrcItem, DstItem, error);
 				return;
@@ -369,7 +369,7 @@ void WorldSession::HandleSwapInvItemOpcode( WorldPacket & recv_data )
 		return;
 	}
 	
-	if(error=_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, dstslot, srcitem->GetProto(), skip_combat))
+	if((error=_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, dstslot, srcitem->GetProto(), skip_combat)))
 	{
 		if(dstslot < INVENTORY_KEYRING_END)
 		{
@@ -380,7 +380,7 @@ void WorldSession::HandleSwapInvItemOpcode( WorldPacket & recv_data )
 
 	if(dstitem)
 	{
-		if(error=_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, srcslot, dstitem->GetProto(), skip_combat))
+		if((error=_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, srcslot, dstitem->GetProto(), skip_combat)))
 		{
 			if(srcslot < INVENTORY_KEYRING_END)
 			{
@@ -517,7 +517,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 		return;
 	}
 
-	if(error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetProto()))
+	if((error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetProto())))
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(eitem,NULL, error);
 		return;
@@ -713,7 +713,7 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 		
 		// Check for gold
 		int32 cost =_player->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff);
-		if(_player->GetUInt32Value(PLAYER_FIELD_COINAGE) < cost )
+		if((int32)_player->GetUInt32Value(PLAYER_FIELD_COINAGE) < cost )
 		{
 			WorldPacket data(SMSG_BUY_FAILED, 12);
 			data << uint64(guid);
@@ -723,7 +723,7 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 			return;
 		}
 		// Check for item uniqueness
-		if (error = _player->GetItemInterface()->CanReceiveItem(it->GetProto(), amount))
+		if ((error = _player->GetItemInterface()->CanReceiveItem(it->GetProto(), amount)))
 		{
 			_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
 			return;
@@ -908,7 +908,7 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 			c=(Container*)_player->GetItemInterface()->GetItemByGUID(bagguid);
 			if(!c)return;
 
-			if(c->GetProto() && slot > c->GetProto()->ContainerSlots)
+			if(c->GetProto() && (uint32)slot > c->GetProto()->ContainerSlots)
 			{
 				_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
 				return;
@@ -949,13 +949,13 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 	ItemPrototype *it = ItemPrototypeStorage.LookupEntry(itemid);
 	if(!it) return;
 
-	if(error = _player->GetItemInterface()->CanReceiveItem(it, amount))
+	if((error = _player->GetItemInterface()->CanReceiveItem(it, amount)))
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
 		return;
 	}
 
-	if(error = _player->GetItemInterface()->CanAffordItem(it,amount*itemd.amount))
+	if((error = _player->GetItemInterface()->CanAffordItem(it,amount*itemd.amount)))
 	{
 		SendBuyFailed(srcguid, itemd.itemid, error);
 		return;
@@ -963,7 +963,7 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 
 
 	int8 cslot = _player->GetItemInterface()->GetInventorySlotByGuid(bagguid);
-	if(error = _player->GetItemInterface()->CanEquipItemInSlot(cslot, ((cslot) ? cslot : slot), it))
+	if((error = _player->GetItemInterface()->CanEquipItemInSlot(cslot, ((cslot) ? cslot : slot), it)))
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(NULL,NULL, error);
 		return;
@@ -1094,13 +1094,13 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 		return;
 	}
 
-	if(error = _player->GetItemInterface()->CanReceiveItem(it, amount))
+	if((error = _player->GetItemInterface()->CanReceiveItem(it, amount)))
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
 		return;
 	}
 
-   if(error = _player->GetItemInterface()->CanAffordItem(it,amount*item.amount))
+   if((error = _player->GetItemInterface()->CanAffordItem(it,amount*item.amount)))
    {
       SendBuyFailed(srcguid, itemid, error);
       return;
@@ -1202,7 +1202,7 @@ void WorldSession::SendInventoryList(Creature* unit)
 	{
 		if(itr->itemid)
 		{
-			if(curItem = ItemPrototypeStorage.LookupEntry(itr->itemid))
+			if((curItem = ItemPrototypeStorage.LookupEntry(itr->itemid)))
 			{
 				data << (counter + 1);
 				data << curItem->ItemId;
@@ -1278,7 +1278,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode( WorldPacket & recv_data )
 		}
 		else
 		{
-			if(error=_player->GetItemInterface()->CanEquipItemInSlot(DstInv,  DstInv, srcitem->GetProto()))
+			if((error=_player->GetItemInterface()->CanEquipItemInSlot(DstInv,  DstInv, srcitem->GetProto())))
 			{
 				if(DstInv < INVENTORY_KEYRING_END)
 				{
@@ -1471,7 +1471,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
 			return;
 	}
 
-	if (_player->GetUInt32Value(PLAYER_FIELD_COINAGE) >= price) 
+	if ((int32)_player->GetUInt32Value(PLAYER_FIELD_COINAGE) >= price) 
 	{
 	   _player->SetUInt32Value(PLAYER_BYTES_2, (bytes&0xff00ffff) | ((slots+1) << 16) );
 	   _player->ModUInt32Value(PLAYER_FIELD_COINAGE, -price);

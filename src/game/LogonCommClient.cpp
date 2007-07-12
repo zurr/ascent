@@ -295,7 +295,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 	}
 
 	ByteBuffer uncompressed(40000 * 5 + 8);
-	uint32 Count = 0;
+	//uint32 Count = 0;
 	uint32 Remaining = mapping_to_send.size();
 	itr = mapping_to_send.begin();
 	for(;;)

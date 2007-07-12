@@ -457,9 +457,9 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 						itr != go->GetInfo()->goMap.end();
 						++itr)
 					{
-						if(qle = target->GetQuestLogForEntry(itr->first->id))
+						if((qle = target->GetQuestLogForEntry(itr->first->id)))
 						{
-							for(int i = 0; i < qle->GetQuest()->count_required_mob; ++i)
+							for(uint32 i = 0; i < qle->GetQuest()->count_required_mob; ++i)
 							{
 								if(qle->GetQuest()->required_mob[i] == go->GetEntry() &&
 									qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
@@ -483,7 +483,7 @@ void Object::_BuildValuesUpdate(ByteBuffer * data, UpdateMask *updateMask, Playe
 								it2 != itr->second.end(); 
 								++it2)
 							{
-								if(qle = target->GetQuestLogForEntry(itr->first->id))
+								if((qle = target->GetQuestLogForEntry(itr->first->id)))
 								{
 									if(target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
 									{
@@ -805,7 +805,7 @@ void Object::LoadValues(const char* data)
 	// thread-safe ;) strtok is not.
 	std::string ndata = data;
 	std::string::size_type last_pos = 0, pos = 0;
-	int index = 0;
+	uint32 index = 0;
 	uint32 val;
 	do 
 	{

@@ -63,11 +63,11 @@ bool TerrainMgr::LoadTerrainHeader()
 	// Create the path
 	char File[200];
 
-	snprintf(File, 200, "%s/Map_%u.bin", mapPath.c_str(), mapId);
+	snprintf(File, 200, "%s/Map_%u.bin", mapPath.c_str(), (unsigned int)mapId);
 
 	FileDescriptor = fopen(File, "rb");
 
-	if((uint32)FileDescriptor == -1 || FileDescriptor == 0)
+	if(FileDescriptor == 0)
 	{
 		sLog.outError("Could not load map file header for %s.", File);
 		return false;

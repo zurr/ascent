@@ -131,7 +131,7 @@ bool ChatHandler::HandleWPMoveTypeCommand(const char* args, WorldSession *m_sess
 	}
 
 	char sql[512];
-	snprintf(sql, 512, "UPDATE creatures SET moverandom = '%u' WHERE id = '%u'", option, GUID_LOPART(guid));
+	snprintf(sql, 512, "UPDATE creatures SET moverandom = '%u' WHERE id = '%u'", (unsigned int)option, (unsigned int)GUID_LOPART(guid));
 	WorldDatabase.Execute( sql );
 
 	pCreature->GetAIInterface()->setMoveType(option);
@@ -516,7 +516,7 @@ bool ChatHandler::HandleWPEmoteCommand(const char* args, WorldSession *m_session
 			ai->saveWayPoints(wpid);
 		}
 
-		ss << "EmoteID for Waypoint " << wpid << " is now " << EmoteId << " and oneshot is " << (OneShot == true)? "Enabled." : "Disabled.";
+		ss << "EmoteID for Waypoint " << wpid << " is now " << EmoteId << " and oneshot is " << ((OneShot == true)? "Enabled." : "Disabled.");
 		SystemMessage(m_session,  ss.str().c_str());
 	}
 	else
@@ -761,7 +761,7 @@ bool ChatHandler::HandleSaveWaypoints(const char* args, WorldSession * m_session
 	WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE creatureid=%u",cr->GetSQL_id());
 
 	
-	for(int x=1;x<=cr->GetAIInterface()->GetWayPointsCount();x++)
+	for(uint32 x=1;x<=cr->GetAIInterface()->GetWayPointsCount();x++)
 	{
 		 WayPoint  *w =cr->GetAIInterface()->getWayPoint(x);
 		 if(!w)continue;

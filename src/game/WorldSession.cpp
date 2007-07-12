@@ -22,8 +22,8 @@
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
-WorldSession::WorldSession(uint32 id, string Name, WorldSocket *sock) : _accountId(id), _socket(sock), _accountName(Name),
-_player(0), _logoutTime(0), _loggingOut(false), permissions(NULL), permissioncount(0), instanceId(0), packetThrottleCount(0), packetThrottleTimeout(0)
+WorldSession::WorldSession(uint32 id, string Name, WorldSocket *sock) : _player(0), _socket(sock), _accountId(id), _accountName(Name),
+_logoutTime(0), permissions(NULL), permissioncount(0), _loggingOut(false), instanceId(0), packetThrottleTimeout(0), packetThrottleCount(0)
 {
 	memset(movement_packet, 0, sizeof(movement_packet));
 	m_currMsTime = getMSTime();
@@ -55,10 +55,10 @@ WorldSession::~WorldSession()
 
 	WorldPacket *packet;
 
-	while(packet = _recvQueue.Pop())
+	while((packet = _recvQueue.Pop()))
 		delete packet;
 
-	while(packet = _throttledQueue.Pop())
+	while((packet = _throttledQueue.Pop()))
 		delete packet;
 
 	for(uint32 x=0;x<8;x++)
@@ -103,7 +103,7 @@ int WorldSession::Update(uint32 InstanceID)
 		return 1;
 	}
 
-	while (packet = _recvQueue.Pop())
+	while ((packet = _recvQueue.Pop()))
 	{
 		ASSERT(packet);
 
@@ -160,7 +160,7 @@ int WorldSession::Update(uint32 InstanceID)
 		LogoutPlayer(true);
 	}
 
-	if(m_lastPing + WORLDSOCKET_TIMEOUT < time(NULL))
+	if(m_lastPing + WORLDSOCKET_TIMEOUT < (uint32)time(NULL))
 	{
 		// Check if the player is in the process of being moved. We can't delete him
 		// if we are.
@@ -383,7 +383,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
 {
 	std::list<char> tmp;
 	bool hasa = false;
-	for(int i = 0; i < securitystring.length(); ++i)
+	for(uint32 i = 0; i < securitystring.length(); ++i)
 	{
 		char c = securitystring.at(i);
 		c = towlower(c);
@@ -854,7 +854,7 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
 	snprintf(out, 32768, "[%-4d-%02d-%02d %02d:%02d:%02d] ",aTm->tm_year+1900,aTm->tm_mon+1,aTm->tm_mday,aTm->tm_hour,aTm->tm_min,aTm->tm_sec);
 	int l = strlen(out);
 
-	snprintf(&out[l], 32768 - l, "Account %u [%s], IP %s, Player %s :: ", session->GetAccountId(), session->GetAccountName().c_str(),
+	snprintf(&out[l], 32768 - l, "Account %u [%s], IP %s, Player %s :: ", (unsigned int)session->GetAccountId(), session->GetAccountName().c_str(),
 		session->GetSocket() ? session->GetSocket()->GetRemoteIP().c_str() : "NOIP", 
 		session->GetPlayer() ? session->GetPlayer()->GetName() : "nologin");
 
@@ -901,7 +901,7 @@ void WorldSession::UpdateThrottledPackets()
 	}
 
 	WorldPacket * pck;
-	while(pck = _throttledQueue.Pop())
+	while((pck = _throttledQueue.Pop()))
 	{
 		SendPacket(pck);
 		delete pck;

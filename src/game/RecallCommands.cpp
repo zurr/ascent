@@ -81,7 +81,7 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession *m_sessi
 
 	char buf[256]; 
 	snprintf((char*)buf, 256, "Added location to DB with MapID: %d, X: %f, Y: %f, Z: %f",
-		plr->GetMapId(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ());
+		(unsigned int)plr->GetMapId(), plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ());
 	GreenSystemMessage(m_session, buf);
 	sGMLog.writefromsession(m_session, "used recall add, added \"%s\" location to database.", rc_locname.c_str());
 

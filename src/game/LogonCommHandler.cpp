@@ -106,7 +106,7 @@ void LogonCommHandler::Connect(LogonServer * server)
 	sLog.outColor(TNORMAL, "        >> result:");
 	while(!conn->authenticated)
 	{
-		if(time(NULL) >= tt)
+		if((uint32)time(NULL) >= tt)
 		{
 			sLog.outColor(TYELLOW, " timeout.\n");
 			return;
@@ -139,7 +139,7 @@ void LogonCommHandler::Connect(LogonServer * server)
 	while(server->Registered == false)
 	{
 		// Don't wait more than.. like 10 seconds for a registration
-		if(time(NULL) >= st)
+		if((uint32)time(NULL) >= st)
 		{
 			sLog.outColor(TYELLOW, "timeout.");
 			logons[server] = 0;
@@ -191,7 +191,7 @@ void LogonCommHandler::UpdateSockets()
 			if(cs->last_pong < t && ((t - cs->last_pong) > 60))
 			{
 				// no pong for 60 seconds -> remove the socket
-				printf(" >> realm id %u connection dropped due to pong timeout.\n", itr->first->ID);
+				printf(" >> realm id %u connection dropped due to pong timeout.\n", (unsigned int)itr->first->ID);
 				cs->_id = 0;
 				cs->Disconnect();
 				itr->second = 0;

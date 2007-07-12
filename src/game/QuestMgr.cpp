@@ -56,7 +56,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst)
 
 	// Check reputation
 	if(qst->required_rep_faction && qst->required_rep_value)
-		if(plr->GetStanding(qst->required_rep_faction) < qst->required_rep_value)
+		if(plr->GetStanding(qst->required_rep_faction) < (int32)qst->required_rep_value)
 			return QMGR_QUEST_NOT_AVAILABLE;
 
 	if (plr->HasFinishedQuest(qst->id))
@@ -500,7 +500,7 @@ bool QuestMgr::OnGameObjectActivate(Player *plr, GameObject *go)
 
 	for(i = 0; i < 25; ++i)
 	{
-		if(qle = plr->GetQuestLogInSlot(i))
+		if((qle = plr->GetQuestLogInSlot(i)))
 		{
 			// dont waste time on quests without mobs
 			if(qle->GetQuest()->count_required_mob == 0)
@@ -540,7 +540,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim)
 	QuestLogEntry *qle;
 	for(i = 0; i < 25; ++i)
 	{
-		if(qle = plr->GetQuestLogInSlot(i))
+		if((qle = plr->GetQuestLogInSlot(i)))
 		{
 			// dont waste time on quests without mobs
 			if(qle->GetQuest()->count_required_mob == 0)
@@ -583,7 +583,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim)
 					{
 						for(i = 0; i < 20; ++i)
 						{
-							if(qle = gplr->GetQuestLogInSlot(i))
+							if((qle = gplr->GetQuestLogInSlot(i)))
 							{
 								// dont waste time on quests without mobs
 								if(qle->GetQuest()->count_required_mob == 0)
@@ -626,7 +626,7 @@ void QuestMgr::OnPlayerItemPickup(Player* plr, Item* item)
 	QuestLogEntry *qle;
 	for(i = 0; i < 25; ++i)
 	{
-		if(qle = plr->GetQuestLogInSlot(i))
+		if((qle = plr->GetQuestLogInSlot(i)))
 		{
 			for(j = 0; j < qle->GetQuest()->count_required_item; ++j)
 			{
@@ -659,7 +659,7 @@ void QuestMgr::OnPlayerExploreArea(Player* plr, uint32 AreaID)
 	QuestLogEntry *qle;
 	for(i = 0; i < 25; ++i)
 	{
-		if(qle = plr->GetQuestLogInSlot(i))
+		if((qle = plr->GetQuestLogInSlot(i)))
 		{
 			// dont waste time on quests without mobs
 			if(qle->GetQuest()->count_requiredtriggers == 0)
@@ -738,7 +738,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 		}
 
 		if(qst->reward_replimit)
-			if(plr->GetStanding(fact) >= qst->reward_replimit)
+			if(plr->GetStanding(fact) >= (int32)qst->reward_replimit)
 				continue;
 
 		plr->ModStanding(fact, amt);

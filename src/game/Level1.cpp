@@ -120,7 +120,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession *m_session)
 
 	char buf[256];
 	snprintf((char*)buf, 256, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
-		obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
+		(unsigned int)obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
 	
 	
 	SystemMessage(m_session, buf);
@@ -210,7 +210,7 @@ bool ChatHandler::HandleAddInvItemCommand(const char *args, WorldSession *m_sess
 	}
 
 	int itemid = atoi(strtok((char*)args, " "));
-	int count = 1;
+	uint32 count = 1;
 	char *cCount = strtok(NULL, "\n");  
 	if(cCount) count = atoi(cCount);
 	if(!count) count = 1;
@@ -234,9 +234,9 @@ bool ChatHandler::HandleAddInvItemCommand(const char *args, WorldSession *m_sess
 		}
 
 		char messagetext[128];
-		snprintf(messagetext, 128, "Adding item %d (%s) to %s's inventory.",it->ItemId,it->Name1, chr->GetName());
+		snprintf(messagetext, 128, "Adding item %d (%s) to %s's inventory.",(unsigned int)it->ItemId,it->Name1, chr->GetName());
 		SystemMessage(m_session, messagetext);
-		snprintf(messagetext, 128, "%s added item %d (%s) to your inventory.", m_session->GetPlayer()->GetName(), itemid, it->Name1);
+		snprintf(messagetext, 128, "%s added item %d (%s) to your inventory.", m_session->GetPlayer()->GetName(), (unsigned int)itemid, it->Name1);
 		SystemMessageToPlr(chr,  messagetext);
 
 		return true;
@@ -537,7 +537,7 @@ bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession *m_sess
 	sGMLog.writefromsession(m_session, "used modify gold on %s, gold: %u", chr->GetName(), gold);
 	BlueSystemMessage(m_session, "Adding %d gold to %s's backpack...", gold, chr->GetName());
 
-	uint32 currentgold = chr->GetUInt32Value(PLAYER_FIELD_COINAGE);
+	int32 currentgold = chr->GetUInt32Value(PLAYER_FIELD_COINAGE);
 	int32 newgold = currentgold + gold;
 
 	if(newgold < 0)
@@ -569,7 +569,7 @@ bool ChatHandler::HandleTriggerCommand(const char* args, WorldSession* m_session
 {
 	int32 instance_id;
 	uint32 trigger_id;
-	int valcount = sscanf(args, "%u %d", &trigger_id, &instance_id);
+	int valcount = sscanf(args, "%u %d", (unsigned int*)&trigger_id, (int*)&instance_id);
 	if(!valcount)
 		return false;
 	if(valcount == 1)
@@ -624,10 +624,10 @@ bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession *m_se
 	if (!target)
 		return false;
 
-	int valcount = sscanf(args, "%u", &id);
+	int valcount = sscanf(args, "%u", (unsigned int*)&id);
 	if(valcount)
 	{
-		snprintf(sql, 512, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", id, target->GetSQL_id());
+		snprintf(sql, 512, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", (unsigned int)id, (unsigned int)target->GetSQL_id());
 		WorldDatabase.Execute( sql );
 		BlueSystemMessage(m_session, "Spawn linking for this npc has been updated: %u", id);
 	}
