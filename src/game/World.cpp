@@ -872,8 +872,6 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CAST_SPELL;		
 					if(strstr(desc,"your Fire damage spell hits"))
 						pr|=PROC_ON_CAST_SPELL;		//this happens only on hit ;)
-					if(strstr(desc,"your shadow damage spells"))
-						pr|=PROC_ON_CAST_SPELL;
 //					if(strstr(desc,"chill effect to your Blizzard"))
 //						pr|=PROC_ON_CAST_SPELL;	
 					//////////////////////////////////////////////////
@@ -957,6 +955,24 @@ void World::SetInitialWorldSettings()
 			sp->EffectApplyAuraName[0] = 42; //force him to use procspell effect
 			sp->EffectTriggerSpell[0] = 12654; //evil , but this is good for us :D
 			sp->procFlags = PROC_ON_SPELL_CRIT_HIT; //add procflag here since this was not processed with the others !
+		}
+		// Winter's Chill handled by frost school
+		if(strstr(nametext, "Winter's Chill"))
+		{
+			sp->School = 4;
+		}
+		// Blackout handled by Shadow school
+		if(strstr(nametext, "Blackout"))
+		{
+			sp->School = 5;
+		}
+		// Shadow Weaving
+		if(strstr(nametext, "Shadow Weaving"))
+		{
+			sp->School = 5;
+			sp->EffectApplyAuraName[0] = 42;
+			sp->procChance = sp->EffectBasePoints[0] + 1;
+			sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
 		}
 		//more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
 		else if( strstr(nametext, "Nature's Guardian"))

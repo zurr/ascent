@@ -3,8 +3,6 @@ Priest:
 Shadow talents:
 Talents:
 
-Improved Mind Blast; should reduce the cooldown of mind blast by 2.5 seconds; does not work at all.
-
 Misery; should make shadow word: pain, mind flay, and vampiric touch increase target spell damage taken by 5%; does not work at all.
 
 Focused Mind; should reduce mana cost of mind blast, mind control, and mind flay by 15%; does not work at all (I think).

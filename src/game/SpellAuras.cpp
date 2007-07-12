@@ -4290,10 +4290,10 @@ void Aura::SpellAuraModDamagePercTaken(bool apply)
 	if(apply)
 	{
 		val = mod->m_amount/100.0;
-		if(val > 0)
-			SetNegative();
-		else
+		if(val < 0)
 			SetPositive();
+		else
+			SetNegative();
 	}
 	else
 	{
