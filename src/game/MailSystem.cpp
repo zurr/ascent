@@ -306,11 +306,13 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
 		// Delete from memory now, its not needed anymore.
 		delete attached_item;
 
-		// items add an hour to delivery time
+		// no need to update guid, it shouldn't change..
+	}
+
+	if(msg.money != 0 || msg.cod != 0 || msg.attached_item_guid != 0)
+	{
 		if(!sMailSystem.MailOption(MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS))
 			msg.delivery_time += 3600;  // 1hr
-
-		// no need to update guid, it shouldn't change..
 	}
 
 	// take the money
