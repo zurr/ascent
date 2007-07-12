@@ -748,6 +748,15 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if( CastingSpell->NameHash!=1828847009) //Rain of Fire
 									continue;
 							}
+						//priest - Shadow Weaving
+						case 15258:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								if(CastingSpell->School!=SCHOOL_SHADOW && victim!=this)
+									continue;
+							}
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too

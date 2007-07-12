@@ -52,6 +52,7 @@ Zack - test my shit :
 - deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
 - mage - Improved Scorch
 - mage - Combustion
+- priest - Shadow Weaving
 
 ==========================================================================
 

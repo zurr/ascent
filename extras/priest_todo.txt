@@ -3,8 +3,6 @@ Priest:
 Shadow talents:
 Talents:
 
-Shadow Weaving; should give shadow damage spells 100% chance to cause target to become vulnerable to shadow damage, increasing shadow damage caused to target by 3% for 15 seconds, stacks up to 5 times; does not work at all.
-
 Improved Mind Blast; should reduce the cooldown of mind blast by 2.5 seconds; does not work at all.
 
 Misery; should make shadow word: pain, mind flay, and vampiric touch increase target spell damage taken by 5%; does not work at all.

@@ -872,6 +872,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CAST_SPELL;		
 					if(strstr(desc,"your Fire damage spell hits"))
 						pr|=PROC_ON_CAST_SPELL;		//this happens only on hit ;)
+					if(strstr(desc,"your shadow damage spells"))
+						pr|=PROC_ON_CAST_SPELL;
 //					if(strstr(desc,"chill effect to your Blizzard"))
 //						pr|=PROC_ON_CAST_SPELL;	
 					//////////////////////////////////////////////////
