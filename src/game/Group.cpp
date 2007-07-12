@@ -78,7 +78,7 @@ SubGroup::~SubGroup()
 	GroupMembersSet::iterator itr = m_GroupMembers.begin();
 	for(; itr != m_GroupMembers.end(); ++itr)
 	{
-		(*itr)->SetSubGroup(NULL);
+		(*itr)->SetSubGroup(0);
 	}
 
 	m_GroupMembers.clear();
@@ -104,7 +104,7 @@ void SubGroup::RemovePlayer(Player *pPlayer)
 	{
 		sLog.outDebug("GROUP: Tried to remove player %s from subgroup %d but he does not exist!", pPlayer->GetName(), m_Id);
 	}
-	pPlayer->SetSubGroup(NULL);
+	pPlayer->SetSubGroup(0);
 	m_Parent->m_MemberCount--;
 
 	if(m_SubGroupLeader == pPlayer)
@@ -281,7 +281,7 @@ void SubGroup::Disband(bool bRemoveGroup)
 	{
 		(*itr)->GetSession()->SendPacket(&data);
 		(*itr)->GetSession()->SendPacket(&data2);
-		(*itr)->SetSubGroup(NULL);
+		(*itr)->SetSubGroup(0);
 		m_Parent->m_MemberCount--;
 
 		if(bRemoveGroup)

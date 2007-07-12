@@ -406,8 +406,8 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 					continue;
 			}
 
-			int32 value = itr->value;
-			value *= sWorld.getRate(RATE_KILLREPUTATION);
+			int32 value = int32(float(itr->value) * sWorld.getRate(RATE_KILLREPUTATION));
+			//value *= sWorld.getRate(RATE_KILLREPUTATION);
 			ModStanding(itr->faction[team], value);
 		}
 	}

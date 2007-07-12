@@ -2874,7 +2874,8 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVict
 		if(!value || (replimit && pPlayer->GetStanding(i->faction[team]) >= replimit))
 			continue;
 
-		value *= sWorld.getRate(RATE_KILLREPUTATION);
+		//value *= sWorld.getRate(RATE_KILLREPUTATION);
+		value = int32(float(value) * sWorld.getRate(RATE_KILLREPUTATION));
 		pPlayer->ModStanding(i->faction[team], value);
 	}
 

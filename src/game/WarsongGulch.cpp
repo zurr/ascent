@@ -771,3 +771,4 @@ void WarsongGulch::AutoReturnFlag(GameObject * flag, uint32 flagteam)
 	FlagGuids[flagteam] = 0;
 	FlagHolders[flagteam] = 0;
 }
+

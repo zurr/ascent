@@ -38,8 +38,8 @@ GameObject::GameObject(uint32 high, uint32 low)
 	spell = 0;
 	m_summoner = NULL;
 	charges = (uint32)-1;
-	m_ritualcaster = NULL;
-	m_ritualtarget = NULL;
+	m_ritualcaster = 0;
+	m_ritualtarget = 0;
 	m_ritualmembers = NULL;
 	m_ritualspell = 0;
 
@@ -72,7 +72,7 @@ GameObject::~GameObject()
 	if (m_summonedGo && m_summoner)
 		for(int i = 0; i < 4; i++)
 			if (m_summoner->m_ObjectSlots[i] == GetGUIDLow())
-				m_summoner->m_ObjectSlots[i] = NULL;
+				m_summoner->m_ObjectSlots[i] = 0;
 }
 
 bool GameObject::CreateFromProto(uint32 entry,uint32 mapid, float x, float y, float z, float ang)
@@ -640,7 +640,7 @@ void GameObject::RemoveInRangeObject(Object* pObj)
 	{
 		for(int i = 0; i < 4; i++)
 			if (m_summoner->m_ObjectSlots[i] == GetGUIDLow())
-				m_summoner->m_ObjectSlots[i] = NULL;
+				m_summoner->m_ObjectSlots[i] = 0;
 
 		m_summoner = 0;
 		ExpireAndDelete();

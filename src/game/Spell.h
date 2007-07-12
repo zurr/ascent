@@ -1063,7 +1063,7 @@ typedef std::vector<uint64> TargetsList;
 typedef void(Spell::*pSpellEffect)(uint32 i);
 
 
-#define POWER_TYPE_HEALTH 4294967294
+#define POWER_TYPE_HEALTH 0xFFFFFFFE
 #define POWER_TYPE_MANA 0
 #define POWER_TYPE_RAGE 1
 #define POWER_TYPE_FOCUS 2

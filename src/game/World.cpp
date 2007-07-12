@@ -550,31 +550,31 @@ void World::SetInitialWorldSettings()
 		else if(strstr(nametext, "Track")==nametext)
             type |= SPELL_TYPE_TRACK;
 //		else if(strstr(nametext, "Gift of the Wild") || strstr(nametext, "Mark of the Wild"))
-		else if(namehash==4152142663 || namehash==539958644)
+		else if(namehash==0xF77CAB47 || namehash==0x202F1D74)
             type |= SPELL_TYPE_MARK_GIFT;
 //		else if(strstr(nametext, "Immolation Trap") || strstr(nametext, "Freezing Trap") || strstr(nametext, "Frost Trap") || strstr(nametext, "Explosive Trap") || strstr(nametext, "Snake Trap"))
-		else if(namehash==596634354 || namehash==1497202375 || namehash==4147219415 || namehash==1421276142 || namehash==4117979579)
+		else if(namehash==0x238FEAF2 || namehash==0x593D7EC7 || namehash==0xF7318BD7 || namehash==0x54B6F3EE || namehash==0xF57361BB)
             type |= SPELL_TYPE_HUNTER_TRAP;
 //		else if(strstr(nametext, "Arcane Intellect") || strstr(nametext, "Arcane Brilliance"))
-		else if(namehash==795875514 || namehash==2628295428)
+		else if(namehash==0x2F7018BA || namehash==0x9CA89B04)
             type |= SPELL_TYPE_MAGE_INTEL;
 //		else if(strstr(nametext, "Amplify Magic") || strstr(nametext, "Dampen Magic"))
-		else if(namehash==1977789695 || namehash==1011753988)
+		else if(namehash==0x75E2ACFF || namehash==0x3C4E2404)
             type |= SPELL_TYPE_MAGE_MAGI;
 //		else if(strstr(nametext, "Fire Ward") || strstr(nametext, "Frost Ward"))
-		else if(namehash==3359283659 || namehash==2161224959)
+		else if(namehash==0xC83A99CB || namehash==0x80D1ACFF)
             type |= SPELL_TYPE_MAGE_WARDS;
 //		else if(strstr(nametext, "Shadow Protection") || strstr(nametext, "Prayer of Shadow Protection"))
-		else if(namehash==3650389800 || namehash==3181823868)
+		else if(namehash==0xD9948728 || namehash==0xBDA6C77C)
             type |= SPELL_TYPE_PRIEST_SH_PPROT;
 //		else if(strstr(nametext, "Water Shield") || strstr(nametext, "Earth Shield") || strstr(nametext, "Lightning Shield"))
-		else if(namehash==3118121598 || namehash==36158091 || namehash==555994910)
+		else if(namehash==0xB9DAC27E || namehash==0x0227BA8B || namehash==0x2123CF1E)
             type |= SPELL_TYPE_SHIELD;
 //		else if(strstr(nametext, "Power Word: Fortitude") || strstr(nametext, "Prayer of Fortitude"))
-		else if(namehash==2421609042 || namehash==1369413555)
+		else if(namehash==0x9056D252 || namehash==0x519F97B3)
             type |= SPELL_TYPE_FORTITUDE;
 //		else if(strstr(nametext, "Divine Spirit") || strstr(nametext, "Prayer of Spirit"))
-		else if(namehash==2977508401 || namehash==3371527599)
+		else if(namehash==0xB1792C31 || namehash==0xC8F56DAF)
             type |= SPELL_TYPE_SPIRIT;
 //		else if(strstr(nametext, "Curse of Weakness") || strstr(nametext, "Curse of Agony") || strstr(nametext, "Curse of Recklessness") || strstr(nametext, "Curse of Tongues") || strstr(nametext, "Curse of the Elements") || strstr(nametext, "Curse of Idiocy") || strstr(nametext, "Curse of Shadow") || strstr(nametext, "Curse of Doom"))
 //		else if(namehash==4129426293 || namehash==885131426 || namehash==626036062 || namehash==3551228837 || namehash==2784647472 || namehash==776142553 || namehash==3407058720 || namehash==202747424)

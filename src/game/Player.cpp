@@ -90,7 +90,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_resurrectHealth	   = m_resurrectMana = 0;
 
 	m_Group				 = NULL;
-	m_SubGroup			  = NULL;
+	m_SubGroup			  = 0;
 	m_GroupInviter		  = 0;
 	
 	Lfgcomment = "";

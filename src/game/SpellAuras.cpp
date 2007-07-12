@@ -928,7 +928,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 						dmg = 0;
 						for(int i=0;i<5;i++)
 							if(it->GetProto()->Damage[i].Type==SCHOOL_NORMAL)
-								dmg += (it->GetProto()->Damage[i].Min + it->GetProto()->Damage[i].Max) / 2;
+								dmg += int32((it->GetProto()->Damage[i].Min + it->GetProto()->Damage[i].Max) / 2);
 						dmg = multiplyer * dmg /100;
 					}
 				}
@@ -2112,7 +2112,7 @@ void Aura::SpellAuraDamageShield(bool apply)
 void Aura::SpellAuraModStealth(bool apply)
 {
 	//check if we have "Faerie Fire". It should block invisibility
-	if(m_target->HasAurasWithNameHash(2787586002))
+	if(m_target->HasAurasWithNameHash(0xA6272FD2))
 	{
 		//report broken cast and exit
 //		SendCastResult(SPELL_FAILED_CANT_STEALTH);
@@ -2177,7 +2177,7 @@ void Aura::SpellAuraModDetect(bool apply)
 void Aura::SpellAuraModInvisibility(bool apply)
 {
 	//check if we have "Faerie Fire". It should block invisibility
-	if(m_target->HasAurasWithNameHash(2787586002))
+	if(m_target->HasAurasWithNameHash(0xA6272FD2))
 	{
 		//report broken cast and exit
 //		SendCastResult(SPELL_FAILED_CANT_STEALTH);

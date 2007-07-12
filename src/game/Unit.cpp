@@ -30,10 +30,10 @@ Unit::Unit()
 	m_TotemSlots[1] = NULL;
 	m_TotemSlots[2] = NULL;
 	m_TotemSlots[3] = NULL;
-	m_ObjectSlots[0] = NULL;
-	m_ObjectSlots[1] = NULL;
-	m_ObjectSlots[2] = NULL;
-	m_ObjectSlots[3] = NULL;
+	m_ObjectSlots[0] = 0;
+	m_ObjectSlots[1] = 0;
+	m_ObjectSlots[2] = 0;
+	m_ObjectSlots[3] = 0;
 	m_silenced = false;
 	disarmed   = false;
 
@@ -651,10 +651,10 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!CastingSpell)
 									continue;//this should not ocur unless we made a fuckup somewhere
 								//only trigger effect for specified spells
-								if( CastingSpell->NameHash!=3553831941 && //backstab
-									CastingSpell->NameHash!=3900082058 && //sinister strike
-									CastingSpell->NameHash!=2451914291 && //shiv
-									CastingSpell->NameHash!=3435700480 ) //gouge
+								if( CastingSpell->NameHash!=0xD3D32C05 && //backstab
+									CastingSpell->NameHash!=0xE876878A && //sinister strike
+									CastingSpell->NameHash!=0x92253E33 && //shiv
+									CastingSpell->NameHash!=0xCCC8A100 ) //gouge
 									continue;
 							}break;
 						//warlock - Improved Shadow Bolt
@@ -667,7 +667,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!CastingSpell)
 									continue;//this should not ocur unless we made a fuckup somewhere
 								//only trigger effect for specified spells
-								if( CastingSpell->NameHash!=2054907731)//shadow bolt								
+								if( CastingSpell->NameHash!=0x7A7B6753)//shadow bolt								
 									continue;
 							}break;
 						//warlock - Aftermath
@@ -702,15 +702,15 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								uint32 amount;
 								switch(CastingSpell->NameHash)
 								{
-									case 2054907731: //Shadow Bolt
-									case 2602281440: //Soul Fire
-									case 734047744: //Incinerate
-									case 3592853585: //Searing Pain
-									case 3077005839: //Conflagrate
+									case 0x7A7B6753: //Shadow Bolt
+									case 0x9B1BA9E0: //Soul Fire
+									case 0x2BC0AE00: //Incinerate
+									case 0xD6269851: //Searing Pain
+									case 0xB767620F: //Conflagrate
 									{
 										amount = CastingSpell->EffectBasePoints[0]+1;
 									}break;
-									case 275158380: //Shadowburn
+									case 0x1066956C: //Shadowburn
 									{
 										amount = CastingSpell->EffectBasePoints[1]+1;
 									}break;
@@ -734,9 +734,9 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!CastingSpell)
 									continue;//this should not ocur unless we made a fuckup somewhere
 								//only trigger effect for specified spells
-								if( CastingSpell->NameHash!=3120897043 && //Rain of Fire
-									CastingSpell->NameHash!=2040019364 && //Hellfire
-									CastingSpell->NameHash!=2602281440 ) //Soul Fire
+								if( CastingSpell->NameHash!=0xBA051C13 && //Rain of Fire
+									CastingSpell->NameHash!=0x799839A4 && //Hellfire
+									CastingSpell->NameHash!=0x9B1BA9E0 ) //Soul Fire
 									continue;
 							}break;
 						//mage - Improved Scorch
@@ -1341,7 +1341,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 //					blocked_damage = shield->GetProto()->Block+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
 					//patch from Onemore
 					//blocked_damage = shield->GetProto()->Block*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
-					blocked_damage = (shield->GetProto()->Block + ((Player*)pVictim)->m_modblockvalue)*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
+					blocked_damage = uint32((shield->GetProto()->Block + ((Player*)pVictim)->m_modblockvalue)*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20);
 
 					if(dmg.full_damage <= blocked_damage)
 					{
@@ -1364,7 +1364,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 					if(damage_type != RANGED && !ability)
 					{
 						float critextra=static_cast<Player*>(this)->m_modphyscritdmgPCT;
-						dmg.full_damage += (dmg.full_damage*critextra/100.0f);
+						dmg.full_damage += int32((dmg.full_damage*critextra/100.0f));
 					}
 					if(!pVictim->IsPlayer())
 						dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);

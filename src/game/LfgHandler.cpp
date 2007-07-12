@@ -97,3 +97,4 @@ void WorldSession::HandleSetLookingForGroup(WorldPacket& recvPacket)
 
 	sLfgMgr.SetPlayerInLFGqueue(GetPlayer(),LfgDungeonId);
 }
+

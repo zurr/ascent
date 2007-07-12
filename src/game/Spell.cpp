@@ -3181,7 +3181,7 @@ int32 Spell::CalculateEffect(uint32 i)
 		//causes ${$RAP*0.2+$m1} Arcane damage." 
 		if(i==0)
 			value +=u_caster->GetRAP()/5;
-	}else if(m_spellInfo->NameHash == 2478850437)//rake
+	}else if(m_spellInfo->NameHash == 0x93C04185)//rake
 	{
 		if(i==0)
 			value+=u_caster->GetAP()/100;
@@ -3189,14 +3189,14 @@ int32 Spell::CalculateEffect(uint32 i)
 		{
 			value = (uint32)(value*3+ u_caster->GetAP()*0.06);
 		}
-	}else if(m_spellInfo->NameHash == 1594322590)//Mongoose Bite
+	}else if(m_spellInfo->NameHash == 0x5F076E9E)//Mongoose Bite
 	{// ${$AP*0.2+$m1} damage.
 		value+=u_caster->GetAP()/5;
 	}
 	
 	if(p_caster)
 	{	
-		if(m_spellInfo->NameHash==3448285709 && i == 0 )//Envenom
+		if(m_spellInfo->NameHash==0xCD88AA0D && i == 0 )//Envenom
 		{
 			value *= p_caster->m_comboPoints;
 			value += (uint32)(p_caster->GetAP()*(0.03*p_caster->m_comboPoints));
@@ -3207,7 +3207,7 @@ int32 Spell::CalculateEffect(uint32 i)
 		if(comboDamage)
 		{
 			
-			if(m_spellInfo->NameHash==3356779121) //Eviscerate
+			if(m_spellInfo->NameHash==0xC8146271) //Eviscerate
 			value += (uint32)(p_caster->GetAP()*(0.03*p_caster->m_comboPoints));
 
 			value += (comboDamage * p_caster->m_comboPoints);
