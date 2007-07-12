@@ -64,6 +64,8 @@ libdatabase_a_SOURCES = \
     Database/impl/PostgreDatabase.cpp
 
 libnetwork_a_SOURCES = \
+    Network/ListenSocketPoll.h \
+    Network/ListenSocketSelect.h \
     Network/ListenSocketLinux.h \
     Network/ListenSocketFreeBSD.h \
     Network/Network.h \
@@ -78,5 +80,13 @@ libnetwork_a_SOURCES = \
     Network/SocketMgrFreeBSD.h \
     Network/SocketOps.h \
     Network/SocketOpsLinux.cpp \
-    Network/SocketOpsFreeBSD.cpp
+    Network/SocketOpsFreeBSD.cpp \
+    Network/SocketMgrSelect.h \
+    Network/SocketMgrSelect.cpp \
+    Network/SocketOpsSelect.cpp \
+    Network/SocketSelect.cpp \
+    Network/SocketMgrPoll.h \
+    Network/SocketMgrPoll.cpp \
+    Network/SocketOpsPoll.cpp \
+    Network/SocketPoll.cpp 
     

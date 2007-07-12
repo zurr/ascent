@@ -246,6 +246,34 @@ private:
 	unsigned int m_writeLock;
 	Mutex m_writeLockMutex;
 #endif
+
+	/* Poll() Specific Calls */
+#ifdef CONFIG_USE_POLL
+public:
+
+	// Atomic wrapper functions for increasing read/write locks
+	inline void IncSendLock() { m_writeLockMutex.Acquire(); m_writeLock++; m_writeLockMutex.Release(); }
+	inline void DecSendLock() { m_writeLockMutex.Acquire(); m_writeLock--; m_writeLockMutex.Release(); }
+	inline bool HasSendLock() { bool res; m_writeLockMutex.Acquire(); res = (m_writeLock != 0); m_writeLockMutex.Release(); return res; }
+	bool AcquireSendLock()
+	{
+		bool rv;
+		m_writeLockMutex.Acquire();
+		if(m_writeLock != 0)
+			rv = false;
+		else
+		{
+			rv = true;
+			m_writeLock++;
+		}
+		m_writeLockMutex.Release();
+		return rv;
+	}
+
+private:
+	unsigned int m_writeLock;
+	Mutex m_writeLockMutex;
+#endif
 };
 
 /* Socket Garbage Collector */

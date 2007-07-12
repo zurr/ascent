@@ -11,6 +11,8 @@
 
 #ifdef CONFIG_USE_POLL
 
+#include <poll.h>
+
 #define SOCKET_HOLDER_SIZE 65536    // You don't want this number to be too big, otherwise you're gonna be eating
                                     // memory. 65536 = 256KB, so thats no big issue for now, and I really can't
                                     // see anyone wanting to have more than 65536 concurrent connections.

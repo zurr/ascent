@@ -16,8 +16,9 @@ void Socket::BurstPush()
 
 void Socket::ReadCallback(uint32 len)
 {
-	int bytes = read(m_fd, ((char*)m_readBuffer + m_readByteCount), m_readBufferSize - m_readByteCount);
-	if(bytes <= 0)
+	int bytes = recv(m_fd, ((char*)m_readBuffer + m_readByteCount), m_readBufferSize - m_readByteCount, 0);
+	printf("ReadCallback(%u) %u bytes\n",m_fd, bytes);
+	if(bytes < 0)
 	{
 		m_readMutex.Release();
 		Disconnect();
@@ -36,7 +37,8 @@ void Socket::ReadCallback(uint32 len)
 void Socket::WriteCallback()
 {
 	// We should already be locked at this point, so try to push everything out.
-	int bytes_written = write(m_fd, (const char*)m_writeBuffer, m_writeByteCount);
+	int bytes_written = send(m_fd, (const char*)m_writeBuffer, m_writeByteCount, 0);
+	printf("WriteCallback() %u/%u bytes\n", bytes_written, m_writeByteCount);
 	if(bytes_written < 0)
 	{
 		// error.
