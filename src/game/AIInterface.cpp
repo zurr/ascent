@@ -2753,7 +2753,7 @@ bool AIInterface::modThreatByGUID(uint64 guid, int32 mod)
 bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 {
 	if(!obj)
-		return;
+		return false;
 	TargetMap::iterator it = m_aiTargets.find(obj);
 	if(it != m_aiTargets.end())
 	{
