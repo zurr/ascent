@@ -125,7 +125,9 @@ public:
 	// Accessing functions
 	inline SubGroup* GetSubGroup(uint32 Id)
 	{
-		ASSERT(Id < 8);
+		if(Id >= 8)
+			return 0;
+
 		return m_SubGroups[Id];
 	}
 

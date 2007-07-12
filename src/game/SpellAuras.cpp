@@ -1226,13 +1226,18 @@ void Aura::SpellAuraDummy(bool apply)
 			if(apply)
 			{
 				SetNegative();
-				m_target->VampEmbCaster.insert(this->GetUnitCaster()->GetGUID());
+				Unit * caster =this->GetUnitCaster();
+				if(caster) m_target->VampEmbCaster.insert(caster->GetGUID());
 			}
 			else
 			{
-				std:set<uint64>::iterator itr = m_target->VampEmbCaster.find(this->GetUnitCaster()->GetGUID());
-				if(itr != m_target->VampEmbCaster.end())
-					m_target->VampEmbCaster.erase(itr);
+				Unit * caster =this->GetUnitCaster();
+				if(caster)
+				{
+					std:set<uint64>::iterator itr = m_target->VampEmbCaster.find(caster->GetGUID());
+					if(itr != m_target->VampEmbCaster.end())
+						m_target->VampEmbCaster.erase(itr);
+				}
 			}
 		}break;
 	case 34914://Vampiric Touch
@@ -1242,7 +1247,9 @@ void Aura::SpellAuraDummy(bool apply)
 			if(apply)
 			{
 				SetNegative();
-				m_target->VampTchCaster = this->GetUnitCaster()->GetGUID();
+				Unit * caster = this->GetUnitCaster();
+				if(caster)
+					m_target->VampTchCaster = caster->GetGUID();
 			}
 			else
 			{
