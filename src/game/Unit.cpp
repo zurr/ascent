@@ -868,7 +868,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 			else
 			{
 				SpellEntry	*ability=sSpellStore.LookupEntry((*i2).m_spellId);
-				victim->Strike(this,(*i2).m_school,ability,0,0,(*i2).m_damage);
+				victim->Strike(this,(*i2).m_school,ability,0,0,(*i2).m_damage, true);
 			}
 		}
 	}
@@ -1060,7 +1060,7 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 	//sLog.outDebug("calc resistance - damage: %d , dmg type: %d , dmg abs: %d\n",*damage,damage_type,*dmgabs);
 }
 
-void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage)
+void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc)
 {
 	if (!pVictim->isAlive() || !isAlive()  || IsStunned() || IsPacified())
 	{
@@ -1453,7 +1453,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	//vstate=1-wound,2-dodge,3-parry,4-interrupt,5-block,6-evade,7-immune,8-deflect
 	
 	// hack fix for stormstirke loop here.
-	if(damage_type != DUALWIELD)
+	if(damage_type != DUALWIELD && !disable_proc)
     {
 	    if( !(ability && ability->NameHash == 0x2535ed19) )
 		    this->HandleProc(aproc,pVictim, ability,realdamage);
@@ -1657,7 +1657,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	while(m_extraattacks > 0)
 	{
 		m_extraattacks--;
-		Strike(pVictim,damage_type,ability,add_damage,pct_dmg_mod,exclusive_damage);
+		Strike(pVictim,damage_type,ability,add_damage,pct_dmg_mod,exclusive_damage, false);
 	}
 }	
 

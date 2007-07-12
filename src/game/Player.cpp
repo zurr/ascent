@@ -903,7 +903,7 @@ void Player::_EventAttack(bool offhand)
 
 		if (!GetOnMeleeSpell())
 		{
-			Strike(pVictim,(uint32)offhand,NULL,0,0,0);
+			Strike(pVictim,(uint32)offhand,NULL,0,0,0, false);
 		} 
 		else 
 		{ 
@@ -979,7 +979,7 @@ void Player::_EventCharmAttack()
 
 			if (!m_CurrentCharm->GetOnMeleeSpell())
 			{
-				m_CurrentCharm->Strike(pVictim,0,NULL,0,0,0);
+				m_CurrentCharm->Strike(pVictim,0,NULL,0,0,0, false);
 			} 
 			else 
 			{ 
