@@ -294,6 +294,8 @@ struct ProcTriggerSpell
 	uint32 procChance;
 	uint32 procFlags;
 	uint32 procCharges;
+//	SpellEntry *ospinfo;
+//	SpellEntry *spinfo;
 	uint32 LastTrigger;
 	bool deleted;
 };

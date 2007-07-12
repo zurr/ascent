@@ -868,10 +868,10 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK;
 					if(strstr(desc,"each strike has"))
 						pr|=PROC_ON_MELEE_ATTACK;		
-					if(strstr(desc,"your scorch spells have"))
-						pr|=PROC_ON_CAST_SPELL;		
 					if(strstr(desc,"your Fire damage spell hits"))
 						pr|=PROC_ON_CAST_SPELL;		//this happens only on hit ;)
+					if(strstr(desc,"shadow damage spells have"))
+						pr|=PROC_ON_CAST_SPELL;
 //					if(strstr(desc,"chill effect to your Blizzard"))
 //						pr|=PROC_ON_CAST_SPELL;	
 					//////////////////////////////////////////////////
@@ -1011,6 +1011,8 @@ void World::SetInitialWorldSettings()
 /*		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
 		if(sp->procCharges==0)
 			sp->procCharges=-1;*/
+		if(sp->proc_interval!=0)
+			sp->procFlags |= PROC_REMOVEONUSE;
 	}
 	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
 	SpellEntry * parentsp = sSpellStore.LookupEntry(30823);
@@ -1143,6 +1145,98 @@ void World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
 		sp->procFlags=PROC_ON_CAST_SPELL;
 		sp->procChance = 26; //god, save us from fixed values !
+	}
+
+	//improved scorch
+	sp = sSpellStore.LookupEntry(11095);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->procFlags=PROC_ON_CAST_SPELL;
+	}
+	sp = sSpellStore.LookupEntry(12872);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->procFlags=PROC_ON_CAST_SPELL;
+	}
+	sp = sSpellStore.LookupEntry(12873);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->procFlags=PROC_ON_CAST_SPELL;
+	}
+
+	//Nature's Grasp
+	sp = sSpellStore.LookupEntry(16689);
+	if(sp)
+	{
+		sp->Effect[0] = 6; 
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->EffectTriggerSpell[0] = 339; 
+		sp->Effect[1] = 0; 
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
+		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
+	}
+	sp = sSpellStore.LookupEntry(16810);
+	if(sp)
+	{
+		sp->Effect[0] = 6; 
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->EffectTriggerSpell[0] = 1062; 
+		sp->Effect[1] = 0; 
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
+		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
+	}
+	sp = sSpellStore.LookupEntry(16811);
+	if(sp)
+	{
+		sp->Effect[0] = 6; 
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->EffectTriggerSpell[0] = 5195; 
+		sp->Effect[1] = 0; 
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
+		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
+	}
+	sp = sSpellStore.LookupEntry(16812);
+	if(sp)
+	{
+		sp->Effect[0] = 6; 
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->EffectTriggerSpell[0] = 5196; 
+		sp->Effect[1] = 0; 
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
+		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
+	}
+	sp = sSpellStore.LookupEntry(16813);
+	if(sp)
+	{
+		sp->Effect[0] = 6; 
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->EffectTriggerSpell[0] = 9852; 
+		sp->Effect[1] = 0; 
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
+		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
+	}
+	sp = sSpellStore.LookupEntry(17329);
+	if(sp)
+	{
+		sp->Effect[0] = 6; 
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->EffectTriggerSpell[0] = 9853; 
+		sp->Effect[1] = 0; 
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
+		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
+	}
+	sp = sSpellStore.LookupEntry(27009);
+	if(sp)
+	{
+		sp->Effect[0] = 6; 
+		sp->EffectApplyAuraName[0] = 42; 
+		sp->EffectTriggerSpell[0] = 26989; 
+		sp->Effect[1] = 0; 
+		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
+		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
 	}
 
 	//for test only

@@ -498,10 +498,10 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		}
 		SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 		//this requires some specific spell check,not yet implemented
-		if(itr2->procFlags & flag)
+		if(ospinfo->procFlags & flag)
 		{
 			uint32 spellId = itr2->spellId;
-			if(itr2->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
+			if(ospinfo->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
 			{
 
 				if(!CastingSpell)
@@ -534,9 +534,10 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					if(itr2->LastTrigger+ospinfo->proc_interval>now_in_ms)
 						continue; //we can't trigger it yet.
 					itr2->LastTrigger = now_in_ms; // consider it triggered
-					//since we did not allow to remove auras like these with interrupt flag we have to remove them manually. Sucks, fell free to come with a better idea
-					RemoveAura(origId);
 				}
+				//since we did not allow to remove auras like these with interrupt flag we have to remove them manually.
+				if(ospinfo->procFlags & PROC_REMOVEONUSE)
+					RemoveAura(origId);
 				//these are player talents. Fuckem they pull the emu speed down 
 				if(IsPlayer())
 				{
@@ -748,6 +749,14 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if( CastingSpell->NameHash!=1828847009) //Rain of Fire
 									continue;
 							}
+						//priest - Shadow Weaving
+						case 15258:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								if(CastingSpell->School!=SCHOOL_SHADOW && victim==this) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
+									continue;
+							}
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
@@ -767,7 +776,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					continue;
 				}
 				SpellCastTargets targets;
-				if(itr2->procFlags & PROC_TAGRGET_SELF)
+				if(ospinfo->procFlags & PROC_TAGRGET_SELF)
 					targets.m_unitTarget = GetGUID();
 				else targets.m_unitTarget = victim->GetGUID();
 				spell->pSpellId=origId;
@@ -2871,7 +2880,7 @@ void Unit::RemoveAurasByInterruptFlag(uint32 flag)
 			continue;
 		
 		//some spells do not get removed all the time only at specific intervals
-		if((a->m_spellProto->AuraInterruptFlags & flag) && a->m_spellProto->proc_interval==0)
+		if((a->m_spellProto->AuraInterruptFlags & flag) && !(a->m_spellProto->procFlags & PROC_REMOVEONUSE))
 		{
 			a->Remove();
 			m_auras[x] = NULL;

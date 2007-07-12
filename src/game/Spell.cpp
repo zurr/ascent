@@ -2483,7 +2483,7 @@ void Spell::HandleAddAura(uint64 guid)
 					Target->AddAura(aur);
 					aur=NULL;
 				}
-				if(itr->second->GetSpellProto()->proc_interval==0)
+				if(!(itr->second->GetSpellProto()->procFlags & PROC_REMOVEONUSE))
 				{
 					SpellCharge charge;
 					charge.count=itr->second->GetSpellProto()->procCharges;

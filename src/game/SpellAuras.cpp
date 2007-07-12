@@ -3164,9 +3164,17 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		pts.procFlags = GetSpellProto()->procFlags;
 		pts.procCharges = GetSpellProto()->procCharges;
 		pts.LastTrigger = 0;
-		sLog.outDebug("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u\n",pts.origId,pts.spellId,pts.procChance,pts.procFlags & ~PROC_TAGRGET_SELF,pts.procCharges,pts.procFlags & PROC_TAGRGET_SELF,GetSpellProto()->proc_interval);
 		pts.deleted = false;
+/*		pts.ospinfo = m_spellProto;
+		pts.spinfo = sSpellStore.LookupEntry(pts.spellId);
+		if(!pts.spinfo)
+		{
+			sLog.outDebug("Error, could not register procspell %u\n",pts.spellId);
+			return;
+		}*/
 		m_target->m_procSpells.push_front(pts);
+//		sLog.outDebug("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u\n",pts.origId,pts.spellId,pts.ospinfo->procChance,pts.ospinfo->procFlags & ~PROC_TAGRGET_SELF,pts.ospinfo->procCharges,pts.ospinfo->procFlags & PROC_TAGRGET_SELF,pts.ospinfo->proc_interval);
+		sLog.outDebug("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u\n",pts.origId,pts.spellId,m_spellProto->procChance,m_spellProto->procFlags & ~PROC_TAGRGET_SELF,m_spellProto->procCharges,m_spellProto->procFlags & PROC_TAGRGET_SELF,m_spellProto->proc_interval);
 	}
 	else
 	{
