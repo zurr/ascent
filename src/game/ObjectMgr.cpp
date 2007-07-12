@@ -281,7 +281,7 @@ skilllinespell* ObjectMgr::GetSpellSkill(uint32 id)
 void ObjectMgr::LoadPlayersInfo()
 {
 	PlayerInfo * pn;
-	QueryResult *result = sDatabase.Query("SELECT guid,name,race,class,level,gender,zoneId,timestamp,publicNote,officerNote,guildRank FROM characters");
+	QueryResult *result = sDatabase.Query("SELECT guid,name,race,class,level,gender,zoneId,timestamp,publicNote,officerNote,guildRank,acct FROM characters");
 	if(result)
 	{
 		do
@@ -300,6 +300,7 @@ void ObjectMgr::LoadPlayersInfo()
 			pn->officerNote= fields[9].GetString();
 			
 			pn->Rank=fields[10].GetUInt32();
+			pn->acct = fields[11].GetUInt32();
 
 			if(pn->race==RACE_HUMAN||pn->race==RACE_DWARF||pn->race==RACE_GNOME||pn->race==RACE_NIGHTELF||pn->race==RACE_DRAENEI)
 				pn->team = 0;

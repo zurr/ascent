@@ -281,6 +281,7 @@ struct FactionReputation
 struct PlayerInfo
 {
 	uint64 guid;
+	uint32 acct;
 	std::string name;
 	uint32 race;
 	uint32 gender;

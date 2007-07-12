@@ -309,7 +309,7 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
 		// no need to update guid, it shouldn't change..
 	}
 
-	if(msg.money != 0 || msg.cod != 0 || msg.attached_item_guid != 0)
+	if(msg.money != 0 || msg.cod != 0 || msg.attached_item_guid != 0 && player->acct != _player->GetSession()->GetAccountId())
 	{
 		if(!sMailSystem.MailOption(MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS))
 			msg.delivery_time += 3600;  // 1hr
