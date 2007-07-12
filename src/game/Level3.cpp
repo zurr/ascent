@@ -2352,9 +2352,7 @@ bool ChatHandler::HandleIPBanCommand(const char * args, WorldSession * m_session
 	char ip[200];
 	uint32 duration;
 	int c = sscanf(args, "%s %u", &ip, &duration);
-	if(c == 1)
-		duration = 0;
-	else
+	if(c != 2)
 		return false;
 
 	int o1, o2, o3, o4;
