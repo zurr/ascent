@@ -2509,7 +2509,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 	}
 
 	//Unit Follow Code
-	if(UnitToFollow != NULL && (m_AIState == STATE_IDLE || m_AIState == STATE_FOLLOWING))
+	if(UnitToFollow != NULL && (m_AIState == STATE_IDLE || m_AIState == STATE_FOLLOWING) && UnitToFollow->IsInWorld())
 	{
 		float dist = m_Unit->GetDistanceSq(UnitToFollow);
 
