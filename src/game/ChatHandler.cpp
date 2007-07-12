@@ -47,7 +47,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(!_player->HasMuteOnPlayer())
 			{
 				std::stringstream Reply; 
-				Reply << "Your voice has been taking you anoying noob for "<< (_player->HasMuteOnPlayer()/1000/60) << " minutes.";
+				Reply << "Your voice has been taken away for "<< (_player->HasMuteOnPlayer()/1000/60) << " minutes by a GM.";
 				data = sChatHandler.FillMessageData( CHAT_MSG_WHISPER, LANG_UNIVERSAL, Reply.str().c_str(), _player->GetGUID(), 3);
 			}
 		}
