@@ -1990,7 +1990,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	ss << "', "
 	
 	<< m_banned << ", '"
-	<< m_banreason << "', "
+	<< CharacterDatabase.EscapeString(m_banreason) << "', "
 	<< (uint32)time(NULL) << ",";
 	
 	//online state
