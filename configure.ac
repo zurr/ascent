@@ -116,6 +116,15 @@ AC_ARG_ENABLE(debug,
        fi
      ],
 )
+
+AC_ARG_ENABLE(allwarnings,
+     AC_HELP_STRING([--enable-allwarnings],[enable Wall compiling])],
+     [ if test "x$enable_allwarnings" = "xyes" ; then
+	   CXXFLAGS="$CXXFLAGS -Wall"
+       fi
+     ],
+)
+
 AC_ARG_ENABLE(profiling,
      AC_HELP_STRING([--enable-profiling],[build for profiling using gprof.])],
      [ if test "x$enable_profiling" = "xyes" ; then
