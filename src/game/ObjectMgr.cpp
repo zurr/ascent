@@ -449,7 +449,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
 // DK:LoadGuilds()
 void ObjectMgr::LoadGuilds()
 {
-	QueryResult *result = WorldDatabase.Query( "SELECT * FROM guilds" );
+	QueryResult *result = CharacterDatabase.Query( "SELECT * FROM guilds" );
 	QueryResult *result2;	
 	QueryResult *result3;
 
