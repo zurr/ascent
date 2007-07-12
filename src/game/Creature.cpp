@@ -139,7 +139,7 @@ void Creature::DeleteMe()
 void Creature::OnRemoveCorpse()
 {
 	// time to respawn!
-	if (IsInWorld() && m_mapMgr->GetInstanceID() == m_instanceId)
+	if (IsInWorld() && (int32)m_mapMgr->GetInstanceID() == m_instanceId)
 	{
 
 		sLog.outDetail("Removing corpse of "I64FMT"...", GetGUID());
@@ -245,7 +245,7 @@ void Creature::generateLoot()
 	}
 	
 	if(loot.gold)
-		loot.gold *= sWorld.getRate(RATE_MONEY);
+		loot.gold = int32(float(loot.gold) * sWorld.getRate(RATE_MONEY));
 }
 
 void Creature::SaveToDB()

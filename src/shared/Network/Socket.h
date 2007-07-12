@@ -101,27 +101,30 @@ public:
 
 private:
 
-	// We are deleted? Stop us from posting events.
-	bool m_deleted;
-
-	// we are connected? stop from posting events.
-	bool m_connected;
-
 	// Called when connection is opened.
 	void _OnConnect();
   
 /* Buffers */
-	uint8 * m_readBuffer;
-	uint8 * m_writeBuffer;
-	Mutex m_writeMutex;
-	Mutex m_readMutex;
 	uint32 m_readBufferSize;
 	uint32 m_writeBufferSize;
-	uint32 m_readByteCount;
-	uint32 m_writeByteCount;
 
-/* Other Member Variables */
 	SOCKET m_fd;
+
+	uint32 m_readByteCount;
+        uint32 m_writeByteCount;
+
+	uint8 * m_readBuffer;
+	uint8 * m_writeBuffer;
+
+	Mutex m_writeMutex;
+	Mutex m_readMutex;
+
+	// we are connected? stop from posting events.
+        bool m_connected;
+
+        // We are deleted? Stop us from posting events.
+        bool m_deleted;
+
 	sockaddr_in m_client;
 
 /* Win32 - IOCP Specific Calls */

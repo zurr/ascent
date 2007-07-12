@@ -274,7 +274,7 @@ void InstanceSavingManagement::LoadSavedInstances()
 		Field *fields = result->Fetch();
 		
 		// check for instance expiry
-		if(time(NULL) >= fields[5].GetUInt32())
+		if((uint32)time(NULL) >= fields[5].GetUInt32())
 		{
 			CharacterDatabase.Execute("DELETE FROM instances WHERE instanceid = %u", fields[0].GetUInt32());
 			continue;

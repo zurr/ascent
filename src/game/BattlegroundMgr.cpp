@@ -1435,7 +1435,8 @@ Battleground* BattlegroundMgr::GetBattlegroundByInstanceID(uint32 ID,uint32 batt
 	std::map<uint32, Battleground*>::iterator i = m_Battlegrounds.begin();
 	for(; i != m_Battlegrounds.end(); ++i)
 	{
-		if((i->second->GetInstanceID() == ID || ID==0) && i->second->GetBattlegroundType() == battlegroundtype)
+		if((i->second->GetInstanceID() == (int32)ID || ID==0) 
+		   && i->second->GetBattlegroundType() == battlegroundtype)
 			return i->second;
 	}
 	return NULL;

@@ -177,7 +177,7 @@ string MySQLDatabase::EscapeString(string Escape)
 void MySQLDatabase::Shutdown()
 {
 	sLog.outString("sql: Closing all MySQLDatabase connections...");
-	for(uint32 i = 0; i < mConnectionCount; ++i)
+	for(int32 i = 0; i < mConnectionCount; ++i)
 	{
 		Disconnect(&Connections[i]);
 	}
@@ -296,13 +296,14 @@ void MySQLDatabase::run()
 {
 	SetThreadName("MySQL Database Execute Thread");
 	SetThreadState(THREADSTATE_BUSY);
-	char * query;
-	while(query=queries_queue.pop())
+	char * query = queries_queue.pop();
+	while(query)
 	{
 		MysqlCon * con=GetFreeConnection();
 		SendQuery(con,query);
 		con->busy=false;
 		delete [] query;
+		query = queries_queue.pop();
 		if(ThreadState == THREADSTATE_TERMINATE && queries_queue.size == 0)
 			break;
 	}

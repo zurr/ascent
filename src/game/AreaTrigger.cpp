@@ -90,7 +90,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 
 			// mm hacky
 			char lvltext[30];
-			snprintf(lvltext, 30, "at least level %d", pAreaTrigger->required_level);
+			snprintf(lvltext, 30, "at least level %d", (int)pAreaTrigger->required_level);
 			failed_reason += lvltext;
 		}
 	}

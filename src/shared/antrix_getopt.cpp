@@ -25,7 +25,7 @@ int antrix_getopt_long_only(int ___argc, char *const *___argv, const char *__sho
 		return -1;
 
 	const char * opt = ___argv[arg_counter];
-	int return_val = 0;
+//	int return_val = 0;
 
 	// if we're not an option, return an error.
 	if (strnicmp(opt, "--", 2) != 0)
@@ -93,3 +93,4 @@ int antrix_getopt_long_only(int ___argc, char *const *___argv, const char *__sho
 	// return 1 (invalid argument)
 	return 1;
 }
+

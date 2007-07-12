@@ -302,7 +302,7 @@ int Player_AddItem(gmThread * a_thread)
 	{
 		int acount;
 		int bcount;
-		if(proto->MaxCount && proto->MaxCount <= count)
+		if(proto->MaxCount && proto->MaxCount <= (uint32)count)
 		{
 			acount = 1;
 			bcount = count;
@@ -960,3 +960,4 @@ int Unit_GetGameObject(gmThread * a_thread)
 	a_thread->PushUser(obj);
 }
 */
+

@@ -133,7 +133,7 @@ void Item::LoadFromDB(	Field *fields, Player * plr, bool light)
 
 	for(vector<string>::iterator itr = enchants.begin(); itr != enchants.end(); ++itr)
 	{
-		if(sscanf((*itr).c_str(), "%u,%u,%u", &enchant_id, &time_left, &enchslot) == 3)
+		if(sscanf((*itr).c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
 		{
 			entry = sEnchantStore.LookupEntry(enchant_id);
 			if(entry && entry->Id == enchant_id)

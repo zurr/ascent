@@ -184,21 +184,24 @@ void ScriptEngine::ExecuteScriptFile(const char * filename)
 void ScriptEngine::DumpErrors()
 {
 	// sLog.outString("Dumping errors from script action: ");
-	const char * message;
+	
 	bool first = true;
-	while(message = m_machine->GetLog().GetEntry(first))
+	const char * message = m_machine->GetLog().GetEntry(first);
+	while(message)
+	{
 		printf("GM_Debug:  %s", message);
+		first = false;
+		message = m_machine->GetLog().GetEntry(first);
+	}
 	// sLog.outString("End of error dump.");
 }
 
 void ScriptEngine::DoGMCall(gmFunctionObject * obj, uint32 ArgumentCount, int * return_value)
 {
-	ASSERT(obj->GetType() == GM_FUNCTION);
-
 	gmCall call;
 	if(call.BeginFunction(m_machine, obj, m_variables[0], false))
 	{
-		for(int i = 0; i < ArgumentCount; ++i)
+		for(uint32 i = 0; i < ArgumentCount; ++i)
 			call.AddParam(m_variables[1+i]);
 
 		m_userObjectCounter = ArgumentCount + 1;

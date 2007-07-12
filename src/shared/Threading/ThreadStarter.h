@@ -58,6 +58,8 @@ static void * thread_func(void * args)
 	// delete the thread to call the destructor, our threads remove themselves here.
 	if(delete_it)
 		delete ptr;
+	
+	return 0;
 }
 
 // Use pthread_create to start the thread

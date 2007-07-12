@@ -123,7 +123,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 		{
 			if(!sp->spell)
 			{
-				printf("SpellId %u in ai_agent for %u is invalid.\n", fields[5].GetUInt32(), sp->entryId);
+				printf("SpellId %u in ai_agent for %u is invalid.\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
 				delete sp;
 				continue;
 			}
@@ -131,7 +131,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 			if(sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
 				sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
 			{
-				printf("Teaching spell %u in ai_agent for %u\n", fields[5].GetUInt32(), sp->entryId);
+				printf("Teaching spell %u in ai_agent for %u\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
 				delete sp;
 				continue;
 			}

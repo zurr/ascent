@@ -23,6 +23,7 @@
 class SERVER_DECL StackBufferBase
 {
 public:
+	virtual ~StackBufferBase() {}
 	virtual uint8 * GetBufferPointer() = 0;
 	virtual uint16 GetOpcode() { return 0; }
 	virtual uint32 GetSize() = 0;
@@ -33,10 +34,10 @@ class SERVER_DECL StackBuffer : public StackBufferBase
 {
 protected:
 	uint8 m_stackBuffer[Size];
+        uint32 m_readPos;
+        uint32 m_writePos;
 	uint8 * m_bufferPointer;
 	uint8 * m_heapBuffer;
-	uint32 m_readPos;
-	uint32 m_writePos;
 	uint32 m_space;
 
 public:

@@ -16,7 +16,7 @@
 
 Database* CreateDatabaseInterface(DatabaseType type)
 {
-	switch(type)
+	switch((int)type)
 	{
 
 #ifdef DATABASE_SUPPORT_MYSQL
@@ -42,7 +42,7 @@ Database* CreateDatabaseInterface(DatabaseType type)
 
 void DestroyDatabaseInterface(Database * ptr)
 {
-	switch(ptr->GetType())
+	switch((int)ptr->GetType())
 	{
 
 #ifdef DATABASE_SUPPORT_MYSQL

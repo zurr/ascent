@@ -23,7 +23,7 @@ void Socket::PostEvent(uint32 events)
 
     // post actual event
     if(epoll_ctl(epoll_fd, EPOLL_CTL_MOD, ev.data.fd, &ev))
-        printf("!! could not post epoll event: type %u, fd %u\n", events, m_fd);   
+        printf("!! could not post epoll event: type %u, fd %u\n", (unsigned int)events, m_fd);   
 }
 
 void Socket::ReadCallback(uint32 len)

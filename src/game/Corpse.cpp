@@ -78,7 +78,7 @@ void Corpse::DeleteFromDB()
 	//delete corpse from db when its not needed anymore
 	char sql[256];
 
-	snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", GetGUIDLow());
+	snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", (unsigned int)GetGUIDLow());
 	CharacterDatabase.Execute(sql);
 }
 
@@ -86,7 +86,7 @@ void CorpseData::DeleteFromDB()
 {
 	char sql[256];
 
-	snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", LowGuid);
+	snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", (unsigned int)LowGuid);
 	CharacterDatabase.Execute(sql);
 }
 

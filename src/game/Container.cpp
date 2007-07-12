@@ -34,7 +34,7 @@ Container::Container(uint32 high,uint32 low) : Item()
 
 Container::~Container( )
 {
-   for(int8 i = 0; i < m_itemProto->ContainerSlots; i++)
+   for(uint32 i = 0; i < m_itemProto->ContainerSlots; i++)
 	{
 		if(m_Slot[i])
 		{
@@ -121,7 +121,7 @@ bool Container::HasItems()
 
 bool Container::AddItem(int8 slot, Item *item)
 {
-	if(slot > m_itemProto->ContainerSlots)
+	if((uint32)slot > m_itemProto->ContainerSlots)
 		return false;
 
 	//ASSERT(m_Slot[slot] == NULL);
@@ -214,7 +214,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
 Item *Container::SafeRemoveAndRetreiveItemFromSlot(int8 slot, bool destroy)
 {
-	ASSERT(slot < GetProto()->ContainerSlots);
+	ASSERT((uint32)slot < GetProto()->ContainerSlots);
 
 	Item *pItem = m_Slot[slot];
 
@@ -238,7 +238,7 @@ Item *Container::SafeRemoveAndRetreiveItemFromSlot(int8 slot, bool destroy)
 
 bool Container::SafeFullRemoveItemFromSlot(int8 slot)
 {
-	ASSERT(slot < GetProto()->ContainerSlots);
+	ASSERT((uint32)slot < GetProto()->ContainerSlots);
 
 	Item *pItem = m_Slot[slot];
 
@@ -260,7 +260,7 @@ bool Container::SafeFullRemoveItemFromSlot(int8 slot)
 
 bool Container::AddItemToFreeSlot(Item *pItem)
 {
-	int8 slot;
+	uint32 slot;
 	for(slot = 0; slot < GetProto()->ContainerSlots; slot++)
 	{
 		if(!m_Slot[slot])
@@ -292,7 +292,7 @@ void Container::SaveBagToDB(int8 slot, bool first)
 {
 	((Item*)this)->SaveToDB(INVENTORY_SLOT_NOT_SET, slot);
 
-	for(int8 i = 0; i < m_itemProto->ContainerSlots; i++)
+	for(uint32 i = 0; i < m_itemProto->ContainerSlots; i++)
 	{
 		if (m_Slot[i])
 		{

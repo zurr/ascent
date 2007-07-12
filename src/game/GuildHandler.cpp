@@ -263,7 +263,7 @@ void WorldSession::HandleGuildPromote(WorldPacket & recv_data)
 {
 	CHECK_PACKET_SIZE(recv_data, 1);
 	std::string name;
-	uint32 plyrRank;
+	int32 plyrRank;
 	int32 pTargetRank;
 
 	recv_data >> name;
@@ -949,7 +949,8 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 		return;
 	}
 
-	if(error = _player->GetItemInterface()->CanReceiveItem(ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER),1))
+	error = _player->GetItemInterface()->CanReceiveItem(ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER),1);
+	if(error)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(NULL,NULL,error);
     }

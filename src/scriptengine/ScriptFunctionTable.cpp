@@ -130,18 +130,18 @@ void ScriptEngine::SetGameObjectFunctionTable()
 
 void ScriptEngine::SetSpellFunctionTable()
 {
-	static gmFunctionEntry table[] = {
+	/*static gmFunctionEntry table[] = {
 		{ "test", 0 },
-	};
+	};*/
 
 	//m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
 }
 
 void ScriptEngine::SetAuraFunctionTable()
 {
-	static gmFunctionEntry table[] = {
+	/*static gmFunctionEntry table[] = {
 		{ "test", 0 },
-	};
+	};*/
 
 	//m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
 }

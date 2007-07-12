@@ -68,8 +68,8 @@ void TextLogger::Push(const char * str)
 
 void TextLogger::Update()
 {
-	char * str;
-	while(str = queue.Pop())
+	char * str = queue.Pop();
+	while(str)
 	{
 		if(m_file)
 		{
@@ -77,6 +77,7 @@ void TextLogger::Update()
 			fflush(m_file);
 		}
 		delete [] str;
+		str = queue.Pop();
 	}
 	m_writeLock = 0;
 }
@@ -122,8 +123,12 @@ void TextLoggerThread::run()
 		}
 
 		// ooh! we got mail!
-		while(l = updatePendingLoggers.Pop())
+		l = updatePendingLoggers.Pop();
+		while(l)
+		{
 			l->Update();
+			l = updatePendingLoggers.Pop();
+		}
 
 		if(!m_running)
 		{

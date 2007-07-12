@@ -136,16 +136,11 @@ bool ConfigFile::SetSource(const char *file, bool ignorecase)
 		buf = new char[length + 1];
 		fseek(f, 0, SEEK_SET);
 
-		int read = fread(buf, length, 1, f);
+		fread(buf, length, 1, f);
 		buf[length] = '\0';
 		string buffer = string(buf);
 		delete [] buf;
-		/*if(length != read)
-		{
-			sLog.outError("Could not read file %s.", file);
-			return false;
-		}*/
-
+		
 		/* close the file, it is no longer needed */
 		fclose(f);
 
@@ -155,7 +150,6 @@ bool ConfigFile::SetSource(const char *file, bool ignorecase)
 		string::size_type offset;
 		bool in_multiline_comment = false;
 		bool in_multiline_quote = false;
-		bool in_multiline_setting = false;
 		bool in_block = false;
 		string current_setting = "";
 		string current_variable = "";
@@ -518,7 +512,7 @@ std::string ConfigFile::GetStringVA(const char * block, const char* def, const c
 bool ConfigFile::GetString(const char * block, char * buffer, const char * name, const char * def, uint32 len)
 {
 	string val = GetStringDefault(block, name, def);
-	int blen = val.length();
+	uint32 blen = val.length();
 	if(blen > len)
 		blen = len;
 

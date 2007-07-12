@@ -299,7 +299,7 @@ void ArathiBasin::EventUpdateResourcesAlliance()
 		SendPacketToAll(&pkt);
 		
 		char message[300];		
-		snprintf(message, 300, "The Alliance has gathered %d resources, and is near victory!", WorldStateVars[rfield] );
+		snprintf(message, 300, "The Alliance has gathered %d resources, and is near victory!", (int)WorldStateVars[rfield] );
 		WorldPacket *data = BuildMessageChat(0x52, 0x29, message, 0);
 		SendPacketToAll(data);
 		delete data;
@@ -352,7 +352,7 @@ void ArathiBasin::EventUpdateResourcesHorde()
 		SendPacketToAll(&pkt);
 		
 		char message[300];		
-		snprintf(message, 300, "The Horde has gathered %d resources, and is near victory!", WorldStateVars[rfield] );
+		snprintf(message, 300, "The Horde has gathered %d resources, and is near victory!", (int)WorldStateVars[rfield] );
 		WorldPacket *data = BuildMessageChat(0x52, 0x29, message, 0);
 		SendPacketToAll(data);
 		delete data;
@@ -429,9 +429,9 @@ void ArathiBasin::EventResourcesCapture(uint64 srcguid,uint32 bannerslot)
 	SetWorldStateValue(rbasesfield,WorldStateVars[rbasesfield]+1);
 	
 	// updates map resource as captured
-	static uint32 capturedfields[5][2] = {AB_CAPTURED_STABLES_ALLIANCE,AB_CAPTURED_FARM_ALLIANCE,AB_CAPTURED_BLACKSMITH_ALLIANCE,AB_CAPTURED_GOLDMINE_ALLIANCE,AB_CAPTURED_LUMBERMILL_ALLIANCE,
-										  AB_CAPTURED_STABLES_HORDE,   AB_CAPTURED_FARM_HORDE,   AB_CAPTURED_BLACKSMITH_HORDE,   AB_CAPTURED_GOLDMINE_HORDE,   AB_CAPTURED_LUMBERMILL_HORDE};
-   
+	/*static uint32 capturedfields[2][5] = { { AB_CAPTURED_STABLES_ALLIANCE,AB_CAPTURED_FARM_ALLIANCE,AB_CAPTURED_BLACKSMITH_ALLIANCE,AB_CAPTURED_GOLDMINE_ALLIANCE,AB_CAPTURED_LUMBERMILL_ALLIANCE, },
+										  { AB_CAPTURED_STABLES_HORDE,   AB_CAPTURED_FARM_HORDE,   AB_CAPTURED_BLACKSMITH_HORDE,   AB_CAPTURED_GOLDMINE_HORDE,   AB_CAPTURED_LUMBERMILL_HORDE } };
+   */
 	setBaseCapturingValue(bannerslot,src->m_bgTeam,0);
 	setBaseCapturingValue(bannerslot,!src->m_bgTeam,0);   
 	setBaseCapturedValue(bannerslot,src->m_bgTeam,1);

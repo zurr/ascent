@@ -96,7 +96,7 @@ bool ChatHandler::HandleSetWorldStateCommand(const char* args, WorldSession *m_s
 		if(!cfield) return false;
 		char *cvalue = strtok(NULL, "\n");
 		if(!cvalue) return false;
-		sscanf(cfield, "0x%X", &field);
+		sscanf(cfield, "0x%X", (unsigned int*)&field);
 		value = atoi(cvalue);		
 	}
 	else
@@ -133,7 +133,7 @@ bool ChatHandler::HandlePlaySoundCommand(const char* args, WorldSession *m_sessi
 		// Is hex..
 		char *cfield = strtok((char*)args, " ");
 		if(!cfield) return false;
-		sscanf(cfield, "0x%X", &value); 
+		sscanf(cfield, "0x%X", (unsigned int*)&value); 
 	}
 	else
 	{

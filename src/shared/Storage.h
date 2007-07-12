@@ -11,6 +11,8 @@ protected:
 	 */
 	T * Pointer;
 public:
+	virtual ~StorageContainerIterator() {}
+
 	/** Returns the currently stored object
 	 */
 	inline T * Get() { return Pointer; }
@@ -82,7 +84,7 @@ public:
 	 */
 	~ArrayStorageContainer()
 	{
-		for(int i = 0; i < _max; ++i)
+		for(uint32 i = 0; i < _max; ++i)
 			if(_array[i] != 0)
 				delete _array[i];
 
@@ -152,7 +154,7 @@ public:
 	 */
 	void Clear()
 	{
-		for(int i = 0; i < _max; ++i)
+		for(uint32 i = 0; i < _max; ++i)
 		{
 			if(_array[i] != 0)
 			{
@@ -398,7 +400,7 @@ public:
 	/** False constructor to fool compiler
 	 */
 	Storage() {}
-	~Storage() {}
+	virtual ~Storage() {}
 
 	/** Makes an iterator, w00t!
 	 */
@@ -564,11 +566,11 @@ public:
 		{
 			if(result->GetFieldCount() > cols)
 			{
-				printf("Invalid format in %s (%u/%u), loading anyway because we have enough data\n", IndexName, cols, result->GetFieldCount());
+				printf("Invalid format in %s (%u/%u), loading anyway because we have enough data\n", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
 			}
 			else
 			{
-				printf("Invalid format in %s (%u/%u), not enough data to proceed.\n", IndexName, cols, result->GetFieldCount());
+				printf("Invalid format in %s (%u/%u), not enough data to proceed.\n", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
 				delete result;
 				return;
 			}
@@ -610,7 +612,7 @@ public:
 
 		if(result->GetFieldCount() != cols)
 		{
-			printf("Invalid format in %s (%u/%u).", Storage<T, StorageType>::_indexName, cols, result->GetFieldCount());
+			printf("Invalid format in %s (%u/%u).", Storage<T, StorageType>::_indexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
 			delete result;
 			return;
 		}

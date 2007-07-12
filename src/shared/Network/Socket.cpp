@@ -123,9 +123,11 @@ void Socket::RemoveReadBufferBytes(uint32 size, bool lock)
 
 	if(m_readByteCount < size)
 	{
+	#ifdef WIN32
 		printf("Requested erase size: %u\n", size);
 		printf("Actual size: %u\n", m_readByteCount);
 		ASSERT(false);
+	#endif
 	}
 
 	if(size == m_readByteCount)	 // complete erasure
@@ -147,9 +149,11 @@ void Socket::RemoveWriteBufferBytes(uint32 size, bool lock)
 
 	if(m_writeByteCount < size)
 	{
+	#ifdef WIN32
 		printf("Requested erase size: %u\n", size);
 		printf("Actual size: %u\n", m_writeByteCount);
 		ASSERT(false);
+	#endif
 	}
 
 	if(size == m_writeByteCount)	 // complete erasure

@@ -320,7 +320,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession *m_session)
 	data << obj->GetGUID();
 	data << obj->GetPositionX() << obj->GetPositionY() << obj->GetPositionZ() << obj->GetOrientation();
 	data << uint8(1);
-	///*
+	
 	data << uint32(0x100); //run
 	data << uint32(0); //time
 	data << uint32(2);
@@ -850,12 +850,12 @@ bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_sessi
 	if ( obj->HasFlag( field, (1<<(bit-1)) ) )
 	{
 		obj->RemoveFlag( field, (1<<(bit-1)) );
-		snprintf((char*)buf,256, "Removed bit %i in field %i.", bit, field);
+		snprintf((char*)buf,256, "Removed bit %i in field %i.", (unsigned int)bit, (unsigned int)field);
 	}
 	else
 	{
 		obj->SetFlag( field, (1<<(bit-1)) );
-		snprintf((char*)buf,256, "Set bit %i in field %i.", bit, field);
+		snprintf((char*)buf,256, "Set bit %i in field %i.", (unsigned int)bit, (unsigned int)field);
 	}
 
 	SystemMessage(m_session, buf);
@@ -906,7 +906,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args,  WorldSession* m_se
 	uint32 oldValue = obj->GetUInt32Value(field);
 	obj->SetUInt32Value(field,value);
 
-	snprintf((char*)buf,256,"Set Field %i from %i to %i.", field, oldValue, value);
+	snprintf((char*)buf,256,"Set Field %i from %i to %i.", (unsigned int)field, (unsigned int)oldValue, (unsigned int)value);
 
 
 	SystemMessage(m_session, buf);
@@ -917,7 +917,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args,  WorldSession* m_se
 bool ChatHandler::HandleDebugDumpCoordsCommmand(const char * args, WorldSession * m_session)
 {
 	Player* p = m_session->GetPlayer();
-	char buffer[200] = {0};
+	//char buffer[200] = {0};
 	FILE * f = fopen("C:\\script_dump.txt", "a");
 	if(!f) return true;
 

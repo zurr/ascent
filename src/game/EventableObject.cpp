@@ -133,7 +133,7 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,boo
 		{
 			if(unconditioned)
 				itr->second->currTime = TimeLeft;
-			else itr->second->currTime = (TimeLeft > itr->second->msTime) ? itr->second->msTime : TimeLeft;
+			else itr->second->currTime = ((int32)TimeLeft > itr->second->msTime) ? itr->second->msTime : (int32)TimeLeft;
 			++itr;
 		} while(itr != m_events.upper_bound(EventType));
 	}
@@ -256,7 +256,7 @@ void EventableObjectHolder::Update(uint32 time_difference)
 		// Event Update Procedure
 		ev = *it2;
 
-		if(ev->currTime <= time_difference)
+		if((uint32)ev->currTime <= time_difference)
 		{
 			// execute the callback
 			ev->cb->execute();

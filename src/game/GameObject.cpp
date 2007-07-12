@@ -58,8 +58,8 @@ GameObject::~GameObject()
 	if(m_ritualmembers)
 	delete[] m_ritualmembers;
 
-	uint64 guid;
-	if(guid = GetUInt64Value(OBJECT_FIELD_CREATED_BY))
+	uint64 guid = GetUInt64Value(OBJECT_FIELD_CREATED_BY);
+	if(guid)
 	{
 		Player *plr = objmgr.GetPlayer(guid);
 		if(plr && plr->GetSummonedObject() == this)

@@ -49,3 +49,4 @@ implementIndexedDBCStore(CharRaceStore, CharRaceEntry);
 implementIndexedDBCStore(MapStore, MapEntry);
 implementIndexedDBCStore(ItemExtendedCostStore,ItemExtendedCostEntry);
 implementIndexedDBCStore(GemPropertiesStore,GemPropertyEntry);
+
