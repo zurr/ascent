@@ -2635,7 +2635,7 @@ SpellCastTargets AIInterface::setSpellTargets(SpellEntry *spellInfo, Unit* targe
 AI_Spell *AIInterface::getSpell()
 {
 	/* limit spell query time to once every second */
-	if(next_spell_time >= World::UNIXTIME)
+	if((time_t)next_spell_time >= World::UNIXTIME)
 		return 0;
 
 	next_spell_time = World::UNIXTIME + 1;

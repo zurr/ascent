@@ -27,6 +27,8 @@ class gmCodeGen
 {
 public:
 
+  virtual ~gmCodeGen() {}
+
   /// \brief Get() will return the singleton code generator.
   static gmCodeGen& Get();
 

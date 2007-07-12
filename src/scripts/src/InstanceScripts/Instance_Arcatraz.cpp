@@ -3159,7 +3159,7 @@ public:
 
 					if (m_spellcheck[2] == true)
 					{
-						uint32 chance = sRand.rand(100);
+						uint32 chance = sRand.randInt(100);
 						if (chance > 0 && chance <= 30)
 							_unit->CastSpell(_unit, spells[1].info, spells[1].instant);
 						else return;
@@ -5961,3 +5961,5 @@ void SetupArcatraz(ScriptMgr * mgr)
 
 // Note: Don't have infos about: Akkiris Lightning-Waker, Nathan, Third Fragment Guardian, Udalo, Whisper and 
 // Twilight Drakonaar; some of those mobs aren't aggresive.
+//
+

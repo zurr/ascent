@@ -36,6 +36,8 @@ class gmTableObject : public gmObject
 {
 public:
 
+  virtual ~gmTableObject() {}
+
   //
   // object
   //

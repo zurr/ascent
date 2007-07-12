@@ -306,7 +306,7 @@ void WorldSession::HandleBuyStableSlot(WorldPacket &recv_data)
 	if(!_player->IsInWorld()) return;
 	uint8 scount = _player->GetStableSlotCount();
 	int32 cost = (scount == 0) ? -500 : -50000;
-	if(cost > _player->GetUInt32Value(PLAYER_FIELD_COINAGE))
+	if(cost > (int32)_player->GetUInt32Value(PLAYER_FIELD_COINAGE))
 		return;
 
 	_player->ModUInt32Value(PLAYER_FIELD_COINAGE, -cost);

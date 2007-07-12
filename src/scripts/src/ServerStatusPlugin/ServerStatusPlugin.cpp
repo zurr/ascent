@@ -107,7 +107,7 @@ void GenerateUptimeString(char * Dest)
             }
         }
     }
-    sprintf(Dest, "%d days, %d hours, %d minutes, %d seconds", days, hours, mins, seconds);
+    sprintf(Dest, "%d days, %d hours, %d minutes, %d seconds", (int)days, (int)hours, (int)mins, (int)seconds);
 }
 
 #ifdef WIN32
@@ -203,7 +203,7 @@ void FillOnlineTime(uint32 Time, char * Dest)
             }
         }
     }
-    sprintf(Dest, "%d hours, %d minutes, %d seconds", hours, mins, seconds);
+    sprintf(Dest, "%d hours, %d minutes, %d seconds", (int)hours, (int)mins, (int)seconds);
 }
 
 void StatDumper::DumpStats()
@@ -258,21 +258,21 @@ void StatDumper::DumpStats()
         GMCount = gm;
 
         fprintf(f, "    <uptime>%s</uptime>\n", uptime);
-        fprintf(f, "    <oplayers>%u</oplayers>\n", sWorld.AlliancePlayers + sWorld.HordePlayers);
+        fprintf(f, "    <oplayers>%u</oplayers>\n", (unsigned int)(sWorld.AlliancePlayers + sWorld.HordePlayers));
         fprintf(f, "    <cpu>%2.2f</cpu>\n", GetCPUUsage());
-        fprintf(f, "    <qplayers>%u</qplayers>\n", sWorld.GetQueueCount());
+        fprintf(f, "    <qplayers>%u</qplayers>\n", (unsigned int)sWorld.GetQueueCount());
         fprintf(f, "    <ram>%.3f</ram>\n", GetRAMUsage());
         fprintf(f, "    <avglat>%.3f</avglat>\n", AvgLat);
-        fprintf(f, "    <threads>%u</threads>\n", sThreadMgr.GetThreadCount());
+        fprintf(f, "    <threads>%u</threads>\n", (unsigned int)sThreadMgr.GetThreadCount());
         time_t t = time(NULL);
-        fprintf(f, "    <gmcount>%u</gmcount>\n", GMCount);
+        fprintf(f, "    <gmcount>%u</gmcount>\n", (unsigned int)GMCount);
         fprintf(f, "    <lastupdate>%s</lastupdate>\n", asctime(localtime(&t)));
-        fprintf(f, "    <alliance>%u</alliance>\n", sWorld.AlliancePlayers);
-        fprintf(f, "    <horde>%u</horde>\n", sWorld.HordePlayers);
-        fprintf(f, "    <acceptedconns>%u</acceptedconns>\n", sWorld.mAcceptedConnections);
-        fprintf(f, "    <peakcount>%u</peakcount>\n", sWorld.PeakSessionCount);
-		fprintf(f, "    <wdbquerysize>%u</wdbquerysize>\n", ((MySQLDatabase*)Database_World)->GetQueueSize());
-		fprintf(f, "    <cdbquerysize>%u</cdbquerysize>\n", ((MySQLDatabase*)Database_Character)->GetQueueSize());
+        fprintf(f, "    <alliance>%u</alliance>\n", (unsigned int)sWorld.AlliancePlayers);
+        fprintf(f, "    <horde>%u</horde>\n", (unsigned int)sWorld.HordePlayers);
+        fprintf(f, "    <acceptedconns>%u</acceptedconns>\n", (unsigned int)sWorld.mAcceptedConnections);
+        fprintf(f, "    <peakcount>%u</peakcount>\n", (unsigned int)sWorld.PeakSessionCount);
+		fprintf(f, "    <wdbquerysize>%u</wdbquerysize>\n", (unsigned int)(((MySQLDatabase*)Database_World)->GetQueueSize()));
+		fprintf(f, "    <cdbquerysize>%u</cdbquerysize>\n", (unsigned int)(((MySQLDatabase*)Database_Character)->GetQueueSize()));
     }
     fprintf(f, "  </status>\n");
     Player * plr;
@@ -302,14 +302,14 @@ void StatDumper::DumpStats()
             fprintf(f, "    <gmplr>\n");
             fprintf(f, "      <name>%s</name>\n", plr->GetName());
             fprintf(f, "      <race>%u</race>\n", plr->getRace());
-            fprintf(f, "      <class>%u</class>\n", plr->getClass());
-            fprintf(f, "      <gender>%u</gender>\n", plr->getGender());
-            fprintf(f, "      <pvprank>%u</pvprank>\n", plr->GetPVPRank());
-            fprintf(f, "      <level>%u</level>\n", plr->GetUInt32Value(UNIT_FIELD_LEVEL));
-            fprintf(f, "      <map>%u</map>\n", plr->GetMapId());
-            fprintf(f, "      <areaid>%u</areaid>\n", plr->GetAreaID());
+            fprintf(f, "      <class>%u</class>\n", (unsigned int)plr->getClass());
+            fprintf(f, "      <gender>%u</gender>\n", (unsigned int)plr->getGender());
+            fprintf(f, "      <pvprank>%u</pvprank>\n", (unsigned int)plr->GetPVPRank());
+            fprintf(f, "      <level>%u</level>\n", (unsigned int)plr->GetUInt32Value(UNIT_FIELD_LEVEL));
+            fprintf(f, "      <map>%u</map>\n", (unsigned int)plr->GetMapId());
+            fprintf(f, "      <areaid>%u</areaid>\n", (unsigned int)plr->GetAreaID());
             fprintf(f, "      <ontime>%s</ontime>\n", otime);
-            fprintf(f, "      <latency>%u</latency>\n", plr->GetSession()->GetLatency());
+            fprintf(f, "      <latency>%u</latency>\n", (unsigned int)plr->GetSession()->GetLatency());
             fprintf(f, "      <permissions>%s</permissions>\n", plr->GetSession()->GetPermissions());
             fprintf(f, "    </gmplr>\n");
         }
@@ -332,18 +332,18 @@ void StatDumper::DumpStats()
 
                 fprintf(f, "    <plr>\n");
                 fprintf(f, "      <name>%s</name>\n", plr->GetName());
-                fprintf(f, "      <race>%u</race>\n", plr->getRace());
-                fprintf(f, "      <class>%u</class>\n", plr->getClass());
-				fprintf(f, "      <gender>%u</gender>\n", plr->getGender());
-				fprintf(f, "      <pvprank>%u</pvprank>\n", plr->GetPVPRank());
-                fprintf(f, "      <level>%u</level>\n", plr->GetUInt32Value(UNIT_FIELD_LEVEL));
-                fprintf(f, "      <map>%u</map>\n", plr->GetMapId());
-                fprintf(f, "      <areaid>%u</areaid>\n", plr->GetAreaID());
+                fprintf(f, "      <race>%u</race>\n", (unsigned int)plr->getRace());
+                fprintf(f, "      <class>%u</class>\n", (unsigned int)plr->getClass());
+				fprintf(f, "      <gender>%u</gender>\n", (unsigned int)plr->getGender());
+				fprintf(f, "      <pvprank>%u</pvprank>\n", (unsigned int)plr->GetPVPRank());
+                fprintf(f, "      <level>%u</level>\n", (unsigned int)plr->GetUInt32Value(UNIT_FIELD_LEVEL));
+                fprintf(f, "      <map>%u</map>\n", (unsigned int)plr->GetMapId());
+                fprintf(f, "      <areaid>%u</areaid>\n", (unsigned int)plr->GetAreaID());
 				//requested by Zdarkside for he's online map. I hope it does not scre up any parser. If so, then make a better one :P
                 fprintf(f, "      <xpos>%f</xpos>\n", plr->GetPositionX ());
                 fprintf(f, "      <ypos>%f</ypos>\n", plr->GetPositionY());
                 fprintf(f, "      <ontime>%s</ontime>\n", otime);
-                fprintf(f, "      <latency>%u</latency>\n", plr->GetSession()->GetLatency());
+                fprintf(f, "      <latency>%u</latency>\n", (unsigned int)plr->GetSession()->GetLatency());
                 fprintf(f, "    </plr>\n");
                 if(plr->GetSession()->GetPermissionCount() > 0)
                     gms.push_back(plr);

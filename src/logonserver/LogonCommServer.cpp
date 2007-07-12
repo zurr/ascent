@@ -295,7 +295,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
 	HM_NAMESPACE::hash_map<uint32, uint8>::iterator itr;
 	buf >> count;
-	printf("Got mapping packet for realm %u, total of %u entries.\n", realm_id, count);
+	printf("Got mapping packet for realm %u, total of %u entries.\n", (unsigned int)realm_id, (unsigned int)count);
 	for(uint32 i = 0; i < count; ++i)
 	{
 		buf >> account_id >> number_of_characters;

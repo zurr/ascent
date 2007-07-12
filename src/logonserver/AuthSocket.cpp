@@ -71,7 +71,7 @@ void AuthSocket::HandleChallenge()
 	uint16 full_size = *(uint16*)&ReceiveBuffer[2];
 	sLog.outDetail("[AuthChallenge] got header, body is 0x%02X bytes", full_size);
 
-	if(GetReadBufferSize() < full_size+4)
+	if(GetReadBufferSize() < uint32(full_size+4))
 		return;
 
 	// Copy the data into our cached challenge structure
@@ -151,7 +151,7 @@ void AuthSocket::HandleChallenge()
 	}
 
 	Sha1Hash sha;
-	uint32 tc = s.GetNumBytes();
+	//uint32 tc = s.GetNumBytes();
 	sha.UpdateData( s.AsByteArray(), 32 );
 	sha.UpdateData( m_account->SrpHash, 20 );
 	sha.Finalize();

@@ -25,7 +25,7 @@ void LogonConsoleThread::run()
 	SetThreadName("Console Interpreter");
 	sLogonConsole._thread = this;
 	sLogonConsole.running = true;
-	char i = 0;
+	int i = 0;
 	char cmd[96];
 	
 
@@ -33,7 +33,7 @@ void LogonConsoleThread::run()
 	{
 		
 		// Make sure our buffer is clean to avoid Array bounds overflow
-		memset(cmd,NULL,sizeof(cmd)); 
+		memset(cmd,0,sizeof(cmd)); 
 		// Read in single line from "stdin"
 		fgets(cmd, 80, stdin);
 		if(!sLogonConsole.running)
@@ -78,10 +78,10 @@ void LogonConsole::ProcessCmd(char *cmd)
 
 	char cmd2[80];
 	strcpy(cmd2, cmd);
-	for(int i = 0; i < strlen(cmd); ++i)
+	for(size_t i = 0; i < strlen(cmd); ++i)
 		cmd2[i] = tolower(cmd[i]);
 
-	for (int i = 0; i < sizeof(cmds)/sizeof(SCmd); i++)
+	for (size_t i = 0; i < sizeof(cmds)/sizeof(SCmd); i++)
 		if (strncmp(cmd2, cmds[i].name, strlen(cmds[i].name)) == 0)
 		{
 			(this->*(cmds[i].tr)) (cmd + strlen(cmds[i].name));

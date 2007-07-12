@@ -865,7 +865,7 @@ public:
 
 		else
 		{
-			uint32 val = sRand.rand(100);
+			uint32 val = sRand.randInt(100);
 
 			if (val > 0 && val < 5)	// Flame Quills wp here!
 			{

@@ -1088,7 +1088,7 @@ public:
     {
         if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())//_unit->getAttackTarget())
         {
-			Unit *target = _unit->GetAIInterface()->GetNextTarget();
+			//Unit *target = _unit->GetAIInterface()->GetNextTarget();
             if(m_antimagic)
             {
                 _unit->CastSpell(_unit, infoantimagic, false);
@@ -1168,7 +1168,7 @@ public:
     {
         if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())//_unit->getAttackTarget())
         {
-			Unit *target = _unit->GetAIInterface()->GetNextTarget();
+			//Unit *target = _unit->GetAIInterface()->GetNextTarget();
             if(m_immolate)
             {
                 _unit->CastSpell(_unit, infoimmolate, false);
@@ -1346,7 +1346,7 @@ public:
     {
         if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())//_unit->getAttackTarget())
         {
-			Unit *target = _unit->GetAIInterface()->GetNextTarget();
+			//Unit *target = _unit->GetAIInterface()->GetNextTarget();
             if(m_arcaneexplosion)
             {
                 _unit->CastSpell(_unit, info_arcaneexplosion, false);
@@ -1531,7 +1531,7 @@ public:
     {
         if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())//_unit->getAttackTarget())
         {
-			Unit *target = _unit->GetAIInterface()->GetNextTarget();
+			//Unit *target = _unit->GetAIInterface()->GetNextTarget();
             if(m_mangle)
             {
                 _unit->CastSpell(_unit, info_mangle, false);
@@ -1601,7 +1601,7 @@ public:
     {
         if(_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->GetNextTarget())//_unit->getAttackTarget())
         {
-			Unit *target = _unit->GetAIInterface()->GetNextTarget();
+			//Unit *target = _unit->GetAIInterface()->GetNextTarget();
                       
             if(m_demoralizingshout)
             {

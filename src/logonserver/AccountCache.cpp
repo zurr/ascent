@@ -199,7 +199,7 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 		sLog.outDebug("[IPBanner] IP has no ban entry");
 		return BAN_STATUS_NOT_BANNED;
 	}
-	if(bantime > time(NULL))
+	if(bantime > (uint32)time(NULL))
 	{
 		// temporary ban.
 		sLog.outDebug("[IPBanner] IP temporary banned, %u seconds left", (bantime-time(NULL)));
@@ -232,12 +232,17 @@ void IPBanner::Load()
 			fields = result->Fetch();
 
 			ip_str = fields[0].GetString();
-			if(sscanf(ip_str, "%u.%u.%u.%u", &ban->ip.full.b1, &ban->ip.full.b2, &ban->ip.full.b3, &ban->ip.full.b4) != 4)
+			unsigned int b1, b2, b3, b4;
+			if(sscanf(ip_str, "%u.%u.%u.%u", &b1, &b2, &b3, &b4) != 4)
 			{
 				delete ban;
 				continue;
 			}
 
+			ban->ip.full.b1 = b1;
+			ban->ip.full.b2 = b2;
+			ban->ip.full.b3 = b3;
+			ban->ip.full.b4 = b4;
 			ban->ban_expire_time = fields[1].GetUInt32();
 
 			banList.insert( ban );
@@ -320,7 +325,7 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	// dunno what this is..
 	data << uint32(0);
 
-	sAuthLogonChallenge_C * client = Socket->GetChallenge();
+	//sAuthLogonChallenge_C * client = Socket->GetChallenge();
 	data << uint16(m_realms.size());
 	
 	// loop realms :/

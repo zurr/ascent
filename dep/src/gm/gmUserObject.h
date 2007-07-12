@@ -21,6 +21,8 @@ class gmUserObject : public gmObject
 {
 public:
 
+  virtual ~gmUserObject() {}
+
   virtual int GetType() const { return m_userType; }
 
   virtual void Destruct(gmMachine * a_machine);

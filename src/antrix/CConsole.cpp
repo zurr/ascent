@@ -21,7 +21,7 @@ void CConsoleThread::run()
 	CThread::run();
 	sCConsole._thread = this;
 	delete_after_use = false;
-	char i = 0;
+	size_t i = 0;
 	char cmd[96];
     bool running = true;
 	sCConsole.running_link = &running;	
@@ -37,7 +37,7 @@ void CConsoleThread::run()
 		}
 		
 		// Make sure our buffer is clean to avoid Array bounds overflow
-		memset(cmd,NULL,sizeof(cmd)); 
+		memset(cmd,0,sizeof(cmd)); 
 		// Read in single line from "stdin"
 		fgets(cmd, 80, stdin);
 
@@ -96,10 +96,10 @@ void CConsole::ProcessCmd(char *cmd)
 	}
 	char cmd2[80];
 	strcpy(cmd2, cmd);
-	for(int i = 0; i < strlen(cmd); ++i)
+	for(size_t i = 0; i < strlen(cmd); ++i)
 		cmd2[i] = tolower(cmd[i]);
 
-	for (int i = 0; i < sizeof(cmds)/sizeof(SCmd); i++)
+	for (size_t i = 0; i < sizeof(cmds)/sizeof(SCmd); i++)
 		if (strncmp(cmd2, cmds[i].name, strlen(cmds[i].name)) == 0)
 		{
 			(this->*(cmds[i].tr)) (cmd + strlen(cmds[i].name) +1);
@@ -322,7 +322,7 @@ void CConsole::SaveallPlayers(char *str)
 	}
 	objmgr._playerslock.ReleaseReadLock();
 	char msg[100];
-	snprintf(msg, 100, "Saved all %d online players in %d msec.", count, (uint32)now() - stime);
+	snprintf(msg, 100, "Saved all %d online players in %d msec.", (unsigned int)count, (unsigned int)((uint32)now() - stime));
 	sWorld.SendWorldText(msg);
 	sWorld.SendWorldWideScreenText(msg);
 }

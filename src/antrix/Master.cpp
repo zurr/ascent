@@ -272,10 +272,10 @@ bool Master::Run(int argc, char ** argv)
 	sWorld.Rehash(false);
 
 	/* set new log levels */
-	if(screen_log_level != DEF_VALUE_NOT_SET)
+	if(screen_log_level != (int)DEF_VALUE_NOT_SET)
 		sLog.SetScreenLoggingLevel(screen_log_level);
 	
-	if(file_log_level != DEF_VALUE_NOT_SET)
+	if(file_log_level != (int)DEF_VALUE_NOT_SET)
 		sLog.SetFileLoggingLevel(file_log_level);
 
 	// Initialize Opcode Table
@@ -332,7 +332,7 @@ bool Master::Run(int argc, char ** argv)
 #else
 		pid = getpid();
 #endif
-		fprintf(fPid, "%u", pid);
+		fprintf(fPid, "%u", (unsigned int)pid);
 		fclose(fPid);
 	}
 
@@ -431,7 +431,7 @@ bool Master::Run(int argc, char ** argv)
 	sLog.outString("Executing pending database queries and closing database thread...");
 	// kill the database thread first so we don't lose any queries/data
 	CThread *dbThread = sThreadMgr.GetThreadByType(THREADTYPE_DATABASE);
-	CThread *temp = dbThread;
+	//CThread *temp = dbThread;
 	ASSERT(dbThread);
 	// end it
 	dbThread->SetThreadState(THREADSTATE_TERMINATE);
@@ -497,9 +497,9 @@ bool Master::_StartDB()
 	string hostname, username, password, database;
 	int port = 0;
 	int type = 1;
-	string lhostname, lusername, lpassword, ldatabase;
-	int lport = 0;
-	int ltype = 1;
+	//string lhostname, lusername, lpassword, ldatabase;
+	//int lport = 0;
+	//int ltype = 1;
 	// Configure Main Database
 	
 	bool result = Config.MainConfig.GetString("WorldDatabase", "Username", &username);

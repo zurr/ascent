@@ -90,6 +90,7 @@ public:
   }
   int m_curPosColor;
 #endif //GM_GC_DEBUG
+  virtual ~gmGCObjBase() {}
 
   inline void SetColor(int a_color)               {m_color = (char)a_color;}
   inline int GetColor()                           {return (int)m_color;}

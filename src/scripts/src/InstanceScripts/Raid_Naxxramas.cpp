@@ -3569,3 +3569,4 @@ void SetupNaxxramas(ScriptMgr * mgr)
 	mgr->register_creature_script(CN_LADY_BLAUMEUX, &BlaumeuxAI::Create);
 	mgr->register_creature_script(CN_SIR_ZELIEK, &ZeliekAI::Create);
 }
+

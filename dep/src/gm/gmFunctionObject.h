@@ -45,6 +45,8 @@ class gmFunctionObject : public gmObject
 {
 public:
 
+  virtual ~gmFunctionObject() {}
+
   virtual int GetType() const { return GM_FUNCTION; }
 
   virtual void Destruct(gmMachine * a_machine);

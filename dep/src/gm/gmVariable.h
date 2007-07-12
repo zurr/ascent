@@ -151,6 +151,8 @@ class gmObject
 #endif //GM_USE_INCGC
 {
 public:
+  
+  virtual ~gmObject() {}
 
   inline gmptr GetRef() const { return (gmptr) this; }
   virtual int GetType() const = 0;

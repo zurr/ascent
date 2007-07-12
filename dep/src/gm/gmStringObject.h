@@ -24,6 +24,8 @@ class gmStringObject : public gmObject, public gmHashNode<const char *, gmString
 {
 public:
 
+  virtual ~gmStringObject() {}
+
   inline const char * GetKey() const { return m_string; }
 
   virtual int GetType() const { return GM_STRING; }

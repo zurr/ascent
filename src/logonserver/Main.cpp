@@ -267,8 +267,8 @@ void LogonServer::Run(int argc, char ** argv)
 	// Load conf settings..
 	uint32 cport = Config.MainConfig.GetIntDefault("Listen", "RealmListPort", 3724);
 	uint32 sport = Config.MainConfig.GetIntDefault("Listen", "ServerPort", 8093);
-	uint32 threadcount = Config.MainConfig.GetIntDefault("Network", "ThreadCount", 5);
-	uint32 threaddelay = Config.MainConfig.GetIntDefault("Network", "ThreadDelay", 20);
+	//uint32 threadcount = Config.MainConfig.GetIntDefault("Network", "ThreadCount", 5);
+	//uint32 threaddelay = Config.MainConfig.GetIntDefault("Network", "ThreadDelay", 20);
 	string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
 	string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
 	min_build = Config.MainConfig.GetIntDefault("Client", "MinBuild", 6180);

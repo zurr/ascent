@@ -74,7 +74,7 @@ bool ChatHandler::HandleSecurityCommand(const char* args, WorldSession *m_sessio
 		chr->GetSession()->SetSecurity(pgm);
 		//sLogonDatabase.Execute("UPDATE accounts SET gm='%s' WHERE acct=%u", pgm, chr->GetSession()->GetAccountId());
 		//sLogonCommHandler.LogonDatabaseSQLExecute(buf);
-		snprintf(buf, 256,"UPDATE accounts set gm='%s' WHERE acct=%u", pgm, chr->GetSession()->GetAccountId());
+		snprintf(buf, 256,"UPDATE accounts set gm='%s' WHERE acct=%u", pgm, (unsigned int)chr->GetSession()->GetAccountId());
 		sLogonCommHandler.LogonDatabaseSQLExecute(buf);
 	}
 	else
@@ -91,7 +91,7 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession *m_sessi
 {
 	float x, y, z;
 	uint32 mapid;
-	if(sscanf(args, "%u %f %f %f", &mapid, &x, &y, &z) != 4)
+	if(sscanf(args, "%u %f %f %f", (unsigned int*)&mapid, &x, &y, &z) != 4)
 		return false;
 
 	if(x >= _maxX || x <= _minX || y <= _minY || y >= _maxY)
@@ -609,7 +609,7 @@ bool ChatHandler::HandleLevelUpCommand(const char* args, WorldSession *m_session
 	sGMLog.writefromsession(m_session, "used level up command on %s, with %u levels", plr->GetName(), levels);
 
 	uint32 startlvl = plr->GetUInt32Value(UNIT_FIELD_LEVEL);
-	for(int i = startlvl; i < (startlvl+levels);i++)
+	for(uint32 i = startlvl; i < (startlvl+levels);i++)
 	{
 		uint32 curXP = plr->GetUInt32Value(PLAYER_XP);
 		uint32 nextLvlXP = plr->GetUInt32Value(PLAYER_NEXT_LEVEL_XP);
@@ -834,7 +834,7 @@ bool ChatHandler::HandleAddSkillCommand(const char* args, WorldSession *m_sessio
 
 	target->AddSkillLine(skillline,cur,max);
 
-	snprintf(buf,256,"SkillLine: %u CurrentValue %u Max Value %u Added.",skillline,cur,max);
+	snprintf(buf,256,"SkillLine: %u CurrentValue %u Max Value %u Added.",(unsigned int)skillline,(unsigned int)cur,(unsigned int)max);
 	SystemMessage(m_session, buf);
 
 	return true;
@@ -848,7 +848,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char *args, WorldSession *m_session
 	if(!crt) return false;
 	if(crt->GetCreatureName())
 		BlueSystemMessage(m_session, "Showing creature info for %s", crt->GetCreatureName()->Name);
-	snprintf(msg,512,"GUID: %d\nFaction: %d\nNPCFlags: %d\nDisplayID: %d", guid, crt->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE), crt->GetUInt32Value(UNIT_NPC_FLAGS), crt->GetUInt32Value(UNIT_FIELD_DISPLAYID));
+	snprintf(msg,512,"GUID: %d\nFaction: %d\nNPCFlags: %d\nDisplayID: %d", (int)guid, (int)crt->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE), (int)crt->GetUInt32Value(UNIT_NPC_FLAGS), (int)crt->GetUInt32Value(UNIT_FIELD_DISPLAYID));
 	SystemMessage(m_session, msg);
 	if(crt->m_faction)
 		GreenSystemMessage(m_session, "Combat Support: 0x%.3X", crt->m_faction->FriendlyMask);
@@ -1312,7 +1312,7 @@ bool ChatHandler::HandleGoInstanceCommand(const char* args, WorldSession* m_sess
 {
 	float x,y,z;
 	uint32 instanceid, mapid = 1000;
-	int valcount = sscanf(args, "%u %f %f %f %u", &instanceid, &x, &y, &z, &mapid);
+	int valcount = sscanf(args, "%u %f %f %f %u", (unsigned int*)&instanceid, &x, &y, &z, (unsigned int*)&mapid);
 	if(valcount < 4)
 	{
 		RedSystemMessage(m_session, "Must be in format <instanceid> <x> <y> <z> <optional: mapid>");
@@ -1365,7 +1365,7 @@ bool ChatHandler::HandleGoInstanceCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)
 {
 	uint32 mapid;
-	int ret =sscanf(args, "%u", &mapid);
+	int ret =sscanf(args, "%u", (unsigned int*)&mapid);
 	if(!ret)
 	{
 		RedSystemMessage(m_session, "Needs to be in format .createinstance <mapid>");
@@ -1518,7 +1518,7 @@ bool ChatHandler::HandleDBReloadCommand(const char* args, WorldSession* m_sessio
 	if(!Storage_ReloadTable(args))
 		snprintf(str, 256, "%sDatabase reload failed.", MSG_COLOR_LIGHTRED);
 	else
-		snprintf(str, 256, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, getMSTime() - mstime);
+		snprintf(str, 256, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, (unsigned int)(getMSTime() - mstime));
 	sWorld.SendWorldText(str, 0);
 	return true;
 }
@@ -1804,7 +1804,7 @@ bool ChatHandler::HandleShutdownCommand(const char* args, WorldSession* m_sessio
 	shutdowntime *= 1000;
 	char msg[500];
 	snprintf(msg, 500, "%sServer shutdown initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
-		m_session->GetPlayer()->GetName(), shutdowntime);
+		m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
 
 	sWorld.SendWorldText(msg);
 	sMaster.m_ShutdownTimer = shutdowntime;
@@ -1822,7 +1822,7 @@ bool ChatHandler::HandleShutdownRestartCommand(const char* args, WorldSession* m
 
 	char msg[500];
 	snprintf(msg, 500, "%sServer restart initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
-		m_session->GetPlayer()->GetName(), shutdowntime);
+		m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
 
 	sWorld.SendWorldText(msg);
 	sMaster.m_ShutdownTimer = shutdowntime;
@@ -1889,7 +1889,7 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
 				continue;
 
 			// figure out the amount we have to add
-			int32 add = amt;
+			uint32 add = amt;
 			if((val + add) > max)
 				add = max - val;
 
@@ -2032,7 +2032,7 @@ bool ChatHandler::HandleSetRateCommand(const char* args, WorldSession* m_session
 	if(!args) return false;
 	float rateval;
 	uint32 rate;
-	if(sscanf(args, "%u %f", &rate, &rateval) != 2 || rate >= MAX_RATES)
+	if(sscanf(args, "%u %f", (unsigned int*)&rate, &rateval) != 2 || rate >= MAX_RATES)
 	{
 		RedSystemMessage(m_session, "Command must be specified in the format <rate> <value>.");
 		return true;
@@ -2325,15 +2325,15 @@ bool ChatHandler::HandleBanAccountCommand(const char * args, WorldSession * m_se
 	char acctname[200];
 	char plrname[200];
 	uint32 duration;
-	int c = sscanf(args, "%s %u %s", acctname, &duration);
-	if(c == 0)
+	int c = sscanf(args, "%s %u %s", acctname, (unsigned int*)&duration, plrname);
+	/*if(c == 0)
 	{
 		Player * plr = getSelectedChar(m_session, false);
 		if(!plr) return false;
 		strcpy(acctname, plr->GetSession()->GetAccountName().c_str());
 		duration = 1;
 	}
-	else if(c == 1)
+	else */if(c == 1)
 		duration = 1;
 	else if(c == 3)
 	{
@@ -2341,6 +2341,8 @@ bool ChatHandler::HandleBanAccountCommand(const char * args, WorldSession * m_se
 		if(!plr) return false;
 		strcpy(acctname, plr->GetSession()->GetAccountName().c_str());
 	}
+	else if(c != 2)
+	return false;
 
 	SystemMessage(m_session, "SQL Executed: UPDATE accounts SET banned = %u WHERE login = '%s'", duration, WorldDatabase.EscapeString(acctname).c_str());
 	sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET banned = %u WHERE login = '%s'", duration, WorldDatabase.EscapeString(acctname).c_str());
@@ -2351,7 +2353,7 @@ bool ChatHandler::HandleIPBanCommand(const char * args, WorldSession * m_session
 {
 	char ip[200];
 	uint32 duration;
-	int c = sscanf(args, "%s %u", &ip, &duration);
+	int c = sscanf(args, "%s %u", ip, (unsigned int*)&duration);
 	if(c != 2)
 		return false;
 
@@ -2425,7 +2427,7 @@ bool ChatHandler::HandleRemoveItemCommand(const char * args, WorldSession * m_se
 {
 	uint32 item_id;
 	int32 count, ocount;
-	int argc = sscanf(args, "%u %u", &item_id, &count);
+	int argc = sscanf(args, "%u %u", (unsigned int*)&item_id, (unsigned int*)&count);
 	if(argc == 1)
 		count = 1;
 	else if(argc != 2 || !count)
@@ -2436,9 +2438,9 @@ bool ChatHandler::HandleRemoveItemCommand(const char * args, WorldSession * m_se
 	if(!plr) return true;
 
 	// loop until they're all gone.
-	uint32 loop_count = 0;
-	uint32 start_count = plr->GetItemInterface()->GetItemCount(item_id, true);
-	uint32 start_count2 = start_count;
+	int32 loop_count = 0;
+	int32 start_count = plr->GetItemInterface()->GetItemCount(item_id, true);
+	int32 start_count2 = start_count;
 	if(count > start_count)
 		count = start_count;
 
@@ -2506,7 +2508,7 @@ bool ChatHandler::HandleSetStandingCommand(const char * args, WorldSession * m_s
 {
 	uint32 faction;
 	int32 standing;
-	if(sscanf(args, "%u %d", &faction, &standing) != 2)
+	if(sscanf(args, "%u %d", (unsigned int*)&faction, (unsigned int*)&standing) != 2)
 		return false;
 	Player * plr = getSelectedChar(m_session, true);
 	if(!plr) return true;;
@@ -2523,7 +2525,7 @@ void SendHighlightedName(WorldSession * m_session, char* full_name, string& lowe
 	char start[50];
 	start[0] = message[0] = 0;
 
-	snprintf(start, 50, "%s %u: %s", item ? "Item" : "Creature", id, MSG_COLOR_WHITE);
+	snprintf(start, 50, "%s %u: %s", item ? "Item" : "Creature", (unsigned int)id, MSG_COLOR_WHITE);
 
 	string::size_type hlen = highlight.length();
 	string fullname = string(full_name);
@@ -2871,7 +2873,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char * args, WorldSession * m
 		ASSERT(it != aiagent_extra.end());
 
 		SpellCastTargets targets;
-		if(it->second.type = STYPE_BUFF)
+		if(it->second.type == STYPE_BUFF)
 			targets = SetTargets(sp, it->second.type, it->second.type, pCreature, pCreature );
 		else
 			targets = SetTargets(sp, it->second.type, it->second.type, pPlayer, pCreature );

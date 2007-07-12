@@ -156,7 +156,7 @@ bool CookiedDeviateFish(uint32 i, Spell * pSpell)
 {
     // actual spell handling code will be in here.
     Player *playerTarget = pSpell->GetPlayerTarget();
-    Unit *unitTarget = pSpell->GetUnitTarget();
+    //Unit *unitTarget = pSpell->GetUnitTarget();
 
     if(!playerTarget) return true;
     //(60 min) Yaaarrrr (turns you into a pirate)
@@ -220,7 +220,7 @@ bool CookiedDeviateFish(uint32 i, Spell * pSpell)
 bool NetOMatic(uint32 i, Spell * pSpell)
 {
     Player *playerTarget = pSpell->GetPlayerTarget();
-    Unit *unitTarget = pSpell->GetUnitTarget();
+    //Unit *unitTarget = pSpell->GetUnitTarget();
     //FIXME: Captures the target in a net for 10 sec. The net has a lot of hooks however and sometimes gets caught in the user's clothing when fired......            
     //Successful Net target: ~50% could be a little less.
 
