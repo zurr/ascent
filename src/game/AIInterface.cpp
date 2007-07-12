@@ -2131,7 +2131,7 @@ bool AIInterface::saveWayPoints(uint32 wpid)
 	{
 		//Delete
 		ss << "DELETE FROM creature_waypoints WHERE creatureid = " << ((Creature*)GetUnit())->GetSQL_id() << "\0";
-		sDatabase.Query( ss.str().c_str() );
+		WorldDatabase.Query( ss.str().c_str() );
 	}
 
 	WayPointMap::const_iterator itr;
@@ -2153,7 +2153,7 @@ bool AIInterface::saveWayPoints(uint32 wpid)
 				//Delete
 				ss.str("");
 				ss << "DELETE FROM creature_waypoints WHERE creatureid = " << ((Creature*)GetUnit())->GetSQL_id() << " and waypointid = " << wp->id << "\0";
-				sDatabase.Query( ss.str().c_str() );
+				WorldDatabase.Query( ss.str().c_str() );
 			}
 
 			//Save
@@ -2173,7 +2173,7 @@ bool AIInterface::saveWayPoints(uint32 wpid)
 			ss << wp->backwardemoteid << ", ";
 			ss << wp->forwardskinid << ", ";
 			ss << wp->backwardskinid << ")\0";
-			sDatabase.Query( ss.str().c_str() );
+			WorldDatabase.Query( ss.str().c_str() );
 
 			if(wpid != 0) 
 				return true;

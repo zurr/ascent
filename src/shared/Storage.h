@@ -545,7 +545,7 @@ public:
 		QueryResult * result;
 		if(Storage<T, StorageType>::_storage.NeedsMax())
 		{
-			result = sDatabase.Query("SELECT MAX(entry) FROM %s", IndexName);
+			result = WorldDatabase.Query("SELECT MAX(entry) FROM %s", IndexName);
 			uint32 Max = 999999;
 			if(result)
 			{
@@ -557,7 +557,7 @@ public:
 		}
 
 		size_t cols = strlen(FormatString);
-		result = sDatabase.Query("SELECT * FROM %s", IndexName);
+		result = WorldDatabase.Query("SELECT * FROM %s", IndexName);
 		Field * fields = result->Fetch();
 
 		if(result->GetFieldCount() != cols)
@@ -593,7 +593,7 @@ public:
 	void Reload()
 	{
 		printf("Reloading database cache from `%s`...\n", Storage<T, StorageType>::_indexName);
-		QueryResult * result = sDatabase.Query("SELECT MAX(entry) FROM %s", Storage<T, StorageType>::_indexName);
+		QueryResult * result = WorldDatabase.Query("SELECT MAX(entry) FROM %s", Storage<T, StorageType>::_indexName);
 		if(result == 0)
 			return;
 
@@ -605,7 +605,7 @@ public:
 		Storage<T, StorageType>::_storage.Resetup(Max);
 
 		size_t cols = strlen(Storage<T, StorageType>::_formatString);
-		result = sDatabase.Query("SELECT * FROM %s", Storage<T, StorageType>::_indexName);
+		result = WorldDatabase.Query("SELECT * FROM %s", Storage<T, StorageType>::_indexName);
 		Field * fields = result->Fetch();
 
 		if(result->GetFieldCount() != cols)

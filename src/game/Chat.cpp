@@ -60,7 +60,7 @@ inline void* allocate_and_copy(uint32 len, void * pointer)
 
 void CommandTableStorage::Load()
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM command_overrides");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM command_overrides");
 	if(!result) return;
 
 	do 

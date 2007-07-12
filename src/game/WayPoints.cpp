@@ -132,7 +132,7 @@ bool ChatHandler::HandleWPMoveTypeCommand(const char* args, WorldSession *m_sess
 
 	char sql[512];
 	snprintf(sql, 512, "UPDATE creatures SET moverandom = '%u' WHERE id = '%u'", option, GUID_LOPART(guid));
-	sDatabase.Execute( sql );
+	WorldDatabase.Execute( sql );
 
 	pCreature->GetAIInterface()->setMoveType(option);
 
@@ -758,14 +758,14 @@ bool ChatHandler::HandleSaveWaypoints(const char* args, WorldSession * m_session
 	if(!cr->GetSQL_id())
 		return false;
 	
-	sDatabase.Execute("DELETE FROM creature_waypoints WHERE creatureid=%u",cr->GetSQL_id());
+	WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE creatureid=%u",cr->GetSQL_id());
 
 	
 	for(int x=1;x<=cr->GetAIInterface()->GetWayPointsCount();x++)
 	{
 		 WayPoint  *w =cr->GetAIInterface()->getWayPoint(x);
 		 if(!w)continue;
-		 sDatabase.Execute(
+		 WorldDatabase.Execute(
 			 "INSERT INTO creature_waypoints VALUES(%u,%u,%f,%f,%f,%u,%u,%u,%u,%u,%u,%u,%u)",
 				
 				cr->GetSQL_id(),w->id,w->x,w->y,w->z,w->waittime,w->flags,w->forwardemoteoneshot,
@@ -785,7 +785,7 @@ bool ChatHandler::HandleDeleteWaypoints(const char* args, WorldSession * m_sessi
 	if(!cr->GetSQL_id())
 		return false;
 	
-	sDatabase.Execute("DELETE FROM creature_waypoints WHERE creatureid=%u",cr->GetSQL_id());
+	WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE creatureid=%u",cr->GetSQL_id());
 
 	
 	while(cr->GetAIInterface()->GetWayPointsCount())

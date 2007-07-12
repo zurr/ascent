@@ -90,7 +90,7 @@ bool Guild::DeleteGuildMember(uint64 guid)
 		{
 			m_guildMembers.erase(i);
 
-			sDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0 WHERE guid=%u AND guildid=%u",GUID_LOPART(guid), m_guildId);
+			CharacterDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0 WHERE guid=%u AND guildid=%u",GUID_LOPART(guid), m_guildId);
 			return true;
 		}
 	}
@@ -105,7 +105,7 @@ bool Guild::DeleteGuildMember(string name)
 		if (!strcmp((*i)->name.c_str(), name.c_str()))
 		{
 			m_guildMembers.erase(i);
-			sDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0 WHERE name='%s' AND guildid=%u",sDatabase.EscapeString(name).c_str(), m_guildId);
+			CharacterDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0 WHERE name='%s' AND guildid=%u",CharacterDatabase.EscapeString(name).c_str(), m_guildId);
 			return true;
 		}
 	}
@@ -419,23 +419,23 @@ void Guild::SaveToDb()
 {
 	std::stringstream query;
 	query << "DELETE FROM guilds WHERE guildId = " << m_guildId;
-	sDatabase.Execute( query.str( ).c_str( ) );
+	CharacterDatabase.Execute( query.str( ).c_str( ) );
 
 	query.rdbuf()->str("");
 
 	query << "INSERT INTO guilds VALUES (";
 	query << m_guildId << ",'";
-	query << sDatabase.EscapeString(m_guildName) << "', ";
+	query << CharacterDatabase.EscapeString(m_guildName) << "', ";
 	query << m_leaderGuid << ", ";
 	query << m_emblemStyle << ", ";
 	query << m_emblemColor << ", ";
 	query << m_borderStyle << ", ";
 	query << m_borderColor << ", ";
 	query << m_backgroundColor << ", ";
-	query << "'" << sDatabase.EscapeString(m_guildInfo) << "', ";
-	query << "'" << sDatabase.EscapeString(m_motd) << "', NOW())";
+	query << "'" << CharacterDatabase.EscapeString(m_guildInfo) << "', ";
+	query << "'" << CharacterDatabase.EscapeString(m_motd) << "', NOW())";
 
-	sDatabase.Execute( query.str().c_str() );
+	CharacterDatabase.Execute( query.str().c_str() );
 }
 
 void Guild::UpdateGuildToDb()
@@ -448,10 +448,10 @@ void Guild::UpdateGuildToDb()
 	query << "borderStyle = " << m_borderStyle << ", ";
 	query << "borderColor = " << m_borderColor << ", ";
 	query << "backgroundColor = " << m_backgroundColor << ", ";
-	query << "guildInfo = '" << sDatabase.EscapeString(m_guildInfo) << "', ";
-	query << "motd = '" << sDatabase.EscapeString(m_motd) << "' ";
+	query << "guildInfo = '" << CharacterDatabase.EscapeString(m_guildInfo) << "', ";
+	query << "motd = '" << CharacterDatabase.EscapeString(m_motd) << "' ";
 	query << "WHERE guildId = " << m_guildId;
-	sDatabase.Execute( query.str( ).c_str( ) );
+	CharacterDatabase.Execute( query.str( ).c_str( ) );
 }
 
 void Guild::SaveRanksToDb()
@@ -459,7 +459,7 @@ void Guild::SaveRanksToDb()
 	std::stringstream query;
 
 	query << "DELETE FROM guild_ranks WHERE guildId = " << m_guildId;
-	sDatabase.Execute( query.str( ).c_str( ) );
+	CharacterDatabase.Execute( query.str( ).c_str( ) );
 
 	std::list<RankInfo*>::iterator itr;
 	for (itr = m_rankList.begin(); itr != m_rankList.end();itr++)
@@ -468,10 +468,10 @@ void Guild::SaveRanksToDb()
 		query << "INSERT INTO guild_ranks VALUES (";
 		query << m_guildId << ", ";
 		query << (*itr)->rankid << ", ";
-		query << "'" << sDatabase.EscapeString((*itr)->name) << "', ";
+		query << "'" << CharacterDatabase.EscapeString((*itr)->name) << "', ";
 		query << (*itr)->rights;
 		query << ")";
-		sDatabase.Execute( query.str().c_str() );
+		CharacterDatabase.Execute( query.str().c_str() );
 	}
 }
 
@@ -499,9 +499,9 @@ break;
 
 void Guild::UpdateGuildMembersDB(PlayerInfo *Member)
 {
-  sDatabase.Execute(
+  CharacterDatabase.Execute(
 		"UPDATE characters SET publicNote='%s',officerNote='%s',guildid=%u,guildRank=%u WHERE guid=%u",
-		sDatabase.EscapeString(Member->publicNote).c_str(),sDatabase.EscapeString(Member->officerNote).c_str(),m_guildId,Member->Rank, (uint32)Member->guid );
+		CharacterDatabase.EscapeString(Member->publicNote).c_str(),CharacterDatabase.EscapeString(Member->officerNote).c_str(),m_guildId,Member->Rank, (uint32)Member->guid );
 }
 
 void Guild::SaveAllGuildMembersToDb()
@@ -509,23 +509,23 @@ void Guild::SaveAllGuildMembersToDb()
 	std::list<PlayerInfo*>::iterator i;
 
 	for (i = m_guildMembers.begin(); i != m_guildMembers.end();++i) 
-		sDatabase.Execute(
+		CharacterDatabase.Execute(
 		"UPDATE characters SET publicNote='%s',officerNote='%s',guildid=%u,guildRank=%u WHERE guid=%u",
-		sDatabase.EscapeString((*i)->publicNote).c_str(),sDatabase.EscapeString((*i)->officerNote).c_str(),m_guildId,(*i)->Rank,(uint32)( (*i)->guid) );
+		CharacterDatabase.EscapeString((*i)->publicNote).c_str(),CharacterDatabase.EscapeString((*i)->officerNote).c_str(),m_guildId,(*i)->Rank,(uint32)( (*i)->guid) );
 	  
 }
 
 void Guild::RemoveFromDb()
 {
-	sDatabase.Execute("DELETE FROM guilds WHERE guildId =%u",m_guildId );
-	sDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_guildId );
-	sDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0,publicNote='',officerNote='' WHERE guildid=%u",m_guildId);
+	CharacterDatabase.Execute("DELETE FROM guilds WHERE guildId =%u",m_guildId );
+	CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_guildId );
+	CharacterDatabase.Execute("UPDATE characters SET guildid=0,guildRank=0,publicNote='',officerNote='' WHERE guildid=%u",m_guildId);
 }
 
 uint32 Guild::GetFreeGuildIdFromDb()
 {
 
-	QueryResult *result = sDatabase.Query( "SELECT MAX(guildId) FROM guilds");
+	QueryResult *result = CharacterDatabase.Query( "SELECT MAX(guildId) FROM guilds");
 	if(result)
 	{
 		uint32 guildId = result->Fetch()->GetUInt32();
@@ -540,21 +540,21 @@ void Guild::LoadGuildCreationDate()
 {
 	Field *fields;
 
-	QueryResult *result1 = sDatabase.Query( "SELECT DATE_FORMAT(createdate,\"%%d\") FROM guilds WHERE guildId =%u", m_guildId );
+	QueryResult *result1 = CharacterDatabase.Query( "SELECT DATE_FORMAT(createdate,\"%%d\") FROM guilds WHERE guildId =%u", m_guildId );
 	if(!result1) return;
 	fields = result1->Fetch();
 	m_createdDay = fields[0].GetUInt32();
 
 	delete result1;
 
-	QueryResult *result2 = sDatabase.Query( "SELECT DATE_FORMAT(createdate,\"%%m\") FROM guilds WHERE guildId =%u", m_guildId );
+	QueryResult *result2 = CharacterDatabase.Query( "SELECT DATE_FORMAT(createdate,\"%%m\") FROM guilds WHERE guildId =%u", m_guildId );
 	if(!result2) return;
 	fields = result2->Fetch();
 	m_createdMonth = fields[0].GetUInt32();
 
 	delete result2;
 
-	QueryResult *result3 = sDatabase.Query( "SELECT DATE_FORMAT(createdate,\"%%Y\") FROM guilds WHERE guildId =%u", m_guildId );
+	QueryResult *result3 = CharacterDatabase.Query( "SELECT DATE_FORMAT(createdate,\"%%Y\") FROM guilds WHERE guildId =%u", m_guildId );
 	if(!result3) return;
 	fields = result3->Fetch();
 	m_createdYear = fields[0].GetUInt32();

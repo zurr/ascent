@@ -250,7 +250,7 @@ void BasicTaskExecutor::run()
 
 void World::SetInitialWorldSettings()
 {
-	sDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
+	CharacterDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
    
 	m_lastTick = time(NULL);
 
@@ -336,6 +336,50 @@ void World::SetInitialWorldSettings()
 	new CharRaceStore("DBC/ChrRaces.dbc");
 	new MapStore("DBC/Map.dbc");
 	new ItemExtendedCostStore("DBC/ItemExtendedCost.dbc");
+
+	/*{
+		DBCFile moo;
+		moo.open("DBC/FactionTemplate.dbc");
+		set<pair<uint32, uint32> > fs;
+		set<uint32> known;
+		for(uint32 i = 0; i < moo.getRecordCount(); ++i)
+		{
+			fs.insert(make_pair(moo.getRecord(i).getUInt(0), moo.getRecord(i).getUInt(1)));
+			known.insert(moo.getRecord(i).getUInt(0));
+		}
+
+		QueryResult * result = sDatabase.Query("SELECT entry, faction FROM creature_proto");
+		uint32 e, f;
+		do 
+		{
+			e = result->Fetch()[0].GetUInt32();
+			f = result->Fetch()[1].GetUInt32();
+			FactionDBC * d;
+			if(known.find(f) == known.end())
+			{
+				printf("Bad faction %u!", f);
+				//d = sFactionStore.LookupEntryForced(f);
+				d = ((FastIndexedDataStore<FactionDBC>*)FactionStore::getSingletonPtr())->LookupEntryForced(f);
+				if(!d)
+					printf(".. REALLY bad faction\n");
+				else
+				{
+					// find a faction template that matches.. meh ;p
+					set<pair<uint32, uint32> >::iterator itr = fs.begin();
+					for(; itr != fs.end(); ++itr)
+					{
+						if(itr->second == f)
+						{
+							printf(" replaced with %u (%s)\n", itr->first, sFactionStore.LookupString(d->Name));
+							sDatabase.WaitExecute("UPDATE creature_proto SET faction = %u WHERE entry = %u", e, itr->second);
+							sDatabase.WaitExecute("UPDATE creature_spawns SET factionid = %u WHERE entry = %u", e, itr->second);
+							break;
+						}
+					}
+				}
+			}
+		} while(result->NextRow());
+	}*/
 
 	/* Convert area table ids/flags */
 	DBCFile area;
@@ -1253,7 +1297,7 @@ void World::LoadMapInformation()
 {
 	sLog.outString("  Loading Map Information...");
 	MapInfo *mapinfo;
-	QueryResult *result = sDatabase.Query( "SELECT * FROM worldmap_info" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM worldmap_info" );
 	if( !result )
 	{
 		sLog.outString( "  0 Maps Info Loaded." );

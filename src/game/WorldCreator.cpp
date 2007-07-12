@@ -30,7 +30,7 @@ WorldCreator::WorldCreator(TaskList * tl)
 	QueryResult *result;
 	m_InstanceHigh = 0;
 
-	result = sDatabase.Query( "SELECT MAX(instanceid) FROM instances" );
+	result = CharacterDatabase.Query( "SELECT MAX(instanceid) FROM instances" );
 	if( result )
 	{
 		m_InstanceHigh = result->Fetch()[0].GetUInt32()+1;
@@ -626,7 +626,7 @@ void WorldCreator::BuildXMLStats(char * m_file)
 
 FormationMgr::FormationMgr()
 {
-	QueryResult * res = sDatabase.Query("SELECT * FROM creature_formations");
+	QueryResult * res = WorldDatabase.Query("SELECT * FROM creature_formations");
 	if(res)
 	{
 		Formation *f ;

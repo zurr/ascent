@@ -664,9 +664,9 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession *m_se
 	}
 
 	// Ban in database
-	sDatabase.Execute("UPDATE characters SET banned = 4 WHERE name = '%s'", sDatabase.EscapeString(string(Character)).c_str());
+	CharacterDatabase.Execute("UPDATE characters SET banned = 4 WHERE name = '%s'", WorldDatabase.EscapeString(string(Character)).c_str());
 	if(HasReason)
-		sDatabase.Execute("UPDATE characters SET bannedReason = \"%s\" WHERE name = '%s'", sDatabase.EscapeString(string(Character)).c_str(), sDatabase.EscapeString(string(Reason)).c_str());
+		CharacterDatabase.Execute("UPDATE characters SET bannedReason = \"%s\" WHERE name = '%s'", WorldDatabase.EscapeString(string(Character)).c_str(), WorldDatabase.EscapeString(string(Reason)).c_str());
 
 	SystemMessage(m_session, "Banned character %s in database.", Character);
 	sGMLog.writefromsession(m_session, "used ban character on %s reason %s", Character, HasReason ? Reason : "NONE");
@@ -698,7 +698,7 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession *m_
 	}
 
 	// Ban in database
-	sDatabase.Execute("UPDATE characters SET banned = 0 WHERE name = '%s'", sDatabase.EscapeString(string(Character)).c_str());
+	CharacterDatabase.Execute("UPDATE characters SET banned = 0 WHERE name = '%s'", CharacterDatabase.EscapeString(string(Character)).c_str());
 
 	SystemMessage(m_session, "Unbanned character %s in database.", Character);
 	sGMLog.writefromsession(m_session, "used unban character on %s", Character);
@@ -1172,9 +1172,9 @@ bool ChatHandler::HandleCreateAccountCommand(const char* args, WorldSession *m_s
 	BlueSystemMessage(m_session, "Attempting to create account: %s, %s (Email: %s)...", user, pass, email);
 
 	ss << "INSERT INTO accounts (login, password, email) VALUES(\""
-		<< sDatabase.EscapeString(user) << "\",\""
-		<< sDatabase.EscapeString(pass) << "\",\""
-		<< sDatabase.EscapeString(email) << "\");";
+		<< WorldDatabase.EscapeString(user) << "\",\""
+		<< WorldDatabase.EscapeString(pass) << "\",\""
+		<< WorldDatabase.EscapeString(email) << "\");";
 
 	sLogonCommHandler.LogonDatabaseSQLExecute(ss.str().c_str());
 	/*if(sLogonDatabase.Execute(ss.str().c_str()))
@@ -2115,7 +2115,7 @@ bool ChatHandler::HandleFormationLink2Command(const char* args, WorldSession * m
 	slave->GetAIInterface()->SetUnitToFollowAngle(ang);
 	
 	// add to db
-	sDatabase.Execute("INSERT INTO creature_formations VALUES(%u, %u, '%f', '%f')", 
+	WorldDatabase.Execute("INSERT INTO creature_formations VALUES(%u, %u, '%f', '%f')", 
 		slave->GetSQL_id(), slave->GetAIInterface()->m_formationLinkSqlId, ang, dist);
 
 	BlueSystemMessage(m_session, "%s linked up to %s with a distance of %f at %f radians.", slave->GetCreatureName()->Name, 
@@ -2144,7 +2144,7 @@ bool ChatHandler::HandleFormationClearCommand(const char* args, WorldSession * m
 	c->GetAIInterface()->m_formationFollowDistance = 0.0f;
 	c->GetAIInterface()->SetUnitToFollow(0);
 	
-	sDatabase.Execute("DELETE FROM creature_formations WHERE creature_sqlid=%u", c->GetSQL_id());
+	WorldDatabase.Execute("DELETE FROM creature_formations WHERE creature_sqlid=%u", c->GetSQL_id());
 	return true;
 }
 
@@ -2342,8 +2342,8 @@ bool ChatHandler::HandleBanAccountCommand(const char * args, WorldSession * m_se
 		strcpy(acctname, plr->GetSession()->GetAccountName().c_str());
 	}
 
-	SystemMessage(m_session, "SQL Executed: UPDATE accounts SET banned = %u WHERE login = '%s'", duration, sDatabase.EscapeString(acctname).c_str());
-	sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET banned = %u WHERE login = '%s'", duration, sDatabase.EscapeString(acctname).c_str());
+	SystemMessage(m_session, "SQL Executed: UPDATE accounts SET banned = %u WHERE login = '%s'", duration, WorldDatabase.EscapeString(acctname).c_str());
+	sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET banned = %u WHERE login = '%s'", duration, WorldDatabase.EscapeString(acctname).c_str());
 	return true;
 }
 
@@ -2364,8 +2364,8 @@ bool ChatHandler::HandleIPBanCommand(const char * args, WorldSession * m_session
 		return true;
 	}
 
-	SystemMessage(m_session, "SQL Executed: INSERT INTO ipbans VALUES('%s', %u)", sDatabase.EscapeString(ip).c_str(), duration);
-	sLogonCommHandler.LogonDatabaseSQLExecute("INSERT INTO ipbans VALUES('%s', %u)", sDatabase.EscapeString(ip).c_str(), duration);
+	SystemMessage(m_session, "SQL Executed: INSERT INTO ipbans VALUES('%s', %u)", WorldDatabase.EscapeString(ip).c_str(), duration);
+	sLogonCommHandler.LogonDatabaseSQLExecute("INSERT INTO ipbans VALUES('%s', %u)", WorldDatabase.EscapeString(ip).c_str(), duration);
 	return true;
 }
 
@@ -2476,7 +2476,7 @@ bool ChatHandler::HandleForceRenameCommand(const char * args, WorldSession * m_s
 	Player * plr = objmgr.GetPlayer(pi->guid);
 	if(plr == 0)
 	{
-		sDatabase.Execute("UPDATE characters SET forced_rename_pending = 1 WHERE guid = %u", (uint32)pi->guid);
+		CharacterDatabase.Execute("UPDATE characters SET forced_rename_pending = 1 WHERE guid = %u", (uint32)pi->guid);
 	}
 	else
 	{
@@ -2747,7 +2747,7 @@ bool ChatHandler::HandleChangePasswordCommand(const char * args, WorldSession * 
 	{
 		// username = password :P
 		BlueSystemMessage(m_session, "Changed password of %s to %s.", password, username);
-		sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET password = '%s' WHERE login = '%s'", sDatabase.EscapeString(password).c_str(), sDatabase.EscapeString(username).c_str());
+		sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET password = '%s' WHERE login = '%s'", WorldDatabase.EscapeString(password).c_str(), WorldDatabase.EscapeString(username).c_str());
 		sLogonCommHandler.LogonDatabaseReloadAccounts();
 		sGMLog.writefromsession(m_session, "used change password command, %s to %s.", password, username);
 	}
@@ -2755,7 +2755,7 @@ bool ChatHandler::HandleChangePasswordCommand(const char * args, WorldSession * 
 	{
 		// changing our own username.
 		BlueSystemMessage(m_session, "Changed your password to %s.", password);
-		sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET password = '%s' WHERE login = '%s'", sDatabase.EscapeString(password).c_str(), sDatabase.EscapeString(m_session->GetAccountName()).c_str());
+		sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET password = '%s' WHERE login = '%s'", WorldDatabase.EscapeString(password).c_str(), WorldDatabase.EscapeString(m_session->GetAccountName()).c_str());
 		sLogonCommHandler.LogonDatabaseReloadAccounts();
 		sGMLog.writefromsession(m_session, "used change password command, self to %s.", password);
 	}
@@ -2789,7 +2789,7 @@ map<uint32, spell_thingo> aiagent_extra;
 
 bool ChatHandler::HandleAIAgentDebugBegin(const char * args, WorldSession * m_session)
 {
-	QueryResult * result = sDatabase.Query("SELECT DISTINCT spellId FROM ai_agents");
+	QueryResult * result = WorldDatabase.Query("SELECT DISTINCT spellId FROM ai_agents");
 	if(!result) return false;
 
 	do 
@@ -2802,7 +2802,7 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char * args, WorldSession * m_se
 
 	for(list<SpellEntry*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
 	{
-		result = sDatabase.Query("SELECT * FROM ai_agents WHERE spellId = %u", (*itr)->Id);
+		result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spellId = %u", (*itr)->Id);
 		ASSERT(result);
 		spell_thingo t;
 		t.type = result->Fetch()[6].GetUInt32();

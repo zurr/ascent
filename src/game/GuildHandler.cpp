@@ -1181,8 +1181,8 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket & recv_data)
 		}
 		else
 		{
-			sDatabase.Execute("UPDATE characters SET guildid = %u WHERE guid = %u", pGuild->GetGuildId(), gc->Signatures[x]);
-			sDatabase.Execute("UPDATE characters SET guildRank = %u WHERE guid = %u", GUILDRANK_MEMBER, gc->Signatures[x]);
+			CharacterDatabase.Execute("UPDATE characters SET guildid = %u WHERE guid = %u", pGuild->GetGuildId(), gc->Signatures[x]);
+			CharacterDatabase.Execute("UPDATE characters SET guildRank = %u WHERE guid = %u", GUILDRANK_MEMBER, gc->Signatures[x]);
 		}
 
 		PlayerInfo *p=objmgr.GetPlayerInfo(gc->Signatures[x]);

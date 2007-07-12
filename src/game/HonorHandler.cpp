@@ -50,7 +50,7 @@ void HonorHandler::PerformStartupTasks()
 	sLog.outString("  - Checking for out of date players and moving their kill values...");
 	uint32 next_update = GetNextUpdateTime();
 	uint32 now_update = time(NULL);
-	QueryResult * result = sDatabase.Query("SELECT guid, killsToday, killsYesterday, killsLifeTime, honorToday, honorYesterday, honorPoints FROM characters WHERE lastDailyReset < %u", next_update);
+	QueryResult * result = CharacterDatabase.Query("SELECT guid, killsToday, killsYesterday, killsLifeTime, honorToday, honorYesterday, honorPoints FROM characters WHERE lastDailyReset < %u", next_update);
 	if(!result)
 	{
 		sLog.outString("  - No players need to be updated.");
@@ -72,13 +72,13 @@ void HonorHandler::PerformStartupTasks()
 			honorYesterday = honorToday;
 			killsToday = honorToday = 0;
 
-			sDatabase.WaitExecute("UPDATE characters SET lastDailyReset = %u WHERE guid = %u", now_update, guid);
-			sDatabase.WaitExecute("UPDATE characters SET killsToday = %u WHERE guid = %u", killsToday, guid);
-			sDatabase.WaitExecute("UPDATE characters SET killsYesterday = %u WHERE guid = %u", killsYesterday, guid);
-			sDatabase.WaitExecute("UPDATE characters SET killsLifeTime = %u WHERE guid = %u", killsLifeTime, guid);
-			sDatabase.WaitExecute("UPDATE characters SET honorToday = %u WHERE guid = %u", honorToday, guid);
-			sDatabase.WaitExecute("UPDATE characters SET honorYesterday = %u WHERE guid = %u", honorYesterday, guid);
-			sDatabase.WaitExecute("UPDATE characters SET honorPoints = %u WHERE guid = %u", honorPoints, guid);
+			CharacterDatabase.WaitExecute("UPDATE characters SET lastDailyReset = %u WHERE guid = %u", now_update, guid);
+			CharacterDatabase.WaitExecute("UPDATE characters SET killsToday = %u WHERE guid = %u", killsToday, guid);
+			CharacterDatabase.WaitExecute("UPDATE characters SET killsYesterday = %u WHERE guid = %u", killsYesterday, guid);
+			CharacterDatabase.WaitExecute("UPDATE characters SET killsLifeTime = %u WHERE guid = %u", killsLifeTime, guid);
+			CharacterDatabase.WaitExecute("UPDATE characters SET honorToday = %u WHERE guid = %u", honorToday, guid);
+			CharacterDatabase.WaitExecute("UPDATE characters SET honorYesterday = %u WHERE guid = %u", honorYesterday, guid);
+			CharacterDatabase.WaitExecute("UPDATE characters SET honorPoints = %u WHERE guid = %u", honorPoints, guid);
 
 		} while(result->NextRow());
 		sLog.outString("  - Honor re-calculated for %u players.", result->GetRowCount());

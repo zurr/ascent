@@ -271,7 +271,7 @@ void Map::LoadSpawns(bool reload)
 			spawns[x][y]=NULL;
 		}
 
-	QueryResult * result = sDatabase.Query("SELECT * FROM creature_spawns WHERE Map = %u",this->_mapId);
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE Map = %u",this->_mapId);
 	if(result)
 	{
 		do{
@@ -304,7 +304,7 @@ void Map::LoadSpawns(bool reload)
 	}
 
 	GameObjectSpawnCount = 0;
-	result = sDatabase.Query("SELECT * FROM gameobject_spawns WHERE Map = %u",this->_mapId);
+	result = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE Map = %u",this->_mapId);
 	if(result)
 	{
 		do{

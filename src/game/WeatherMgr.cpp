@@ -34,7 +34,7 @@ WeatherMgr::~WeatherMgr()
 void WeatherMgr::LoadFromDB()
 {
 	sLog.outString("  Loading Weather...");
-	QueryResult *result = sDatabase.Query( "SELECT * FROM weather" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM weather" );
 
 	if( !result )
 	{

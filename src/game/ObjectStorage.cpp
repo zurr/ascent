@@ -93,7 +93,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 	}
 
 	// Load AI Agents
-	QueryResult * result = sDatabase.Query( "SELECT * FROM ai_agents" );
+	QueryResult * result = WorldDatabase.Query( "SELECT * FROM ai_agents" );
 	CreatureProto * cn;
 
 	if( !result )

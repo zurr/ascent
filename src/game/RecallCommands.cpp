@@ -19,7 +19,7 @@ bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession *m_sessio
 	if(!*args)
 		return false;
 
-	QueryResult *result = sDatabase.Query( "SELECT * FROM recall" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM recall" );
 	if(!result)
 		return false;
 
@@ -50,7 +50,7 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession *m_sessi
 	if(!*args)
 		return false;
 	
-	QueryResult *result = sDatabase.Query( "SELECT locname FROM recall" );
+	QueryResult *result = WorldDatabase.Query( "SELECT locname FROM recall" );
 	if(!result)
 		return false;
 	do
@@ -72,12 +72,12 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession *m_sessi
 	string rc_locname = string(args);
 
 	ss << "INSERT INTO recall (locname, mapid, positionX, positionY, positionZ) VALUES ('"
-	<< sDatabase.EscapeString(rc_locname).c_str() << "' , "
+	<< WorldDatabase.EscapeString(rc_locname).c_str() << "' , "
 	<< plr->GetMapId() << ", "
 	<< plr->GetPositionX() << ", " 
 	<< plr->GetPositionY() << ", "
 	<< plr->GetPositionZ() << ");";
-	sDatabase.Execute( ss.str( ).c_str( ) );
+	WorldDatabase.Execute( ss.str( ).c_str( ) );
 
 	char buf[256]; 
 	snprintf((char*)buf, 256, "Added location to DB with MapID: %d, X: %f, Y: %f, Z: %f",
@@ -93,7 +93,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession *m_sessi
 	   if(!*args)
 		return false;
 
-	QueryResult *result = sDatabase.Query( "SELECT id,locname FROM recall" );
+	QueryResult *result = WorldDatabase.Query( "SELECT id,locname FROM recall" );
 	if(!result)
 		return false;
 
@@ -107,7 +107,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession *m_sessi
 		{
 			std::stringstream ss;
 			ss << "DELETE FROM recall WHERE id = "<< (int)id <<";";
-			sDatabase.Execute( ss.str( ).c_str( ) );
+			WorldDatabase.Execute( ss.str( ).c_str( ) );
 			GreenSystemMessage(m_session, "Recall location removed.");
 			sGMLog.writefromsession(m_session, "used recall delete, removed \"%s\" location from database.", args);
 			delete result;
@@ -122,7 +122,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession *m_sessi
 
 bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession *m_session)
 {
-	QueryResult *result = sDatabase.Query( "SELECT id,locname FROM recall" );
+	QueryResult *result = WorldDatabase.Query( "SELECT id,locname FROM recall" );
 	if(!result)
 		return false;
 	std::string recout;
@@ -161,7 +161,7 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession *
 	Player * plr = objmgr.GetPlayer(player, false);
 	if(!plr) return false;
 
-	QueryResult *result = sDatabase.Query( "SELECT * FROM recall" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM recall" );
 	if(!result)
 		return false;
 

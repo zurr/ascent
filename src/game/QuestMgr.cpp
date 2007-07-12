@@ -1299,7 +1299,7 @@ void QuestMgr::LoadExtraQuestStuff()
 	// load creature starters
 	uint32 creature, quest;
 
-	QueryResult * pResult = sDatabase.Query("SELECT * FROM creature_quest_starter");
+	QueryResult * pResult = WorldDatabase.Query("SELECT * FROM creature_quest_starter");
 	uint32 pos = 0;
 	uint32 total;
 	if(pResult)
@@ -1324,7 +1324,7 @@ void QuestMgr::LoadExtraQuestStuff()
 		delete pResult;
 	}
 
-	pResult = sDatabase.Query("SELECT * FROM creature_quest_finisher");
+	pResult = WorldDatabase.Query("SELECT * FROM creature_quest_finisher");
 	pos = 0;
 	if(pResult)
 	{
@@ -1348,7 +1348,7 @@ void QuestMgr::LoadExtraQuestStuff()
 		delete pResult;
 	}
 
-	pResult = sDatabase.Query("SELECT * FROM gameobject_quest_starter");
+	pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_starter");
 	pos = 0;
 	if(pResult)
 	{
@@ -1372,7 +1372,7 @@ void QuestMgr::LoadExtraQuestStuff()
 		delete pResult;
 	}
 
-	pResult = sDatabase.Query("SELECT * FROM gameobject_quest_finisher");
+	pResult = WorldDatabase.Query("SELECT * FROM gameobject_quest_finisher");
 	pos = 0;
 	if(pResult)
 	{

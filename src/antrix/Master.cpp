@@ -53,7 +53,8 @@ bool crashed = false;
 volatile bool Master::m_stopEvent = false;
 
 // Database defines.
-SERVER_DECL Database* Database_Main;
+SERVER_DECL Database* Database_Character;
+SERVER_DECL Database* Database_World;
 
 // mainserv defines
 TextLogger * Crash_Log;
@@ -397,7 +398,8 @@ bool Master::Run(int argc, char ** argv)
 				m_ShutdownTimer -= diff;
 		}
 		
-		sDatabase.CheckConnections();
+		Database_Character->CheckConnections();
+		Database_World->CheckConnections();
 		sWorld.UpdateQueuedSessions(diff);
 
 		if(50 > etime)
@@ -433,7 +435,7 @@ bool Master::Run(int argc, char ** argv)
 	ASSERT(dbThread);
 	// end it
 	dbThread->SetThreadState(THREADSTATE_TERMINATE);
-	sDatabase.Execute("UPDATE characters SET online = 0");
+	CharacterDatabase.Execute("UPDATE characters SET online = 0");
 	MySQLDatabase * db = (MySQLDatabase*)dbThread;
 
 	// wait for it to finish its work
@@ -500,13 +502,37 @@ bool Master::_StartDB()
 	int ltype = 1;
 	// Configure Main Database
 	
-	bool result = Config.MainConfig.GetString("Database", "Username", &username);
-	Config.MainConfig.GetString("Database", "Password", &password);
-	result = !result ? result : Config.MainConfig.GetString("Database", "Hostname", &hostname);
-	result = !result ? result : Config.MainConfig.GetString("Database", "Name", &database);
-	result = !result ? result : Config.MainConfig.GetInt("Database", "Port", &port);
-	result = !result ? result : Config.MainConfig.GetInt("Database", "Type", &type);
-	Database_Main = CreateDatabaseInterface((DatabaseType)type);
+	bool result = Config.MainConfig.GetString("WorldDatabase", "Username", &username);
+	Config.MainConfig.GetString("WorldDatabase", "Password", &password);
+	result = !result ? result : Config.MainConfig.GetString("WorldDatabase", "Hostname", &hostname);
+	result = !result ? result : Config.MainConfig.GetString("WorldDatabase", "Name", &database);
+	result = !result ? result : Config.MainConfig.GetInt("WorldDatabase", "Port", &port);
+	result = !result ? result : Config.MainConfig.GetInt("WorldDatabase", "Type", &type);
+	Database_World = CreateDatabaseInterface((DatabaseType)type);
+
+	if(result == false)
+	{
+		sLog.outError("sql: One or more parameters were missing from WorldDatabase directive.");
+		return false;
+	}
+
+	// Initialize it
+	if(!WorldDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
+		password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("WorldDatabase", "ConnectionCount", 6),
+		16384))
+	{
+		sLog.outError("sql: Main database initialization failed. Exiting.");
+		return false;
+	}
+
+
+	result = Config.MainConfig.GetString("CharacterDatabase", "Username", &username);
+	Config.MainConfig.GetString("CharacterDatabase", "Password", &password);
+	result = !result ? result : Config.MainConfig.GetString("CharacterDatabase", "Hostname", &hostname);
+	result = !result ? result : Config.MainConfig.GetString("CharacterDatabase", "Name", &database);
+	result = !result ? result : Config.MainConfig.GetInt("CharacterDatabase", "Port", &port);
+	result = !result ? result : Config.MainConfig.GetInt("CharacterDatabase", "Type", &type);
+	Database_Character = CreateDatabaseInterface((DatabaseType)type);
 
 	if(result == false)
 	{
@@ -515,49 +541,23 @@ bool Master::_StartDB()
 	}
 
 	// Initialize it
-	if(!sDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
-		password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("Database", "ConnectionCount", 6),
+	if(!CharacterDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
+		password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("CharacterDatabase", "ConnectionCount", 6),
 		16384))
 	{
 		sLog.outError("sql: Main database initialization failed. Exiting.");
 		return false;
 	}
 
-	// Configure Logon Database...
-	/*result = Config.MainConfig.GetString("LogonDatabase.Username", &lusername);
-	result = !result ? result : Config.MainConfig.GetString("LogonDatabase.Password", &lpassword);
-	result = !result ? result : Config.MainConfig.GetString("LogonDatabase.Hostname", &lhostname);
-	result = !result ? result : Config.MainConfig.GetString("LogonDatabase.Name", &ldatabase);
-	result = !result ? result : Config.MainConfig.GetInt("LogonDatabase.Port", &lport);
-	result = !result ? result : Config.MainConfig.GetInt("LogonDatabase.Type", &ltype);
-	Database_Logon = CreateDatabaseInterface((DatabaseType)ltype);
-
-	if(result == false)
-	{
-		sLog.outString("sql: Logon database parameters not found. Using main database information.");
-		lusername = username;
-		lpassword = password;
-		lhostname = hostname;
-		ldatabase = database;
-		lport = port;
-	}
-
-	// Initialize it
-	if(!sLogonDatabase.Initialize(lhostname.c_str(), (unsigned int)lport, lusername.c_str(),
-		lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase.ConnectionCount", 1),
-		16384))
-	{
-		sLog.outError("sql: Logon database initialization failed. Exiting.");
-		return false;
-	} */  
-
 	return true;
 }
 
 void Master::_StopDB()
 {
-	sDatabase.Shutdown();
-	DestroyDatabaseInterface(Database_Main);
+	CharacterDatabase.Shutdown();
+	WorldDatabase.Shutdown();
+	DestroyDatabaseInterface(Database_World);
+	DestroyDatabaseInterface(Database_Character);
 }
 
 void Master::_HookSignals()
@@ -605,10 +605,14 @@ void OnCrash(bool Terminate)
 			if(dbThread != 0)
 			{
 				// end it
+				MySQLDatabase * dbThread2 = (MySQLDatabase*)Database_World;
+				dbThread = (MySQLDatabase*)Database_Character;
 				dbThread->SetThreadState(THREADSTATE_TERMINATE);
-				sDatabase.Execute("UPDATE characters SET online = 0");
+				dbThread2->SetThreadState(THREADSTATE_TERMINATE);
+				CharacterDatabase.Execute("UPDATE characters SET online = 0");
+				WorldDatabase.Execute("UPDATE characters SET online = 0");
 				// wait for it to finish its work
-				while(dbThread->ThreadRunning)
+				while(dbThread->ThreadRunning || dbThread2->ThreadRunning)
 				{
 					Sleep(100);
 				}

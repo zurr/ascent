@@ -250,7 +250,7 @@ void GameObject::SaveToDB()
 		<< GetUInt32Value(GAMEOBJECT_FACTION) << ","
 		<< GetFloatValue(OBJECT_FIELD_SCALE_X) << ","
 		<< "0)";
-	sDatabase.Execute(ss.str().c_str());
+	WorldDatabase.Execute(ss.str().c_str());
 
   /*  std::stringstream ss;
 	if (!m_sqlid)
@@ -432,7 +432,7 @@ bool GameObject::Load(GOSpawn *spawn)
 
 void GameObject::DeleteFromDB()
 {
-	sDatabase.Execute("DELETE FROM gameobject_spawns WHERE id=%u", spawnid);
+	WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id=%u", spawnid);
 }
 
 void GameObject::EventCloseDoor()

@@ -272,7 +272,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 	recvData >> realm_id;
 
 	// fetch the character mapping
-	result = sDatabase.Query("SELECT acct FROM characters");
+	result = CharacterDatabase.Query("SELECT acct FROM characters");
 
 	if(result)
 	{

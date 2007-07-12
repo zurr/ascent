@@ -281,7 +281,7 @@ skilllinespell* ObjectMgr::GetSpellSkill(uint32 id)
 void ObjectMgr::LoadPlayersInfo()
 {
 	PlayerInfo * pn;
-	QueryResult *result = sDatabase.Query("SELECT guid,name,race,class,level,gender,zoneId,timestamp,publicNote,officerNote,guildRank,acct FROM characters");
+	QueryResult *result = CharacterDatabase.Query("SELECT guid,name,race,class,level,gender,zoneId,timestamp,publicNote,officerNote,guildRank,acct FROM characters");
 	if(result)
 	{
 		do
@@ -335,7 +335,7 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(std::string &name)
 void ObjectMgr::LoadPlayerCreateInfo()
 {
 	sLog.outString("  Loading Player Create Info...");
-	QueryResult *result = sDatabase.Query( "SELECT * FROM playercreateinfo" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM playercreateinfo" );
 
 	if( !result )
 	{
@@ -375,7 +375,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
 		pPlayerCreateInfo->mindmg = fields[21].GetFloat();
 		pPlayerCreateInfo->maxdmg = fields[22].GetFloat();
 
-		QueryResult *sk_sql = sDatabase.Query(
+		QueryResult *sk_sql = WorldDatabase.Query(
 			"SELECT * FROM playercreateinfo_skills WHERE indexid=%u",pPlayerCreateInfo->index);
 
 		if(sk_sql)
@@ -391,7 +391,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
 			} while(sk_sql->NextRow());
 			delete sk_sql;
 		}
-		QueryResult *sp_sql = sDatabase.Query(
+		QueryResult *sp_sql = WorldDatabase.Query(
 			"SELECT * FROM playercreateinfo_spells WHERE indexid=%u",pPlayerCreateInfo->index);
 
 		if(sp_sql)
@@ -403,7 +403,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
 			delete sp_sql;
 		}
 	  
-		QueryResult *items_sql = sDatabase.Query(
+		QueryResult *items_sql = WorldDatabase.Query(
 			"SELECT * FROM playercreateinfo_items WHERE indexid=%u",pPlayerCreateInfo->index);
 		
 		if(items_sql)
@@ -420,7 +420,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
 		   delete items_sql;
 		}
 
-		QueryResult *bars_sql = sDatabase.Query(
+		QueryResult *bars_sql = WorldDatabase.Query(
 			"SELECT * FROM playercreateinfo_bars WHERE class=%u",pPlayerCreateInfo->class_ );
 
 		if(bars_sql)
@@ -449,7 +449,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
 // DK:LoadGuilds()
 void ObjectMgr::LoadGuilds()
 {
-	QueryResult *result = sDatabase.Query( "SELECT * FROM guilds" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM guilds" );
 	QueryResult *result2;	
 	QueryResult *result3;
 
@@ -478,7 +478,7 @@ void ObjectMgr::LoadGuilds()
 		pGuild->SetGuildInfo( fields[8].GetString() );
 		pGuild->SetGuildMotd( fields[9].GetString() );
 
-		result2 = sDatabase.Query( "SELECT guid FROM characters WHERE guildId=%u",pGuild->GetGuildId());
+		result2 = CharacterDatabase.Query( "SELECT guid FROM characters WHERE guildId=%u",pGuild->GetGuildId());
 		if(result2)
 		{
 			do
@@ -490,7 +490,7 @@ void ObjectMgr::LoadGuilds()
 			delete result2;
 		}
 
-		result3 = sDatabase.Query("SELECT * FROM guild_ranks WHERE guildId=%u ORDER BY rankId", pGuild->GetGuildId());
+		result3 = CharacterDatabase.Query("SELECT * FROM guild_ranks WHERE guildId=%u ORDER BY rankId", pGuild->GetGuildId());
 		if(result3)
 		{ 
 			do
@@ -516,7 +516,7 @@ void ObjectMgr::LoadGuilds()
 Corpse* ObjectMgr::LoadCorpse(uint32 guid)
 {
 	Corpse *pCorpse;
-	QueryResult *result = sDatabase.Query("SELECT * FROM Corpses WHERE guid =%u ", guid );
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM Corpses WHERE guid =%u ", guid );
 
 	if( !result )
 		return NULL;
@@ -584,7 +584,7 @@ void ObjectMgr::DelinkPlayerCorpses(Player *pOwner)
 
 void ObjectMgr::LoadGMTickets()
 {
-	QueryResult *result = sDatabase.Query( "SELECT * FROM gm_tickets" );
+	QueryResult *result = CharacterDatabase.Query( "SELECT * FROM gm_tickets" );
 
 	GM_Ticket *ticket;
 	if(result == 0)
@@ -623,61 +623,61 @@ void ObjectMgr::SaveGMTicket(uint64 guid)
 	std::stringstream ss1;
 	std::stringstream ss2;
 	ss1 << "DELETE FROM gm_tickets WHERE guid = " << guid << ";";
-	sDatabase.Execute(ss1.str( ).c_str( ));
+	CharacterDatabase.Execute(ss1.str( ).c_str( ));
 
 	ss2 << "INSERT INTO gm_tickets (guid, name, level, type, posX, posY, posZ, message, timestamp) VALUES(";
 	ss2 << ticket->guid << ", '";
-	ss2 << sDatabase.EscapeString(ticket->name) << "', ";
+	ss2 << CharacterDatabase.EscapeString(ticket->name) << "', ";
 	ss2 << ticket->level << ", ";
 	ss2 << ticket->type << ", ";
 	ss2 << ticket->posX << ", ";
 	ss2 << ticket->posY << ", ";
 	ss2 << ticket->posZ << ", '";
-	ss2 << sDatabase.EscapeString(ticket->message) << "', ";
+	ss2 << CharacterDatabase.EscapeString(ticket->message) << "', ";
 	ss2 << ticket->timestamp << ");";
-	sDatabase.Execute(ss2.str( ).c_str( ));
+	CharacterDatabase.Execute(ss2.str( ).c_str( ));
 }
 
 void ObjectMgr::SetHighestGuids()
 {
 	QueryResult *result;
 
-	result = sDatabase.Query( "SELECT MAX(guid) FROM characters" );
+	result = CharacterDatabase.Query( "SELECT MAX(guid) FROM characters" );
 	if( result )
 	{
 		m_hiPlayerGuid = result->Fetch()[0].GetUInt32();
 		delete result;
 	}
 
-	result = sDatabase.Query("SELECT MAX(guid) FROM playeritems WHERE guid <25769803776");
+	result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems WHERE guid <25769803776");
 	if( result )
 	{
 		m_hiItemGuid = (uint32)result->Fetch()[0].GetUInt64();
 		delete result;
 	}
 
-	result = sDatabase.Query("SELECT MAX(guid) FROM playeritems WHERE guid >25769803776");
+	result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems WHERE guid >25769803776");
 	if( result )
 	{
 		m_hiContainerGuid  = (uint32)result->Fetch()[0].GetUInt64();
 		delete result;
 	}
 
-	result = sDatabase.Query( "SELECT MAX(guid) FROM corpses" );
+	result = CharacterDatabase.Query( "SELECT MAX(guid) FROM corpses" );
 	if( result )
 	{
 		m_hiCorpseGuid = result->Fetch()[0].GetUInt32();
 		delete result;
 	}
 
-	result = sDatabase.Query("SELECT MAX(id) FROM creature_spawns");
+	result = WorldDatabase.Query("SELECT MAX(id) FROM creature_spawns");
 	if(result)
 	{
 		m_hiCreatureSpawnId = result->Fetch()[0].GetUInt32();
 		delete result;
 	}
 
-	result = sDatabase.Query("SELECT MAX(id) FROM gameobject_spawns");
+	result = WorldDatabase.Query("SELECT MAX(id) FROM gameobject_spawns");
 	if(result)
 	{
 		m_hiGameObjectSpawnId = result->Fetch()[0].GetUInt32();
@@ -792,8 +792,8 @@ void ObjectMgr::ProcessGameobjectQuests()
 			SetProgressBar(c, total, "Binding");
 	}
 	ClearProgressBar();*/
-	QueryResult * result  = sDatabase.Query("SELECT * FROM gameobject_quest_item_binding");
-	QueryResult * result2 = sDatabase.Query("SELECT * FROM gameobject_quest_pickup_binding");
+	QueryResult * result  = WorldDatabase.Query("SELECT * FROM gameobject_quest_item_binding");
+	QueryResult * result2 = WorldDatabase.Query("SELECT * FROM gameobject_quest_pickup_binding");
 
 	GameObjectInfo * gon;
 	Quest * qst;
@@ -827,7 +827,7 @@ void ObjectMgr::ProcessGameobjectQuests()
 		delete result2;
 	}
 
-	result = sDatabase.Query("SELECT * FROM npc_gossip_textid");
+	result = WorldDatabase.Query("SELECT * FROM npc_gossip_textid");
 	if(result)
 	{
 		uint32 entry, text;
@@ -983,7 +983,7 @@ void ObjectMgr::remGMTicket(uint64 guid)
 	}
 
 	// kill from db
-	sDatabase.Execute("DELETE FROM gm_tickets WHERE guid=%u", guid);
+	CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE guid=%u", guid);
 }
 
 GM_Ticket* ObjectMgr::GetGMTicket(uint64 guid)
@@ -1005,7 +1005,7 @@ void ObjectMgr::LoadVendors()
 	std::vector<CreatureItem> *items;
 	CreatureItem itm;
   
-	QueryResult *result = sDatabase.Query("SELECT * FROM vendors");
+	QueryResult *result = WorldDatabase.Query("SELECT * FROM vendors");
 	if(result)
 	{
 		do
@@ -1042,7 +1042,7 @@ void ObjectMgr::LoadTotemSpells()
 {
 	sLog.outString("  Loading Totem Spells...");
 	std::stringstream query;
-	QueryResult *result = sDatabase.Query( "SELECT * FROM totemspells" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM totemspells" );
 
 	if(!result)
 	{
@@ -1074,7 +1074,7 @@ SpellEntry* ObjectMgr::GetTotemSpell(uint32 spellId)
 
 void ObjectMgr::LoadAIThreatToSpellId()
 {
-	QueryResult *result = sDatabase.Query( "SELECT * FROM ai_threattospellid" );
+	QueryResult *result = WorldDatabase.Query( "SELECT * FROM ai_threattospellid" );
 
 	if(!result)
 	{
@@ -1133,7 +1133,7 @@ Item * ObjectMgr::CreateItem(uint32 entry,Player * owner)
 
 Item * ObjectMgr::LoadItem(uint64 guid)
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM playeritems WHERE guid ="I64FMTD, guid);
+	QueryResult * result = CharacterDatabase.Query("SELECT * FROM playeritems WHERE guid ="I64FMTD, guid);
 	Item * pReturn = 0;
 
 	if(result)
@@ -1165,7 +1165,7 @@ void ObjectMgr::CorpseCollectorLoad()
 {
 	Corpse *pCorpse = NULL;
  
-	QueryResult *result = sDatabase.Query("SELECT * FROM corpses");
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM corpses");
 
 	if(result)
 	{
@@ -1313,7 +1313,7 @@ void ObjectMgr::GenerateTrainerSpells()
 {
 	std::map<uint32, TrainerSpellOverride> OMap;
 	
-	QueryResult * result = sDatabase.Query("SELECT * FROM trainerspelloverride");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM trainerspelloverride");
 	if(result != 0)
 	{
 //		uint32 mx = result->GetRowCount(), c = 0;
@@ -1336,7 +1336,7 @@ void ObjectMgr::GenerateTrainerSpells()
 	std::vector<uint32> itemSpell;
 
 	// Lets take item spell learn list so we can remove recipe from trainers
-	result = sDatabase.Query("SELECT spellid_1,spellid_2,spellid_3,spellid_4,spellid_5 FROM items");
+	result = WorldDatabase.Query("SELECT spellid_1,spellid_2,spellid_3,spellid_4,spellid_5 FROM items");
 	if(result != 0)
 	{
 		do 
@@ -1782,7 +1782,7 @@ void ObjectMgr::LoadTrainers()
 	sLog.outString("  Loading Trainers...");
 	LoadDisabledSpells();
 	GenerateTrainerSpells();
-	QueryResult * result = sDatabase.Query("SELECT * FROM trainers");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM trainers");
 	if(!result) return;
 
 //	uint32 mx = result->GetRowCount();
@@ -2175,7 +2175,7 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
 
 void ObjectMgr::LoadDefaultPetSpells()
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM petdefaultspells");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM petdefaultspells");
 	if(result)
 	{
 		do 
@@ -2254,7 +2254,7 @@ void ObjectMgr::LoadSpellFixes()
 {
 	// Loads data from stored 1.12 dbc to fix spells that have had spell data removed in 2.0.
 	sLog.outString("  Loading Spell Fixes...");
-	QueryResult * result = sDatabase.Query("SELECT * FROM spells112");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM spells112");
 	if(result == 0) return;
 
 //	uint32 count = result->GetRowCount();
@@ -2301,7 +2301,7 @@ void ObjectMgr::LoadSpellOverride()
 	sLog.outString("  Loading Spell Override...");
 //	int i = 0;
 	std::stringstream query;
-	QueryResult *result = sDatabase.Query( "SELECT DISTINCT overrideId FROM spelloverride" );
+	QueryResult *result = WorldDatabase.Query( "SELECT DISTINCT overrideId FROM spelloverride" );
 
 	if(!result)
 	{
@@ -2320,7 +2320,7 @@ void ObjectMgr::LoadSpellOverride()
 		query.rdbuf()->str("");
 		query << "SELECT spellId FROM spelloverride WHERE overrideId = ";
 		query << fields[0].GetUInt32();
-		QueryResult *resultIn = sDatabase.Query(query.str().c_str());
+		QueryResult *resultIn = WorldDatabase.Query(query.str().c_str());
 		std::list<SpellEntry*>* list = new std::list<SpellEntry*>;
 		if(resultIn)
 		{
@@ -2375,7 +2375,7 @@ void ObjectMgr::SetCreatureBySqlId(uint32 Sql_Id, Creature * pCreature)
 
 void ObjectMgr::LoadCreatureWaypoints()
 {
-	QueryResult *result = sDatabase.Query("SELECT * FROM creature_waypoints");
+	QueryResult *result = WorldDatabase.Query("SELECT * FROM creature_waypoints");
 	if(!result)return;
 
 	do
@@ -2512,7 +2512,7 @@ Transporter * ObjectMgr::GetTransporterByEntry(uint32 entry)
 void ObjectMgr::LoadGuildCharters()
 {
 	m_hiCharterId = 0;
-	QueryResult * result = sDatabase.Query("SELECT * FROM charters");
+	QueryResult * result = CharacterDatabase.Query("SELECT * FROM charters");
 	if(!result) return;
 	do 
 	{
@@ -2601,8 +2601,8 @@ void Charter::Destroy()
 	//meh remove from objmgr
 	objmgr.RemoveCharter(this);
 	// Kill the players with this (in db/offline)
-	sDatabase.Execute("UPDATE characters SET charterId = 0 WHERE charterId = %u", CharterId);
-	sDatabase.Execute("DELETE FROM charters WHERE charterId = %u", CharterId);
+	CharacterDatabase.Execute("UPDATE characters SET charterId = 0 WHERE charterId = %u", CharterId);
+	CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", CharterId);
 	Player * p;
 	for(uint32 i = 0; i < 9; ++i)
 	{
@@ -2619,7 +2619,7 @@ void Charter::Destroy()
 
 void Charter::SaveToDB()
 {
-	sDatabase.Execute(
+	CharacterDatabase.Execute(
 		"REPLACE INTO charters VALUES(%u,%u,'%s',"I64FMTD",%u,%u,%u,%u,%u,%u,%u,%u,%u)",
 		CharterId,LeaderGuid,GuildName.c_str(),ItemGuid,Signatures[0],Signatures[1],
 		Signatures[2],Signatures[3],Signatures[4],Signatures[5],
@@ -2672,7 +2672,7 @@ void ObjectMgr::RemoveCharter(Charter * c)
 
 void ObjectMgr::LoadReputationModifierTable(const char * tablename, HM_NAMESPACE::hash_map<uint32, ReputationModifier*> * dmap)
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM %s", tablename);
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM %s", tablename);
 	HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr;
 	ReputationModifier * modifier;
 	ReputationMod mod;
@@ -2728,7 +2728,7 @@ ReputationModifier * ObjectMgr::GetReputationModifier(uint32 entry_id, uint32 fa
 
 void ObjectMgr::LoadMonsterSay()
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM npc_monstersay");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM npc_monstersay");
 	if(!result) return;
 
 	uint32 Entry, Event;
@@ -2806,7 +2806,7 @@ bool ObjectMgr::HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event)
 
 void ObjectMgr::LoadInstanceReputationModifiers()
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM reputation_instance_onkill");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM reputation_instance_onkill");
 	if(!result) return;
 
 	do 
@@ -2883,7 +2883,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVict
 
 void ObjectMgr::LoadDisabledSpells()
 {
-	QueryResult * result = sDatabase.Query("SELECT * FROM spell_disable");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM spell_disable");
 	if(result)
 	{
 		do 
@@ -2893,7 +2893,7 @@ void ObjectMgr::LoadDisabledSpells()
 		delete result;
 	}
 
-	result = sDatabase.Query("SELECT * FROM spell_disable_trainers");
+	result = WorldDatabase.Query("SELECT * FROM spell_disable_trainers");
 	if(result)
 	{
 		do 

@@ -253,7 +253,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession *m_session)
 	{
 		std::stringstream ss;
 		ss << "INSERT INTO vendors VALUES ('" << pCreature->GetUInt32Value(OBJECT_FIELD_ENTRY) << "', '" << item << "', '" << amount << "')" << '\0';
-		sDatabase.Execute( ss.str().c_str() );
+		WorldDatabase.Execute( ss.str().c_str() );
 
 		pCreature->AddVendorItem(item, amount);
 
@@ -299,7 +299,7 @@ bool ChatHandler::HandleItemRemoveCommand(const char* args, WorldSession *m_sess
 
 		std::stringstream ss;
 		ss << "DELETE FROM vendors WHERE vendorGuid = " << guidlow << " AND itemGuid = " << itemguid << '\0';
-		sDatabase.Execute( ss.str().c_str() );
+		WorldDatabase.Execute( ss.str().c_str() );
 
 		pCreature->RemoveVendorItem(itemguid);
 		ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(itemguid);
@@ -353,7 +353,7 @@ bool ChatHandler::HandleRunCommand(const char* args, WorldSession *m_session)
 	char sql[512];
 
 	snprintf(sql, 512, "UPDATE creatures SET running = '%i' WHERE id = '%u'", option, GUID_LOPART(guid));
-	sDatabase.Execute( sql );
+	WorldDatabase.Execute( sql );
 
 	pCreature->GetAIInterface()->setMoveRunFlag(option > 0);
 
@@ -1048,7 +1048,7 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession *m_sess
 
 	std::stringstream qry;
 	qry << "INSERT INTO ai_agents set entryId = '" << target->GetUInt32Value(OBJECT_FIELD_ENTRY) << "', AI_AGENT = '" << atoi(agent) << "', procEvent = '" << atoi(procEvent)<< "', procChance = '" << atoi(procChance)<< "', procCount = '" << atoi(procCount)<< "', spellId = '" << atoi(spellId)<< "', spellType = '" << atoi(spellType)<< "', spelltargetType = '" << atoi(spelltargetType)<< "', spellCooldown = '" << atoi(spellCooldown)<< "', floatMisc1 = '" << atof(floatMisc1)<< "', Misc2  ='" << atoi(Misc2)<< "'";
-	sDatabase.Execute( qry.str().c_str( ) );
+	WorldDatabase.Execute( qry.str().c_str( ) );
 
 	AI_Spell * sp = new AI_Spell;
 	sp->agent = atoi(agent);
@@ -1108,7 +1108,7 @@ bool ChatHandler::HandleListAIAgentCommand(const char* args, WorldSession *m_ses
 
 	std::stringstream ss;
 	ss << "SELECT * FROM ai_agents where entryId=" << target->GetUInt32Value(OBJECT_FIELD_ENTRY);
-	QueryResult *result = sDatabase.Query( ss.str().c_str() );
+	QueryResult *result = WorldDatabase.Query( ss.str().c_str() );
 
 	if( !result )
 		return false;

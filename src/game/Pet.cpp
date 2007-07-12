@@ -392,7 +392,7 @@ void Pet::InitializeMe(bool first)
 	else
 	{
 		// Pull from database... :/
-		QueryResult * query = sDatabase.Query("SELECT * FROM playerpetspells WHERE ownerguid=%u and petnumber=%u",
+		QueryResult * query = CharacterDatabase.Query("SELECT * FROM playerpetspells WHERE ownerguid=%u and petnumber=%u",
 			m_Owner->GetGUIDLow(), m_PetNumber);
 		if(query)
 		{
@@ -459,7 +459,7 @@ void Pet::Dismiss(bool bSafeDelete)
 	// Delete any petspells for us.
 	if(!Summon && m_Owner)
 	{
-		sDatabase.Execute("DELETE FROM playerpetspells WHERE ownerguid=%u AND petnumber=%u",
+		CharacterDatabase.Execute("DELETE FROM playerpetspells WHERE ownerguid=%u AND petnumber=%u",
 			m_Owner->GetGUIDLow(), m_PetNumber);
 	}
 

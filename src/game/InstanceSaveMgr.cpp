@@ -261,7 +261,7 @@ void InstanceSavingManagement::LoadSavedInstances()
 {
 	QueryResult *result = NULL;
 
-	result = sDatabase.Query("SELECT * FROM instances");
+	result = CharacterDatabase.Query("SELECT * FROM instances");
 
 	if(result==NULL)
 	{
@@ -276,7 +276,7 @@ void InstanceSavingManagement::LoadSavedInstances()
 		// check for instance expiry
 		if(time(NULL) >= fields[5].GetUInt32())
 		{
-			sDatabase.Execute("DELETE FROM instances WHERE instanceid = %u", fields[0].GetUInt32());
+			CharacterDatabase.Execute("DELETE FROM instances WHERE instanceid = %u", fields[0].GetUInt32());
 			continue;
 		}
 
@@ -459,7 +459,7 @@ void InstanceSavingManagement::DeleteInstanceFromDB(uint32 instanceid)
 	std::stringstream ss;
 	ss << "DELETE FROM instances WHERE instanceid = '";
 	ss << instanceid << "'";
-	sDatabase.Execute( ss.str().c_str() );
+	CharacterDatabase.Execute( ss.str().c_str() );
 
 }
 
@@ -882,7 +882,7 @@ void Instance_Map_InstanceId_Holder::SaveInstanceToDB()
 	ss << CreationTime << ", ";
 	ss << ExpireTime << ", ";
     ss << difficulty << ");";
-	sDatabase.Execute( ss.str().c_str() );
+	CharacterDatabase.Execute( ss.str().c_str() );
 }
 
 void InstanceSavingManagement::AddInactiveInstance(InactiveInstance * ia)

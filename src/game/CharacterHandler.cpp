@@ -67,7 +67,7 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 	uint32 start_time = getMSTime();
 
 	// loading characters
-	QueryResult* result = sDatabase.Query("SELECT guid, level, race, class, gender, bytes, bytes2, guildid, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, forced_rename_pending FROM characters WHERE acct=%u ORDER BY guid", GetAccountId());
+	QueryResult* result = CharacterDatabase.Query("SELECT guid, level, race, class, gender, bytes, bytes2, guildid, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, forced_rename_pending FROM characters WHERE acct=%u ORDER BY guid", GetAccountId());
 	uint8 num = 0;
 	
 	// should be more than enough.. 200 bytes per char..
@@ -360,7 +360,7 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket & recv_data)
 	PlayerInfo * pi = objmgr.GetPlayerInfo(guid);
 	if(pi == 0) return;
 
-	QueryResult * result = sDatabase.Query("SELECT forced_rename_pending FROM characters WHERE guid = %u AND acct = %u", 
+	QueryResult * result = CharacterDatabase.Query("SELECT forced_rename_pending FROM characters WHERE guid = %u AND acct = %u", 
 		(uint32)guid, _accountId);
 	if(result == 0) return;
 
@@ -391,8 +391,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket & recv_data)
 
 	// If we're here, the name is okay.
 	pi->name = name;
-	sDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", name.c_str(), (uint32)guid);
-	sDatabase.WaitExecute("UPDATE characters SET forced_rename_pending = 0 WHERE guid = %u", (uint32)guid);
+	CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", name.c_str(), (uint32)guid);
+	CharacterDatabase.WaitExecute("UPDATE characters SET forced_rename_pending = 0 WHERE guid = %u", (uint32)guid);
 	
 	data << uint8(0) << guid << name;
 	SendPacket(&data);
@@ -499,7 +499,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	SendPacket(&data);
 
 	// Set TIME OF LOGIN
-	sDatabase.Execute (
+	CharacterDatabase.Execute (
 		"UPDATE characters SET online = 1 WHERE guid = %u" , plr->GetGUIDLow());
 
 	bool enter_world = true;
@@ -718,7 +718,7 @@ bool ChatHandler::HandleRenameCommand(const char * args, WorldSession * m_sessio
 	}
 	else
 	{
-		sDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", sDatabase.EscapeString(new_name).c_str(), (uint32)pi->guid);
+		CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", CharacterDatabase.EscapeString(new_name).c_str(), (uint32)pi->guid);
 	}
 
 	GreenSystemMessage(m_session, "Changed name of '%s' to '%s'.", name1, name2);

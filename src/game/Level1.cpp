@@ -628,7 +628,7 @@ bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession *m_se
 	if(valcount)
 	{
 		snprintf(sql, 512, "UPDATE creature_spawns SET respawnlink = '%u' WHERE id = '%u'", id, target->GetSQL_id());
-		sDatabase.Execute( sql );
+		WorldDatabase.Execute( sql );
 		BlueSystemMessage(m_session, "Spawn linking for this npc has been updated: %u", id);
 	}
 	else

@@ -17,21 +17,21 @@
 
 void Auction::DeleteFromDB()
 {
-	sDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
-	sDatabase.WaitExecute("DELETE FROM bids WHERE Id = %u", Id);
+	CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
+	CharacterDatabase.WaitExecute("DELETE FROM bids WHERE Id = %u", Id);
 }
 
 void Auction::SaveToDB(uint32 AuctionHouseId)
 {
-	sDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, "I64FMTD", %u, %u, %u, %u, %u, %u)",
+	CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, "I64FMTD", %u, %u, %u, %u, %u, %u)",
 		Id, AuctionHouseId, pItem->GetGUID(), Owner, BuyoutPrice, ExpiryTime, HighestBidder, HighestBid,
 		DepositAmount);
 }
 
 void Auction::UpdateInDB()
 {
-	sDatabase.Execute("UPDATE auctions SET bidder = %u WHERE auctionId = %u", HighestBidder, Owner);
-	sDatabase.Execute("UPDATE auctions SET bid = %u WHERE auctionId = %u", HighestBid, Owner);
+	CharacterDatabase.Execute("UPDATE auctions SET bidder = %u WHERE auctionId = %u", HighestBidder, Owner);
+	CharacterDatabase.Execute("UPDATE auctions SET bid = %u WHERE auctionId = %u", HighestBid, Owner);
 }
 
 AuctionHouse::AuctionHouse(uint32 ID)
@@ -622,7 +622,7 @@ void WorldSession::HandleAuctionListItems( WorldPacket & recv_data )
 
 void AuctionHouse::LoadAuctions()
 {
-	QueryResult *result = sDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", GetID());
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", GetID());
 
 	if( !result )
 		return;

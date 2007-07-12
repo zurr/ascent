@@ -372,7 +372,7 @@ Transporter::~Transporter()
 void ObjectMgr::LoadTransporters()
 {
 	sLog.outString("  Loading Transports...");
-	QueryResult * QR = sDatabase.Query("SELECT * FROM transport_data");
+	QueryResult * QR = WorldDatabase.Query("SELECT * FROM transport_data");
 	if(!QR) return;
 	uint32 guid = 0;
 

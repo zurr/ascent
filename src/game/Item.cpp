@@ -246,9 +246,9 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave)
 	ss << "')";
 	
 	if(firstsave)
-		sDatabase.WaitExecute(ss.str().c_str());
+		CharacterDatabase.WaitExecute(ss.str().c_str());
 	else
-		sDatabase.Execute( ss.str().c_str());
+		CharacterDatabase.Execute( ss.str().c_str());
 
 	m_isDirty = false;
 }
@@ -258,7 +258,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave)
 
 void Item::DeleteFromDB()
 {
-	sDatabase.Execute("DELETE FROM playeritems WHERE guid ="I64FMTD, GetGUID());
+	CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid ="I64FMTD, GetGUID());
 }
 
 uint32 GetSkillByProto(uint32 Class, uint32 SubClass)

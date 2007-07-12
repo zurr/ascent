@@ -45,7 +45,7 @@ void LootMgr::LoadLoot()
 
 void LootMgr::LoadLootProp(uint32 id)
 {	
-	QueryResult * result = sDatabase.Query("SELECT * FROM lootrandomprop ORDER BY entryid");
+	QueryResult * result = WorldDatabase.Query("SELECT * FROM lootrandomprop ORDER BY entryid");
 	if(!result)return;
 
 	Field *fields = result->Fetch();
@@ -116,7 +116,7 @@ void LootMgr::LoadLootTables(const char * szTableName,LootStore * LootTable)
 	vector< pair< uint32, vector< pair<uint32, float> > > >::iterator itr;
 	db_cache.reserve(10000);
 	LootStore::iterator tab;
-	QueryResult *result =sDatabase.Query("SELECT entryid, itemid, percentchance FROM %s ORDER BY entryid ASC",szTableName);
+	QueryResult *result =WorldDatabase.Query("SELECT entryid, itemid, percentchance FROM %s ORDER BY entryid ASC",szTableName);
 	if(!result)
 	{
 		sLog.outError("\rWARNING: Loading loot from table %s failed.", szTableName);

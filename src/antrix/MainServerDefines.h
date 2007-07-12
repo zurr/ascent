@@ -5,9 +5,11 @@
 
 class Database;
 
-SERVER_DECL extern Database* Database_Main;
+SERVER_DECL extern Database* Database_Character;
+SERVER_DECL extern Database* Database_World;
 extern TextLogger * Crash_Log;
 
-#define sDatabase (*Database_Main)
+#define WorldDatabase (*Database_World)
+#define CharacterDatabase (*Database_Character)
 
 #endif

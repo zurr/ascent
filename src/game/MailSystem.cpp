@@ -94,7 +94,7 @@ void Mailbox::DeleteMessage(uint32 MessageId, bool sql)
 {
 	Messages.erase(MessageId);
 	if(sql)
-		sDatabase.Execute("DELETE FROM mailbox WHERE message_id = %u", MessageId);
+		CharacterDatabase.Execute("DELETE FROM mailbox WHERE message_id = %u", MessageId);
 }
 
 WorldPacket * Mailbox::BuildMailboxListingPacket()
@@ -167,7 +167,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 		ss << "SELECT `entry`, `count`, `charges`, `durability` FROM playeritems WHERE guid='"
 			<< attached_item_guid << "'";
 		
-		QueryResult * result = sDatabase.Query(ss.str().c_str());
+		QueryResult * result = CharacterDatabase.Query(ss.str().c_str());
 		if(result)
 		{
 			itementry = result->Fetch()[0].GetUInt32();
@@ -214,8 +214,8 @@ void MailSystem::SaveMessageToSQL(MailMessage * message)
 		<< message->message_type << ","
 		<< message->player_guid << ","
 		<< message->sender_guid << ",\""
-		<< sDatabase.EscapeString(message->subject) << "\",\""
-		<< sDatabase.EscapeString(message->body) << "\","
+		<< CharacterDatabase.EscapeString(message->subject) << "\",\""
+		<< CharacterDatabase.EscapeString(message->body) << "\","
 		<< message->money << ",'"
 		<< message->attached_item_guid << "',"
 		<< message->cod << ","
@@ -225,7 +225,7 @@ void MailSystem::SaveMessageToSQL(MailMessage * message)
 		<< message->copy_made << ","
 		<< message->read_flag << ","
 		<< message->deleted_flag << ")";
-	sDatabase.Execute(ss.str().c_str());
+	CharacterDatabase.Execute(ss.str().c_str());
 }
 
 void WorldSession::HandleSendMail(WorldPacket & recv_data )
@@ -368,7 +368,7 @@ void WorldSession::HandleMarkAsRead(WorldPacket & recv_data )
 		message->expire_time = time(NULL) + (TIME_DAY * 3);
 
 	// update it in sql
-	sDatabase.Execute("UPDATE mailbox SET read_flag = 1, expiry_time = %u WHERE message_id = %u", message->message_id, message->expire_time);
+	CharacterDatabase.Execute("UPDATE mailbox SET read_flag = 1, expiry_time = %u WHERE message_id = %u", message->message_id, message->expire_time);
 }
 
 void WorldSession::HandleMailDelete(WorldPacket & recv_data )
@@ -407,7 +407,7 @@ void WorldSession::HandleMailDelete(WorldPacket & recv_data )
 		message->deleted_flag = 1;
 
 		// update in sql
-		sDatabase.Execute("UPDATE mailbox SET deleted_flag = 1 WHERE message_id = %u", message_id);
+		CharacterDatabase.Execute("UPDATE mailbox SET deleted_flag = 1 WHERE message_id = %u", message_id);
 	}
 	else
 	{
@@ -502,7 +502,7 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data )
 	message->attached_item_guid = 0;
 	
 	// update in sql!
-	sDatabase.Execute("UPDATE mailbox SET attached_item_guid = 0, cod = 0 WHERE message_id = %u", message->message_id);
+	CharacterDatabase.Execute("UPDATE mailbox SET attached_item_guid = 0, cod = 0 WHERE message_id = %u", message->message_id);
 
 	// send complete packet
 	data << uint32(MAIL_OK);
@@ -533,13 +533,13 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data )
 		{
 			// this is the hard part, the player is offline so we need to load them, 
 			// mod, and resave.
-			QueryResult * result = sDatabase.Query("SELECT gold FROM characters WHERE guid=%u", message->sender_guid);
+			QueryResult * result = CharacterDatabase.Query("SELECT gold FROM characters WHERE guid=%u", message->sender_guid);
 			if(result)
 			{
 				uint32 gold = result->Fetch()[0].GetUInt32();
 				gold += message->cod;
 				delete result;
-				sDatabase.Execute("UPDATE characters SET gold = %u WHERE guid=%u", gold, message->sender_guid);
+				CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid=%u", gold, message->sender_guid);
 			}
 		}
 	}
@@ -581,7 +581,7 @@ void WorldSession::HandleTakeMoney(WorldPacket & recv_data )
 	message->money = 0;
 
 	// update in sql!
-	sDatabase.Execute("UPDATE mailbox SET money = 0 WHERE message_id = %u", message->message_id);
+	CharacterDatabase.Execute("UPDATE mailbox SET money = 0 WHERE message_id = %u", message->message_id);
 
 	// send result
 	data << uint32(MAIL_OK);
@@ -696,7 +696,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket & recv_data )
 	message->copy_made = true;
 
 	// update in sql
-	sDatabase.Execute("UPDATE mailbox SET copy_made = 1 WHERE message_id = %u", message_id);
+	CharacterDatabase.Execute("UPDATE mailbox SET copy_made = 1 WHERE message_id = %u", message_id);
 
 	data << uint32(MAIL_OK);
 	SendPacket(&data);
@@ -832,7 +832,7 @@ void MailSystem::LoadMessages()
 	sLog.outString("  Creating/Loading Mailboxes...");
 
 	uint32 high = 0;
-	QueryResult * result = sDatabase.Query("SELECT * FROM mailbox");
+	QueryResult * result = CharacterDatabase.Query("SELECT * FROM mailbox");
 	if(result)
 	{
 		Field * fields;

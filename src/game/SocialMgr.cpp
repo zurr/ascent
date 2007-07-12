@@ -207,7 +207,7 @@ void SocialMgr::AddFriend(Player* plr, std::string friendName)
 	m_isInFriendList[fGuid]->insert(pGuid);
 
 	plr->GetSession()->SendPacket( &data );
-	sDatabase.Execute("INSERT INTO social(guid,socialguid,flags) VALUES (%I64u,%I64u,'FRIEND')",pGuid,fGuid);
+	CharacterDatabase.Execute("INSERT INTO social(guid,socialguid,flags) VALUES (%I64u,%I64u,'FRIEND')",pGuid,fGuid);
 }
 
 void SocialMgr::AddIgnore(Player* plr, std::string ignoreName)
@@ -270,7 +270,7 @@ void SocialMgr::AddIgnore(Player* plr, std::string ignoreName)
 	m_needsBlockNotice[iGuid]->insert(pGuid);
 
 	plr->GetSession()->SendPacket( &data );
-	sDatabase.Execute("INSERT INTO social(guid,socialguid,flags,noticed) VALUES (%I64u,%I64u,'IGNORE',0)",pGuid,iGuid);
+	CharacterDatabase.Execute("INSERT INTO social(guid,socialguid,flags,noticed) VALUES (%I64u,%I64u,'IGNORE',0)",pGuid,iGuid);
 }
 
 void SocialMgr::DelFriend(Player* plr, uint64 friendguid)
@@ -296,7 +296,7 @@ void SocialMgr::DelFriend(Player* plr, uint64 friendguid)
 	data << (uint8)FRIEND_REMOVED << (uint64)friendguid;
 
 	plr->GetSession()->SendPacket( &data );
-	sDatabase.Execute("DELETE FROM social WHERE guid=%I64u AND socialguid=%I64u AND flags='FRIEND'",plrguid,friendguid);
+	CharacterDatabase.Execute("DELETE FROM social WHERE guid=%I64u AND socialguid=%I64u AND flags='FRIEND'",plrguid,friendguid);
 }
 
 void SocialMgr::DelIgnore(Player* plr, uint64 ignoreguid)
@@ -322,7 +322,7 @@ void SocialMgr::DelIgnore(Player* plr, uint64 ignoreguid)
 	data << (uint8)FRIEND_IGNORE_REMOVED << (uint64)ignoreguid;
 
 	plr->GetSession()->SendPacket( &data );
-	sDatabase.Execute("DELETE FROM social WHERE guid=%I64u AND socialguid=%I64u AND flags='IGNORE'",plrguid,ignoreguid);
+	CharacterDatabase.Execute("DELETE FROM social WHERE guid=%I64u AND socialguid=%I64u AND flags='IGNORE'",plrguid,ignoreguid);
 }
 
 bool SocialMgr::IsFriend(uint64 plrguid, uint64 target)
@@ -393,7 +393,7 @@ bool SocialMgr::HasIgnore(Player* plr, Player* mignore)
 					sChatHandler.SystemMessage(mignore->GetSession(), "%s is ignoring you, it isn't possible for you to whisper him/her.", plr->GetName());
 					Itr->second->erase( iter );
 					ss << "UPDATE social SET noticed=1 WHERE guid="<< plrguid <<" AND socialguid="<< ignguid <<" AND flags='IGNORE'";
-					sDatabase.Execute( ss.str().c_str() );
+					CharacterDatabase.Execute( ss.str().c_str() );
 					return true;
 				}
 			}
@@ -519,7 +519,7 @@ void SocialMgr::RemovePlayer(Player* plr)
 		m_needsBlockNotice.erase(Itr);
 	}
 
-	sDatabase.Execute("DELETE FROM social WHERE guid=%d OR socialguid=%d", plr->GetGUIDLow(), plr->GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM social WHERE guid=%d OR socialguid=%d", plr->GetGUIDLow(), plr->GetGUIDLow());
 }
 
 void SocialMgr::LoadFromDB()
@@ -531,7 +531,7 @@ void SocialMgr::LoadFromDB()
 	uint64 ignoreguid = 0;
 	bool noticed = false;
 
-	QueryResult *result = sDatabase.Query("SELECT guid,socialguid FROM social WHERE flags='FRIEND'");
+	QueryResult *result = CharacterDatabase.Query("SELECT guid,socialguid FROM social WHERE flags='FRIEND'");
 
 	if(result)
 	{
@@ -554,7 +554,7 @@ void SocialMgr::LoadFromDB()
 		delete result;
 	}
 
-	result = sDatabase.Query("SELECT guid,socialguid,noticed FROM social WHERE flags='IGNORE'");
+	result = CharacterDatabase.Query("SELECT guid,socialguid,noticed FROM social WHERE flags='IGNORE'");
 	if(result)
 	{
 		do 

@@ -2238,7 +2238,7 @@ void ItemInterface::mLoadItemsFromDatabase()
 
 	std::stringstream invq;
 	invq << "SELECT * FROM playeritems WHERE ownerguid=" << m_pOwner->GetGUIDLow() << " ORDER BY containerslot ASC";
-	QueryResult *result = sDatabase.Query( invq.str().c_str() );
+	QueryResult *result = CharacterDatabase.Query( invq.str().c_str() );
 	if(result)
 	{
 		do

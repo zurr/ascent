@@ -59,7 +59,7 @@ void Corpse::SaveToDB()
 	//save corpse to DB
 	std::stringstream ss;
 	ss << "DELETE FROM corpses WHERE guid = " << GetGUIDLow();
-	sDatabase.Execute( ss.str( ).c_str( ) );
+	CharacterDatabase.Execute( ss.str( ).c_str( ) );
 
 	ss.rdbuf()->str("");
 	ss << "INSERT INTO corpses (guid, positionX, positionY, positionZ, orientation, zoneId, mapId, data, instanceId) VALUES ("
@@ -70,7 +70,7 @@ void Corpse::SaveToDB()
 
 	ss << "', " << GetInstanceID() << " )";
 
-	sDatabase.Execute( ss.str().c_str() );
+	CharacterDatabase.Execute( ss.str().c_str() );
 }
 
 void Corpse::DeleteFromDB()
@@ -79,7 +79,7 @@ void Corpse::DeleteFromDB()
 	char sql[256];
 
 	snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", GetGUIDLow());
-	sDatabase.Execute(sql);
+	CharacterDatabase.Execute(sql);
 }
 
 void CorpseData::DeleteFromDB()
@@ -87,7 +87,7 @@ void CorpseData::DeleteFromDB()
 	char sql[256];
 
 	snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", LowGuid);
-	sDatabase.Execute(sql);
+	CharacterDatabase.Execute(sql);
 }
 
 void Corpse::Despawn()

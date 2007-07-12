@@ -1175,7 +1175,7 @@ void Player::BuildEnumData( WorldPacket * p_data )
 	
 	if(getClass()==WARLOCK || getClass()==HUNTER)
 	{
-		QueryResult *result = sDatabase.Query("SELECT entryid FROM playerpets WHERE ownerguid=%u AND active=1", GetGUIDLow());
+		QueryResult *result = CharacterDatabase.Query("SELECT entryid FROM playerpets WHERE ownerguid=%u AND active=1", GetGUIDLow());
 		
 		if(result)
 		{
@@ -1414,7 +1414,7 @@ void Player::_SaveItemCooldown()
 	if (m_itemcooldown.size() == 0)
 		return;
 
-	sDatabase.Execute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", GetGUIDLow() );
+	CharacterDatabase.Execute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", GetGUIDLow() );
 
 	uint32 entrys_to_insert=0;
 	std::stringstream query;
@@ -1445,7 +1445,7 @@ void Player::_SaveItemCooldown()
 	}
 	//only execute if we have entrys to insert
 	if(entrys_to_insert)
-		sDatabase.Execute( query.str().c_str() );
+		CharacterDatabase.Execute( query.str().c_str() );
 }
 
 void Player::_SaveSpellCoolDownSecurity()
@@ -1455,7 +1455,7 @@ void Player::_SaveSpellCoolDownSecurity()
 	if (SpellCooldownMap.size() == 0)
 		return;
 
-	sDatabase.Execute("DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u", GetGUIDLow() );
+	CharacterDatabase.Execute("DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u", GetGUIDLow() );
 
 	SpellCooldownHolderMap::iterator itr, it2, itrend;
 
@@ -1487,13 +1487,13 @@ void Player::_SaveSpellCoolDownSecurity()
 		hascooldowns++;
 	}
 	if(hascooldowns)
-		sDatabase.Execute( query.str().c_str( ) );
+		CharacterDatabase.Execute( query.str().c_str( ) );
 }
 
 void Player::_SavePet()
 {
 	// Remove any existing info
-	sDatabase.Execute("DELETE FROM playerpets WHERE ownerguid=%u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM playerpets WHERE ownerguid=%u", GetGUIDLow());
 
 	if(m_Summon)	// update PlayerPets array with current pet's info
 	{
@@ -1504,11 +1504,11 @@ void Player::_SavePet()
 			// save pet spellz
 			PetSpellMap::iterator itr = m_Summon->mSpells.begin();
 			uint32 pn = m_Summon->m_PetNumber;
-			sDatabase.Execute("DELETE FROM playerpetspells WHERE petnumber=%u", pn);
+			CharacterDatabase.Execute("DELETE FROM playerpetspells WHERE petnumber=%u", pn);
 
 			for(; itr != m_Summon->mSpells.end(); ++itr)
 			{
-				sDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", GetGUIDLow(), pn, itr->first->Id, itr->second);
+				CharacterDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", GetGUIDLow(), pn, itr->first->Id, itr->second);
 			}
 		}
 	}
@@ -1521,7 +1521,7 @@ void Player::_SavePet()
 		ss << "INSERT INTO playerpets VALUES('"
 			<< GetGUIDLow() << "','"
 			<< itr->second->number << "','"
-			<< sDatabase.EscapeString(itr->second->name) << "','"
+			<< CharacterDatabase.EscapeString(itr->second->name) << "','"
 			<< itr->second->entry << "','"
 			<< itr->second->fields << "','"
 			<< itr->second->xp << "','"
@@ -1533,14 +1533,14 @@ void Player::_SavePet()
 			<< itr->second->summon << "','"
 			<< itr->second->autocastspell << "')";
 			
-		sDatabase.Execute(ss.str().c_str());
+		CharacterDatabase.Execute(ss.str().c_str());
 	}
 }
 
 void Player::_SavePetSpells()
 {	
 	// Remove any existing
-	sDatabase.Execute("DELETE FROM playersummonspells WHERE ownerguid=%u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM playersummonspells WHERE ownerguid=%u", GetGUIDLow());
 
 	// Save summon spells
 	map<uint32, set<uint32> >::iterator itr = SummonSpells.begin();
@@ -1549,7 +1549,7 @@ void Player::_SavePetSpells()
 		set<uint32>::iterator it = itr->second.begin();
 		for(; it != itr->second.end(); ++it)
 		{
-			sDatabase.Execute("INSERT INTO playersummonspells VALUES(%u, %u, %u)", GetGUIDLow(), itr->first, (*it));
+			CharacterDatabase.Execute("INSERT INTO playersummonspells VALUES(%u, %u, %u)", GetGUIDLow(), itr->first, (*it));
 		}
 	}
 }
@@ -1584,7 +1584,7 @@ set<uint32>* Player::GetSummonSpells(uint32 Entry)
 checks for invalid items and deletes them from the db */
 void Player::_LoadItemCooldown()
 {
-	QueryResult *result = sDatabase.Query("SELECT * FROM playercooldownitems WHERE OwnerGuid=%u",GetGUIDLow());
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM playercooldownitems WHERE OwnerGuid=%u",GetGUIDLow());
 	if(result)
 	{
 		// TODO is there a better way to do this?
@@ -1600,7 +1600,7 @@ void Player::_LoadItemCooldown()
 
 			if (now() > TempTimestamp || (now() < TempTimestamp && DiffTimestamp > TempCooldown)) //if timestamp overflow or dif time is larget than 7 days
 			{
-				sDatabase.Execute( "DELETE FROM playercooldownitems WHERE OwnerGuid=%u AND ItemEntry=%u",
+				CharacterDatabase.Execute( "DELETE FROM playercooldownitems WHERE OwnerGuid=%u AND ItemEntry=%u",
 					GetGUIDLow(),fields[1].GetUInt32());
 			}
 			else // only add items to list that still have cooldown
@@ -1623,7 +1623,7 @@ void Player::_LoadItemCooldown()
 
 void Player::_LoadSpellCoolDownSecurity()
 {
-	QueryResult *result = sDatabase.Query("SELECT * FROM playercooldownsecurity WHERE OwnerGuid=%u",GetGUIDLow());
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM playercooldownsecurity WHERE OwnerGuid=%u",GetGUIDLow());
 	if(result)
 	{
 		do
@@ -1644,7 +1644,7 @@ void Player::_LoadSpellCoolDownSecurity()
 			else // only add spells to list that still have cooldown
 			{
 				//if timestamp overflow or diff time is larger than 7 days
-				sDatabase.WaitExecute( "DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u AND SpellID = %u", GetGUIDLow(), SpellID );
+				CharacterDatabase.WaitExecute( "DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u AND SpellID = %u", GetGUIDLow(), SpellID );
 			}
 		}
 		while( result->NextRow() );
@@ -1655,7 +1655,7 @@ void Player::_LoadSpellCoolDownSecurity()
 
 void Player::_LoadPet()
 {
-	QueryResult *result = sDatabase.Query( 
+	QueryResult *result = CharacterDatabase.Query( 
 		 "SELECT * FROM playerpets WHERE ownerguid=%u ORDER BY petnumber",GetGUIDLow());
 	if(!result)return;
 
@@ -1715,7 +1715,7 @@ void Player::_LoadPetSpells()
 	uint32 spell = 0;
 
 	query << "SELECT * FROM playersummonspells where ownerguid='" << GetGUIDLow() << "' ORDER BY entryid";
-	QueryResult *result = sDatabase.Query( query.str().c_str() );
+	QueryResult *result = CharacterDatabase.Query( query.str().c_str() );
 	if(result)
 	{
 		do
@@ -2028,8 +2028,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	if(GetGuildId() && (pGuild = objmgr.GetGuild(GetGuildId())) && (pMember = pGuild->GetGuildMember( GetGUID() )))
 	{
 	
-		ss << ",'" << sDatabase.EscapeString(pMember->publicNote) << "','";
-		ss << sDatabase.EscapeString(pMember->officerNote) << "'," << GetGuildId() << "," << GetGuildRank();
+		ss << ",'" << CharacterDatabase.EscapeString(pMember->publicNote) << "','";
+		ss << CharacterDatabase.EscapeString(pMember->officerNote) << "'," << GetGuildId() << "," << GetGuildRank();
 
 	   }else
 	{
@@ -2116,9 +2116,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << iInstanceType << ")";
 	
 	if(bNewCharacter)
-		sDatabase.WaitExecute(ss.str().c_str());
+		CharacterDatabase.WaitExecute(ss.str().c_str());
 	else
-		sDatabase.Execute( ss.str().c_str() );
+		CharacterDatabase.Execute( ss.str().c_str() );
 
 	//Save Other related player stuff
 
@@ -2153,7 +2153,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 void Player::_SaveQuestLogEntry()
 {
 	for(std::set<uint32>::iterator itr = m_removequests.begin(); itr != m_removequests.end(); ++itr)
-		sDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", GetGUIDLow(), (*itr));
+		CharacterDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", GetGUIDLow(), (*itr));
 
 	m_removequests.clear();
 
@@ -2210,7 +2210,7 @@ bool Player::LoadFromDB(uint32 guid)
 	uint32 field_index = 2;
 #define get_next_field fields[field_index++]
 
-	QueryResult *result = sDatabase.Query("SELECT * FROM characters WHERE guid=%u AND banned=0 AND forced_rename_pending = 0",guid);
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM characters WHERE guid=%u AND banned=0 AND forced_rename_pending = 0",guid);
 	if(!result)
 	{
 		printf("Player login query failed., guid %u\n", guid);
@@ -2784,7 +2784,7 @@ void Player::_LoadInventoryLight()
 	invq << "SELECT * FROM playeritems WHERE ownerguid=" << GetGUIDLow();
 	invq << " and containerslot=-1 and slot < 19";//EQUIPMENT_SLOT_END
 
-	QueryResult *result = sDatabase.Query( invq.str().c_str() );
+	QueryResult *result = CharacterDatabase.Query( invq.str().c_str() );
 	if(result)
 	{
 		do
@@ -2822,7 +2822,7 @@ bool Player::HasSpell(uint32 spell)
 
 void Player::_LoadQuestLogEntry()
 {
-	QueryResult *result = sDatabase.Query("SELECT * FROM questlog WHERE player_guid=%u", GetGUIDLow());
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM questlog WHERE player_guid=%u", GetGUIDLow());
 	QuestLogEntry *entry;
 	Quest *quest;
 	Field *fields;
@@ -2891,21 +2891,21 @@ void Player::DeleteFromDB()
 {	
 	sSocialMgr.RemovePlayer(this);
 
-	sDatabase.WaitExecute("DELETE FROM characters WHERE guid = %u", GetGUIDLow());
+	CharacterDatabase.WaitExecute("DELETE FROM characters WHERE guid = %u", GetGUIDLow());
 
 	Corpse * c=objmgr.GetCorpseByOwner(GetGUIDLow());
 	if(c)
-		sDatabase.Execute("DELETE FROM corpses WHERE guid = %u", c->GetGUIDLow());
+		CharacterDatabase.Execute("DELETE FROM corpses WHERE guid = %u", c->GetGUIDLow());
 
-	sDatabase.Execute("DELETE FROM playeritems WHERE ownerguid=%u",GetGUIDLow());
-	sDatabase.Execute("DELETE FROM gm_tickets WHERE guid = %u", GetGUIDLow());
-	sDatabase.Execute("DELETE FROM playerpets WHERE ownerguid = %u", GetGUIDLow());
-	sDatabase.Execute("DELETE FROM playerpetspells WHERE ownerguid = %u", GetGUIDLow());
-	sDatabase.Execute("DELETE FROM playersummonspells WHERE ownerguid = %u", GetGUIDLow());
-	sDatabase.Execute("DELETE FROM tutorials WHERE playerId = %u", GetGUIDLow());
-	sDatabase.Execute("DELETE FROM questlog WHERE player_guid = %u", GetGUIDLow());
-	sDatabase.Execute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", GetGUIDLow());
-	sDatabase.Execute("DELETE FROM mailbox WHERE player_guid = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM playeritems WHERE ownerguid=%u",GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE guid = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM playerpets WHERE ownerguid = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM playerpetspells WHERE ownerguid = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM playersummonspells WHERE ownerguid = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM tutorials WHERE playerId = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM questlog WHERE player_guid = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", GetGUIDLow());
+	CharacterDatabase.Execute("DELETE FROM mailbox WHERE player_guid = %u", GetGUIDLow());
 
 	//Zehamster: Delete own lists and people having plr in their lists AND clear storage
 	sSocialMgr.RemovePlayer( this );
@@ -4085,7 +4085,7 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 //From Mangos Project
 void Player::_LoadTutorials()
 {	
-	QueryResult *result = sDatabase.Query("SELECT * FROM tutorials WHERE playerId=%u",GetGUIDLow());
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM tutorials WHERE playerId=%u",GetGUIDLow());
 
 	if(result)
 	{
@@ -4102,7 +4102,7 @@ void Player::_SaveTutorials()
 {
 	if(tutorialsDirty)
 	{
-		sDatabase.Execute("REPLACE INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u')", GetGUIDLow(), m_Tutorials[0], m_Tutorials[1], m_Tutorials[2], m_Tutorials[3], m_Tutorials[4], m_Tutorials[5], m_Tutorials[6], m_Tutorials[7]);
+		CharacterDatabase.Execute("REPLACE INTO tutorials VALUES('%u','%u','%u','%u','%u','%u','%u','%u','%u')", GetGUIDLow(), m_Tutorials[0], m_Tutorials[1], m_Tutorials[2], m_Tutorials[3], m_Tutorials[4], m_Tutorials[5], m_Tutorials[6], m_Tutorials[7]);
 		tutorialsDirty = false;
 	}
 }
@@ -7044,7 +7044,7 @@ void Player::SaveHonorFields()
 {
 	// Save honor fields only :P
 	//Zehamster: we can do this with a single single query instead of 7 ;)
-	sDatabase.Execute("UPDATE characters SET lastDailyReset=%u,killsToday=%u,killsYesterday=%u,killsLifeTime=%u,"
+	CharacterDatabase.Execute("UPDATE characters SET lastDailyReset=%u,killsToday=%u,killsYesterday=%u,killsLifeTime=%u,"
 		"honorToday=%u,honorYesterday=%u,honorPoints=%u WHERE guid=%u",
 		m_lastHonorResetTime, m_killsToday, m_killsYesterday, m_killsLifetime, m_honorToday, m_honorYesterday,
 		m_honorPoints, GetGUIDLow());

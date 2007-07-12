@@ -136,7 +136,7 @@ void QuestLogEntry::SaveToDB()
 	if(!mDirty)
 		return;
 
-	sDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", m_plr->GetGUIDLow(), m_quest->id);
+	CharacterDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", m_plr->GetGUIDLow(), m_quest->id);
 	std::stringstream ss;
 	ss << "INSERT INTO questlog (player_guid, quest_id, slot, time_left, explored_area1, explored_area2, explored_area3, explored_area4, mob_kill1, mob_kill2, mob_kill3, mob_kill4) VALUES(";
 	ss << m_plr->GetGUIDLow() << "," << m_quest->id << "," << m_slot << "," << m_time_left;
@@ -148,7 +148,7 @@ void QuestLogEntry::SaveToDB()
 
 	ss << ")";
 	
-	sDatabase.Execute(ss.str().c_str());
+	CharacterDatabase.Execute(ss.str().c_str());
 }
 
 bool QuestLogEntry::LoadFromDB(Field *fields)

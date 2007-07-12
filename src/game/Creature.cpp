@@ -271,7 +271,7 @@ void Creature::SaveToDB()
 		<< m_uint32Values[UNIT_NPC_EMOTESTATE] << ","
 		<< ((this->m_spawn ? m_spawn->respawnNpcLink : uint32(0))) << ")";
 
-	sDatabase.Execute(ss.str().c_str());
+	WorldDatabase.Execute(ss.str().c_str());
 }
 
 void Creature::SaveToFile(std::stringstream & name)
@@ -318,8 +318,8 @@ void Creature::LoadScript()
 void Creature::DeleteFromDB()
 {
 	if(!GetSQL_id())return;
-	sDatabase.Execute("DELETE FROM creature_spawns WHERE id=%u", GetSQL_id());
-	sDatabase.Execute("DELETE FROM creature_waypoints WHERE creatureid=%u",GetSQL_id());
+	WorldDatabase.Execute("DELETE FROM creature_spawns WHERE id=%u", GetSQL_id());
+	WorldDatabase.Execute("DELETE FROM creature_waypoints WHERE creatureid=%u",GetSQL_id());
 }
 
 

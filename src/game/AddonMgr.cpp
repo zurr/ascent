@@ -205,7 +205,7 @@ bool AddonMgr::AppendPublicKey(WorldPacket& data, string AddonName, uint32 CRC)
 
 void AddonMgr::LoadFromDB()
 {
-	QueryResult *result = sDatabase.Query("SELECT * FROM clientaddons");
+	QueryResult *result = WorldDatabase.Query("SELECT * FROM clientaddons");
 	if(!result)
 	{
 		sLog.outString("Query failed: SELECT * FROM clientaddons");
@@ -240,12 +240,12 @@ void AddonMgr::SaveToDB()
 			sLog.outDetail("Saving new addon %s", itr->second->name.c_str());
 			std::stringstream ss;
 			ss << "INSERT INTO clientaddons (name, crc, banned, showinlist) VALUES(\""
-				<< sDatabase.EscapeString(itr->second->name) << "\",\""
+				<< WorldDatabase.EscapeString(itr->second->name) << "\",\""
 				<< itr->second->crc << "\",\""
 				<< itr->second->banned << "\",\""
 				<< itr->second->showinlist << "\");";
 
-			sDatabase.Execute(ss.str().c_str());
+			WorldDatabase.Execute(ss.str().c_str());
 		}
 	}
 }

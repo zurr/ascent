@@ -20,14 +20,14 @@ void AuctionMgr::LoadAuctionHouses()
 {
 	sLog.outString("Loading Auction Houses...");
 
-	QueryResult * res = sDatabase.Query("SELECT MAX(auctionId) FROM auctions");
+	QueryResult * res = CharacterDatabase.Query("SELECT MAX(auctionId) FROM auctions");
 	if(res)
 	{
 		maxId = res->Fetch()[0].GetUInt32();
 		delete res;
 	}
 
-	res = sDatabase.Query("SELECT DISTINCT AHid FROM auctionhouse ORDER BY AHid");
+	res = WorldDatabase.Query("SELECT DISTINCT AHid FROM auctionhouse ORDER BY AHid");
 	AuctionHouse * ah;
 	map<uint32, AuctionHouse*> tempmap;
 	if(res)
@@ -42,7 +42,7 @@ void AuctionMgr::LoadAuctionHouses()
 		delete res;
 	}
 
-	res = sDatabase.Query("SELECT auctioneer, AHid FROM auctionhouse");
+	res = WorldDatabase.Query("SELECT auctioneer, AHid FROM auctionhouse");
 	if(res)
 	{
 		do 
