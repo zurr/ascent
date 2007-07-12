@@ -867,7 +867,13 @@ void World::SetInitialWorldSettings()
 					if(strstr(desc,"giving each melee attack"))
 						pr|=PROC_ON_MELEE_ATTACK;
 					if(strstr(desc,"each strike has"))
-						pr|=PROC_ON_MELEE_ATTACK;					
+						pr|=PROC_ON_MELEE_ATTACK;		
+					if(strstr(desc,"your scorch spells have"))
+						pr|=PROC_ON_CAST_SPELL;		
+					if(strstr(desc,"your Fire damage spell hits"))
+						pr|=PROC_ON_CAST_SPELL;		//this happens only on hit ;)
+//					if(strstr(desc,"chill effect to your Blizzard"))
+//						pr|=PROC_ON_CAST_SPELL;	
 					//////////////////////////////////////////////////
 					//proc dmg flags
 					//////////////////////////////////////////////////
@@ -895,6 +901,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_ANY_DAMAGE_VICTIM;
 					if(strstr(desc,"damage on every attack"))
 						pr|=PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
+					if(strstr(desc,"chance to reflect Fire spells"))
+						pr|=PROC_ON_SPELL_HIT_VICTIM;
 //					if(strstr(desc,"Your critical strikes from Fire damage"))
 //						pr|=PROC_ON_SPELL_CRIT_HIT;
 				}//end "if procspellaura"

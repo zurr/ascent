@@ -739,6 +739,15 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									CastingSpell->NameHash!=2602281440 ) //Soul Fire
 									continue;
 							}break;
+						//mage - Improved Scorch
+						case 22959:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								if( CastingSpell->NameHash!=1828847009) //Rain of Fire
+									continue;
+							}
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too

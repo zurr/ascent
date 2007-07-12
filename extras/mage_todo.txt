@@ -28,27 +28,17 @@ Spell Power:Doesn't work
 
 Fire:
 Improved Fire Blast:Doesn't Work. It's only visual
-Incineration:Doesn't work
 Improved Flamestrike:Doesn't Work
-Burning Soul:Not tested yet
-Improved Scorch:Doesn't work
-Improved Fire Ward:Not tested yet
 Master of Elements:Not tested yet
 Playing with Fire:Not tested yet
-Critical Mass:Not tested yet
-Fire Power:Not tested yet
 Pyromaniac:Not tested yet
-Combustion:Doesn't work
 Molten Fury:Not tested yet
-Empowered Fireball:Not tested yet
+- mage - Improved Fire Ward
 
 Frost:
 Frost Warding:Doesn't work
 Elemental Precision:Doesn't work
-Improved Frost Nova:Doesn't work, it's only visual
-Permafrost:Doesn't work
-Piercing Ice:Doesn't work
-Improved Blizzard:Doesn't work
+Improved Blizzard:Doesn't work. Retest
 Frost Channeling:Threat part works. Mana cost part doesn't
 Shatter:Not working
 Frozen Core:Not tested yet

@@ -331,6 +331,7 @@ Player::Player ( uint32 high, uint32 low )
 	trigger_on_stun = 0;
 	trigger_on_stun_chance = 100;
 	m_modphyscritdmgPCT = 0;
+	m_RootedCritChanceBonus = 0;
 	m_rap_mod_pct = 0;
 	m_modblockvalue = 0;
 	m_summoner = m_summonInstanceId = m_summonMapId = 0;

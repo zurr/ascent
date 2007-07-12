@@ -918,6 +918,7 @@ public:
 	float SpellDmgDoneBySpr[7];
 	float SpellHealDoneBySpr[7];
 	uint32 m_modphyscritdmgPCT;
+	uint32 m_RootedCritChanceBonus;
 	
 	uint32 FlatStatModPos[5];
 	uint32 FlatStatModNeg[5];

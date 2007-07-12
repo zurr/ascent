@@ -50,6 +50,8 @@ Zack - test my shit :
 - added trigger for "Nature's Grasp"
 - !help : Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
 - deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
+- mage - Improved Scorch
+- mage - Combustion
 
 ==========================================================================
 

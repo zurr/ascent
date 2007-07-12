@@ -1991,6 +1991,9 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			if(res < 0) res = 0;	
 			float CritChance = static_cast<Unit*>(this)->spellcritperc + static_cast<Unit*>(this)->SpellCritChanceSchool[school] + pVictim->AttackerSpellCritChanceMod[school];
 
+			if (this->IsPlayer()&&(pVictim->m_rooted-pVictim->m_stunned))	
+				CritChance += static_cast<Player*>(this)->m_RootedCritChanceBonus;
+
 			if(spellInfo->SpellGroupType)
 				SM_FFValue(static_cast<Unit*>(this)->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
 

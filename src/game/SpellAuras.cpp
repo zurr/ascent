@@ -4845,19 +4845,34 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
 
 	Player *plr = static_cast<Player*>(GetUnitCaster());
 
+	//Adding bonus to effect
 	switch(mod->m_miscValue)
 	{
-	//Adding bonus to effect
-	case 3736:
-	case 4415:
-	case 4418:
-	case 4554:
-	case 4555:
-	case 4953:
-	case 5142:
-	case 5147:
-	case 5148:
-		{
+		//----Shatter---
+		case 849:
+		case 910:
+		case 911:
+		case 912:
+		case 913:
+			if (m_target->IsPlayer())
+			{
+				int32 val = (apply) ? (mod->m_miscValue-908)*10 : -(mod->m_miscValue-908)*10;
+				if (mod->m_miscValue==849)
+					val = (apply) ? 10 : -10;
+				static_cast<Player*>(m_target)->m_RootedCritChanceBonus += val;
+			}
+			break;
+			//--------------
+		case 3736:
+		case 4415:
+		case 4418:
+		case 4554:
+		case 4555:
+		case 4953:
+		case 5142:
+		case 5147:
+		case 5148:
+			{
 			if(apply)
 			{
 				OverrideIdMap::iterator itermap = objmgr.mOverrideIdMap.find(mod->m_miscValue);
