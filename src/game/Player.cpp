@@ -2258,8 +2258,8 @@ bool Player::LoadFromDB(uint32 guid)
 
 	// set level
 	m_uint32Values[UNIT_FIELD_LEVEL] = get_next_field.GetUInt32();
-	if(m_uint32Values[UNIT_FIELD_LEVEL] > sWorld.LevelCap)
-		m_uint32Values[UNIT_FIELD_LEVEL] = sWorld.LevelCap;
+	/*if(m_uint32Values[UNIT_FIELD_LEVEL] > sWorld.LevelCap)
+		m_uint32Values[UNIT_FIELD_LEVEL] = sWorld.LevelCap;*/
 
 	// obtain level/stats information
 	lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), getLevel());
