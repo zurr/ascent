@@ -194,6 +194,8 @@ private:
 /* FreeBSD - kqueue specific calls */
 #ifdef CONFIG_USE_KQUEUE
 public:
+	// Posts a epoll event with the specifed arguments.
+	void PostEvent(int events, bool oneshot);
 	// Atomic wrapper functions for increasing read/write locks
 	inline void IncSendLock() { m_writeLockMutex.Acquire(); m_writeLock++; m_writeLockMutex.Release(); }
 	inline void DecSendLock() { m_writeLockMutex.Acquire(); m_writeLock--; m_writeLockMutex.Release(); }
@@ -221,9 +223,6 @@ private:
 /* Select() Specific Calls */
 #ifdef CONFIG_USE_SELECT
 public:
-	// Posts a epoll event with the specifed arguments.
-	void PostEvent(int events, bool oneshot);
-
 	// Atomic wrapper functions for increasing read/write locks
 	inline void IncSendLock() { m_writeLockMutex.Acquire(); m_writeLock++; m_writeLockMutex.Release(); }
 	inline void DecSendLock() { m_writeLockMutex.Acquire(); m_writeLock--; m_writeLockMutex.Release(); }
