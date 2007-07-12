@@ -207,6 +207,9 @@ void Map::DestroyMapMgrInstance(uint32 instanceId)
 		return;
 	}
 
+	if(it->second->m_battleground)
+		it->second->TeleportPlayers();
+
 	delete it->second;
 	_instances.erase(it);
 	listmutex.Release();
