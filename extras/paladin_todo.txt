@@ -1,4 +1,5 @@
 Paladin:
+Heroism
 
 =====SPELLS AND ABILITIES =====
 Blessing of Light - Doesn't work.
@@ -15,7 +16,7 @@ Hammer of Wrath - Does not do the damage it should at Maximum rank.
 Righteous Defense - Only works for one monster, not 3.
 Seal of Blood - Doesn't work. Judgment doesnt work.
 Seal of Command - If you unlearn it, you cant learn past rank 1. Judgment doesn't work.
-Seal of Justice - Doesn't work. Judgment doesn't work.
+Seal of Justice - Judgment doesn't work.
 Seal of Wisdom - Doesn't work. Judgment doesn't work.
 Spiritual Attunement - Doesn't add the mana.
 Summon Charger/Warhorse - Doesn't work for Blood Elf.

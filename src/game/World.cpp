@@ -582,6 +582,8 @@ void World::SetInitialWorldSettings()
 //            type |= SPELL_TYPE_WARLOCK_CURSES;
 		else if(strstr(nametext, "Immolate") || strstr(nametext, "Conflagrate"))
 			type |= SPELL_TYPE_WARLOCK_IMMOLATE;
+		else if(strstr(nametext, "Amplify Magic") || strstr(nametext, "Dampen Magic"))
+			type |= SPELL_TYPE_MAGE_AMPL_DUMP;
 
 		/*FILE * f = fopen("C:\\spells.txt", "a");
 		fprintf(f, "case 0x%08X:		// %s\n", namehash, nametext);

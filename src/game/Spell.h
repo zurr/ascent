@@ -857,7 +857,7 @@ enum SpellTypes
 	SPELL_TYPE_SHIELD				= 16384,
 	SPELL_TYPE_FORTITUDE			= 32768,
 	SPELL_TYPE_SPIRIT				= 65536,
-//	SPELL_TYPE_WARLOCK_CURSES		= 131072,
+	SPELL_TYPE_MAGE_AMPL_DUMP		= 131072,
 	SPELL_TYPE_WARLOCK_IMMOLATE		= 262144, //maybe there is a better way to trigger the aurastate for imolate spell
 };
 

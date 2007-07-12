@@ -13,6 +13,7 @@ SMT_RESIST_DISPEL - check if it is used
 - if you use some items while on taxi it will remove mount and animate as swim. Maybe this was made with a hack
 - redoubt(paladin talent) description says that aura=51 shoul dhave effect of increase block chance by percent. Are we mixing this up ? We use different meaning for it
 - rogue - cold blood - need a log why does not trigger cooldown decrease
+- water shield gets removed on first trigger and does not show effect log. But why ?
 
 ==========================================================================
 ! Features !
@@ -37,21 +38,17 @@ SMT_RESIST_DISPEL - check if it is used
 - if BG is over and you are dead then you are teleported as dead.
 - there should be a cooldown for players who leave instance groups.
 - some players can't shoot with wand
+- (old one but effect counts)if you have multiple slow effects that stack you can inverse your direction keys back=forward
 
 ==========================================================================
 Zack - test my shit :
 
 - after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
 - RR looting.
-- skinning patch from Onemore
-- pet instant spells make creature loop. They go to target and back.
-- test sboil patch for extra_dmg_for_creature_type
-- water shield gets removed on first trigger and does not show effect log. But why ?
 - mage "Blazing Speed" = 31642 - talent
 - druid "Faerie Fire" to block stealth
 - added trigger for "Nature's Grasp"
 - !help : Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
-- paladin seal of justice trigger
 - deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
 
 ==========================================================================

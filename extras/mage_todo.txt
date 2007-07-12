@@ -64,8 +64,6 @@ Molter Armor:Partially working. Crit chance is incrised. but the rest doens't wo
 
 Arcane:
 Arcane Missiles:Don't shot the last missile (or first?)
-Dampen Magic:Works fine, but do not remove Amplify Magic
-Amplify Magic:Works fine, but do not remove Dampen Magic
 Detect Magic:Not tested yet
 Blink: Doesn't release you from stun, just from bonds.
 Mana Shield:Working, but only for physical damage, because in 2.0.3 or later it has been changed to absorb spell damage too.
