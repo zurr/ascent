@@ -2199,11 +2199,14 @@ bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession * m_se
 bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession * m_session)
 {
 	Player * plr;
-	if(strlen(args) > 2)
+	if(strlen(args) >= 2) // char name can be 2 letters
 	{
 		plr = objmgr.GetPlayer(args, false);
-		if(!plr) RedSystemMessage(m_session, "Cannot find player with name `%s`.", args);
-		return true;
+		if(!plr)
+		{
+			RedSystemMessage(m_session, "Unable to locate player %s.", args);		
+			return true;
+		}
 	}
 	else
 		plr = getSelectedChar(m_session, true);
