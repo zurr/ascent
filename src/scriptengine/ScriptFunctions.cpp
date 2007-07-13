@@ -943,6 +943,62 @@ int Unit_GetGameObject(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Unit_ChangeEntry(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(entry, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	WorldPacket data(200);
+	pThis->BuildFieldUpdatePacket(&data, OBJECT_FIELD_ENTRY, entry);
+	pThis->SendMessageToSet(&data, true);
+	return GM_OK;
+}
+
+int Unit_ChangeModel(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(model, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	pThis->SetUInt32Value(UNIT_FIELD_DISPLAYID, model);
+	return GM_OK;
+}
+
+int Unit_ChangeScale(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_FLOAT_PARAM(scale, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	pThis->SetFloatValue(OBJECT_FIELD_SCALE_X, scale);
+	return GM_OK;
+}
+
+int Unit_ChangeFaction(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(meh, 0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	pThis->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, meh);
+	pThis->_setFaction();
+	pThis->UpdateOppFactionSet();
+	return GM_OK;
+}
+
+int Unit_TextEmote(gmThread * a_thread)
+{
+	return GM_OK;
+}
+
+int Unit_SendChatMessageAltEntry(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(entry, 0);
+	GM_CHECK_STRING_PARAM(msg, 1);
+
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	pUnit->SendChatMessageAlternateEntry(entry, CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
+	return GM_OK;
+}
+
 /*int Player_GetSelectedCreature(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);

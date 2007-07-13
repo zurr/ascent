@@ -68,6 +68,7 @@ T * GetThisPointer(gmThread * a_thread)
 /* Unit Functions */
 	int GM_CDECL Unit_Despawn(gmThread * a_thread);
 	int GM_CDECL Unit_SendChatMessage(gmThread * a_thread);
+	int GM_CDECL Unit_SendChatMessageAltEntry(gmThread * a_thread);
 	int GM_CDECL Unit_Emote(gmThread * a_thread);
 	int GM_CDECL Unit_CastSpell(gmThread * a_thread);
 	int GM_CDECL Unit_SetStandState(gmThread * a_thread);
@@ -98,6 +99,11 @@ T * GetThisPointer(gmThread * a_thread)
 		int GM_CDECL Unit_ClearEscortTarget(gmThread * a_thread);
 		int GM_CDECL Unit_SetNPCFlags(gmThread * a_thread);
 		int GM_CDECL Unit_DestroyCustomWaypointMap(gmThread * a_thread);
+		int GM_CDECL Unit_ChangeEntry(gmThread * a_thread);
+		int GM_CDECL Unit_ChangeScale(gmThread * a_thread);
+		int GM_CDECL Unit_TextEmote(gmThread * a_thread);
+		int GM_CDECL Unit_ChangeModel(gmThread * a_thread);
+		int GM_CDECL Unit_ChangeFaction(gmThread * a_thread);
 
 /* GameObject Functions */
 	int GM_CDECL GameObject_Despawn(gmThread * a_thread);
@@ -107,6 +113,7 @@ T * GetThisPointer(gmThread * a_thread)
 /* Misc Helper Functions */
 	int GM_CDECL GM_RAND(gmThread * a_thread);
 	int GM_CDECL GM_RegisterEvent(gmThread * a_thread);
+	int GM_CDECL GM_GetUnitBySqlId(gmThread * a_thread);
 
 /* Quest Functions */
 	int GM_CDECL Quest_GetID(gmThread * a_thread);

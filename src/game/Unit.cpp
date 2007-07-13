@@ -2270,6 +2270,94 @@ void Unit::Emote (EmoteType emote)
 	SendMessageToSet (&data, true);
 }
 
+void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char * msg)
+{
+	uint32 UnitNameLength = 0, MessageLength = 0;
+	const char *UnitName = "";
+	CreatureInfo *ci;
+
+	ci = CreatureNameStorage.LookupEntry(entry);
+	if(!ci)
+		return;
+
+	UnitName = ci->Name;
+	UnitNameLength = strlen((char*)UnitName) + 1;
+	MessageLength = strlen((char*)msg) + 1;
+
+	switch(type)
+	{
+	case CHAT_MSG_MONSTER_SAY:
+		{
+			for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); i++)
+			{
+				if((*i)->GetTypeId() == TYPEID_PLAYER)
+				{
+					WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);
+					data << type;
+					data << lang;
+					data << GetGUID();
+					data << uint32(0);			// new in 2.1.0
+					data << UnitNameLength;
+					data << UnitName;
+					data << ((Player*)(*i))->GetGUID();
+					data << MessageLength;
+					data << msg;
+					data << uint8(0x00);
+
+					WorldSession *session = ((Player*)(*i))->GetSession();
+					session->SendPacket(&data);
+				}
+			}
+		}break;
+	case CHAT_MSG_MONSTER_YELL:
+		{
+			for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); i++)
+			{
+				if((*i)->GetTypeId() == TYPEID_PLAYER)
+				{
+					WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);
+					data << type;
+					data << lang;
+					data << GetGUID();
+					data << uint32(0);			// new in 2.1.0
+					data << UnitNameLength;
+					data << UnitName;
+					data << ((Player*)(*i))->GetGUID();
+					data << MessageLength;
+					data << msg;
+					data << uint8(0x00);
+
+					WorldSession *session = ((Player*)(*i))->GetSession();
+					session->SendPacket(&data);
+				}
+			}
+		}break;
+	case CHAT_MSG_MONSTER_EMOTE:
+		{
+			for(Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); i++)
+			{
+				if((*i)->GetTypeId() == TYPEID_PLAYER)
+				{
+					WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);
+					data << type;
+					data << lang;
+					data << GetGUID();
+					data << uint32(0);			// new in 2.1.0
+					data << UnitNameLength;
+					data << UnitName;
+					data << ((Player*)(*i))->GetGUID();
+					data << MessageLength;
+					data << msg;
+					data << uint8(0x00);
+
+					WorldSession *session = ((Player*)(*i))->GetSession();
+					session->SendPacket(&data);
+				}
+			}
+		}break;
+	}
+}
+
 void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 {
 	uint32 UnitNameLength = 0, MessageLength = 0;

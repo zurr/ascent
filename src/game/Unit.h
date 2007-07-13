@@ -839,6 +839,7 @@ public:
 	}
 
 	void SendChatMessage(uint8 type, uint32 lang, const char *msg);
+	void SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char * msg);
 	void RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
 
 	void DelayedChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify);
