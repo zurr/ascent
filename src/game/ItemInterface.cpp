@@ -1489,6 +1489,18 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 	case INVENTORY_SLOT_BAG_3:
 	case INVENTORY_SLOT_BAG_4:
 		{
+			//this chunk of code will limit you to equip only 1 Ammo Bag. Later i found out that this is not blizzlike so i will remove it when it's blizzlike
+			//we are trying to equip an Ammo Bag
+			if(proto->Class==ITEM_CLASS_QUIVER)
+			{
+				//check if we already have an AB equiped
+				FindAmmoBag();			
+				//we do have amo bag but we are not swaping them then we send error
+				if(result.Slot!=ITEM_NO_SLOT_AVAILABLE && result.Slot != slot)
+				{
+					return INV_ERR_CAN_EQUIP_ONLY1_AMMOPOUCH;
+				}
+			}
 			if(GetInventoryItem(INVENTORY_SLOT_NOT_SET,slot))
 			{
 				if(GetInventoryItem(INVENTORY_SLOT_NOT_SET,slot)->GetProto()->BagFamily)
@@ -2513,6 +2525,24 @@ SlotResult ItemInterface::FindFreeBankSlot(ItemPrototype *proto)
 			}
 		}
 	}
+
+	result.ContainerSlot = ITEM_NO_SLOT_AVAILABLE;
+	result.Slot = ITEM_NO_SLOT_AVAILABLE;
+	result.Result = false;
+
+	return result;
+}
+
+SlotResult ItemInterface::FindAmmoBag()
+{
+	for(uint32 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END;i++)
+		if(m_pItems[i] && m_pItems[i]->IsAmmoBag())
+		{
+			result.ContainerSlot = ITEM_NO_SLOT_AVAILABLE;
+			result.Slot = i;
+			result.Result = true;
+			return result;
+		}
 
 	result.ContainerSlot = ITEM_NO_SLOT_AVAILABLE;
 	result.Slot = ITEM_NO_SLOT_AVAILABLE;

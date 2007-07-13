@@ -83,6 +83,7 @@ public:
 	//Searching functions
 	SlotResult FindFreeInventorySlot(ItemPrototype *proto);
 	SlotResult FindFreeBankSlot(ItemPrototype *proto);
+	SlotResult FindAmmoBag();
 	int8 FindFreeBackPackSlot();
 	int8 FindFreeKeyringSlot();
 	int8 FindSpecialBag(Item *item);
@@ -93,6 +94,7 @@ public:
 	int8 CanAffordItem(ItemPrototype * item,uint32 amount);
 	int8 GetItemSlotByType(uint32 type);
 	Item* GetItemByGUID(uint64 itemGuid);
+
 
 	void BuildInventoryChangeError(Item *SrcItem, Item *DstItem, uint8 Error);
 	void SwapItemSlots(int8 srcslot, int8 dstslot);

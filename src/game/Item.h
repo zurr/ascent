@@ -140,6 +140,7 @@ public:
 	inline void SetDurabilityToMax() { SetUInt32Value(ITEM_FIELD_DURABILITY,GetUInt32Value(ITEM_FIELD_MAXDURABILITY)); }
 	inline uint32 GetDurability() { return GetUInt32Value(ITEM_FIELD_DURABILITY); }
 	inline uint32 GetDurabilityMax() { return GetUInt32Value(ITEM_FIELD_MAXDURABILITY); }
+	inline bool IsAmmoBag() { return (m_itemProto->Class==ITEM_CLASS_QUIVER); }
 
 	void RemoveFromWorld();
 
