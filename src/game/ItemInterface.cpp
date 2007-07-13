@@ -1494,7 +1494,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 			if(proto->Class==ITEM_CLASS_QUIVER)
 			{
 				//check if we already have an AB equiped
-				FindAmmoBag();			
+				FindAmmoBag();
 				//we do have amo bag but we are not swaping them then we send error
 				if(result.Slot!=ITEM_NO_SLOT_AVAILABLE && result.Slot != slot)
 				{
@@ -2535,7 +2535,7 @@ SlotResult ItemInterface::FindFreeBankSlot(ItemPrototype *proto)
 
 SlotResult ItemInterface::FindAmmoBag()
 {
-	for(uint32 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END;i++)
+	for(uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END;i++)
 		if(m_pItems[i] && m_pItems[i]->IsAmmoBag())
 		{
 			result.ContainerSlot = ITEM_NO_SLOT_AVAILABLE;

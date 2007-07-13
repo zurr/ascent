@@ -2834,7 +2834,7 @@ uint32 Player::GetMaxLearnedSpellLevel(uint32 spell)
 		return 0;
 	uint32 max_level=0;
 	SpellSet::iterator iter;
-	for(iter= mSpells.begin();iter != mSpells.end();)
+	for(iter= mSpells.begin();iter != mSpells.end();iter++)
 	{
 		//get hash name for this spell
 		SpellEntry *spinfo2 = sSpellStore.LookupEntry(*iter);

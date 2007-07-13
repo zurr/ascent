@@ -14,6 +14,8 @@ SMT_RESIST_DISPEL - check if it is used
 - redoubt(paladin talent) description says that aura=51 shoul dhave effect of increase block chance by percent. Are we mixing this up ? We use different meaning for it
 - rogue - cold blood - need a log why does not trigger cooldown decrease
 - water shield gets removed on first trigger and does not show effect log. But why ?
+- deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
+- maybe these work, didn;t test them :P Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
 
 ==========================================================================
 ! Features !
@@ -29,6 +31,7 @@ SMT_RESIST_DISPEL - check if it is used
 - players can moderate channels and they should not do so : trade ...
 - trainers should not train spells with 0 cost ? Maybe this will remove talents from them
 - maybe rewrite procspell on spell. There are like 140 spells who use this, and to function correctly most of them would need this
+- hunter : curently you can equip only 1 Ammo Bag. This is wrong (INV_ERR_CAN_EQUIP_ONLY1_AMMOPOUCH). It should only use effects of ammo bag that is actively used.
 
 ==========================================================================
 ! BUGS !
@@ -43,13 +46,9 @@ SMT_RESIST_DISPEL - check if it is used
 ==========================================================================
 Zack - test my shit :
 
-- after players reseted their talents they can have same spell multiple times (wierd) since i removed check on deleted spells for trainers
 - RR looting.
 - druid "Faerie Fire" to block stealth
-- !help : Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
-- deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
-- hunter : curently you can equip only 1 Ammo Bag. This is wrong (INV_ERR_CAN_EQUIP_ONLY1_AMMOPOUCH). It should only use effects of ammo bag that is actively used.
-- trainers teaching talents and reteaching spells
+
 
 ==========================================================================
 
