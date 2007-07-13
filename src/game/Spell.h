@@ -234,7 +234,7 @@ enum procFlags
 	PROC_ON_TRAP_TRIGGERED		  = 0x200000,
 	PROC_ON_AUTO_SHOT_HIT			= 0x400000,
 	PROC_UNUSED2					= 0x800000,
-	PROC_REMOVEONUSE				= 0x8000000,//our custom flag to decide if proc dmg or shield
+	PROC_REMOVEONUSE				= 0x8000000,//remove prochcharge only when it is used
 	PROC_MISC						= 0x10000000,//our custom flag to decide if proc dmg or shield
 	PROC_ON_BLOCK_VICTIM			= 0x20000000,//added it as custom, maybe already exists in another form ?
 	PROC_ON_SPELL_CRIT_HIT			= 0x40000000,//added it as custom, maybe already exists in another form ?

@@ -5966,7 +5966,7 @@ void Aura::SpellAuraModPowerCostPCT(bool apply)
 		for(uint32 x=0;x<7;x++)
 		{
 			if (mod->m_miscValue & (((uint32)1)<<x))
-				m_target->PowerCostPctMod[x] += mod->m_amount/100.0;
+				m_target->PowerCostPctMod[x] += mod->m_amount;
 		}
 		
 		if(mod->m_miscValue == 126 && m_target->IsPlayer())
@@ -5977,7 +5977,7 @@ void Aura::SpellAuraModPowerCostPCT(bool apply)
 		for(uint32 x=0;x<7;x++)
 		{
 			if (mod->m_miscValue & (((uint32)1)<<x))
-				m_target->PowerCostPctMod[x] -= mod->m_amount/100.0;
+				m_target->PowerCostPctMod[x] -= mod->m_amount;
 		}
 		if(mod->m_miscValue == 126 && m_target->IsPlayer())
 			m_target->ModUInt32Value(PLAYER_FIELD_MOD_TARGET_RESISTANCE,  mod->m_amount);

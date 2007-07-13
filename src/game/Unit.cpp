@@ -761,7 +761,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							{
 								if(!CastingSpell)
 									continue;//this should not ocur unless we made a fuckup somewhere
-								if(CastingSpell->School!=SCHOOL_SHADOW && victim==this) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
+								if(CastingSpell->School!=SCHOOL_SHADOW || victim==this) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
 									continue;
 							}
 					}
@@ -1059,18 +1059,23 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 					resistchance -= spellHitMod;
 			}
 		}
-		resistchance += resistchance*PowerCostPctMod[(*dmg).damage_type];
+		//something strange. so commit.
+		//resistchance += resistchance*PowerCostPctMod[(*dmg).damage_type];
+		if (resistchance<1)
+			resistchance=1.0f;
 		if(Rand(resistchance))
 		{
 			(*dmg).resisted_damage = (*dmg).full_damage;
 		}
 		else
 		{
-			AverageResistance = ((float)pVictim->GetResistance( (*dmg).damage_type) / (float)(getLevel() * 5)) * 0.75f;
+			AverageResistance = ((float)pVictim->GetResistance( (*dmg).damage_type)- PowerCostPctMod[(*dmg).damage_type]) / (float)(getLevel() * 5) * 0.75f;
 			  if(AverageResistance > 0.75f)
 				AverageResistance = 0.75f;
-			if(AverageResistance)
-				(*dmg).resisted_damage = (uint32)(((*dmg).full_damage)*AverageResistance);
+			if(AverageResistance>0)
+ 				(*dmg).resisted_damage = (uint32)(((*dmg).full_damage)*AverageResistance);
+			else 
+				(*dmg).resisted_damage=0; 
 		 }
 	}
 	// Checks for random bugs on spells
