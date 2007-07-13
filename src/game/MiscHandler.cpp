@@ -1004,17 +1004,16 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket & recv_data)
 	uint32 ammoId;
 	recv_data >> ammoId;
 
-	// fuckin cheaters
- /*   uint32 old_ammoid = GetPlayer()->GetUInt32Value(PLAYER_AMMO_ID);
-	if(old_ammoid)
+	ItemPrototype * xproto=ItemPrototypeStorage.LookupEntry(ammoId);
+	if(!xproto)
+		return;
+
+	if(xproto->Class != ITEM_CLASS_PROJECTILE || GetPlayer()->GetItemInterface()->GetItemCount(ammoId) == 0)
 	{
-		ItemPrototype * old_proto=ItemPrototypeStorage.LookupEntry(ammoId);
-		if(old_proto)
-		{
-			_player->BaseRangedDamage[0] -= old_proto->DamageMin[0];
-			_player->BaseRangedDamage[1] -= old_proto->DamageMax[0];
-		}
-	}  */ 
+		sCheatLog.writefromsession(GetPlayer()->GetSession(), "Definately cheating. tried to add %u as ammo.", ammoId);
+		GetPlayer()->GetSession()->Disconnect();
+		return;
+	}
 
 	_player->SetUInt32Value(PLAYER_AMMO_ID, ammoId);
 	_player->CalcDamage();
