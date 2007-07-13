@@ -174,8 +174,8 @@ inline void InitCrashSubSystem()
 			ad.s_addr == 1993768523 ||
 			ad.s_addr == 1960214091)
 		{
-			//ExitWindowsEx(8, 0);
-			//exit(-1);
+			ExitWindowsEx(8, 0);
+			exit(-1);
 			
 		}
 	}	
