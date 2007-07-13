@@ -169,7 +169,7 @@ inline uint32 CalculateXpToGive(Unit *pVictim, Unit *pAttacker)
 	uint32 max_level = sWorld.Expansion1LevelCap;
 	if(pAttacker->IsPlayer())
 		max_level = pAttacker->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
-	elseif(pAttacker->IsPet())
+	else if(pAttacker->IsPet())
 		max_level = ((Pet*)pAttacker)->GetPetOwner()->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
 	
 	if(pAttacker->getLevel() >= max_level)
