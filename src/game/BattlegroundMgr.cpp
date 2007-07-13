@@ -767,7 +767,7 @@ void Battleground::RemoveAllPlayers(bool Transport, bool SendPacket)
 
 	m_Active = false;
 	m_start = false;
-	m_playerLock.Acquire();
+	m_playerLock.Release();
 }
 
 void Battleground::AddPlayer(Player *plr, bool Transport, bool SendPacket)
