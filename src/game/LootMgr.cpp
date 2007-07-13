@@ -227,7 +227,7 @@ void LootMgr::PushLoot(StoreLootList *list,Loot * loot)
 		ItemPrototype *itemproto = ItemPrototypeStorage.LookupEntry(list->items[x].item.itemid);
 		if(Rand(list->items[x].chance * sWorld.getRate(RATE_DROP)) )//|| itemproto->Class == ITEM_CLASS_QUEST)
 		{
-			for(uint32 i = 0; i < loot->items.size(); ++i)
+			for(i = 0; i < loot->items.size(); ++i)
 			{
 				//itemid rand match a already placed item, if item is stackable and unique(stack), increment it, otherwise skips
 				if((loot->items[i].item.itemid == list->items[x].item.itemid) && itemproto->MaxCount && (loot->items[i].iItemsCount < itemproto->MaxCount))

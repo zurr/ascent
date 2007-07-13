@@ -244,7 +244,7 @@ void WorldSession::HandleStablePet(WorldPacket & recv_data)
 
 	// remove pet from world and association with player
 	Pet *pPet = _player->GetSummon();
-	if(!pPet) return;
+	if(!pPet || pPet->GetUInt32Value(UNIT_CREATED_BY_SPELL) != 0) return;
 
 	pPet->Remove(false, true, true);	// no safedelete needed
 }
