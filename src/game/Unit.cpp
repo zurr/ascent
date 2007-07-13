@@ -87,6 +87,7 @@ Unit::Unit()
 	SM_PPenalty=0;
 	SM_FCooldownTime = 0;
 	SM_PCooldownTime = 0;
+	SM_FChanceOfSuccess = 0;
 	m_pacified = 0;
 	m_interruptRegen = 0;
 	m_resistChance = 0;
@@ -239,6 +240,11 @@ Unit::~Unit()
 	if(SM_FSpeedMod != 0) delete [] SM_FSpeedMod ;
 	if(SM_PNonInterrupt != 0) delete [] SM_PNonInterrupt ;
 	if(SM_FPenalty != 0) delete [] SM_FPenalty ;
+	if(SM_PPenalty != 0) delete [] SM_PPenalty ;
+	if(SM_PEffectBonus != 0) delete [] SM_PEffectBonus ;
+	if(SM_FCooldownTime != 0) delete [] SM_FCooldownTime ;
+	if(SM_PCooldownTime != 0) delete [] SM_PCooldownTime ;
+	if(SM_FChanceOfSuccess != 0) delete [] SM_FChanceOfSuccess ;
 
 	delete m_aiInterface;
 
@@ -524,7 +530,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					if(sp->dummy == 1)
 						continue;
 			}			
-			uint32 proc_Chance = itr2->procChance + GetExtraSuccessChance(ospinfo);
+			int32 proc_Chance = (int32)itr2->procChance;
+			SM_FIValue(SM_FChanceOfSuccess, &proc_Chance, ospinfo->SpellGroupType);
 			if(spellId && Rand(proc_Chance))
 			{
 				//check if we can trigger due to time limitation
@@ -1303,6 +1310,8 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			{
 				aproc |= PROC_ON_RANGED_ATTACK;
 				vproc |= PROC_ON_RANGED_ATTACK_VICTIM;
+				if(ability && ability->Id==3018 && IsPlayer() && getClass()==HUNTER)
+					aproc |= PROC_ON_AUTO_SHOT_HIT;
 			}
 
 			if(exclusive_damage)
@@ -3664,19 +3673,4 @@ void Unit::GetSpeedDecrease()
 		m_slowdown = min(m_slowdown, (itr->second.first->EffectBasePoints[itr->second.second] + 1));
 
 	m_speedModifier += m_slowdown;
-}
-
-uint32 Unit::GetExtraSuccessChance(SpellEntry * ospinfo)
-{
-	uint32 dummyVal = ospinfo->dummy;
-	uint32 extraChance = 0;
-	map<SpellEntry*,uint32>::iterator itr = SM_FChanceOfSuccess.begin();
-	for(; itr != SM_FChanceOfSuccess.end(); ++itr)
-	{
-		if(dummyVal == itr->first->dummy)
-		{
-			extraChance += itr->first->EffectBasePoints[itr->second] + 1;
-		}
-	}
-	return extraChance;
 }

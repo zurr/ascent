@@ -3286,17 +3286,17 @@ void Aura::SpellAuraModDodgePerc(bool apply)
 {
 	if (m_target->GetTypeId() == TYPEID_PLAYER)
 	{
-		int32 amt;
+		int32 amt = mod->m_amount;
+		SM_FIValue(m_target->SM_FDummy, &amt, GetSpellProto()->SpellGroupType);
 		if(apply)
 		{
-			amt = mod->m_amount;
 			if(amt<0)
 				SetNegative();
 			else
 				SetPositive();
 		}
 		else 
-			amt = -mod->m_amount;
+			amt = -amt;
 		static_cast<Player*>(m_target)->SetDodgeFromSpell(static_cast<Player*>(m_target)->GetDodgeFromSpell() + amt );
 		static_cast<Player*>(m_target)->UpdateChances();
 	}
@@ -5328,10 +5328,18 @@ void Aura::SpellAuraModRangedHaste(bool apply)
 
 	if (m_target->GetTypeId() == TYPEID_PLAYER)
 	{
+		int32 amount = mod->m_amount;
+		if(GetSpellProto()->Id == 6150)// Quick Shots
+		{
+			Unit * pCaster = GetUnitCaster();
+			if(pCaster)
+				SM_FIValue(pCaster->SM_FDummy,&amount,0x100000);
+		}
+
 		if(apply)
-			static_cast<Player*>(m_target)->m_rangedattackspeedmod += mod->m_amount;
+			static_cast<Player*>(m_target)->m_rangedattackspeedmod += amount;
 		else
-			static_cast<Player*>(m_target)->m_rangedattackspeedmod -= mod->m_amount;
+			static_cast<Player*>(m_target)->m_rangedattackspeedmod -= amount;
 		((Player*)m_target)->UpdateAttackSpeed();
 	}
 	else
@@ -5841,7 +5849,7 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 		break;
 
 	case SMT_TRIGGER:
-		SendDummyModifierLog(&m_target->SM_FChanceOfSuccess,m_spellProto,mod->i,apply);
+		SendModifierLog(&m_target->SM_FChanceOfSuccess,val,AffectedGroups,mod->m_miscValue);
 		break;
 
 /*	case SMT_TREAT_REDUCED:

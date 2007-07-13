@@ -903,6 +903,10 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
 					if(strstr(desc,"chance to reflect Fire spells"))
 						pr|=PROC_ON_SPELL_HIT_VICTIM;
+					if(strstr(desc,"hunter takes on the aspects of a hawk"))
+						pr|=PROC_TAGRGET_SELF | PROC_ON_RANGED_ATTACK;
+					if(strstr(desc,"successful auto shot attacks"))
+						pr|=PROC_ON_AUTO_SHOT_HIT;
 //					if(strstr(desc,"Your critical strikes from Fire damage"))
 //						pr|=PROC_ON_SPELL_CRIT_HIT;
 				}//end "if procspellaura"
@@ -974,6 +978,9 @@ void World::SetInitialWorldSettings()
 			sp->procChance = sp->EffectBasePoints[0] + 1;
 			sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
 		}
+		//Improved Aspect of the Hawk
+		if(strstr(nametext, "Improved Aspect of the Hawk"))
+			sp->EffectSpellGroupRelation[1] = 0x100000;
 		//more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
 		else if( strstr(nametext, "Nature's Guardian"))
 		{

@@ -232,7 +232,7 @@ enum procFlags
 	PROC_ON_UNK2_DAMAGE_VICTIM	  = 0x80000,
 	PROC_ON_ANY_DAMAGE_VICTIM	   = 0x100000,
 	PROC_ON_TRAP_TRIGGERED		  = 0x200000,
-	PROC_UNUSED1					= 0x400000,
+	PROC_ON_AUTO_SHOT_HIT			= 0x400000,
 	PROC_UNUSED2					= 0x800000,
 	PROC_REMOVEONUSE				= 0x8000000,//our custom flag to decide if proc dmg or shield
 	PROC_MISC						= 0x10000000,//our custom flag to decide if proc dmg or shield
