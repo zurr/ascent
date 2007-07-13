@@ -938,7 +938,7 @@ void Unit::RegenerateHealth()
 void Unit::RegeneratePower()
 {
         // This is only 2000 IF the power is not rage
-        m_P_regenTimer = 2000;//set next regen time 
+    m_P_regenTimer = 2000;//set next regen time 
 
 	if (!isAlive())
 		return;
@@ -982,14 +982,12 @@ void Unit::RegeneratePower()
 		// These only NOT in combat
 		if(!static_cast<Player*>(this)->isInCombat())
 		{
-		        // This was already checked above, redundant
-			//if(powertype == POWER_TYPE_RAGE && !static_cast<Player*>(this)->isInCombat())//rage is dropped only out of combat
-
-  		        // Rage timer is 3 seconds not 2
+	        // Rage timer is 3 seconds not 2
+	        if(powertype == POWER_TYPE_RAGE)
+			{
 		        m_P_regenTimer = 3000;
-
-		        if(powertype == POWER_TYPE_RAGE)
-			        static_cast<Player*>(this)->LooseRage();
+		        static_cast<Player*>(this)->LooseRage();
+			}
 		}
 	}
 	else
