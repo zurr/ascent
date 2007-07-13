@@ -22,6 +22,51 @@
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature * c) { return new cl(c); }
 #define ADD_GOSSIP_FACTORY_FUNCTION(cl) static GossipScript * Create() { return new cl; }
 
+class Guild;
+struct Quest;
+enum ServerHookEvents
+{
+	SERVER_HOOK_EVENT_ON_NEW_CHARACTER		= 1,
+	SERVER_HOOK_EVENT_ON_KILL_PLAYER		= 2,
+	SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD	= 3,
+	SERVER_HOOK_EVENT_ON_ENTER_WORLD		= 4,
+	SERVER_HOOK_EVENT_ON_GUILD_JOIN			= 5,
+	SERVER_HOOK_EVENT_ON_DEATH				= 6,
+	SERVER_HOOK_EVENT_ON_REPOP				= 7,
+	SERVER_HOOK_EVENT_ON_EMOTE				= 8,
+	SERVER_HOOK_EVENT_ON_ENTER_COMBAT		= 9,
+	SERVER_HOOK_EVENT_ON_CAST_SPELL			= 10,
+	SERVER_HOOK_EVENT_ON_TICK				= 11,
+	SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST		= 12,
+	SERVER_HOOK_EVENT_ON_LOGOUT				= 13,
+	SERVER_HOOK_EVENT_ON_QUEST_ACCEPT		= 14,
+	SERVER_HOOK_EVENT_ON_ZONE				= 15,
+	SERVER_HOOK_EVENT_ON_CHAT				= 16,
+	SERVER_HOOK_EVENT_ON_LOOT				= 17,
+	SERVER_HOOK_EVENT_ON_GUILD_CREATE		= 18,
+
+	NUM_SERVER_HOOKS,
+};
+
+/* Hook typedefs */
+typedef bool(*tOnNewCharacter)(uint32 Race, uint32 Class, WorldSession * Session, const char * Name);
+typedef void(*tOnKillPlayer)(Player * pPlayer, Player * pVictim);
+typedef void(*tOnFirstEnterWorld)(Player * pPlayer);
+typedef void(*tOnEnterWorld)(Player * pPlayer);
+typedef void(*tOnGuildCreate)(Player * pLeader, Guild * pGuild);
+typedef void(*tOnGuildJoin)(Player * pPlayer, Guild * pGuild);
+typedef void(*tOnDeath)(Player * pPlayer);
+typedef bool(*tOnRepop)(Player * pPlayer);
+typedef void(*tOnEmote)(Player * pPlayer, uint32 Emote);
+typedef void(*tOnEnterCombat)(Player * pPlayer, Unit * pTarget);
+typedef bool(*tOnCastSpell)(Player * pPlayer, SpellEntry * pSpell);
+typedef void(*tOnTick)();
+typedef bool(*tOnLogoutRequest)(Player * pPlayer);
+typedef void(*tOnQuestAccept)(Player * pPlayer, Quest * pQuest);
+typedef void(*tOnZone)(Player * pPlayer, uint32 Zone);
+typedef void(*tOnChat)(Player * pPlayer, uint32 Type, uint32 Lang, const char * Message, const char * Misc);
+typedef void(*tOnLoot)(Player * pPlayer, Unit * pTarget, uint32 Money, uint32 ItemId);
+
 class Spell;
 class Aura;
 class Creature;
@@ -48,11 +93,14 @@ typedef HM_NAMESPACE::hash_map<uint32, exp_create_gameobject_ai> GameObjectCreat
 typedef HM_NAMESPACE::hash_map<uint32, exp_create_gossip_script> GossipCreateMap;
 typedef HM_NAMESPACE::hash_map<uint32, exp_handle_dummy_aura> HandleDummyAuraMap;
 typedef HM_NAMESPACE::hash_map<uint32, exp_handle_dummy_spell> HandleDummySpellMap;
+typedef list<void*> ServerHookList;
 typedef list<SCRIPT_MODULE> LibraryHandleMap;
 
 class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 {
 public:
+
+	friend class HookInterface;
 
 	void LoadScripts();
 	void UnloadScripts();
@@ -70,6 +118,7 @@ public:
 	void register_gossip_script(uint32 entry, exp_create_gossip_script callback);
 	void register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback);
 	void register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback);
+	void register_hook(ServerHookEvents event, void * function_pointer);
 
 protected:
 	CreatureCreateMap _creatures;
@@ -78,6 +127,7 @@ protected:
 	HandleDummyAuraMap _auras;
 	HandleDummySpellMap _spells;
 	LibraryHandleMap _handles;
+	ServerHookList _hooks[NUM_SERVER_HOOKS];
 };
 
 class SERVER_DECL CreatureAIScript
@@ -179,6 +229,30 @@ protected:
 	QuestLogEntry *_qLogEntry;
 };
 
+class SERVER_DECL HookInterface : public Singleton<HookInterface>
+{
+public:
+	friend class ScriptMgr;
+
+	bool OnNewCharacter(uint32 Race, uint32 Class, WorldSession * Session, const char * Name);
+	void OnKillPlayer(Player * pPlayer, Player * pVictim);
+	void OnFirstEnterWorld(Player * pPlayer);
+	void OnEnterWorld(Player * pPlayer);
+	void OnGuildCreate(Player * pLeader, Guild * pGuild);
+	void OnGuildJoin(Player * pPlayer, Guild * pGuild);
+	void OnDeath(Player * pPlayer);
+	bool OnRepop(Player * pPlayer);
+	void OnEmote(Player * pPlayer, uint32 Emote);
+	void OnEnterCombat(Player * pPlayer, Unit * pTarget);
+	bool OnCastSpell(Player * pPlayer, SpellEntry * pSpell);
+	bool OnLogoutRequest(Player * pPlayer);
+	void OnQuestAccept(Player * pPlayer, Quest * pQuest);
+	void OnZone(Player * pPlayer, uint32 Zone);
+	void OnChat(Player * pPlayer, uint32 Type, uint32 Lang, const char * Message, const char * Misc);
+	void OnLoot(Player * pPlayer, Unit * pTarget, uint32 Money, uint32 ItemId);
+};
+
 #define sScriptMgr ScriptMgr::getSingleton()
+#define sHookInterface HookInterface::getSingleton()
 
 #endif

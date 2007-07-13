@@ -79,6 +79,7 @@ void Guild::AddNewGuildMember(Player *plyr)
 	gMember->lastOnline = time(NULL);
 
 	AddGuildMember(gMember);
+	sHookInterface.OnGuildJoin(plyr, this);
 }
 
 bool Guild::DeleteGuildMember(uint64 guid)

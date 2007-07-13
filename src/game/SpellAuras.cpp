@@ -1578,6 +1578,8 @@ void Aura::SpellAuraModConfuse(bool apply)
 			m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 			//m_target->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GetUnitCaster(), 0);
 		}
+		if(m_target->IsPlayer())
+			sHookInterface.OnEnterCombat(((Player*)m_target), m_caster);
 	}
 }
 
@@ -1685,6 +1687,8 @@ void Aura::SpellAuraModFear(bool apply)
 			m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 			m_target->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GetUnitCaster(), 0);
 		}
+		if(m_target->IsPlayer())
+			sHookInterface.OnEnterCombat(((Player*)m_target), m_caster);
 	}
 }
 

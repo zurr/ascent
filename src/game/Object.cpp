@@ -1392,6 +1392,12 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 
 	if(this->IsUnit())
 	{
+		if(!pVictim->isInCombat() && pVictim->IsPlayer())
+			sHookInterface.OnEnterCombat((Player*)pVictim, ((Unit*)this));
+
+		if(IsPlayer() && !((Player*)this)->isInCombat())
+			sHookInterface.OnEnterCombat(((Player*)this), ((Player*)this));
+
 		Player * plr = 0;
 		if(IsPet())
 			plr = static_cast<Pet*>(this)->GetPetOwner();
@@ -1696,6 +1702,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			
 			if(pVictim->IsPlayer())
 			{
+				sHookInterface.OnKillPlayer(((Player*)this), ((Player*)pVictim));
 				if(((Unit*)this)->getLevel() > pVictim->getLevel())
 				{
 					unsigned int diff = ((Unit*)this)->getLevel() - pVictim->getLevel();

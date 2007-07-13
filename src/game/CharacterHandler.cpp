@@ -127,8 +127,9 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 {
 	CHECK_PACKET_SIZE(recv_data, 10);
 	std::string name;
+	uint8 race, class_;
 
-	recv_data >> name;
+	recv_data >> name >> race >> class_;
 	recv_data.rpos(0);
 
 	if(!VerifyName(name.c_str(), name.length()))
@@ -138,6 +139,12 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	}
 
 	if(objmgr.GetPlayerInfoByName(name) != 0)
+	{
+		OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
+		return;
+	}
+
+	if(!sHookInterface.OnNewCharacter(race, class_, this, name.c_str()))
 	{
 		OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
 		return;
@@ -624,8 +631,6 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 				sWorld.GetSessionCount(), sWorld.PeakSessionCount, sWorld.mAcceptedConnections );
 		}
 	}
-
-	if(plr->m_FirstLogin) plr->m_FirstLogin = false;
 
 	// Calculate rested experience if there is time between lastlogoff and now
 	uint32 currenttime = (uint32)time(NULL);

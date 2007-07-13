@@ -89,7 +89,7 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 		CALL_SCRIPT_EVENT(pCreature, OnLootTaken)(_player, it);
 
 	add = GetPlayer()->GetItemInterface()->FindItemLessMax(itemid, amt, false);
-	
+	sHookInterface.OnLoot(_player, pCreature, 0, itemid);
 	if (!add)
 	{
 		slotresult = GetPlayer()->GetItemInterface()->FindFreeInventorySlot(it);
@@ -159,12 +159,14 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 		_player->InterruptSpell();
 
 	WorldPacket pkt;	
+	Unit * pt = 0;
 
 	if(UINT32_LOPART(GUID_HIPART(lootguid)) == HIGHGUID_UNIT)
 	{
 		Creature* pCreature = _player->GetMapMgr()->GetCreature(lootguid);
 		if(!pCreature)return;
 		pLoot=&pCreature->loot;
+		pt = pCreature;
 	}
 	else if(UINT32_LOPART(GUID_HIPART(lootguid)) == HIGHGUID_GAMEOBJECT)
 	{
@@ -184,6 +186,7 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 		if(!pPlayer) return;
 		pLoot = &pPlayer->loot;
 		pPlayer->bShouldHaveLootableOnCorpse = false;
+		pt = pPlayer;
 	}
 	else if( (UINT32_LOPART(GUID_HIPART(lootguid)) == HIGHGUID_ITEM) )
 	{
@@ -215,7 +218,10 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 	if(!_player->InGroup())
 	{
 		if(money)
+		{
 			GetPlayer()->ModUInt32Value( PLAYER_FIELD_COINAGE , money);
+			sHookInterface.OnLoot(_player, pt, money, 0);
+		}
 	}
 	else
 	{

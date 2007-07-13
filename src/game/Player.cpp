@@ -2968,6 +2968,13 @@ void Player::OnPushToWorld()
 
 	Unit::OnPushToWorld();
    
+	if(m_FirstLogin)
+	{
+		sHookInterface.OnFirstEnterWorld(this);
+		m_FirstLogin = false;
+	}
+
+	sHookInterface.OnEnterWorld(this);
 
 	if(m_TeleportState == 1)		// First world enter
 		CompleteLoading();
@@ -3569,6 +3576,8 @@ void Player::KillPlayer()
 	SetUInt32Value( UNIT_DYNAMIC_FLAGS, 0x00 );
 	if(this->getClass() == WARRIOR) //rage resets on death
 		SetUInt32Value(UNIT_FIELD_POWER2, 0);
+
+	sHookInterface.OnDeath(this);
 }
 
 void Player::CreateCorpse()
@@ -3777,7 +3786,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 		itr->Destruct();
 	}
 
-	if(dest.x != 0 && dest.y != 0 && dest.z != 0)
+	if(sHookInterface.OnRepop(this) && dest.x != 0 && dest.y != 0 && dest.z != 0)
 	{
 		SafeTeleport(mapid, 0, dest);
 	}
@@ -6333,6 +6342,7 @@ void Player::Gossip_SendPOI(float X, float Y, uint32 Icon, uint32 Flags, uint32 
 void Player::ZoneUpdate(uint32 ZoneId)
 {
 	m_zoneId = ZoneId;
+	sHookInterface.OnZone(this, ZoneId);
 
 	/*std::map<uint32, AreaTable*>::iterator iter = sWorld.mZoneIDToTable.find(ZoneId);
 	if(iter == sWorld.mZoneIDToTable.end())

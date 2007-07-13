@@ -24,9 +24,13 @@
 #endif
 
 initialiseSingleton(ScriptMgr);
+initialiseSingleton(HookInterface);
 
 void ScriptMgr::LoadScripts()
 {
+	if(!HookInterface::getSingletonPtr())
+		new HookInterface;
+
 	sLog.outString("Loading External Script Libraries...");
 	sLog.outString("");
 
@@ -494,3 +498,138 @@ void GossipScript::Destroy()
 	delete this;
 }
 
+void ScriptMgr::register_hook(ServerHookEvents event, void * function_pointer)
+{
+	ASSERT(event < NUM_SERVER_HOOKS);
+	_hooks[event].push_back(function_pointer);
+}
+
+/* Hook Implementations */
+#define OUTER_LOOP_BEGIN(type, fptr_type) if(!sScriptMgr._hooks[type].size()) { \
+	return; } \
+	fptr_type call; \
+	for(ServerHookList::iterator itr = sScriptMgr._hooks[type].begin(); itr != sScriptMgr._hooks[type].end(); ++itr) { \
+	call = ((fptr_type)*itr);
+
+#define OUTER_LOOP_END }
+
+#define OUTER_LOOP_BEGIN_COND(type, fptr_type) if(!sScriptMgr._hooks[type].size()) { \
+	return true; } \
+	fptr_type call; \
+	bool ret_val = true; \
+	for(ServerHookList::iterator itr = sScriptMgr._hooks[type].begin(); itr != sScriptMgr._hooks[type].end(); ++itr) { \
+		call = ((fptr_type)*itr);
+
+#define OUTER_LOOP_END_COND } return ret_val;
+
+bool HookInterface::OnNewCharacter(uint32 Race, uint32 Class, WorldSession * Session, const char * Name)
+{
+	OUTER_LOOP_BEGIN_COND(SERVER_HOOK_EVENT_ON_NEW_CHARACTER, tOnNewCharacter)
+		ret_val = (call)(Race, Class, Session, Name);
+	OUTER_LOOP_END_COND
+}
+
+void HookInterface::OnKillPlayer(Player * pPlayer, Player * pVictim)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_KILL_PLAYER, tOnKillPlayer)
+		(call)(pPlayer, pVictim);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnFirstEnterWorld(Player * pPlayer)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD, tOnFirstEnterWorld)
+		(call)(pPlayer);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnEnterWorld(Player * pPlayer)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_ENTER_WORLD, tOnEnterWorld)
+		(call)(pPlayer);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnGuildCreate(Player * pLeader, Guild * pGuild)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_GUILD_CREATE, tOnGuildCreate)
+		(call)(pLeader, pGuild);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnGuildJoin(Player * pPlayer, Guild * pGuild)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_GUILD_JOIN, tOnGuildJoin)
+		(call)(pPlayer, pGuild);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnDeath(Player * pPlayer)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_DEATH, tOnDeath)
+		(call)(pPlayer);
+	OUTER_LOOP_END
+}
+
+bool HookInterface::OnRepop(Player * pPlayer)
+{
+	OUTER_LOOP_BEGIN_COND(SERVER_HOOK_EVENT_ON_REPOP, tOnRepop)
+		ret_val = (call)(pPlayer);
+	OUTER_LOOP_END_COND
+}
+
+void HookInterface::OnEmote(Player * pPlayer, uint32 Emote)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_EMOTE, tOnEmote)
+		(call)(pPlayer, Emote);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnEnterCombat(Player * pPlayer, Unit * pTarget)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_ENTER_COMBAT, tOnEnterCombat)
+		(call)(pPlayer, pTarget);
+	OUTER_LOOP_END
+}
+
+bool HookInterface::OnCastSpell(Player * pPlayer, SpellEntry* pSpell)
+{
+	OUTER_LOOP_BEGIN_COND(SERVER_HOOK_EVENT_ON_CAST_SPELL, tOnCastSpell)
+		ret_val = (call)(pPlayer, pSpell);
+	OUTER_LOOP_END_COND
+}
+
+bool HookInterface::OnLogoutRequest(Player * pPlayer)
+{
+	OUTER_LOOP_BEGIN_COND(SERVER_HOOK_EVENT_ON_LOGOUT, tOnLogoutRequest)
+		ret_val = (call)(pPlayer);
+	OUTER_LOOP_END_COND
+}
+
+void HookInterface::OnQuestAccept(Player * pPlayer, Quest * pQuest)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT, tOnQuestAccept)
+		(call)(pPlayer, pQuest);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnZone(Player * pPlayer, uint32 Zone)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_ZONE, tOnZone)
+		(call)(pPlayer, Zone);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnChat(Player * pPlayer, uint32 Type, uint32 Lang, const char * Message, const char * Misc)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_CHAT, tOnChat)
+		(call)(pPlayer, Type, Lang, Message, Misc);
+	OUTER_LOOP_END
+}
+
+void HookInterface::OnLoot(Player * pPlayer, Unit * pTarget, uint32 Money, uint32 ItemId)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_LOOT, tOnLoot)
+		(call)(pPlayer, pTarget, Money, ItemId);
+	OUTER_LOOP_END
+}

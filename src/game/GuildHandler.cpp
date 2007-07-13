@@ -1206,6 +1206,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket & recv_data)
 	gc->Destroy();
 
 	_player->GetItemInterface()->RemoveItemAmt(ITEM_ENTRY_GUILD_CHARTER, 1);
+	sHookInterface.OnGuildCreate(_player, pGuild);
 }
 
 void WorldSession::HandleCharterRename(WorldPacket & recv_data)

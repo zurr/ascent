@@ -333,6 +333,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 	ScriptSystem->OnQuestEvent(qst, ((Creature*)qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
 	
 	sLog.outDebug("WORLD: Added new QLE.");
+	sHookInterface.OnQuestAccept(_player, qst);
 }
 
 void WorldSession::HandleQuestgiverCancelOpcode(WorldPacket& recvPacket)

@@ -27,6 +27,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 	uint32 type;
 	uint32 lang;
 
+	const char * pMisc = 0;
+	const char * pMsg = 0;
 	recv_data >> type;
 	recv_data >> lang;
 
@@ -71,6 +73,9 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 
 			sLog.outString("[emote] %s: %s", _player->GetName(), msg.c_str());
 			delete data;
+			
+			pMsg=msg.c_str();
+			pMisc=0;
 
 		}break;
 	case CHAT_MSG_SAY:
@@ -88,6 +93,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			GetPlayer()->SendMessageToSet( data, true );
 			sLog.outString("[say] %s: %s", _player->GetName(), msg.c_str());
 			delete data;
+			pMsg=msg.c_str();
+			pMisc=0;
 		} break;
 	case CHAT_MSG_PARTY:
 	case CHAT_MSG_RAID:
@@ -127,6 +134,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			}
 			//sLog.outString("[party] %s: %s", _player->GetName(), msg.c_str());
 			delete data;
+			pMsg=msg.c_str();
+			pMisc=0;
 		} break;
 	case CHAT_MSG_GUILD:
 		{
@@ -154,7 +163,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 					}
 				}
 			}
-			//sLog.outString("[guild] %s: %s", _player->GetName(), msg.c_str());
+			pMsg=msg.c_str();
+			pMisc=0;
 		} break;
 	case CHAT_MSG_OFFICER:
 		{
@@ -181,7 +191,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 					}
 				}
 			}
-			sLog.outString("[officer] %s: %s", _player->GetName(), msg.c_str());
+			pMsg=msg.c_str();
+			pMisc=0;
 		} break;
 	case CHAT_MSG_YELL:
 		{
@@ -199,7 +210,9 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			SendPacket(data);
 			sWorld.SendZoneMessage(data, GetPlayer()->GetZoneId(), this);
 			delete data;
-			sLog.outString("[yell] %s: %s", _player->GetName(), msg.c_str());			
+			sLog.outString("[yell] %s: %s", _player->GetName(), msg.c_str());
+			pMsg=msg.c_str();
+			pMisc=0;
 		} break;
 	case CHAT_MSG_WHISPER:
 		{
@@ -261,6 +274,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			}
 
 			sLog.outString("[whisper] %s to %s: %s", _player->GetName(), to.c_str(), msg.c_str());
+			pMsg=msg.c_str();
+			pMisc=to.c_str();
 		} break;
 	case CHAT_MSG_CHANNEL:
 		{
@@ -278,6 +293,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 				chn->Say(GetPlayer(),msg.c_str());
 
 			//sLog.outString("[%s] %s: %s", channel.c_str(), _player->GetName(), msg.c_str());
+			pMsg=msg.c_str();
+			pMisc=channel.c_str();
 
 		} break;
 	case CHAT_MSG_AFK:
@@ -325,6 +342,9 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 	default:
 		sLog.outError("CHAT: unknown msg type %u, lang: %u", type, lang);
 	}
+
+	if(pMsg)
+		sHookInterface.OnChat(_player, type, lang, pMsg, pMisc);
 }
 
 void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
@@ -373,6 +393,7 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
 	{
 		WorldPacket data(SMSG_EMOTE, 28 + namelen);
 
+		sHookInterface.OnEmote(_player, (EmoteType)em->textid);
         switch(em->textid)
         {
             case EMOTE_STATE_SLEEP:
