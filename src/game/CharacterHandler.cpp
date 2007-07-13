@@ -636,7 +636,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	uint32 currenttime = (uint32)time(NULL);
 	float timediff = currenttime - plr->m_timeLogoff;
 
-	if(plr->m_timeLogoff > 0 && plr->GetUInt32Value(UNIT_FIELD_LEVEL) < sWorld.LevelCap)	// if timelogoff = 0 then it's the first login
+	if(plr->m_timeLogoff > 0 && plr->GetUInt32Value(UNIT_FIELD_LEVEL) < plr->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL))	// if timelogoff = 0 then it's the first login
 	{
 		if(plr->m_isResting) 
 		{

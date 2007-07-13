@@ -363,7 +363,7 @@ void QuestMgr::BuildRequestItems(WorldPacket *data, Quest* qst, Object* qst_give
 void QuestMgr::BuildQuestComplete(Player*plr, Quest* qst)
 {
 	uint32 xp ;
-	if(plr->getLevel() >= sWorld.LevelCap)
+	if(plr->getLevel() >= plr->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL))
 	{
 		plr->ModUInt32Value(PLAYER_FIELD_COINAGE, qst->reward_xp_as_money);
 		xp = 0;

@@ -1975,7 +1975,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 				continue;   // Class not valid for this race.
 
 			// Generate each level's information
-			uint32 MaxLevel = sWorld.LevelCap + 1;
+			uint32 MaxLevel = sWorld.Expansion1LevelCap + 1;
 			LevelInfo* lvl=0, lastlvl;
 			lastlvl.HP = PCI->health;
 			lastlvl.Mana = PCI->mana;
@@ -2159,8 +2159,8 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
 		{
 			// We got a match.
 			// Let's check that our level is valid first.
-			if(Level > sWorld.LevelCap) // too far.
-				Level = sWorld.LevelCap;
+			if(Level > sWorld.Expansion1LevelCap) // too far.
+				Level = sWorld.Expansion1LevelCap;
 
 			// Pull the level information from the second map.
 			LevelMap::iterator it2 = itr->second->find(Level);
