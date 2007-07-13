@@ -537,6 +537,7 @@ public:
 	// Spells
 	bool HasSpell(uint32 spell);
 	bool HasDeletedSpell(uint32 spell);
+	uint32 GetMaxLearnedSpellLevel(uint32 spell);
 	void smsg_InitialSpells();
 	void addSpell(uint32 spell_idy);
 	void removeSpellByHashName(uint32 hash);

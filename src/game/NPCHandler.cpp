@@ -155,7 +155,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 		// HACKFIX: dont show already known spells
 //		if(Status == TRAINER_STATUS_ALREADY_HAVE && _player->getClass() == PALADIN || RequiredLevel < 0)
 		//do not sell spells that we already have and spells that do not cost anything are probably talents ...
-		if(Status == TRAINER_STATUS_ALREADY_HAVE || pSpell->Cost==0)
+		if(Status != TRAINER_STATUS_LEARNABLE || pSpell->Cost==0)
 		{
 			*SpellCount--;
 			continue;
@@ -237,8 +237,18 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 	// check if we already have this spell
 	//Zack 2007 06 28 :removed checking of deleted spells. why do we need that ? Why can't we relearn what we tryed to forget once ?
 //	if(_player->HasSpell( pSpell->SpellID ) || _player->HasDeletedSpell(pSpell->SpellID) )	// Check deleted here too.
-	if(_player->HasSpell( pSpell->SpellID ))
-		return TRAINER_STATUS_ALREADY_HAVE;
+//	if(_player->HasSpell( pSpell->SpellID ))
+//		return TRAINER_STATUS_ALREADY_HAVE;
+
+	SpellEntry *spinfo=sSpellStore.LookupEntry(pSpell->SpellID);
+	if(!spinfo)
+		return TRAINER_STATUS_NOT_LEARNABLE; //we should not teach spells that do not exist
+
+	if(_player->GetMaxLearnedSpellLevel(pSpell->SpellID)>=spinfo->spellLevel)
+		return TRAINER_STATUS_NOT_LEARNABLE; //we already know this spell or have a higher rank
+
+	//we may also look at spell max level to not be 0 - those spells should not be teached to us
+	//maybe even check price to not be 0 since those spells are probably talents
 
 	// check if we have a required spell
 	if(pSpell->RequiredSpell && !_player->HasSpell( pSpell->RequiredSpell))

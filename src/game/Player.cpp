@@ -2827,6 +2827,25 @@ bool Player::HasSpell(uint32 spell)
 	return mSpells.find(spell) != mSpells.end();
 }
 
+uint32 Player::GetMaxLearnedSpellLevel(uint32 spell)
+{
+	SpellEntry *spinfo=sSpellStore.LookupEntry(spell);
+	if(!spinfo)
+		return 0;
+	uint32 max_level=0;
+	SpellSet::iterator iter;
+	for(iter= mSpells.begin();iter != mSpells.end();)
+	{
+		//get hash name for this spell
+		SpellEntry *spinfo2 = sSpellStore.LookupEntry(*iter);
+		if(spinfo2->NameHash == spinfo->NameHash)
+			if(max_level<spinfo2->spellLevel);
+				max_level = spinfo2->spellLevel;
+	}
+	return max_level;
+}
+
+
 void Player::_LoadQuestLogEntry()
 {
 	QueryResult *result = CharacterDatabase.Query("SELECT * FROM questlog WHERE player_guid=%u", GetGUIDLow());
