@@ -808,9 +808,6 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler							 = &WorldSession::HandleUnlearnSkillOpcode;
 	
 	// Meeting Stone / Instances
-	WorldPacketHandlers[CMSG_MEETINGSTONE_INFO].handler						 = &WorldSession::HandleMeetingStoneInfoOpcode;
-	WorldPacketHandlers[CMSG_MEETINGSTONE_JOIN].handler						 = &WorldSession::HandleMeetingStoneJoinOpcode;
-	WorldPacketHandlers[CMSG_MEETINGSTONE_LEAVE].handler						= &WorldSession::HandleMeetingStoneLeaveOpcode;
 	WorldPacketHandlers[CMSG_SUMMON_RESPONSE].handler							= &WorldSession::HandleSummonResponseOpcode;
 	WorldPacketHandlers[CMSG_RESET_INSTANCE].handler							= &WorldSession::HandleResetInstanceOpcode;
 	WorldPacketHandlers[CMSG_SELF_RES].handler								  = &WorldSession::HandleSelfResurrectOpcode;

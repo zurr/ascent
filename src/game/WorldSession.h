@@ -580,10 +580,6 @@ protected:
 
 	//Acknowledgements
 	void HandleAcknowledgementOpcodes( WorldPacket & recv_data );
-	void HandleMeetingStoneInfoOpcode(WorldPacket& recv_data);
-	void HandleMeetingStoneJoinOpcode(WorldPacket& recv_data);
-	void HandleMeetingStoneLeaveOpcode(WorldPacket& recv_data);
-
 	void HandleMountSpecialAnimOpcode(WorldPacket& recv_data);	
 
 	void HandleSelfResurrectOpcode(WorldPacket& recv_data);

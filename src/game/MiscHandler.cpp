@@ -1139,11 +1139,18 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 					plyr->SetUInt32Value(UNIT_CHANNEL_SPELL, obj->m_ritualspell);
 					break;
 				}else if(obj->m_ritualmembers[i] == plyr->GetGUIDLow()) 
+				{
+					// we're deselecting :(
+					obj->m_ritualmembers[i] = 0;
+					plyr->SetUInt32Value(UNIT_CHANNEL_SPELL, 0);
+					plyr->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, 0);
 					return;
+				}
 			}
 
 			if(i == goinfo->SpellFocus - 1)
 			{
+				obj->m_ritualspell = 0;
 				Player * plr;
 				for(i=0;i<goinfo->SpellFocus;i++)
 				{
@@ -1175,7 +1182,6 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 				else if(goinfo->ID == 177193) // doom portal
 				{
 					Player *psacrifice = NULL;
-					SpellEntry *info = NULL;
 					Spell * spell = NULL;
 					
 					// kill the sacrifice player
@@ -1198,6 +1204,24 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 					targets.m_unitTarget = pCaster->GetGUID();
 					spell->prepare(&targets);					
 				}
+				else if(goinfo->ID == 179944)			// Summoning portal for meeting stones
+				{
+					Player * plr = _player->GetMapMgr()->GetPlayer(obj->m_ritualtarget);
+					if(!plr)
+						return;
+
+					Player * pleader = _player->GetMapMgr()->GetPlayer(obj->m_ritualcaster);
+					if(!pleader)
+						return;
+
+					info = sSpellStore.LookupEntry(goinfo->sound1);
+					Spell * spell = new Spell(pleader, info, true, 0);
+					SpellCastTargets targets(plr->GetGUID());
+					spell->prepare(&targets);
+
+					/* expire the gameobject */
+					obj->ExpireAndDelete();
+				}
 			}
 		}break;
 	case GAMEOBJECT_TYPE_GOOBER:
@@ -1209,6 +1233,33 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			WorldPacket pkt(SMSG_TRIGGER_CINEMATIC,4);
 			pkt << (uint32)1;//i ve found only on such item,id =1
 			SendPacket(&pkt);
+		}break;
+	case GAMEOBJECT_TYPE_MEETINGSTONE:	// Meeting Stone
+		{
+			/* Use selection */
+			Player * pPlayer = _player->GetMapMgr()->GetPlayer((uint32)_player->GetSelection());
+			if(!pPlayer || _player->m_Group != pPlayer->m_Group || !_player->m_Group)
+				return;
+
+			GameObjectInfo * info = GameObjectNameStorage.LookupEntry(179944);
+			if(!info)
+				return;
+
+			/* Create the summoning portal */
+			GameObject * pGo = _player->GetMapMgr()->CreateGameObject();
+			pGo->CreateFromProto(179944, _player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), 0);
+			pGo->m_ritualcaster = _player->GetGUIDLow();
+			pGo->m_ritualtarget = pPlayer->GetGUIDLow();
+			pGo->m_ritualspell = 18540;	// meh
+			pGo->PushToWorld(_player->GetMapMgr());
+
+			/* member one: the (w00t) caster */
+			pGo->m_ritualmembers[0] = _player->GetGUIDLow();
+			_player->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, pGo->GetGUID());
+			_player->SetUInt32Value(UNIT_CHANNEL_SPELL, pGo->m_ritualspell);
+			
+			/* expire after 2mins*/
+			sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1);
 		}break;
 	}   
 }
@@ -1332,43 +1383,6 @@ void WorldSession::HandleAcknowledgementOpcodes( WorldPacket & recv_data )
 		}
 	}*/
 
-}
-
-void WorldSession::HandleMeetingStoneJoinOpcode(WorldPacket& recv_data)
-{
-	uint32 zone_id = 0;
-	if(recv_data.size() < 4) return;
-	recv_data >> zone_id;   // guessed
-
-	//todo: add to meeting stone queue in instance mgr
-	
-	WorldPacket data(SMSG_MEETINGSTONE_SETQUEUE, 5);
-
-	data << uint32(zone_id);
-	data << uint8(MEETINGSTONE_STATUS_JOINED_MEETINGSTONE_QUEUE_FOR);
-
-	SendPacket(&data);
-}
-
-void WorldSession::HandleMeetingStoneInfoOpcode(WorldPacket& recv_data)
-{
-	WorldPacket data(SMSG_MEETINGSTONE_SETQUEUE, 5);
-	
-	data << uint32(0);								  // no zoneid
-	data << uint8(MEETINGSTONE_STATUS_NONE_UNK);		// this one is sent on login
-
-	SendPacket(&data);
-}
-
-void WorldSession::HandleMeetingStoneLeaveOpcode(WorldPacket& recv_data)
-{
-	// something like sInstanceMgr.RemovePlayerFromMeetingStone(_player)
-	WorldPacket data(SMSG_MEETINGSTONE_SETQUEUE, 5);
-	
-	data << uint32(0);							  // no zoneid
-	data << uint8(MEETINGSTONE_STATUS_NONE);		// set to 0 here. clears icon.
-
-	SendPacket(&data);
 }
 
 void WorldSession::HandleSelfResurrectOpcode(WorldPacket& recv_data)
