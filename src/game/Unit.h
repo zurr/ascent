@@ -818,6 +818,9 @@ public:
 	int32 * SM_PPenalty;//Pct
 	int32 * SM_PCooldownTime;
 	int32 * SM_FCooldownTime;
+	map<SpellEntry*,uint32> SM_FChanceOfSuccess;
+
+	uint32 GetExtraSuccessChance(SpellEntry * ospinfo);
 
 	//Events
 	void Emote (EmoteType emote);

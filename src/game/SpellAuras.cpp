@@ -4814,6 +4814,41 @@ void Aura::SendModifierLog(int32 ** m,int32 v,uint32 mask,uint8 type,bool pct)
 	}
 
 }
+
+void Aura::SendDummyModifierLog(std::map<SpellEntry*,uint32> * m,SpellEntry * spellInfo,uint32 i,bool apply,bool pct)
+{
+	WorldPacket data(SMSG_SET_FLAT_SPELL_MODIFIER+pct, 6);
+
+	int32 v = spellInfo->EffectBasePoints[i] + 1;
+	uint32 mask = spellInfo->EffectSpellGroupRelation[i];
+	uint8 type = spellInfo->EffectMiscValue[i];
+
+	if(apply)
+	{
+		m->insert(make_pair(spellInfo,i));
+	}
+	else
+	{
+		v = -v;
+		std::map<SpellEntry*,uint32>::iterator itr = m->find(spellInfo);
+		if (itr != m->end())
+			m->erase(itr);
+	}
+
+	for(uint32 x=0;x<SPELL_GROUPS;x++)
+	{
+		if((1<<x) & mask)
+		{
+			if(!m_target->IsPlayer())continue;
+			data << uint8(x);//group
+			data << uint8(type);//type 
+			data << v;//value
+			static_cast<Player*>(m_target)->GetSession()->SendPacket(&data);
+			data.clear();
+		}
+	}
+}
+
 void Aura::SpellAuraAddTargetTrigger(bool apply)
 {
 //	uint32 spellid = GetSpellId();
@@ -5290,6 +5325,7 @@ void Aura::SpellAuraModRangedHaste(bool apply)
 		SetNegative();
 	else
 		SetPositive();
+
 	if (m_target->GetTypeId() == TYPEID_PLAYER)
 	{
 		if(apply)
@@ -5802,6 +5838,10 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 	
 	case SMT_COOLDOWN_DECREASE:
 		SendModifierLog(&m_target->SM_FCooldownTime, val, AffectedGroups,mod->m_miscValue);
+		break;
+
+	case SMT_TRIGGER:
+		SendDummyModifierLog(&m_target->SM_FChanceOfSuccess,m_spellProto,mod->i,apply);
 		break;
 
 /*	case SMT_TREAT_REDUCED:

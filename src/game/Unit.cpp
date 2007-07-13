@@ -524,8 +524,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					if(sp->dummy == 1)
 						continue;
 			}			
-
-			if(spellId && Rand(itr2->procChance))
+			uint32 proc_Chance = itr2->procChance + GetExtraSuccessChance(ospinfo);
+			if(spellId && Rand(proc_Chance))
 			{
 				//check if we can trigger due to time limitation
 				if(ospinfo->proc_interval)
@@ -3664,4 +3664,19 @@ void Unit::GetSpeedDecrease()
 		m_slowdown = min(m_slowdown, (itr->second.first->EffectBasePoints[itr->second.second] + 1));
 
 	m_speedModifier += m_slowdown;
+}
+
+uint32 Unit::GetExtraSuccessChance(SpellEntry * ospinfo)
+{
+	uint32 dummyVal = ospinfo->dummy;
+	uint32 extraChance = 0;
+	map<SpellEntry*,uint32>::iterator itr = SM_FChanceOfSuccess.begin();
+	for(; itr != SM_FChanceOfSuccess.end(); ++itr)
+	{
+		if(dummyVal == itr->first->dummy)
+		{
+			extraChance += itr->first->EffectBasePoints[itr->second] + 1;
+		}
+	}
+	return extraChance;
 }
