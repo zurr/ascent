@@ -235,9 +235,7 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 		return TRAINER_STATUS_NOT_LEARNABLE;
 
 	// check if we already have this spell
-	//Zack 2007 06 28 :removed checking of deleted spells. why do we need that ? Why can't we relearn what we tryed to forget once ?
 //	if(_player->HasSpell( pSpell->SpellID ) || _player->HasDeletedSpell(pSpell->SpellID) )	// Check deleted here too.
-//	if(_player->HasSpell( pSpell->SpellID ))
 //		return TRAINER_STATUS_ALREADY_HAVE;
 
 	SpellEntry *spinfo=sSpellStore.LookupEntry(pSpell->SpellID);

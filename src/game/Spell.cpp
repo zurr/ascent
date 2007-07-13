@@ -185,6 +185,28 @@ Spell::~Spell()
 		RemoveItems();
 }
 
+//i might forget condicions here. Feel free to add them
+bool Spell::IsStealthSpell()
+{
+	//check if auraname is some stealth aura
+	if( m_spellInfo->EffectApplyAuraName[0]==16 ||
+		m_spellInfo->EffectApplyAuraName[1]==16 ||
+		m_spellInfo->EffectApplyAuraName[2]==16 )
+		return true;
+	return false;
+}
+
+//i might forget condicions here. Feel free to add them
+bool Spell::IsInvisibilitySpell()
+{
+	//check if auraname is some invisibility aura
+	if( m_spellInfo->EffectApplyAuraName[0]==18 ||
+		m_spellInfo->EffectApplyAuraName[1]==18 ||
+		m_spellInfo->EffectApplyAuraName[2]==18 )
+		return true;
+	return false;
+}
+
 void Spell::FillAllTargetsInArea(float srcx,float srcy,float srcz,uint32 ind)
 {
 	FillAllTargetsInArea(&m_targetUnits[ind],srcx,srcy,srcz,GetRadius(ind));
@@ -2815,7 +2837,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 				if(m_spellInfo->NameHash==0xCCC8A100)// Gouge
 					if(!target->isInFront(p_caster))
 						return SPELL_FAILED_NOT_INFRONT;
- 
+
 				if(m_spellInfo->Category==1131)//Hammer of wrath, requires target to have 20- % of hp
 				{
 					if(target->GetUInt32Value(UNIT_FIELD_HEALTH) == 0)
@@ -2843,6 +2865,14 @@ uint8 Spell::CanCast(bool rangetolerate)
 			AuraCheckResponse acr = target->AuraCheck(m_spellInfo->NameHash, m_spellInfo->RankNumber);
 			if(acr.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
 				return (uint8)SPELL_FAILED_AURA_BOUNCED;
+
+			//check if we are trying to stealth or turn invisible but it is not alowed right now
+			if(IsStealthSpell() || IsInvisibilitySpell())
+			{
+				//if we have Faerie Fire, we canot stealth or turn invisible
+				if(u_caster->HasNegativeAuraWithNameHash(2787586002))
+					return SPELL_FAILED_CANT_STEALTH;
+			}
 
 			/*SpellReplacement*rp=objmgr.GetReplacingSpells(m_spellInfo->Id);
 			if(rp)

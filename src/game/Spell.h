@@ -1379,6 +1379,9 @@ public:
 
 		return Rad[i];
 	}
+
+	bool IsStealthSpell();
+	bool IsInvisibilitySpell();
 	
 	int32 damage;
 	Aura* m_triggeredByAura;

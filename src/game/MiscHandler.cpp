@@ -301,6 +301,7 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 
 				party->SendPacketToAll(&data);
 			}
+/*			//this commented code is not used because it was never tested and finished !
 			else if(party->GetMethod() == PARTY_LOOT_RR)
 			{
 				Creature *target=GetPlayer()->GetMapMgr()->GetCreature(guid); //maybe we should extend this to other object types too
@@ -310,7 +311,7 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 						GetPlayer()->SendLoot(guid,1);
 					else return;
 				}
-			}
+			}*/
 		}	
 	}
 	GetPlayer()->SendLoot(guid,1);

@@ -1247,9 +1247,10 @@ void World::SetInitialWorldSettings()
 	}
 
 	//for test only
-	sp = sSpellStore.LookupEntry(12360);
+	sp = sSpellStore.LookupEntry(16498);
 	if(sp)
 	{
+//		printf("!!!!!!hash %u \n",sp->NameHash);
 //		sp->procChance=100;
 //		SpellDuration *sd=sSpellDuration.LookupEntry(sp->DurationIndex);
 //printf("iterruptflag %u, duration %u",sp->AuraInterruptFlags,GetDuration(sd));

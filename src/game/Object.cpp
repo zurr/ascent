@@ -1779,7 +1779,8 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 						switch(pGroup->GetMethod())
 						{
 						case PARTY_LOOT_RR:
-							{
+/*						//this commented code is not used because it was never tested and finished !
+						{
 								//get new tagger for creature
 								Player *tp = pGroup->GetnextRRlooter();
 								if(tp)
@@ -1790,7 +1791,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 									if(tp->IsVisible(victim))  // Save updates for non-existant creatures
 										tp->PushUpdateData(&buf, 1);
 								}
-							}break;
+							}break;*/
 						case PARTY_LOOT_FFA:
 						case PARTY_LOOT_GROUP:
 						case PARTY_LOOT_NBG:
