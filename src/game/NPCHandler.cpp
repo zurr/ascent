@@ -153,7 +153,9 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 		Status = TrainerGetSpellStatus(pSpell);
 
 		// HACKFIX: dont show already known spells
-		if(Status == TRAINER_STATUS_ALREADY_HAVE && _player->getClass() == PALADIN || RequiredLevel < 0)
+//		if(Status == TRAINER_STATUS_ALREADY_HAVE && _player->getClass() == PALADIN || RequiredLevel < 0)
+		//do not sell spells that we already have and spells that do not cost anything are probably talents ...
+		if(Status == TRAINER_STATUS_ALREADY_HAVE || pSpell->Cost==0)
 		{
 			*SpellCount--;
 			continue;
