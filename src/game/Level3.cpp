@@ -1960,6 +1960,24 @@ bool ChatHandler::HandleUnlockMovementCommand(const char* args, WorldSession* m_
 	return true;
 }
 
+bool ChatHandler::HandleMassSummonCommand(const char* args, WorldSession* m_session)
+{
+	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	objmgr._playerslock.AcquireReadLock();
+	Player * summoner = m_session->GetPlayer();
+	Player * plr;
+	for (itr = objmgr._players.begin(); itr != objmgr._players.end(); itr++)
+	{
+		plr = itr->second;
+		if(plr->GetSession() && plr->IsInWorld())
+		{
+			plr->SafeTeleport(summoner->GetMapId(), summoner->GetInstanceID(), summoner->GetPosition());
+		}
+	}
+	objmgr._playerslock.ReleaseReadLock();
+	return true;
+}
+
 bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session)
 {
 	if(!args || strlen(args) < 2)
