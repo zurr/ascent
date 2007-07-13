@@ -2839,7 +2839,7 @@ uint32 Player::GetMaxLearnedSpellLevel(uint32 spell)
 		//get hash name for this spell
 		SpellEntry *spinfo2 = sSpellStore.LookupEntry(*iter);
 		if(spinfo2->NameHash == spinfo->NameHash)
-			if(max_level<spinfo2->spellLevel);
+			if(max_level<spinfo2->spellLevel)
 				max_level = spinfo2->spellLevel;
 	}
 	return max_level;

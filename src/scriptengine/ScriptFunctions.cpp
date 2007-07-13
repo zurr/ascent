@@ -999,6 +999,25 @@ int Unit_SendChatMessageAltEntry(gmThread * a_thread)
 	return GM_OK;
 }
 
+int GM_GetUnitBySqlId(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(id, 0);
+	Creature * pc = objmgr.GetCreatureBySqlId(id);
+	if(!pc)
+	{
+		GM_EXCEPTION_MSG("could not find entrysqlid");
+		return GM_EXCEPTION;
+	}
+
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)pc;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_unitType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+
+	return GM_OK;
+}
+
 /*int Player_GetSelectedCreature(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
