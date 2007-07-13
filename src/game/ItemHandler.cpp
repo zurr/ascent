@@ -1069,8 +1069,6 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 	recv_data >> srcguid >> itemid;
 	recv_data >> amount >> slot;
 
-	if(_player->isCasting())
-		_player->InterruptSpell();
 
 	Creature *unit = _player->GetMapMgr()->GetCreature(srcguid);
 	if (unit == NULL || !unit->HasItems())
