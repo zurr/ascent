@@ -1975,4 +1975,9 @@ void World::Rehash(bool load)
 		config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
 
 	sMailSystem.config_flags = config_flags;
+	flood_lines = Config.MainConfig.GetIntDefault("FloodProtection", "Lines", 0);
+	flood_seconds = Config.MainConfig.GetIntDefault("FloodProtection", "Seconds", 0);
+	flood_message = Config.MainConfig.GetBoolDefault("FloodProtection", "SendMessage", false);
+	if(!flood_lines || !flood_seconds)
+		flood_lines = flood_seconds = 0;
 }

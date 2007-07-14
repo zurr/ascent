@@ -463,6 +463,10 @@ public:
 
     uint32 GetRealmType() { return realmtype; }
 
+	uint32 flood_lines;
+	uint32 flood_seconds;
+	bool flood_message;
+
 protected:
 	// update Stuff, FIXME: use diff
 	time_t _UpdateGameTime()

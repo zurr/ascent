@@ -32,7 +32,6 @@
 
 bool ON_CRASH_BREAK_DEBUGGER;
 extern TextLogger * Crash_Log;
-#include "Network/SocketMgrPoll.cpp"
 
 void StartCrashHandler()
 {
@@ -61,7 +60,6 @@ void StartCrashHandler()
 		// No debugger. On crash, we'll call OnCrash to save etc.
 		ON_CRASH_BREAK_DEBUGGER = false;
 	}
-	InitCrashSubSystem();
 	//ON_CRASH_BREAK_DEBUGGER = IsDebuggerPresent();
 }
 

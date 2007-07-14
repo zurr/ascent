@@ -25,12 +25,30 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 		return;
 
 	uint32 type;
-	uint32 lang;
+	int32 lang;
 
 	const char * pMisc = 0;
 	const char * pMsg = 0;
 	recv_data >> type;
 	recv_data >> lang;
+
+	if(lang != -1 && !GetPermissionCount() && sWorld.flood_lines)
+	{
+		/* flood detection, wheeee! */
+		if(World::UNIXTIME >= floodTime)
+		{
+			floodLines = 0;
+			floodTime = World::UNIXTIME + sWorld.flood_seconds;
+		}
+
+		if((++floodLines) > sWorld.flood_lines)
+		{
+			if(sWorld.flood_message)
+				_player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.", floodTime - World::UNIXTIME);
+
+			return;
+		}
+	}
 
 	std::stringstream irctext;
 	irctext.rdbuf()->str("");
@@ -88,7 +106,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(GetPlayer()->m_modlanguage >=0)
 				data = sChatHandler.FillMessageData( CHAT_MSG_SAY, GetPlayer()->m_modlanguage,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 			else 
-				data = sChatHandler.FillMessageData( CHAT_MSG_SAY, CanUseCommand('c') ? LANG_UNIVERSAL : lang,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
+				data = sChatHandler.FillMessageData( CHAT_MSG_SAY, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 
 			GetPlayer()->SendMessageToSet( data, true );
 			sLog.outString("[say] %s: %s", _player->GetName(), msg.c_str());
@@ -113,7 +131,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(GetPlayer()->m_modlanguage >=0)
 				data=sChatHandler.FillMessageData( type, GetPlayer()->m_modlanguage,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 			else
-				data=sChatHandler.FillMessageData( type, CanUseCommand('c') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0);
+				data=sChatHandler.FillMessageData( type, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0);
 			if(type == CHAT_MSG_PARTY && pGroup->GetGroupType() == GROUP_TYPE_RAID)
 			{
 				// only send to that subgroup
@@ -205,7 +223,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(GetPlayer()->m_modlanguage >=0)
 				data = sChatHandler.FillMessageData( CHAT_MSG_YELL, GetPlayer()->m_modlanguage,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 			else
-				data = sChatHandler.FillMessageData( CHAT_MSG_YELL, CanUseCommand('c') ? LANG_UNIVERSAL : lang,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
+				data = sChatHandler.FillMessageData( CHAT_MSG_YELL, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 
 			SendPacket(data);
 			sWorld.SendZoneMessage(data, GetPlayer()->GetZoneId(), this);
@@ -222,12 +240,15 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			Player *player = objmgr.GetPlayer(to.c_str(), false);
 			if(!player)
 			{
-				tmp = "Player \"";
+				/*tmp = "Player \"";
 				tmp += to.c_str();
 				tmp += "\" is not online.";
 				data = sChatHandler.FillSystemMessageData(  tmp.c_str() );
 				SendPacket(data);			  
-				delete data;
+				delete data;*/
+				data->Initialize(SMSG_CHAT_PLAYER_NOT_FOUND);
+				*data << to;
+				SendPacket(data);
 				break;
 			}
 
@@ -235,7 +256,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(!_player->GetSession()->GetPermissionCount() && player->bGMTagOn && player->gmTargets.count(_player) == 0)
 			{
 				// Build automated reply
-				string Reply = "This Game Master does not currently have an open ticket from you and did not recive you whisper. Please subit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
+				string Reply = "This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
 				data = sChatHandler.FillMessageData( CHAT_MSG_WHISPER, LANG_UNIVERSAL, Reply.c_str(), player->GetGUID(), 3);
 				SendPacket(data);
 				delete data;
@@ -248,7 +269,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			if(GetPlayer()->m_modlanguage >=0)
 				data = sChatHandler.FillMessageData( CHAT_MSG_WHISPER, GetPlayer()->m_modlanguage,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 			else
-				data = sChatHandler.FillMessageData( CHAT_MSG_WHISPER, CanUseCommand('c') ? LANG_UNIVERSAL : lang,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
+				data = sChatHandler.FillMessageData( CHAT_MSG_WHISPER, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang,  msg.c_str(), _player->GetGUID(), _player->bGMTagOn ? 4 : 0 );
 
 			player->GetSession()->SendPacket(data);
 			delete data;

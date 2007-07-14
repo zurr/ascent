@@ -657,6 +657,8 @@ public:
 
 	time_t packetThrottleTimeout;
 	uint32 packetThrottleCount;
+	uint32 floodLines;
+	uint32 floodTime;
 };
 
 typedef std::set<WorldSession*> SessionSet;

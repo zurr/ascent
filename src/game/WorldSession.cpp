@@ -29,6 +29,8 @@ _logoutTime(0), permissions(NULL), permissioncount(0), _loggingOut(false), insta
 	m_currMsTime = getMSTime();
 	bDeleted = false;
 	m_bIsWLevelSet = false;
+	floodLines = 0;
+	floodTime = World::UNIXTIME;
 
 	for(uint32 x=0;x<8;x++)
 		sAccountData[x].data=NULL;	

