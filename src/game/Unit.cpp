@@ -88,6 +88,7 @@ Unit::Unit()
 	SM_FCooldownTime = 0;
 	SM_PCooldownTime = 0;
 	SM_FChanceOfSuccess = 0;
+
 	m_pacified = 0;
 	m_interruptRegen = 0;
 	m_resistChance = 0;
@@ -225,6 +226,7 @@ Unit::~Unit()
 	if(SM_FDOT != 0) delete [] SM_FDOT ;
 	if(SM_PDOT != 0) delete [] SM_PDOT ;
 	if(SM_PEffectBonus != 0) delete [] SM_PEffectBonus ;
+    if(SM_FEffectBonus != 0) delete [] SM_FEffectBonus ;
 	if(SM_FDamageBonus != 0) delete [] SM_FDamageBonus ;
 	if(SM_PDamageBonus != 0) delete [] SM_PDamageBonus ;
 	if(SM_PDummy != 0) delete [] SM_PDummy ;
@@ -241,7 +243,6 @@ Unit::~Unit()
 	if(SM_PNonInterrupt != 0) delete [] SM_PNonInterrupt ;
 	if(SM_FPenalty != 0) delete [] SM_FPenalty ;
 	if(SM_PPenalty != 0) delete [] SM_PPenalty ;
-	if(SM_PEffectBonus != 0) delete [] SM_PEffectBonus ;
 	if(SM_FCooldownTime != 0) delete [] SM_FCooldownTime ;
 	if(SM_PCooldownTime != 0) delete [] SM_PCooldownTime ;
 	if(SM_FChanceOfSuccess != 0) delete [] SM_FChanceOfSuccess ;
