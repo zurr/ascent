@@ -160,6 +160,8 @@ public:
 	void HandleUpdateFieldChange(uint32 Index, Player * pPlayer);
 	void HandlePartialChange(uint32 Type, Player * pPlayer);
 
+	uint64 m_targetIcons[8];
+
 protected:
 	
 	Player* m_Leader;

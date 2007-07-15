@@ -313,38 +313,35 @@ void WorldSession::HandleMinimapPingOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleSetPlayerIconOpcode(WorldPacket& recv_data)
 {
-	if(!_player->IsInWorld()) return;
-	//printf("Received Set Player Icon opcode, size: %d\n", recv_data.size());
-	if(recv_data.size() < 9 || !_player->m_targetIcon)
-	{
-		// Clearing our icon
-		/*WorldPacket data;
-		data.Initialize(MSG_GROUP_SET_PLAYER_ICON);
-		data << uint8(0x00) << uint8(0) << _player->GetGUID();
-
-		if(_player->GetGroup())
-			_player->GetGroup()->SendPacketToAll(&data);
-		
-		_player->m_targetIcon = 0;*/
-
-		return;
-	}
-
 	uint64 guid;
 	uint8 icon;
-	recv_data >> icon >> guid;
+	Group * pGroup = _player->GetGroup();
+	if(!_player->IsInWorld() || !pGroup) return;
 
-	Player *plyr = _player->GetMapMgr()->GetPlayer(guid);
-	if(!plyr) return;
+	recv_data >> icon;
+	if(icon == 0xFF)
+	{
+		// client request
+		WorldPacket data(MSG_GROUP_SET_PLAYER_ICON, 73);
+		data << uint8(1);
+		for(uint8 i = 0; i < 8; ++i)
+			data << i << pGroup->m_targetIcons[i];
 
-	plyr->m_targetIcon = icon;
-	WorldPacket data;
-	data.Initialize(MSG_GROUP_SET_PLAYER_ICON);
-	data << uint8(0x00) << uint8(icon) << plyr->GetGUID();
-	
-	Group *grp = _player->GetGroup();
-	if(grp)
-		grp->SendPacketToAll(&data);
+		SendPacket(&data);
+	}
+	else if(_player->IsGroupLeader())
+	{
+		recv_data >> guid;
+		if(icon > 7)
+			return;			// whhopes,buffer overflow :p
+
+		// setting icon
+		WorldPacket data(MSG_GROUP_SET_PLAYER_ICON, 10);
+		data << uint8(0) << icon << guid;
+		pGroup->SendPacketToAll(&data);
+
+		pGroup->m_targetIcons[icon] = guid;
+	}
 }
 
 void WorldSession::SendPartyCommandResult(Player *pPlayer, uint32 p1, std::string name, uint32 err)
