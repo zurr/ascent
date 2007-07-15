@@ -760,17 +760,25 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		}break;
 	case 19938:
 		{
-			WorldPacket data;
-			data.SetOpcode(SMSG_PLAY_OBJECT_SOUND);
-			data << uint32(6197) << unitTarget->GetGUID();
-			p_caster->SendMessageToSet(&data, true);
+            if(((Creature*)unitTarget)->GetEntry() == 10556)
+            {
+			    WorldPacket data;
+			    data.SetOpcode(SMSG_PLAY_OBJECT_SOUND);
+			    data << uint32(6197) << unitTarget->GetGUID();
+			    p_caster->SendMessageToSet(&data, true);
 
-			sQuestMgr.OnPlayerKill(p_caster, ((Creature*)unitTarget));  // this should increment in quest log
+			    sQuestMgr.OnPlayerKill(p_caster, ((Creature*)unitTarget));  // this should increment in quest log
 
-			// Send chat message
-			char msg[100];
-			snprintf(msg, 100, "Ow! Ok, I'll get back to work, %s", p_caster->GetName());
-			unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
+			    // Send chat message
+			    char msg[100];
+			    snprintf(msg, 100, "Ow! Ok, I'll get back to work, %s", p_caster->GetName());
+			    unitTarget->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
+            }
+            else
+            {
+                SendCastResult(SPELL_FAILED_BAD_TARGETS);
+                return;
+            }
 		}break;
 	case 7669:// Bethor's Potion
 		{
