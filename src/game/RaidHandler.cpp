@@ -80,37 +80,34 @@ void WorldSession::HandleRequestRaidInfoOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleReadyCheckOpcode(WorldPacket& recv_data)
 {
-	// Seems to be looping. Will re-enable later...
+	Group * pGroup  = _player->GetGroup();
+	WorldPacket data(CMSG_RAID_READYCHECK, 20);
+	uint8 ready;
 
-	/*
-	Raid *raid = _player->GetCurrentRaid();
-	if(!raid) return;
-	if(raid->GetRaidLeader()->GetGUID() == _player->GetGUID())
+	if(!pGroup || ! _player->IsInWorld())
+		return;
+
+	if(recv_data.size() == 0)
 	{
-		// Forward the packet onto all raid members. This will cause the box to come up, yes/no.
-		WorldPacket *data = new WorldPacket;
-		data->Initialize(CMSG_RAID_READYCHECK);
-		for(int i=0;i<8;i++)
+		if(pGroup->GetLeader() == _player)
 		{
-			RaidGroup *group = raid->GetRaidGroup(i);
-			for(std::set<Player*>::iterator it = group->SubGroupMembers.begin(); it!=group->SubGroupMembers.end(); ++it)
-				if((*it)->GetGUID() != _player->GetGUID()) (*it)->GetSession()->SendPacket(data);	   // dont send to self
+			/* send packet to group */
+			pGroup->SendPacketToAllButOne(&data, _player);
 		}
-		delete data;
-	} else {
-		uint8 ready = 0;
-		if(recv_data.size() >= 1) recv_data >> ready;
-		// Build a packet, and send to all (but self, again)
-
-		WorldPacket *data = new WorldPacket;
-		data->Initialize(CMSG_RAID_READYCHECK);
-		*data << _player->GetGUID() << ready;
-		for(int i=0;i<8;i++)
+		else
 		{
-			RaidGroup *group = raid->GetRaidGroup(i);
-			for(std::set<Player*>::iterator it = group->SubGroupMembers.begin(); it!=group->SubGroupMembers.end(); ++it)
-				if((*it)->GetGUID() != _player->GetGUID()) (*it)->GetSession()->SendPacket(data);	   // dont send to self
+			SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
 		}
-		delete data;
-	}*/
+	}
+	else
+	{
+		if(_player != pGroup->GetLeader())
+		{
+			recv_data >> ready;
+			data << _player->GetGUID();
+			data << ready;
+			pGroup->GetLeader()->GetSession()->SendPacket(&data);
+		}
+	}
 }
+
