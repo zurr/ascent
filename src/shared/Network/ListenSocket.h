@@ -83,6 +83,7 @@ public:
 		// add to mgr
 		m_connected = true;
 		sSocketEngine.AddSocket(this);
+		return true;
 	}
 
 	bool Writable() { return false; }

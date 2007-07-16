@@ -20,6 +20,7 @@
 SelectEngine::SelectEngine()
 {
 	m_running = true;
+	new SocketDeleter;
 }
 
 SelectEngine::~SelectEngine()
@@ -49,8 +50,8 @@ void SelectEngine::MessageLoop()
 	map<int, BaseSocket*>::iterator itr, it2;
 	int nfds;
 	timeval timeout;
-	timeout.tv_sec = 1;
-	timeout.tv_usec = 0;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 50000;
 	while(m_running)
 	{
 		if(!m_sockets.size())
@@ -97,6 +98,24 @@ void SelectEngine::SpawnThreads()
 void SelectEngine::Shutdown()
 {
 	m_running = false;
+	m_socketLock.Acquire();
+	BaseSocket * s;
+	for(map<int, BaseSocket*>::iterator itr = m_sockets.begin(); itr != m_sockets.end(); )
+	{
+		s = itr->second;
+		++itr;
+		s->Delete();
+	}
+	m_socketLock.Release();
+
+	/* shutdown the socket deleter */
+	sSocketDeleter.Kill();
+
+	/* delete the socket deleter */
+	delete SocketDeleter::getSingletonPtr();
+
+	/* delete us */
+	delete this;
 }
 
 void SelectEngine::WantWrite(BaseSocket * s)
