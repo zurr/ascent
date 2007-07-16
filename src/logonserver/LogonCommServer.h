@@ -17,7 +17,7 @@
 
 #include <RC4Engine.h>
 
-class LogonCommServerSocket : public Socket
+class LogonCommServerSocket : public TcpSocket
 {
 	uint16 remaining;
 	uint16 opcode;
@@ -28,7 +28,7 @@ public:
 	uint32 authenticated;
 	bool use_crypto;
 
-	LogonCommServerSocket(SOCKET fd);
+	LogonCommServerSocket(SOCKET fd, const sockaddr_in * addr);
 	~LogonCommServerSocket();
 
 	void OnRead();

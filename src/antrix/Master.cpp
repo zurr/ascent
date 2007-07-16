@@ -310,9 +310,8 @@ bool Master::Run(int argc, char ** argv)
 
 	// Start Network Subsystem
 	sLog.outString("Starting network subsystem...");
-	new SocketMgr;
-	new SocketGarbageCollector;
-	sSocketMgr.SpawnWorkerThreads();
+	_socketEngine = new SelectEngine;
+	_socketEngine->SpawnThreads();
 
 	sScriptMgr.LoadScripts();
 
@@ -341,8 +340,9 @@ bool Master::Run(int argc, char ** argv)
 	sLogonCommHandler.Startup();
 
 	// Create listener
-	ListenSocket<WorldSocket> Listener("0.0.0.0", wsport);
-	bool listnersockcreate = Listener.IsOpen();
+	ListenSocket<WorldSocket> Listener;
+	Listener.Open("0.0.0.0", wsport);
+	bool listnersockcreate = /*Listener.IsOpen()*/true;
 
 
 	while(!m_stopEvent && listnersockcreate)
@@ -350,8 +350,8 @@ bool Master::Run(int argc, char ** argv)
 		start = now();
 		diff = start - last_time;
 		sLogonCommHandler.UpdateSockets();
-		sSocketGarbageCollector.Update();
-		Listener.Update();
+		//sSocketGarbageCollector.Update();
+		//Listener.Update();
 
 		/* UPDATE */
 		last_time = now();
@@ -416,11 +416,11 @@ bool Master::Run(int argc, char ** argv)
 
 	
 	sLog.outString("Closing listener socket...");
-	Listener.Close();
+	//Listener.Close();
 	sLog.outString("Listener closed..");
 
 	sLog.outString("\nDisconnecting all clients....");
-	sSocketMgr.CloseAll();
+	//sSocketMgr.CloseAll();
 	sLog.outString("All client sockets closed.\n");
 
 	// begin server shutdown
@@ -449,7 +449,7 @@ bool Master::Run(int argc, char ** argv)
 
 #ifdef WIN32
 	sLog.outString("Killing Socket Threads...");
-	sSocketMgr.ShutdownThreads();
+	//sSocketMgr.ShutdownThreads();
 	sLog.outString("Done.");
 #endif
 
@@ -469,7 +469,7 @@ bool Master::Run(int argc, char ** argv)
 	_StopDB();
 
 	sLog.outString("Deleting Network Subsystem...");
-	delete SocketMgr::getSingletonPtr();
+	//delete SocketMgr::getSingletonPtr();
 
 	sLog.outString("Deleting Script Engine...");
 	delete ScriptSystem;

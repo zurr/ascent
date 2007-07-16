@@ -35,7 +35,7 @@ struct ServerPktHeader
 };
 #pragma pack(pop)
 
-WorldSocket::WorldSocket(SOCKET fd) : Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE)
+WorldSocket::WorldSocket(SOCKET fd, const sockaddr_in * addr) : TcpSocket(fd, WORLDSOCKET_RECVBUF_SIZE, WORLDSOCKET_SENDBUF_SIZE, false, addr)
 {
 	Authed = false;
 	mSize = mOpcode = mRemaining = 0;
@@ -74,16 +74,7 @@ void WorldSocket::OutPacket(uint16 opcode, uint16 len, const void* data)
 	if(opcode == 0 || !IsConnected())
 		return;
 
-	BurstBegin();	   // Lock
-
-	// Check that our buffer isn't overflowed (shitty clients who don't drop fast enough)
-	// confusing, i named the vars shitty :P
-	if((4 + len + GetWriteBufferSize()) >= WORLDSOCKET_SENDBUF_SIZE)
-	{
-		BurstEnd();
-		Disconnect();
-		return;
-	}
+	LockWriteBuffer();
 
 	// Packet logger :)
 	sWorldLog.LogPacket(len, opcode, (const uint8*)data, 1);
@@ -96,17 +87,15 @@ void WorldSocket::OutPacket(uint16 opcode, uint16 len, const void* data)
 	_crypt.EncryptSend((uint8*)&Header, 4);
 
 	// Pass the header to our send buffer
-	rv = BurstSend((const uint8*)&Header, 4);
+	rv = Write(&Header, 4);
 
 	// Pass the rest of the packet to our send buffer (if there is any)
 	if(len > 0 && rv)
 	{
-		assert(data != 0);
-		rv = BurstSend((const uint8*)data, len);
+		rv = Write(data, len);
 	}
 
-	if(rv) BurstPush();
-	BurstEnd();	 // Unlock
+	UnlockWriteBuffer();
 }
 
 void WorldSocket::OnConnect()
@@ -229,7 +218,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 	for(uint32 i = 0; i < 8; ++i)
 		mSession->SetAccountData(i, NULL, true, 0);
 
-	sLog.outString("> %s authenticated from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
+	sLog.outString("> %s authenticated from %s:%u [%ums]", AccountName.c_str(), inet_ntoa(m_peer.sin_addr), ntohs(m_peer.sin_port), _latency);
 
 	// Check for queue.
 	if( (sWorld.GetNonGmSessionCount() < sWorld.GetPlayerLimit()) || mSession->HasGMPermissions() ) {
@@ -320,7 +309,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 /*			if(mSession && mSession->GetPlayer() && mSession->GetPlayer()->IsInWorld())
 				mSession->GetPlayer()->BroadcastMessage("["MSG_COLOR_LIGHTBLUE"Server|r]"MSG_COLOR_WHITE" Your latency |r["MSG_COLOR_GREEN"%ums|r]"MSG_COLOR_WHITE" has been detected to be over 150ms. The server is adjusting to this by enabling internal buffering algorithms. This will most likely decrease lag spikes.", _latency);*/
 
-			SocketOps::EnableBuffering(GetFd());
+			//SocketOps::EnableBuffering(GetFd());
 			m_nagleEanbled = true;
 		}
 	}
@@ -331,7 +320,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 /*			if(mSession && mSession->GetPlayer() && mSession->GetPlayer()->IsInWorld())
 				mSession->GetPlayer()->BroadcastMessage("["MSG_COLOR_LIGHTBLUE"Server|r]"MSG_COLOR_WHITE" Your latency |r["MSG_COLOR_GREEN"%ums|r]"MSG_COLOR_WHITE" has been detected to be less than 100ms. We're disabling internal buffering algorithms to reduce delay time.", _latency);*/
 
-			SocketOps::DisableBuffering(GetFd());
+			//SocketOps::DisableBuffering(GetFd());
 			m_nagleEanbled = false;
 		}
 	}
@@ -441,11 +430,11 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 	}
 }
 
-void WorldSocket::OnRead()
+void WorldSocket::OnRecvData()
 {
-	if(GetReadBufferSize() > 0)
+	if(GetReadBuffer()->GetSize())
 	{
-		uint32 BytesLeft = GetReadBufferSize();
+		uint32 BytesLeft = GetReadBuffer()->GetSize();
 
 		while(TRUE)
 		{
@@ -455,7 +444,7 @@ void WorldSocket::OnRead()
 			// Check for the header if we don't have any bytes to wait for.
 			if(mRemaining == 0)
 			{
-				if(GetReadBufferSize() < 6)
+				if(GetReadBuffer()->GetSize() < 6)
 				{
 					// No header in the packet, let's wait.
 					return;
@@ -463,7 +452,7 @@ void WorldSocket::OnRead()
 
 				// Copy from packet buffer into header local var
 				ClientPktHeader Header;
-				Read(6, (uint8*)&Header);
+				Read(&Header, 6);
 				
 				// Decrypt the header
 				_crypt.DecryptRecv((uint8*)&Header, 6);
@@ -477,15 +466,9 @@ void WorldSocket::OnRead()
 
 			if(mRemaining > 0)
 			{
-				if( GetReadBufferSize() < mRemaining )
+				if( GetReadBuffer()->GetSize() < mRemaining )
 				{
 					// We have a fragmented packet. Wait for the complete one before proceeding.
-					return;
-				}
-
-				if(mSize > 100000)   // This is getting way too big after this..
-				{
-					Disconnect();
 					return;
 				}
 			}
@@ -496,7 +479,7 @@ void WorldSocket::OnRead()
 			if(mRemaining > 0)
 			{
 				// Copy from packet buffer into our actual buffer.
-				Read(mRemaining, (uint8*)Packet->contents());
+				Read((void*)Packet->contents(), mRemaining);
 				BytesLeft -= mRemaining;
 			}
 

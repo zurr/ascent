@@ -282,19 +282,23 @@ void LogonServer::Run(int argc, char ** argv)
 	launch_thread(new LogonConsoleThread);
 
 	// Spawn garbage collector
-	new SocketMgr;
-	new SocketGarbageCollector;
+	//new SocketMgr;
+	//new SocketGarbageCollector;
+	_socketEngine = new SelectEngine();
+	_socketEngine->SpawnThreads();
 
 	// Spawn network worker threads.
-	sSocketMgr.SpawnWorkerThreads();
+	//sSocketMgr.SpawnWorkerThreads();
 
 	// Spawn auth listener
-	ListenSocket<AuthSocket> clientListener(host.c_str(), cport);
-	bool authsockcreated = clientListener.IsOpen();
+	ListenSocket<AuthSocket> clientListener;
+	clientListener.Open(host.c_str(), cport);
+	bool authsockcreated = /*clientListener.IsOpen()*/true;
 
 	// Spawn interserver listener
-	ListenSocket<LogonCommServerSocket> interListener(shost.c_str(), sport);
-	bool intersockcreated = interListener.IsOpen();
+	ListenSocket<LogonCommServerSocket> interListener;
+	interListener.Open(shost.c_str(), sport);
+	bool intersockcreated = /*interListener.IsOpen()*/true;
 
 	// hook signals
 	sLog.outString("Hooking signals...");
@@ -314,10 +318,10 @@ void LogonServer::Run(int argc, char ** argv)
 		if(!(++loop_counter % 400))	 // 20 seconds
 			CheckForDeadSockets();
 
-		clientListener.Update();
-		interListener.Update();
+		//clientListener.Update();
+		//interListener.Update();
 		sInfoCore.TimeoutSockets();
-		sSocketGarbageCollector.Update();
+		//sSocketGarbageCollector.Update();
 		CheckForDeadSockets();			  // Flood Protection
 		Sleep(50);
 	}
@@ -325,9 +329,9 @@ void LogonServer::Run(int argc, char ** argv)
 	sLog.outString("Shutting down...");
 	pfc->kill();
 
-	clientListener.Close();
-	interListener.Close();
-	sSocketMgr.CloseAll();
+	//clientListener.Close();
+	//interListener.Close();
+	//sSocketMgr.CloseAll();
 	
 	sLogonConsole.kill();
 
@@ -379,8 +383,6 @@ void LogonServer::CheckForDeadSockets()
 		diff = t - s->GetLastRecv();
 		if(diff > 240)		   // More than 4mins -> kill the socket.
 		{
-			sLog.outString("Killing connection from %s:%u due to no activity!", inet_ntoa(s->GetRemoteAddress()), 
-				s->GetRemotePort());
 			_authSockets.erase(it2);
 			s->removedFromSet = true;
 			s->Disconnect();

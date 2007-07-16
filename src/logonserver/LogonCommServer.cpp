@@ -20,7 +20,7 @@ typedef struct
 	uint16 size;
 }logonpacket;
 
-LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)
+LogonCommServerSocket::LogonCommServerSocket(SOCKET fd, const sockaddr_in * addr) : TcpSocket(fd, 65536, 524288, false, addr)
 {
 	// do nothing
 	last_ping = time(NULL);
@@ -56,12 +56,12 @@ void LogonCommServerSocket::OnRead()
 	{
 		if(!remaining)
 		{
-			if(GetReadBufferSize() < 4)
+			if(GetReadBuffer()->GetSize() < 4)
 				return;	 // no header
 
 			// read header
-			Read(2, (uint8*)&opcode);
-			Read(2, (uint8*)&remaining);
+			Read((uint8*)&opcode, 2);
+			Read((uint8*)&remaining, 2);
 
 			if(use_crypto)
 			{
@@ -75,7 +75,7 @@ void LogonCommServerSocket::OnRead()
 		}
 
 		// do we have a full packet?
-		if(GetReadBufferSize() < remaining)
+		if(GetReadBuffer()->GetSize() < remaining)
 			return;
 
 		// create the buffer
@@ -83,7 +83,7 @@ void LogonCommServerSocket::OnRead()
 		if(remaining)
 		{
 			buff.resize(remaining);
-			Read(remaining, (uint8*)buff.contents());
+			Read((uint8*)buff.contents(), remaining);
 		}
 
 		if(use_crypto && remaining)
@@ -200,7 +200,7 @@ void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 
 void LogonCommServerSocket::SendPacket(WorldPacket * data)
 {
-	BurstBegin();	   //  << Lock
+	LockWriteBuffer();
 
 	logonpacket header;
 	header.opcode = data->GetOpcode();
@@ -209,18 +209,17 @@ void LogonCommServerSocket::SendPacket(WorldPacket * data)
 	if(use_crypto)
 		sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 4);
 
-	BurstSend((uint8*)&header, 4);
+	Write((uint8*)&header, 4);
 
 	if(data->size() > 0)
 	{
 		if(use_crypto)
 			sendCrypto.Process((unsigned char*)data->contents(), (unsigned char*)data->contents(), data->size());
 
-		BurstSend(data->contents(), data->size());
+		Write(data->contents(), data->size());
 	}
 
-	BurstPush();
-	BurstEnd();		 //  >> Unlock
+	UnlockWriteBuffer();
 }
 
 void LogonCommServerSocket::HandleSQLExecute(WorldPacket & recvData)
@@ -245,7 +244,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 	if(memcmp(key, LogonServer::getSingleton().sql_hash, 20))
 		result = 0;
 
-	sLog.outString("Authentication request from %s, result %s.", inet_ntoa(GetRemoteAddress()), result ? "OK" : "FAIL");
+	sLog.outString("Authentication request from %s, result %s.", GetIP(), result ? "OK" : "FAIL");
 
 	printf("Key: ");
 	for(int i = 0; i < 20; ++i)

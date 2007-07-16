@@ -357,7 +357,7 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 	*(uint16*)&data.contents()[1] = data.size() - 3;
 
 	// Send to the socket.
-	Socket->Send((const uint8*)data.contents(), data.size());
+	Socket->Write((const uint8*)data.contents(), data.size());
 }
 
 BigNumber * InformationCore::GetSessionKey(uint32 account_id)

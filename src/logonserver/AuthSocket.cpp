@@ -28,7 +28,7 @@ enum _errors
 	CE_ACCOUNT_FREEZED=0x0c
 } ; 
 
-AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
+AuthSocket::AuthSocket(SOCKET fd, const sockaddr_in * addr) : TcpSocket(fd, 32768, 4096, false, addr)
 {
 	N.SetHexStr("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7");
 	g.SetDword(7);
@@ -63,15 +63,15 @@ void AuthSocket::OnDisconnect()
 void AuthSocket::HandleChallenge()
 {
 	// No header
-	if(GetReadBufferSize() < 4)
+	if(GetReadBuffer()->GetSize() < 4)
 		return;	
 
 	// Check the rest of the packet is complete.
-	uint8 * ReceiveBuffer = GetReadBuffer(0);
+	uint8 * ReceiveBuffer = (uint8*)GetReadBuffer()->GetBufferOffset();
 	uint16 full_size = *(uint16*)&ReceiveBuffer[2];
 	sLog.outDetail("[AuthChallenge] got header, body is 0x%02X bytes", full_size);
 
-	if(GetReadBufferSize() < uint32(full_size+4))
+	if(GetReadBuffer()->GetSize() < uint32(full_size+4))
 		return;
 
 	// Copy the data into our cached challenge structure
@@ -84,7 +84,7 @@ void AuthSocket::HandleChallenge()
 	sLog.outDebug("[AuthChallenge] got full packet.");
 
 	memcpy(&m_challenge, ReceiveBuffer, full_size + 4);
-	RemoveReadBufferBytes(full_size + 4, false);
+	GetReadBuffer()->Remove(full_size + 4);
 
 	// Check client build.
 	if(m_challenge.build > LogonServer::getSingleton().max_build ||
@@ -94,11 +94,8 @@ void AuthSocket::HandleChallenge()
 		return;
 	}
 
-	/** Burlex TODO: This fucks up bad on freebsd systems, I have got NO IDEA why.
-	 */
-#ifdef WIN32
 	// Check for a possible IP ban on this client.
-	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
+	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(m_peer.sin_addr);
 
 	switch(ipb)
 	{
@@ -110,7 +107,6 @@ void AuthSocket::HandleChallenge()
 			SendChallengeError(CE_ACCOUNT_FREEZED);
 			return;
 	}
-#endif
 
 	// Null-terminate the account string
 	m_challenge.I[m_challenge.I_len] = 0;
@@ -131,12 +127,8 @@ void AuthSocket::HandleChallenge()
 
 	sLog.outDebug("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
-	/** Burlex TODO: This fucks up bad on freebsd systems, I have got NO IDEA why.
-	 */
-#ifdef WIN32
 	// Don't update when IP banned, but update anyway if it's an account ban
-	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", inet_ntoa(GetRemoteAddress()), m_account->AccountId);
-#endif
+	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", GetIP(), m_account->AccountId);
 
 	// Check that the account isn't banned.
 	if(m_account->Banned == 1)
@@ -182,18 +174,18 @@ void AuthSocket::HandleChallenge()
 	memcpy(&response[c], unk.AsByteArray(), 16);			c += 16;
 	response[c] = 0;										c += 1;
 
-	Send(response, c);
+	Write(response, c);
 }
 
 void AuthSocket::HandleProof()
 {
-	if(!m_account || GetReadBufferSize() < sizeof(sAuthLogonProof_C))
+	if(!m_account || GetReadBuffer()->GetSize() < sizeof(sAuthLogonProof_C))
 		return ;
 
 	sLog.outDebug("[AuthLogonProof] Interleaving and checking proof...");
 
 	sAuthLogonProof_C lp;
-	Read(sizeof(sAuthLogonProof_C), (uint8*)&lp);
+	Read((uint8*)&lp, sizeof(sAuthLogonProof_C));
 
 	BigNumber A;
 	A.SetBinary(lp.A, 32);
@@ -299,7 +291,7 @@ void AuthSocket::SendChallengeError(uint8 Error)
 	buffer[0] = buffer[1] = 0;
 	buffer[2] = Error;
 
-	Send(buffer, 3);
+	Write(buffer, 3);
 }
 
 void AuthSocket::SendProofError(uint8 Error, uint8 * M2)
@@ -312,20 +304,20 @@ void AuthSocket::SendProofError(uint8 Error, uint8 * M2)
 	if(M2 == 0)
 	{
 		*(uint32*)&buffer[2] = 3;
-		Send(buffer, 6);
+		Write(buffer, 6);
 		return;
 	}
 	
 	memcpy(&buffer[2], M2, 20);
-	Send(buffer, 28);
+	Write(buffer, 28);
 }
 
-void AuthSocket::OnRead()
+void AuthSocket::OnRecvData()
 {
-	if(GetReadBufferSize() < 1)
+	if(GetReadBuffer()->GetSize() < 1)
 		return;
 
-	uint8 Command = GetReadBuffer(0)[0];
+	uint8 Command = ((uint8*)GetReadBuffer()->GetBufferOffset())[0];
 
 	// Handle depending on command
 	switch(Command)

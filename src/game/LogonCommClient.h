@@ -18,14 +18,14 @@
 #include "../logonserver/LogonOpcodes.h"
 #include <RC4Engine.h>
 
-class LogonCommClientSocket : public Socket
+class LogonCommClientSocket : public TcpSocket
 {
 	uint16 remaining;
 	uint16 opcode;
 	RC4Engine _sendCrypto;
 	RC4Engine _recvCrypto;
 public:
-	LogonCommClientSocket(SOCKET fd);
+	LogonCommClientSocket(SOCKET fd, const sockaddr_in * addr);
 	~LogonCommClientSocket();
 	
 	void OnRead();

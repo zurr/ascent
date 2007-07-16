@@ -40,15 +40,7 @@ LogonCommHandler::~LogonCommHandler()
 
 LogonCommClientSocket * LogonCommHandler::ConnectToLogon(string Address, uint32 Port)
 {
-	// Create the socket.
-	LogonCommClientSocket * conn = new LogonCommClientSocket(0);
-	if(!conn->Connect(Address.c_str(), Port))
-	{
-		//delete conn;
-		conn->Delete();
-		return 0;
-	}
-	
+	LogonCommClientSocket * conn = TcpSocket::Connect<LogonCommClientSocket>(Address.c_str(), Port);	
 	return conn;
 }
 

@@ -25,10 +25,10 @@ class WorldPacket;
 class SocketHandler;
 class WorldSession;
 
-class WorldSocket : public Socket
+class WorldSocket : public TcpSocket
 {
 public:
-	WorldSocket(SOCKET fd);
+	WorldSocket(SOCKET fd, const sockaddr_in * addr);
 	~WorldSocket();
 
 	// vs8 fix - send null on empty buffer
@@ -44,7 +44,7 @@ public:
 
 	void __fastcall UpdateQueuePosition(uint32 Position);
 
-	void OnRead();
+	void OnRecvData();
 	void OnConnect();
 	void OnDisconnect();
 
