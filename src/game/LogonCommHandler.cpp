@@ -40,7 +40,7 @@ LogonCommHandler::~LogonCommHandler()
 
 LogonCommClientSocket * LogonCommHandler::ConnectToLogon(string Address, uint32 Port)
 {
-	LogonCommClientSocket * conn = TcpSocket::Connect<LogonCommClientSocket>(Address.c_str(), Port);	
+	LogonCommClientSocket * conn = ConnectTCPSocket<LogonCommClientSocket>(Address.c_str(), Port);	
 	return conn;
 }
 

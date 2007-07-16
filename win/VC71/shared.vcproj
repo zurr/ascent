@@ -252,6 +252,9 @@
 				RelativePath="..\..\src\shared\Network\Network.h">
 			</File>
 			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\shared\SocketEngine.h">
 			</File>
 			<File
@@ -261,10 +264,19 @@
 				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_Select.cpp">
+				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_Select.h">
+				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.h">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_poll.h">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_select.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_select.h">
 			</File>
 			<File
 				RelativePath="..\..\src\shared\Network\StraightBuffer.h">

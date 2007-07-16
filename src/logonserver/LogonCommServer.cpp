@@ -50,7 +50,7 @@ void LogonCommServerSocket::OnDisconnect()
 	}
 }
 
-void LogonCommServerSocket::OnRead()
+void LogonCommServerSocket::OnRecvData()
 {
 	while(true)
 	{

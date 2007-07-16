@@ -28,7 +28,7 @@ public:
 	LogonCommClientSocket(SOCKET fd, const sockaddr_in * addr);
 	~LogonCommClientSocket();
 	
-	void OnRead();
+	void OnRecvData();
 	void SendPacket(WorldPacket * data);
 	void HandlePacket(WorldPacket & recvData);
 	void SendPing();

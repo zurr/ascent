@@ -49,46 +49,6 @@ TcpSocket::~TcpSocket()
 	delete m_readBuffer;
 }
 
-template<class T>
-T * TcpSocket::Connect(const char * hostname, u_short port)
-{
-	sockaddr_in conn;
-	hostent * host;
-	
-	/* resolve the peer */
-	host = gethostbyname(hostname);
-
-	if(!host)
-		return NULL;
-
-	/* copy into our address struct */
-	memcpy(&conn.sin_addr, host->h_addr_list[0], sizeof(in_addr));
-	conn.sin_family = AF_INET;
-	conn.sin_port = ntohs(port);
-
-	/* open socket */
-	int fd = socket(AF_INET, 0, 0);
-
-	/* set him to blocking mode */
-	u_long arg = 0;
-	ioctlsocket(fd, FIONBIO, &arg);
-
-	/* try to connect */
-	int result = connect(fd, (const sockaddr*)&conn, sizeof(sockaddr_in));
-
-	if(result < 0)
-	{
-		printf("connect() failed - %u\n", errno);
-		closesocket(fd);
-		return 0;
-	}
-
-	/* create the struct */
-	T * s = new T(fd, &conn);
-	s->Finalize();
-    return s;	
-}
-
 void TcpSocket::OnRead(size_t len)
 {
 	/* This is called when the socket engine gets an event on the socket */
@@ -212,10 +172,11 @@ void TcpSocket::Disconnect()
 	if(!m_connected) return;
 	m_connected = false;
 
+	OnDisconnect();
 	sSocketEngine.RemoveSocket(this);
 	shutdown(m_fd, SD_BOTH);
 	closesocket(m_fd);
-	
+
 	if(!m_deleted)
 		Delete();
 }

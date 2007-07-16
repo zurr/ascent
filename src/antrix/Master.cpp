@@ -310,8 +310,8 @@ bool Master::Run(int argc, char ** argv)
 
 	// Start Network Subsystem
 	sLog.outString("Starting network subsystem...");
-	_socketEngine = new SelectEngine;
-	_socketEngine->SpawnThreads();
+	CreateSocketEngine();
+	sSocketEngine.SpawnThreads();
 
 	sScriptMgr.LoadScripts();
 
@@ -340,18 +340,14 @@ bool Master::Run(int argc, char ** argv)
 	sLogonCommHandler.Startup();
 
 	// Create listener
-	ListenSocket<WorldSocket> Listener;
-	Listener.Open("0.0.0.0", wsport);
-	bool listnersockcreate = /*Listener.IsOpen()*/true;
-
+	bool listnersockcreate = CreateListenSocket<WorldSocket>(host.c_str(), wsport);
 
 	while(!m_stopEvent && listnersockcreate)
 	{
 		start = now();
 		diff = start - last_time;
 		sLogonCommHandler.UpdateSockets();
-		//sSocketGarbageCollector.Update();
-		//Listener.Update();
+		sSocketDeleter.Update();
 
 		/* UPDATE */
 		last_time = now();
@@ -414,14 +410,8 @@ bool Master::Run(int argc, char ** argv)
 	// have to cleanup manually.
 	sThreadMgr.RemoveThread(thread);
 
-	
-	sLog.outString("Closing listener socket...");
-	//Listener.Close();
-	sLog.outString("Listener closed..");
-
-	sLog.outString("\nDisconnecting all clients....");
-	//sSocketMgr.CloseAll();
-	sLog.outString("All client sockets closed.\n");
+	sLog.outString("Killing all sockets and network subsystem.");
+	sSocketEngine.Shutdown();
 
 	// begin server shutdown
 	time_t st = time(NULL);
@@ -430,28 +420,21 @@ bool Master::Run(int argc, char ** argv)
 	// send a query to wake it up if its inactive
 	sLog.outString("Executing pending database queries and closing database thread...");
 	// kill the database thread first so we don't lose any queries/data
-	CThread *dbThread = sThreadMgr.GetThreadByType(THREADTYPE_DATABASE);
-	//CThread *temp = dbThread;
-	ASSERT(dbThread);
-	// end it
-	dbThread->SetThreadState(THREADSTATE_TERMINATE);
+	((MySQLDatabase*)Database_Character)->SetThreadState(THREADSTATE_TERMINATE);
+	((MySQLDatabase*)Database_World)->SetThreadState(THREADSTATE_TERMINATE);
+
 	CharacterDatabase.Execute("UPDATE characters SET online = 0");
-	MySQLDatabase * db = (MySQLDatabase*)dbThread;
+	WorldDatabase.Execute("UPDATE characters SET online = 0");
 
 	// wait for it to finish its work
-	while(db->ThreadRunning)
+	while(((MySQLDatabase*)Database_Character)->ThreadRunning || ((MySQLDatabase*)Database_World)->ThreadRunning)
 	{
 		Sleep(100);
 	}
-	sThreadMgr.RemoveThread(db);
+	sThreadMgr.RemoveThread(((MySQLDatabase*)Database_Character));
+	sThreadMgr.RemoveThread(((MySQLDatabase*)Database_World));
 
 	sLog.outString("All pending database operations cleared.\n");
-
-#ifdef WIN32
-	sLog.outString("Killing Socket Threads...");
-	//sSocketMgr.ShutdownThreads();
-	sLog.outString("Done.");
-#endif
 
 	sWorld.SaveAllPlayers();
 	sLog.outString("");
@@ -518,7 +501,7 @@ bool Master::_StartDB()
 
 	// Initialize it
 	if(!WorldDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
-		password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("WorldDatabase", "ConnectionCount", 6),
+		password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("WorldDatabase", "ConnectionCount", 3),
 		16384))
 	{
 		sLog.outError("sql: Main database initialization failed. Exiting.");
@@ -542,7 +525,7 @@ bool Master::_StartDB()
 
 	// Initialize it
 	if(!CharacterDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
-		password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("CharacterDatabase", "ConnectionCount", 6),
+		password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("CharacterDatabase", "ConnectionCount", 3),
 		16384))
 	{
 		sLog.outError("sql: Main database initialization failed. Exiting.");

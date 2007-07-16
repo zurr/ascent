@@ -30,7 +30,7 @@ MySQLDatabase::MySQLDatabase() : Database(DATABASE_TYPE_MYSQL)
 
 MySQLDatabase::~MySQLDatabase()
 {
-	Shutdown();
+	//Shutdown();
 	delete [] Connections;
 }
 
@@ -303,9 +303,10 @@ void MySQLDatabase::run()
 		SendQuery(con,query);
 		con->busy=false;
 		delete [] query;
-		query = queries_queue.pop();
 		if(ThreadState == THREADSTATE_TERMINATE && queries_queue.size == 0)
 			break;
+
+		query = queries_queue.pop();
 	}
 	ThreadRunning = false;
 }

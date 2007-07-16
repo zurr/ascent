@@ -120,7 +120,7 @@ public:
 		ASSERT(written >= len);
 		written -= len;
 		if(written)
-			memcpy(&m_buffer[0], &m_buffer[written], written);
+			memcpy(&m_buffer[0], &m_buffer[len], written);
 	}
 
 	/** Returns a pointer at the "end" of the buffer, where new data can be written

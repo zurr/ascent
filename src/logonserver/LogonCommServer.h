@@ -31,7 +31,7 @@ public:
 	LogonCommServerSocket(SOCKET fd, const sockaddr_in * addr);
 	~LogonCommServerSocket();
 
-	void OnRead();
+	void OnRecvData();
 	void OnDisconnect();
 	void SendPacket(WorldPacket * data);
 	void HandlePacket(WorldPacket & recvData);

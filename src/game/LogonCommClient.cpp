@@ -31,7 +31,7 @@ LogonCommClientSocket::LogonCommClientSocket(SOCKET fd, const sockaddr_in * addr
 	authenticated = 0;
 }
 
-void LogonCommClientSocket::OnRead()
+void LogonCommClientSocket::OnRecvData()
 {
 	while(true)
 	{

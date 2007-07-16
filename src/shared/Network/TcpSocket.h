@@ -32,14 +32,6 @@ public:
 	 */
 	~TcpSocket();
 
-	/** Connect to a server.
-	 * @param hostname Hostname or IP address to connect to
-	 * @param port Port to connect to
-	 * @return templated type if successful, otherwise null
-	 */
-	template<class T>
-	static T* Connect(const char * hostname, u_short port);
-
 	/** Locks the socket's write buffer so you can begin a write operation
 	 */
 	inline void LockWriteBuffer() { m_writeMutex.Acquire(); }
@@ -110,5 +102,50 @@ protected:
 	 */
 	Mutex m_writeMutex;
 };
+
+/** Connect to a server.
+ * @param hostname Hostname or IP address to connect to
+ * @param port Port to connect to
+ * @return templated type if successful, otherwise null
+ */
+template<class T>
+T* ConnectTCPSocket(const char * hostname, u_short port)
+{
+	sockaddr_in conn;
+	hostent * host;
+
+	/* resolve the peer */
+	host = gethostbyname(hostname);
+
+	if(!host)
+		return NULL;
+
+	/* copy into our address struct */
+	memcpy(&conn.sin_addr, host->h_addr_list[0], sizeof(in_addr));
+	conn.sin_family = AF_INET;
+	conn.sin_port = ntohs(port);
+
+	/* open socket */
+	int fd = socket(AF_INET, 0, 0);
+
+	/* set him to blocking mode */
+	u_long arg = 0;
+	ioctlsocket(fd, FIONBIO, &arg);
+
+	/* try to connect */
+	int result = connect(fd, (const sockaddr*)&conn, sizeof(sockaddr_in));
+
+	if(result < 0)
+	{
+		printf("connect() failed - %u\n", errno);
+		closesocket(fd);
+		return 0;
+	}
+
+	/* create the struct */
+	T * s = new T(fd, &conn);
+	s->Finalize();
+	return s;	
+}
 
 #endif		// _NETLIB_TCPSOCKET_H
