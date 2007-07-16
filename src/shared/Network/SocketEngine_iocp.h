@@ -1,7 +1,7 @@
 /****************************************************************************
  *
  * Multiplatform High-Performance Async Network Library
- * Implemented epoll Socket Engine
+ * Implementation of IOCP Socket Engine
  * Copyright (c) 2007 Burlex
  *
  * This file may be distributed under the terms of the Q Public License
@@ -13,33 +13,39 @@
  *
  */
 
-#ifndef _NETLIB_SOCKETENGINE_EPOLL_H
-#define _NETLIB_SOCKETENGINE_EPOLL_H
+#ifndef _NETLIB_SOCKETENGINE_IOCP_H
+#define _NETLIB_SOCKETENGINE_IOCP_H
 
-#ifdef NETLIB_EPOLL
+#ifdef NETLIB_IOCP
 
-/** This is the maximum number of connections you will be able to hold at one time.
- * adjust it accordingly.
- */
-#define MAX_DESCRIPTORS 1024
-
-class epollEngine : public SocketEngine
+struct Overlapped
 {
-	/** Created epoll file descriptor
-	 */
-	int epoll_fd;
+	int m_op;
+	void * m_acceptBuffer;
+	OVERLAPPED m_ov;
+};
 
-	/** Thread running or not?
+class iocpEngine : public SocketEngine
+{
+	/** Our completion port
 	 */
-	bool m_running;
+	HANDLE m_completionPort;
 
-	/** Binding for fd -> pointer
+	/** Socket set lock
 	 */
-	BaseSocket * fds[MAX_DESCRIPTORS];
+	Mutex m_socketLock;
+
+	/** Socket set
+	 */
+	set<BaseSocket*> m_sockets;
+
+	/** Spawned thread count
+	 */
+	int thread_count;
 
 public:
-	epollEngine();
-	~epollEngine();
+	iocpEngine();
+	~iocpEngine();
 
 	/** Adds a socket to the engine.
 	 */
@@ -60,16 +66,22 @@ public:
 	/** Called by SocketWorkerThread, this is the network loop.
 	 */
 	void MessageLoop();
-	
+
 	/** Shutdown the socket engine, disconnect any associated sockets and 
 	 * deletes itself and the socket deleter.
 	 */
 	void Shutdown();
 };
 
-/** Returns the socket engine
- */
-inline void CreateSocketEngine() { new epollEngine; }
+enum SocketEvents
+{
+	IO_EVENT_ACCEPT,
+	IO_EVENT_READ,
+	IO_EVENT_WRITE,
+	IO_SHUTDOWN,
+};
 
-#endif		// NETLIB_EPOLL
-#endif		// _NETLIB_SOCKETENGINE_EPOLL_H
+inline void CreateSocketEngine() { new iocpEngine; }
+
+#endif		// NETLIB_IOCP
+#endif		// _NETLIB_SOCKETENGINE_IOCP_H

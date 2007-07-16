@@ -1,7 +1,7 @@
 /****************************************************************************
  *
  * Multiplatform High-Performance Async Network Library
- * Circular Buffer Class
+ * Implementation of poll() Socket Engine
  * Copyright (c) 2007 Burlex
  *
  * This file may be distributed under the terms of the Q Public License
@@ -13,8 +13,8 @@
  *
  */
 
-#ifndef _NETLIB_CIRCULARBUFFER_H
-#define _NETLIB_CIRCUALRBUFFER_H
+#ifndef _NETLIB_SOCKETENGINE_POLL_H
+#define _NETLIB_SOCKETENGINE_POLL_H
 
-#endif		// _NETLIB_CIRCULARBUFFER_H
+#endif		// _NETLIB_SOCKETENGINE_POLL_H
 

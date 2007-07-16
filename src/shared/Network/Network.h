@@ -1,5 +1,25 @@
+/****************************************************************************
+ *
+ * Multiplatform High-Performance Async Network Library
+ * Include File For Antrix
+ * Copyright (c) 2007 Burlex
+ *
+ * This file may be distributed under the terms of the Q Public License
+ * as defined by Trolltech ASA of Norway and appearing in the file
+ * COPYING included in the packaging of this file.
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
 #include "../Common.h"
 using namespace std;
+
+/* windows sucks dick! */
+#ifdef WIN32
+#define USE_IOCP
+#endif
 
 #include "BaseSocket.h"
 #include "BaseBuffer.h"
@@ -7,5 +27,30 @@ using namespace std;
 #include "CircularBuffer.h"
 #include "SocketEngine.h"
 #include "TcpSocket.h"
-#include "ListenSocket.h"
+
+#ifdef USE_POLL
+#define NETLIB_POLL
+#include "SocketEngine_poll.h"
+#endif
+
+#ifdef USE_EPOLL
+#define NETLIB_EPOLL
+#include "SocketEngine_epoll.h"
+#endif
+
+#ifdef USE_IOCP
+#define NETLIB_IOCP
+#include "SocketEngine_iocp.h"
+#endif
+
+#ifdef USE_SELECT
+#define NETLIB_SELECT
 #include "SocketEngine_Select.h"
+#endif
+
+#ifdef USE_KQUEUE
+#define NETLIB_KQUEUE
+#include "SocketEngine_kqueue.h"
+#endif
+
+#include "ListenSocket.h"

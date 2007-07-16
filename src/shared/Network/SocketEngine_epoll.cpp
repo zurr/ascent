@@ -1,10 +1,27 @@
+/****************************************************************************
+ *
+ * Multiplatform High-Performance Async Network Library
+ * Implemented epoll Socket Engine
+ * Copyright (c) 2007 Burlex
+ *
+ * This file may be distributed under the terms of the Q Public License
+ * as defined by Trolltech ASA of Norway and appearing in the file
+ * COPYING included in the packaging of this file.
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
 #include "Network.h"
-#include "SocketEngine_epoll.h"
+
+#ifdef NETLIB_EPOLL
 
 epollEngine::epollEngine()
 {
 	epoll_fd = epoll_create(MAX_DESCRIPTORS);
 	assert(epoll_fd != -1);
+	memset(this->fds, 0, sizeof(void*) * MAX_DESCRIPTORS);
 }
 
 epollEngine::~epollEngine()
@@ -90,9 +107,11 @@ void epollEngine::MessageLoop()
 					ev.events = EPOLLIN | EPOLLET;
 
 					epoll_ctl(epoll_fd, EPOLL_CTL_MOD, s->GetFd(), &ev);
+					--s->m_writeLock;
 				}
 			}
 		}
 	}
 }
 
+#endif

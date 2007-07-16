@@ -1,3 +1,18 @@
+/****************************************************************************
+ *
+ * Multiplatform High-Performance Async Network Library
+ * Implementation of TCP Socket
+ * Copyright (c) 2007 Burlex
+ *
+ * This file may be distributed under the terms of the Q Public License
+ * as defined by Trolltech ASA of Norway and appearing in the file
+ * COPYING included in the packaging of this file.
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
 #ifndef _NETLIB_TCPSOCKET_H
 #define _NETLIB_TCPSOCKET_H
 
@@ -44,12 +59,6 @@ public:
 		return m_readBuffer->Read(destination, bytes);
 	}
 
-	/** If for some reason we need to access the buffers directly 
-	 * (shouldn't happen) these will return them
-	 */
-	inline BaseBuffer * GetReadBuffer() { return m_readBuffer; }
-	inline BaseBuffer * GetWriteBuffer() { return m_writeBuffer; }
-
 	/** Disconnects the socket, removing it from the socket engine, and queues
 	 * deletion.
 	 */
@@ -67,10 +76,6 @@ public:
 	 */
 	void OnWrite(size_t len);
 
-	/** Are we connected?
-	 */
-	inline bool IsConnected() { return m_connected; }
-
 	/** When we read data this is called
 	 */
 	virtual void OnRecvData() {}
@@ -86,7 +91,14 @@ public:
 	/** Are we writable?
 	 */
 	bool Writable();
+
+	/** Occurs on error
+	 */
 	void OnError(int errcode);
+
+	/** Windows gayness :P
+	 */
+	void OnAccept(void * pointer) {}
 
 protected:
 
@@ -97,23 +109,6 @@ protected:
 	/** Socket's write buffer protection
 	 */
 	Mutex m_writeMutex;
-
-	/** Read (inbound) buffer
-	 */
-	BaseBuffer * m_readBuffer;
-
-	/** Write (outbound) buffer
-	 */
-	BaseBuffer * m_writeBuffer;
-	
-	/** Write mutex (so we don't post a write event twice
-	 */
-	long m_writeLock;
-
-	/** deleted/disconnected markers
-	 */
-	bool m_deleted;
-	bool m_connected;
 };
 
 #endif		// _NETLIB_TCPSOCKET_H

@@ -1,7 +1,7 @@
 /****************************************************************************
  *
  * Multiplatform High-Performance Async Network Library
- * Implemented epoll Socket Engine
+ * Implemented Select Socket Engine
  * Copyright (c) 2007 Burlex
  *
  * This file may be distributed under the terms of the Q Public License
@@ -13,33 +13,17 @@
  *
  */
 
-#ifndef _NETLIB_SOCKETENGINE_EPOLL_H
-#define _NETLIB_SOCKETENGINE_EPOLL_H
+#ifndef _NETLIB_SELECTENGINE_H
+#define _NETLIB_SELECTENGINE_H
 
-#ifdef NETLIB_EPOLL
+#ifdef NETLIB_SELECT
 
-/** This is the maximum number of connections you will be able to hold at one time.
- * adjust it accordingly.
- */
-#define MAX_DESCRIPTORS 1024
-
-class epollEngine : public SocketEngine
+class BaseSocket;
+class SelectEngine : public SocketEngine
 {
-	/** Created epoll file descriptor
-	 */
-	int epoll_fd;
-
-	/** Thread running or not?
-	 */
-	bool m_running;
-
-	/** Binding for fd -> pointer
-	 */
-	BaseSocket * fds[MAX_DESCRIPTORS];
-
 public:
-	epollEngine();
-	~epollEngine();
+	SelectEngine();
+	~SelectEngine();
 
 	/** Adds a socket to the engine.
 	 */
@@ -57,19 +41,31 @@ public:
 	 */
 	void SpawnThreads();
 
-	/** Called by SocketWorkerThread, this is the network loop.
-	 */
-	void MessageLoop();
-	
 	/** Shutdown the socket engine, disconnect any associated sockets and 
 	 * deletes itself and the socket deleter.
 	 */
 	void Shutdown();
+
+	/** Called by SocketWorkerThread, this is the network loop.
+	 */
+	void MessageLoop();
+
+protected:
+
+	/** Thread running or not
+	 */
+	bool m_running;
+
+	/** Protection for map
+	 */
+	Mutex m_socketLock;
+
+	/** Map of fd->socket
+	 */
+	map<int, BaseSocket*> m_sockets;
 };
 
-/** Returns the socket engine
- */
-inline void CreateSocketEngine() { new epollEngine; }
+inline void CreateSocketEngine() { new SelectEngine; }
 
-#endif		// NETLIB_EPOLL
-#endif		// _NETLIB_SOCKETENGINE_EPOLL_H
+#endif		// NETLIB_SELECT
+#endif		// _NETLIB_SELECTENGINE_H
