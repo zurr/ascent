@@ -255,7 +255,7 @@
 				RelativePath="..\..\src\shared\Network\SocketEngine.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\SocketEngine.h">
+				RelativePath="..\..\src\shared\Network\SocketEngine.h">
 			</File>
 			<File
 				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.cpp">
