@@ -39,7 +39,10 @@ bool Channel::Join(Player *p, const char *pass)
 		PlayerInfo pinfo; 
 		pinfo.player = p;
 		pinfo.muted = false;
-		pinfo.owner = false;
+		if(GetNumPlayers() == 0)
+			pinfo.owner = true;
+		else
+			pinfo.owner = false;
 		pinfo.moderator = false;
 
 		MakeJoined(&data,p);
@@ -53,12 +56,13 @@ bool Channel::Join(Player *p, const char *pass)
 		/*MakeYouJoined(&data,p);
 		SendToOne(&data,p);*/
 
+
 		if(owner == NULL)
 		{
-			if(!constant)
+			if(!IsDefaultChannel())
 			{
 				SetOwner(p);
-				players[p].moderator = true;
+				players[p].moderator = false;
 			}
 			else if(p->GetSession()->CanUseCommand('c'))
 			{
@@ -504,6 +508,9 @@ bool Channel::IsDefaultChannel()
 		)
 		return true;
 	if( !strncmp(cName, "Trade", 5)			
+		)
+		return true;
+	if( !strncmp(cName, "Guild Recruitment", 17)
 		)
 		return true;
 
