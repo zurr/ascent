@@ -148,7 +148,8 @@ public:
 
 	ListenSocket()
 	{
-		m_fd = socket(AF_INET, SOCK_STREAM, 0);
+		//m_fd = socket(AF_INET, SOCK_STREAM, 0);
+		m_fd = WSASocket(AF_INET, SOCK_STREAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
 		m_connected = false;
 		m_deleted = false;
 	}
@@ -201,7 +202,8 @@ public:
 		ov->m_op = IO_EVENT_ACCEPT;
 		ov->m_acceptBuffer = malloc(1024);
 		memset(ov->m_acceptBuffer, 0, 1024);
-		int s = socket(AF_INET, SOCK_STREAM, 0);
+		/*int s = socket(AF_INET, SOCK_STREAM, 0);*/
+		int s = WSASocket(AF_INET, SOCK_STREAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
 		int len = sizeof(sockaddr_in) + 16;
 		*(int*)&((char*)ov->m_acceptBuffer)[0] = s;
 		DWORD bytes;
