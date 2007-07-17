@@ -31,7 +31,13 @@ public:
 
 	ListenSocket()
 	{
-		m_fd = socket(AF_INET, 0, 0);
+		m_fd = socket(AF_INET, SOCK_STREAM, 0);
+		u_long arg = 1;
+		setsockopt(m_fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&arg, sizeof(u_long));
+		if(m_fd < 0)
+		{
+			printf("WARNING: ListenSocket constructor: could not create socket() %u (%s)\n", errno, strerror(errno));
+		}
 		m_connected = false;
 		m_deleted = false;
 	}
@@ -41,7 +47,11 @@ public:
 		if(!m_connected)
 			return;
 
+#ifdef WIN32
 		int len2 = sizeof(sockaddr_in);
+#else
+		socklen_t len2 = sizeof(sockaddr_in);
+#endif
 		new_fd = accept(m_fd, (sockaddr*)&new_peer, &len2);
 		if(new_fd > 0)
 		{
@@ -56,9 +66,11 @@ public:
 	
 	bool Open(const char * hostname, u_short port)
 	{
-		m_fd = socket(AF_INET, 0, 0);
-		if(!m_fd)
+		if(m_fd < 0)
+		{
+			printf("No fd in listensocket\n");
 			return false;
+		}
 
 		if(!strcmp(hostname, "0.0.0.0"))
 			address.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -66,7 +78,10 @@ public:
 		{
 			hostent * h = gethostbyname(hostname);
 			if(!h)
+			{
+				printf("Could not resolve listen address\n");
 				return false;
+			}
 
 			memcpy(&address.sin_addr, h->h_addr_list[0], sizeof(in_addr));
 		}
@@ -75,10 +90,16 @@ public:
 		address.sin_port = ntohs(port);
 
 		if(bind(m_fd, (const sockaddr*)&address, sizeof(sockaddr_in)) < 0)
+		{
+			printf("Could not bind\n");
 			return false;
+		}
 
 		if(listen(m_fd, 5) < 0)
+		{
+			printf("Could not bind\n");
 			return false;
+		}
 
 		// add to mgr
 		m_connected = true;
@@ -127,7 +148,7 @@ public:
 
 	ListenSocket()
 	{
-		m_fd = socket(AF_INET, 0, 0);
+		m_fd = socket(AF_INET, SOCK_STREAM, 0);
 		m_connected = false;
 		m_deleted = false;
 	}
@@ -180,7 +201,7 @@ public:
 		ov->m_op = IO_EVENT_ACCEPT;
 		ov->m_acceptBuffer = malloc(1024);
 		memset(ov->m_acceptBuffer, 0, 1024);
-		int s = socket(AF_INET, 0, 0);
+		int s = socket(AF_INET, SOCK_STREAM, 0);
 		int len = sizeof(sockaddr_in) + 16;
 		*(int*)&((char*)ov->m_acceptBuffer)[0] = s;
 		DWORD bytes;
@@ -241,3 +262,4 @@ bool CreateListenSocket(const char * hostname, u_short port)
 }
 
 #endif		// _NETLIB_LISTENSOCKET_H
+

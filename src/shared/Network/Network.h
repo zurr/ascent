@@ -21,6 +21,15 @@ using namespace std;
 #define USE_IOCP
 #endif
 
+/* Define these on non-windows systems */
+#ifndef WIN32
+#define ioctlsocket ioctl
+#define closesocket close
+#define TCP_NODELAY 0x6
+#define SD_BOTH SHUT_RDWR
+#define SOCKET int
+#endif
+
 #include "BaseSocket.h"
 #include "BaseBuffer.h"
 #include "StraightBuffer.h"
@@ -29,11 +38,13 @@ using namespace std;
 #include "TcpSocket.h"
 
 #ifdef USE_POLL
+#include <sys/poll.h>
 #define NETLIB_POLL
 #include "SocketEngine_poll.h"
 #endif
 
 #ifdef USE_EPOLL
+#include <sys/epoll.h>
 #define NETLIB_EPOLL
 #include "SocketEngine_epoll.h"
 #endif

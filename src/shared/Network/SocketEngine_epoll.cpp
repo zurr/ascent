@@ -19,9 +19,11 @@
 
 epollEngine::epollEngine()
 {
+	new SocketDeleter();
 	epoll_fd = epoll_create(MAX_DESCRIPTORS);
 	assert(epoll_fd != -1);
 	memset(this->fds, 0, sizeof(void*) * MAX_DESCRIPTORS);
+	m_running = true;
 }
 
 epollEngine::~epollEngine()
@@ -75,10 +77,10 @@ void epollEngine::MessageLoop()
 	BaseSocket * s;
 	while(m_running)
 	{
-        nfds = epoll_wait(epoll_fd, events, maxevents, 1000);
+        	nfds = epoll_wait(epoll_fd, events, maxevents, 1000);
 		for(i = 0; i < nfds; ++i)
 		{
-            s = fds[events[i].data.fd];
+	            s = fds[events[i].data.fd];
 			if(s == 0)
 			{
 				printf("epoll returned invalid fd %u\n", events[i].data.fd);
@@ -97,7 +99,7 @@ void epollEngine::MessageLoop()
 			}
 			else if(events[i].events & EPOLLOUT)
 			{
-				s->OnWrite();
+				s->OnWrite(0);
 				if(!s->Writable())
 				{
 					/* change back to read state */
@@ -112,6 +114,27 @@ void epollEngine::MessageLoop()
 			}
 		}
 	}
+}
+
+void epollEngine::Shutdown()
+{
+	m_running = false;
+	for(int i = 0; i < MAX_DESCRIPTORS; ++i)
+	{
+		if(fds[i] != 0)
+		{
+			fds[i]->Delete();
+		}
+	}
+
+	sSocketDeleter.Kill();
+	delete SocketDeleter::getSingletonPtr();
+	delete this;
+}
+
+void epollEngine::SpawnThreads()
+{
+	launch_thread(new SocketEngineThread(this));
 }
 
 #endif

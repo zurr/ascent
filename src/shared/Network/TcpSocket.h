@@ -126,7 +126,7 @@ T* ConnectTCPSocket(const char * hostname, u_short port)
 	conn.sin_port = ntohs(port);
 
 	/* open socket */
-	int fd = socket(AF_INET, 0, 0);
+	int fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	/* set him to blocking mode */
 	u_long arg = 0;

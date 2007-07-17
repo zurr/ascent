@@ -70,3 +70,4 @@ public:
 };
 
 #endif		// _NETLIB_BASE_BUFFER_H
+

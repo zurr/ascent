@@ -301,15 +301,14 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 	}
 	OutPacket(SMSG_PONG, 4, &ping);
 
+#ifdef WIN32
 	// Dynamically change nagle buffering status based on latency.
 	if(_latency >= 250)
 	{
 		if(!m_nagleEanbled)
 		{
-/*			if(mSession && mSession->GetPlayer() && mSession->GetPlayer()->IsInWorld())
-				mSession->GetPlayer()->BroadcastMessage("["MSG_COLOR_LIGHTBLUE"Server|r]"MSG_COLOR_WHITE" Your latency |r["MSG_COLOR_GREEN"%ums|r]"MSG_COLOR_WHITE" has been detected to be over 150ms. The server is adjusting to this by enabling internal buffering algorithms. This will most likely decrease lag spikes.", _latency);*/
-
-			//SocketOps::EnableBuffering(GetFd());
+			u_long arg = 0;
+			setsockopt(GetFd(), 0x6, 0x1, (const char*)&arg, sizeof(arg));
 			m_nagleEanbled = true;
 		}
 	}
@@ -317,13 +316,12 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 	{
 		if(m_nagleEanbled)
 		{
-/*			if(mSession && mSession->GetPlayer() && mSession->GetPlayer()->IsInWorld())
-				mSession->GetPlayer()->BroadcastMessage("["MSG_COLOR_LIGHTBLUE"Server|r]"MSG_COLOR_WHITE" Your latency |r["MSG_COLOR_GREEN"%ums|r]"MSG_COLOR_WHITE" has been detected to be less than 100ms. We're disabling internal buffering algorithms to reduce delay time.", _latency);*/
-
-			//SocketOps::DisableBuffering(GetFd());
+			u_long arg = 1;
+			setsockopt(GetFd(), 0x6, 0x1, (const char*)&arg, sizeof(arg));
 			m_nagleEanbled = false;
 		}
 	}
+#endif
 }
 
 void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction)
