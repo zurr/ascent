@@ -39,6 +39,7 @@ World::World()
 	mAcceptedConnections = 0;
 	HordePlayers = 0;
 	AlliancePlayers = 0;
+	gm_skip_attunement = false;
 }
 
 World::~World()
@@ -101,11 +102,6 @@ World::~World()
 		delete i->second;
 	}
 
-	for( MapInfoMap::iterator i = m_mapinfo.begin( ); i != m_mapinfo.end( ); ++ i ) 
-	{
-		delete i->second;
-	}
-	
 	//eventholder = 0;
 	delete eventholder;
 	sLog.outString("\n  Unloading DBC files...");
@@ -448,7 +444,6 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
 	MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);
 	MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
-	MAKE_TASK(World, LoadMapInformation);
 	MAKE_TASK(ObjectMgr, LoadGuildCharters);
 	MAKE_TASK(ObjectMgr, LoadGMTickets);
 	MAKE_TASK(SocialMgr, LoadFromDB);
@@ -1423,60 +1418,6 @@ void World::UpdateSessions(uint32 diff)
 	}
 }
 
-void World::LoadMapInformation()
-{
-	sLog.outString("  Loading Map Information...");
-	MapInfo *mapinfo;
-	QueryResult *result = WorldDatabase.Query( "SELECT * FROM worldmap_info" );
-	if( !result )
-	{
-		sLog.outString( "  0 Maps Info Loaded." );
-		return;
-	}
-	do
-	{
-		Field *fields = result->Fetch();
-		mapinfo = new MapInfo;
-		mapinfo->mapid = fields[0].GetUInt32();
-		mapinfo->screenid = fields[1].GetUInt32();
-		mapinfo->type = fields[2].GetUInt32();
-		mapinfo->playerlimit = fields[3].GetUInt32();
-		mapinfo->minlevel = fields[4].GetUInt32();
-		mapinfo->repopx = fields[5].GetFloat();
-		mapinfo->repopy = fields[6].GetFloat();
-		mapinfo->repopz = fields[7].GetFloat();
-		mapinfo->repopmapid = fields[8].GetUInt32();
-		mapinfo->name = fields[9].GetString();
-		mapinfo->flags =  fields[10].GetUInt32();
-		mapinfo->cooldown =  fields[11].GetUInt32();
-        mapinfo->lvl_mod_a =  fields[12].GetUInt32();
-
-		AddMapInformation(mapinfo);
-
-	}while( result->NextRow() );
-	delete result;
-}
-
-void World::AddMapInformation(MapInfo *mapinfo)
-{
-	ASSERT( mapinfo );
-	ASSERT( m_mapinfo.find(mapinfo->mapid) == m_mapinfo.end() );
-	m_mapinfo[mapinfo->mapid] = mapinfo;
-}
-
-MapInfo *World::GetMapInformation(uint32 mapid)
-{
-	MapInfoMap::iterator iter, end;
-	for( iter = m_mapinfo.begin(), end = m_mapinfo.end(); iter != end; iter++ )
-	{
-		MapInfo *mapinfo= iter->second;
-		if(mapinfo->mapid == mapid)
-			return mapinfo;
-	}
-	return NULL;
-
-}
-
 std::string World::GenerateName(uint32 type)
 {
 	uint32 maxval = NameGenStore::getSingleton().GetNumRows();
@@ -1493,9 +1434,6 @@ std::string World::GenerateName(uint32 type)
 	else
 		return "ERR";
 }
-
-
-
 
 void World::DeleteSession(WorldSession *session)
 {
@@ -1915,6 +1853,7 @@ void World::Rehash(bool load)
 	SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
 	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "Screen", 1));
 	sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", -1));
+	gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
 
 	bool log_enabled = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
 	if(Anticheat_Log->IsOpen())

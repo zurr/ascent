@@ -29,6 +29,7 @@ const char * gGraveyardFormat							= "uffffuuuux";
 const char * gTeleportCoordFormat						= "uxufffx";
 const char * gPvPAreaFormat								= "ush";
 const char * gFishingFormat								= "uuu";
+const char * gWorldMapInfoFormat						= "uuuuufffusuuuuu";
 
 /** SQLStorage symbols
  */
@@ -44,6 +45,7 @@ SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >			SpellExtr
 SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >		GraveyardStorage;
 SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >			TeleportCoordStorage;
 SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
+SQLStorage<MapInfo, HashMapStorageContainer<MapInfo> >							WorldMapInfoStorage;
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
@@ -123,7 +125,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 		{
 			if(!sp->spell)
 			{
-				printf("SpellId %u in ai_agent for %u is invalid.\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
+				//printf("SpellId %u in ai_agent for %u is invalid.\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
 				delete sp;
 				continue;
 			}
@@ -131,7 +133,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 			if(sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
 				sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
 			{
-				printf("Teaching spell %u in ai_agent for %u\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
+				//printf("Teaching spell %u in ai_agent for %u\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
 				delete sp;
 				continue;
 			}
@@ -230,6 +232,7 @@ void Storage_FillTaskList(TaskList & tl)
 	make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
 	make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
 	make_task(NpcTextStorage, GossipText, HashMapStorageContainer, "npc_text", gNpcTextFormat);
+	make_task(WorldMapInfoStorage, MapInfo, HashMapStorageContainer, "worldmap_info", gWorldMapInfoFormat);
 }
 
 void Storage_Cleanup()
@@ -261,6 +264,7 @@ void Storage_Cleanup()
 	TeleportCoordStorage.Cleanup();
 	FishingZoneStorage.Cleanup();
 	NpcTextStorage.Cleanup();
+	WorldMapInfoStorage.Cleanup();
 }
 
 bool Storage_ReloadTable(const char * TableName)
@@ -290,6 +294,8 @@ bool Storage_ReloadTable(const char * TableName)
 		TeleportCoordStorage.Reload();
 	else if(!stricmp(TableName, "graveyards"))			// Graveyards
 		TeleportCoordStorage.Reload();
+	else if(!stricmp(TableName, "worldmap_info"))		// WorldMapInfo
+		WorldMapInfoStorage.Reload();
 	else
 		return false;
 	return true;

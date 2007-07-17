@@ -25,7 +25,7 @@ MapMgr::MapMgr(Map *map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
 	_shutdown = false;
 	m_instanceID = instanceid;
 	m_UpdateDistance = sWorld.GetUpdateDistance();
-	pMapInfo = sWorld.GetMapInformation(mapId);
+	pMapInfo = WorldMapInfoStorage.LookupEntry(mapId);
     iInstanceMode = 0;
 	reset_pending = false;
 	DeletionPending = false;

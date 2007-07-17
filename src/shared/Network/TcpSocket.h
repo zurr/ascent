@@ -137,7 +137,7 @@ T* ConnectTCPSocket(const char * hostname, u_short port)
 
 	if(result < 0)
 	{
-		printf("connect() failed - %u\n", errno);
+		/*printf("connect() failed - %u\n", errno);*/
 		closesocket(fd);
 		return 0;
 	}

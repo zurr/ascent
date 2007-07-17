@@ -3508,7 +3508,7 @@ void Player::RepopRequestedPlayer()
 	CreateCorpse();
 	BuildPlayerRepop();
 
-	pMapinfo = sWorld.GetMapInformation(GetMapId());
+	pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
 	if(pMapinfo)
 	{
 		if(pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_PVP)
@@ -6314,7 +6314,7 @@ void Player::SaveEntryPoint(uint32 mapId)
 	if(IS_INSTANCE(GetMapId()))
 		return; // dont save if we're not on the main continent.
 	//otherwise we could end up in an endless loop :P
-	MapInfo * pMapinfo = sWorld.GetMapInformation(mapId);
+	MapInfo * pMapinfo = WorldMapInfoStorage.LookupEntry(mapId);
 
 	if(pMapinfo)
 	{
@@ -6757,7 +6757,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
 	}
 
 	// Lookup map info
-	MapInfo * mi = sWorld.GetMapInformation(MapID);
+	MapInfo * mi = WorldMapInfoStorage.LookupEntry(MapID);
 	if(mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01))
 	{
 		WorldPacket msg(SMSG_BROADCAST_MSG, 50);
@@ -7211,7 +7211,7 @@ void Player::CompleteLoading()
 void Player::OnWorldPortAck()
 {
 	//only rezz if player is porting to a instance portal
-	MapInfo *pMapinfo = sWorld.GetMapInformation(GetMapId());
+	MapInfo *pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
 	if(isDead())
 	{
 		if(pMapinfo)

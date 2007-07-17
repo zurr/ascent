@@ -27,6 +27,7 @@ extern SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >			Sp
 extern SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >	GraveyardStorage;
 extern SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >			TeleportCoordStorage;
 extern SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
+extern SQLStorage<MapInfo, HashMapStorageContainer<MapInfo> >						WorldMapInfoStorage;
 
 void Storage_FillTaskList(TaskList & tl);
 void Storage_Cleanup();

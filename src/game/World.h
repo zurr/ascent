@@ -181,24 +181,26 @@ enum AccountFlags
 
 struct MapInfo
 {
-	bool HasFlag(uint32 flag)
-	{
-		 return (flags & flag) != 0;
-	}
-
 	uint32 mapid;
 	uint32 screenid;
 	uint32 type;
 	uint32 playerlimit;
 	uint32 minlevel;
-	uint32 cooldown;
 	float repopx;
 	float repopy;
 	float repopz;
 	uint32 repopmapid;
+	char * name;
 	uint32 flags;
-	std::string name;
+	uint32 cooldown;
     uint32 lvl_mod_a;
+	uint32 required_quest;
+	uint32 required_item;
+
+	bool HasFlag(uint32 flag)
+	{
+		return (flags & flag) != 0;
+	}
 };
 
 enum REALM_TYPE
@@ -407,10 +409,6 @@ public:
 	typedef std::map< uint32, uint32> SpellPricesMap;
 	SpellPricesMap mPrices;
 
-	//world map information
-	void LoadMapInformation();
-	void AddMapInformation(MapInfo *mapinfo);
-	MapInfo *GetMapInformation(uint32 mapid);
 	inline uint32 GetTimeOut(){return TimeOut;}
 
 	std::string GenerateName(uint32 type = 0);
@@ -466,6 +464,7 @@ public:
 	uint32 flood_lines;
 	uint32 flood_seconds;
 	bool flood_message;
+	bool gm_skip_attunement;
 
 protected:
 	// update Stuff, FIXME: use diff
@@ -492,15 +491,10 @@ private:
 
 public:
 
-	typedef HM_NAMESPACE::hash_map<uint32, MapInfo*> MapInfoMap;
-	inline MapInfoMap::iterator GetMapInfoBegin() { return m_mapinfo.begin(); }
-	inline MapInfoMap::iterator GetMapInfoEnd() { return m_mapinfo.end(); }
-
 	static time_t UNIXTIME;
 	static time_t MSTIME;
 
 protected:
-	MapInfoMap m_mapinfo;
 	Mutex SessionsMutex;//FOR GLOBAL !
 	SessionSet Sessions;
 

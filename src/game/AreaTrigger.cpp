@@ -117,7 +117,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 //					CorpseData *pCorpseData = NULL;
 				MapInfo *pMapinfo = NULL;
 
-				pMapinfo = sWorld.GetMapInformation(pAreaTrigger->Mapid);
+				pMapinfo = WorldMapInfoStorage.LookupEntry(pAreaTrigger->Mapid);
 				if(pMapinfo && !pMapinfo->HasFlag(WMI_INSTANCE_ENABLED))
 				{
 					WorldPacket msg;
@@ -162,12 +162,30 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 					return;
 				}
 
+				if(pMapinfo && pMapinfo->required_quest && !_player->HasFinishedQuest(pMapinfo->required_quest))
+				{
+					WorldPacket msg;
+					msg.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
+					msg << uint32(0) << "You do not have the required attunement to enter this instance.";
+					SendPacket(&msg);
+					return;
+				}
+
+				if(pMapinfo && pMapinfo->required_item && !_player->GetItemInterface()->GetItemCount(pMapinfo->required_item, true))
+				{
+					WorldPacket msg;
+					msg.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
+					msg << uint32(0) << "You do not have the required attunement to enter this instance.";
+					SendPacket(&msg);
+					return;
+				}
+
 				if(!GetPlayer()->isAlive())
 				{
 					pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetGUIDLow());
 					if(pCorpse)
 					{
-						pMapinfo = sWorld.GetMapInformation(pCorpse->GetMapId());
+						pMapinfo = WorldMapInfoStorage.LookupEntry(pCorpse->GetMapId());
 						if(pMapinfo)
 						{
                             if(GetPlayer()->InGroup())
@@ -236,7 +254,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 	case ATTYPE_NULL:
 		{
 			MapInfo *pMapinfo = NULL;
-			pMapinfo = sWorld.GetMapInformation(pAreaTrigger->Mapid);
+			pMapinfo = WorldMapInfoStorage.LookupEntry(pAreaTrigger->Mapid);
 			if(pMapinfo && pMapinfo->HasFlag(WMI_INSTANCE_XPACK_01) && !HasFlag(ACCOUNT_FLAG_XPACK_01))
 			{
 				WorldPacket msg;

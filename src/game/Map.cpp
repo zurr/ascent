@@ -22,7 +22,7 @@ Map::Map(uint32 mapid)
 {
 	memset(spawns,0,sizeof(spawns));
 
-	_mapInfo = sWorld.GetMapInformation(mapid);
+	_mapInfo = WorldMapInfoStorage.LookupEntry(mapid);
 	_mapId = mapid;
 
 	bool instance;

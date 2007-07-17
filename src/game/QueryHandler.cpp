@@ -175,7 +175,7 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket &recv_data)
 	pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetGUIDLow());
 	if(pCorpse)
 	{
-		pMapinfo = sWorld.GetMapInformation(pCorpse->GetMapId());
+		pMapinfo = WorldMapInfoStorage.LookupEntry(pCorpse->GetMapId());
 		if(pMapinfo)
 		{
 			if(pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_PVP)

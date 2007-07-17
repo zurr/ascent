@@ -189,7 +189,7 @@ void InstanceSavingManagement::RemoveSavedInstance(uint32 mapid, uint32 instance
 	if(itr != mInstanceInfoList.end())
 	{
 		Instance_Map_Info_Holder *p1 = itr->second;
-		MapInfo * pMapInfo = sWorld.GetMapInformation(mapid);
+		MapInfo * pMapInfo = WorldMapInfoStorage.LookupEntry(mapid);
 		if(!pMapInfo)
         {
             instanceInfoListMutex.Release();
@@ -543,7 +543,7 @@ void Instance_Map_Info_Holder::AddInstanceId(InactiveInstance * ia)
 		Instance_Map_InstanceId_Holder *pIdList;
 		pIdList = new Instance_Map_InstanceId_Holder;
 
-		MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+		MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 		ASSERT(pMapInfo); //if this asserts then something went rly wrong.
 
 		pIdList->SetMapInfo(pMapInfo);
@@ -942,7 +942,7 @@ void InstanceSavingManagement::SaveInstance(InactiveInstance *ia)
 		Instance_Map_Info_Holder *mapholder;
 
 		mapholder = new Instance_Map_Info_Holder;
-		MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+		MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 		if(!pMapInfo)
         {
             inactiveInstancesMutex.Release();
@@ -956,7 +956,7 @@ void InstanceSavingManagement::SaveInstance(InactiveInstance *ia)
 	else
 	{
 		Instance_Map_Info_Holder *mapholder = itr->second;
-		MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+		MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 		if(!pMapInfo)
         {
             inactiveInstancesMutex.Release();

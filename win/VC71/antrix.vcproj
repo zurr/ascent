@@ -49,7 +49,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib dbghelp.lib"
+				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib dbghelp.lib mswsock.lib"
 				OutputFile=".\..\..\bin\Release/antrix.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

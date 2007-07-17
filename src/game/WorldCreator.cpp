@@ -38,16 +38,20 @@ WorldCreator::WorldCreator(TaskList * tl)
 		delete result;
 	}
 
-	for(World::MapInfoMap::iterator itr = sWorld.GetMapInfoBegin(); itr != sWorld.GetMapInfoEnd(); ++itr)
+	StorageContainerIterator<MapInfo> * itr = WorldMapInfoStorage.MakeIterator();
+	while(!itr->AtEnd())
 	{
-		MapInfo * pInfo = itr->second;
+		MapInfo * pInfo = itr->Get();
 		if(pInfo->type == INSTANCE_NULL)
 		{
 			// Create it (we're a non-instance).
 			// Add a loading task for this map.
 			tl->AddTask(new Task(new CallbackP1<WorldCreator, uint32>(WorldCreator::getSingletonPtr(), &WorldCreator::CreateMap, pInfo->mapid)));
 		}
+		if(!itr->Inc())
+			break;
 	}
+	itr->Destruct();
 }
 
 WorldCreator::~WorldCreator()
@@ -97,7 +101,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, Object* obj)
 		{
 			//create that inactive instance.
 			//extra, it now checks if the instance should expire.
-			MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+			MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 			if(pMapInfo)
 			{
 				if((uint32)time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))
@@ -139,7 +143,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, uint32 instanceId)
 		if(ia != 0)
 		{
 			// create that inactive instance.
-			MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+			MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 			if(pMapInfo)
 			{
 				if((uint32)time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))
@@ -179,7 +183,7 @@ MapMgr* WorldCreator::GetInstance(uint32 instanceId)
 		if(ia != 0)
 		{
 			// create that inactive instance.
-			MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+			MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 			if(pMapInfo)
 			{
 				if((uint32)time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))
@@ -444,7 +448,7 @@ MapMgr *WorldCreator::GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo
 				{
 					//create that inactive instance.
 					//extra, it now checks if the instance should expire.
-					MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+					MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 					if(pMapInfo)
 					{
 						if((uint32)time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))
@@ -497,7 +501,7 @@ MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
 				{
 					//create that inactive instance.
 					//extra, it now checks if the instance should expire.
-					MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+					MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 					if(pMapInfo)
 					{
 						if((uint32)time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))
@@ -584,7 +588,7 @@ MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 ma
 		if(ia != 0)
 		{
 			// create that inactive instance.
-			MapInfo *pMapInfo = sWorld.GetMapInformation(ia->MapId);
+			MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 			if(pMapInfo)
 			{
 				if((uint32)time(NULL) > (ia->Creation) + (pMapInfo ? pMapInfo->cooldown : 604800))

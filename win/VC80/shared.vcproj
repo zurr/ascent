@@ -170,156 +170,6 @@
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
-		<Configuration
-			Name="Debug Precache|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\shared,..\..\src\game,..\..\src\realmlist"
-				PreprocessorDefinitions="WIN32,_DEBUG,_LIB"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\shared___Win32_Debug/shared.pch"
-				AssemblerListingLocation=".\shared___Win32_Debug/"
-				ObjectFile=".\shared___Win32_Debug/"
-				ProgramDataBaseFileName=".\shared___Win32_Debug/"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
-				CompileAs="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\shared___Win32_Debug\shared.lib"
-				SuppressStartupBanner="true"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release Precache|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\dep\include,..\..\src\shared,..\..\src\game,..\..\src\realmlist"
-				PreprocessorDefinitions="WIN32,NDEBUG,_LIB"
-				StringPooling="true"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\shared___Win32_Release/shared.pch"
-				AssemblerListingLocation=".\shared___Win32_Release/"
-				ObjectFile=".\shared___Win32_Release/"
-				ProgramDataBaseFileName=".\shared___Win32_Release/"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
-				CompileAs="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Release\shared.lib"
-				SuppressStartupBanner="true"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -560,7 +410,19 @@
 			Name="Network"
 			>
 			<File
-				RelativePath="..\..\src\shared\Network\ListenSocketWin32.h"
+				RelativePath="..\..\src\shared\Network\BaseBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\BaseSocket.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\CircularBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\ListenSocket.h"
 				>
 			</File>
 			<File
@@ -568,35 +430,63 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\Socket.cpp"
+				RelativePath="..\..\src\shared\Network\SocketEngine.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\Socket.h"
+				RelativePath="..\..\src\shared\Network\SocketEngine.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketDefines.h"
+				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketMgrWin32.cpp"
+				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketMgrWin32.h"
+				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketOps.h"
+				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketOpsWin32.cpp"
+				RelativePath="..\..\src\shared\Network\SocketEngine_kqueue.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketWin32.cpp"
+				RelativePath="..\..\src\shared\Network\SocketEngine_kqueue.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_poll.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_poll.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_select.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_select.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\StraightBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\TcpSocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\TcpSocket.h"
 				>
 			</File>
 		</Filter>
