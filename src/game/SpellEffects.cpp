@@ -1292,16 +1292,9 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 
 		uint32 item_count = 0;
 		if (m_itemProto->Class != ITEM_CLASS_CONSUMABLE || m_spellInfo->SpellFamilyName != 3) //SpellFamilyName 3 is mage
-		{
-			int32 basePoints = m_spellInfo->EffectBasePoints[i];
-			int32 randomPoints = m_spellInfo->EffectDieSides[i];
-			if (randomPoints>1)
-				item_count = basePoints + rand() % randomPoints;
-			else
-				item_count = basePoints + 1;
-		}
+			item_count = damage;
 		else if(p_caster->getLevel() >= m_spellInfo->spellLevel)
-			item_count = ((p_caster->getLevel() - (m_spellInfo->spellLevel-1))*2);
+			item_count = ((p_caster->getLevel() - (m_spellInfo->spellLevel-1))*damage);
 
 		if(!item_count)
 			item_count = damage;
