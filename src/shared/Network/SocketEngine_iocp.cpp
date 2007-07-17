@@ -79,6 +79,24 @@ void iocpEngine::WantWrite(BaseSocket * s)
 	}
 }
 
+void OnAccept(Overlapped * ov, BaseSocket * s, DWORD len)
+{
+	s->OnAccept(ov->m_acceptBuffer);
+}
+
+void OnRead(Overlapped * ov, BaseSocket * s, DWORD len)
+{
+	s->OnRead(len);
+}
+
+void OnWrite(Overlapped * ov, BaseSocket * s, DWORD len)
+{
+	s->OnWrite(len);
+}
+
+typedef void(*IOCPHandler)(Overlapped * ov, BaseSocket * s, DWORD len);
+static IOCPHandler Handlers[] = { &OnAccept, &OnRead, &OnWrite, };
+
 void iocpEngine::MessageLoop()
 {
 	BaseSocket * s;
@@ -87,7 +105,7 @@ void iocpEngine::MessageLoop()
 	DWORD len;
 	for(;;)
 	{
-		if(!GetQueuedCompletionStatus(m_completionPort, &len, (PULONG_PTR)&s, &ov, 1000))
+		if(!GetQueuedCompletionStatus(m_completionPort, &len, (PULONG_PTR)&s, &ov, 5000))
 			continue;
 
         myov = CONTAINING_RECORD(ov, Overlapped, m_ov);
@@ -99,7 +117,9 @@ void iocpEngine::MessageLoop()
 
 		if(s->IsConnected())
 		{
-			switch(myov->m_op)
+			Handlers[myov->m_op](myov, s, len);
+
+/*			switch(myov->m_op)
 			{
 			case IO_EVENT_ACCEPT:
 				s->OnAccept(myov->m_acceptBuffer);
@@ -112,7 +132,7 @@ void iocpEngine::MessageLoop()
 			case IO_EVENT_WRITE:
 				s->OnWrite(len);
 				break;
-			}
+			}*/
 		}
 
 		delete myov;
@@ -124,8 +144,8 @@ void iocpEngine::SpawnThreads()
 	SYSTEM_INFO si;
 	GetSystemInfo(&si);
 
-	//thread_count = si.dwNumberOfProcessors;
-	thread_count = 1;
+	thread_count = si.dwNumberOfProcessors;
+	//thread_count = 1;
 	for(int i =0; i < thread_count; ++i)
 		launch_thread(new SocketEngineThread(this));
 }
