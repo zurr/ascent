@@ -531,8 +531,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					if(sp->dummy == 1)
 						continue;
 			}			
-			int32 proc_Chance = (int32)itr2->procChance;
-			SM_FIValue(SM_FChanceOfSuccess, &proc_Chance, ospinfo->SpellGroupType);
+			uint32 proc_Chance = itr2->procChance;
+			SM_FIValue(SM_FChanceOfSuccess, (int32*)&proc_Chance, ospinfo->SpellGroupType);
 			if(spellId && Rand(proc_Chance))
 			{
 				//check if we can trigger due to time limitation
