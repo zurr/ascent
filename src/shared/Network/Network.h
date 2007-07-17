@@ -60,6 +60,7 @@ using namespace std;
 #endif
 
 #ifdef USE_KQUEUE
+#include <sys/event.h>
 #define NETLIB_KQUEUE
 #include "SocketEngine_kqueue.h"
 #endif
