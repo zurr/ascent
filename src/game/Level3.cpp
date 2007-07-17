@@ -1179,7 +1179,7 @@ bool ChatHandler::HandleCreateAccountCommand(const char* args, WorldSession *m_s
 	sLogonCommHandler.LogonDatabaseSQLExecute(ss.str().c_str());
 	/*if(sLogonDatabase.Execute(ss.str().c_str()))
 	{*/
-		GreenSystemMessage(m_session, "Creation succedded. That player can now log in.");
+		GreenSystemMessage(m_session, "Account creation successful. The account will be active with the next reload cycle.");
 		return true;
 	/*} else {
 		RedSystemMessage(m_session, "Creation failed. The player may or may not be able to log in.");
@@ -1224,6 +1224,7 @@ bool ChatHandler::HandleParalyzeCommand(const char* args, WorldSession *m_sessio
 	}
 
 	BlueSystemMessage(m_session, "Rooting target.");
+	BlueSystemMessageToPlr(((Player*)plr), "You have been rooted by %s.", m_session->GetPlayer()->GetName());
 	WorldPacket data;
 	data.Initialize(SMSG_FORCE_MOVE_ROOT);
 	data << plr->GetNewGUID();
@@ -1244,6 +1245,8 @@ bool ChatHandler::HandleUnParalyzeCommand(const char* args, WorldSession *m_sess
 		return true;
 	}
 	
+	BlueSystemMessage(m_session, "Unrooting target.");
+	BlueSystemMessageToPlr(((Player*)plr), "You have been unrooted by %s.", m_session->GetPlayer()->GetName());
 	WorldPacket data;
 	data.Initialize(SMSG_FORCE_MOVE_UNROOT);
 	data << plr->GetNewGUID();
@@ -1261,7 +1264,9 @@ bool ChatHandler::HandleSetMotdCommand(const char* args, WorldSession* m_session
 		return true;
 	}
 
+	GreenSystemMessage(m_session, "Motd has been set to: %s", args);
 	World::getSingleton().SetMotd(args);
+	sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
 	return true;
 }
 
@@ -1626,6 +1631,7 @@ bool ChatHandler::HandleSpawnSpiritGuideCommand(const char* args, WorldSession *
 	pCreature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 
 	BlueSystemMessage(m_session, "Spawned %s spirit healer.", faction ? "horde" : "alliance");
+	sGMLog.writefromsession(m_session, "Spawned spirit healer with guid "I64FMT"", pCreature->GetGUID());
 	return true;
 }
 
@@ -2340,30 +2346,16 @@ bool ChatHandler::HandleGlobalPlaySoundCommand(const char* args, WorldSession * 
 
 bool ChatHandler::HandleBanAccountCommand(const char * args, WorldSession * m_session)
 {
-	char acctname[200];
-	char plrname[200];
-	uint32 duration;
-	int c = sscanf(args, "%s %u %s", acctname, (unsigned int*)&duration, plrname);
-	/*if(c == 0)
-	{
-		Player * plr = getSelectedChar(m_session, false);
-		if(!plr) return false;
-		strcpy(acctname, plr->GetSession()->GetAccountName().c_str());
-		duration = 1;
-	}
-	else */if(c == 1)
-		duration = 1;
-	else if(c == 3)
-	{
-		Player * plr = objmgr.GetPlayer(plrname, false);
-		if(!plr) return false;
-		strcpy(acctname, plr->GetSession()->GetAccountName().c_str());
-	}
-	else if(c != 2)
-	return false;
+	BlueSystemMessage(m_session, "Account %s has been permanently banned.", args);
+	sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET banned = 1 WHERE login = '%s'", WorldDatabase.EscapeString(args).c_str());
 
-	SystemMessage(m_session, "SQL Executed: UPDATE accounts SET banned = %u WHERE login = '%s'", duration, WorldDatabase.EscapeString(acctname).c_str());
-	sLogonCommHandler.LogonDatabaseSQLExecute("UPDATE accounts SET banned = %u WHERE login = '%s'", duration, WorldDatabase.EscapeString(acctname).c_str());
+	WorldSession * session = sWorld.FindSessionByName(args);
+	if(session)
+		session->Disconnect();
+
+	sLogonCommHandler.LogonDatabaseReloadAccounts();
+	BlueSystemMessage(m_session, "Accounts table reloaded.");
+	sGMLog.writefromsession(m_session, "Banned account %s", args);
 	return true;
 }
 

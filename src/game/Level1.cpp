@@ -149,7 +149,7 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession *m_session)
 			kickreason = reason;
 
 		BlueSystemMessage(m_session, "Attempting to kick %s from the server for \"%s\".", chr->GetName(), kickreason.c_str());
-
+		sGMLog.writefromsession(m_session, "Kicked player %s from the server for %s", chr->GetName(), kickreason.c_str());
 		/*if(m_session->GetSecurity() < chr->GetSession()->GetSecurity())
 		{
 			SystemMessage(m_session, "You cannot kick %s, as he is a higher GM level than you.", chr->GetName());
