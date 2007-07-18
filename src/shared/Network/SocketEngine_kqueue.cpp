@@ -96,8 +96,11 @@ void kqueueEngine::MessageLoop()
 			{
 				printf("EVFILT_READ\n");
 				s->OnRead(0);
-                if(s->Writable())
+                if(s->Writable() && !s->m_writeLock)
+				{
+					++s->m_writeLock;
 					WantWrite(s);
+				}
 			}
 			else if(events[i].fflags & EVFILT_WRITE)
 			{
@@ -105,6 +108,7 @@ void kqueueEngine::MessageLoop()
 				s->OnWrite(0);
 				if(!s->Writable())
 				{
+					--s->m_writeLock;
 					EV_SET(&ev, s->GetFd(), EVFILT_READ, EV_ADD, 0, 0, NULL);
 					if(kevent(kq, &ev, 1, NULL, 0, NULL) < 0)
 						printf("!! could not modify kevent (to read) for fd %u\n", s->GetFd());

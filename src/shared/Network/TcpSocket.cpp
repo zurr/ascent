@@ -41,6 +41,10 @@ TcpSocket::TcpSocket(int fd, size_t readbuffersize, size_t writebuffersize, bool
 	m_writeLock = 0;
 	m_deleted = false;
 	m_connected = true;
+
+	/* disable nagle buffering by default */
+	int arg2 = 1;
+	setsockopt(m_fd, IPPROTO_TCP, TCP_NODELAY, (char*)&arg2, sizeof(int));
 }
 
 TcpSocket::~TcpSocket()
@@ -127,7 +131,7 @@ void TcpSocket::OnWrite(size_t len)
 	if(m_writeBuffer->GetSize())
 		sSocketEngine.WantWrite(this);
 	else
-		m_writeLock--;
+		InterlockedDecrement(&m_writeLock);
 
 #else
 	/* Push as much data out as we can in a nonblocking fashion. */
@@ -157,11 +161,17 @@ bool TcpSocket::Write(const void * data, size_t bytes)
 	bool rv = m_writeBuffer->Write(data, bytes);
 	if(rv)
 	{
+#ifdef NETLIB_IOCP
+		/* On windows since you have multiple threads this has to be guarded. */
+		if(InterlockedCompareExchange(&m_writeLock, 1, 0) == 0)
+			sSocketEngine.WantWrite(this);
+#else
 		if(!m_writeLock)
 		{
 			++m_writeLock;
 			sSocketEngine.WantWrite(this);
 		}
+#endif
 	}
 
     return rv;

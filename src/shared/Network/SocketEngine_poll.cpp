@@ -125,8 +125,11 @@ void pollEngine::MessageLoop()
 						s->OnRead(0);
 
 						/* are we writable now? */
-						if(s->Writable())
+						if(s->Writable() && !s->m_writeLock)
+						{
+							++s->m_writeLock;
 							poll_events[i].events = POLLOUT;
+						}
 					}
 					
 					if(poll_events[i].revents & POLLOUT)
@@ -135,7 +138,10 @@ void pollEngine::MessageLoop()
 
 						/* are we readable now? */
 						if(!s->Writable())
+						{
+							--s->m_writeLock;
 							poll_events[i].events = POLLIN;
+						}
 					}
 				}
 			}

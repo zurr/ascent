@@ -94,8 +94,11 @@ void epollEngine::MessageLoop()
 			else if(events[i].events & EPOLLIN)
 			{
 				s->OnRead(0);
-				if(s->Writable())
+				if(s->Writable() && !s->m_writeLock)
+				{
+					++s->m_writeLock;
 					WantWrite(s);
+				}
 			}
 			else if(events[i].events & EPOLLOUT)
 			{
