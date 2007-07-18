@@ -505,10 +505,10 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		}
 		SpellEntry *ospinfo = sSpellStore.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 		//this requires some specific spell check,not yet implemented
-		if(ospinfo->procFlags & flag)
+		if(itr2->procFlags & flag)
 		{
 			uint32 spellId = itr2->spellId;
-			if(ospinfo->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
+			if(itr2->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
 			{
 
 				if(!CastingSpell)
@@ -544,7 +544,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					itr2->LastTrigger = now_in_ms; // consider it triggered
 				}
 				//since we did not allow to remove auras like these with interrupt flag we have to remove them manually.
-				if(ospinfo->procFlags & PROC_REMOVEONUSE)
+				if(itr2->procFlags & PROC_REMOVEONUSE)
 					RemoveAura(origId);
 				//these are player talents. Fuckem they pull the emu speed down 
 				if(IsPlayer())
@@ -784,7 +784,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					continue;
 				}
 				SpellCastTargets targets;
-				if(ospinfo->procFlags & PROC_TAGRGET_SELF)
+				if(itr2->procFlags & PROC_TAGRGET_SELF)
 					targets.m_unitTarget = GetGUID();
 				else targets.m_unitTarget = victim->GetGUID();
 				spell->pSpellId=origId;
