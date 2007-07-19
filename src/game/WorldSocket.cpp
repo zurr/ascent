@@ -134,7 +134,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 	}
 
 	// Set the authentication packet 
-	pAuthenticationPacket = recvPacket;
+    pAuthenticationPacket = recvPacket;
 }
 
 void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 requestid)
@@ -175,13 +175,12 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 	_crypt.Init();
 
 	//checking if player is already connected
+    //disconnect corrent player and login this one(blizzlike)
 	WorldSession *session = sWorld.FindSession( AccountID );
 	if( session)
 	{
 		// AUTH_FAILED = 0x0D
-		OutPacket(SMSG_AUTH_RESPONSE, 1, "\x0D");
 		session->Disconnect();
-		return;
 	}
 
 	Sha1Hash sha;

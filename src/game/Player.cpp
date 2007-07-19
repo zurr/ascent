@@ -7160,9 +7160,6 @@ void Player::CompleteLoading()
 	SetUInt32Value(UNIT_FIELD_HEALTH, load_health);
 	SetUInt32Value(UNIT_FIELD_POWER1, load_mana); 
 
-	if(isDead())
-		SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
-
 	// this needs to be after the cast of passive spells, because it will cast ghost form, after the remove making it in ghost alive, if no corpse.
 	//death system checkout
 	if(GetUInt32Value(UNIT_FIELD_HEALTH) <= 0 && !HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE))

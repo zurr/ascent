@@ -273,18 +273,18 @@ void Unit::Update( uint32 p_time )
 		
 	}
 
-	if(p_time >= m_H_regenTimer)
-		RegenerateHealth();	
-	else
-		m_H_regenTimer -= p_time;
-	//most of the times the 2 timers will be the same (except on spell casts)
-	if(p_time >= m_P_regenTimer)
-		RegeneratePower();	
-	else
-		m_P_regenTimer -= p_time;
-
 	if(!isDead())
 	{
+        if(p_time >= m_H_regenTimer)
+		    RegenerateHealth();	
+	    else
+		    m_H_regenTimer -= p_time;
+	    //most of the times the 2 timers will be the same (except on spell casts)
+	    if(p_time >= m_P_regenTimer)
+		    RegeneratePower();	
+	    else
+		    m_P_regenTimer -= p_time;
+
 		if(m_aiInterface != NULL && m_useAI)
 			m_aiInterface->Update(p_time);
 
