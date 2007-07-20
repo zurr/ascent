@@ -64,24 +64,29 @@ libdatabase_a_SOURCES = \
     Database/impl/PostgreDatabase.cpp
 
 libnetwork_a_SOURCES = \
-	Network/BaseBuffer.h \
-	Network/BaseSocket.h \
-	Network/CircularBuffer.h \
-	Network/ListenSocket.h \
-	Network/Network.h \
-	Network/SocketEngine.cpp \
-	Network/SocketEngine.h \
-	Network/SocketEngine_epoll.cpp \
-	Network/SocketEngine_epoll.h \
-	Network/SocketEngine_iocp.cpp \
-	Network/SocketEngine_iocp.h \
-	Network/SocketEngine_kqueue.cpp \
-	Network/SocketEngine_kqueue.h \
-	Network/SocketEngine_poll.cpp \
-	Network/SocketEngine_poll.h \
-	Network/SocketEngine_select.cpp \
-	Network/SocketEngine_select.h \
-	Network/StraightBuffer.h \
-	Network/TcpSocket.cpp \
-	Network/TcpSocket.h
+    Network/ListenSocketPoll.h \
+    Network/ListenSocketSelect.h \
+    Network/ListenSocketLinux.h \
+    Network/ListenSocketFreeBSD.h \
+    Network/Network.h \
+    Network/Socket.cpp \
+    Network/Socket.h \
+    Network/SocketDefines.h \
+    Network/SocketLinux.cpp \
+    Network/SocketFreeBSD.cpp \
+    Network/SocketMgrLinux.cpp \
+    Network/SocketMgrLinux.h \
+    Network/SocketMgrFreeBSD.cpp \
+    Network/SocketMgrFreeBSD.h \
+    Network/SocketOps.h \
+    Network/SocketOpsLinux.cpp \
+    Network/SocketOpsFreeBSD.cpp \
+    Network/SocketMgrSelect.h \
+    Network/SocketMgrSelect.cpp \
+    Network/SocketOpsSelect.cpp \
+    Network/SocketSelect.cpp \
+    Network/SocketMgrPoll.h \
+    Network/SocketMgrPoll.cpp \
+    Network/SocketOpsPoll.cpp \
+    Network/SocketPoll.cpp 
     

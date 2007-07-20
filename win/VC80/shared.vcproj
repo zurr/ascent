@@ -410,19 +410,7 @@
 			Name="Network"
 			>
 			<File
-				RelativePath="..\..\src\shared\Network\BaseBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\BaseSocket.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\CircularBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\ListenSocket.h"
+				RelativePath="..\..\src\shared\Network\ListenSocketWin32.h"
 				>
 			</File>
 			<File
@@ -430,63 +418,35 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine.cpp"
+				RelativePath="..\..\src\shared\Network\Socket.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine.h"
+				RelativePath="..\..\src\shared\Network\Socket.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.cpp"
+				RelativePath="..\..\src\shared\Network\SocketDefines.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.h"
+				RelativePath="..\..\src\shared\Network\SocketMgrWin32.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.cpp"
+				RelativePath="..\..\src\shared\Network\SocketMgrWin32.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.h"
+				RelativePath="..\..\src\shared\Network\SocketOps.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_kqueue.cpp"
+				RelativePath="..\..\src\shared\Network\SocketOpsWin32.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_kqueue.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_poll.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_poll.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_select.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_select.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\StraightBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\TcpSocket.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\shared\Network\TcpSocket.h"
+				RelativePath="..\..\src\shared\Network\SocketWin32.cpp"
 				>
 			</File>
 		</Filter>
