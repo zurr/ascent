@@ -281,13 +281,17 @@ void LogonServer::Run(int argc, char ** argv)
 	
 	launch_thread(new LogonConsoleThread);
 
-	CreateSocketEngine();
-	sSocketEngine.SpawnThreads();
+	new SocketMgr;
+	new SocketGarbageCollector;
+	sSocketMgr.SpawnWorkerThreads();
+
+	ListenSocket<AuthSocket> * cl = new ListenSocket<AuthSocket>(host.c_str(), cport);
+	ListenSocket<LogonCommServerSocket> * sl = new ListenSocket<LogonCommServerSocket>(shost.c_str(), sport);
 
 	// Spawn auth listener
 	// Spawn interserver listener
-	bool authsockcreated = CreateListenSocket<AuthSocket>(host.c_str(), cport);
-	bool intersockcreated = CreateListenSocket<LogonCommServerSocket>(shost.c_str(), sport);
+	bool authsockcreated = cl->IsOpen();
+	bool intersockcreated = sl->IsOpen();
 
 	// hook signals
 	sLog.outString("Hooking signals...");
@@ -308,7 +312,7 @@ void LogonServer::Run(int argc, char ** argv)
 			CheckForDeadSockets();
 
 		sInfoCore.TimeoutSockets();
-		sSocketDeleter.Update();
+		sSocketGarbageCollector.Update();
 		CheckForDeadSockets();			  // Flood Protection
 		Sleep(50);
 	}
@@ -316,7 +320,11 @@ void LogonServer::Run(int argc, char ** argv)
 	sLog.outString("Shutting down...");
 	pfc->kill();
 
-	sSocketEngine.Shutdown();
+	cl->Close();
+	sl->Close();
+	delete sl;
+	delete cl;
+	sSocketMgr.CloseAll();
 	sLogonConsole.kill();
 
 	// kill db
@@ -337,6 +345,8 @@ void LogonServer::Run(int argc, char ** argv)
 	delete InformationCore::getSingletonPtr();
 	delete ThreadMgr::getSingletonPtr();
 	delete IPBanner::getSingletonPtr();
+	delete SocketMgr::getSingletonPtr();
+	delete SocketGarbageCollector::getSingletonPtr();
 #ifdef WIN32
 	//TerminateProcess(GetCurrentProcess(), 0);
 #else

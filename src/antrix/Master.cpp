@@ -310,8 +310,9 @@ bool Master::Run(int argc, char ** argv)
 
 	// Start Network Subsystem
 	sLog.outString("Starting network subsystem...");
-	CreateSocketEngine();
-	sSocketEngine.SpawnThreads();
+	new SocketMgr;
+	new SocketGarbageCollector;
+	sSocketMgr.SpawnWorkerThreads();
 
 	sScriptMgr.LoadScripts();
 
@@ -340,14 +341,16 @@ bool Master::Run(int argc, char ** argv)
 	sLogonCommHandler.Startup();
 
 	// Create listener
-	bool listnersockcreate = CreateListenSocket<WorldSocket>(host.c_str(), wsport);
+	ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(host.c_str(), wsport);
+    bool listnersockcreate = ls->IsOpen();
 
 	while(!m_stopEvent && listnersockcreate)
 	{
 		start = now();
 		diff = start - last_time;
 		sLogonCommHandler.UpdateSockets();
-		sSocketDeleter.Update();
+		ls->Update();
+		sSocketGarbageCollector.Update();
 
 		/* UPDATE */
 		last_time = now();
@@ -411,7 +414,10 @@ bool Master::Run(int argc, char ** argv)
 	sThreadMgr.RemoveThread(thread);
 
 	sLog.outString("Killing all sockets and network subsystem.");
-	sSocketEngine.Shutdown();
+	ls->Close();
+	delete ls;
+	sSocketMgr.ShutdownThreads();
+	sSocketMgr.CloseAll();
 
 	// begin server shutdown
 	time_t st = time(NULL);
@@ -452,7 +458,8 @@ bool Master::Run(int argc, char ** argv)
 	_StopDB();
 
 	sLog.outString("Deleting Network Subsystem...");
-	//delete SocketMgr::getSingletonPtr();
+	delete SocketMgr::getSingletonPtr();
+	delete SocketGarbageCollector::getSingletonPtr();
 
 	sLog.outString("Deleting Script Engine...");
 	delete ScriptSystem;

@@ -28,7 +28,7 @@ enum _errors
 	CE_ACCOUNT_FREEZED=0x0c
 } ; 
 
-AuthSocket::AuthSocket(SOCKET fd, const sockaddr_in * addr) : TcpSocket(fd, 32768, 4096, false, addr)
+AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
 {
 	N.SetHexStr("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7");
 	g.SetDword(7);
@@ -63,15 +63,15 @@ void AuthSocket::OnDisconnect()
 void AuthSocket::HandleChallenge()
 {
 	// No header
-	if(GetReadBuffer()->GetSize() < 4)
+	if(GetReadBufferSize() < 4)
 		return;	
 
 	// Check the rest of the packet is complete.
-	uint8 * ReceiveBuffer = (uint8*)GetReadBuffer()->GetBufferOffset();
+	uint8 * ReceiveBuffer = this->GetReadBuffer(0);
 	uint16 full_size = *(uint16*)&ReceiveBuffer[2];
 	sLog.outDetail("[AuthChallenge] got header, body is 0x%02X bytes", full_size);
 
-	if(GetReadBuffer()->GetSize() < uint32(full_size+4))
+	if(GetReadBufferSize() < uint32(full_size+4))
 		return;
 
 	// Copy the data into our cached challenge structure
@@ -84,7 +84,7 @@ void AuthSocket::HandleChallenge()
 	sLog.outDebug("[AuthChallenge] got full packet.");
 
 	memcpy(&m_challenge, ReceiveBuffer, full_size + 4);
-	GetReadBuffer()->Remove(full_size + 4);
+	RemoveReadBufferBytes(full_size + 4, true);
 
 	// Check client build.
 	if(m_challenge.build > LogonServer::getSingleton().max_build ||
@@ -95,7 +95,7 @@ void AuthSocket::HandleChallenge()
 	}
 
 	// Check for a possible IP ban on this client.
-	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(m_peer.sin_addr);
+	BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
 
 	switch(ipb)
 	{
@@ -126,9 +126,6 @@ void AuthSocket::HandleChallenge()
 	}
 
 	sLog.outDebug("[AuthChallenge] Account banned state = %u", m_account->Banned);
-
-	// Don't update when IP banned, but update anyway if it's an account ban
-	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", GetIP(), m_account->AccountId);
 
 	// Check that the account isn't banned.
 	if(m_account->Banned == 1)
@@ -174,18 +171,18 @@ void AuthSocket::HandleChallenge()
 	memcpy(&response[c], unk.AsByteArray(), 16);			c += 16;
 	response[c] = 0;										c += 1;
 
-	Write(response, c);
+	Send(response, c);
 }
 
 void AuthSocket::HandleProof()
 {
-	if(!m_account || GetReadBuffer()->GetSize() < sizeof(sAuthLogonProof_C))
+	if(!m_account || GetReadBufferSize() < sizeof(sAuthLogonProof_C))
 		return ;
 
 	sLog.outDebug("[AuthLogonProof] Interleaving and checking proof...");
 
 	sAuthLogonProof_C lp;
-	Read((uint8*)&lp, sizeof(sAuthLogonProof_C));
+	Read(sizeof(sAuthLogonProof_C), (uint8*)&lp);
 
 	BigNumber A;
 	A.SetBinary(lp.A, 32);
@@ -281,8 +278,8 @@ void AuthSocket::HandleProof()
 	// we're authenticated now :)
 	m_authenticated = true;
 
-
-
+	// Don't update when IP banned, but update anyway if it's an account ban
+	sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE acct=%u;", GetRemoteIP().c_str(), m_account->AccountId);
 }
 
 void AuthSocket::SendChallengeError(uint8 Error)
@@ -291,7 +288,7 @@ void AuthSocket::SendChallengeError(uint8 Error)
 	buffer[0] = buffer[1] = 0;
 	buffer[2] = Error;
 
-	Write(buffer, 3);
+	Send(buffer, 3);
 }
 
 void AuthSocket::SendProofError(uint8 Error, uint8 * M2)
@@ -304,20 +301,20 @@ void AuthSocket::SendProofError(uint8 Error, uint8 * M2)
 	if(M2 == 0)
 	{
 		*(uint32*)&buffer[2] = 3;
-		Write(buffer, 6);
+		Send(buffer, 6);
 		return;
 	}
 	
 	memcpy(&buffer[2], M2, 20);
-	Write(buffer, 28);
+	Send(buffer, 28);
 }
 
-void AuthSocket::OnRecvData()
+void AuthSocket::OnRead()
 {
-	if(GetReadBuffer()->GetSize() < 1)
+	if(GetReadBufferSize() < 1)
 		return;
 
-	uint8 Command = ((uint8*)GetReadBuffer()->GetBufferOffset())[0];
+	uint8 Command = GetReadBuffer(0)[0];
 
 	// Handle depending on command
 	switch(Command)

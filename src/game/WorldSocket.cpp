@@ -36,7 +36,7 @@ struct ServerPktHeader
 };
 #pragma pack(pop)
 
-WorldSocket::WorldSocket(SOCKET fd, const sockaddr_in * addr) : TcpSocket(fd, WORLDSOCKET_RECVBUF_SIZE, WORLDSOCKET_SENDBUF_SIZE, false, addr)
+WorldSocket::WorldSocket(SOCKET fd) : Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE)
 {
 	Authed = false;
 	mSize = mOpcode = mRemaining = 0;
@@ -75,7 +75,7 @@ void WorldSocket::OutPacket(uint16 opcode, uint16 len, const void* data)
 	if(opcode == 0 || !IsConnected())
 		return;
 
-	LockWriteBuffer();
+	BurstBegin();
 
 	// Packet logger :)
 	sWorldLog.LogPacket(len, opcode, (const uint8*)data, 1);
@@ -88,15 +88,16 @@ void WorldSocket::OutPacket(uint16 opcode, uint16 len, const void* data)
 	_crypt.EncryptSend((uint8*)&Header, 4);
 
 	// Pass the header to our send buffer
-	rv = Write(&Header, 4);
+	rv = BurstSend((const uint8*)&Header, 4);
 
 	// Pass the rest of the packet to our send buffer (if there is any)
 	if(len > 0 && rv)
 	{
-		rv = Write(data, len);
+		rv = BurstSend((const uint8*)data, len);
 	}
 
-	UnlockWriteBuffer();
+	if(rv) BurstPush();
+	BurstEnd();
 }
 
 void WorldSocket::OnConnect()
@@ -218,7 +219,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 	for(uint32 i = 0; i < 8; ++i)
 		mSession->SetAccountData(i, NULL, true, 0);
 
-	sLog.outString("> %s authenticated from %s:%u [%ums]", AccountName.c_str(), inet_ntoa(m_peer.sin_addr), ntohs(m_peer.sin_port), _latency);
+	sLog.outString("> %s authenticated from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
 
 	// Check for queue.
 	if( (sWorld.GetNonGmSessionCount() < sWorld.GetPlayerLimit()) || mSession->HasGMPermissions() ) {
@@ -324,80 +325,70 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 #endif
 }
 
-void WorldSocket::OnRecvData()
+void WorldSocket::OnRead()
 {
-	if(GetReadBuffer()->GetSize())
+	for(;;)
 	{
-		uint32 BytesLeft = GetReadBuffer()->GetSize();
-
-		while(TRUE)
+		// Check for the header if we don't have any bytes to wait for.
+		if(mRemaining == 0)
 		{
-			if(BytesLeft == 0)
+			if(GetReadBufferSize() < 6)
+			{
+				// No header in the packet, let's wait.
 				return;
-
-			// Check for the header if we don't have any bytes to wait for.
-			if(mRemaining == 0)
-			{
-				if(GetReadBuffer()->GetSize() < 6)
-				{
-					// No header in the packet, let's wait.
-					return;
-				}
-
-				// Copy from packet buffer into header local var
-				ClientPktHeader Header;
-				Read(&Header, 6);
-
-				// Decrypt the header
-				_crypt.DecryptRecv((uint8*)&Header, 6);
-
-				mRemaining = mSize = ntohs(Header.size) - 4;
-				mOpcode = Header.cmd;
-				BytesLeft -= 6;
 			}
 
-			WorldPacket * Packet;
+			// Copy from packet buffer into header local var
+			ClientPktHeader Header;
+			Read(6, (uint8*)&Header);
 
-			if(mRemaining > 0)
+			// Decrypt the header
+			_crypt.DecryptRecv((uint8*)&Header, 6);
+
+			mRemaining = mSize = ntohs(Header.size) - 4;
+			mOpcode = Header.cmd;
+		}
+
+		WorldPacket * Packet;
+
+		if(mRemaining > 0)
+		{
+			if( GetReadBufferSize() < mRemaining )
 			{
-				if( GetReadBuffer()->GetSize() < mRemaining )
-				{
-					// We have a fragmented packet. Wait for the complete one before proceeding.
-					return;
-				}
+				// We have a fragmented packet. Wait for the complete one before proceeding.
+				return;
 			}
+		}
 
-			Packet = new WorldPacket(mOpcode, mSize);
-			Packet->resize(mSize);
+		Packet = new WorldPacket(mOpcode, mSize);
+		Packet->resize(mSize);
 
-			if(mRemaining > 0)
+		if(mRemaining > 0)
+		{
+			// Copy from packet buffer into our actual buffer.
+			Read(mRemaining, (uint8*)Packet->contents());
+		}
+
+		sWorldLog.LogPacket(mSize, mOpcode, mSize ? Packet->contents() : NULL, 0);
+		mRemaining = mSize = mOpcode = 0;
+
+		// Check for packets that we handle
+		switch(Packet->GetOpcode())
+		{
+		case CMSG_PING:
 			{
-				// Copy from packet buffer into our actual buffer.
-				Read((void*)Packet->contents(), mRemaining);
-				BytesLeft -= mRemaining;
-			}
-
-			sWorldLog.LogPacket(mSize, mOpcode, mSize ? Packet->contents() : NULL, 0);
-			mRemaining = mSize = mOpcode = 0;
-
-			// Check for packets that we handle
-			switch(Packet->GetOpcode())
+				_HandlePing(Packet);
+				delete Packet;
+			}break;
+		case CMSG_AUTH_SESSION:
 			{
-			case CMSG_PING:
-				{
-					_HandlePing(Packet);
-					delete Packet;
-				}break;
-			case CMSG_AUTH_SESSION:
-				{
-					_HandleAuthSession(Packet);
-				}break;
-			default:
-				{
-					if(mSession) mSession->QueuePacket(Packet);
-					else delete Packet;
-				}break;
-			}
+				_HandleAuthSession(Packet);
+			}break;
+		default:
+			{
+				if(mSession) mSession->QueuePacket(Packet);
+				else delete Packet;
+			}break;
 		}
 	}
 }

@@ -20,7 +20,7 @@
 
 class LogonCommServerSocket;
 
-class AuthSocket : public TcpSocket
+class AuthSocket : public Socket
 {
 	friend class LogonCommServerSocket;
 public:
@@ -28,10 +28,10 @@ public:
 	///////////////////////////////////////////////////
 	// Netcore shit
 	//////////////////////////
-	AuthSocket(SOCKET fd, const sockaddr_in * addr);
+	AuthSocket(SOCKET fd);
 	~AuthSocket();
 
-	void OnRecvData();
+	void OnRead();
 
 	///////////////////////////////////////////////////
 	// Client Packet Handlers
@@ -48,7 +48,7 @@ public:
 	void SendChallengeError(uint8 Error);
 	void SendProofError(uint8 Error, uint8 * M2);
 	inline sAuthLogonChallenge_C * GetChallenge() { return &m_challenge; }
-	inline void SendPacket(const uint8* data, const uint16 len) { Write(data, len); }
+	inline void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
 	void OnDisconnect();
 	inline time_t GetLastRecv() { return last_recv; }
 	bool removedFromSet;

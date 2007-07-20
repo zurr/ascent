@@ -2,7 +2,7 @@
 #ifndef _WORKERSERVER_CLIENT_H
 #define _WORKERSERVER_CLIENT_H
 
-class WSClient : public TcpSocket
+class WSClient : public Socket
 {
 	bool _authenticated;
 	uint32 _remaining;
@@ -11,7 +11,7 @@ public:
 	WSClient(SOCKET fd, const sockaddr_in * addr);
 	~WSClient();
 
-	void OnRecvData();
+	void OnRead();
 	void OnConnect();
 };
 

@@ -2326,7 +2326,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession * m_session)
 		(sess->HasFlag(ACCOUNT_FLAG_XPACK_01)?"WoW Burning Crusade":"WoW"), sess->GetClientBuild());
 
 	BlueSystemMessage(m_session, "%s IP is '%s', and has a latency of %ums", (plr->getGender()?"Her":"His"),
-		sess->GetSocket()->GetIP(), sess->GetLatency());
+		sess->GetSocket()->GetRemoteIP().c_str(), sess->GetLatency());
 
 	return true;
 }

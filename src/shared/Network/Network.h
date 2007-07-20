@@ -1,68 +1,42 @@
-/****************************************************************************
- *
- * Multiplatform High-Performance Async Network Library
- * Include File For Antrix
+/*
+ * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * This file may be distributed under the terms of the Q Public License
- * as defined by Trolltech ASA of Norway and appearing in the file
- * COPYING included in the packaging of this file.
- *
- * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ * Network.h - Include this file in your .cpp files to gain access
+ *			 to features offered by this library.
  *
  */
 
-#include "../Common.h"
-using namespace std;
+#ifndef NETWORK_H_
+#define NETWORK_H_
 
-/* windows sucks dick! */
-#ifdef WIN32
-#define USE_IOCP
+#include "SocketDefines.h"
+#include "SocketOps.h"
+#include "Socket.h"
+
+#ifdef CONFIG_USE_POLL
+#include "SocketMgrPoll.h"
+#include "ListenSocketPoll.h"
 #endif
 
-/* Define these on non-windows systems */
-#ifndef WIN32
-#define ioctlsocket ioctl
-#define closesocket close
-#define TCP_NODELAY 0x6
-#define SD_BOTH SHUT_RDWR
-#define SOCKET int
+#ifdef CONFIG_USE_SELECT
+#include "SocketMgrSelect.h"
+#include "ListenSocketSelect.h"
 #endif
 
-#include "BaseSocket.h"
-#include "BaseBuffer.h"
-#include "StraightBuffer.h"
-#include "CircularBuffer.h"
-#include "SocketEngine.h"
-#include "TcpSocket.h"
-
-#ifdef USE_POLL
-#include <sys/poll.h>
-#define NETLIB_POLL
-#include "SocketEngine_poll.h"
+#ifdef CONFIG_USE_IOCP
+#include "SocketMgrWin32.h"
+#include "ListenSocketWin32.h"
 #endif
 
-#ifdef USE_EPOLL
-#include <sys/epoll.h>
-#define NETLIB_EPOLL
-#include "SocketEngine_epoll.h"
+#ifdef CONFIG_USE_EPOLL
+#include "SocketMgrLinux.h"
+#include "ListenSocketLinux.h"
 #endif
 
-#ifdef USE_IOCP
-#define NETLIB_IOCP
-#include "SocketEngine_iocp.h"
+#ifdef CONFIG_USE_KQUEUE
+#include "SocketMgrFreeBSD.h"
+#include "ListenSocketFreeBSD.h"
 #endif
 
-#ifdef USE_SELECT
-#define NETLIB_SELECT
-#include "SocketEngine_Select.h"
 #endif
-
-#ifdef USE_KQUEUE
-#include <sys/event.h>
-#define NETLIB_KQUEUE
-#include "SocketEngine_kqueue.h"
-#endif
-
-#include "ListenSocket.h"

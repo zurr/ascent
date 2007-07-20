@@ -18,17 +18,17 @@
 #include "../logonserver/LogonOpcodes.h"
 #include <RC4Engine.h>
 
-class LogonCommClientSocket : public TcpSocket
+class LogonCommClientSocket : public Socket
 {
 	uint16 remaining;
 	uint16 opcode;
 	RC4Engine _sendCrypto;
 	RC4Engine _recvCrypto;
 public:
-	LogonCommClientSocket(SOCKET fd, const sockaddr_in * addr);
+	LogonCommClientSocket(SOCKET fd);
 	~LogonCommClientSocket();
 	
-	void OnRecvData();
+	void OnRead();
 	void SendPacket(WorldPacket * data);
 	void HandlePacket(WorldPacket & recvData);
 	void SendPing();

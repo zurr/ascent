@@ -20,7 +20,7 @@ typedef struct
 	uint16 size;
 }logonpacket;
 
-LogonCommClientSocket::LogonCommClientSocket(SOCKET fd, const sockaddr_in * addr) : TcpSocket(fd, 524288, 65536, false, addr)
+LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 524288, 65536)
 {
 	// do nothing
 	last_ping = last_pong = time(NULL);
@@ -31,18 +31,18 @@ LogonCommClientSocket::LogonCommClientSocket(SOCKET fd, const sockaddr_in * addr
 	authenticated = 0;
 }
 
-void LogonCommClientSocket::OnRecvData()
+void LogonCommClientSocket::OnRead()
 {
 	while(true)
 	{
 		if(!remaining)
 		{
-			if(GetReadBuffer()->GetSize() < 4)
+			if(GetReadBufferSize() < 4)
 				return;	 // no header
 
 			// read header
-			Read(&opcode, 2);
-			Read(&remaining, 2);
+			Read(2, (uint8*)&opcode);
+			Read(2, (uint8*)&remaining);
 
 			// decrypt the first two bytes
 			if(use_crypto)
@@ -56,7 +56,7 @@ void LogonCommClientSocket::OnRecvData()
 		}
 
 		// do we have a full packet?
-		if(GetReadBuffer()->GetSize() < remaining)
+		if(GetReadBufferSize() < remaining)
 			return;
 
 		// create the buffer
@@ -64,7 +64,7 @@ void LogonCommClientSocket::OnRecvData()
 		if(remaining)
 		{
 			buff.resize(remaining);
-			Read((uint8*)buff.contents(), remaining);
+			Read(remaining, (uint8*)buff.contents());
 		}
 
 		// decrypt the rest of the packet
@@ -166,7 +166,7 @@ void LogonCommClientSocket::SendPacket(WorldPacket * data)
 	logonpacket header;
 	bool rv;
 
-	LockWriteBuffer();
+	BurstBegin();
 
 	header.opcode = data->GetOpcode();
 	header.size   = ntohs(data->size());
@@ -174,17 +174,18 @@ void LogonCommClientSocket::SendPacket(WorldPacket * data)
 	if(use_crypto)
 		_sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 4);
 
-	rv = Write((const uint8*)&header, 4);
+	rv = BurstSend((const uint8*)&header, 4);
 
 	if(data->size() > 0 && rv)
 	{
 		if(use_crypto)
 			_sendCrypto.Process((unsigned char*)data->contents(), (unsigned char*)data->contents(), data->size());
 
-		rv = Write((const uint8*)data->contents(), data->size());
+		rv = BurstSend((const uint8*)data->contents(), data->size());
 	}
 
-	UnlockWriteBuffer();
+	if(rv) BurstPush();
+	BurstEnd();
 }
 
 void LogonCommClientSocket::OnDisconnect()

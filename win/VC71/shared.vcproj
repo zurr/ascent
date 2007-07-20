@@ -237,58 +237,94 @@
 			Name="Network"
 			Filter="">
 			<File
-				RelativePath="..\..\src\shared\Network\BaseBuffer.h">
+				RelativePath="..\..\src\shared\Network\ListenSocketFreeBSD.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\BaseSocket.h">
+				RelativePath="..\..\src\shared\Network\ListenSocketLinux.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\CircularBuffer.h">
+				RelativePath="..\..\src\shared\Network\ListenSocketPoll.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\ListenSocket.h">
+				RelativePath="..\..\src\shared\Network\ListenSocketSelect.h">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\ListenSocketWin32.h">
 			</File>
 			<File
 				RelativePath="..\..\src\shared\Network\Network.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine.cpp">
+				RelativePath="..\..\src\shared\Network\Socket.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine.h">
+				RelativePath="..\..\src\shared\Network\Socket.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.cpp">
+				RelativePath="..\..\src\shared\Network\SocketDefines.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_epoll.h">
+				RelativePath="..\..\src\shared\Network\SocketFreeBSD.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.cpp">
+				RelativePath="..\..\src\shared\Network\SocketLinux.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.h">
+				RelativePath="..\..\src\shared\Network\SocketMgrFreeBSD.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_poll.cpp">
+				RelativePath="..\..\src\shared\Network\SocketMgrFreeBSD.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_poll.h">
+				RelativePath="..\..\src\shared\Network\SocketMgrLinux.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_select.cpp">
+				RelativePath="..\..\src\shared\Network\SocketMgrLinux.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\SocketEngine_select.h">
+				RelativePath="..\..\src\shared\Network\SocketMgrPoll.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\StraightBuffer.h">
+				RelativePath="..\..\src\shared\Network\SocketMgrPoll.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\TcpSocket.cpp">
+				RelativePath="..\..\src\shared\Network\SocketMgrSelect.cpp">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\Network\TcpSocket.h">
+				RelativePath="..\..\src\shared\Network\SocketMgrSelect.h">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketMgrWin32.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketMgrWin32.h">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketOps.h">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketOpsFreeBSD.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketOpsLinux.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketOpsPoll.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketOpsSelect.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketOpsWin32.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketPoll.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketSelect.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\shared\Network\SocketWin32.cpp">
 			</File>
 		</Filter>
 		<Filter
