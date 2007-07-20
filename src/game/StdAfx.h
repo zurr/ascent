@@ -16,6 +16,7 @@
 #define __STDAFX_H
 
 #define _GAME
+/*#define CLUSTERING*/
 
 #include <list>
 #include <vector>
@@ -29,6 +30,7 @@
 #include "../shared/MersenneTwister.h"
 #include "../shared/WorldPacket.h"
 #include "../shared/Log.h"
+#include "../shared/NGLog.h"
 #include "../shared/ByteBuffer.h"
 #include "../shared/StackBuffer.h"
 #include "../shared/Config/ConfigEnv.h"
@@ -52,6 +54,11 @@
 #include "UpdateFields.h"
 #include "UpdateMask.h"
 #include "Opcodes.h"
+
+#ifdef CLUSTERING
+#include "../realmserver/WorkerOpcodes.h"
+#endif
+
 #include "../shared/CallBack.h"
 #include "EventMgr.h"
 #include "EventableObject.h"
@@ -131,5 +138,10 @@
 
 #include "../shared/Storage.h"
 #include "ObjectStorage.h"
+
+#ifdef CLUSTERING
+#include "WorkerServerClient.h"
+#include "ClusterInterface.h"
+#endif
 
 #endif

@@ -1904,7 +1904,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			}
 			/* -------------------- KILL PET WHEN PLAYER DIES END---------------*/
 		}
-		else Log::getSingleton( ).outError("DealDamage for Unknown Object.");
+		else sLog.outError("DealDamage for Unknown Object.");
 	}
 	else /* ---------- NOT DEAD YET --------- */
 	{

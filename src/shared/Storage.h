@@ -542,7 +542,7 @@ public:
 	 */
 	void Load(const char * IndexName, const char * FormatString)
 	{
-		printf("Loading database cache from `%s`...\n", IndexName);
+		//printf("Loading database cache from `%s`...\n", IndexName);
 		Storage<T, StorageType>::Load(IndexName, FormatString);
 		QueryResult * result;
 		if(Storage<T, StorageType>::_storage.NeedsMax())
@@ -566,11 +566,11 @@ public:
 		{
 			if(result->GetFieldCount() > cols)
 			{
-				printf("Invalid format in %s (%u/%u), loading anyway because we have enough data\n", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
+				Log.Warning("Storage", "Invalid format in %s (%u/%u), loading anyway because we have enough data\n", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
 			}
 			else
 			{
-				printf("Invalid format in %s (%u/%u), not enough data to proceed.\n", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
+				Log.Error("Storage", "Invalid format in %s (%u/%u), not enough data to proceed.\n", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
 				delete result;
 				return;
 			}
@@ -588,13 +588,15 @@ public:
 			LoadBlock(fields, Allocated);
 		} while(result->NextRow());
 		delete result;
+
+		Log.Success("Storage", "Loaded database cache from `%s`.", IndexName);
 	}
 
 	/** Reloads the storage container
 	 */
 	void Reload()
 	{
-		printf("Reloading database cache from `%s`...\n", Storage<T, StorageType>::_indexName);
+		Log.Notice("Storage", "Reloading database cache from `%s`...\n", Storage<T, StorageType>::_indexName);
 		QueryResult * result = WorldDatabase.Query("SELECT MAX(entry) FROM %s", Storage<T, StorageType>::_indexName);
 		if(result == 0)
 			return;
@@ -612,7 +614,7 @@ public:
 
 		if(result->GetFieldCount() != cols)
 		{
-			printf("Invalid format in %s (%u/%u).", Storage<T, StorageType>::_indexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
+			Log.Error("Storage", "Invalid format in %s (%u/%u).", Storage<T, StorageType>::_indexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
 			delete result;
 			return;
 		}

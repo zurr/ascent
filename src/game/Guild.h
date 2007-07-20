@@ -250,6 +250,7 @@ public:
 	uint32 GetGuildId() { return m_guildId; }
 	void SetGuildId( uint32 guildId ) { m_guildId = guildId; }
 	std::string GetGuildName() { return m_guildName; }
+	inline const char * GetGuildNameC() { return m_guildName.c_str(); }
 	void SetGuildName( std::string guildName ) { m_guildName = guildName; }
 
 	uint64 GetGuildLeaderGuid() { return m_leaderGuid; }

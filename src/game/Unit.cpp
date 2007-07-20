@@ -1752,7 +1752,7 @@ void Unit::smsg_AttackStart(Unit* pVictim)
 	data << GetGUID();
 	data << pVictim->GetGUID();
 	SendMessageToSet(&data, true);
-	Log::getSingleton( ).outDebug( "WORLD: Sent SMSG_ATTACKSTART" );
+	sLog.outDebug( "WORLD: Sent SMSG_ATTACKSTART" );
 
 	// FLAGS changed so other players see attack animation
 	//	addUnitFlag(0x00080000);

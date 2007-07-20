@@ -15,11 +15,14 @@
 #include "Common.h"
 #include "Config/ConfigEnv.h"
 #include "Log.h"
+#include "NGLog.h"
 #include <stdarg.h>
 
-createFileSingleton( Log );
+createFileSingleton( oLog );
+createFileSingleton(CLog);
 initialiseSingleton( WorldLog );
 
+time_t UNIXTIME;
 #ifndef WIN32
 static char* colorstrings[TBLUE+1] = {
 "",
@@ -33,7 +36,7 @@ static char* colorstrings[TBLUE+1] = {
 };
 #endif
 
-void Log::outString( const char * str, ... )
+void oLog::outString( const char * str, ... )
 {
 	if(m_fileLogLevel < 0 && m_screenLogLevel < 0)
 		return;
@@ -53,7 +56,7 @@ void Log::outString( const char * str, ... )
 	va_end(ap);
 }
 
-void Log::outError( const char * err, ... )
+void oLog::outError( const char * err, ... )
 {
 	if(m_fileLogLevel < 1 && m_screenLogLevel < 1)
 		return;
@@ -83,7 +86,7 @@ void Log::outError( const char * err, ... )
 	va_end(ap);
 }
 
-void Log::outBasic( const char * str, ... )
+void oLog::outBasic( const char * str, ... )
 {
 	if(m_fileLogLevel < 1 && m_screenLogLevel < 1)
 		return;
@@ -103,7 +106,7 @@ void Log::outBasic( const char * str, ... )
 	va_end(ap);
 }
 
-void Log::outDetail( const char * str, ... )
+void oLog::outDetail( const char * str, ... )
 {
 	if(m_fileLogLevel < 2 && m_screenLogLevel < 2)
 		return;
@@ -123,7 +126,7 @@ void Log::outDetail( const char * str, ... )
 	va_end(ap);
 }
 
-void Log::outDebug( const char * str, ... )
+void oLog::outDebug( const char * str, ... )
 {
 	if(m_fileLogLevel < 3 && m_screenLogLevel < 3)
 		return;
@@ -143,7 +146,7 @@ void Log::outDebug( const char * str, ... )
 	va_end(ap);
 }
 
-void Log::outMenu( const char * str, ... )
+void oLog::outMenu( const char * str, ... )
 {
 	va_list ap;
 	va_start(ap, str);
@@ -152,7 +155,7 @@ void Log::outMenu( const char * str, ... )
 	fflush(stdout);
 }
 
-void Log::Init(int32 fileLogLevel, int32 screenLogLevel)
+void oLog::Init(int32 fileLogLevel, int32 screenLogLevel)
 {
 	m_screenLogLevel = screenLogLevel;
 	m_fileLogLevel = fileLogLevel;
@@ -168,12 +171,12 @@ void Log::Init(int32 fileLogLevel, int32 screenLogLevel)
 #endif
 }
 
-void Log::SetScreenLoggingLevel(int32 level)
+void oLog::SetScreenLoggingLevel(int32 level)
 {
 	m_screenLogLevel = level;
 }
 
-void Log::SetFileLoggingLevel(int32 level)
+void oLog::SetFileLoggingLevel(int32 level)
 {
 	if(level < 0)
 	{
@@ -244,7 +247,7 @@ WorldLog::~WorldLog()
 
 }
 
-void Log::outColor(uint32 colorcode, const char * str, ...)
+void oLog::outColor(uint32 colorcode, const char * str, ...)
 {
 	if( !str ) return;
 	va_list ap;

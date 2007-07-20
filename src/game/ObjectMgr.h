@@ -476,6 +476,9 @@ public:
 		return (itr == mNormalSpells.end()) ? 0 : &itr->second;
 	}
 
+	inline GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
+	inline GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
+
 protected:
 	RWLock playernamelock;
 	uint32 m_mailid;

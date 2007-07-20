@@ -319,7 +319,7 @@ bool Master::Run(int argc, char ** argv)
 	sLog.outString("Threading system initialized, currently %u threads are active.", sThreadMgr.GetThreadCount());	
 
 	LoadingTime = getMSTime() - LoadingTime;
-	Log::getSingleton( ).outString ("\nServer is ready for connections. Startup time: %ums\n", LoadingTime );
+	sLog.outString ("\nServer is ready for connections. Startup time: %ums\n", LoadingTime );
  
 	/* write pid file */
 	FILE * fPid = fopen("antrix.pid", "w");

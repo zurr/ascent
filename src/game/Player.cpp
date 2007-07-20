@@ -854,7 +854,7 @@ void Player::_EventAttack(bool offhand)
 	//Can't find victim, stop attacking
 	if (!pVictim)
 	{
-		Log::getSingleton( ).outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
+		sLog.outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
 		setHRegenTimer(5000); //prevent clicking off creature for a quick heal
 		EventAttackStop();
 		return;
@@ -935,8 +935,8 @@ void Player::_EventCharmAttack()
 	//Can't find victim, stop attacking
 	if (!pVictim)
 	{
-		Log::getSingleton( ).outError( "WORLD: "I64FMT" doesn't exist.",m_curSelection);
-		Log::getSingleton( ).outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
+		sLog.outError( "WORLD: "I64FMT" doesn't exist.",m_curSelection);
+		sLog.outDetail("Player::Update:  No valid current selection to attack, stopping attack\n");
 		this->setHRegenTimer(5000); //prevent clicking off creature for a quick heal
 		clearStateFlag(UF_ATTACKING);
 		EventAttackStop();
@@ -4491,7 +4491,7 @@ void Player::EventPlayerRest()
 	float diff = difftime(time(NULL),m_lastRestUpdate);
 	m_lastRestUpdate = (uint32)time(NULL);
 	uint32 RestXP = CalculateRestXP((uint32)diff);
-	Log::getSingleton( ).outDebug("REST: Adding %d rest XP for %.0f seconds of rest time", RestXP, diff);
+	sLog.outDebug("REST: Adding %d rest XP for %.0f seconds of rest time", RestXP, diff);
 	AddRestXP(RestXP);
 }
 

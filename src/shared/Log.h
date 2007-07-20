@@ -42,7 +42,7 @@ class WorldSession;
 
 #endif
 
-class SERVER_DECL Log : public Singleton< Log > {
+class SERVER_DECL oLog : public Singleton< oLog > {
 public:
   void outString( const char * str, ... );
   void outError( const char * err, ... );
@@ -80,7 +80,7 @@ public:
 extern SessionLogWriter * Anticheat_Log;
 extern SessionLogWriter * GMCommand_Log;
 
-#define sLog Log::getSingleton()
+#define sLog oLog::getSingleton()
 #define sCheatLog (*Anticheat_Log)
 #define sGMLog (*GMCommand_Log)
 

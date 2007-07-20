@@ -13,6 +13,7 @@
  */
 
 #include "IRCPlugin.h"
+void OnMessageChat(Player * pPlayer, uint32 Type, uint32 Lang, const char * Message, const char * Misc);
 
 extern "C" SCRIPT_DECL uint32 _exp_get_version()
 {
@@ -43,6 +44,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	t->Port = Config.MainConfig.GetIntDefault("IRCPlugin", "Port", 6667);
 
 	launch_thread(t);
+	mgr->register_hook(SERVER_HOOK_EVENT_ON_CHAT, &OnMessageChat);
 }
 
 
@@ -113,3 +115,8 @@ void IRCThread::_HandleConnected()
 	socket->PollRecvQ();
 }
 
+/* This is the hook for chat. */
+void OnMessageChat(Player * pPlayer, uint32 Type, uint32 Lang, const char * Message, const char * Misc)
+{
+
+}

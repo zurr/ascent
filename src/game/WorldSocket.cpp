@@ -21,6 +21,7 @@
 #include "StdAfx.h"
 #include "../shared/AuthCodes.h"
 
+#ifndef CLUSTERING
 #pragma pack(push, 1)
 struct ClientPktHeader
 {
@@ -323,6 +324,86 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 #endif
 }
 
+void WorldSocket::OnRecvData()
+{
+	if(GetReadBuffer()->GetSize())
+	{
+		uint32 BytesLeft = GetReadBuffer()->GetSize();
+
+		while(TRUE)
+		{
+			if(BytesLeft == 0)
+				return;
+
+			// Check for the header if we don't have any bytes to wait for.
+			if(mRemaining == 0)
+			{
+				if(GetReadBuffer()->GetSize() < 6)
+				{
+					// No header in the packet, let's wait.
+					return;
+				}
+
+				// Copy from packet buffer into header local var
+				ClientPktHeader Header;
+				Read(&Header, 6);
+
+				// Decrypt the header
+				_crypt.DecryptRecv((uint8*)&Header, 6);
+
+				mRemaining = mSize = ntohs(Header.size) - 4;
+				mOpcode = Header.cmd;
+				BytesLeft -= 6;
+			}
+
+			WorldPacket * Packet;
+
+			if(mRemaining > 0)
+			{
+				if( GetReadBuffer()->GetSize() < mRemaining )
+				{
+					// We have a fragmented packet. Wait for the complete one before proceeding.
+					return;
+				}
+			}
+
+			Packet = new WorldPacket(mOpcode, mSize);
+			Packet->resize(mSize);
+
+			if(mRemaining > 0)
+			{
+				// Copy from packet buffer into our actual buffer.
+				Read((void*)Packet->contents(), mRemaining);
+				BytesLeft -= mRemaining;
+			}
+
+			sWorldLog.LogPacket(mSize, mOpcode, mSize ? Packet->contents() : NULL, 0);
+			mRemaining = mSize = mOpcode = 0;
+
+			// Check for packets that we handle
+			switch(Packet->GetOpcode())
+			{
+			case CMSG_PING:
+				{
+					_HandlePing(Packet);
+					delete Packet;
+				}break;
+			case CMSG_AUTH_SESSION:
+				{
+					_HandleAuthSession(Packet);
+				}break;
+			default:
+				{
+					if(mSession) mSession->QueuePacket(Packet);
+					else delete Packet;
+				}break;
+			}
+		}
+	}
+}
+
+#endif
+
 void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction)
 {
 #ifdef ECHO_PACKET_LOG_TO_CONSOLE
@@ -388,7 +469,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 					}
 
 					for (unsigned int c = count; c < 15;c++)
-					log->Add(" ");
+						log->Add(" ");
 
 					log->Add("|\n");
 				}
@@ -414,7 +495,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 					}
 
 					for (unsigned int c = print; c < 16;c++)
-					log->Add(" ");
+						log->Add(" ");
 
 					log->Add("|\n");
 				}
@@ -424,83 +505,5 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 		}
 		log->Add("-------------------------------------------------------------------\n\n");
 		mutex.Release();
-	}
-}
-
-void WorldSocket::OnRecvData()
-{
-	if(GetReadBuffer()->GetSize())
-	{
-		uint32 BytesLeft = GetReadBuffer()->GetSize();
-
-		while(TRUE)
-		{
-			if(BytesLeft == 0)
-				return;
-
-			// Check for the header if we don't have any bytes to wait for.
-			if(mRemaining == 0)
-			{
-				if(GetReadBuffer()->GetSize() < 6)
-				{
-					// No header in the packet, let's wait.
-					return;
-				}
-
-				// Copy from packet buffer into header local var
-				ClientPktHeader Header;
-				Read(&Header, 6);
-				
-				// Decrypt the header
-				_crypt.DecryptRecv((uint8*)&Header, 6);
-
-				mRemaining = mSize = ntohs(Header.size) - 4;
-				mOpcode = Header.cmd;
-				BytesLeft -= 6;
-			}
-
-			WorldPacket * Packet;
-
-			if(mRemaining > 0)
-			{
-				if( GetReadBuffer()->GetSize() < mRemaining )
-				{
-					// We have a fragmented packet. Wait for the complete one before proceeding.
-					return;
-				}
-			}
-
-			Packet = new WorldPacket(mOpcode, mSize);
-			Packet->resize(mSize);
-
-			if(mRemaining > 0)
-			{
-				// Copy from packet buffer into our actual buffer.
-				Read((void*)Packet->contents(), mRemaining);
-				BytesLeft -= mRemaining;
-			}
-
-			sWorldLog.LogPacket(mSize, mOpcode, mSize ? Packet->contents() : NULL, 0);
-			mRemaining = mSize = mOpcode = 0;
-			
-			// Check for packets that we handle
-			switch(Packet->GetOpcode())
-			{
-			case CMSG_PING:
-				{
-					_HandlePing(Packet);
-					delete Packet;
-				}break;
-			case CMSG_AUTH_SESSION:
-				{
-					_HandleAuthSession(Packet);
-				}break;
-			default:
-				{
-					if(mSession) mSession->QueuePacket(Packet);
-					else delete Packet;
-				}break;
-			}
-		}
 	}
 }

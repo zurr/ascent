@@ -18,6 +18,9 @@
 #ifndef __WORLDSOCKET_H
 #define __WORLDSOCKET_H
 
+/* Normal WorldSocket when not using clustering */
+#ifndef CLUSTERING
+
 #define WORLDSOCKET_SENDBUF_SIZE 131078
 #define WORLDSOCKET_RECVBUF_SIZE 16384
 
@@ -75,6 +78,8 @@ private:
 	bool mQueued;
 	bool m_nagleEanbled;
 };
+
+#endif
 
 inline void FastGUIDPack(ByteBuffer & buf, const uint64 & oldguid)
 {
@@ -200,5 +205,24 @@ inline unsigned int FastGUIDPack(const uint64 & oldguid, unsigned char * buffer,
 	return (j - pos);
 }
 
+/* Modified/Simplified WorldSocket for use with clustering */
+#ifdef CLUSTERING
+class WorldSocket
+{
+public:
+	WorldSocket();
+	~WorldSocket();
 
+	void Disconnect();
+	bool IsConnected();
+
+	inline void SendPacket(WorldPacket* packet) { if(!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
+	inline void SendPacket(StackBufferBase * packet) { if(!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
+	void __fastcall OutPacket(uint16 opcode, uint16 len, const void* data);
+
+protected:
+	uint32 m_sessionId;
+};
+
+#endif
 #endif

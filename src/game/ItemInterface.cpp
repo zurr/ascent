@@ -2015,7 +2015,7 @@ void ItemInterface::AddBuyBackItem(Item *it,uint32 price)
 	{
 		if((m_pOwner->GetUInt32Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + i) == 0) || (m_pBuyBack[i/2] == NULL))
 		{
-			Log::getSingleton().outDetail("setting buybackslot %u\n",i/2);
+			sLog.outDetail("setting buybackslot %u\n",i/2);
 			m_pBuyBack[i/2] = it;
 
 			m_pOwner->SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + i,m_pBuyBack[i/2]->GetGUID());
@@ -2049,7 +2049,7 @@ void ItemInterface::RemoveBuyBackItem(uint32 index)
 						m_pBuyBack[j] = NULL;
 				}
 
-				Log::getSingleton().outDetail("nulling %u\n",(j));
+				sLog.outDetail("nulling %u\n",(j));
 			}
 		}
 		else

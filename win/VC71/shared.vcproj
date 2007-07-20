@@ -270,6 +270,9 @@
 				RelativePath="..\..\src\shared\Network\SocketEngine_iocp.h">
 			</File>
 			<File
+				RelativePath="..\..\src\shared\Network\SocketEngine_poll.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\shared\Network\SocketEngine_poll.h">
 			</File>
 			<File
@@ -402,6 +405,9 @@
 				</File>
 				<File
 					RelativePath="..\..\src\shared\Log.h">
+				</File>
+				<File
+					RelativePath="..\..\src\shared\NGLog.h">
 				</File>
 			</Filter>
 		</Filter>
