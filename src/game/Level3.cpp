@@ -2913,3 +2913,16 @@ bool ChatHandler::HandleAIAgentDebugSkip(const char * args, WorldSession * m_ses
 	BlueSystemMessage(m_session, "Erased %u spells.", count);
 	return true;
 }
+
+bool ChatHandler::HandleSendRunSpeedChange(const char * args, WorldSession * m_session)
+{
+	float s = atof(args);
+
+	WorldPacket data(SMSG_FORCE_RUN_SPEED_CHANGE, 20);
+	data << m_session->GetPlayer()->GetNewGUID();
+	data << m_session->GetPlayer()->m_speedChangeCounter;
+	data << uint8(1);
+	data << s;
+	m_session->GetPlayer()->GetSession()->SendPacket(&data);
+	return true;
+}

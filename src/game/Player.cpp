@@ -335,6 +335,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_rap_mod_pct = 0;
 	m_modblockvalue = 0;
 	m_summoner = m_summonInstanceId = m_summonMapId = 0;
+	m_lastMoveType = 0;
 }
 
 
@@ -3005,6 +3006,9 @@ void Player::OnPushToWorld()
 		RemoveAura(flying_aura);
 		flying_aura = 0;
 	}
+
+	ResetHeartbeatCoords();
+	m_lastMoveType = 0;
 }
 
 void Player::ResetHeartbeatCoords()

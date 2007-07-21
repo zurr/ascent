@@ -210,6 +210,7 @@ protected:
 	bool HandleGoStateLinkCommand(const char* args, WorldSession *m_session);
 	bool HandleSilentPlayerCommand(const char* args, WorldSession *m_session);
 	bool HandleDebugDumpCoordsCommmand(const char * args, WorldSession * m_session);
+	bool HandleSendRunSpeedChange(const char * args, WorldSession * m_session);
 
 	//WayPoint Commands
 	bool HandleWPAddCommand(const char* args, WorldSession *m_session);

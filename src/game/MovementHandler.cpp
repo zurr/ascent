@@ -202,13 +202,13 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		{
 			//player is dead, no need to keep increasing falltime
 			GetPlayer()->m_fallTime = 0;
-			_player->ResetHeartbeatCoords();
+			/*_player->ResetHeartbeatCoords();*/
 			_player->blinked = false;
 		}
 	}
 
 	// speedhack protection
-	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked && !(movement_info.flags & 0x2000))
+	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
 
@@ -377,6 +377,26 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 
 	if(movement_info.flags & 0x200000)
 	{
+		if(!_player->m_lastMoveType)
+		{
+            if(_player->FlyCheat)
+			{
+				if(_player->m_lastMoveType != 2)
+				{
+					_player->m_lastMoveType = 2;		// flying
+					_player->ResetHeartbeatCoords();
+				}
+			}
+			else
+			{
+				if(_player->m_lastMoveType != 1)
+				{
+					_player->m_lastMoveType = 1;		// swimming
+					_player->ResetHeartbeatCoords();
+				}
+			}
+		}
+
 		// get water level only if it was not set before
 		if (!m_bIsWLevelSet)
 		{
@@ -390,6 +410,12 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 	// make sure the swimming flag was disabled because of getting out of water
 	else if (m_bIsWLevelSet && movement_info.z > m_wLevel)
 	{
+		if(_player->m_lastMoveType)
+		{
+			_player->m_lastMoveType = 0;
+			_player->ResetHeartbeatCoords();
+		}
+
 		if(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
 		{
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
@@ -406,9 +432,6 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 	//moved from the start of the function. Test if this changes something regarding "inwater" state
 	if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || _player->GodModeCheat)
 		return;
-
-//	uint8 wtype  = _player->m_mapMgr->GetWaterType(movement_info.x, movement_info.y);
-//	float wlevel = _player->m_mapMgr->GetWaterHeight(movement_info.x, movement_info.y);
 
 	if(m_bIsWLevelSet && (movement_info.z + _player->m_noseLevel) < m_wLevel)
 	{
@@ -439,93 +462,6 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 		}
 	}
-
-	//printf("Water flags: %02X\n", GetPlayer()->GetMapMgr()->GetLiquidType(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY()));
-	/*if(movement_info.flags & 0x200000 && GetPlayer()->isAlive())
-	{
-		uint8 wtype = GetPlayer()->GetMapMgr()->GetLiquidType(GetPlayer()->GetPositionX(),GetPlayer()->GetPositionY());
-
-		if((GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_SWIMMING) == 0)	  // set swimming.
-			GetPlayer()->m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
-
-		// Dismount if mounted
-		if(_player->m_MountSpellId)
-			_player->RemoveAura(_player->m_MountSpellId);
-
-		if(!wtype) wtype = 0x01;
-
-		if(wtype & 0x2)
-		{
-			if( !(GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_LAVA) )
-				GetPlayer()->m_UnderwaterState |= UNDERWATERSTATE_LAVA;
-		}
-		else if(movement_info.unk6 < SWIMMING_TOLERANCE_LEVEL && !(GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER) && !_player->m_bUnlimitedBreath)  // that's it, we're underwater.
-		{
-			GetPlayer()->m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
-
-			if( !(GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_RECOVERING) )	  // fix for "unlimited" bug
-				GetPlayer()->m_UnderwaterState &= ~UNDERWATERSTATE_RECOVERING;
-
-			// send start packet
-			WorldPacket data(20);
-			data.SetOpcode(SMSG_START_MIRROR_TIMER);
-			data << uint32(1) << uint32(60000-GetPlayer()->m_UnderwaterTime) << uint32(60000) << uint32(-1) << uint32(0);
-			SendPacket(&data);
-		}
-		else if(movement_info.unk6 == 0)
-		{
-			if((GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER) != 0)
-			{
-				GetPlayer()->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-				if(GetPlayer()->m_UnderwaterTime && !(GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_RECOVERING) )
-				{
-					GetPlayer()->m_UnderwaterState |= UNDERWATERSTATE_RECOVERING;
-					WorldPacket data(20);
-					data.SetOpcode(SMSG_START_MIRROR_TIMER);
-					data << uint32(1) << uint32(60000 - GetPlayer()->m_UnderwaterTime) << uint32(60000) << uint32(10) << uint32(0);
-					SendPacket(&data);
-				}
-			}
-
-			if( GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_TAKINGDAMAGE )
-			{
-				GetPlayer()->m_UnderwaterState &= ~UNDERWATERSTATE_TAKINGDAMAGE;
-			}
-		}
-
-	}
-	else if(recv_data.GetOpcode() != MSG_MOVE_JUMP) 
-	{	 // otherwise cheaters :P		
-		if(_player->m_ShapeShifted == 1066)
-			_player->RemoveAura(1066);  // remove aquatic form shapeshift
-
-		if( GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_SWIMMING )
-		{
-			GetPlayer()->m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
-			GetPlayer()->m_SwimmingTime = 0;
-		}
-
-		if( GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER )
-		{
-			GetPlayer()->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-			if(GetPlayer()->m_UnderwaterTime && !(GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_RECOVERING) )
-			{
-				GetPlayer()->m_UnderwaterState |= UNDERWATERSTATE_RECOVERING;
-				WorldPacket data(20);
-				data.SetOpcode(SMSG_START_MIRROR_TIMER);
-				data << uint32(1) << uint32(60000 - GetPlayer()->m_UnderwaterTime) << uint32(60000) << uint32(10) << uint32(0);
-				SendPacket(&data);
-			}
-		}
-
-		if( GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_TAKINGDAMAGE )
-		{
-			GetPlayer()->m_UnderwaterState &= ~UNDERWATERSTATE_TAKINGDAMAGE;
-		}
-
-		if( GetPlayer()->m_UnderwaterState & UNDERWATERSTATE_LAVA )
-			GetPlayer()->m_UnderwaterState &= ~UNDERWATERSTATE_LAVA;
-	}*/
 }
 
 void WorldSession::_SpeedCheck(MovementInfo &mi)
@@ -543,7 +479,20 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 		uint32 time_difference = new_time - _player->_lastHeartbeatTime;
 
 		// do our check calculation
-		uint32 move_time = (uint32)((float)distance_travelled / (float)(_player->m_runSpeed*0.001f));
+		float speed = _player->m_runSpeed;
+
+		// underwater or flying
+		switch(_player->m_lastMoveType)
+		{
+		case 1:		// swimming
+			speed = _player->m_swimSpeed;
+			break;
+		case 2:		// flying
+			speed = _player->m_flySpeed;
+			break;
+		}
+
+		uint32 move_time = (uint32)((float)distance_travelled / (float)(speed*0.001f));
 
 		// check if we're in the correct bounds
 		if(move_time > time_difference)

@@ -1225,6 +1225,7 @@ public:
 	LocationVector m_last_group_position;
 	int32 m_rap_mod_pct;
 	void SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position);
+	uint8 m_lastMoveType;
 
 protected:
 	LocationVector m_summonPos;
