@@ -64,7 +64,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 	case CHAT_MSG_WHISPER:
 	case CHAT_MSG_CHANNEL:
 		{
-			if(!_player->HasMuteOnPlayer())
+			if(_player->HasMuteOnPlayer())
 			{
 				std::stringstream Reply; 
 				Reply << "Your voice has been taken away for "<< (_player->HasMuteOnPlayer()/1000/60) << " minutes by a GM.";
@@ -246,9 +246,10 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 				data = sChatHandler.FillSystemMessageData(  tmp.c_str() );
 				SendPacket(data);			  
 				delete data;*/
-				data->Initialize(SMSG_CHAT_PLAYER_NOT_FOUND);
+				data = new WorldPacket(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
 				*data << to;
 				SendPacket(data);
+				delete data;
 				break;
 			}
 

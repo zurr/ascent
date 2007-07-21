@@ -2673,7 +2673,7 @@ bool Player::LoadFromDB(uint32 guid)
 	{
 		std::list<CreateInfo_SkillStruct>::iterator itr = info->skills.begin();
 		skilllineentry * sk;
-//		uint32 spell;
+		uint32 spell;
 		for(; itr != info->skills.end(); ++itr)
 		{
 			if((sk = sSkillLineStore.LookupEntry(itr->skillid)))
@@ -2682,8 +2682,8 @@ bool Player::LoadFromDB(uint32 guid)
 				{
 					AddSkillLine(sk->id, 300, 300);
 					sLog.outDebug("Adding skill %u",sk->id);
-   //				 spell = ::GetSpellForLanguage(sk->id);
-	 //			   if(spell) addSpell(spell);
+					spell = ::GetSpellForLanguage(sk->id);
+					if(spell) addSpell(spell);
 				}
 			}			
 		}
