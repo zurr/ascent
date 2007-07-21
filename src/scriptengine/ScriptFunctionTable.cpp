@@ -61,6 +61,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetGameObject",						Unit_GetGameObject					},
 		{ "GetPlayer",							Unit_GetPlayer						},
 		{ "GetGuid",							Unit_GetGuid						},
+		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -105,6 +106,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "ChangeScale",						Unit_ChangeScale					},
 		{ "ChangeFaction",						Unit_ChangeFaction					},
 		{ "TextEmote",							Unit_TextEmote						},
+		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -130,6 +132,7 @@ void ScriptEngine::SetGameObjectFunctionTable()
 		{ "GetPlayer",							Unit_GetPlayer						},
 		{ "GetGuid",							Unit_GetGuid						},
 		{ "RegisterEvent",						GM_RegisterEvent					},
+		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));

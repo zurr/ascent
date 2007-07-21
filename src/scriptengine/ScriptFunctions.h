@@ -105,6 +105,7 @@ T * GetThisPointer(gmThread * a_thread)
 		int GM_CDECL Unit_TextEmote(gmThread * a_thread);
 		int GM_CDECL Unit_ChangeModel(gmThread * a_thread);
 		int GM_CDECL Unit_ChangeFaction(gmThread * a_thread);
+		int GM_CDECL Unit_PlaySoundToSet(gmThread * a_thread);
 
 /* GameObject Functions */
 	int GM_CDECL GameObject_Despawn(gmThread * a_thread);

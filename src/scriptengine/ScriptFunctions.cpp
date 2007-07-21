@@ -1039,6 +1039,17 @@ int GM_GetUnitBySqlId(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Unit_PlaySoundToSet(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(id, 0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	WorldPacket data(SMSG_PLAY_SOUND, 4);
+	data << uint32(id);
+	pThis->SendMessageToSet(&data, true);
+	return GM_OK;
+}
+
 /*int Player_GetSelectedCreature(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
