@@ -1875,7 +1875,7 @@ void Aura::SpellAuraModStun(bool apply)
 	{ 
 		SetNegative();
 		if(m_target->m_rooted == 0)
-			m_target->Root();
+			m_target->Root((uint32)GetDuration());
 
 		if(m_target->m_stunned == 0)
 		{

@@ -3266,6 +3266,19 @@ void Unit::Root()
 	}
 }
 
+void Unit::Root(uint32 time)
+{
+	if(m_objectTypeId == TYPEID_PLAYER)
+	{
+		static_cast<Player*>(this)->SetMovement(MOVE_ROOT, 1);
+	}
+	else
+	{
+		m_aiInterface->m_canMove = false;
+		m_aiInterface->StopMovement(time);
+	}
+}
+
 void Unit::Unroot()
 {
 	if(m_objectTypeId == TYPEID_PLAYER)

@@ -987,6 +987,7 @@ public:
 	}
 
 	void Root();
+	void Root(uint32 time);
 	void Unroot();
 
 	void RemoveAurasByBuffType(uint32 buff_type, uint64 guid);
