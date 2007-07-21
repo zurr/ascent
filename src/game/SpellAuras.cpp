@@ -367,7 +367,7 @@ Aura::Aura(SpellEntry *proto, int32 duration,Object* caster, Unit *target)
 void Aura::Remove()
 {
 	sEventMgr.RemoveEvents(this);
-	if(!IsPassive())
+	if(!IsPassive() || IsPassive() && m_spellProto->AttributesEx & 1024)
 		RemoveAuraVisual();
 	ApplyModifiers(false);
 

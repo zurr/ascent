@@ -1814,7 +1814,7 @@ void Unit::AddAura(Aura *aur)
 		return;
 	}
 
-	if(!aur->IsPassive())
+    if(!aur->IsPassive())
 	{
 		//uint32 aurName = aur->GetSpellProto()->Name;
 		//uint32 aurRank = aur->GetSpellProto()->Rank;
@@ -1938,6 +1938,10 @@ void Unit::AddAura(Aura *aur)
 	}
 	else
 	{
+        if((aur->m_spellProto->AttributesEx & 1024))
+        {
+            aur->AddAuraVisual();
+        }
 		for(uint32 x=MAX_AURAS;x<MAX_AURAS+MAX_PASSIVE_AURAS;x++)
 		{
 			if(!m_auras[x])
