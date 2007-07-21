@@ -37,7 +37,7 @@ WorldCreator::WorldCreator(TaskList * tl)
 
 		delete result;
 	}
-
+#ifndef CLUSTERING
 	StorageContainerIterator<MapInfo> * itr = WorldMapInfoStorage.MakeIterator();
 	while(!itr->AtEnd())
 	{
@@ -52,6 +52,7 @@ WorldCreator::WorldCreator(TaskList * tl)
 			break;
 	}
 	itr->Destruct();
+#endif
 }
 
 WorldCreator::~WorldCreator()

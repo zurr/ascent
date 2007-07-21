@@ -210,11 +210,13 @@ inline unsigned int FastGUIDPack(const uint64 & oldguid, unsigned char * buffer,
 class WorldSocket
 {
 public:
-	WorldSocket();
+	WorldSocket(uint32 sessionid);
 	~WorldSocket();
 
 	void Disconnect();
 	bool IsConnected();
+	inline string GetRemoteIP() { return string(inet_ntoa(m_address.sin_addr)); }
+	inline uint32 GetRemotePort() { return ntohs(m_address.sin_port); }
 
 	inline void SendPacket(WorldPacket* packet) { if(!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
 	inline void SendPacket(StackBufferBase * packet) { if(!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
@@ -222,6 +224,7 @@ public:
 
 protected:
 	uint32 m_sessionId;
+	sockaddr_in m_address;
 };
 
 #endif

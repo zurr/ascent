@@ -1,24 +1,7 @@
 #include "Master.h"
 #include "CConsole.h"
 #include "../shared/CrashHandler.h"
-
-#include <Network/Network.h>
-#include "../shared/Auth/WowCrypt.h"
-#include "../shared/CallBack.h"
-#include "../game/EventMgr.h"
-#include "../game/EventableObject.h"
-#include "../game/AreaTrigger.h"
-#include "../game/Opcodes.h"
-#include "../game/World.h"
-#include "../game/Opcodes.h"
-#include "../shared/WorldPacket.h"
-#include "../game/WorldSocket.h"
-#include "../game/ThreadMgr.h"
-#include "../game/ScriptMgr.h"
-#include "../game/WorldSocket.h"
-#include "../game/LogonCommClient.h"
-#include "../game/LogonCommHandler.h"
-#include "../scriptengine/ScriptEngine.h"
+#include "../game/StdAfx.h"
 #include "../shared/antrix_getopt.h"
 
 #ifdef WIN32
@@ -335,7 +318,7 @@ bool Master::Run(int argc, char ** argv)
 		fprintf(fPid, "%u", (unsigned int)pid);
 		fclose(fPid);
 	}
-
+#ifndef CLUSTERING
 	/* Connect to realmlist servers / logon servers */
 	new LogonCommHandler();
 	sLogonCommHandler.Startup();
@@ -343,13 +326,22 @@ bool Master::Run(int argc, char ** argv)
 	// Create listener
 	ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(host.c_str(), wsport);
     bool listnersockcreate = ls->IsOpen();
-
 	while(!m_stopEvent && listnersockcreate)
+#else
+	new ClusterInterface;
+	sClusterInterface.ConnectToRealmServer();
+	while(!m_stopEvent)
+#endif
 	{
 		start = now();
 		diff = start - last_time;
+
+#ifndef CLUSTERING
 		sLogonCommHandler.UpdateSockets();
 		ls->Update();
+#else
+		sClusterInterface.Update();
+#endif
 		sSocketGarbageCollector.Update();
 
 		/* UPDATE */
@@ -414,8 +406,10 @@ bool Master::Run(int argc, char ** argv)
 	sThreadMgr.RemoveThread(thread);
 
 	sLog.outString("Killing all sockets and network subsystem.");
+#ifndef CLUSTERING
 	ls->Close();
 	delete ls;
+#endif
 	sSocketMgr.ShutdownThreads();
 	sSocketMgr.CloseAll();
 

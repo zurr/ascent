@@ -8,9 +8,10 @@ class WSClient : public Socket
 	uint32 _remaining;
 	uint16 _cmd;
 public:
-	WSClient(SOCKET fd, const sockaddr_in * addr);
+	WSClient(SOCKET fd);
 	~WSClient();
 
+	void SendPacket(WorldPacket * data);
 	void OnRead();
 	void OnConnect();
 };

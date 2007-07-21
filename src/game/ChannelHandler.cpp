@@ -23,20 +23,14 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
 	uint32 code = 0;
 	uint8 crap;
 
-	// Skip the first bytes for 2.0.6 (dunno what the point of the crap is, anyway)
-	if(client_build >= 6337)
-		recvPacket >> code >> crap;
-
+	recvPacket >> code >> crap;
 	recvPacket >> channelname;
 	recvPacket >> pass;
 	if(channelmgr.GetJoinChannel(channelname.c_str(),GetPlayer())->Join(GetPlayer(),pass.c_str()))
 	{
 		WorldPacket data(SMSG_CHANNEL_NOTIFY, 100);
 		data << uint8(2) << channelname;
-		if(client_build >= 6337)
-			data << uint64(code);
-		else
-			data << _player->GetGUID();
+		data << uint64(code);
 		SendPacket(&data);
 	}
 }

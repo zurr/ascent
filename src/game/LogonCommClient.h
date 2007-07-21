@@ -20,7 +20,7 @@
 
 class LogonCommClientSocket : public Socket
 {
-	uint16 remaining;
+	uint32 remaining;
 	uint16 opcode;
 	RC4Engine _sendCrypto;
 	RC4Engine _recvCrypto;

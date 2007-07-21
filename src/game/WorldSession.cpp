@@ -69,8 +69,10 @@ WorldSession::~WorldSession()
 			delete [] sAccountData[x].data;
 	}
 
+#ifndef CLUSTERING
 	if(_socket)
 		_socket->SetSession(0);
+#endif
 
 	deleteMutex.Release();
 }
@@ -825,6 +827,10 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_SET_VISIBLE_RANK].handler							= &WorldSession::HandleSetVisibleRankOpcode;
 
 	WorldPacketHandlers[MSG_ADD_DYNAMIC_TARGET_OBSOLETE].handler				= &WorldSession::HandleAddDynamicTargetOpcode;
+
+#ifdef CLUSTERING
+	WorldPacketHandlers[CMSG_PING].handler = &WorldSession::HandlePingOpcode;
+#endif
 }
 
 void WorldSession::CHECK_PACKET_SIZE(WorldPacket& data, uint32 size)
@@ -906,3 +912,15 @@ void WorldSession::UpdateThrottledPackets()
 		delete pck;
 	}
 }
+
+#ifdef CLUSTERING
+void WorldSession::HandlePingOpcode(WorldPacket& recvPacket)
+{
+	uint32 pong;
+	recvPacket >> pong;
+	WorldPacket data(SMSG_PONG, 4);
+	data << pong;
+	SendPacket(&data);
+}
+
+#endif

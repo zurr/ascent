@@ -1527,6 +1527,7 @@ uint32 World::GetQueuePos(WorldSocket* Socket)
 
 void World::UpdateQueuedSessions(uint32 diff)
 {
+#ifndef CLUSTERING
 	if(diff >= m_queueUpdateTimer) 
 	{
 		m_queueUpdateTimer = mQueueUpdateInterval;
@@ -1575,6 +1576,7 @@ void World::UpdateQueuedSessions(uint32 diff)
 	{
 		m_queueUpdateTimer -= diff;
 	}
+#endif
 }
 
 void World::SaveAllPlayers()

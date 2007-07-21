@@ -414,19 +414,24 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	sLog.outDebug( "WORLD: Recvd Player Logon Message" );
 
 	recv_data >> playerGuid; // this is the GUID selected by the player
+	PlayerLogin((uint32)playerGuid, 0, 0);
+}
+
+bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 forced_instance_id)
+{
 	if(objmgr.GetPlayer(playerGuid) != NULL)
 	{
 		// A character with that name already exists 0x3E
 		uint8 respons = CHAR_LOGIN_DUPLICATE_CHARACTER;
 		OutPacket(SMSG_CHARACTER_LOGIN_FAILED, 1, &respons);
-		return;
+		return false;
 	}
 
 	Player* plr = new Player(HIGHGUID_PLAYER,playerGuid);
 	ASSERT(plr);
 	plr->SetSession(this);
 	m_bIsWLevelSet = false;
-	
+
 	if(!plr->LoadFromDB(GUID_LOPART(playerGuid)))
 	{
 		// kick em.
@@ -434,7 +439,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		Disconnect();
 		plr->ok_to_remove = true;
 		delete plr;
-		return;
+		return false;
 	}
 
 	SetPlayer(plr); 
@@ -443,20 +448,20 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	// copy to movement array
 	movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
 	memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
-	
-    StackWorldPacket<20> datab(CMSG_DUNGEON_DIFFICULTY);
-    datab << plr->iInstanceType;
-    datab << uint32(0x01);
-    datab << uint32(0x00);
-    SendPacket(&datab);
+
+	StackWorldPacket<20> datab(CMSG_DUNGEON_DIFFICULTY);
+	datab << plr->iInstanceType;
+	datab << uint32(0x01);
+	datab << uint32(0x00);
+	SendPacket(&datab);
 
 	/* world preload */
 	datab.Initialize(SMSG_LOGIN_VERIFY_WORLD);
 	datab << plr->GetMapId();
 	datab << plr->GetPositionX()
-		  << plr->GetPositionY()  
-		  << plr->GetPositionZ()
-		  << plr->GetOrientation();
+		<< plr->GetPositionY()  
+		<< plr->GetPositionZ()
+		<< plr->GetOrientation();
 
 	SendPacket(&datab);
 
@@ -489,7 +494,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	for (int i = 0; i < 8; i++)
 	{
 		AccountDataEntry* acct_data = GetAccountData(i);
-		
+
 		if (!acct_data->data)
 		{
 			data << uint64(0) << uint64(0);				// Nothing.
@@ -497,7 +502,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		}
 		MD5_CTX ctx;
 		MD5_Init(&ctx);
-	   
+
 		MD5_Update(&ctx, acct_data->data, acct_data->sz);
 		uint8 md5hash[MD5_DIGEST_LENGTH];
 		MD5_Final(md5hash, &ctx);
@@ -510,7 +515,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		"UPDATE characters SET online = 1 WHERE guid = %u" , plr->GetGUIDLow());
 
 	bool enter_world = true;
-
+#ifndef CLUSTERING
 	// Find our transporter and add us if we're on one.
 	if(plr->m_TransporterGUID != 0)
 	{
@@ -536,10 +541,12 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 			pTrans->AddPlayer(plr);
 		}
 	}
+#endif
 
 	sLog.outString("Player %s (%s %s %s), logged in.", plr->GetName(), plr->getGender() ? "Female" : "Male", 
 		sCharRaceStore.LookupString(plr->myRace->name2), sCharClassStore.LookupString(plr->myClass->name));
 
+#ifndef CLUSTERING
 	// send extended message
 	sWorld.BroadcastExtendedMessage(this, "[SM:PLRLOGIN:%u:%u]%s", plr->getRace(), plr->getClass(), plr->GetName());
 	if(HasFlag(ACCOUNT_FLAG_XTEND_INFO))
@@ -564,13 +571,17 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		sWorld.BroadcastExtendedMessage(this, "[SM:GMLOGIN]%s", plr->GetName());
 	}
 
+#endif
+
 	if(plr->GetTeam() == 1)
 		sWorld.HordePlayers++;
 	else
 		sWorld.AlliancePlayers++;
 
+#ifndef CLUSTERING
 	// send info
 	sWorld.BroadcastExtendedMessage(0, "[SM:INFO:%u:%u]", sWorld.HordePlayers, sWorld.AlliancePlayers);
+#endif
 
 	if(plr->m_FirstLogin && !HasGMPermissions())
 	{
@@ -655,14 +666,20 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 		}
 	}
 
+#ifdef CLUSTERING
+	plr->SetInstanceID(forced_instance_id);
+	plr->SetMapId(forced_map_id);
+#endif
+
 	if(enter_world)
 	{
 		plr->SendInitialLogonPackets();
 		plr->AddToWorld();
 	}
 
-/*	if(sWorld.m_useIrc)
-		sIRCBot.SendMessage("> %s from account %u entered world.", _player->GetName(), GetAccountId());*/
+#ifndef CLUSTERING
+	/*	if(sWorld.m_useIrc)
+	sIRCBot.SendMessage("> %s from account %u entered world.", _player->GetName(), GetAccountId());*/
 
 	if(_player->GetMapId() == 489 ||
 		_player->GetMapId() == 529 || _player->GetMapId() == 30)
@@ -679,9 +696,11 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 			battleground->AddPlayer(_player, false, true);
 		}
 	}
+#endif
 
 	sInstanceSavingManager.BuildSavedInstancesForPlayer(plr);
 	objmgr.AddPlayer(_player);
+	return true;
 }
 
 bool ChatHandler::HandleRenameCommand(const char * args, WorldSession * m_session)

@@ -14,7 +14,7 @@
 
 #include "StdAfx.h"
 initialiseSingleton(LogonCommHandler);
-
+#ifndef CLUSTERING
 LogonCommHandler::LogonCommHandler()
 {
 	idhigh = 1;
@@ -355,3 +355,5 @@ void LogonCommHandler::UpdateAccountCount(uint32 account_id, uint8 add)
 	}
 	itr->second->UpdateAccountCount(account_id, add);
 }
+
+#endif

@@ -13,12 +13,15 @@
  */
 
 #include "StdAfx.h"
-
+#pragma pack(push, 1)
 typedef struct
 {
 	uint16 opcode;
-	uint16 size;
+	uint32 size;
 }logonpacket;
+#pragma pack(pop)
+
+#ifndef CLUSTERING
 
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 524288, 65536)
 {
@@ -42,17 +45,17 @@ void LogonCommClientSocket::OnRead()
 
 			// read header
 			Read(2, (uint8*)&opcode);
-			Read(2, (uint8*)&remaining);
+			Read(4, (uint8*)&remaining);
 
 			// decrypt the first two bytes
 			if(use_crypto)
 			{
 				_recvCrypto.Process((uint8*)&opcode, (uint8*)&opcode, 2);
-				_recvCrypto.Process((uint8*)&remaining, (uint8*)&remaining, 2);
+				_recvCrypto.Process((uint8*)&remaining, (uint8*)&remaining, 4);
 			}
 
 			// convert network byte order
-			remaining = ntohs(remaining);
+			remaining = ntohl(remaining);
 		}
 
 		// do we have a full packet?
@@ -169,12 +172,12 @@ void LogonCommClientSocket::SendPacket(WorldPacket * data)
 	BurstBegin();
 
 	header.opcode = data->GetOpcode();
-	header.size   = ntohs(data->size());
+	header.size   = ntohl(data->size());
 
 	if(use_crypto)
-		_sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 4);
+		_sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
 
-	rv = BurstSend((const uint8*)&header, 4);
+	rv = BurstSend((const uint8*)&header, 6);
 
 	if(data->size() > 0 && rv)
 	{
@@ -254,7 +257,6 @@ void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
 
 void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket & recvData)
 {
-	return;
 	uint32 t= getMSTime();
 	uint32 realm_id;
 	uint32 account_id;
@@ -370,3 +372,40 @@ void LogonCommClientSocket::CompressAndSend(ByteBuffer & uncompressed)
 	data.resize(stream.total_out + 4);
 	SendPacket(&data);
 }
+#else
+void LogonCommHandler::LogonDatabaseReloadAccounts()
+{
+
+}
+
+void LogonCommHandler::LogonDatabaseSQLExecute(const char* str, ...)
+{
+
+}
+
+void LogonCommHandler::Startup()
+{
+
+}
+
+void LogonCommHandler::UpdateAccountCount(uint32 account_id, uint8 add)
+{
+
+}
+
+void LogonCommHandler::UpdateSockets()
+{
+
+}
+
+LogonCommHandler::LogonCommHandler()
+{
+
+}
+
+LogonCommHandler::~LogonCommHandler()
+{
+
+}
+
+#endif

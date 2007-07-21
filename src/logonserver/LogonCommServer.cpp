@@ -13,13 +13,13 @@
  */
 
 #include "LogonStdAfx.h"
-
+#pragma pack(push, 1)
 typedef struct
 {
 	uint16 opcode;
-	uint16 size;
+	uint32 size;
 }logonpacket;
-
+#pragma pack(pop)
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)
 {
 	// do nothing
@@ -61,17 +61,17 @@ void LogonCommServerSocket::OnRead()
 
 			// read header
 			Read(2, (uint8*)&opcode);
-			Read(2, (uint8*)&remaining);
+			Read(4, (uint8*)&remaining);
 
 			if(use_crypto)
 			{
 				// decrypt the packet
 				recvCrypto.Process((unsigned char*)&opcode, (unsigned char*)&opcode, 2);
-				recvCrypto.Process((unsigned char*)&remaining, (unsigned char*)&remaining, 2);
+				recvCrypto.Process((unsigned char*)&remaining, (unsigned char*)&remaining, 4);
 			}
 
 			/* reverse byte order */
-			remaining = ntohs(remaining);
+			remaining = ntohl(remaining);
 		}
 
 		// do we have a full packet?
@@ -205,12 +205,12 @@ void LogonCommServerSocket::SendPacket(WorldPacket * data)
 
 	logonpacket header;
 	header.opcode = data->GetOpcode();
-	header.size   = ntohs(data->size());
+	header.size   = ntohl(data->size());
 
 	if(use_crypto)
-		sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 4);
+		sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
 
-	rv=BurstSend((uint8*)&header, 4);
+	rv=BurstSend((uint8*)&header, 6);
 
 	if(data->size() > 0 && rv)
 	{

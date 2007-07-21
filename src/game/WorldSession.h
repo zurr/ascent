@@ -619,6 +619,7 @@ public:
 	void SendTabardHelp(Creature* pCreature);
 	void SendAuctionList(Creature* pCreature);
 	void SendSpiritHealerRequest(Creature* pCreature);
+	bool PlayerLogin(uint32 guid, uint32 forced_map_id, uint32 forced_instance_id);
 
 private:
 	friend class Player;

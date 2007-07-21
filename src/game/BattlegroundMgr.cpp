@@ -323,6 +323,7 @@ void BattlegroundMgr::CreateArena()
 
 void BattlegroundMgr::CreateInitialBattlegrounds()
 {
+#ifndef CLUSTERING
 	CreateWSGBattleground();
 	//CreateWSGBattleground();
 	CreateABBattleground();
@@ -330,6 +331,7 @@ void BattlegroundMgr::CreateInitialBattlegrounds()
 	//CreateABBattleground();
 	//CreateAVBattleground();
 	//CreateAVBattleground();
+#endif
 }
 
 WorldPacket* BattlegroundMgr::BuildBattlegroundListPacket(uint64 guid, Player* plr,uint32 BattlegroundType)
