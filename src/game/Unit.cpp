@@ -164,6 +164,7 @@ Unit::Unit()
 		HealTakenMod[x] = 0;
 		HealTakenPctMod[x] = 0;
 		DamageTakenMod[x] = 0;
+		ModDamageDonePCT[x] = 0;
 		SchoolCastPrevent[x]=0;
 		DamageTakenPctMod[x] = 1;
 		SpellCritChanceSchool[x] = 0;
@@ -1338,7 +1339,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				dmg.full_damage = 0;
 			else
 			{
-				dmg.full_damage *= float2int32(pVictim->DamageTakenPctMod[0]); 
+				dmg.full_damage = float2int32(dmg.full_damage*pVictim->DamageTakenPctMod[0]*ModDamageDonePCT[0]); 
 				if(pct_dmg_mod)
 					dmg.full_damage = (dmg.full_damage*pct_dmg_mod)/100;
 			}

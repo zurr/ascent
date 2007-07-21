@@ -4078,19 +4078,16 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
 		//126 == melee,
 		//127 == evrything
 		//else - schools
-		/*
-		//this is somehow wrong since fixed value will be owerwritten by other values
 		if(GetSpellProto()->EquippedItemClass==-1)//does not depend on weapon
 		{
 			for(uint32 x=0;x<7;x++)
 			{
 				if (mod->m_miscValue & (((uint32)1)<<x) )
 				{
-					m_target->ModFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT + x,val);
+					m_target->ModDamageDonePCT[x] +=val;
 				}
 			}
 		}else
-		*/
 		//if(mod->m_miscValue&1 || mod->m_miscValue == 126)
 		{
 			if(apply)

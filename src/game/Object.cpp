@@ -1994,7 +1994,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			res = 0;
 		else
 		{
-			res *= static_cast<Unit*>(this)->GetDamageDonePctMod(school) * pVictim->DamageTakenPctMod[school];
+			res *= (static_cast<Unit*>(this)->GetDamageDonePctMod(school) + static_cast<Unit*>(this)->ModDamageDonePCT[school])* pVictim->DamageTakenPctMod[school];
 			res += float(pVictim->DamageTakenMod[school]);
 			if(res < 0) res = 0;	
 			float CritChance = static_cast<Unit*>(this)->spellcritperc + static_cast<Unit*>(this)->SpellCritChanceSchool[school] + pVictim->AttackerSpellCritChanceMod[school];
