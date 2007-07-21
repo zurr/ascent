@@ -205,6 +205,27 @@ int Player_IsGroupLeader(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Player_JoinInstance(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(5);
+	GM_CHECK_INT_PARAM(mapId, 0);
+	GM_CHECK_FLOAT_PARAM(posX, 1);
+	GM_CHECK_FLOAT_PARAM(posY, 2);
+	GM_CHECK_FLOAT_PARAM(posZ, 3);
+	GM_CHECK_FLOAT_PARAM(posO, 4);
+
+	MapInfo *pMapinfo = NULL;
+	pMapinfo = WorldMapInfoStorage.LookupEntry(mapId);
+	bool result = sWorldCreator.CheckInstanceForObject(static_cast<Object*>(GetThisPointer<Player>(a_thread)), pMapinfo);
+	if(result)
+	{
+		GetThisPointer<Player>(a_thread)->SaveEntryPoint(mapId);
+		GetThisPointer<Player>(a_thread)->SafeTeleport(mapId, 0, LocationVector(posX, posY, posZ, posO));
+	}
+
+	return GM_OK;
+}
+
 /* Areatrigger events */
 int AreaTrigger_GetEntry(gmThread * a_thread)
 {
@@ -1035,4 +1056,5 @@ int GM_GetUnitBySqlId(gmThread * a_thread)
 	a_thread->PushUser(obj);
 }
 */
+
 

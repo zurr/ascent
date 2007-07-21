@@ -37,6 +37,7 @@ TerrainMgr::TerrainMgr(string MapPath, uint32 MapId, bool Instanced) : mapPath(M
 
 TerrainMgr::~TerrainMgr()
 {
+#ifndef USE_MEMORY_MAPPING_FOR_MAPS
 	if(FileDescriptor)
 	{
 		// Free up our file pointer.
@@ -56,6 +57,37 @@ TerrainMgr::~TerrainMgr()
 		delete [] CellInformation[x];
 	}
 	delete CellInformation;
+#else
+
+	mutex.Acquire();
+
+	// Big memory cleanup, whee.
+	for(uint32 x = 0; x < _sizeX; ++x)
+	{
+		for(uint32 y = 0; y < _sizeY; ++y)
+		{
+			if(CellInformation[x][y] != 0)
+			{
+#ifdef WIN32
+				UnmapViewOfFile((LPCVOID)CellInformation[x][y]);
+#else
+#error moo
+#endif
+			}		
+		}
+		delete [] CellInformation[x];
+	}
+	delete CellInformation;
+
+#ifdef WIN32
+	UnmapViewOfFile((LPCVOID)CellOffsets);
+	CloseHandle(hMap);
+	CloseHandle(hMappedFile);
+#else
+#error moo
+#endif
+	mutex.Release();
+#endif
 }
 
 bool TerrainMgr::LoadTerrainHeader()
@@ -64,6 +96,8 @@ bool TerrainMgr::LoadTerrainHeader()
 	char File[200];
 
 	snprintf(File, 200, "%s/Map_%u.bin", mapPath.c_str(), (unsigned int)mapId);
+
+#ifndef USE_MEMORY_MAPPING_FOR_MAPS
 
 	FileDescriptor = fopen(File, "rb");
 
@@ -78,10 +112,50 @@ bool TerrainMgr::LoadTerrainHeader()
 		return false;
 
 	return true;
+
+#else
+
+#ifdef WIN32
+	
+	hMappedFile = CreateFile(File, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_ARCHIVE, NULL);
+	if(hMappedFile == INVALID_HANDLE_VALUE)
+		return false;
+
+	DWORD bytes;
+	ASSERT(ReadFile(hMappedFile, CellOffsets, TERRAIN_HEADER_SIZE, &bytes, NULL));
+	ASSERT(bytes == TERRAIN_HEADER_SIZE);
+	SetFilePointer(hMappedFile, 0, 0, FILE_END);
+
+	mFileSize = GetFileSize(hMappedFile, NULL);
+    hMap = CreateFileMapping(hMappedFile, NULL, PAGE_READONLY, 0, 0, NULL);
+	if(hMap == INVALID_HANDLE_VALUE)
+	{
+		CloseHandle(hMappedFile);
+		hMappedFile = INVALID_HANDLE_VALUE;
+		return false;
+	}
+
+	// Map the terrain header
+	//CellOffsets = (uint32**)MapViewOfFile(hMap, FILE_MAP_READ, 0, 0, TERRAIN_HEADER_SIZE);
+	//memcpy(temp, CellOffsets, TERRAIN_HEADER_SIZE);
+
+#else
+#error unimplemented in *nix
+#endif
+	return true;
+#endif
 }
 
 bool TerrainMgr::LoadCellInformation(uint32 x, uint32 y)
 {
+#ifdef USE_MEMORY_MAPPING_FOR_MAPS
+	if(!CellOffsets)
+		return false;
+#else
+	if(!FileDescriptor)
+		return false;
+#endif
+
 	// Make sure that we're not already loaded.
 	assert(CellInformation[x][y] == 0);
 
@@ -103,6 +177,19 @@ bool TerrainMgr::LoadCellInformation(uint32 x, uint32 y)
 		return true;
 	}
 	
+#ifdef USE_MEMORY_MAPPING_FOR_MAPS
+	#ifdef WIN32
+		if(Offset >= mFileSize)
+		{
+			mutex.Release();
+			return false;
+		}
+
+		CellInformation[x][y] = (CellTerrainInformation*)MapViewOfFile(hMap, FILE_MAP_READ, 0, Offset, sizeof(CellTerrainInformation));
+	#else
+		#error moo
+	#endif
+#else
 	// Seek to our specified offset.
 	if(fseek(FileDescriptor, Offset, SEEK_SET) == 0)
 	{
@@ -112,7 +199,7 @@ bool TerrainMgr::LoadCellInformation(uint32 x, uint32 y)
 		// Read from our file into this newly created struct.
 		fread(CellInformation[x][y], sizeof(CellTerrainInformation), 1, FileDescriptor);
 	}
-
+#endif
 	// Release the mutex.
 	mutex.Release();
 
@@ -134,9 +221,17 @@ bool TerrainMgr::UnloadCellInformation(uint32 x, uint32 y)
 
 	// Set the spot to unloaded (null).
 	CellInformation[x][y] = 0;
-
+#ifdef USE_MEMORY_MAPPING_FOR_MAPS
+	#ifdef WIN32
+		if(!UnmapViewOfFile((LPCVOID)ptr))
+			Log.Error("TerrainMgr", "Could not unmap view of file at memory address 0x%.8X", ptr);
+	#else
+		#error moo
+	#endif
+#else
 	// Free the memory.
 	delete ptr;
+#endif
 
 	sLog.outDetail("Unloaded cell information for cell [%u][%u] in %ums.", x, y, getMSTime() - Start);
 	// Success

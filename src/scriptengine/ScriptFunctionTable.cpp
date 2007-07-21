@@ -44,6 +44,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "SendSystemMessage",					Player_SendSystemMessage			},
 		{ "SendNotification",					Player_SendNotification				},
 		{ "Knockback",							Player_Knockback					},
+		{ "JoinInstance",						Player_JoinInstance					},
 
 		// Imported Unit Functions
 		{ "Emote",								Unit_Emote							},
@@ -177,5 +178,6 @@ void ScriptEngine::SetScriptEngineFunctionTable()
 	m_machine->RegisterLibraryFunction("Rand", GM_RAND, 0, 0);
 	m_machine->RegisterLibraryFunction("GetUnitBySqlId", GM_GetUnitBySqlId, 0, 0);
 }
+
 
 

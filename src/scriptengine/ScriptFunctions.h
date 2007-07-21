@@ -61,6 +61,7 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Player_SendNotification(gmThread * a_thread);
 	int GM_CDECL Player_SendSystemMessage(gmThread * a_thread);
 	int GM_CDECL Player_Knockback(gmThread * a_thread);
+	int GM_CDECL Player_JoinInstance(gmThread * a_thread);
 
 /* AreaTrigger Functions */
 	int GM_CDECL AreaTrigger_GetEntry(gmThread * a_thread);
