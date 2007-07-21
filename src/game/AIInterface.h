@@ -146,6 +146,7 @@ struct AI_Spell
 	SpellEntry * spell;
 	uint8 spellType;
 	uint8 spelltargetType;
+	float cooldown;
 	float floatMisc1;
 	uint32 Misc2;
 	float minrange;
@@ -298,7 +299,7 @@ public:
 	map<uint32, uint32> m_spellCooldown;
 	list<AI_Spell*> m_spells;
 	uint32 __fastcall GetSpellCooldown(uint32 SpellId);
-	void __fastcall AddSpellCooldown(uint32 SpellId);
+	void __fastcall AddSpellCooldown(SpellEntry * pSpell, AI_Spell * sp);
 	bool disable_melee;
 	uint32 next_spell_time;
 

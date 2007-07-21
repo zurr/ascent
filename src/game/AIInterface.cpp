@@ -929,8 +929,8 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					SpellEntry* spellInfo = m_nextSpell->spell;
 					SpellCastTargets targets = setSpellTargets(spellInfo, m_nextTarget);
 					CastSpell(m_Unit, spellInfo, targets);
+					AddSpellCooldown(spellInfo, m_nextSpell);
 					m_nextSpell = NULL;
-					AddSpellCooldown(spellInfo->Id);
 				}
 				else // Target out of Range -> Run to it
 				{
@@ -2699,8 +2699,8 @@ AI_Spell *AIInterface::getSpell()
 		if(cast_time)
 			next_spell_time = World::UNIXTIME + cast_time;
 
-		// add the cooldown
-		AddSpellCooldown(sp->spell->Id);
+/*		// add the cooldown - added at actual cast
+		AddSpellCooldown(sp->spell->Id);*/
 		return def_spell;
 	}
 
@@ -2951,22 +2951,8 @@ uint32 AIInterface::GetSpellCooldown(uint32 SpellId)
 	return 0;
 }
 
-void AIInterface::AddSpellCooldown(uint32 SpellId)
+void AIInterface::AddSpellCooldown(SpellEntry * pSpell, AI_Spell * sp)
 {
-	uint32 Cooldown = objmgr.GetPetSpellCooldown(SpellId);
-	if(Cooldown == 0)
-	{
-		// Try to pull a cooldown value from spelldbc.
-		SpellEntry * sp = sSpellStore.LookupEntry(SpellId);
-		if(sp)
-		{
-			Cooldown = sp->CategoryRecoveryTime > sp->RecoveryTime ? sp->CategoryRecoveryTime : sp->RecoveryTime;
-		}
-
-		// if still 0
-		if(!Cooldown)
-			Cooldown = 1000;	// hack..
-	}
-
-	m_spellCooldown[SpellId] = getMSTime() + Cooldown;
+	uint32 Cooldown = pSpell->CategoryRecoveryTime > pSpell->RecoveryTime ? pSpell->CategoryRecoveryTime : pSpell->RecoveryTime;
+	m_spellCooldown[pSpell->Id] = getMSTime() + Cooldown;
 }

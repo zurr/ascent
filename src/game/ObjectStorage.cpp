@@ -119,6 +119,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 		sp->procChance = fields[3].GetUInt32();
 		sp->spellType = fields[6].GetUInt32();;
 		sp->spelltargetType = fields[7].GetUInt32();
+		sp->cooldown = fields[8].GetFloat();
 		sp->floatMisc1 = fields[9].GetFloat();
 		sp->Misc2 = fields[10].GetUInt32();
 		if(sp->agent == AGENT_SPELL)

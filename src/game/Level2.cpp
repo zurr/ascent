@@ -1058,6 +1058,7 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession *m_sess
 	sp->spelltargetType = atoi(spelltargetType);
 	sp->floatMisc1 = atof(floatMisc1);
 	sp->Misc2 = (uint32)atof(Misc2);
+	sp->cooldown = atof(spellCooldown);
 	sp->minrange = GetMinRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(atoi(spellId))->rangeIndex));
 	sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sSpellStore.LookupEntry(atoi(spellId))->rangeIndex));
 	if(sp->agent == AGENT_CALLFORHELP)
