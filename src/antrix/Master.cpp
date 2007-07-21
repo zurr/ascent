@@ -410,7 +410,9 @@ bool Master::Run(int argc, char ** argv)
 	ls->Close();
 	delete ls;
 #endif
+#ifdef WIN32
 	sSocketMgr.ShutdownThreads();
+#endif
 	sSocketMgr.CloseAll();
 
 	// begin server shutdown
