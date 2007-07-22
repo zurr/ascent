@@ -181,8 +181,9 @@ public:
 	inline uint8 getAIType() { return m_AIType; }
 	inline uint8 getCurrentAgent() { return m_aiCurrentAgent; }
 	void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
-	uint32 getThreatByGUID(uint64 guid);
-	uint32 getThreatByPtr(Unit* obj);
+	uint32	getThreatByGUID(uint64 guid);
+	uint32	getThreatByPtr(Unit* obj);
+	Unit	*GetMostHated();
 	bool modThreatByGUID(uint64 guid, int32 mod);
 	bool modThreatByPtr(Unit* obj, int32 mod);
 	inline AssistTargetSet GetAssistTargets() { return m_assistTargets; }
@@ -283,7 +284,13 @@ public:
 	inline void AddStopTime(uint32 Time) { m_moveTimer += Time; }
 	inline void SetNextSpell(AI_Spell * sp) { m_nextSpell = sp; }
 	inline Unit* GetNextTarget() { return m_nextTarget; }
-	inline void SetNextTarget (Unit *nextTarget) { m_nextTarget = nextTarget; }
+	inline void SetNextTarget (Unit *nextTarget) 
+	{ 
+		m_nextTarget = nextTarget; 
+		if(nextTarget)
+			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+		else m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+	}
 
 	Creature * m_formationLinkTarget;
 	float m_formationFollowDistance;

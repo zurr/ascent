@@ -220,9 +220,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				m_hasFleed = false;
 				m_hasCalledForHelp = false;
 				m_nextSpell = NULL;
-				m_nextTarget = NULL;
-				
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+				SetNextTarget(NULL);
 
 				firstLeaveCombat = false;
 
@@ -277,8 +275,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				m_hasFleed = false;
 				m_hasCalledForHelp = false;
 				m_nextSpell = NULL;
-				m_nextTarget = NULL;
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+				SetNextTarget(NULL);
 			}break;
 		case EVENT_FEAR:
 			{   
@@ -303,10 +300,8 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				getMoveFlags();
 
 				m_nextSpell = NULL;
-				m_nextTarget = NULL;
-				
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
-				//m_Unit->setAttackTarget(NULL);
+
+				SetNextTarget(NULL);
 			}break;
 		case EVENT_UNFEAR:
 			{
@@ -343,9 +338,8 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				getMoveFlags();
 
 				m_nextSpell = NULL;
-				m_nextTarget = NULL;
-				
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+
+				SetNextTarget(NULL);
 				//m_Unit->setAttackTarget(NULL);
 
 			}break;
@@ -385,12 +379,11 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 			m_hasFleed = false;
 			m_hasCalledForHelp = false;
 			m_nextSpell = NULL;
-			m_nextTarget = NULL;
+
+			SetNextTarget(NULL);
 		
 			//reset waypoint to 0
 			m_currentWaypoint = 0;
-				
-			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 			
 			// There isn't any need to do any attacker checks here, as
 			// they should all be taken care of in DealDamage
@@ -564,7 +557,7 @@ void AIInterface::Update(uint32 p_time)
 		else
 		{
 			m_fleeTimer = 0;
-			m_nextTarget = FindTargetForSpell(m_nextSpell);
+			SetNextTarget(FindTargetForSpell(m_nextSpell));
 		}
 	}
 
@@ -718,7 +711,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 	}
 	else if(!m_nextTarget && m_AIState != STATE_FOLLOWING && m_AIState != STATE_SCRIPTMOVE)
 	{
-		m_nextTarget = FindTargetForSpell(m_nextSpell);
+		SetNextTarget(FindTargetForSpell(m_nextSpell));
 		if(!m_nextTarget)
 		{
 			HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
@@ -995,9 +988,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 	}
 	else  if(!m_nextTarget || m_nextTarget->GetInstanceID() != m_Unit->GetInstanceID() || !m_nextTarget->isAlive() || !cansee)
 	{
-		m_nextTarget = NULL;
-		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
-
+		SetNextTarget(NULL);
 		// no more target
 		//m_Unit->setAttackTarget(NULL);
 	}
@@ -1312,43 +1303,13 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell *sp)
 	}
 
 
-	Unit* target = NULL;
-	uint32 threat = 0;
-	//modified for vs2005 compatibility
-
 	if(GetIsTaunted())
 	{
-		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, tauntedBy->GetGUID());
 		return tauntedBy;
 	}
-
-	for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();) // Find Target and Cleanup Targetlist
+	else
 	{
-		itr2 = itr;
-		++itr;
-		uint32 curThreat = 1;
-		if((itr2->second + itr2->first->GetThreatModifyer()) > 0) // threat may be < 0 due to some modifyers.
-		{
-			curThreat = (itr2->second + itr2->first->GetThreatModifyer());
-		}
-		if(curThreat > threat)
-		{
-			if(itr2->first->isAlive())
-			{
-				target = itr2->first;
-				threat = curThreat;
-			}
-			else
-			{
-				m_aiTargets.erase(itr2);
-			}
-		}
-	}
-	m_currentHighestThreat = threat;
-	if(target && target->GetInstanceID() == m_Unit->GetInstanceID())
-	{
-		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, target->GetGUID());
-		return target;
+		return GetMostHated();
 	}
 
 	return NULL;
@@ -2738,6 +2699,61 @@ uint32 AIInterface::getThreatByPtr(Unit* obj)
 	return 0;
 }
 
+Unit *AIInterface::GetMostHated()
+{
+	Unit *ResultUnit=NULL;
+
+	//override mosthated with taunted target
+	ResultUnit = getTauntedBy();
+	if(ResultUnit)
+		return ResultUnit;
+
+	int32 threat = 0;
+
+	TargetMap::iterator itr,itr2;
+	for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();) // Find Target and Cleanup Targetlist
+	{
+		itr2 = itr;
+		++itr;
+		if((itr2->second + itr2->first->GetThreatModifyer()) > threat) // threat may be < 0 due to some modifyers.
+		{
+/*
+			bool cansee;
+			if(m_nextTarget && m_nextTarget->GetInstanceID() == m_Unit->GetInstanceID())
+			{
+				if(m_Unit->GetTypeId() == TYPEID_UNIT)
+					cansee=((Creature*)m_Unit)->CanSee(m_nextTarget);
+				else
+					cansee = ((Player*)m_Unit)->CanSee(m_nextTarget);
+			}
+			else 
+				cansee=false; */ 
+//			if(itr2->first->isAlive() )
+			if(	!m_Unit->GetMapMgr()->GetUnit(m_nextTarget->GetGUID()) || 
+				!m_nextTarget->isAlive()
+//				!cansee || 
+//				!isAttackable(m_Unit, m_nextTarget) //maybe our target is not attackable anymore : PVP
+				)
+			{
+				m_aiTargets.erase(itr2);
+			}
+			else if((itr2->second + itr2->first->GetThreatModifyer())>threat)
+			{
+				ResultUnit = itr2->first;
+				threat = (itr2->second + itr2->first->GetThreatModifyer());
+			}
+		}
+	}
+	m_currentHighestThreat = threat;
+
+/*	if(ResultUnit && ResultUnit->GetInstanceID() == m_Unit->GetInstanceID())
+	{
+		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, target->GetGUID());
+		return target;
+	}*/
+	return ResultUnit;
+}
+
 bool AIInterface::modThreatByGUID(uint64 guid, int32 mod)
 {
 	if (!m_aiTargets.size())
@@ -2761,11 +2777,11 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 		if((it->second + obj->GetThreatModifyer()) > m_currentHighestThreat)
 		{
 			// new target!
+			m_currentHighestThreat = it->second + obj->GetThreatModifyer();
 			if(!isTaunted)
 			{
-				m_nextTarget = obj;
 				m_currentHighestThreat = it->second + obj->GetThreatModifyer();
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+				SetNextTarget(obj);
 			}
 		}
 	}
@@ -2776,9 +2792,8 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 		{
 			if(!isTaunted)
 			{
-				m_nextTarget = obj;
 				m_currentHighestThreat = mod + obj->GetThreatModifyer();
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+				SetNextTarget(obj);
 			}
 		}
 	}
@@ -2788,8 +2803,7 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 		// check for a possible decrease in threat.
 		if(mod < 0)
 		{
-			m_nextTarget = FindTargetForSpell(m_nextSpell);
-			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+			SetNextTarget(FindTargetForSpell(m_nextSpell));
 		}
 	}
 	return true;
@@ -2809,9 +2823,7 @@ void AIInterface::WipeHateList()
 
 void AIInterface::WipeTargetList()
 {
-	m_nextTarget = NULL;
-	
-	m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+	SetNextTarget(NULL);
 
 	m_nextSpell = NULL;
 	m_aiTargets.clear();
@@ -2821,40 +2833,35 @@ bool AIInterface::taunt(Unit* caster, bool apply)
 {
 	if(apply)
 	{
+		//wowwiki says that we cannot owerride this spell
+		if(GetIsTaunted())
+			return false;
+
 		if(!caster)
 		{
 			isTaunted = false;
 			return false;
 		}
-		isTaunted = true;
-		tauntedBy = caster;
+
 		//check if we can attack taunter. Maybe it's a hack or a bug if we fail this test
 		if(isHostile(m_Unit, caster))
 		{
 			//check if we have to add him to our agro list
-			if(m_aiTargets.find(caster) == m_aiTargets.end())
-			{
-				m_aiTargets.insert(TargetMap::value_type(caster, 1));//Best amount of agro would be taken from spell but taunt spell agro amount formula does not go with other spell agro formulas :(
-				m_nextTarget = tauntedBy; //switch to this target 
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID()); //set creature target to be visible client side too
-				return true;
-			}
-			else
-			{
-				//make sure we rush the target anyway
-				m_nextTarget = tauntedBy; //switch to this target 
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
-			}
+			GetMostHated(); //update our most hated list/ Note that at this point we do not have a taunter yet. If we would have then this funtion will not give real mosthated
+			int32 oldthreat = getThreatByPtr(caster);
+			//make sure we rush the target anyway. Since we are not tauted yet, this will also set our target
+			modThreatByPtr(caster,abs(m_currentHighestThreat-oldthreat)+1); //we need to be the most hated at this moment
+//			SetNextTarget(caster);
 		}
+		isTaunted = true;
+		tauntedBy = caster;
 	}
 	else
 	{
 		isTaunted = false;
 		tauntedBy = NULL;
-//		modThreatByPtr(tauntedBy,1); //we added 1 fake agro point and we remove it. Maybe the taunter was luring the target and made no extra dmg since then and that means we do not have any most hated ?
 		//taunt is ower, we should get a new target based on most hated list
-		m_updateTargets = true; //maybe this will get us a good target
-		m_nextTarget = NULL; //on next update let already made funtions get ourself a new target :P
+		SetNextTarget(GetMostHated());
 	}
 
 	return true;
@@ -2895,8 +2902,7 @@ void AIInterface::CheckTarget(Unit* target)
 
 	if (target == m_nextTarget)	 // no need to cast on these.. mem addresses are still the same
 	{
-		m_nextTarget = NULL;
-		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+		SetNextTarget(NULL);
 		m_nextSpell = NULL;
 	}
 
@@ -2945,9 +2951,8 @@ uint32 AIInterface::_CalcThreat(uint32 damage, uint32 spellId, Unit* Attacker)
 void AIInterface::WipeReferences()
 {
 	m_nextSpell = 0;
-	m_nextTarget = 0;
 	m_aiTargets.clear();
-	m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+	SetNextTarget(NULL);
 	UnitToFear = 0;
 	UnitToFollow = 0;
 	tauntedBy = 0;
