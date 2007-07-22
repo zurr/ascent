@@ -44,6 +44,7 @@ enum ServerHookEvents
 	SERVER_HOOK_EVENT_ON_CHAT				= 16,
 	SERVER_HOOK_EVENT_ON_LOOT				= 17,
 	SERVER_HOOK_EVENT_ON_GUILD_CREATE		= 18,
+	SERVER_HOOK_EVENT_ON_ENTER_WORLD_2		= 19,
 
 	NUM_SERVER_HOOKS,
 };
@@ -250,6 +251,7 @@ public:
 	void OnZone(Player * pPlayer, uint32 Zone);
 	void OnChat(Player * pPlayer, uint32 Type, uint32 Lang, const char * Message, const char * Misc);
 	void OnLoot(Player * pPlayer, Unit * pTarget, uint32 Money, uint32 ItemId);
+	void OnEnterWorld2(Player * pPlayer);
 };
 
 #define sScriptMgr ScriptMgr::getSingleton()

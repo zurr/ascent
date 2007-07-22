@@ -633,3 +633,10 @@ void HookInterface::OnLoot(Player * pPlayer, Unit * pTarget, uint32 Money, uint3
 		(call)(pPlayer, pTarget, Money, ItemId);
 	OUTER_LOOP_END
 }
+
+void HookInterface::OnEnterWorld2(Player * pPlayer)
+{
+	OUTER_LOOP_BEGIN(SERVER_HOOK_EVENT_ON_ENTER_WORLD_2, tOnEnterWorld)
+		(call)(pPlayer);
+	OUTER_LOOP_END
+}

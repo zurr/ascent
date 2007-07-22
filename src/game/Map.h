@@ -75,7 +75,7 @@ typedef struct
 	GOSpawnList GOSpawns;
 }CellSpawns;
 
-class Map
+class SERVER_DECL Map
 {
 public:
 	Map(uint32 mapid);

@@ -669,6 +669,8 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 #ifdef CLUSTERING
 	plr->SetInstanceID(forced_instance_id);
 	plr->SetMapId(forced_map_id);
+#else
+	sHookInterface.OnEnterWorld2(_player);
 #endif
 
 	if(enter_world)
@@ -682,7 +684,7 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	sIRCBot.SendMessage("> %s from account %u entered world.", _player->GetName(), GetAccountId());*/
 
 	if(_player->GetMapId() == 489 ||
-		_player->GetMapId() == 529 || _player->GetMapId() == 30)
+		_player->GetMapId() == 529 /*|| _player->GetMapId() == 30*/)
 	{
 		uint32 battlegroundtype = sBattlegroundMgr.GetBattleGroundTypeByMapId(_player->GetMapId());
 		Battleground *battleground = sBattlegroundMgr.GetBattlegroundByInstanceID(_player->GetInstanceID(),battlegroundtype);

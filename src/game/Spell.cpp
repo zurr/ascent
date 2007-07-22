@@ -2438,7 +2438,9 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 					playerTarget = static_cast<Player*>(unitTarget);
 				}break;
 			case HIGHGUID_ITEM:
-				itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
+				if(p_caster)
+					itemTarget = p_caster->GetItemInterface()->GetItemByGUID(guid);
+
 				break;
 			case HIGHGUID_GAMEOBJECT:
 				gameObjTarget = m_caster->GetMapMgr()->GetGameObject(guid);
