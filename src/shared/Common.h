@@ -241,6 +241,87 @@ typedef unsigned long		uint32;
 typedef unsigned short	   uint16;
 typedef unsigned char		uint8;
 
+/* Define this if you're using a big-endian machine (todo: replace with autoconf */
+/*#define USING_BIG_ENDIAN 1*/
+
+/* these can be optimized into assembly */
+inline static void swap16(uint16* p) { *p = (*p >> 8) | (*p << 8); }
+inline static void swap32(uint32* p) { *p = (*p >> 24) | ((*p >> 8) & 0xff00) | ((*p << 8) & 0xff0000) | (*p << 24); }
+inline static void swap64(uint64* p) { *p = ((*p >> 56)) | ((*p >> 40) & 0x000000000000ff00ULL) | ((*p >> 24) & 0x0000000000ff0000ULL) | ((*p >> 8 ) & 0x00000000ff000000ULL) |
+								((*p << 8 ) & 0x000000ff00000000ULL) | ((*p << 24) & 0x0000ff0000000000ULL) | ((*p << 40) & 0x00ff000000000000ULL) | ((*p << 56)); }
+inline static float swapfloat(float p)
+{
+	union { float asfloat; uint8 asbytes[4]; } u1, u2;
+	u1.asfloat = p;
+	/* swap! */
+	u2.asbytes[0] = u1.asbytes[3];
+	u2.asbytes[1] = u1.asbytes[2];
+	u2.asbytes[2] = u1.asbytes[1];
+	u2.asbytes[3] = u1.asbytes[0];
+    
+	return u2.asfloat;
+}
+
+inline static double swapdouble(double p)
+{
+	union { double asfloat; uint8 asbytes[8]; } u1, u2;
+	u1.asfloat = p;
+	/* swap! */
+	u2.asbytes[0] = u1.asbytes[7];
+	u2.asbytes[1] = u1.asbytes[6];
+	u2.asbytes[2] = u1.asbytes[5];
+	u2.asbytes[3] = u1.asbytes[4];
+	u2.asbytes[4] = u1.asbytes[3];
+	u2.asbytes[5] = u1.asbytes[2];
+	u2.asbytes[6] = u1.asbytes[1];
+	u2.asbytes[7] = u1.asbytes[0];
+
+	return u2.asfloat;
+}
+
+inline static void swapfloat(float * p)
+{
+	union { float asfloat; uint8 asbytes[4]; } u1, u2;
+	u1.asfloat = *p;
+	/* swap! */
+	u2.asbytes[0] = u1.asbytes[3];
+	u2.asbytes[1] = u1.asbytes[2];
+	u2.asbytes[2] = u1.asbytes[1];
+	u2.asbytes[3] = u1.asbytes[0];
+	*p = u2.asfloat;
+}
+
+inline static void swapdouble(double * p)
+{
+	union { double asfloat; uint8 asbytes[8]; } u1, u2;
+	u1.asfloat = *p;
+	/* swap! */
+	u2.asbytes[0] = u1.asbytes[7];
+	u2.asbytes[1] = u1.asbytes[6];
+	u2.asbytes[2] = u1.asbytes[5];
+	u2.asbytes[3] = u1.asbytes[4];
+	u2.asbytes[4] = u1.asbytes[3];
+	u2.asbytes[5] = u1.asbytes[2];
+	u2.asbytes[6] = u1.asbytes[1];
+	u2.asbytes[7] = u1.asbytes[0];
+	*p = u2.asfloat;
+}
+
+inline static uint16 swap16(uint16 p) { return (p >> 8) | (p << 8); }
+inline static uint32 swap32(uint32 p) { return (p >> 24) | ((p >> 8) & 0xff00) | ((p << 8) & 0xff0000) | (p << 24); }
+inline static uint64 swap64(uint64 p)  { p = ((p >> 56)) | ((p >> 40) & 0x000000000000ff00ULL) | ((p >> 24) & 0x0000000000ff0000ULL) | ((p >> 8 ) & 0x00000000ff000000ULL) |
+								((p << 8 ) & 0x000000ff00000000ULL) | ((p << 24) & 0x0000ff0000000000ULL) | ((p << 40) & 0x00ff000000000000ULL) | ((p << 56)); }
+
+inline static void swap16(int16* p) { *p = (*p >> 8) | (*p << 8); }
+inline static void swap32(int32* p) { *p = (*p >> 24) | ((*p >> 8) & 0xff00) | ((*p << 8) & 0xff0000) | (*p << 24); }
+inline static void swap64(int64* p) { *p = ((*p >> 56)) | ((*p >> 40) & 0x000000000000ff00ULL) | ((*p >> 24) & 0x0000000000ff0000ULL) | ((*p >> 8 ) & 0x00000000ff000000ULL) |
+								((*p << 8 ) & 0x000000ff00000000ULL) | ((*p << 24) & 0x0000ff0000000000ULL) | ((*p << 40) & 0x00ff000000000000ULL) | ((*p << 56)); }
+
+inline static int16 swap16(int16 p) { return (p >> 8) | (p << 8); }
+inline static int32 swap32(int32 p) { return (p >> 24) | ((p >> 8) & 0xff00) | ((p << 8) & 0xff0000) | (p << 24); }
+inline static int64 swap64(int64 p)  { p = ((p >> 56)) | ((p >> 40) & 0x000000000000ff00ULL) | ((p >> 24) & 0x0000000000ff0000ULL) | ((p >> 8 ) & 0x00000000ff000000ULL) |
+								((p << 8 ) & 0x000000ff00000000ULL) | ((p << 24) & 0x0000ff0000000000ULL) | ((p << 40) & 0x00ff000000000000ULL) | ((p << 56)); }
+
 /* 
 Scripting system exports/imports
 */
