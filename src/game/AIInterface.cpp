@@ -2828,12 +2828,33 @@ bool AIInterface::taunt(Unit* caster, bool apply)
 		}
 		isTaunted = true;
 		tauntedBy = caster;
-		//now let us run to the taunter and start hitting him
+		//check if we can attack taunter. Maybe it's a hack or a bug if we fail this test
+		if(isHostile(m_Unit, caster))
+		{
+			//check if we have to add him to our agro list
+			if(m_aiTargets.find(caster) == m_aiTargets.end())
+			{
+				m_aiTargets.insert(TargetMap::value_type(caster, 1));//Best amount of agro would be taken from spell but taunt spell agro amount formula does not go with other spell agro formulas :(
+				m_nextTarget = tauntedBy; //switch to this target 
+				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID()); //set creature target to be visible client side too
+				return true;
+			}
+			else
+			{
+				//make sure we rush the target anyway
+				m_nextTarget = tauntedBy; //switch to this target 
+				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
+			}
+		}
 	}
 	else
 	{
 		isTaunted = false;
 		tauntedBy = NULL;
+//		modThreatByPtr(tauntedBy,1); //we added 1 fake agro point and we remove it. Maybe the taunter was luring the target and made no extra dmg since then and that means we do not have any most hated ?
+		//taunt is ower, we should get a new target based on most hated list
+		m_updateTargets = true; //maybe this will get us a good target
+		m_nextTarget = NULL; //on next update let already made funtions get ourself a new target :P
 	}
 
 	return true;
