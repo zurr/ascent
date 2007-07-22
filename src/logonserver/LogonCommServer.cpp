@@ -273,11 +273,12 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 	/* this packet is gzipped, whee! :D */
 	uint32 real_size;
 	recvData >> real_size;
+	uLongf rsize = real_size;
 
 	ByteBuffer buf(real_size);
 	buf.resize(real_size);
 
-	if(uncompress((uint8*)buf.contents(), &real_size, recvData.contents() + 4, recvData.size() - 4) != Z_OK)
+	if(uncompress((uint8*)buf.contents(), &rsize, recvData.contents() + 4, recvData.size() - 4) != Z_OK)
 	{
 		printf("Uncompress of mapping failed.\n");
 		return;

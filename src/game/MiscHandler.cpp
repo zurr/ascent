@@ -863,6 +863,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket &recv_data)
 
 	uint32 uiDecompressedSize;
 	recv_data >> uiDecompressedSize;
+	uLongf uid = uiDecompressedSize;
 
 	// client wants to 'erase' current entries
 	if(uiDecompressedSize == 0)
@@ -878,7 +879,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket &recv_data)
 	{
 		int32 ZlibResult;
 
-		ZlibResult = uncompress((uint8*)data, &uiDecompressedSize, recv_data.contents() + 8, RecievedPackedSize);
+		ZlibResult = uncompress((uint8*)data, &uid, recv_data.contents() + 8, RecievedPackedSize);
 		
 		switch (ZlibResult)
 		{
@@ -938,7 +939,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
 	else
 	{
 		data << res->sz;
-		uint32 destsize;
+		uLongf destsize;
 		if(res->sz>200)
 		{
 			data.resize( res->sz+800 );  // give us plenty of room to work with..

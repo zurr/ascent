@@ -104,6 +104,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket *source, uint32 pos, WorldSession
 	returnpacket.Initialize(SMSG_ADDON_INFO);	// SMSG_ADDON_INFO
 
 	uint32 realsize;
+	uLongf rsize;
 	try
 	{
 		*source >> realsize;
@@ -113,6 +114,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket *source, uint32 pos, WorldSession
 		sLog.outDebug("Warning: Incomplete auth session sent.");
 		return;
 	}	
+	rsize = realsize;
 	uint32 position = source->rpos();
 
 	ByteBuffer unpacked;
@@ -125,7 +127,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket *source, uint32 pos, WorldSession
 		return;
 	}
 	int32 result;
-	result = uncompress((uint8*)unpacked.contents(), &realsize, (uint8*)(*source).contents() + position, (*source).size() - position);
+	result = uncompress((uint8*)unpacked.contents(), &rsize, (uint8*)(*source).contents() + position, (*source).size() - position);
 
 	if(result != Z_OK)
 	{

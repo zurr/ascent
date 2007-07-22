@@ -38,7 +38,7 @@ void SocketMgr::SpawnWorkerThreads()
 void SocketWorkerThread::run()
 {
 	HANDLE cp = sSocketMgr.GetCompletionPort();
-	uint32 len;
+	DWORD len;
 	Socket * s;
 	OverlappedStruct * ov;
 	LPOVERLAPPED ol_ptr;

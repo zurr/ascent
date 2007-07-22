@@ -20,8 +20,8 @@ void Socket::WriteCallback()
 	m_writeMutex.Acquire();
 	if(m_writeByteCount)
 	{
-		uint32 w_length = 0;
-		uint32 flags = 0;
+		DWORD w_length = 0;
+		DWORD flags = 0;
 
 		// attempt to push all the data out in a non-blocking fashion.
 		WSABUF buf;
@@ -53,8 +53,8 @@ void Socket::SetupReadEvent()
 		return;
 
 	m_readMutex.Acquire();
-	uint32 r_length = 0;
-	uint32 flags = 0;
+	DWORD r_length = 0;
+	DWORD flags = 0;
 	WSABUF buf;
 	buf.buf = (char*)m_readBuffer + m_readByteCount;
 	buf.len = m_readBufferSize - m_readByteCount;

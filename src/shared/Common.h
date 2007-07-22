@@ -219,27 +219,30 @@ namespace __gnu_cxx
 using std::hash_map;
 #endif
 
-#if COMPILER == COMPILER_MICROSOFT
-  typedef __int64   int64;
-#else
-  typedef long long int64;
-#endif
-typedef long		int32;
-typedef short	   int16;
-typedef char		int8;
+/* Use correct types for x64 platforms, too */
+#if COMPILER != COMPILER_GNU
+typedef signed __int64 int64;
+typedef signed __int32 int32;
+typedef signed __int16 int16;
+typedef signed __int8 int8;
 
-#if COMPILER == COMPILER_MICROSOFT
-  typedef unsigned __int64   uint64;
-  typedef __int64			int64;
+typedef unsigned __int64 uint64;
+typedef unsigned __int32 uint32;
+typedef unsigned __int16 uint16;
+typedef unsigned __int8 uint8;
 #else
-  typedef unsigned long long uint64;
-  typedef long long		  int64;
-  typedef unsigned long	  DWORD;
-#endif
 
-typedef unsigned long		uint32;
-typedef unsigned short	   uint16;
-typedef unsigned char		uint8;
+typedef int64_t int64;
+typedef int32_t int32;
+typedef int16_t int16;
+typedef int8_t int8;
+typedef uint64_t uint64;
+typedef uint32_t uint32;
+typedef uint16_t uint16;
+typedef uint8_t uint8;
+typedef uint32_t DWORD;
+
+#endif
 
 /* Define this if you're using a big-endian machine (todo: replace with autoconf */
 /*#define USING_BIG_ENDIAN 1*/

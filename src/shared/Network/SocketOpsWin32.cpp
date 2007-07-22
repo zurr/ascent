@@ -21,14 +21,14 @@ namespace SocketOps
 	// Disable blocking send/recv calls.
 	bool Nonblocking(SOCKET fd)
 	{
-		uint32 arg = 1;
+		u_long arg = 1;
 		return (::ioctlsocket(fd, FIONBIO, &arg) == 0);
 	}
 
 	// Disable blocking send/recv calls.
 	bool Blocking(SOCKET fd)
 	{
-		uint32 arg = 0;
+		u_long arg = 0;
 		return (ioctlsocket(fd, FIONBIO, &arg) == 0);
 	}
 
