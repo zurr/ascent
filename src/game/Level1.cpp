@@ -27,7 +27,9 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession *m_sessio
 	string input2;
 
 	input2 = "|cffff6060<";
-	if (m_session->GetPermissionCount())   input2+="GM";
+	//if (m_session->GetPermissionCount())   input2+="GM";
+	if(m_session->CanUseCommand('z')) input2+="Admin";
+	else if(m_session->GetPermissionCount()) input2+="GM";
 	input2+=">|r|c1f40af20";
 	input2+=m_session->GetPlayer()->GetName();
 	input2+="|r|cffffffff broadcasts: |r";
@@ -49,7 +51,8 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession *m_sessi
 	string input2;
 
 	input2 = "|cffff6060<";
-	if (m_session->GetPermissionCount())   input2+="GM";
+	if(m_session->CanUseCommand('z')) input2+="Admin";
+	else if(m_session->GetPermissionCount()) input2+="GM";
 	input2+=">|r|c1f40af20";
 	input2+=m_session->GetPlayer()->GetName();
 	input2+=":|r ";

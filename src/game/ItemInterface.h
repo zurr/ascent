@@ -112,6 +112,7 @@ public:
 	void AddBuyBackItem(Item* it, uint32 price);
 	void RemoveBuyBackItem(uint32 index);
 	void EmptyBuyBack();
+	bool IsEquipped(uint32 itemid);
 };
 
 #endif

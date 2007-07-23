@@ -2574,3 +2574,13 @@ void ItemInterface::ReduceItemDurability()
    }
 }
 
+bool ItemInterface::IsEquipped(uint32 itemid)
+{
+	for(uint32 x = EQUIPMENT_SLOT_START; x < EQUIPMENT_SLOT_END; ++x)
+	{
+		if(m_pItems[x])
+			if(m_pItems[x]->GetProto()->ItemId == itemid)
+				return true;
+	}
+	return false;
+}
