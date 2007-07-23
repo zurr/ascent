@@ -10,6 +10,8 @@
 #ifndef NETWORK_H_
 #define NETWORK_H_
 
+#include "../Log.h"
+#include "../NGLog.h"
 #include "SocketDefines.h"
 #include "SocketOps.h"
 #include "Socket.h"

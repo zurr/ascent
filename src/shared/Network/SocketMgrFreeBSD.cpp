@@ -70,7 +70,7 @@ void SocketWorkerThread::run()
     struct timespec ts;
     ts.tv_nsec = 0;
     ts.tv_sec = 5;
-	struct kevent ev, ev2;
+	struct kevent ev2;
 
     SocketMgr * mgr = SocketMgr::getSingletonPtr();
     int kq = mgr->GetKq();
