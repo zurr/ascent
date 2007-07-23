@@ -55,6 +55,14 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 	m_lock.Release();
 
 	/* Add to event manager */
+	if(!m_holder)
+	{
+		/* relocate to -1 eventholder :/ */
+		m_event_Instanceid = -1;
+		m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
+		ASSERT(m_holder);
+	}
+
 	m_holder->AddEvent(ptr);
 }
 
