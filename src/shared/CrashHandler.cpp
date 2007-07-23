@@ -330,7 +330,7 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
 
 
 		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-			hDump, MiniDumpNormal, &info, 0, 0);
+			hDump, MiniDumpWithIndirectlyReferencedMemory, &info, 0, 0);
 
 		CloseHandle(hDump);
 	}

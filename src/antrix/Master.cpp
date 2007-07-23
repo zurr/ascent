@@ -270,8 +270,6 @@ bool Master::Run(int argc, char ** argv)
 	new ScriptMgr;
 
 	sWorld.SetInitialWorldSettings();
-
-
 	sWorld.SetStartTime((uint32)time(NULL));
 	
 	_HookSignals();

@@ -298,7 +298,6 @@ void ObjectMgr::LoadPlayersInfo()
 			pn->lastOnline=fields[7].GetUInt32();
 			pn->publicNote=fields[8].GetString();
 			pn->officerNote= fields[9].GetString();
-			
 			pn->Rank=fields[10].GetUInt32();
 			pn->acct = fields[11].GetUInt32();
 
