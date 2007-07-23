@@ -2701,6 +2701,7 @@ Unit *AIInterface::GetMostHated()
 		return ResultUnit;
 
 GETMOSTHATED_REPEAT:
+	ResultUnit = NULL;
 	int32 threat = 0;
 	TargetMap::iterator itr,itr2,itr3=m_aiTargets.end();
 	for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();) // Find Target and Cleanup Targetlist
@@ -2884,7 +2885,7 @@ bool AIInterface::GetIsTaunted()
 {
 	if(isTaunted)
 	{
-		if(!tauntedBy || !tauntedBy->isAlive() || !m_Unit->GetMapMgr()->GetUnit(m_nextTarget->GetGUID()))
+		if(!tauntedBy || !tauntedBy->isAlive() || !m_Unit->GetMapMgr()->GetUnit(tauntedBy->GetGUID()))
 		{
 			isTaunted = false;
 			tauntedBy = NULL;
