@@ -1302,17 +1302,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell *sp)
 		}
 	}
 
-
-	if(GetIsTaunted())
-	{
-		return tauntedBy;
-	}
-	else
-	{
-		return GetMostHated();
-	}
-
-	return NULL;
+	return GetMostHated();
 }
 
 bool AIInterface::FindFriends(float dist)
@@ -2699,41 +2689,27 @@ uint32 AIInterface::getThreatByPtr(Unit* obj)
 	return 0;
 }
 
+//should return a valid target
 Unit *AIInterface::GetMostHated()
 {
 	Unit *ResultUnit=NULL;
 
-	//override mosthated with taunted target
+	//override mosthated with taunted target. Basic combat checks are made for it. 
+	//What happens if we can't see tauntedby unit ?
 	ResultUnit = getTauntedBy();
 	if(ResultUnit)
 		return ResultUnit;
 
+GETMOSTHATED_REPEAT:
 	int32 threat = 0;
-
-	TargetMap::iterator itr,itr2;
+	TargetMap::iterator itr,itr2,itr3=m_aiTargets.end();
 	for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();) // Find Target and Cleanup Targetlist
 	{
 		itr2 = itr;
 		++itr;
 		if((itr2->second + itr2->first->GetThreatModifyer()) > threat) // threat may be < 0 due to some modifyers.
 		{
-/*
-			bool cansee;
-			if(m_nextTarget && m_nextTarget->GetInstanceID() == m_Unit->GetInstanceID())
-			{
-				if(m_Unit->GetTypeId() == TYPEID_UNIT)
-					cansee=((Creature*)m_Unit)->CanSee(m_nextTarget);
-				else
-					cansee = ((Player*)m_Unit)->CanSee(m_nextTarget);
-			}
-			else 
-				cansee=false; */ 
-//			if(itr2->first->isAlive() )
-			if(	!m_Unit->GetMapMgr()->GetUnit(m_nextTarget->GetGUID()) || 
-				!m_nextTarget->isAlive()
-//				!cansee || 
-//				!isAttackable(m_Unit, m_nextTarget) //maybe our target is not attackable anymore : PVP
-				)
+			if( !itr2->first->isAlive() )
 			{
 				m_aiTargets.erase(itr2);
 			}
@@ -2741,16 +2717,42 @@ Unit *AIInterface::GetMostHated()
 			{
 				ResultUnit = itr2->first;
 				threat = (itr2->second + itr2->first->GetThreatModifyer());
+				itr3 = itr2;
 			}
 		}
 	}
+	
 	m_currentHighestThreat = threat;
 
-/*	if(ResultUnit && ResultUnit->GetInstanceID() == m_Unit->GetInstanceID())
+	//no need to make further actions if list is empty
+	if(!ResultUnit)
+		return NULL;
+
+	//make some more acurate checks and return only valid target
+	if(	!m_Unit->GetMapMgr()->GetUnit(ResultUnit->GetGUID()) || 
+		!ResultUnit->IsInWorld() || //i think this is not even necesarry
+		!isAttackable(m_Unit, ResultUnit) //maybe our target is not attackable anymore : PVP (what are the ods of this)
+		)
 	{
-		m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, target->GetGUID());
-		return target;
+		//we did pick a target so this should not be null 
+		m_aiTargets.erase(itr3);
+		goto GETMOSTHATED_REPEAT;
+	}
+/*	bool cansee;
+	if(ResultUnit && ResultUnit->GetInstanceID() == m_Unit->GetInstanceID())
+	{
+		if(m_Unit->GetTypeId() == TYPEID_UNIT)
+			cansee=((Creature*)m_Unit)->CanSee(ResultUnit);
+		else
+			cansee = ((Player*)m_Unit)->CanSee(ResultUnit);
+	}
+	else 
+		cansee=false;
+	if(!cansee)
+	{
+		//we should pick another target ?
 	}*/
+
 	return ResultUnit;
 }
 
@@ -2777,7 +2779,6 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 		if((it->second + obj->GetThreatModifyer()) > m_currentHighestThreat)
 		{
 			// new target!
-			m_currentHighestThreat = it->second + obj->GetThreatModifyer();
 			if(!isTaunted)
 			{
 				m_currentHighestThreat = it->second + obj->GetThreatModifyer();
@@ -2883,7 +2884,7 @@ bool AIInterface::GetIsTaunted()
 {
 	if(isTaunted)
 	{
-		if(!tauntedBy || !tauntedBy->isAlive())
+		if(!tauntedBy || !tauntedBy->isAlive() || !m_Unit->GetMapMgr()->GetUnit(m_nextTarget->GetGUID()))
 		{
 			isTaunted = false;
 			tauntedBy = NULL;
