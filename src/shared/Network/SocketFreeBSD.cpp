@@ -12,14 +12,6 @@
 
 void Socket::PostEvent(int events, bool oneshot)
 {
-    //printf("post event: %d\n", events);
-    if(!IsConnected())
-        return;
-
-    //assert(!(events & EVFILT_WRITE && !GetWriteBufferSize()));
-    if(events == EVFILT_WRITE && !GetWriteBufferSize())
-        assert(false);
-
     int kq = sSocketMgr.GetKq();
 
     struct kevent ev;
@@ -29,7 +21,7 @@ void Socket::PostEvent(int events, bool oneshot)
         EV_SET(&ev, m_fd, events, EV_ADD, 0, 0, NULL);
 
     if(kevent(kq, &ev, 1, 0, 0, NULL) < 0)
-        printf("!! could not re-add kqueue event %d\n", events);
+		Log.Warning("kqueue", "Could not modify event for fd %u", GetFd());
 }
 
 void Socket::ReadCallback(uint32 len)
@@ -38,7 +30,6 @@ void Socket::ReadCallback(uint32 len)
     m_readMutex.Acquire();
 
     int bytes = recv(m_fd, ((char*)m_readBuffer + m_readByteCount), m_readBufferSize - m_readByteCount, 0);
-    //printf("readcallback: got %d bytes, error %d\n", bytes, errno);
     if(bytes <= 0)
     {
         m_readMutex.Release();
@@ -59,7 +50,6 @@ void Socket::WriteCallback()
 {
     // We should already be locked at this point, so try to push everything out.
     int bytes_written = send(m_fd, (void*)m_writeBuffer, m_writeByteCount, 0);
-    //printf("writecallback: sent %u bytes.\n", bytes_written);
     if(bytes_written < 0)
     {
         // error.

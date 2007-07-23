@@ -13,39 +13,36 @@ initialiseSingleton(SocketMgr);
 void SocketMgr::AddSocket(Socket * s)
 {
     assert(fds[s->GetFd()] == 0);
+    fds[s->GetFd()] = s;
 
     // Add epoll event based on socket activity.
     struct epoll_event ev;
     memset(&ev, 0, sizeof(epoll_event));
     ev.events = (s->GetWriteBufferSize()) ? EPOLLOUT : EPOLLIN;
-    ev.events |= EPOLLONESHOT;      // Only one event at a time.
-
+    ev.events |= EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
     ev.data.fd = s->GetFd();
     
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
-    {
-        printf("!! could not add to epoll set.\n");
-        return;
-    }
-
-    fds[s->GetFd()] = s;
+		Log.Warning("epoll", "Could not add event to epoll set on fd %u", ev.data.fd);
 }
 
 void SocketMgr::RemoveSocket(Socket * s)
 {
-    //assert(fds[s->GetFd()] == s);
     if(fds[s->GetFd()] != s)
+	{
+		Log.Warning("epoll", "Could not remove fd %u from the set due to it not existing?", s->GetFd());
         return;
+	}
 
+	fds[s->GetFd()] = 0;
     // Remove from epoll list.
     struct epoll_event ev;
+	memset(&ev, 0, sizeof(epoll_event));
     ev.data.fd = s->GetFd();
     ev.events = EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLHUP | EPOLLONESHOT;
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, ev.data.fd, &ev))
-        printf("!! could not remove from epoll set.\n");
-    
-    fds[s->GetFd()] = 0;
+		Log.Warning("epoll", "Could not remove fd %u from epoll set, errno %u", s->GetFd(), errno);
 }
 
 void SocketMgr::CloseAll()
@@ -77,7 +74,7 @@ void SocketWorkerThread::run()
         {
             if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
             {
-                printf("epoll: requested FD that is too high (%u). aborting.\n", events[i].data.fd);
+                Log.Warning("epoll", "Requested FD that is too high (%u)", events[i].data.fd);
                 continue;
             }
 
@@ -85,35 +82,34 @@ void SocketWorkerThread::run()
 
             if(ptr == NULL)
             {
-                printf("epoll returned invalid fd (no pointer) of FD %u!!\n", events[i].data.fd);
+               Log.Warning("epoll", "Returned invalid fd (no pointer) of FD %u", events[i].data.fd);
                 continue;
             }
 
             if(events[i].events & EPOLLHUP || events[i].events & EPOLLERR)
             {
-                printf("higup\n");
-                // Hangup, or error.
-                ptr->Delete();
+				ptr->Disconnect();
                 continue;
             }
-
-            if(events[i].events & EPOLLIN)
+			else if(events[i].events & EPOLLIN)
             {
                 ptr->ReadCallback(0);               // Len is unknown at this point.
-                if(!(events[i].events & EPOLLOUT) && !ptr->HasSendLock())
-                    ptr->PostEvent(EPOLLIN);        // Remember we are oneshotting events, so we have to push another.
-            }
 
-            if(events[i].events & EPOLLOUT)
+				/* changing to written state? */
+				if(ptr->GetWriteBufferSize() && !ptr->HasSendLock() && ptr->IsConnected())
+					ptr->PostEvent(EPOLLOUT);
+            }
+			else if(events[i].events & EPOLLOUT)
             {
                 ptr->BurstBegin();          // Lock receive mutex
                 ptr->WriteCallback();       // Perform actual send()
                 if(ptr->GetWriteBufferSize() > 0)
                 {
-                    ptr->PostEvent(EPOLLOUT);   // Still remaining data.
+                    /* we don't have to do anything here. no more oneshots :) */
                 }
                 else
                 {
+					/* change back to a read event */
                     ptr->DecSendLock();
                     ptr->PostEvent(EPOLLIN);
                 }

@@ -11,19 +11,16 @@
 
 void Socket::PostEvent(uint32 events)
 {
-    if(!IsConnected())
-        return;
-
-    assert(!(events & EPOLLOUT && !GetWriteBufferSize()));
     int epoll_fd = sSocketMgr.GetEpollFd();
 
     struct epoll_event ev;
+	memset(&ev, 0, sizeof(epoll_event));
     ev.data.fd = m_fd;
-    ev.events = events | EPOLLONESHOT;
+    ev.events = events | EPOLLET;			/* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
 
     // post actual event
     if(epoll_ctl(epoll_fd, EPOLL_CTL_MOD, ev.data.fd, &ev))
-        printf("!! could not post epoll event: type %u, fd %u\n", (unsigned int)events, m_fd);   
+		Log.Warning("epoll", "Could not post event on fd %u", m_fd);
 }
 
 void Socket::ReadCallback(uint32 len)
