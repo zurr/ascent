@@ -28,7 +28,7 @@ public:
 			m_spellcheck[i] = false;
 		}
         spells[0].info = sSpellStore.LookupEntry(MULTI_SHOT);
-		spells[0].targettype = TARGET_VARIOUS;
+		spells[0].targettype = TARGET_ATTACKING;	// changed from VARIOUS to prevent crashes when caster kills itself by using this ability on low hp
 		spells[0].instant = true;
 		spells[0].cooldown = 35;
 		spells[0].perctrigger = 0.0f;

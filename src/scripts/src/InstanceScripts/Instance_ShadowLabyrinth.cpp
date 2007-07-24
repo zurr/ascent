@@ -1580,11 +1580,14 @@ protected:
 
 #define CN_MURMUR 18708
 
-#define SONIC_BOOM 33666 // 33666 or 38795
-#define RESONANCE 33657
-#define SONIC_SHOCK 38797
+#define SONIC_BOOM 33666// 33666 or 38795 (I think it's dummy (33923); it should be connected with Murmur's Touch; Murmur should say 
+						// “Murmur draws energy from the air…” then use Murmur's Touch (33711), Sonic Boom (33923) and
+						// release Sonic Boom (38052); it also shouldn't attack during all those casts;
+#define RESONANCE 33657	// should be applied only when no target in melee combat range (each 5 sec)
+#define SHOCKWAVE 33686
 #define MURMURS_TOUCH 33711
-#define THUNDERING_STORM 39365	
+#define THUNDERING_STORM 39365
+//#define SONIC_SHOCK 38797
 // Higher ids > 38k are for spells used on Heroic Mode
 
 class MURMURAI : public CreatureAIScript
@@ -1609,17 +1612,23 @@ public:
 		spells[0].attackstoptimer = 1000;
 
 		spells[1].info = sSpellStore.LookupEntry(RESONANCE);
-		spells[1].targettype = TARGET_ATTACKING;
+		spells[1].targettype = TARGET_VARIOUS;
 		spells[1].instant = true;
-		spells[1].perctrigger = 5.0f;
+		spells[1].perctrigger = 3.0f;
 		spells[1].attackstoptimer = 1000;
 
+		spells[2].info = sSpellStore.LookupEntry(SHOCKWAVE);
+		spells[2].targettype = TARGET_VARIOUS; 
+		spells[2].instant = true;
+		spells[2].perctrigger = 7.0f;
+		spells[2].attackstoptimer = 1000;
+/*
 		spells[2].info = sSpellStore.LookupEntry(SONIC_SHOCK);
 		spells[2].targettype = TARGET_ATTACKING; 
 		spells[2].instant = true;
 		spells[2].perctrigger = 7.0f;
 		spells[2].attackstoptimer = 1000;
-
+*/
 		spells[3].info = sSpellStore.LookupEntry(MURMURS_TOUCH);
 		spells[3].targettype = TARGET_VARIOUS;
 		spells[3].instant = false;

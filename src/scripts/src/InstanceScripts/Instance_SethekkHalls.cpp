@@ -1652,7 +1652,7 @@ public:
 		spells[1].info = sSpellStore.LookupEntry(ARCANE_EXPLOSION);
 		spells[1].targettype = TARGET_VARIOUS;
 		spells[1].instant = false;
-		spells[1].perctrigger = 8.0f;
+		spells[1].perctrigger = 5.0f;	// with 8.0f it was casted too often
 		spells[1].attackstoptimer = 1000;
 
 		spells[2].info = sSpellStore.LookupEntry(BLINK);
