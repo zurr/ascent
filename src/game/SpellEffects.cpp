@@ -1986,7 +1986,9 @@ void Spell::SpellEffectApplyAA(uint32 i) // Apply Area Aura
 		sEventMgr.AddEvent(pAura, &Aura::EventUpdateAA,r*r, EVENT_AREAAURA_UPDATE, 1000, 0);	
 
 	}else 
+	{
 		pAura=itr->second;	
+	}
  
 	pAura->AddMod(m_spellInfo->EffectApplyAuraName[i],damage,m_spellInfo->EffectMiscValue[i],i);
 }

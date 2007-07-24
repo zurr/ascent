@@ -1241,6 +1241,17 @@ void World::SetInitialWorldSettings()
 		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
 	}
 
+	//wrath of air totem targets sorounding creatures instead of us
+	sp = sSpellStore.LookupEntry(2895);
+	if(sp)
+	{
+		sp->EffectImplicitTargetA[0]=1;
+		sp->EffectImplicitTargetA[1]=1;
+		sp->EffectImplicitTargetA[2]=0;
+		sp->EffectImplicitTargetB[0]=0;
+		sp->EffectImplicitTargetB[1]=0;
+		sp->EffectImplicitTargetB[2]=0;
+	}
 	//for test only
 	sp = sSpellStore.LookupEntry(16498);
 	if(sp)
