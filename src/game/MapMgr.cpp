@@ -246,6 +246,19 @@ void MapMgr::PushObject(Object *obj)
 
 		// Change the instance ID, this will cause it to be removed from the world thread (return value 1)
 		plObj->GetSession()->SetInstance(GetInstanceID());
+
+		/* Add the map wide objects */
+		if(_mapWideStaticObjects.size())
+		{
+			if(!buf)
+				buf = new ByteBuffer(300);
+
+			for(set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+			{
+				count = (*itr)->BuildCreateUpdateBlockForPlayer(buf, plObj);
+				plObj->PushUpdateData(buf, count);
+			}
+		}
 	}
 
 	if(buf)
@@ -253,6 +266,31 @@ void MapMgr::PushObject(Object *obj)
 
 	if(plObj && InactiveMoveTime)
 		InactiveMoveTime = 0;
+}
+
+
+void MapMgr::PushStaticObject(Object *obj)
+{
+	_mapWideStaticObjects.insert(obj);
+
+	switch(UINT32_LOPART(obj->GetGUIDHigh()))
+	{
+		case HIGHGUID_UNIT:
+			m_CreatureStorage[obj->GetGUIDLow()] = (Creature*)obj;
+			break;
+
+		case HIGHGUID_PET:
+			m_PetStorage[obj->GetGUIDLow()] = (Pet*)obj;
+			break;
+
+		case HIGHGUID_DYNAMICOBJECT:
+			m_DynamicObjectStorage[obj->GetGUIDLow()] = (DynamicObject*)obj;
+			break;
+
+		case HIGHGUID_GAMEOBJECT:
+			m_GOStorage[obj->GetGUIDLow()] = (GameObject*)obj;
+			break;
+	}
 }
 
 
@@ -365,6 +403,11 @@ void MapMgr::RemoveObject(Object *obj)
 	// Remove the session from our set if it is a player.
 	if(plObj)
 	{
+		for(set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+		{
+			plObj->PushOutOfRange((*itr)->GetNewGUID());
+		}
+
 		// Setting an instance ID here will trigger the session to be removed
 		// by MapMgr::run(). :)
 		plObj->GetSession()->SetInstance(0);
@@ -971,6 +1014,10 @@ void MapMgr::Do()
 	SetThreadName("Map mgr - M%u|I%u",this->_mapId ,this->m_instanceID);
 	ObjectSet::iterator i;
 	uint32 last_exec=getMSTime();
+
+	/* add static objects */
+	for(set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+		PushStaticObject(*itr);
 
 	// always declare local variables outside of the loop!
 	// otherwise theres a lot of sub esp; going on.

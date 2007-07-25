@@ -306,8 +306,64 @@ void Map::LoadSpawns(bool reload)
 		delete result;
 	}
 
+	result = WorldDatabase.Query("SELECT * FROM creature_staticspawns WHERE Map = %u",this->_mapId);
+	if(result)
+	{
+		do{
+			Field * fields = result->Fetch();
+			CreatureSpawn * cspawn = new CreatureSpawn;
+			cspawn->id = fields[0].GetUInt32();
+			cspawn->form = FormationMgr::getSingleton().GetFormation(cspawn->id);
+			cspawn->entry = fields[1].GetUInt32();
+			cspawn->x = fields[3].GetFloat();
+			cspawn->y = fields[4].GetFloat();
+			cspawn->z = fields[5].GetFloat();
+			cspawn->o = fields[6].GetFloat();
+			cspawn->movetype = fields[7].GetUInt32();
+			cspawn->displayid = fields[8].GetUInt32();
+			cspawn->factionid = fields[9].GetUInt32();
+			cspawn->flags = fields[10].GetUInt32();
+			cspawn->bytes = fields[11].GetUInt32();
+			cspawn->bytes2 = fields[12].GetUInt32();
+			cspawn->emote_state = fields[13].GetUInt32();
+			cspawn->respawnNpcLink = fields[14].GetUInt32();
+			staticSpawns.CreatureSpawns.insert(cspawn);
+			++CreatureSpawnCount;
+		}while(result->NextRow());
+
+		delete result;
+	}
+
 	GameObjectSpawnCount = 0;
 	result = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE Map = %u",this->_mapId);
+	if(result)
+	{
+		do{
+			Field * fields = result->Fetch();
+			GOSpawn * gspawn = new GOSpawn;
+			gspawn->entry = fields[1].GetUInt32();
+			gspawn->id = fields[0].GetUInt32();
+			gspawn->x=fields[3].GetFloat();
+			gspawn->y=fields[4].GetFloat();
+			gspawn->z=fields[5].GetFloat();
+			gspawn->facing=fields[6].GetFloat();
+			gspawn->o =fields[7].GetFloat();
+			gspawn->o1=fields[8].GetFloat();
+			gspawn->o2=fields[9].GetFloat();
+			gspawn->o3=fields[10].GetFloat();
+			gspawn->state=fields[11].GetUInt32();
+			gspawn->flags=fields[12].GetUInt32();
+			gspawn->faction=fields[13].GetUInt32();
+			gspawn->scale = fields[14].GetFloat();
+			gspawn->stateNpcLink = fields[15].GetUInt32();
+			staticSpawns.GOSpawns.insert(gspawn);
+			++GameObjectSpawnCount;
+		}while(result->NextRow());
+
+		delete result;
+	}
+
+	result = WorldDatabase.Query("SELECT * FROM gameobject_staticspawns WHERE Map = %u",this->_mapId);
 	if(result)
 	{
 		do{

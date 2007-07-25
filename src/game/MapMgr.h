@@ -194,6 +194,7 @@ public:
 
 
 	void PushObject(Object *obj);
+	void PushStaticObject(Object * obj);
 	void RemoveObject(Object *obj);
 	void ChangeObjectLocation(Object *obj); // update inrange lists
 	void ChangeFarsightLocation(Player *plr, Creature *farsight);
@@ -264,6 +265,7 @@ private:
 	//! Objects that exist on map
  
 	uint32 _mapId;
+	set<Object*> _mapWideStaticObjects;
 
 	bool _CellActive(uint32 x, uint32 y);
 	void UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuffer ** buf);

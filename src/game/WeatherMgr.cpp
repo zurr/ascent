@@ -16,6 +16,47 @@
 
 initialiseSingleton( WeatherMgr );
 
+void BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density)
+{
+	data->Initialize(SMSG_WEATHER);
+	if(Effect == 0)
+		*data << uint32(0) << float(0.5f) << uint8(1);		// this is blizzlike!
+	else
+	{
+		uint32 Value;
+		switch(Effect)
+		{
+		case 1:		// Rain
+			if(Density >= 2.0f)
+				Value = 5;
+			else if(Density >= 1.5f)
+				Value = 4;
+			else if(Density >= 1.0f)
+				Value = 3;
+			else if(Density >= 0.5f)
+				Value = 2;
+			else
+				Value = 1;
+			break;
+		case 2:		// Snow
+			if(Density >= 2.0f)
+				Value = 8;
+			else if(Density >= 1.0f)
+				Value = 7;
+			else
+				Value = 6;
+			break;
+
+		default:
+			*data << uint32(0) << float(0.5f) << uint8(1);
+			return;
+			break;
+		}
+
+		*data << Effect << Density << uint8(1);
+	}
+}
+
 WeatherMgr::WeatherMgr()
 {
 }
@@ -37,12 +78,7 @@ void WeatherMgr::LoadFromDB()
 	QueryResult *result = WorldDatabase.Query( "SELECT * FROM weather" );
 
 	if( !result )
-	{
-		sLog.outString("  Query failed.");
 		return;
-	}
-//	uint32 total =(uint32) result->GetRowCount();
-//	int num = 0;
 
 	do
 	{
@@ -52,9 +88,6 @@ void WeatherMgr::LoadFromDB()
 		wi->m_effectValues[0] = fields[1].GetUInt32();
 		wi->m_effectValues[1] = fields[2].GetUInt32();
 		wi->m_effectValues[2] = fields[3].GetUInt32();
-		wi->m_effectValues[3] = fields[4].GetUInt32();
-		wi->m_effectValues[4] = fields[5].GetUInt32();
-
 		m_zoneWeathers[wi->m_zoneId] = wi;
 
 		wi->_GenerateWeather();
@@ -70,11 +103,8 @@ void WeatherMgr::SendWeather(Player *plr)
 
 	if (itr == m_zoneWeathers.end())
 	{
-		WorldPacket data(SMSG_WEATHER, 13);
-		data << (uint32)0;
-		data << (float)0;
-		data << (uint32)0;
-		data << (uint8)0;
+		WorldPacket data(SMSG_WEATHER, 9);
+		BuildWeatherPacket(&data, 0, 0);
 		plr->GetSession()->SendPacket( &data );
 		plr->m_lastSeenWeather = 0;
 
@@ -83,43 +113,6 @@ void WeatherMgr::SendWeather(Player *plr)
 	else
 	{
 		itr->second->SendUpdate(plr);
-	}
-}
-
-uint32 WeatherMgr::GetSound(uint32 effect, float density)
-{
-	//Maybe i should find a better way to do this, but atm can't think of any
-	// - 
-
-	if (effect == 0)
-	{
-		return 0;
-	}
-	else if ((effect == 1) || (effect == 3))
-	{
-		if (density < 0.15)
-			return 0;
-		else if (density < 0.25)
-			return 8533;
-		else if (density < 0.35)
-			return 8534;
-		else
-			return 8535;
-	}
-	else if ((effect == 2) || (effect == 4))
-	{
-		if (density < 0.15)
-			return 0;
-		else if (density < 0.25)
-			return 8536;
-		else if (density < 0.35)
-			return 8537;
-		else
-			return 8538;
-	}
-	else
-	{
-		return 0;
 	}
 }
 
@@ -200,15 +193,8 @@ void WeatherInfo::Update()
 
 void WeatherInfo::SendUpdate()
 {
-	WorldPacket data(SMSG_WEATHER, 13);
-	data << (uint32)this->m_currentEffect;
-	if (this->m_currentEffect == 0)
-		data << (float)0;
-	else
-		data << (float)this->m_currentDensity;
-	data << (uint32)sWeatherMgr.GetSound(this->m_currentEffect, this->m_currentDensity);
-	data << (uint8)1;
-
+	WorldPacket data(SMSG_WEATHER, 9);
+	BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
 	sWorld.SendZoneMessage(&data, m_zoneId, 0);
 }
 
@@ -216,16 +202,10 @@ void WeatherInfo::SendUpdate(Player *plr)
 {
 	if(plr->m_lastSeenWeather == m_currentEffect)
 		return;
+
 	plr->m_lastSeenWeather = m_currentEffect;
 
-	WorldPacket data(SMSG_WEATHER, 13);
-	data << (uint32)this->m_currentEffect;
-	if (this->m_currentEffect == 0)
-		data << (float)0;
-	else
-		data << (float)this->m_currentDensity;
-	data << (uint32)sWeatherMgr.GetSound(this->m_currentEffect, this->m_currentDensity);
-	data << (uint8)1;
-
+	WorldPacket data(SMSG_WEATHER, 9);
+	BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
 	plr->GetSession()->SendPacket( &data );
 }

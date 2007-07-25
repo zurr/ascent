@@ -26,22 +26,18 @@ bool ChatHandler::HandleWeatherCommand(const char* args, WorldSession *m_session
 	if(!ptype)
 		return false;
 	char *pintensity = strtok(NULL, " ");
-	char *punk = strtok(NULL, " ");
-	char *punk2 = strtok(NULL, " ");
-	if(!pintensity || !punk || !punk2)
+	/*char *punk = strtok(NULL, " ");
+	char *punk2 = strtok(NULL, " ");*/
+	if(!pintensity/* || !punk || !punk2*/)
 		return false;
 
 	uint32 type = atol(ptype);
 	float intensity = (float)atol(args);
-	uint32 sound = atol(punk);
-	uint8 switchTimeFlag = atol(punk2);
 
-	//	sLog.outString("Recived set weather command. Type: %u, Intensity: %.3f, Unknown: %u", type, intensity, unk);
 	data.Initialize(SMSG_WEATHER);
 	data << (uint32)type;
 	data << (float)intensity;
-	data << (uint32)sound;
-	data << (uint8)switchTimeFlag;
+	data << (uint8)1;
 	m_session->GetPlayer()->SendMessageToSet(&data,true);
 	sLog.outDebug("SENT SMSG_WEATHER");
 	return true;

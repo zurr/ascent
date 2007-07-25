@@ -15,10 +15,12 @@
 #ifndef __WEATHERMGR_H
 #define __WEATHERMGR_H
 
-#define WEATHER_DENSITY_UPDATE 0.01f
+#define WEATHER_DENSITY_UPDATE 0.05f
 
 class WeatherInfo;
 class WeatherMgr;
+
+void BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density);
 
 class WeatherMgr :  public Singleton < WeatherMgr >
 {
@@ -27,7 +29,6 @@ public:
 	~WeatherMgr();
 
 	void LoadFromDB();
-	uint32 GetSound(uint32 effect, float density);
 	void SendWeather(Player *plr);
 
 private:
