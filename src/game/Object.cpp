@@ -247,6 +247,20 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer *data, Player *target)
 	return 1;
 }
 
+uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer * buf, UpdateMask * mask )
+{
+	// returns: update count
+	*buf << (uint8) UPDATETYPE_VALUES;		// update type == update
+
+	ASSERT(m_wowGuid.GetNewGuidLen());
+	*buf << m_wowGuid;
+
+	_BuildValuesUpdate( buf, mask, 0 );
+
+	// 1 update.
+	return 1;
+}
+
 void Object::DestroyForPlayer(Player *target) const
 {
 	if(target->GetSession() == 0) return;
@@ -831,11 +845,14 @@ void Object::_SetUpdateBits(UpdateMask *updateMask, Player *target) const
 
 void Object::_SetCreateBits(UpdateMask *updateMask, Player *target) const
 {
-	for( uint16 index = 0; index < m_valuesCount; index++ )
+	/*for( uint16 index = 0; index < m_valuesCount; index++ )
 	{
 		if(GetUInt32Value(index) != 0)
 			updateMask->SetBit(index);
-	}
+	}*/
+	for(uint32 i = 0; i < m_valuesCount; ++i)
+		if(m_uint32Values[i] != 0)
+			updateMask->SetBit(i);
 }
 
 void Object::AddToWorld()

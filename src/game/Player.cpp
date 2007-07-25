@@ -1893,6 +1893,14 @@ void Player::_SetVisibleBits(UpdateMask *updateMask, Player *target) const
 		updateMask->SetBit((uint16)(PLAYER_VISIBLE_ITEM_1_0 + (i*16))); // visual items for other players
 		updateMask->SetBit((uint16)(PLAYER_VISIBLE_ITEM_1_0+1 + (i*16))); // visual items for other players
 	}
+
+	/* fuck i hate const - burlex */
+	if(target && target->GetGroup() == const_cast<Player*>(this)->GetGroup() && const_cast<Player*>(this)->GetSubGroup() == target->GetSubGroup())
+	{
+		/* quest fields are the same for party members */
+		for(uint32 i = PLAYER_QUEST_LOG_1_01; i < PLAYER_QUEST_LOG_25_2; ++i)
+			updateMask->SetBit(i);
+	}
 }
 
 

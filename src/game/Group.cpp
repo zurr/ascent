@@ -619,6 +619,12 @@ void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 
 	/* tell us any other players we don't know about */
 	Player * plr;
+	bool u1, u2;
+	UpdateMask myMask;
+	myMask.SetCount(PLAYER_END);
+	UpdateMask hisMask;
+	hisMask.SetCount(PLAYER_END);
+
 	for(uint32 i = 0; i < m_SubGroupCount; ++i)
 	{
 		for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
@@ -630,6 +636,44 @@ void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 			{
 				UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE, false, &data);
 				pPlayer->GetSession()->SendPacket(&data);
+			}
+			else
+			{
+				if(pPlayer->GetSubGroup() == plr->GetSubGroup())
+				{
+					/* distribute quest fields to other players */
+					hisMask.Clear();
+					myMask.Clear();
+					u1 = u2 = false;
+					for(uint32 i = PLAYER_QUEST_LOG_1_1; i < PLAYER_QUEST_LOG_25_01; ++i)
+					{
+						if(plr->GetUInt32Value(i))
+						{
+							hisMask.SetBit(i);
+							u1 = true;
+						}
+
+						if(pPlayer->GetUInt32Value(i))
+						{
+							u2 = true;
+							myMask.SetBit(i);
+						}
+					}
+
+					if(u1)
+					{
+						data.clear();
+                        plr->BuildValuesUpdateBlockForPlayer(&data, &hisMask);
+						pPlayer->PushUpdateData(&data, 1);
+					}
+
+					if(u2)
+					{
+						data.clear();
+						pPlayer->BuildValuesUpdateBlockForPlayer(&data, &myMask);
+						plr->PushUpdateData(&data, 1);
+					}
+				}
 			}
 		}
 	}

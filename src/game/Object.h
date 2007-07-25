@@ -125,6 +125,7 @@ public:
 	//! This includes any nested objects we have, inventory for example.
 	virtual uint32 __fastcall BuildCreateUpdateBlockForPlayer( ByteBuffer *data, Player *target );
 	uint32 __fastcall BuildValuesUpdateBlockForPlayer( ByteBuffer *buf, Player *target );
+	uint32 __fastcall BuildValuesUpdateBlockForPlayer( ByteBuffer * buf, UpdateMask * mask );
 	uint32 __fastcall BuildOutOfRangeUpdateBlock( ByteBuffer *buf );
 
 	WorldPacket* BuildFieldUpdatePacket(uint32 index,uint32 value);

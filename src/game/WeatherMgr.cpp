@@ -207,7 +207,7 @@ void WeatherInfo::SendUpdate()
 	else
 		data << (float)this->m_currentDensity;
 	data << (uint32)sWeatherMgr.GetSound(this->m_currentEffect, this->m_currentDensity);
-	data << (uint8)0;
+	data << (uint8)1;
 
 	sWorld.SendZoneMessage(&data, m_zoneId, 0);
 }
@@ -225,7 +225,7 @@ void WeatherInfo::SendUpdate(Player *plr)
 	else
 		data << (float)this->m_currentDensity;
 	data << (uint32)sWeatherMgr.GetSound(this->m_currentEffect, this->m_currentDensity);
-	data << (uint8)0;
+	data << (uint8)1;
 
 	plr->GetSession()->SendPacket( &data );
 }
