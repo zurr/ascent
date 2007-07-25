@@ -1592,6 +1592,8 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 	pCreature->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2));
 	pCreature->GetAIInterface()->SetFollowDistance(3.0f);
 	pCreature->SetUInt32Value(UNIT_FIELD_LEVEL, p_caster->getLevel());
+	pCreature->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, p_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+	pCreature->_setFaction();
 	p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, pCreature->GetGUID());
 	p_caster->m_tempSummon = pCreature;
 	pCreature->PushToWorld(p_caster->GetMapMgr());

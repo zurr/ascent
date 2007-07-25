@@ -3031,7 +3031,9 @@ void Player::RemoveFromWorld()
 	if(m_tempSummon)
 	{
 		m_tempSummon->RemoveFromWorld(false);
-		m_tempSummon->SafeDelete();
+		if(m_tempSummon)
+			m_tempSummon->SafeDelete();
+
 		m_tempSummon = 0;
 		SetUInt64Value(UNIT_FIELD_SUMMON, 0);
 	}
@@ -4840,7 +4842,9 @@ void Player::RemoveInRangeObject(Object* pObj)
 	if(m_tempSummon == pObj)
 	{
 		m_tempSummon->RemoveFromWorld(false);
-		m_tempSummon->SafeDelete();
+		if(m_tempSummon)
+			m_tempSummon->SafeDelete();
+
 		m_tempSummon = 0;
 		SetUInt64Value(UNIT_FIELD_SUMMON, 0);
 	}
