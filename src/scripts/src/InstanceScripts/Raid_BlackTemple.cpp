@@ -1205,7 +1205,7 @@ protected:
 void SetupBlackTemple(ScriptMgr * mgr)
 {
 	//mgr->register_creature_script(CN_SUPREMUS, &SupremusAI::Create);
-	mgr->register_creature_script(CN_FLAME_OF_AZZINOTH, &FlameOfAzzinothAI::Create);
-	mgr->register_creature_script(CN_AKAMA, &AkamaAI::Create);
-	mgr->register_creature_script(CN_ILLIDAN_STORMRAGE, &IllidanStormrageAI::Create);
+	//mgr->register_creature_script(CN_FLAME_OF_AZZINOTH, &FlameOfAzzinothAI::Create);
+	//mgr->register_creature_script(CN_AKAMA, &AkamaAI::Create);
+	//mgr->register_creature_script(CN_ILLIDAN_STORMRAGE, &IllidanStormrageAI::Create);
 }
