@@ -336,6 +336,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_modblockvalue = 0;
 	m_summoner = m_summonInstanceId = m_summonMapId = 0;
 	m_lastMoveType = 0;
+	m_tempSummon = 0;
 }
 
 
@@ -3027,6 +3028,14 @@ void Player::ResetHeartbeatCoords()
 
 void Player::RemoveFromWorld()
 {
+	if(m_tempSummon)
+	{
+		m_tempSummon->RemoveFromWorld(false);
+		m_tempSummon->SafeDelete();
+		m_tempSummon = 0;
+		SetUInt64Value(UNIT_FIELD_SUMMON, 0);
+	}
+
 	// Cancel trade if it's active.
 	Player * pTarget;
 	if(mTradeTarget != 0)
@@ -4824,11 +4833,19 @@ void Player::AddInRangeObject(Object* pObj)
 
 void Player::RemoveInRangeObject(Object* pObj)
 {
-	if (/*!CanSee(pObj) && */IsVisible(pObj))
+	//if (/*!CanSee(pObj) && */IsVisible(pObj))
+	//{
+		//RemoveVisibleObject(pObj);
+	//}
+	if(m_tempSummon == pObj)
 	{
-		RemoveVisibleObject(pObj);
+		m_tempSummon->RemoveFromWorld(false);
+		m_tempSummon->SafeDelete();
+		m_tempSummon = 0;
+		SetUInt64Value(UNIT_FIELD_SUMMON, 0);
 	}
 
+	m_visibleObjects.erase(pObj);
 	Unit::RemoveInRangeObject(pObj);
 
 	if(InGroup() && pObj->GetTypeId() == TYPEID_PLAYER)

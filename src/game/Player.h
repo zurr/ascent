@@ -1231,6 +1231,8 @@ public:
 	void EventRemoveAndDelete();
 #endif
 
+	Creature * m_tempSummon;
+
 protected:
 	LocationVector m_summonPos;
 	uint32 m_summonInstanceId;

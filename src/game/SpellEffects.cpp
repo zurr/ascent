@@ -1567,64 +1567,44 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
 
 void Spell::SpellEffectSummon(uint32 i) // Summon
 {
-	return;
-	//FIXME:Open it when AI fixed
-//	uint32 entryId = m_spellInfo->EffectMiscValue[i];
-	
-	if(u_caster->summonPet)
+	if(!p_caster || !p_caster->IsInWorld())
+		return;
+
+	if(p_caster->m_tempSummon)
 	{
-		u_caster->summonPet->RemoveFromWorld(false);
-		delete u_caster->summonPet;
-		u_caster->summonPet = NULL;
-	}					
-  
-	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
-	if(ci)
-	{
-		Creature* NewSummon = m_caster->GetMapMgr()->CreateCreature();
-		NewSummon->SetInstanceID(m_caster->GetInstanceID());
-		// Create
-		NewSummon->Create( ci->Name, m_caster->GetMapId(), 
-			m_caster->GetPositionX()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionY()+(3*(cos(-(M_PI/2)+m_caster->GetOrientation()))), m_caster->GetPositionZ(), m_caster->GetOrientation());
-
-		// Fields
-		NewSummon->SetUInt32Value(UNIT_FIELD_LEVEL,m_caster->GetUInt32Value(UNIT_FIELD_LEVEL));
-		NewSummon->SetUInt32Value(UNIT_FIELD_DISPLAYID,  ci->DisplayID);
-		NewSummon->SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, ci->DisplayID);
-		NewSummon->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
-		NewSummon->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_caster->GetGUID());
-		NewSummon->SetUInt32Value(UNIT_NPC_FLAGS , 0);
-		NewSummon->SetUInt32Value(UNIT_FIELD_HEALTH , 1);
-		NewSummon->SetUInt32Value(UNIT_FIELD_MAXHEALTH , 1);
-		NewSummon->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, m_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
-		NewSummon->SetFloatValue(OBJECT_FIELD_SCALE_X, 1.0f);//m_caster->GetFloatValue(OBJECT_FIELD_SCALE_X));
-
-		NewSummon->SetUInt32Value(UNIT_FIELD_BYTES_0, 2048); 
-		NewSummon->SetUInt32Value(UNIT_FIELD_BASEATTACKTIME, 2000);//ci->baseattacktime); 
-		NewSummon->SetUInt32Value(UNIT_FIELD_BASEATTACKTIME+1, 2000);//ci->rangeattacktime); 
-		NewSummon->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 0.1f);  
-		NewSummon->SetFloatValue(UNIT_FIELD_COMBATREACH,m_caster->GetFloatValue(UNIT_FIELD_COMBATREACH));					
-
-	   // NewSummon->SetUInt32Value(UNIT_FIELD_BYTES_1, 0); 
-		NewSummon->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id); 
-		NewSummon->SetUInt32Value(OBJECT_FIELD_ENTRY, ci->Id);
-		NewSummon->SetZoneId(m_caster->GetZoneId());
-		//Setting faction
-		NewSummon->_setFaction();
-
-		// Add To World
-		//NewSummon->AddToWorld();
-		NewSummon->PushToWorld(m_caster->GetMapMgr());
-		
-		NewSummon->GetAIInterface()->Init(NewSummon,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
-		NewSummon->GetAIInterface()->SetUnitToFollow(u_caster);
-		NewSummon->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2));
-		NewSummon->GetAIInterface()->SetFollowDistance(3.0f);
-		
-		u_caster->summonPet = NewSummon;
-		u_caster->SetUInt64Value(UNIT_FIELD_PETNUMBER,NewSummon->GetGUID());
-		sEventMgr.AddEvent(u_caster, &Unit::EventSummonPetExpire, EVENT_SUMMON_PET_EXPIRE, 60000, 1);
+		p_caster->m_tempSummon->RemoveFromWorld(false);
+		p_caster->m_tempSummon->SafeDelete();
+		p_caster->m_tempSummon = 0;
+		p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, 0);
 	}
+
+	/* This is for summon water elemenal, etc */
+	CreatureInfo * ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
+	CreatureProto * cp = CreatureProtoStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
+	if( !ci || !cp )
+		return;
+
+	Creature * pCreature = p_caster->GetMapMgr()->CreateCreature();
+	pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
+	pCreature->_setFaction();
+	pCreature->GetAIInterface()->Init(pCreature,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
+	pCreature->GetAIInterface()->SetUnitToFollow(u_caster);
+	pCreature->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2));
+	pCreature->GetAIInterface()->SetFollowDistance(3.0f);
+	pCreature->SetUInt32Value(UNIT_FIELD_LEVEL, p_caster->getLevel());
+	p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, pCreature->GetGUID());
+	p_caster->m_tempSummon = pCreature;
+	pCreature->PushToWorld(p_caster->GetMapMgr());
+
+	if(p_caster->isInCombat())
+	{
+		Unit * target = p_caster->GetMapMgr()->GetUnit(p_caster->getAttackTarget());
+		if(target)
+			pCreature->GetAIInterface()->AttackReaction(target, 1, 0);
+	}
+	
+	/* not sure on this */
+	sEventMgr.AddEvent(pCreature, &Creature::SafeDelete, EVENT_CREATURE_REMOVE_CORPSE, /*GetDuration()*/45000, 1);
 }
 
 void Spell::SpellEffectLeap(uint32 i) // Leap

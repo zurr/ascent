@@ -335,7 +335,7 @@ void Map::LoadSpawns(bool reload)
 	}
 
 	GameObjectSpawnCount = 0;
-	result = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE Map = %u",this->_mapId);
+	result = WorldDatabase.Query("SELECT * FROM gameobject_staticspawns WHERE Map = %u",this->_mapId);
 	if(result)
 	{
 		do{
@@ -363,7 +363,7 @@ void Map::LoadSpawns(bool reload)
 		delete result;
 	}
 
-	result = WorldDatabase.Query("SELECT * FROM gameobject_staticspawns WHERE Map = %u",this->_mapId);
+	result = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE Map = %u",this->_mapId);
 	if(result)
 	{
 		do{

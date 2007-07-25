@@ -451,6 +451,7 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, SetHighestGuids);
 	MAKE_TASK(ObjectMgr, LoadReputationModifiers);
 	MAKE_TASK(ObjectMgr, LoadMonsterSay);
+	MAKE_TASK(WeatherMgr, LoadFromDB);
 
 	MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
 	MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
