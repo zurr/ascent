@@ -384,8 +384,6 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 void Player::Reputation_OnKilledUnit(Unit * pUnit)
 {
 	// add rep for on kill
-	/*if(pUnit->m_factionDBC->RepListId < 0)
-		return;*/
 	if(pUnit->GetTypeId() != TYPEID_UNIT || pUnit->IsPet())
 		return;
 
@@ -414,6 +412,9 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit)
 	else
 	{
 		if(IS_INSTANCE(GetMapId()) && objmgr.HandleInstanceReputationModifiers(this, pUnit))
+			return;
+
+		if(pUnit->m_factionDBC->RepListId < 0)
 			return;
 
 		// decrease rep by 5.
