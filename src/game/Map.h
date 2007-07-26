@@ -132,6 +132,7 @@ private:
 
 	//new stuff
 	CellSpawns *spawns[_sizeX][_sizeY];
+public:
 	CellSpawns staticSpawns;
 };
 

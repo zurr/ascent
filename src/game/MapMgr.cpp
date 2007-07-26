@@ -1015,6 +1015,21 @@ void MapMgr::Do()
 	ObjectSet::iterator i;
 	uint32 last_exec=getMSTime();
 
+	/* create static objects */
+	for(GOSpawnList::iterator itr = _map->staticSpawns.GOSpawns.begin(); itr != _map->staticSpawns.GOSpawns.end(); ++itr)
+	{
+		GameObject * obj = CreateGameObject();
+		obj->Load((*itr));
+		_mapWideStaticObjects.insert(obj);
+	}
+
+	for(CreatureSpawnList::iterator itr = _map->staticSpawns.CreatureSpawns.begin(); itr != _map->staticSpawns.CreatureSpawns.end(); ++itr)
+	{
+		Creature * obj = CreateCreature();
+		obj->Load(*itr, 0, pMapInfo);
+		_mapWideStaticObjects.insert(obj);
+	}
+
 	/* add static objects */
 	for(set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
 		PushStaticObject(*itr);
