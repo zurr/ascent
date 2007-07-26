@@ -64,6 +64,8 @@ Group::Group()
 	m_Id = objmgr.GenerateGroupId();
 	ObjectMgr::getSingleton().AddGroup(this);
 	lastRRlooter = NULL;
+	m_disbandOnNoMembers = false;
+	memset(m_targetIcons, 0, sizeof(uint64) * 8);
 }
 
 Group::~Group()
@@ -157,6 +159,9 @@ bool Group::AddMember(Player* pPlayer)
 			// We're the only member? Set us to the leader.
 			SetLeader(pPlayer);
 		}		
+
+		/* process any pending updates beforehand */
+		pPlayer->ProcessPendingUpdates();
 
 		UpdateAllOutOfRangePlayersFor(pPlayer);
 		Update();	// Send group update
@@ -336,8 +341,11 @@ void Group::RemovePlayer(Player* pPlayer)
 
 	if(m_MemberCount < 2)
 	{
-		Disband();
-		return;
+		if(m_disbandOnNoMembers)
+		{
+			Disband();
+			return;
+		}
 	}
 
 	Player *newPlayer = FindFirstPlayer();
@@ -346,7 +354,15 @@ void Group::RemovePlayer(Player* pPlayer)
 		m_Looter = newPlayer;
 
 	if(m_Leader == pPlayer)
-		SetLeader(newPlayer);
+	{
+		if(!newPlayer)
+		{
+			m_Leader = 0;
+			Update();
+		}
+		else
+			SetLeader(newPlayer);
+	}
 	else
 		Update();
 }
@@ -750,8 +766,15 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket & recv_data)
 	if(!_player->GetGroup()->HasMember(plr))
 		return;			// invalid player
 
+	if(_player->IsVisible(plr))
+		return;
+
 	_player->GetGroup()->UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE | GROUP_UPDATE_TYPE_FULL_REQUEST_REPLY, false, &data);
 	data.SetOpcode(CMSG_PET_UNLEARN);
 	SendPacket(&data);
 }
 
+Group* Group::Create()
+{
+	return new Group;
+}

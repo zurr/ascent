@@ -2700,61 +2700,34 @@ Unit *AIInterface::GetMostHated()
 	if(ResultUnit)
 		return ResultUnit;
 
-GETMOSTHATED_REPEAT:
-	ResultUnit = NULL;
-	int32 threat = 0;
-	TargetMap::iterator itr,itr2,itr3=m_aiTargets.end();
-	for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();) // Find Target and Cleanup Targetlist
+	pair<Unit*, int32> currentTarget;
+	currentTarget.first = 0;
+	currentTarget.second = -1;
+
+	TargetMap::iterator it2 = m_aiTargets.begin();
+	TargetMap::iterator itr;
+	for(; it2 != m_aiTargets.end(); ++itr)
 	{
-		itr2 = itr;
-		++itr;
-		if((itr2->second + itr2->first->GetThreatModifyer()) > threat) // threat may be < 0 due to some modifyers.
+		itr = it2++;
+
+		/* check the target is valid */
+		if(!itr->first->isAlive() || !isAttackable(m_Unit, itr->first))
 		{
-			if( !itr2->first->isAlive() )
-			{
-				m_aiTargets.erase(itr2);
-			}
-			else if((itr2->second + itr2->first->GetThreatModifyer())>threat)
-			{
-				ResultUnit = itr2->first;
-				threat = (itr2->second + itr2->first->GetThreatModifyer());
-				itr3 = itr2;
-			}
+			m_aiTargets.erase(itr);
+			continue;
 		}
-	}
-	
-	m_currentHighestThreat = threat;
 
-	//no need to make further actions if list is empty
-	if(!ResultUnit)
-		return NULL;
+		if((itr->second + itr->first->GetThreatModifyer()) > currentTarget.second)
+		{
+			/* new target */
+			currentTarget.first = itr->first;
+			currentTarget.second = itr->second + itr->first->GetThreatModifyer();
+		}
 
-	//make some more acurate checks and return only valid target
-	if(	!m_Unit->GetMapMgr()->GetUnit(ResultUnit->GetGUID()) || 
-		!ResultUnit->IsInWorld() || //i think this is not even necesarry
-		!isAttackable(m_Unit, ResultUnit) //maybe our target is not attackable anymore : PVP (what are the ods of this)
-		)
-	{
-		//we did pick a target so this should not be null 
-		m_aiTargets.erase(itr3);
-		goto GETMOSTHATED_REPEAT;
+		/* there are no more checks needed here... the needed checks are done by CheckTarget() */
 	}
-/*	bool cansee;
-	if(ResultUnit && ResultUnit->GetInstanceID() == m_Unit->GetInstanceID())
-	{
-		if(m_Unit->GetTypeId() == TYPEID_UNIT)
-			cansee=((Creature*)m_Unit)->CanSee(ResultUnit);
-		else
-			cansee = ((Player*)m_Unit)->CanSee(ResultUnit);
-	}
-	else 
-		cansee=false;
-	if(!cansee)
-	{
-		//we should pick another target ?
-	}*/
 
-	return ResultUnit;
+	return currentTarget.first;
 }
 
 bool AIInterface::modThreatByGUID(uint64 guid, int32 mod)
@@ -2849,7 +2822,7 @@ bool AIInterface::taunt(Unit* caster, bool apply)
 		if(isHostile(m_Unit, caster))
 		{
 			//check if we have to add him to our agro list
-			GetMostHated(); //update our most hated list/ Note that at this point we do not have a taunter yet. If we would have then this funtion will not give real mosthated
+			//GetMostHated(); //update our most hated list/ Note that at this point we do not have a taunter yet. If we would have then this funtion will not give real mosthated
 			int32 oldthreat = getThreatByPtr(caster);
 			//make sure we rush the target anyway. Since we are not tauted yet, this will also set our target
 			modThreatByPtr(caster,abs(m_currentHighestThreat-oldthreat)+1); //we need to be the most hated at this moment
@@ -2900,6 +2873,11 @@ void AIInterface::CheckTarget(Unit* target)
 	{
 		UnitToFollow = NULL;
 		m_lastFollowX = m_lastFollowY = 0;
+	}
+
+	if(target == UnitToFollow_backup)
+	{
+		UnitToFollow_backup = 0;
 	}
 
 	if (target == m_nextTarget)	 // no need to cast on these.. mem addresses are still the same

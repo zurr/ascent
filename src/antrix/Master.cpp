@@ -141,6 +141,7 @@ bool Master::Run(int argc, char ** argv)
 	}
 
 	// Startup banner
+	UNIXTIME = time(NULL);
 	if(!do_version && !do_check_conf)
 	{
 		launch_thread(new TextLoggerThread);
@@ -331,6 +332,9 @@ bool Master::Run(int argc, char ** argv)
 	while(!m_stopEvent)
 #endif
 	{
+		/* Update global UnixTime variable */
+		UNIXTIME = time(NULL);
+
 		start = now();
 		diff = start - last_time;
 

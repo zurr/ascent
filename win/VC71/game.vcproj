@@ -510,6 +510,9 @@
 				RelativePath="..\..\src\game\Opcodes.h">
 			</File>
 			<File
+				RelativePath="..\..\src\game\WorkdSocketCluster.cpp">
+			</File>
+			<File
 				RelativePath="..\..\src\game\WorldSession.cpp">
 			</File>
 			<File
@@ -672,6 +675,22 @@
 			</File>
 			<File
 				RelativePath="..\..\src\game\LogonCommHandler.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="RS Comm"
+			Filter="">
+			<File
+				RelativePath="..\..\src\game\ClusterInterface.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\game\ClusterInterface.h">
+			</File>
+			<File
+				RelativePath="..\..\src\game\WorkerServerClient.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\game\WorkerServerClient.h">
 			</File>
 		</Filter>
 		<File

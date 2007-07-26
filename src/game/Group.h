@@ -91,10 +91,12 @@ protected:
 
 };
 
-class Group
+class SERVER_DECL Group
 {
 public:
 	friend class SubGroup;
+
+	static Group* Create();
 
 	Group();
 	~Group();
@@ -161,6 +163,7 @@ public:
 	void HandlePartialChange(uint32 Type, Player * pPlayer);
 
 	uint64 m_targetIcons[8];
+	bool m_disbandOnNoMembers;
 
 protected:
 	

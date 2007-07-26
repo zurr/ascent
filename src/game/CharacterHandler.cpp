@@ -31,7 +31,7 @@
 #define PLATFORM_TEXT "unknown"
 #endif
 
-#define SERVER_NAME "Antrix"
+#define SERVER_NAME "BurlexPwns"
 #ifdef _DEBUG
 #define CONFIG "Debug"
 #else

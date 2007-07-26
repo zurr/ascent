@@ -1573,7 +1573,9 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 	if(p_caster->m_tempSummon)
 	{
 		p_caster->m_tempSummon->RemoveFromWorld(false);
-		p_caster->m_tempSummon->SafeDelete();
+		if(p_caster->m_tempSummon)
+			p_caster->m_tempSummon->SafeDelete();
+
 		p_caster->m_tempSummon = 0;
 		p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, 0);
 	}
