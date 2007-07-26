@@ -51,6 +51,7 @@ protected:					// Protected methods:
 	void SaveallPlayers(char *str);
 	void Kick(char *str);
 	void IPBan(char *str);
+	void IPUnBan(char *str);
 	void BanAccount(char *str);
 	void PlayerInfo(char *str);
 };

@@ -409,6 +409,7 @@ protected:
 
 	bool HandleBanAccountCommand(const char * args, WorldSession * m_session);
 	bool HandleIPBanCommand(const char * args, WorldSession * m_session);
+	bool HandleIPUnBanCommand(const char * args, WorldSession * m_session);
 
 	bool HandleRemoveItemCommand(const char * args, WorldSession * m_session);
 	bool HandleRenameCommand(const char * args, WorldSession * m_session);

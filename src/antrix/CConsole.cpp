@@ -86,6 +86,7 @@ void CConsole::ProcessCmd(char *cmd)
 		{ "kick", &CConsole::Kick},
 		{ "banaccount", &CConsole::BanAccount},
 		{ "banip", &CConsole::IPBan},
+		{ "unbanip", &CConsole::IPUnBan},
 		{ "playerinfo", &CConsole::PlayerInfo},
 	};
 
@@ -175,7 +176,8 @@ void CConsole::ProcessHelp(char *command)
 		sLog.outString("   saveall: saves all players");
 		sLog.outString("   kick: kicks a player with a reason");
 		sLog.outString("   banaccount: bans an account");
-		sLog.outString("   banip: bans an ip");
+		sLog.outString("   banip <address> [duration]: bans an ip");
+		sLog.outString("   unbanip <address>: unbans an ip");
 		sLog.outString("   playerinfo: gets info on an online player");
 		sLog.outString("   quit, exit: close program");
 	}
@@ -225,9 +227,67 @@ void CConsole::BanAccount(char* str)
 
 void CConsole::IPBan(char* str)
 {
-	sLogonCommHandler.LogonDatabaseSQLExecute("INSERT INTO ipbans (ip, time) VALUES ('%s', '0')", str);
-	sLog.outString("IP %s banned!", str);
+	char ip[16] = {0};		// IPv4 address
+	uint32 dLength = 0;		// duration of ban, 0 = permanent
+	char dType = {0};		// duration type, defaults to minutes ( see convTimePeriod() )
+
+	// we require at least one argument, the network address to ban
+	if ( sscanf(str, "%15s %u%c", ip, (unsigned int*)&dLength, &dType) < 1 )
+	{
+		sLog.outString("usage: banip <address> [duration]");
+		return;
+	}
+
+	uint32 o1, o2, o3, o4;
+	if ( sscanf(ip, "%3u.%3u.%3u.%3u", (unsigned int*)&o1, (unsigned int*)&o2, (unsigned int*)&o3, (unsigned int*)&o4) != 4
+			|| o1 > 255 || o2 > 255 || o3 > 255 || o4 > 255)
+	{
+		sLog.outString("Invalid IPv4 address [%s]", ip);
+		return;
+	}
+
+	time_t rawtime;
+	if ( dLength == 0)		// permanent ban
+		rawtime = 0;
+	else
+	{
+		uint32 dPeriod = convTimePeriod(dLength, dType);
+		if ( dPeriod == 0)
+		{
+			sLog.outString("Invalid ban duration");
+			return;
+		}
+		time( &rawtime );
+		rawtime += dPeriod;
+	}
+
+	sLog.outString("Adding [%s] to IP ban table, expires: %s", ip, (rawtime == 0)? "Never" : ctime( &rawtime ));
+	sLogonCommHandler.LogonDatabaseSQLExecute("REPLACE INTO ipbans VALUES ('%s', %u);", WorldDatabase.EscapeString(ip).c_str(), (uint32)rawtime);
 	sLogonCommHandler.LogonDatabaseReloadAccounts();
+}
+
+void CConsole::IPUnBan(char* str)
+{
+	char ip[16] = {0};		// IPv4 address
+
+	// we require at least one argument, the network address to unban
+	if ( sscanf(str, "%15s", ip) < 1)
+	{
+		sLog.outString("usage: unbanip <address>");
+		return;
+	}
+
+	/**
+	 * We can afford to be less fussy with the validty of the IP address given since
+	 * we are only attempting to remove it.
+	 * Sadly, we can only blindly execute SQL statements on the logonserver so we have
+	 * no idea if the address existed and so the account/IPBanner cache requires reloading.
+	 */
+
+	sLog.outString("Removing [%s] from IP ban table if it exists", ip);
+	sLogonCommHandler.LogonDatabaseSQLExecute("DELETE FROM ipbans WHERE ip = '%s';", WorldDatabase.EscapeString(ip).c_str());
+	sLogonCommHandler.LogonDatabaseReloadAccounts();
+	return;
 }
 
 void CConsole::PlayerInfo(char* str)

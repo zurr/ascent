@@ -99,7 +99,7 @@ void AuthSocket::HandleChallenge()
 
 	switch(ipb)
 	{
-		case BAN_STATUS_PERMANANT_BAN:
+		case BAN_STATUS_PERMANENT_BAN:
 			SendChallengeError(CE_ACCOUNT_CLOSED);
 			return;
 

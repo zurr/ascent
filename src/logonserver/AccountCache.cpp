@@ -162,7 +162,7 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 
 	// loop storage array
 	set<IPBan*>::iterator itr = banList.begin();
-	uint32 bantime = 0;
+	uint32 expiretime;
 	bool banned = false;
 
 	for(; itr != banList.end(); ++itr)
@@ -181,7 +181,7 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 					{
 						// full IP match
 						banned = true;
-						bantime = (*itr)->ban_expire_time;
+						expiretime = (*itr)->ban_expire_time;
 						break;
 					}
 				}
@@ -199,13 +199,22 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 		sLog.outDebug("[IPBanner] IP has no ban entry");
 		return BAN_STATUS_NOT_BANNED;
 	}
-	if(bantime > (uint32)time(NULL))
+	
+	if (expiretime == 0)
+	{
+		sLog.outDebug("[IPBanner] IP permanently banned");
+		return BAN_STATUS_PERMANENT_BAN;
+	}
+	
+	time_t rawtime;
+	time( &rawtime );
+	if(expiretime > (uint32)rawtime)
 	{
 		// temporary ban.
-		sLog.outDebug("[IPBanner] IP temporary banned, %u seconds left", (bantime-time(NULL)));
+		sLog.outDebug("[IPBanner] IP temporary banned, %u seconds left", (expiretime-(uint32)rawtime));
 		return BAN_STATUS_TIME_LEFT_ON_BAN;
 	}
-	if(bantime)
+	if(expiretime <= (uint32)rawtime)
 	{
 		// ban has expired. erase it from the banlist and database
 		sLog.outDebug("[IPBanner] Expired IP temporary ban has been removed");
@@ -213,9 +222,9 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 		return BAN_STATUS_NOT_BANNED;
 	}
 
-	// we haven't returned, this means ip is permanantly banned.
-	sLog.outDebug("[IPBanner] IP permanantly banned");
-	return BAN_STATUS_PERMANANT_BAN;
+	// shouldnt get this far, but just in case...
+	sLog.outDebug("[IPBanner] Unknown IP ban state/duration, enforcing anyway");
+	return BAN_STATUS_PERMANENT_BAN;
 }
 
 void IPBanner::Load()

@@ -43,7 +43,7 @@ enum BAN_STATUS
 {
 	BAN_STATUS_NOT_BANNED = 0,
 	BAN_STATUS_TIME_LEFT_ON_BAN = 1,
-	BAN_STATUS_PERMANANT_BAN = 2,
+	BAN_STATUS_PERMANENT_BAN = 2,
 };
 
 class IPBanner : public Singleton< IPBanner >

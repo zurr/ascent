@@ -62,3 +62,31 @@ void SetThreadName(const char* format, ...)
 
 	va_end(ap);
 }
+
+uint32 convTimePeriod ( uint32 dLength, char dType )
+{
+	if (dLength == 0)
+		return 0;
+	switch(tolower(dType))
+	{
+		case 'h':		// hours
+			return 60 * 60 * dLength;
+			break;
+		case 'd':		// days
+			return 60 * 60 * 24 * dLength;
+			break;
+		case 'w':		// weeks
+			return 60 * 60 * 24 * 7 * dLength;
+			break;
+		case 'm':		// months
+			return 60 * 60 * 24 * 30 * dLength;
+			break;
+		case 'y':		// years
+			return 60 * 60 * 24 * 365 * dLength;
+			break;
+		default:		// minutes
+			return 60 * dLength;
+			break;
+	}
+	return 0;
+}
