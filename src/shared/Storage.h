@@ -560,6 +560,8 @@ public:
 
 		size_t cols = strlen(FormatString);
 		result = WorldDatabase.Query("SELECT * FROM %s", IndexName);
+		if (!result)
+			return;
 		Field * fields = result->Fetch();
 
 		if(result->GetFieldCount() != cols)
@@ -610,6 +612,8 @@ public:
 
 		size_t cols = strlen(Storage<T, StorageType>::_formatString);
 		result = WorldDatabase.Query("SELECT * FROM %s", Storage<T, StorageType>::_indexName);
+		if (!result)
+			return;
 		Field * fields = result->Fetch();
 
 		if(result->GetFieldCount() != cols)

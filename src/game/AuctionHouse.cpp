@@ -18,7 +18,6 @@
 void Auction::DeleteFromDB()
 {
 	CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
-	CharacterDatabase.WaitExecute("DELETE FROM bids WHERE Id = %u", Id);
 }
 
 void Auction::SaveToDB(uint32 AuctionHouseId)
