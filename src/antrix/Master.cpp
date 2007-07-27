@@ -170,9 +170,17 @@ bool Master::Run(int argc, char ** argv)
 		sLog.m_screenLogLevel = 3;
 	}
 	
-	sLog.outString(BANNER, g_getRevision());
-	sLog.outString("==============================================================================");
-	sLog.outString("");
+	Log.Notice("Startup", "==========================================================");
+	Log.Notice("Startup", BANNER, g_getRevision());
+	Log.Notice("Startup", "http://www.ascentemu.com/");
+	Log.Notice("Startup", "");
+	Log.Notice("Startup", "Copyright (c) 2007 Ascent Team. All Rights Reserved.");
+	Log.Notice("Startup", "This software is provided under the Creative Commons");
+	Log.Notice("Startup", "Attribution-NonCommercial-ShareAlike 3.0 license.");
+	Log.Notice("Startup", "It should have been provided along with this distribution.");
+	Log.Notice("Startup", "==========================================================");
+	Log.Line();
+
 	if(do_version)
 		return true;
 
