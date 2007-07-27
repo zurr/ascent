@@ -53,7 +53,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool" CommandLine="if not exist ..\..\bin\debug\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\debug"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -118,7 +118,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool" CommandLine="if not exist ..\..\bin\release\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\release"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool

@@ -100,8 +100,7 @@
 				Name="VCWebDeploymentTool"
 			/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCPostBuildEventTool" CommandLine="if not exist ..\..\bin\debug\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\debug"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
