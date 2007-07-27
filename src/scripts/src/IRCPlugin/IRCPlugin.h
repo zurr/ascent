@@ -1,14 +1,17 @@
 /****************************************************************************
  *
- * IRC Plugin for Antrix
- * Copyright (c) 2007 Burlex, Antrix Team
+ * IRC Plugin
+ * Copyright (c) 2007 Team Ascent
  *
- * This file may be distributed under the terms of the Q Public License
- * as defined by Trolltech ASA of Norway and appearing in the file
- * COPYING included in the packaging of this file.
+ * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0
+ * License. To view a copy of this license, visit
+ * http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons,
+ * 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.
  *
- * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
- * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ * EXCEPT TO THE EXTENT REQUIRED BY APPLICABLE LAW, IN NO EVENT WILL LICENSOR BE LIABLE TO YOU
+ * ON ANY LEGAL THEORY FOR ANY SPECIAL, INCIDENTAL, CONSEQUENTIAL, PUNITIVE OR EXEMPLARY DAMAGES
+ * ARISING OUT OF THIS LICENSE OR THE USE OF THE WORK, EVEN IF LICENSOR HAS BEEN ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGES.
  *
  */
 

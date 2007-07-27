@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="realmserver"
+	Name="ascent"
 	ProjectGUID="{A3A04E47-43A2-4C08-90B3-029CEF558594}"
 	SccProjectName=""
 	SccLocalPath="">
@@ -14,7 +14,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\..\..\bin\Release"
-			IntermediateDirectory=".\realmserver___Win32_Release"
+			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -35,7 +35,7 @@
 				BufferSecurityCheck="FALSE"
 				EnableFunctionLevelLinking="FALSE"
 				EnableEnhancedInstructionSet="0"
-				PrecompiledHeaderFile=".\Release/realmserver.pch"
+				PrecompiledHeaderFile=".\Release/ascent.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -50,16 +50,16 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib dbghelp.lib mswsock.lib"
-				OutputFile=".\..\..\bin\Release/realmserver.exe"
+				OutputFile=".\..\..\bin\Release/ascent.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\dep\lib\release"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\..\..\bin\Release/realmserver.pdb"
+				ProgramDatabaseFile=".\..\..\bin\Release/ascent.pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\..\..\bin\Release/realmserver.tlb"/>
+				TypeLibraryName=".\..\..\bin\Release/ascent.tlb"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="copy ..\..\dep\lib\release\*.dll ..\..\bin\release
@@ -87,7 +87,7 @@ copy ..\..\dep\lib\*.dll ..\..\bin\release
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\..\..\bin\Debug"
-			IntermediateDirectory=".\realmserver___Win32_Debug"
+			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -96,18 +96,16 @@ copy ..\..\dep\lib\*.dll ..\..\bin\release
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\..\dep\src\gm"
+				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\game;..\..\src\shared;..\..\src\ascent;..\..\src\logonserver;..\..\dep\src\gm"
 				PreprocessorDefinitions="WIN32,_DEBUG,_CONSOLE;INTEL_COMPILER"
 				IgnoreStandardIncludePath="FALSE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="3"
-				PrecompiledHeaderThrough="RStdAfx.h"
-				PrecompiledHeaderFile=".\realmserver___Win32_Debug\realmserver.pch"
-				AssemblerListingLocation=".\realmserver___Win32_Debug/"
-				ObjectFile=".\realmserver___Win32_Debug/"
-				ProgramDataBaseFileName=".\realmserver___Win32_Debug/"
+				PrecompiledHeaderFile=".\Debug/antirx.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
@@ -119,21 +117,24 @@ copy ..\..\dep\lib\*.dll ..\..\bin\release
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib dbghelp.lib libpq.lib mswsock.lib"
-				OutputFile=".\..\..\bin\Debug\realmserver.exe"
+				OutputFile=".\..\..\bin\Debug\ascent.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\dep\lib\debug"
 				ModuleDefinitionFile=""
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\..\..\bin\Debug\realmserver.pdb"
+				ProgramDatabaseFile=".\..\..\bin\Debug\ascent.pdb"
 				GenerateMapFile="FALSE"
 				SubSystem="1"
 				FixedBaseAddress="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\..\..\bin\Debug/realmserver.tlb"/>
+				TypeLibraryName=".\..\..\bin\Debug/ascent.tlb"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\..\dep\lib\debug\*.dll ..\..\bin\debug
+copy ..\..\dep\lib\*.dll ..\..\bin\debug
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -157,129 +158,23 @@ copy ..\..\dep\lib\*.dll ..\..\bin\release
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="LogonComm"
-			Filter="">
-			<File
-				RelativePath="..\..\src\realmserver\LogonCommClient.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\LogonCommClient.h">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\LogonCommHandler.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\LogonCommHandler.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Client"
-			Filter="">
-			<File
-				RelativePath="..\..\src\realmserver\CharacterHandler.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\QueryHandler.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\Session.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\Session.h">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\WorldSocket.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\WorldSocket.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Manager"
-			Filter="">
-			<File
-				RelativePath="..\..\src\realmserver\ClientManager.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\ClientManager.h">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\ClusterManager.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\ClusterManager.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Worker Server"
-			Filter="">
-			<File
-				RelativePath="..\..\src\realmserver\WorkerOpcodes.h">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\WorkerServer.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\WorkerServer.h">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\WorkerServerSocket.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\WorkerServerSocket.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Defines"
-			Filter="">
-			<File
-				RelativePath="..\..\src\realmserver\Structures.h">
-			</File>
-			<Filter
-				Name="Thread Crap"
-				Filter="">
-				<File
-					RelativePath="..\..\src\game\CThreads.cpp">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\src\realmserver\RealmlistThreadMgr.cpp">
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Storage"
-			Filter="">
-			<File
-				RelativePath="..\..\src\realmserver\ObjectStorage.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\realmserver\ObjectStorage.h">
-			</File>
-		</Filter>
 		<File
-			RelativePath="..\..\src\realmserver\Master.cpp">
+			RelativePath="..\..\src\ascent\CConsole.cpp">
 		</File>
 		<File
-			RelativePath="..\..\src\realmserver\Master.h">
+			RelativePath="..\..\src\ascent\CConsole.h">
 		</File>
 		<File
-			RelativePath="..\..\src\realmserver\RStdAfx.cpp">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="1"/>
-			</FileConfiguration>
+			RelativePath="..\..\src\ascent\Main.cpp">
 		</File>
 		<File
-			RelativePath="..\..\src\realmserver\RStdAfx.h">
+			RelativePath="..\..\src\ascent\MainServerDefines.h">
+		</File>
+		<File
+			RelativePath="..\..\src\ascent\Master.cpp">
+		</File>
+		<File
+			RelativePath="..\..\src\ascent\Master.h">
 		</File>
 	</Files>
 	<Globals>

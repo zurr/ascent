@@ -133,7 +133,7 @@
 
 #include "LogonCommClient.h"
 #include "LogonCommHandler.h"
-#include "../antrix/MainServerDefines.h"
+#include "../ascent/MainServerDefines.h"
 #include "WorldRunnable.h"
 
 #include "../scriptengine/ScriptEngine.h"

@@ -1,9 +1,9 @@
 ## Process this file with autoconf to produce a configure script.
 
-AC_INIT([Antrix],
+AC_INIT([Ascent],
         [2.1.0],
-        [Antrix],
-        [antrix])
+        [Ascent],
+        [ascent])
 
 AC_PREREQ(2.5)
 
@@ -209,7 +209,7 @@ AC_DEFINE_UNQUOTED([CONFDIR], "${sysconfdir}", "configdir")
 AC_CONFIG_FILES([
    ./Makefile
    src/Makefile
-   src/antrix/Makefile
+   src/ascent/Makefile
    src/shared/Makefile
    src/logonserver/Makefile
    src/game/Makefile

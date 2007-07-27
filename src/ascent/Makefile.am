@@ -2,18 +2,18 @@
 INCLUDES += -I$(srcdir) -I$(srcdir)/../../dep/include -I$(srcdir)/../shared -I$(srcdir)/../../dep/src/gm
 INCLUDES += -I$(srcdir)/../game
 
-bin_PROGRAMS = antrix
+bin_PROGRAMS = ascent
 
-antrix_SOURCES = \
+ascent_SOURCES = \
     Main.cpp \
     Master.cpp \
     Master.h \
     CConsole.cpp \
     CConsole.h
 
-antrix_LDADD = -lgame -ldatabase -lconfig -lauth -lshared -lzlib -lnetwork -lgmscript
+ascent_LDADD = -lgame -ldatabase -lconfig -lauth -lshared -lzlib -lnetwork -lgmscript
 
-antrix_LDFLAGS = -L$(srcdir)/../shared \
+ascent_LDFLAGS = -L$(srcdir)/../shared \
                -L$(srcdir)/../game \
                -L$(srcdir)/../../dep/src/zlib \
                -L$(srcdir)/../../dep/src/gm \

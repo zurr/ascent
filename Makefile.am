@@ -3,7 +3,7 @@
 EXTRA_DIST = reconf configure
 SUBDIRS = dep src
 
-EXTRA_DIST += win/antrixVC71.sln win/VC71/antrix.vcproj \
+EXTRA_DIST += win/ascentVC71.sln win/VC71/ascent.vcproj \
               win/VC71/game.vcproj win/VC71/realmlist.vcproj \
               win/VC71/redirect.vcproj win/VC71/shared.vcproj
 

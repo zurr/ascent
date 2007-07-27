@@ -1828,7 +1828,7 @@ void World::DeleteObject(Object * obj)
 void World::Rehash(bool load)
 {
 	if(load)
-		Config.MainConfig.SetSource("antrix.conf", true);
+		Config.MainConfig.SetSource("ascent.conf", true);
 
 	if(!ChannelMgr::getSingletonPtr())
 		new ChannelMgr;
@@ -1864,7 +1864,7 @@ void World::Rehash(bool load)
 	setIntRate(INTRATE_COMPRESSION, Config.MainConfig.GetIntDefault("Rates", "Compression", 1));
 	setIntRate(INTRATE_PVPTIMER, Config.MainConfig.GetIntDefault("Rates", "PvPTimer", 300000));
 	SetPlayerLimit(Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000));
-	SetMotd(Config.MainConfig.GetStringDefault("Server", "Motd", "Antrix Default MOTD").c_str());
+	SetMotd(Config.MainConfig.GetStringDefault("Server", "Motd", "Ascent Default MOTD").c_str());
 	SetUpdateDistance( Config.MainConfig.GetFloatDefault("Server", "PlrUpdateDistance", 79.1f) );
 	mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
 	SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));

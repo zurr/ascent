@@ -20,7 +20,7 @@
 //
 
 #include "StdAfx.h"
-#include "../antrix/Master.h"
+#include "../ascent/Master.h"
 
 bool ChatHandler::HandleWeatherCommand(const char* args, WorldSession *m_session)
 {

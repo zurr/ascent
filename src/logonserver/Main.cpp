@@ -22,7 +22,7 @@
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
-#include "../shared/antrix_getopt.h"
+#include "../shared/ascent_getopt.h"
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
@@ -146,25 +146,25 @@ void LogonServer::Run(int argc, char ** argv)
 	int do_check_conf = 0;
 	int do_version = 0;
 
-	struct antrix_option longopts[] =
+	struct ascent_option longopts[] =
 	{
-		{ "checkconf",			antrix_no_argument,				&do_check_conf,			1		},
-		{ "screenloglevel",		antrix_required_argument,		&screen_log_level,		1		},
-		{ "fileloglevel",		antrix_required_argument,		&file_log_level,		1		},
-		{ "version",			antrix_no_argument,				&do_version,			1		},
-		{ "conf",				antrix_required_argument,		NULL,					'c'		},
+		{ "checkconf",			ascent_no_argument,				&do_check_conf,			1		},
+		{ "screenloglevel",		ascent_required_argument,		&screen_log_level,		1		},
+		{ "fileloglevel",		ascent_required_argument,		&file_log_level,		1		},
+		{ "version",			ascent_no_argument,				&do_version,			1		},
+		{ "conf",				ascent_required_argument,		NULL,					'c'		},
 		{ 0, 0, 0, 0 }
 	};
 
 	char c;
-	while ((c = antrix_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
+	while ((c = ascent_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
 	{
 		switch (c)
 		{
 		case 'c':
 			/* Log filename was set */
-			config_file = new char[strlen(antrix_optarg)];
-			strcpy(config_file,antrix_optarg);
+			config_file = new char[strlen(ascent_optarg)];
+			strcpy(config_file,ascent_optarg);
 			break;
 		case 0:
 			break;

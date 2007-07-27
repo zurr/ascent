@@ -14,8 +14,8 @@
  *
  */
 
-#ifndef __ANTRIX_UPDATEFIELDS_H
-#define __ANTRIX_UPDATEFIELDS_H
+#ifndef __ASCENT_UPDATEFIELDS_H
+#define __ASCENT_UPDATEFIELDS_H
 
 // Object Fields
 #define OBJECT_FIELD_GUID										  0x000
@@ -1667,5 +1667,5 @@
 #define CORPSE_FIELD_PAD										   OBJECT_END + 0x01F
 #define CORPSE_END												OBJECT_END + 0x020
 
-#endif // __ANTRIX_UPDATEFIELDS_H
+#endif // __ASCENT_UPDATEFIELDS_H
 

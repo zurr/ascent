@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
 	new ClientMgr;
 	Log.Line();
 	Log.Notice("Database", "Connecting to database...");
-	if(Database_Character->Initialize("localhost", 3306, "moocow", "moo", "antrix-character", 1, 1000) &&
-		Database_World->Initialize("localhost", 3306, "moocow", "moo", "antrix-world", 1, 1000))
+	if(Database_Character->Initialize("localhost", 3306, "moocow", "moo", "ascent-character", 1, 1000) &&
+		Database_World->Initialize("localhost", 3306, "moocow", "moo", "ascent-world", 1, 1000))
 	{
 		Log.Success("Database", "Connections established.");
 	}
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	ListenSocket<WSSocket> * isl = new ListenSocket<WSSocket>("0.0.0.0", 10010);
 	bool ssc = isl->IsOpen();
 
-	Config.MainConfig.SetSource("antrix.conf");
+	Config.MainConfig.SetSource("ascent.conf");
 	Config.RealmConfig.SetSource("realms.conf");
 
 	if(!lsc || !ssc)

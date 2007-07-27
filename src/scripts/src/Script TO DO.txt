@@ -1,6 +1,6 @@
 /************************************** Header ****************************************/
 /*										      */
-/*			       Antrix Script Development			      */
+/*			       Ascent Script Development			      */
 /*			           						      */
 /*			Brings completely new view on WoW reality.		      */
 /*										      */

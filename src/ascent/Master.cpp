@@ -19,7 +19,7 @@
 #include "CConsole.h"
 #include "../shared/CrashHandler.h"
 #include "../game/StdAfx.h"
-#include "../shared/antrix_getopt.h"
+#include "../shared/ascent_getopt.h"
 
 #ifdef WIN32
 #define PLATFORM_TEXT "Win32"
@@ -109,10 +109,10 @@ struct Addr
 bool Master::Run(int argc, char ** argv)
 {
 #ifdef WIN32
-	char * config_file = "antrix.conf";
+	char * config_file = "ascent.conf";
 	char * realm_config_file = "realms.conf";
 #else
-	char * config_file = CONFDIR "/antrix.conf";
+	char * config_file = CONFDIR "/ascent.conf";
 	char * realm_config_file = CONFDIR "/realms.conf";
 #endif
 
@@ -121,30 +121,30 @@ bool Master::Run(int argc, char ** argv)
 	int do_check_conf = 0;
 	int do_version = 0;
 
-	struct antrix_option longopts[] =
+	struct ascent_option longopts[] =
 	{
-		{ "checkconf",			antrix_no_argument,				&do_check_conf,			1		},
-		{ "screenloglevel",		antrix_required_argument,		&screen_log_level,		1		},
-		{ "fileloglevel",		antrix_required_argument,		&file_log_level,		1		},
-		{ "version",			antrix_no_argument,				&do_version,			1		},
-		{ "conf",				antrix_required_argument,		NULL,					'c'		},
-		{ "realmconf",			antrix_required_argument,		NULL,					'r'		},
+		{ "checkconf",			ascent_no_argument,				&do_check_conf,			1		},
+		{ "screenloglevel",		ascent_required_argument,		&screen_log_level,		1		},
+		{ "fileloglevel",		ascent_required_argument,		&file_log_level,		1		},
+		{ "version",			ascent_no_argument,				&do_version,			1		},
+		{ "conf",				ascent_required_argument,		NULL,					'c'		},
+		{ "realmconf",			ascent_required_argument,		NULL,					'r'		},
 		{ 0, 0, 0, 0 }
 	};
 
 	char c;
-	while ((c = antrix_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
+	while ((c = ascent_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
 	{
 		switch (c)
 		{
 		case 'c':
-			config_file = new char[strlen(antrix_optarg)];
-			strcpy(config_file, antrix_optarg);
+			config_file = new char[strlen(ascent_optarg)];
+			strcpy(config_file, ascent_optarg);
 			break;
 
 		case 'r':
-			realm_config_file = new char[strlen(antrix_optarg)];
-			strcpy(realm_config_file, antrix_optarg);
+			realm_config_file = new char[strlen(ascent_optarg)];
+			strcpy(realm_config_file, ascent_optarg);
 			break;
 
 		case 0:
@@ -326,7 +326,7 @@ bool Master::Run(int argc, char ** argv)
 	sLog.outString ("\nServer is ready for connections. Startup time: %ums\n", LoadingTime );
  
 	/* write pid file */
-	FILE * fPid = fopen("antrix.pid", "w");
+	FILE * fPid = fopen("ascent.pid", "w");
 	if(fPid)
 	{
 		uint32 pid;

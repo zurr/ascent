@@ -38,9 +38,9 @@ ClusterInterface::ClusterInterface()
 	ClusterInterface::InitHandlers();
 
 	/* Load + Process Config Files */
-	/*if(!Config.ClusterConfig.SetSource("antrix-cluster.conf", true))
+	/*if(!Config.ClusterConfig.SetSource("ascent-cluster.conf", true))
 	{
-		printf("Could not load antrix-cluster.conf");
+		printf("Could not load ascent-cluster.conf");
 	}*/
 }
 

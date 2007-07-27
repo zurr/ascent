@@ -1,7 +1,7 @@
 /****************************************************************************
  *
  * Multiplatform High-Performance Async Network Library
- * Include File For Antrix
+ * Include File For Ascent
  * Copyright (c) 2007 Burlex
  *
  * This file may be distributed under the terms of the Q Public License

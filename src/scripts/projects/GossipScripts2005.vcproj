@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="antrix.lib"
+				AdditionalDependencies="ascent.lib"
 				OutputFile="../../../bin/debug/script_bin/GossipScripts.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\bin\debug"
@@ -142,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="antrix.lib"
+				AdditionalDependencies="ascent.lib"
 				OutputFile="../../../bin/release/script_bin/GossipScripts.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\bin\release"

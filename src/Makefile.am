@@ -1,1 +1,1 @@
-SUBDIRS = shared game scripts logonserver antrix
+SUBDIRS = shared game scripts logonserver ascent

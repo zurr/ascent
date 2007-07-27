@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * SpellHandler Plugin
+ * General Object Type File
  * Copyright (c) 2007 Team Ascent
  *
  * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0
@@ -15,31 +15,21 @@
  *
  */
 
-#include "StdAfx.h"
-#include "Setup.h"
+#ifndef _ASCENT_GETOPT_H
+#define _ASCENT_GETOPT_H
 
-extern "C" SCRIPT_DECL uint32 _exp_get_version()
+/* getopt() wrapper */
+#define ascent_no_argument            0
+#define ascent_required_argument      1
+#define ascent_optional_argument      2
+struct ascent_option
 {
-    return MAKE_SCRIPT_VERSION(SCRIPTLIB_VERSION_MAJOR, SCRIPTLIB_VERSION_MINOR);
-}
-
-extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
-{
-    SetupShamanSpells(mgr);
-    SetupWarlockSpells(mgr);
-    SetupWarriorSpells(mgr);
-    SetupHunterSpells(mgr);
-    SetupItemSpells_1(mgr);
-    SetupMageSpells(mgr);
-    SetupPaladinSpells(mgr);
-    SetupRogueSpells(mgr);
-}
-
-#ifdef WIN32
-
-BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved )
-{
-    return TRUE;
-}
+	char *name;
+	int has_arg;
+	int *flag;
+	int val;
+};
+extern char ascent_optarg[514];
+int ascent_getopt_long_only (int ___argc, char *const *___argv, const char *__shortopts, const struct ascent_option *__longopts, int *__longind);
 
 #endif

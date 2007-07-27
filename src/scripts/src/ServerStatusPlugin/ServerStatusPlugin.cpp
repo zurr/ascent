@@ -223,9 +223,9 @@ void StatDumper::DumpStats()
     {
         // Dump server information.
 #ifdef WIN32
-        fprintf(f, "    <platform>Antrix/Win32 v2.1.0-%u</platform>\n", g_getRevision());
+        fprintf(f, "    <platform>Ascent/Win32 v2.1.0-%u</platform>\n", g_getRevision());
 #else
-        fprintf(f, "    <platform>Antrix/Linux v2.1.0-%u</platform>\n", g_getRevision());
+        fprintf(f, "    <platform>Ascent/Linux v2.1.0-%u</platform>\n", g_getRevision());
 #endif
 
         char uptime[80];
