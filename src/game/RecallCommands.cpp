@@ -125,7 +125,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession *m_sessi
 
 bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession *m_session)
 {
-	QueryResult *result = WorldDatabase.Query( "SELECT id,locname FROM recall" );
+	QueryResult *result = WorldDatabase.Query( "SELECT id,locname FROM recall ORDER BY locname" );
 	if(!result)
 		return false;
 	std::string recout;

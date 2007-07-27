@@ -2376,23 +2376,23 @@ bool ChatHandler::HandleIPBanCommand(const char * args, WorldSession * m_session
 		return true;	// error in syntax, but we wont remind client of command usage
 	}
 
-	time_t rawtime;
+	time_t expire_time;
 	if ( dLength == 0)		// permanent ban
-		rawtime = 0;
+		expire_time = 0;
 	else
 	{
-		uint32 dPeriod = convTimePeriod(dLength, dType);
+		time_t dPeriod = convTimePeriod(dLength, dType);
 		if ( dPeriod == 0)
 		{
 			RedSystemMessage(m_session, "Invalid ban duration");
 			return false;
 		}
-		time( &rawtime );
-		rawtime += dPeriod;
+		time( &expire_time );
+		expire_time += dPeriod;
 	}
 	
-	SystemMessage(m_session, "Adding [%s] to IP ban table, expires %s", ip, (rawtime == 0)? "Never" : ctime( &rawtime ));
-	sLogonCommHandler.LogonDatabaseSQLExecute("REPLACE INTO ipbans VALUES ('%s', %u);", WorldDatabase.EscapeString(ip).c_str(), (uint32)rawtime);
+	SystemMessage(m_session, "Adding [%s] to IP ban table, expires %s", ip, (expire_time == 0)? "Never" : ctime( &expire_time ));
+	sLogonCommHandler.LogonDatabaseSQLExecute("REPLACE INTO ipbans VALUES ('%s', %u);", WorldDatabase.EscapeString(ip).c_str(), (uint32)expire_time);
 	sLogonCommHandler.LogonDatabaseReloadAccounts();
 	return true;
 }

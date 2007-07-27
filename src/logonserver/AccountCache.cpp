@@ -214,7 +214,8 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 	if(expiretime > (uint32)rawtime)
 	{
 		// temporary ban.
-		sLog.outDebug("[IPBanner] IP temporary banned, %u seconds left", (expiretime-(uint32)rawtime));
+		time_t expire_time = expiretime;
+		sLog.outDebug("[IPBanner] IP temporary banned, Expires: %s", ctime( &expire_time ));
 		return BAN_STATUS_TIME_LEFT_ON_BAN;
 	}
 	if(expiretime <= (uint32)rawtime)
