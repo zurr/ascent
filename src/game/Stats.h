@@ -554,7 +554,7 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 	if(offset == UNIT_FIELD_MINRANGEDDAMAGE)
 	{
 //		//starting from base attack power then we apply mods on it
-//		ap += pAttacker->GetRAP();
+		//ap += pAttacker->GetRAP();
 		ap += pVictim->RAPvModifier;
 
 		if(!pVictim->IsPlayer())
@@ -587,8 +587,6 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
 			else
 				wspeed = (float)pAttacker->GetUInt32Value(UNIT_FIELD_RANGEDATTACKTIME);
 
-            ap += pAttacker->GetRAP();
-			ap += pVictim->RAPvModifier;
 		}
 		else
 		{

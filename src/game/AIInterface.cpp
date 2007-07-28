@@ -2709,9 +2709,10 @@ Unit *AIInterface::GetMostHated()
 
 	TargetMap::iterator it2 = m_aiTargets.begin();
 	TargetMap::iterator itr;
-	for(; it2 != m_aiTargets.end(); ++itr)
+	for(; it2 != m_aiTargets.end();)
 	{
-		itr = it2++;
+		itr = it2;
+        ++it2;
 
 		/* check the target is valid */
 		if(!itr->first->isAlive() || !isAttackable(m_Unit, itr->first))

@@ -6169,6 +6169,11 @@ void Player::PushOutOfRange(const WoWGuid & guid)
 void Player::ProcessPendingUpdates()
 {
 	_bufferS.Acquire();
+    if(!bUpdateBuffer.size() && !mOutOfRangeIds.size())
+	{
+		_bufferS.Release();
+		return;
+	}
 
 	uint32 buffer_size = bUpdateBuffer.size() + 10 + (mOutOfRangeIds.size() * 9);
 	uint8 * update_buffer = new uint8[buffer_size];

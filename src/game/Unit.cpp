@@ -1439,12 +1439,13 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				{
 					if(damage_type != RANGED)
 					{
-						if(Rand(pVictim->getLevel()-this->getLevel()-1)*20)
+						if(Rand(10 + victim_skill - self_skill))
 						{
-							int32 dif = (victim_skill+10-self_skill)*3;
-							if(dif > 0)
+							double damage_reduction = (10 + victim_skill - self_skill);
+							if(damage_reduction > 0)
 							{
-								dmg.full_damage -= (dif*dmg.full_damage)/100;
+								dmg.full_damage -= (damage_reduction*dmg.full_damage)/100;
+                                if(dmg.full_damage <= 0) dmg.full_damage = 1;
 								hit_status |= HITSTATUS_GLANCING;
 							}
 						}
@@ -2505,12 +2506,6 @@ void Unit::RemoveInRangeObject(Object* pObj)
 
 	if(pObj->GetTypeId() == TYPEID_UNIT || pObj->GetTypeId() == TYPEID_PLAYER)
 	{
-		if(critterPet == pObj)
-		{
-			critterPet->SafeDelete();
-			critterPet = 0;
-		}
-
 		/*if (m_useAI)*/
 		Unit *pUnit = static_cast<Unit*>(pObj);
 		GetAIInterface()->CheckTarget(pUnit);
@@ -2529,9 +2524,18 @@ void Unit::RemoveInRangeObject(Object* pObj)
 		if(GetUInt64Value(UNIT_FIELD_CHARM) == pObj->GetGUID())
 			if(m_currentSpell)
 				m_currentSpell->cancel();
-	}
 
-	Object::RemoveInRangeObject(pObj);
+        Object::RemoveInRangeObject(pObj);
+        if(critterPet == pObj)
+		{
+			critterPet->SafeDelete();
+			critterPet = 0;
+		}
+	}
+    else
+    {
+        Object::RemoveInRangeObject(pObj);
+    }
 }
 
 void Unit::ClearInRangeSet()
