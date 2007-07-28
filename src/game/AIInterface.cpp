@@ -55,6 +55,7 @@ AIInterface::AIInterface()
 
 	m_nextSpell = NULL;
 	m_nextTarget = NULL;
+    totemspell = NULL;
 	m_Unit = NULL;
 	m_PetOwner = NULL;
 	m_aiCurrentAgent = AGENT_NULL;
