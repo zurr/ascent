@@ -1,22 +1,24 @@
 /****************************************************************************
  *
  * AI Interface
- * Copyright (c) 2007 Team Ascent
+ * Copyright (c) 2007 Antrix Team
  *
- * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0
- * License. To view a copy of this license, visit
- * http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons,
- * 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.
+ * This file may be distributed under the terms of the Q Public License
+ * as defined by Trolltech ASA of Norway and appearing in the file
+ * COPYING included in the packaging of this file.
  *
- * EXCEPT TO THE EXTENT REQUIRED BY APPLICABLE LAW, IN NO EVENT WILL LICENSOR BE LIABLE TO YOU
- * ON ANY LEGAL THEORY FOR ANY SPECIAL, INCIDENTAL, CONSEQUENTIAL, PUNITIVE OR EXEMPLARY DAMAGES
- * ARISING OUT OF THIS LICENSE OR THE USE OF THE WORK, EVEN IF LICENSOR HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
 
 #ifndef WOWSERVER_AIINTERFACE_H
 #define WOWSERVER_AIINTERFACE_H
+
+/* platforms that already define M_PI in math.h */
+#ifdef M_PI
+#undef M_PI
+#endif
 
 #define M_PI	   3.14159265358979323846
 #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/ // ms smoother server/client side moving vs less cpu/ less b/w
