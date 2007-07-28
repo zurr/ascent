@@ -141,6 +141,8 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
 {
 	if(pVictim && (!pVictim->IsPlayer() || static_cast<Player*>(pVictim)->m_honorless))
 		return;
+    if(pVictim && pVictim->IsPlayer() && static_cast<Player*>(pVictim)->GetTeam() == pPlayer->GetTeam())
+        return;
 
 	// Calculate points
 	int32 Points = CalculateHonorPointsForKill(pPlayer, pVictim);
