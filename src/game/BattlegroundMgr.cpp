@@ -1012,6 +1012,8 @@ void Battleground::EventResurrectPlayers()
 				}
 				SelectedPlayer->ResurrectPlayer();
 				SelectedPlayer->SetUInt32Value(UNIT_FIELD_HEALTH, SelectedPlayer->GetUInt32Value(UNIT_FIELD_MAXHEALTH));				
+				if ( SelectedPlayer->GetPowerType() == POWER_TYPE_MANA )
+					SelectedPlayer->SetUInt32Value(UNIT_FIELD_POWER1, SelectedPlayer->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
 			}
 		}
 	}
