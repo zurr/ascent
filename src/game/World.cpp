@@ -1256,6 +1256,67 @@ void World::SetInitialWorldSettings()
 		sp->EffectImplicitTargetB[1]=0;
 		sp->EffectImplicitTargetB[2]=0;
 	}
+	//winfury weapon changes. Start to hate these day by day
+	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(283);
+	if(Enchantment)
+	{
+		Enchantment->spell[0] = 33757; //this is actually good
+		sp = sSpellStore.LookupEntry(33757);
+		if(sp)
+		{
+			sp->EffectApplyAuraName[0] = 42; //who needs dummys anyway ?
+			sp->procFlags = PROC_ON_MELEE_ATTACK; //we do not need proc on spell ;)
+			sp->EffectTriggerSpell[0] = 8232; //for the logs and rest
+		}
+	}
+	Enchantment = sEnchantStore.LookupEntry(284);
+	if(Enchantment)
+	{
+		Enchantment->spell[0] = 33756; 
+		sp = sSpellStore.LookupEntry(33756);
+		if(sp)
+		{
+			sp->EffectApplyAuraName[0] = 42; //who needs dummys anyway ?
+			sp->procFlags = PROC_ON_MELEE_ATTACK; //we do not need proc on spell ;)
+			sp->EffectTriggerSpell[0] = 8235; //for the logs and rest
+		}
+	}
+	Enchantment = sEnchantStore.LookupEntry(525);
+	if(Enchantment)
+	{
+		Enchantment->spell[0] = 33755; 
+		sp = sSpellStore.LookupEntry(33755);
+		if(sp)
+		{
+			sp->EffectApplyAuraName[0] = 42; //who needs dummys anyway ?
+			sp->procFlags = PROC_ON_MELEE_ATTACK; //we do not need proc on spell ;)
+			sp->EffectTriggerSpell[0] = 10486; //for the logs and rest
+		}
+	}
+	Enchantment = sEnchantStore.LookupEntry(1669);
+	if(Enchantment)
+	{
+		Enchantment->spell[0] = 33754; 
+		sp = sSpellStore.LookupEntry(33754);
+		if(sp)
+		{
+			sp->EffectApplyAuraName[0] = 42; //who needs dummys anyway ?
+			sp->procFlags = PROC_ON_MELEE_ATTACK; //we do not need proc on spell ;)
+			sp->EffectTriggerSpell[0] = 16362; //for the logs and rest
+		}
+	}
+	Enchantment = sEnchantStore.LookupEntry(2636);
+	if(Enchantment)
+	{
+		Enchantment->spell[0] = 33727; 
+		sp = sSpellStore.LookupEntry(33727);
+		if(sp)
+		{
+			sp->EffectApplyAuraName[0] = 42; //who needs dummys anyway ?
+			sp->procFlags = PROC_ON_MELEE_ATTACK; //we do not need proc on spell ;)
+			sp->EffectTriggerSpell[0] = 25505; //for the logs and rest
+		}
+	}
 	//for test only
 	sp = sSpellStore.LookupEntry(16498);
 	if(sp)

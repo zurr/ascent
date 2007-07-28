@@ -7603,7 +7603,7 @@ void Player::CalcDamage()
 		}
 		
 		float bonus=ap_bonus*speed;
-		   float tmp = 1;
+		float tmp = 1;
 		map<uint32, WeaponModifier>::iterator i;
 		for(i = damagedone.begin();i!=damagedone.end();i++)
 		{
@@ -7731,6 +7731,59 @@ void Player::CalcDamage()
 		//display only modifiers for any weapon
 		SetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT ,tmp);
  
+}
+
+uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
+{
+	float min_dmg,max_dmg;
+	float delta;
+	float r;
+	int ss = GetShapeShift();
+/////////////////MAIN HAND
+	float ap_bonus;
+	if(AP_owerride) 
+		ap_bonus = AP_owerride/14000.0;
+	else 
+		ap_bonus = GetAP()/14000.0;
+	delta = GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS)-GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG);
+	if(IsInFeralForm())
+	{
+		uint32 lev = getLevel();
+		if(ss == FORM_CAT)
+			r = lev + delta + ap_bonus * 1000.0;
+		else
+			r = lev + delta + ap_bonus * 2500.0;
+		min_dmg = r * 0.9;
+		max_dmg = r * 1.1;
+		return max((min_dmg + max_dmg)/2,0);
+	}
+//////no druid ss	
+	uint32 speed=2000;
+	Item *it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+	if(!disarmed)
+	{	
+		if(it)
+			speed = it->GetProto()->Delay;
+	}
+	float bonus=ap_bonus*speed;
+	float tmp = 1;
+	map<uint32, WeaponModifier>::iterator i;
+	for(i = damagedone.begin();i!=damagedone.end();i++)
+	{
+		if((i->second.wclass == (uint32)-1) || //any weapon
+			(it && ((1 << it->GetProto()->SubClass) & i->second.subclass) )
+			)
+				tmp+=i->second.value/100.0;
+	}
+	
+	r = BaseDamage[0]+delta+bonus;
+	r *= tmp;
+	min_dmg = r * 0.9;
+	r = BaseDamage[1]+delta+bonus;
+	r *= tmp;
+	max_dmg = r * 1.1;
+
+	return max((min_dmg + max_dmg)/2,0);
 }
 
 void Player::EventPortToGM(Player *p)

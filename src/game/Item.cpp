@@ -590,7 +590,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 		{
 		case 1:		 // Trigger spell on melee attack.
 			{
-				if(Apply)
+				if(Apply && Entry->spell[c] != 0)
 				{
 					// Create a proc trigger spell
 
@@ -601,14 +601,8 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 					TS.procCharges = 0;
 					TS.procChance = Entry->min[c] ? Entry->min[c] : 35;
 					TS.deleted = false;
-
-					
-						if(Entry->spell[c] != 0)
-						{
-							TS.spellId = Entry->spell[c];
-							m_owner->m_procSpells.push_back(TS);
-						}
-					
+					TS.spellId = Entry->spell[c];
+					m_owner->m_procSpells.push_back(TS);
 				}
 				else
 				{

@@ -759,7 +759,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								//only trigger effect for specified spells
 								if( CastingSpell->NameHash!=1828847009) //Rain of Fire
 									continue;
-							}
+							}break;
 						//priest - Shadow Weaving
 						case 15258:
 							{
@@ -767,7 +767,26 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									continue;//this should not ocur unless we made a fuckup somewhere
 								if(CastingSpell->School!=SCHOOL_SHADOW || victim==this) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
 									continue;
-							}
+							}break;
+						//shaman - windfurry weapon
+						case 8232:
+						case 8235:
+						case 10486:
+						case 16362:
+						case 25505:
+							{
+								if(!IsPlayer())
+									continue;
+								//!! The wierd thing is that we need the spell thet trigegred this enchant spell in order to output logs ..we are using oldspell info too 
+								//we have to recalc the value of this spell
+								SpellEntry *spellInfo = sSpellStore.LookupEntry(origId);
+								uint32 AP_owerride=GetAP() + spellInfo->EffectBasePoints[0]+1;
+								float dmg = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
+								SpellEntry *sp_for_the_logs = sSpellStore.LookupEntry(spellId);
+								Strike(victim,NORMAL_DAMAGE,sp_for_the_logs,2*dmg,0,0,true);
+								//nothing else to be done for this trigger
+								continue;
+							}break;
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
