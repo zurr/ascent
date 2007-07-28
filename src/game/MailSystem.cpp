@@ -265,6 +265,13 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
 		return;
 	}
 
+	// Check if we're sending mail to ourselves
+	if(player->name == _player->GetName())
+	{
+		SendMailError(MAIL_ERR_CANNOT_SEND_TO_SELF);
+		return;
+	}
+
 	// Instant delivery time by default.
 	msg.delivery_time = time(NULL);
 
