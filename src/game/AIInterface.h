@@ -313,6 +313,7 @@ public:
 	uint32 __fastcall GetSpellCooldown(uint32 SpellId);
 	void __fastcall AddSpellCooldown(SpellEntry * pSpell, AI_Spell * sp);
 	bool disable_melee;
+	bool waiting_for_cooldown;
 	uint32 next_spell_time;
 
 	void CheckNextSpell(AI_Spell * sp)

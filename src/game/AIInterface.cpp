@@ -82,6 +82,7 @@ AIInterface::AIInterface()
 	disable_melee = false;
 	next_spell_time = 0;
 	m_hasWaypointEvents = false;
+	waiting_for_cooldown = false;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
@@ -738,6 +739,12 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 		{
 			if(!m_nextSpell)
 				m_nextSpell = this->getSpell();
+
+			if(!m_nextSpell && waiting_for_cooldown)
+			{
+				/* don't start running to the target for melee if we're waiting for a cooldown. */
+				return;
+			}
 
 			if(m_canFlee && !m_hasFleed 
 				&& ((m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH) / m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) < m_FleeHealth ))
@@ -2646,7 +2653,11 @@ AI_Spell *AIInterface::getSpell()
 	{
 		// Check for cooldowns
 		if(GetSpellCooldown(sp->spell->Id) > 0)
+		{
+			/* we're waiting for a spell to cool down. set this flag so we don't go running until it happens. */
+			waiting_for_cooldown = true;
 			return 0;
+		}
 
 		cast_time = GetCastTime(sCastTime.LookupEntry( sp->spell->CastingTimeIndex ) );
 		cast_time /= 1000;
@@ -2657,6 +2668,8 @@ AI_Spell *AIInterface::getSpell()
 		AddSpellCooldown(sp->spell->Id);*/
 		return def_spell;
 	}
+	else
+		waiting_for_cooldown = false;	/* we're not waiting for any spells to cool down */
 
 #ifdef _AI_DEBUG
 	sLog.outString("AI DEBUG: Returning no spell for unit %u", m_Unit->GetEntry());
