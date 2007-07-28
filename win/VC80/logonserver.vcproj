@@ -191,6 +191,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="if not exist ..\..\bin\release\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\release"
 			/>
 		</Configuration>
 	</Configurations>
