@@ -104,6 +104,7 @@ void CConsole::ProcessCmd(char *cmd)
 		{ "banip", &CConsole::IPBan},
 		{ "unbanip", &CConsole::IPUnBan},
 		{ "playerinfo", &CConsole::PlayerInfo},
+		{ "reloadscripts", &CConsole::ReloadGMScripts},
 	};
 
 	if(_thread->GetThreadState() == THREADSTATE_TERMINATE)
@@ -195,6 +196,7 @@ void CConsole::ProcessHelp(char *command)
 		sLog.outString("   banip <address> [duration]: bans an ip");
 		sLog.outString("   unbanip <address>: unbans an ip");
 		sLog.outString("   playerinfo: gets info on an online player");
+		sLog.outString("   reloadscripts: reloads gamemonkey scripts");
 		sLog.outString("   quit, exit: close program");
 	}
 }
@@ -401,4 +403,9 @@ void CConsole::SaveallPlayers(char *str)
 	snprintf(msg, 100, "Saved all %d online players in %d msec.", (unsigned int)count, (unsigned int)((uint32)now() - stime));
 	sWorld.SendWorldText(msg);
 	sWorld.SendWorldWideScreenText(msg);
+}
+
+void CConsole::ReloadGMScripts(char * str)
+{
+	ScriptSystem->Reload();
 }

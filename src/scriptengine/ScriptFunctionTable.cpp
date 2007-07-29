@@ -48,6 +48,9 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "SendNotification",					Player_SendNotification				},
 		{ "Knockback",							Player_Knockback					},
 		{ "JoinInstance",						Player_JoinInstance					},
+		{ "SetLevel",							Player_SetLevel						},
+		{ "LevelUp",							Player_LevelUp						},
+		{ "Kick",								Player_Kick							},
 
 		// Imported Unit Functions
 		{ "Emote",								Unit_Emote							},
@@ -110,6 +113,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "ChangeFaction",						Unit_ChangeFaction					},
 		{ "TextEmote",							Unit_TextEmote						},
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
+		{ "SendYellMessage",					Unit_SendYellMessage				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));

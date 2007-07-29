@@ -70,6 +70,7 @@ protected:					// Protected methods:
 	void IPUnBan(char *str);
 	void BanAccount(char *str);
 	void PlayerInfo(char *str);
+	void ReloadGMScripts(char * str);
 };
 
 #define sCConsole CConsole::getSingleton()

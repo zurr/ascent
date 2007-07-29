@@ -146,7 +146,7 @@ int Player_SendAreaTriggerMessage(gmThread * a_thread)
 int Player_BroadcastMessage(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
-	GM_CHECK_STRING_PARAM(message, 1);
+	GM_CHECK_STRING_PARAM(message, 0);
 
 	if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
 		return GM_EXCEPTION;
@@ -1050,6 +1050,102 @@ int Unit_PlaySoundToSet(gmThread * a_thread)
 	WorldPacket data(SMSG_PLAY_SOUND, 4);
 	data << uint32(id);
 	pThis->SendMessageToSet(&data, true);
+	return GM_OK;
+}
+
+/**
+ * Updates a player to the specified level
+ */
+int Player_SetLevel(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(level, 0);
+
+	Player * p = GetThisPointer<Player>(a_thread);
+
+	uint32 curLevel = p->getLevel();
+	if ( curLevel >= level )	// player has already reached or exceeded the requested level
+		return GM_OK;
+
+	// deny the setting of level above server limits
+	if ( p->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) )
+	{
+		if ( level > sWorld.Expansion1LevelCap )
+			level = sWorld.Expansion1LevelCap;
+	} else {
+		if ( level > sWorld.LevelCap )
+			level = sWorld.LevelCap;
+	}
+
+	for( ; curLevel < level ; curLevel++ )
+	{
+		p->GiveXP(p->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) - p->GetUInt32Value(PLAYER_XP), p->GetGUID(), true);
+	}
+
+	sSocialMgr.SendUpdateToFriends( p );
+
+	return GM_OK;
+}
+
+/**
+ * Updates player level by the specified amount
+ */
+int Player_LevelUp(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(amount, 0);
+	
+	if (amount < 1)
+		amount = 1;
+
+	Player * p = GetThisPointer<Player>(a_thread);
+
+	uint32 curLevel = p->getLevel();		// current level
+	uint32 endLevel = curLevel + amount;		// result level
+
+	if ( p->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) )
+	{
+		if ( endLevel > sWorld.Expansion1LevelCap )
+			endLevel = sWorld.Expansion1LevelCap;
+	} else {
+		if ( endLevel > sWorld.LevelCap )
+			endLevel = sWorld.LevelCap;
+	};
+
+	for( ; curLevel < endLevel; curLevel++ )
+	{
+		p->GiveXP(p->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) - p->GetUInt32Value(PLAYER_XP), p->GetGUID(), true);
+	}
+
+	sSocialMgr.SendUpdateToFriends( p );
+
+	return GM_OK;
+}
+
+/**
+ * Player_Kick()
+ *
+ * Kicks the player from the server
+ *
+ * @param int Delay in seconds before kicking
+ */
+int Player_Kick(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(delay, 0);		// delay seconds
+
+	if (delay < 0)
+		delay = 0;
+
+	GetThisPointer<Player>(a_thread)->Kick(delay * 1000);
+	return GM_OK;
+}
+
+int Unit_SendYellMessage(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_STRING_PARAM(text, 0);
+	GetThisPointer<Unit>(a_thread)->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, text);
 	return GM_OK;
 }
 

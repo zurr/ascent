@@ -65,6 +65,9 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Player_SendSystemMessage(gmThread * a_thread);
 	int GM_CDECL Player_Knockback(gmThread * a_thread);
 	int GM_CDECL Player_JoinInstance(gmThread * a_thread);
+	int GM_CDECL Player_SetLevel(gmThread * a_thread);
+	int GM_CDECL Player_LevelUp(gmThread * a_thread);
+	int GM_CDECL Player_Kick(gmThread * a_thread);
 
 /* AreaTrigger Functions */
 	int GM_CDECL AreaTrigger_GetEntry(gmThread * a_thread);
@@ -81,6 +84,7 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Unit_RegisterTimer(gmThread * a_thread);
 	int GM_CDECL Unit_DeregisterTimer(gmThread * a_thread);
 	int GM_CDECL Unit_SpawnMonster(gmThread * a_thread);
+	int GM_CDECL Unit_SendYellMessage(gmThread * a_thread);
 	
 	int GM_CDECL Unit_GetGuid(gmThread * a_thread);
 	int GM_CDECL Unit_GetPlayer(gmThread * a_thread);
