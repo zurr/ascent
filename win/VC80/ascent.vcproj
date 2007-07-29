@@ -107,11 +107,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\dep\lib\release\*.dll ..\..\bin\release
-copy ..\..\dep\lib\*.dll ..\..\bin\release
-if not exist ..\..\bin\release\ascent.conf copy ..\..\src\ascent.conf ..\..\bin\release
-if not exist ..\..\bin\release\realms.conf copy ..\..\src\realms.conf ..\..\bin\release
-"/>
+				CommandLine="copy ..\..\dep\lib\release\*.dll ..\..\bin\release&#x0D;&#x0A;copy ..\..\dep\lib\*.dll ..\..\bin\release&#x0D;&#x0A;if not exist ..\..\bin\release\ascent.conf copy ..\..\src\ascent.conf ..\..\bin\release&#x0D;&#x0A;if not exist ..\..\bin\release\realms.conf copy ..\..\src\realms.conf ..\..\bin\release"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
@@ -208,11 +204,7 @@ if not exist ..\..\bin\release\realms.conf copy ..\..\src\realms.conf ..\..\bin\
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\dep\lib\debug\*.dll ..\..\bin\debug
-copy ..\..\dep\lib\*.dll ..\..\bin\debug
-if not exist ..\..\bin\debug\ascent.conf copy ..\..\src\ascent.conf ..\..\bin\debug
-if not exist ..\..\bin\debug\realms.conf copy ..\..\src\realms.conf ..\..\bin\debug
-"/>
+				CommandLine="copy ..\..\dep\lib\debug\*.dll ..\..\bin\debug&#x0D;&#x0A;copy ..\..\dep\lib\*.dll ..\..\bin\debug&#x0D;&#x0A;if not exist ..\..\bin\debug\ascent.conf copy ..\..\src\ascent.conf ..\..\bin\debug&#x0D;&#x0A;if not exist ..\..\bin\debug\realms.conf copy ..\..\src\realms.conf ..\..\bin\debug"/>
 		</Configuration>
 	</Configurations>
 	<References>
