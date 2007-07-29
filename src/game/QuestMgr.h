@@ -46,10 +46,11 @@ public:
 	//Packet Forging...
 	void BuildOfferReward(WorldPacket* data,Quest* qst, Object* qst_giver, uint32 menutype);
 	void BuildQuestDetails(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 menutype);	
-	void BuildRequestItems(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 menutype);
+	void BuildRequestItems(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 status);
 	void BuildQuestComplete(Player*, Quest* qst);
 	void BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr);
 	bool OnActivateQuestGiver(Object *qst_giver, Player *plr);
+    bool isRepeatableQuestFinished(Player *plr, Quest *qst);
 
 	void SendQuestUpdateAddKill(Player* plr, uint32 questid, uint32 entry, uint32 count, uint32 tcount, uint64 guid);
 	void BuildQuestUpdateAddItem(WorldPacket* data, uint32 itemid, uint32 count);
