@@ -137,6 +137,7 @@ public:
 	LootStore	SkinningLoot;
 	LootStore	GOLoot;
 	LootStore	ItemLoot;
+	LootStore	ProspectingLoot;
 	std::map<uint32, std::set<uint32> > quest_loot_go;
  
 private:

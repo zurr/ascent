@@ -21,6 +21,6 @@
 uint32 GetGOReqSkill(GameObject * gameObjTarget);
 void UseFishing(Player *player);
 void AddItemFromDisenchant(ItemPrototype *proto,Player*owner);
-void AddItemFromProspecting(ItemPrototype *proto,Player*owner);
+void AddItemFromProspecting(uint32 loot_id,Player*owner);
 
 #endif

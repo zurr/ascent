@@ -44,6 +44,7 @@ void LootMgr::LoadLoot()
 	LoadLootTables("skinningloot",&SkinningLoot);
 	LoadLootTables("fishingloot",&FishingLoot);
 	LoadLootTables("itemloot", &ItemLoot);
+	LoadLootTables("prospectingloot", &ProspectingLoot);
 }
 
 void LootMgr::LoadLootProp(uint32 id)
@@ -99,6 +100,9 @@ LootMgr::~LootMgr()
 
   for(LootStore::iterator iter=ItemLoot.begin(); iter != ItemLoot.end(); ++iter)
 	  delete [] iter->second.items;
+
+  for(LootStore::iterator iter=ProspectingLoot.begin(); iter != ProspectingLoot.end(); ++iter)
+  delete [] iter->second.items;
 
   for(PropStore::iterator iter = LootProperties.begin(); iter != LootProperties.end(); ++iter)
   {

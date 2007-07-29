@@ -3906,7 +3906,7 @@ void Spell::SpellEffectProspecting(uint32 i)
 			return;
 		}
    
-		AddItemFromProspecting(m_itemProto,p_caster);
+		AddItemFromProspecting(entry,p_caster);
 
 /*		//prospecting does not increase SKILL !!!
 		uint32 skill=caster->GetBaseSkillAmt(SKILL_JEWELCRAFTING);
