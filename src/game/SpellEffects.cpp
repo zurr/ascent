@@ -1306,17 +1306,19 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 		switch(m_spellInfo->Id)
 		{
 		case 27389: //Conjure Food 7
-		case 33717: //Conjure Food 8
 		case 10140: //Conjure Water 7
 		case 37420: //Conjure Water 8
-		case 27090: //Conjure Water 9
 			item_count += 8;
 			break;
 		}
 
-		//scale item_count down if its over 20
-		if(item_count > 20)
-			item_count = 20;
+		// item count cannot be more than allowed in a single stack
+		if (item_count > m_itemProto->MaxCount)
+			item_count = m_itemProto->MaxCount;
+
+		// item count cannot be more than item unique value
+		if (m_itemProto->Unique && item_count > m_itemProto->Unique)
+			item_count = m_itemProto->Unique;
 
 		if(p_caster->GetItemInterface()->CanReceiveItem(m_itemProto, item_count)) //reversed since it sends >1 as invalid and 0 as valid
 		{
