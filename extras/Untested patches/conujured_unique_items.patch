@@ -1,0 +1,15 @@
+Index: src/game/SpellEffects.cpp
+===================================================================
+--- src/game/SpellEffects.cpp    (revision 976)
++++ src/game/SpellEffects.cpp    (working copy)
+@@ -1317,7 +1317,9 @@
+        //scale item_count down if its over 20
+        if(item_count > 20)
+            item_count = 20;
+-
++        if (m_itemProto->Unique)
++            item_count = 1;
++        
+        if(p_caster->GetItemInterface()->CanReceiveItem(m_itemProto, item_count)) //reversed since it sends >1 as invalid and 0 as valid
+        {
+            SendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
