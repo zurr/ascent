@@ -1,5 +1,8 @@
 Warlock:
 
+Warclock's have lot's of spells woking,but mostly they depend on pets,and since they'r pets dont like to listen to they'r masters,lock's are abit weak.
+Death Coil need's a dmg heal effect added.It just does damage,but not giving a heal equal to the damage done.
+
 Affliction
 Life Tap - last rank isn't working so you don't get any mana whit cost of health points
 Curse of Tongues - nothing happens , no +x% casting time to enemy

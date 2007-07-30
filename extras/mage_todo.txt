@@ -4,6 +4,11 @@
 9) Summon water elemental (Mage)
 10) Arcane fortitude (if you take it and type .resettalent or reset talent from the trainer it incresease the armor. Every time you learn it and unlearning increase the armor. - mage)
 
+Ice lance this spell is cheap on mana,and does little damage,but here it gains all the spell damage you have and as a result we have tonz of damage for nothing.It should not gain any spell dmg.it only does tripple damage against frozen targets like frost nova'd.
+Double shield - Ice Barrier + Mana Shield,this combo makes a mage mostly impossible to kill if you are melee,since the dmg absorb is unreal.Only one type of shield can be on you at a time.
+Arcane Missles - popular spell due it's unlimited range,if you even run away from the range,they will be still casting on you.When the target leaves the range the channeling should be canceled.
+Slowing effect's - example,a mage casts fire nova + frostbolt and you are a tortoise,since those effects stack.They should cancel each other.
+
 Mage:
 
 Talents:
