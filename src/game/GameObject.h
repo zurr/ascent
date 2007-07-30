@@ -210,6 +210,9 @@ public:
 	void RemoveInRangeObject(Object* pObj);
 	void RemoveFromWorld();
 
+	inline bool CanMine(){return mines_remaining!=0;}
+	inline void UseMine(){mines_remaining--;}
+
 protected:
 
 	bool m_summonedGo;
@@ -217,6 +220,7 @@ protected:
 	GameObjectInfo *pInfo;
 	GameObjectAIScript * myScript;
 	uint32 _fields[GAMEOBJECT_END];
+	uint32 mines_remaining; //used for mining to mark times it can be mined
 
 };
 

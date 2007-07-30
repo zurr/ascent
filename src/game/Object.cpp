@@ -1585,6 +1585,9 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	/* -------------------------- HIT THAT CAUSES VICTIM TO DIE ---------------------------*/
 	if ((isCritter || health <= damage) )
 	{
+		//warlock - seed of corruption
+//		pVictim->HandleProc(PROC_ON_DIE,pVictim,NULL);
+
 		/* victim died! */
 		if(pVictim->IsPlayer())
 			((Player*)pVictim)->KillPlayer();

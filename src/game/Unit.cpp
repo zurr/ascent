@@ -787,6 +787,36 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								//nothing else to be done for this trigger
 								continue;
 							}break;
+						//rogue - Ruthlessness
+						case 14157:
+							{
+								//we need a finishing move for this 
+								if(CastingSpell->buffType!=SPELL_TYPE_FINISHING_MOVE)
+									continue;
+							}break;
+						//rogue - Relentless Strikes
+						case 14181:
+							{
+								int32 proc_Chance;
+								//chance is based actually on combopoint count and not 100% always 
+								if(CastingSpell->buffType==SPELL_TYPE_FINISHING_MOVE && IsPlayer())
+									proc_Chance = static_cast<Player*>(this)->m_comboPoints*ospinfo->EffectBasePoints[1];
+								else continue;
+								if(!Rand(proc_Chance))
+									continue;
+							}break;
+						//paladin - illumination
+						case 18350:
+							{
+								continue; //disabled until finished
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								//only trigger effect for specified spells
+								if( CastingSpell->NameHash!=666 && //Holy light
+									CastingSpell->NameHash!=666 && //Flash of light
+									CastingSpell->NameHash!=666 ) //Holy shock
+									continue;
+							}break;
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
@@ -802,6 +832,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				{
 					spell->pSpellId=itr2->spellId;
 					spell->SpellEffectDummy(0);
+					spell->ProcedOnSpell = CastingSpell;
 					delete spell;
 					continue;
 				}
@@ -858,7 +889,12 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							if(victim==this || isFriendly(this, victim))
 								continue;
 						}break;
-
+						//paladin - Surge of Light
+					case 33151:
+						{
+							if( CastingSpell->NameHash!=2272412495)//smite
+								continue;
+						}break;
 					}
 				}
 				if(iter2->second.lastproc!=0)
@@ -1454,7 +1490,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 						}
 					}
 				}
-				else if(!pVictim->IsPlayer()&&(!ability))	//glancing
+/*				else if(!pVictim->IsPlayer()&&(!ability))	//glancing
 				{
 					if(damage_type != RANGED)
 					{
@@ -1464,12 +1500,15 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 							if(damage_reduction > 0)
 							{
 								dmg.full_damage -= (damage_reduction*dmg.full_damage)/100;
-                                if(dmg.full_damage <= 0) dmg.full_damage = 1;
+                                if(dmg.full_damage <= 0)
+								{
+									dmg.full_damage = 1;
+								}
 								hit_status |= HITSTATUS_GLANCING;
 							}
 						}
 					}
-				}
+				}*/
 			}	
 			//absorb apply
 			uint32 dm = dmg.full_damage;
@@ -1991,7 +2030,7 @@ void Unit::AddAura(Aura *aur)
 	// Reaction from enemy AI
 	if(GetTypeId() == TYPEID_UNIT && !aur->IsPositive())	  // Creature
 	{
-		if(isAlive())
+		if(isAlive() && aur->m_spellProto->NameHash!=4287212498) //no threat for hunter's mark
 		{
 			Unit * pCaster = aur->GetUnitCaster();
 			if(!pCaster) return;

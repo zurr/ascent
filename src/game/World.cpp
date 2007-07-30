@@ -583,6 +583,8 @@ void World::SetInitialWorldSettings()
 			type |= SPELL_TYPE_WARLOCK_IMMOLATE;
 		else if(strstr(nametext, "Amplify Magic") || strstr(nametext, "Dampen Magic"))
 			type |= SPELL_TYPE_MAGE_AMPL_DUMP;
+		else if(strstr(desc, "Finishing move")==desc)
+			type |= SPELL_TYPE_FINISHING_MOVE;
 
 		/*FILE * f = fopen("C:\\spells.txt", "a");
 		fprintf(f, "case 0x%08X:		// %s\n", namehash, nametext);
@@ -824,6 +826,8 @@ void World::SetInitialWorldSettings()
 							pr|=PROC_ON_CAST_SPELL;
 						else if(strstr(desc,"chance to daze the target"))
 							pr|=PROC_ON_CAST_SPELL;
+						else if(strstr(desc,"finishing moves"))
+							pr|=PROC_ON_CAST_SPELL;
 //						else if(strstr(desc,"shadow bolt, shadowburn, soul fire, incinerate, searing pain and conflagrate"))
 //							pr|=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
 						//we should find that specific spell (or group) on what we will trigger
@@ -871,6 +875,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CAST_SPELL;		//this happens only on hit ;)
 					if(strstr(desc,"shadow damage spells have"))
 						pr|=PROC_ON_CAST_SPELL;
+					if(strstr(desc,"your spell criticals have"))
+						pr|=PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_CRIT_HIT_VICTIM;
 //					if(strstr(desc,"chill effect to your Blizzard"))
 //						pr|=PROC_ON_CAST_SPELL;	
 					//////////////////////////////////////////////////
@@ -945,7 +951,7 @@ void World::SetInitialWorldSettings()
 			sp->proc_interval = 3000; //few seconds
 		}
 		//mage ignite talent should proc only on some chances
-		if(strstr(nametext, "Ignite") && sp->Id>=11119 && sp->Id<=12848 && sp->EffectApplyAuraName[0]==4)
+		else if(strstr(nametext, "Ignite") && sp->Id>=11119 && sp->Id<=12848 && sp->EffectApplyAuraName[0]==4)
 		{
 			//check if we can find in the desription
 			char *startofid=strstr(desc, "an additional ");
@@ -960,17 +966,17 @@ void World::SetInitialWorldSettings()
 			sp->procFlags = PROC_ON_SPELL_CRIT_HIT; //add procflag here since this was not processed with the others !
 		}
 		// Winter's Chill handled by frost school
-		if(strstr(nametext, "Winter's Chill"))
+		else if(strstr(nametext, "Winter's Chill"))
 		{
 			sp->School = 4;
 		}
 		// Blackout handled by Shadow school
-		if(strstr(nametext, "Blackout"))
+		else if(strstr(nametext, "Blackout"))
 		{
 			sp->School = 5;
 		}
 		// Shadow Weaving
-		if(strstr(nametext, "Shadow Weaving"))
+		else if(strstr(nametext, "Shadow Weaving"))
 		{
 			sp->School = 5;
 			sp->EffectApplyAuraName[0] = 42;
@@ -978,7 +984,7 @@ void World::SetInitialWorldSettings()
 			sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
 		}
 		//Improved Aspect of the Hawk
-		if(strstr(nametext, "Improved Aspect of the Hawk"))
+		else if(strstr(nametext, "Improved Aspect of the Hawk"))
 			sp->EffectSpellGroupRelation[1] = 0x100000;
 		//more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
 		else if( strstr(nametext, "Nature's Guardian"))
@@ -1013,6 +1019,8 @@ void World::SetInitialWorldSettings()
 			sp->proc_interval = 10000; //10 seconds
 		else if(strstr(nametext, "Aviana's Purpose"))
 			sp->proc_interval = 10000; //10 seconds
+		else if(strstr(nametext, "Illumination"))
+			sp->EffectTriggerSpell[0]=20272;
 		//sp->dummy=result;
 /*		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
 		if(sp->procCharges==0)
@@ -1256,6 +1264,45 @@ void World::SetInitialWorldSettings()
 		sp->EffectImplicitTargetB[1]=0;
 		sp->EffectImplicitTargetB[2]=0;
 	}
+	//Relentless Strikes
+	sp = sSpellStore.LookupEntry(14179);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0]=42;//proc spell
+		sp->procFlags = PROC_ON_CAST_SPELL;
+		sp->EffectBasePoints[1] = 20; //client showes 20% chance but whe do not have it ? :O
+	}
+/*	//warlock - seed of corruption
+	sp = sSpellStore.LookupEntry(27243);
+	if(sp)
+	{
+		sp->EffectTriggerSpell[1] = 27285;
+		sp->procFlags = PROC_ON_DIE;
+	}
+	sp = sSpellStore.LookupEntry(32863);
+	if(sp)
+	{
+		sp->EffectTriggerSpell[1] = 32865;
+		sp->procFlags = PROC_ON_DIE;
+	}
+	sp = sSpellStore.LookupEntry(36123);
+	if(sp)
+	{
+		sp->EffectTriggerSpell[1] = 32865;
+		sp->procFlags = PROC_ON_DIE;
+	}
+	sp = sSpellStore.LookupEntry(38252);
+	if(sp)
+	{
+		sp->EffectTriggerSpell[1] = 32865;
+		sp->procFlags = PROC_ON_DIE;
+	}
+	sp = sSpellStore.LookupEntry(39367);
+	if(sp)
+	{
+		sp->EffectTriggerSpell[1] = 32865;
+		sp->procFlags = PROC_ON_DIE;
+	}*/
 	//winfury weapon changes. Start to hate these day by day
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(283);
 	if(Enchantment)

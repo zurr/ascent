@@ -1846,7 +1846,12 @@ void Spell::finish()
 	{
 		if(m_requiresCP && !failed)
 		{
-			p_caster->ResetComboPoints();
+			if(p_caster->m_spellcomboPoints)
+			{
+				p_caster->SetComboPoint(p_caster->GetSelection(),p_caster->m_spellcomboPoints);
+				p_caster->m_spellcomboPoints=0;
+			}
+			else p_caster->ResetComboPoints();
 		}
 		if(m_delayed)
 		{
@@ -3499,42 +3504,46 @@ void Spell::Heal(int32 amount)
 	// add threat
 	if(u_caster)
 	{
+		uint32 base_threat=GetBaseThreat(amount);
 		int count = 0;
 		Unit *unit;
 		std::vector<Unit*> target_threat;
-		target_threat.reserve(u_caster->GetInRangeCount()); // this helps speed
-
-		for(std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+		if(base_threat)
 		{
-			if((*itr)->GetTypeId() != TYPEID_UNIT)
-				continue;
-			unit = static_cast<Unit*>((*itr));
-			if(unitTarget->IsBeingAttackedBy(unit) ||
-				unitTarget->getAttackTarget() == unit->GetGUID() ||
-				u_caster->IsBeingAttackedBy(unit) ||
-				u_caster->getAttackTarget() == unit->GetGUID())
+			target_threat.reserve(u_caster->GetInRangeCount()); // this helps speed
+
+			for(std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
 			{
-				target_threat.push_back(unit);
-				++count;
+				if((*itr)->GetTypeId() != TYPEID_UNIT)
+					continue;
+				unit = static_cast<Unit*>((*itr));
+				if(unitTarget->IsBeingAttackedBy(unit) ||
+					unitTarget->getAttackTarget() == unit->GetGUID() ||
+					u_caster->IsBeingAttackedBy(unit) ||
+					u_caster->getAttackTarget() == unit->GetGUID())
+				{
+					target_threat.push_back(unit);
+					++count;
+				}
 			}
-		}
-		if(count == 0)
-			count = 1;  // division against 0 protection
-		/* 
-		When a tank hold multiple mobs, the threat of a heal on the tank will be split between all the mobs.
-		The exact formula is not yet known, but it is more than the Threat/number of mobs.
-		So if a tank holds 5 mobs and receives a heal, the threat on each mob will be less than Threat(heal)/5.
-		Current speculation is Threat(heal)/(num of mobs *2)
-		*/
-		uint32 threat = amount / (count * 2);
-			
-		for(std::vector<Unit*>::iterator itr = target_threat.begin(); itr != target_threat.end(); ++itr)
-		{
-			// for now we'll just use heal amount as threat.. we'll prolly need a formula though
-			((Unit*)(*itr))->GetAIInterface()->HealReaction(u_caster, unitTarget, threat);
+			if(count == 0)
+				count = 1;  // division against 0 protection
+			/* 
+			When a tank hold multiple mobs, the threat of a heal on the tank will be split between all the mobs.
+			The exact formula is not yet known, but it is more than the Threat/number of mobs.
+			So if a tank holds 5 mobs and receives a heal, the threat on each mob will be less than Threat(heal)/5.
+			Current speculation is Threat(heal)/(num of mobs *2)
+			*/
+			uint32 threat = base_threat / (count * 2);
+				
+			for(std::vector<Unit*>::iterator itr = target_threat.begin(); itr != target_threat.end(); ++itr)
+			{
+				// for now we'll just use heal amount as threat.. we'll prolly need a formula though
+				((Unit*)(*itr))->GetAIInterface()->HealReaction(u_caster, unitTarget, threat);
 
-			if((*itr)->GetGUID() == u_caster->getAttackTarget())
-				doneTarget = 1;
+				if((*itr)->GetGUID() == u_caster->getAttackTarget())
+					doneTarget = 1;
+			}
 		}
 
 		if(!u_caster->isInCombat() && unitTarget->isInCombat() && unitTarget->IsInWorld())
@@ -3833,6 +3842,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
 

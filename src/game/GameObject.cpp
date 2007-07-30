@@ -53,6 +53,7 @@ GameObject::GameObject(uint32 high, uint32 low)
 	m_spawn = 0;
 	loot.gold = 0;
 	m_deleted = false;
+	mines_remaining = 5;
 }
 
 GameObject::~GameObject()

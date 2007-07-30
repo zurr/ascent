@@ -382,8 +382,29 @@ void WorldSession::HandleLootReleaseOpcode( WorldPacket & recv_data )
 			}
 			delete pGO;
 		}
+		//mining thingies can be mined more then once
 		else
 		{
+			if(pGO->GetUInt32Value(GAMEOBJECT_TYPE_ID)==GAMEOBJECT_TYPE_CHEST && pGO->CanMine())
+			{
+				//we should make sure this is minable.=> last casted spell had open lock and locktype was LOCKTYPE_MINING ? Maybe there is an easier way :(
+				if(	GetPlayer()->pLastSpell)
+				{
+					SpellEntry *se = GetPlayer()->pLastSpell;
+					if( (se->EffectMiscValue[0]==LOCKTYPE_MINING && se->Effect[0]==SPELL_EFFECT_OPEN_LOCK) ||
+						(se->EffectMiscValue[1]==LOCKTYPE_MINING && se->Effect[1]==SPELL_EFFECT_OPEN_LOCK) ||
+						(se->EffectMiscValue[3]==LOCKTYPE_MINING && se->Effect[3]==SPELL_EFFECT_OPEN_LOCK))
+					{
+						//now see the ods to remove or not this GO from map
+						if(Rand(20))
+						{
+							pGO->loot.items.clear(); //make the next mining generate loot
+							pGO->UseMine();//reduce minability count. No more very lucky bastards
+							return;
+						}
+					}
+				}
+			}
 			uint32 DespawnTime = 0;
 			if(sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()))
 				DespawnTime = 120000;	   // 5 min for quest GO,
@@ -1741,4 +1762,5 @@ void WorldSession::HandleDismountOpcode(WorldPacket& recv_data)
 	if( _player->m_MountSpellId )
 		_player->RemoveAura( _player->m_MountSpellId );
 }
+
 

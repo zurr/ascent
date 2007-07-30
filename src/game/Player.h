@@ -1165,6 +1165,7 @@ public:
 	vector<TaxiPath*> m_taxiPaths;
 	uint64 m_comboTarget;
 	int8 m_comboPoints;
+	int8 m_spellcomboPoints; // rogue talent Ruthlessness will change combopoints while consuming them. solutions 1) add post cast prochandling, 2) delay adding the CP
 	void UpdateComboPoints();
 	inline void AddComboPoint(uint64 target, int8 count)
 	{
@@ -1178,7 +1179,7 @@ public:
 		UpdateComboPoints();
 	}
 	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
-	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; UpdateComboPoints(); }
+	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints=0; UpdateComboPoints(); }
 	Unit *GetSoloSpellTarget(uint32 spell_id);
 	void  SetSoloSpellTarget(uint32 spellid,uint64 newtarget);
 	uint32 m_speedChangeCounter;

@@ -1545,6 +1545,44 @@ void Aura::SpellAuraDummy(bool apply)
 				if(caster && caster->IsPlayer())
 					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(12494,mod->m_amount);
 			}break;
+		//warlock - seed of corruption
+		case 27243:
+		case 32863:
+		case 36123:
+		case 38252:
+		case 39367:
+			{
+				//register a cast on death of the player
+				if(apply)
+				{
+					ProcTriggerSpell pts;
+					pts.origId = GetSpellProto()->Id;
+					pts.caster = m_casterGuid;
+//					pts.spellId=GetSpellProto()->Id;
+					pts.spellId=32865;
+					if(!pts.spellId)
+						return;
+					pts.procChance = GetSpellProto()->procChance;
+//					pts.procFlags = GetSpellProto()->procFlags;
+					pts.procFlags = PROC_ON_DIE;
+					pts.procCharges = GetSpellProto()->procCharges;
+					pts.LastTrigger = 0;
+					pts.deleted = false;
+					m_target->m_procSpells.push_front(pts);
+				}
+				else
+				{
+					for(std::list<struct ProcTriggerSpell>::iterator itr = m_target->m_procSpells.begin();itr != m_target->m_procSpells.end();itr++)
+					{
+						if(itr->origId == GetSpellId() && itr->caster == m_casterGuid)
+						{
+							//m_target->m_procSpells.erase(itr);
+							itr->deleted = true;
+							break;
+						}
+					}
+				}
+			}break;
 	}
 }
 

@@ -94,14 +94,25 @@ void AddItemFromDisenchant(ItemPrototype *proto,Player*owner)
 			count = proto->Quality-2+rand()%3;
 		}
 	}
-
-	Item * it=objmgr.CreateItem(item,owner);
-   
-	it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
-	bool result = owner->GetItemInterface()->AddItemToFreeSlot(it);
-	if(!result)
+	Item *add;
+	SlotResult slotresult;
+	add = owner->GetItemInterface()->FindItemLessMax(item, count, false);
+	if (!add)
 	{
-		printf("Error whole trying to add disenchanted items to free slots");
+		slotresult = owner->GetItemInterface()->FindFreeInventorySlot(proto);
+		if(!slotresult.Result)
+		{
+			owner->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+			return;
+		}
+		Item * it=objmgr.CreateItem(item,owner);  
+		it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+		owner->GetItemInterface()->SafeAddItem(it,slotresult.ContainerSlot, slotresult.Slot);
+	}
+	else
+	{
+		add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + count);
+		add->m_isDirty = true;
 	}
 }
 
@@ -158,25 +169,37 @@ void AddItemFromProspecting(uint32 loot_id,Player*owner)
 		{
 			if(Rand(list->items[x].chance)) 
 		    {
-				Item * itm = objmgr.CreateItem(list->items[x].item.itemid,owner);
-				if(!itm) 
+				ItemPrototype *itemproto = ItemPrototypeStorage.LookupEntry(list->items[x].item.itemid);
+				if(!itemproto)
 					return;
 				uint32 count = 1;
 				if(list->count != (x - 1))
 				{
-					ItemPrototype *itemproto = ItemPrototypeStorage.LookupEntry(list->items[x].item.itemid);
 					for(uint32 z = (x + 1); z < list->count; z++)
 						if(itemproto->MaxCount && (count == itemproto->MaxCount))
 							break;
 						else if(list->items[x].item.itemid == list->items[z].item.itemid && Rand(list->items[x].chance))
 							count++;
 				}
-				itm->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
-				bool result = owner->GetItemInterface()->AddItemToFreeSlot(itm);
-				if(!result)
+				Item *add;
+				SlotResult slotresult;
+				add = owner->GetItemInterface()->FindItemLessMax(list->items[x].item.itemid, count, false);
+				if (!add)
 				{
-					owner->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_INVENTORY_FULL );
-					return;
+					slotresult = owner->GetItemInterface()->FindFreeInventorySlot(itemproto);
+					if(!slotresult.Result)
+					{
+						owner->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+						return;
+					}
+					Item * it=objmgr.CreateItem(list->items[x].item.itemid,owner);  
+					it->SetUInt32Value( ITEM_FIELD_STACK_COUNT, count);
+					owner->GetItemInterface()->SafeAddItem(it,slotresult.ContainerSlot, slotresult.Slot);
+				}
+				else
+				{
+					add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + count);
+					add->m_isDirty = true;
 				}
 			}
 		}

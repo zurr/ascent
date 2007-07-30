@@ -340,6 +340,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_summoner = m_summonInstanceId = m_summonMapId = 0;
 	m_lastMoveType = 0;
 	m_tempSummon = 0;
+	m_spellcomboPoints = 0;
 }
 
 

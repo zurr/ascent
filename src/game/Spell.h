@@ -237,6 +237,7 @@ enum procFlags
 	PROC_ON_TRAP_TRIGGERED		  = 0x200000,
 	PROC_ON_AUTO_SHOT_HIT			= 0x400000,
 	PROC_UNUSED2					= 0x800000,
+	PROC_ON_DIE						= 0x4000000,//added it as custom, maybe already exists in another form ?
 	PROC_REMOVEONUSE				= 0x8000000,//remove prochcharge only when it is used
 	PROC_MISC						= 0x10000000,//our custom flag to decide if proc dmg or shield
 	PROC_ON_BLOCK_VICTIM			= 0x20000000,//added it as custom, maybe already exists in another form ?
@@ -863,6 +864,7 @@ enum SpellTypes
 	SPELL_TYPE_SPIRIT				= 65536,
 	SPELL_TYPE_MAGE_AMPL_DUMP		= 131072,
 	SPELL_TYPE_WARLOCK_IMMOLATE		= 262144, //maybe there is a better way to trigger the aurastate for imolate spell
+	SPELL_TYPE_FINISHING_MOVE		= 524288, 
 };
 
 inline bool IsInrange(float x1,float y1, float z1, Object * o,float square_r)
@@ -1157,6 +1159,7 @@ public:
 
 	SpellEntry * m_spellInfo;
 	uint32 pSpellId;
+	SpellEntry *ProcedOnSpell; //some spells need to know the origins of the proc too
 	SpellCastTargets m_targets;
 
 	void CreateItem(uint32 itemId);
@@ -1383,6 +1386,19 @@ public:
 		return Rad[i];
 	}
 
+	inline uint32 GetBaseThreat(uint32 dmg)
+	{
+		//there should be a formula to determine what spell cause threat and which don't
+/*		switch(m_spellInfo->NameHash)
+		{
+			//hunter's mark
+			case 4287212498:
+				{
+					return 0;
+				}break;
+		}*/
+		return dmg;
+	}
 	bool IsStealthSpell();
 	bool IsInvisibilitySpell();
 	

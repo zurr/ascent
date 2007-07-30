@@ -1670,6 +1670,13 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
 	//yess there is always someone special : shamanistic rage - talent
 	if(m_spellInfo->Id==30824)
 		totalEnergy = curEnergy+damage*GetUnitTarget()->GetAP()/100;
+	//paladin illumination
+	else if(m_spellInfo->Id==20272 && ProcedOnSpell)
+	{
+		SpellEntry *motherspell=sSpellStore.LookupEntry(pSpellId);
+		if(motherspell)
+			totalEnergy = (motherspell->EffectBasePoints[0]+1)*ProcedOnSpell->manaCost/100;
+	}
 	else  totalEnergy = curEnergy+damage;
 	if(totalEnergy > maxEnergy)
 		unitTarget->SetUInt32Value(POWER_TYPE,maxEnergy);
@@ -3145,6 +3152,13 @@ void Spell::SpellEffectAddComboPoints(uint32 i) // Add Combo Points
 	if(!p_caster)
 		return;
   
+	//if this is a procspell
+	if(pSpellId)
+	{
+		//it seems this combo adding procspell is going to change combopoint count before they will get reseted. We add it after the reset
+		p_caster->m_spellcomboPoints+=damage;
+		return;
+	}
 	p_caster->AddComboPoint(p_caster->GetSelection(), damage);
 }
 

@@ -30,6 +30,7 @@ SMT_RESIST_DISPEL - check if it is used
 - players can moderate channels and they should not do so : trade ...
 - maybe rewrite procspell on spell. There are like 140 spells who use this, and to function correctly most of them would need this
 - hunter : curently you can equip only 1 Ammo Bag. This is wrong (INV_ERR_CAN_EQUIP_ONLY1_AMMOPOUCH). It should only use effects of ammo bag that is actively used.
+- make a general way of adidng threat to targets. Right now unit.cpp->addaura:AttackReaction makes this move but it is not right
 
 ==========================================================================
 ! BUGS !
@@ -49,15 +50,15 @@ SMT_RESIST_DISPEL - check if it is used
 ==========================================================================
 Zack - test my shit :
 
-- quest items are stacked in backpack (usless)
-- prospecting and disenchanting results are stacked in backpack
-- minable things can be mined more then once
-- removed glancing blow until proper fix is found. Right now to many players do not make any dmg at all
+	- prospecting and disenchanting results are stacked in backpack
+	- minable things can be mined more then once
+	- rogue - Ruthlessness
+	- rogue - Relentless Strikes
+	- removed glancing blow until proper fix is found. Right now to many players do not make any dmg at all
+	- hunter's mark to not agro creatures (very important indeed :P)
+	- quest items are stacked in backpack (usless change :P)
 - paladin - illumination
 - paladin - Surge of Light
-- rogue - Ruthlessness
-- rogue - Relentless Strikes
-- hunter's mark to not agro creatures
 - warlock seed of corruption
 
 ==========================================================================
