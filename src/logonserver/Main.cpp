@@ -303,6 +303,19 @@ void LogonServer::Run(int argc, char ** argv)
 	signal(SIGHUP, _OnSignal);
 #endif
 
+		/* write pid file */
+	FILE * fPid = fopen("logonserver.pid", "w");
+	if(fPid)
+	{
+		uint32 pid;
+#ifdef WIN32
+		pid = GetCurrentProcessId();
+#else
+		pid = getpid();
+#endif
+		fprintf(fPid, "%u", (unsigned int)pid);
+		fclose(fPid);
+	}
 	uint32 loop_counter = 0;
 
 	while(mrunning && authsockcreated && intersockcreated)
@@ -340,6 +353,9 @@ void LogonServer::Run(int argc, char ** argv)
 	DestroyDatabaseInterface(sLogonSQL);
 
 	sThreadMgr.Shutdown();
+
+	// delete pid file
+	remove("logonserver.pid");
 
 	delete AccountMgr::getSingletonPtr();
 	delete InformationCore::getSingletonPtr();
