@@ -2932,31 +2932,87 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 		//FIXME: Conjured items disappear if logged out for more than 15 minutes.
 		//itemId's might be wrong
 		//Commenting out till items come
-	case 6201://Create Healthstone (Minor)
+	
+	// Warlock Healthstones, just how much health does a lock need?
+	case 6201:		// Minor Healthstone
+		if (p_caster->HasSpell(18692))
 		{
-			CreateItem(5512);
-		}break;
-	case 6202://Create Healthstone (Lesser)
+			CreateItem(19004);
+			break;
+		}
+		if (p_caster->HasSpell(18693))
 		{
-			CreateItem(5511);
-		}break;
-	case 5699://Create Healthstone
+			CreateItem(19005);
+			break;
+		}
+		CreateItem(5512);
+		break;
+	case 6202:		// Lesser Healthstone
+		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
 		{
-			CreateItem(5509);
-		}break;
-	case 11729://Create Healthstone (Greater)
+			CreateItem(19007);
+			break;
+		}
+		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
 		{
-			CreateItem(5510);
-		}break;
-	case 11730://Create Healthstone (Major)
+			CreateItem(19006);
+			break;
+		}
+		CreateItem(551);
+		break;
+	case 5699:		// Healthstone
+		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
 		{
-			CreateItem(9421);
-		}break;
-	case 27230:// Create Healthstone (Master)
+			CreateItem(19009);
+			break;
+		}
+		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
 		{
-			CreateItem(22103); 
-		}break;
-		 
+			CreateItem(19008);
+			break;
+		}
+		CreateItem(5509);
+		break;
+	case 11729:		// Greater Healthstone
+		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		{
+			CreateItem(19011);
+			break;
+		}
+		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		{
+			CreateItem(19010);
+			break;
+		}
+		CreateItem(5510);
+		break;
+	case 11730:		// Major Healthstone
+
+		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		{
+			CreateItem(19013);
+			break;
+		}
+		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		{
+			CreateItem(19012);
+			break;
+		}
+		CreateItem(9421);
+		break;
+	case 27230:		// Master Healthstone
+		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		{
+			CreateItem(22105);
+			break;
+		}
+		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		{
+			CreateItem(22104);
+			break;
+		}
+		CreateItem(22103);
+		break;
 	case 635:// Holy Light
 	case 639:
 	case 647:

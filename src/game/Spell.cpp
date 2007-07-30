@@ -3335,6 +3335,12 @@ void Spell::CreateItem(uint32 itemId)
 	 if (!m_itemProto)
 		 return;
 
+	if (pUnit->GetItemInterface()->CanReceiveItem(m_itemProto, 1))
+	{
+		SendCastResult(SPELL_FAILED_TOO_MANY_OF_ITEM);
+		return;
+	}
+
 	add = pUnit->GetItemInterface()->FindItemLessMax(itemId, 1, false);
 	if (!add)
 	{
