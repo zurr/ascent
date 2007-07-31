@@ -116,7 +116,7 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 		m_homeFlags[plr->GetTeam()]->PushToWorld(m_mapMgr);
 
 		/* give each player on that team a bonus 82 honor - burlex: is this correct amount? */
-		for(set<Player*>::iterator itr = m_playersT[plr->GetTeam()].begin(); itr != m_playersT[plr->GetTeam()].end(); ++itr)
+		for(set<Player*>::iterator itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
 		{
 			if(plr->m_bgScore)
 				plr->m_bgScore->BonusHonor += 82;
