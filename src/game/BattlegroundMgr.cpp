@@ -33,7 +33,7 @@ const static uint32 BGMapIds[BATTLEGROUND_NUM_TYPES] = {
 const static CreateBattlegroundFunc BGCFuncs[BATTLEGROUND_NUM_TYPES] = {
 	NULL,						// 0
 	NULL,						// AV
-	NULL,						// WSG
+	&WarsongGulch::Create,		// WSG
 	NULL,						// AB
 	NULL,						// Nagrand
 	NULL,						// Blades Edge
@@ -375,6 +375,25 @@ void CBattleground::SendWorldStates(Player * plr)
 	plr->GetSession()->SendPacket(&data);
 }
 
+CBattleground::CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup) : m_mapMgr(mgr), m_id(id), m_levelGroup(levelgroup)
+{
+	m_nextPvPUpdateTime = 0;
+}
+
+CBattleground::~CBattleground()
+{
+
+}
+
+void CBattleground::UpdatePvPData()
+{
+	if(World::UNIXTIME >= m_nextPvPUpdateTime)
+	{
+
+		m_nextPvPUpdateTime = World::UNIXTIME + 2;
+	}
+}
+
 void CBattleground::AddPlayer(Player * plr)
 {
 
@@ -410,4 +429,18 @@ CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGr
 void CBattlegroundManager::DeleteBattleground(CBattleground * bg)
 {
 
+}
+
+GameObject * CBattleground::SpawnGameObject(uint32 entry,uint32 MapId , float x, float y, float z, float o, uint32 flags, uint32 faction, float scale)
+{
+	GameObject *go = m_mapMgr->CreateGameObject();
+
+	go->CreateFromProto(entry, MapId, x, y, z, o);
+
+	go->SetUInt32Value(GAMEOBJECT_FACTION,faction);
+	go->SetFloatValue(OBJECT_FIELD_SCALE_X,scale);	
+	go->SetUInt32Value(GAMEOBJECT_FLAGS, flags);
+	go->SetInstanceID(m_mapMgr->GetInstanceID());
+
+	return go;
 }

@@ -195,6 +195,8 @@ public:
 
 class CBattleground : public EventableObject
 {
+protected:
+	time_t m_nextPvPUpdateTime;
 	MapMgr * m_mapMgr;
 	uint32 m_id;
 	uint32 m_levelGroup;
@@ -237,6 +239,7 @@ public:
 
 	/* Used when a player kills a unit/player */
 	virtual void HookOnPlayerKill(Player * plr, Unit * pVictim) = 0;
+	virtual void HookOnHK(Player * plr) = 0;
 
 	/* On Area Trigger */
 	virtual void HookOnAreaTrigger(Player * plr, uint32 id) = 0;
@@ -257,7 +260,7 @@ public:
 	void SendPVPData(Player * plr);
 
 	/* Get the starting position for this team. */
-	virtual LocationVector * GetStartingCoords(uint32 Team) = 0;
+	virtual LocationVector GetStartingCoords(uint32 Team) = 0;
 
 	/* Send a packet to the entire battleground */
 	void DistributePacketToAll(WorldPacket * packet);
@@ -273,12 +276,15 @@ public:
 
 	/* Add Player */
 	void AddPlayer(Player * plr);
+	virtual void OnAddPlayer(Player * plr) = 0;
 
 	/* Remove Player */
 	void RemovePlayer(Player * plr);
+	virtual void OnRemovePlayer(Player * plr) = 0;
 
 	/* Port Player */
 	void PortPlayer(Player * plr);
+	virtual void OnCreate() = 0;
 
 	/* Gets the number of free slots */
 	inline uint32 GetFreeSlots(uint32 t)
@@ -288,6 +294,9 @@ public:
 		m_mainLock.Release();
 		return s;
 	}
+
+	GameObject * SpawnGameObject(uint32 entry,uint32 MapId , float x, float y, float z, float o, uint32 flags, uint32 faction, float scale);
+	void UpdatePvPData();
 };
 
 #define BattlegroundManager CBattlegroundManager::getSingleton( )

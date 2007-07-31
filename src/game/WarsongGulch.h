@@ -14,3 +14,34 @@
  * POSSIBILITY OF SUCH DAMAGES.
  *
  */
+
+#define BUFF_RESPAWN_TIME 90000
+
+class WarsongGulch : public CBattleground
+{
+	GameObject * m_buffs[6];
+	GameObject * m_homeFlags[2];
+	GameObject * m_dropFlags[2];
+	uint32 m_flagHolders[2];
+	list<GameObject*> m_gates;
+public:
+	WarsongGulch(MapMgr * mgr, uint32 id, uint32 lgroup);
+	~WarsongGulch();
+
+	void HookOnPlayerDeath(Player * plr);
+	void HookFlagDrop(Player * plr, GameObject * obj);
+	void HookFlagStand(Player * plr, GameObject * obj);
+	void HookOnMount(Player * plr);
+	void HookOnAreaTrigger(Player * plr, uint32 id);
+	bool HookHandleRepop(Player * plr);
+	void OnAddPlayer(Player * plr);
+	void OnRemovePlayer(Player * plr);
+	void OnCreate();
+	void HookOnPlayerKill(Player * plr, Unit * pVictim);
+	void HookOnHK(Player * plr);
+	void SpawnBuff(uint32 x);
+	LocationVector GetStartingCoords(uint32 Team);
+	void DropFlag(Player * plr);
+
+	static CBattleground * Create(MapMgr * m, uint32 i, uint32 l) { return new WarsongGulch(m, i, l); }
+};

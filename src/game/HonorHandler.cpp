@@ -162,10 +162,13 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
 				{
 					gPlayer = (*gitr);
                     
-                    if(gPlayer->isInRange(pPlayer,100.0f)) // visible range
+                    if(gPlayer == pPlayer || gPlayer->isInRange(pPlayer,100.0f)) // visible range
                     {
                         gPlayer->m_killsToday++;
                         gPlayer->m_killsLifetime++;
+						if(gPlayer->m_bg)
+							gPlayer->m_bg->HookOnHK(gPlayer);
+
 		                AddHonorPointsToPlayer(gPlayer, GroupPoints);
                         if(pVictim)
 		                {
@@ -187,6 +190,9 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
 		    pPlayer->m_killsLifetime++;
 		    AddHonorPointsToPlayer(pPlayer, Points);
     		
+			if(pPlayer->m_bg)
+				pPlayer->m_bg->HookOnHK(pPlayer);
+
 		    if(pVictim)
 		    {
 			    // Send PVP credit
