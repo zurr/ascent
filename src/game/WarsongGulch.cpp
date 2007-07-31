@@ -97,8 +97,33 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 			/* despawn the gameobject (not delete!) */
 			m_buffs[buffslot]->Despawn(BUFF_RESPAWN_TIME);
 		}
+		return;
+	}
 
-		// Cheater! :P
+	if(id == 3646 || id == 3647 && plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetGUIDLow())
+	{
+		/* remove flag aura from player */
+		plr->RemoveAura(23333+(plr->GetTeam() * 2));
+
+		/* capture flag points */
+		if(plr->m_bgScore)
+			plr->m_bgScore->Misc1++;
+
+		PlaySoundToAll(plr->GetTeam() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
+		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, plr->GetGUID(), "$N captured the %s flag!", plr->GetTeam() ? "Alliance" : "Horde");
+
+		/* respawn the home flag */
+		m_homeFlags[plr->GetTeam()]->PushToWorld(m_mapMgr);
+
+		/* give each player on that team a bonus 82 honor - burlex: is this correct amount? */
+		for(set<Player*>::iterator itr = m_playersT[plr->GetTeam()].begin(); itr != m_playersT[plr->GetTeam()].end(); ++itr)
+		{
+			if(plr->m_bgScore)
+				plr->m_bgScore->BonusHonor += 82;
+			HonorHandler::AddHonorPointsToPlayer(plr, 82);
+		}
+
+		UpdatePvPData();
 	}
 
 }
@@ -112,6 +137,8 @@ void WarsongGulch::DropFlag(Player * plr)
 	m_dropFlags[plr->GetTeam()]->SetPosition(plr->GetPosition());
 	m_dropFlags[plr->GetTeam()]->PushToWorld(m_mapMgr);
 	plr->m_bgHasFlag = false;
+
+	SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, plr->GetGUID(), "The %s flag was dropped by $N!", plr->GetTeam() ? "Alliance" : "Horde");
 }
 
 void WarsongGulch::HookFlagDrop(Player * plr, GameObject * obj)
@@ -119,11 +146,30 @@ void WarsongGulch::HookFlagDrop(Player * plr, GameObject * obj)
 	/* picking up a dropped flag */
 	if(m_dropFlags[plr->GetTeam()] != obj)
 	{
+		/* are we returning it? */
+		if( (obj->GetEntry() == 179830 && plr->GetTeam() == 0) ||
+			(obj->GetEntry() == 179831 && plr->GetTeam() == 1) )
+		{
+			uint32 x = plr->GetTeam() ? 0 : 1;
+			m_dropFlags[x]->RemoveFromWorld();
+			if(m_homeFlags[x]->IsInWorld() == false)
+				m_homeFlags[x]->PushToWorld(m_mapMgr);
+
+			if(plr->m_bgScore)
+			{
+				plr->m_bgScore->Misc2++;
+				UpdatePvPData();
+			}
+
+			SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, plr->GetGUID(), "The %s flag was returned to its base by $N!", plr->GetTeam() ? "Horde" : "Alliance");
+			PlaySoundToAll(plr->GetTeam() ? SOUND_HORDE_RETURNED : SOUND_ALLIANCE_RETURNED);
+		}
 		return;
 	}
 
 	m_dropFlags[plr->GetTeam()]->RemoveFromWorld();
 	m_flagHolders[plr->GetTeam()] = plr->GetGUIDLow();
+	plr->m_bgHasFlag = true;
 	
 	SpellEntry * pSp = sSpellStore.LookupEntry(23333 + (plr->GetTeam() * 2));
 	Spell * sp = new Spell(plr, pSp, true, 0);
@@ -147,6 +193,10 @@ void WarsongGulch::HookFlagStand(Player * plr, GameObject * obj)
 	/* set the flag holder */
 	m_flagHolders[plr->GetTeam()] = plr->GetGUIDLow();
 	m_homeFlags[plr->GetTeam()]->RemoveFromWorld();
+	plr->m_bgHasFlag = true;
+
+	SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "The %s flag was picked up by $N!", plr->GetTeam() ? "Alliance" : "Horde");
+	PlaySoundToAll(plr->GetTeam() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
 }
 
 void WarsongGulch::HookOnPlayerKill(Player * plr, Unit * pVictim)
@@ -165,12 +215,14 @@ void WarsongGulch::HookOnHK(Player * plr)
 
 void WarsongGulch::OnAddPlayer(Player * plr)
 {
-
+	/* do we actually need to do anything special to the player? */
 }
 
 void WarsongGulch::OnRemovePlayer(Player * plr)
 {
-
+	/* drop the flag if we have it */
+	if(plr->m_bgHasFlag)
+		HookOnMount(plr);
 }
 
 LocationVector WarsongGulch::GetStartingCoords(uint32 Team)

@@ -444,3 +444,48 @@ GameObject * CBattleground::SpawnGameObject(uint32 entry,uint32 MapId , float x,
 
 	return go;
 }
+
+void CBattleground::SendChatMessage(uint32 Type, uint64 Guid, const char * Format, ...)
+{
+	char msg[500];
+	va_list ap;
+	va_start(ap, Format);
+	vsnprintf(msg, 500, Format, ap);
+	va_end(ap);
+	WorldPacket * data = sChatHandler.FillMessageData(Type, 0, msg, Guid, 0);
+	DistributePacketToAll(data);
+	delete data;
+}
+
+void CBattleground::DistributePacketToAll(WorldPacket * packet)
+{
+	m_mainLock.Acquire();
+	for(int i = 0; i < 2; ++i)
+	{
+		for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+			(*itr)->GetSession()->SendPacket(packet);
+	}
+	m_mainLock.Release();
+}
+
+void CBattleground::DistributePacketToTeam(WorldPacket * packet, uint32 Team)
+{
+	m_mainLock.Acquire();
+	for(set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+		(*itr)->GetSession()->SendPacket(packet);
+	m_mainLock.Release();
+}
+
+void CBattleground::PlaySoundToAll(uint32 Sound)
+{
+	WorldPacket data(SMSG_PLAY_SOUND, 4);
+	data << Sound;
+	DistributePacketToAll(&data);
+}
+
+void CBattleground::PlaySoundToTeam(uint32 Team, uint32 Sound)
+{
+	WorldPacket data(SMSG_PLAY_SOUND, 4);
+	data << Sound;
+	DistributePacketToTeam(&data, Team);
+}

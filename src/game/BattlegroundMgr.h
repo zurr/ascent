@@ -51,12 +51,14 @@ struct BGScore
 };
 
 #define SOUND_BATTLEGROUND_BEGIN			0xD6F
-#define SOUND_HORDE_SCORES				  0x1FED
-#define SOUND_ALLIANCE_SCORES			   0x1FEE
-#define SOUND_ALLIANCE_CAPTURE			  0x2014
-#define SOUND_HORDE_CAPTURE				 0x2015
-#define SOUND_HORDEWINS					 0x2106
-#define SOUND_ALLIANCEWINS				  0x2107
+#define SOUND_HORDE_SCORES					8213
+#define SOUND_ALLIANCE_SCORES				8173
+#define SOUND_ALLIANCE_CAPTURE				8174
+#define SOUND_HORDE_CAPTURE					8212
+#define SOUND_ALLIANCE_RETURNED				8192
+#define SOUND_HORDE_RETURNED				8192	// huh?
+#define SOUND_HORDEWINS						8454
+#define SOUND_ALLIANCEWINS					8455
 #define SOUND_HORDE_BGALMOSTEND			 0x2108
 #define SOUND_ALLIANCE_BGALMOSTEND		  0x2109
 
@@ -201,11 +203,8 @@ protected:
 	uint32 m_id;
 	uint32 m_levelGroup;
 
-	/* Our player set */
-	set<Player*> m_players;
-
 	/* Team->Player Map */
-	set<Player*> m_playersT[2];
+	set<Player*> m_players[2];
 
 	/* World States. This should be moved to mapmgr instead for world pvp :/ */
 	map<uint32, uint32> m_worldStates;
@@ -223,6 +222,8 @@ protected:
 	set<Player*> m_pendPlayers[2];
 
 public:
+
+	void SendChatMessage(uint32 Type, uint64 Guid, const char * Format, ...);
 
 	/* Hook Functions */
 	virtual void HookOnPlayerDeath(Player * plr) = 0;
@@ -268,11 +269,17 @@ public:
 	/* send a packet to only this team */
 	void DistributePacketToTeam(WorldPacket * packet, uint32 Team);
 
+	/* play sound to this team only */
+	void PlaySoundToTeam(uint32 Team, uint32 Sound);
+
+	/* play sound to all */
+	void PlaySoundToAll(uint32 Sound);
+
 	/* Full? */
 	inline bool IsFull() { return (!HasFreeSlots(0) && !HasFreeSlots(1)); }
 
 	/* Are we full? */
-	inline bool HasFreeSlots(uint32 Team) { m_mainLock.Acquire(); bool res = ((m_playersT[Team].size() + m_pendPlayers[Team].size()) >= m_playerCountPerTeam); m_mainLock.Release(); return res; }
+	inline bool HasFreeSlots(uint32 Team) { m_mainLock.Acquire(); bool res = ((m_players[Team].size() + m_pendPlayers[Team].size()) >= m_playerCountPerTeam); m_mainLock.Release(); return res; }
 
 	/* Add Player */
 	void AddPlayer(Player * plr);
@@ -290,7 +297,7 @@ public:
 	inline uint32 GetFreeSlots(uint32 t)
 	{
 		m_mainLock.Acquire();
-		uint32 s = m_playerCountPerTeam - m_playersT[t].size() - m_pendPlayers[t].size();
+		uint32 s = m_playerCountPerTeam - m_players[t].size() - m_pendPlayers[t].size();
 		m_mainLock.Release();
 		return s;
 	}

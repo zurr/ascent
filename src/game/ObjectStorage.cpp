@@ -142,9 +142,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 				continue;
 			}
 
-			/*sp->minrange = GetMinRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));*/
-			// burlex: minimum range? you can go f*ck yourself. it causes really strange shit in movement.
-			sp->minrange = 0;
+			sp->minrange = GetMinRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
 			sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
 		}
 
