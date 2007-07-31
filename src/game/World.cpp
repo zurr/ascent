@@ -1019,8 +1019,8 @@ void World::SetInitialWorldSettings()
 			sp->proc_interval = 10000; //10 seconds
 		else if(strstr(nametext, "Aviana's Purpose"))
 			sp->proc_interval = 10000; //10 seconds
-		else if(strstr(nametext, "Illumination"))
-			sp->EffectTriggerSpell[0]=20272;
+//		else if(strstr(nametext, "Illumination"))
+//			sp->EffectTriggerSpell[0]=20272;
 		//sp->dummy=result;
 /*		//if there is a proc spell and has 0 as charges then it's probably going to triger infinite times. Better not save these
 		if(sp->procCharges==0)
@@ -1272,37 +1272,21 @@ void World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->EffectBasePoints[1] = 20; //client showes 20% chance but whe do not have it ? :O
 	}
-/*	//warlock - seed of corruption
-	sp = sSpellStore.LookupEntry(27243);
+	//priest - surge of light
+	sp = sSpellStore.LookupEntry(33150);
+	if(sp)
+		sp->procFlags = PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_TAGRGET_SELF;
+	sp = sSpellStore.LookupEntry(33154);
+	if(sp)
+		sp->procFlags = PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_TAGRGET_SELF;
+	sp = sSpellStore.LookupEntry(33151);
 	if(sp)
 	{
-		sp->EffectTriggerSpell[1] = 27285;
-		sp->procFlags = PROC_ON_DIE;
+		sp->EffectSpellGroupRelation[0]=128;
+		sp->EffectSpellGroupRelation[1]=128;
+		sp->EffectSpellGroupRelation[2]=128;
+		sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
 	}
-	sp = sSpellStore.LookupEntry(32863);
-	if(sp)
-	{
-		sp->EffectTriggerSpell[1] = 32865;
-		sp->procFlags = PROC_ON_DIE;
-	}
-	sp = sSpellStore.LookupEntry(36123);
-	if(sp)
-	{
-		sp->EffectTriggerSpell[1] = 32865;
-		sp->procFlags = PROC_ON_DIE;
-	}
-	sp = sSpellStore.LookupEntry(38252);
-	if(sp)
-	{
-		sp->EffectTriggerSpell[1] = 32865;
-		sp->procFlags = PROC_ON_DIE;
-	}
-	sp = sSpellStore.LookupEntry(39367);
-	if(sp)
-	{
-		sp->EffectTriggerSpell[1] = 32865;
-		sp->procFlags = PROC_ON_DIE;
-	}*/
 	//winfury weapon changes. Start to hate these day by day
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(283);
 	if(Enchantment)

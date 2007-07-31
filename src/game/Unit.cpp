@@ -805,7 +805,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!Rand(proc_Chance))
 									continue;
 							}break;
-						//paladin - illumination
+/*						//paladin - illumination
 						case 18350:
 							{
 								continue; //disabled until finished
@@ -816,7 +816,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									CastingSpell->NameHash!=666 && //Flash of light
 									CastingSpell->NameHash!=666 ) //Holy shock
 									continue;
-							}break;
+							}break;*/
 					}
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
@@ -887,12 +887,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					case 14177: //cold blood will get removed on offensive spell
 						{
 							if(victim==this || isFriendly(this, victim))
-								continue;
-						}break;
-						//paladin - Surge of Light
-					case 33151:
-						{
-							if( CastingSpell->NameHash!=2272412495)//smite
 								continue;
 						}break;
 					}
@@ -3499,6 +3493,24 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
 		//some spells do not get removed all the time only at specific intervals
 		if((a->m_spellProto->AuraInterruptFlags & flag) && (a->m_spellProto->Id != skip) && a->m_spellProto->proc_interval==0)
 		{
+			//the black sheeps of sociaty
+			if(a->m_spellProto->AuraInterruptFlags & AURA_INTERRUPT_ON_CAST_SPELL)
+			{
+				switch(a->GetSpellProto()->Id)
+				{
+					//priest - surge of light
+					case 33151:
+						{
+							//our luck. it got trigered on smite..we do not remove it just yet
+							if(m_currentSpell && m_currentSpell->m_spellInfo->NameHash==2272412495)
+								continue;
+							//this spell gets removed only when caasting smite
+						    SpellEntry *spi = sSpellStore.LookupEntry(skip);
+							if(spi && spi->NameHash!=2272412495)
+								continue;
+						}
+				}
+			}
 			a->Remove();
 		}
 	}
