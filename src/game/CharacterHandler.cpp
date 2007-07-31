@@ -682,27 +682,6 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 		plr->AddToWorld();
 	}
 
-#ifndef CLUSTERING
-	/*	if(sWorld.m_useIrc)
-	sIRCBot.SendMessage("> %s from account %u entered world.", _player->GetName(), GetAccountId());*/
-
-	if(_player->GetMapId() == 489 ||
-		_player->GetMapId() == 529 /*|| _player->GetMapId() == 30*/)
-	{
-		uint32 battlegroundtype = sBattlegroundMgr.GetBattleGroundTypeByMapId(_player->GetMapId());
-		Battleground *battleground = sBattlegroundMgr.GetBattlegroundByInstanceID(_player->GetInstanceID(),battlegroundtype);
-		if(battleground == NULL)	// bad battleground
-		{
-			_player->SetInstanceID(_player->m_bgEntryPointInstance);
-			_player->_Relocate(_player->m_bgEntryPointMap, LocationVector(_player->m_bgEntryPointX, _player->m_bgEntryPointY, _player->m_bgEntryPointZ, 
-				_player->m_bgEntryPointO), true, true);
-		} else {
-			// we are ALREADY in battleground! no need to transport ;)
-			battleground->AddPlayer(_player, false, true);
-		}
-	}
-#endif
-
 	sInstanceSavingManager.BuildSavedInstancesForPlayer(plr);
 	objmgr.AddPlayer(_player);
 	return true;

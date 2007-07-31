@@ -17,7 +17,7 @@
 
 #ifndef _PLAYER_H
 #define _PLAYER_H
-struct BattlegroundScore;
+struct BGScore;
 class Channel;
 class Creature;
 class Battleground;
@@ -878,18 +878,17 @@ public:
 	void Reset_Talents();
 	void Reset_ToLevel1();
 	// Battlegrounds xD
-	bool m_bgInBattleground;
-	uint32 m_bgBattlegroundID;
-	uint32 m_bgLastBattlegroundID;
+	CBattleground * m_bg;
 	uint32 m_bgEntryPointMap;
 	float m_bgEntryPointX;	
 	float m_bgEntryPointY;
 	float m_bgEntryPointZ;
 	float m_bgEntryPointO;
 	int32 m_bgEntryPointInstance;
-	uint32 m_bgTeam;
-	Battleground* GetCurrentBattleground();
 	bool m_bgHasFlag;
+	bool m_bgIsQueued;
+	uint32 m_bgQueueType;
+	uint32 m_bgQueueInstanceId;
 	void EventRepeatSpell();
 	void EventCastRepeatedSpell(uint32 spellid, Unit *target);
 	bool CanShootRangedWeapon(uint32 spellid, Unit *target, bool autoshot);
@@ -1035,7 +1034,7 @@ public:
 	bool m_Autojoin;
 	bool m_AutoAddMem;
 	void StopMirrorTimer(uint32 Type);
-	BattlegroundScore* m_bgScore;
+	BGScore* m_bgScore;
 	void UpdateChanceFields();
 	//Honor Variables
 	uint32 m_honorToday;

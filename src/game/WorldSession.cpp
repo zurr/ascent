@@ -268,13 +268,6 @@ void WorldSession::LogoutPlayer(bool Save)
 
 		_player->GetItemInterface()->EmptyBuyBack();
 		
-		
-		// Remove from BG
-		if(_player->GetCurrentBattleground() != NULL)
-		{
-			_player->GetCurrentBattleground()->RemovePlayer(_player, false, false, false);
-		}
-		
 		// Remove ourself from a group
 		if (_player->InGroup())
 		{

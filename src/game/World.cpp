@@ -82,11 +82,7 @@ World::~World()
 	delete TaxiMgr::getSingletonPtr();
 	
 	sLog.outString("  Deleting Battleground Manager...");	
-	delete BattlegroundMgr::getSingletonPtr();
-
-	//Save all characters to db on ctrl+c
-	sLog.outString("Deleting Battleground Manager...");
-	delete BattlegroundMgr::getSingletonPtr();
+	delete CBattlegroundManager::getSingletonPtr();
 
 	sLog.outString("Removing all objects and deleting WorldCreator...\n");
 	delete WorldCreator::getSingletonPtr();
@@ -412,7 +408,6 @@ void World::SetInitialWorldSettings()
 	new LfgMgr;
 	new WeatherMgr;
 	new TaxiMgr;
-	new BattlegroundMgr;
 	new AddonMgr;
 	new SocialMgr;
 	new WorldLog;
@@ -1372,10 +1367,6 @@ void World::SetInitialWorldSettings()
 	sSpellStore.LookupEntry(16974)->RequiredShapeShift = mm;
 	sSpellStore.LookupEntry(16975)->RequiredShapeShift = mm;
 	
-	sLog.outString( "Creating initial battlegrounds..." );
-	sLog.outString("");
-	sBattlegroundMgr.CreateInitialBattlegrounds();
-
 	sLog.outString( "Starting Transport System...");
 	objmgr.LoadTransporters();
 
@@ -1414,6 +1405,9 @@ void World::SetInitialWorldSettings()
 		sLog.outString("Loading loot in foreground...");
 		lootmgr.LoadLoot();
 	}
+
+	Log.Notice("BattlegroundManager", "Starting...");
+	new CBattlegroundManager;
 }
 
 

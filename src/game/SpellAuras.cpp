@@ -4063,11 +4063,8 @@ void Aura::SpellAuraMounted(bool apply)
 	if(apply)
 	{   
 		//plr->AdvanceSkillLine(762); // advance riding skill
-		if(plr->m_bgInBattleground && plr->GetMapId() == 489)
-		{
-			if(plr->m_bgHasFlag)
-				static_cast<WarsongGulch*>(plr->GetCurrentBattleground())->HandleBattlegroundEvent(m_target, NULL, BGEVENT_WSG_PLAYER_DIED_WITH_FLAG);
-		}
+		if(plr->m_bg)
+			plr->m_bg->HookOnMount(plr);
 
 		if(((Player*)m_target)->m_MountSpellId)
 			m_target->RemoveAura(((Player*)m_target)->m_MountSpellId);

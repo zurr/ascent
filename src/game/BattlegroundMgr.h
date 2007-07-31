@@ -18,25 +18,13 @@
 #ifndef __BATTLEGROUNDMGR_H
 #define __BATTLEGROUNDMGR_H
 
-class BattlegroundMgr;
-class Battleground;
+#include "../shared/Threading/RWLock.h"
+
+class CBattleground;
 class MapMgr;
 class Player;
 class Map;
 class Group;
-
-struct BattlegroundScore
-{
-	uint32 teamid;
-	uint32 KillingBlows;
-	uint32 HonorableKills;
-	uint32 Deaths;
-	uint32 DamageDone;
-	uint32 HealingDone;
-	uint32 FlagCaptures;
-	uint32 FlagReturns;
-	uint32 BonusHonor;
-};
 
 enum BattleGroundTypes
 {
@@ -47,154 +35,20 @@ enum BattleGroundTypes
 	BATTLEGROUND_BLADES_EDGE_ARENA,
 	BATTLEGROUND_ALL_ARENAS,
 	BATTLEGROUND_EYE_OF_THE_STORM,
+	BATTLEGROUND_NUM_TYPES,
 };
 
-enum BattleGround_Events
+struct BGScore
 {
-	BGEVENT_WSG_NULL,
-	BGEVENT_WSG_PICKUP_FLAG,
-	BGEVENT_WSG_DROP_FLAG,
-	BGEVENT_WSG_PLAYER_DEATH,
-	BGEVENT_WSG_CAPTURE_FLAG,
-	BGEVENT_WSG_RETURN_FLAG,
-	BGEVENT_WSG_PLAYER_DIED_WITH_FLAG,
-	BGEVENT_WSG_SCORE_FLAG,
-	BGEVENT_WSG_ALLIANCE_WIN,
-	BGEVENT_WSG_HORDE_WIN,
-	BGEVENT_WSG_PLAYER_KILL,
-	BGEVENT_AB_NULL,
-	BGEVENT_AB_PLAYER_DEATH,
-	BGEVENT_AB_PLAYER_KILL,
-	BGEVENT_AV_NULL,
-	BGEVENT_AV_PLAYER_DEATH,
-	BGEVENT_AV_PLAYER_KILL,
-	BGEVENT_AV_GENERAL_DEAD_HORDE,
-	BGEVENT_AV_GENERAL_DEAD_ALLIANCE,
+	uint32 KillingBlows;
+	uint32 HonorableKills;
+	uint32 Deaths;
+	uint32 BonusHonor;
+	uint32 DamageDone;
+	uint32 HealingDone;
+	uint32 Misc1;
+	uint32 Misc2;
 };
-
-class SERVER_DECL BattlegroundMgr :  public Singleton < BattlegroundMgr >, public EventableObject
-{
-public:
-	/* Construction */
-	BattlegroundMgr();
-	~BattlegroundMgr();
-	
-	/* Packet Building */
-	WorldPacket * BuildBattlegroundStatusPacket(uint32 Battleground, uint32 BattleGroundType, uint8 InstanceID, uint8 StatusID, uint32 Time, bool Faction);
-	WorldPacket * BuildPlayerLeftBattlegroundPacket(Player* plr);
-	WorldPacket * BuildPlayerJoinedBattlegroundPacket(Player* plr);
-	WorldPacket * BuildBattlegroundListPacket(uint64 guid, Player* plr,uint32 BattlegroundType);
-	WorldPacket * BuildWorldStateUpdatePacket(uint16 field, uint16 value);
-
-	/* Battlegrounds */
-	inline std::map<uint32, Battleground*>::iterator GetBattlegroundsBegin() { return m_Battlegrounds.begin(); };
-	inline std::map<uint32, Battleground*>::iterator GetBattlegroundsEnd() { return m_Battlegrounds.end(); };
-	Battleground* GetBattleground(uint8 ID)
-	{
-		std::map<uint32, Battleground*>::iterator i = m_Battlegrounds.find(ID);
-		if(i != m_Battlegrounds.end())
-			return i->second;
-		else
-			return NULL;
-	}
-	Battleground* GetBattlegroundByInstanceID(uint32 ID,uint32 battlegroundtype);
-		
-	uint32 CreateBattleground(uint32 MaxPlayersPerTeam, uint32 LevelMin, uint32 LevelMax, std::string BattlegroundName, uint32 MapID, float Team1StartLocX, float Team1StartLocY, float Team1StartLocZ, float Team1StartLocO, float Team2StartLocX, float Team2StartLocY, float Team2StartLocZ, float Team2StartLocO);
-	inline void AddBattleground(uint32 ID, Battleground* BG) { m_Battlegrounds[ID] = BG; };
-	void RemoveBattleground(uint32 ID);
-	void CreateWSGBattleground();
-	void CreateABBattleground();
-	void CreateAVBattleground();
-	void CreateArena();
-	void CreateInitialBattlegrounds();
-
-	uint32 GenerateTeamByRace(uint8 Race);
-	uint32 GeneratePlayerKillMoney(Player *pKiller, Player* pVictim);
-	
-	void CleanupBattlegrounds();
-
-	void EventCreateBattleground(uint32 mapid);
-
-	uint32 GetBattleGroundMapIdByType(uint32 BattleGroundType)
-	{
-		switch (BattleGroundType)
-		{
-			case BATTLEGROUND_ALTERAC_VALLEY: //Alterac Valley
-				return 30;
-				break;
-			case BATTLEGROUND_WARSUNG_GULCH: //Warsong Gulch
-				return 489;
-				break;
-			case BATTLEGROUND_ARATHI_BASIN: //Arathi Basin
-				return 529;
-				break;
-			case BATTLEGROUND_NAGRAND_ARENA: //Nagrand Arena
-				return 559;
-				break;
-			case BATTLEGROUND_BLADES_EDGE_ARENA: //Blade's Edge Arena
-				return 562;
-				break;
-			case BATTLEGROUND_ALL_ARENAS: //Netherstorm BG
-				return 566;
-				break;
-			default:
-				return 0;
-		}
-	};
-
-	uint32 GetBattleGroundTypeByMapId(uint32 MapID)
-	{
-		switch (MapID)
-		{
-			case 30: //Alterac Valley
-				return BATTLEGROUND_ALTERAC_VALLEY;
-				break;
-			case 489: //Warsong Gulch
-				return BATTLEGROUND_WARSUNG_GULCH;
-				break;
-			case 529: //Arathi Basin
-				return BATTLEGROUND_ARATHI_BASIN;
-				break;
-			case 559: //Nagrand Arena
-				return BATTLEGROUND_NAGRAND_ARENA;
-				break;
-			case 562: //Blade's Edge Arena
-				return BATTLEGROUND_BLADES_EDGE_ARENA;
-				break;
-			case 566: //Netherstorm BG
-				return BATTLEGROUND_ALL_ARENAS;
-				break;
-			default:
-				return 0;
-				break;
-		}
-	};
-
-private:
-
-	/* Battlegrounds */
-	std::map<uint32, Battleground*> m_Battlegrounds;
-};
-
-
-#define PVPRANK_GRAND_MARSHAL			   18
-#define PVPRANK_FIELD_MARSHAL			   17
-#define PVPRANK_MARSHAL					 16
-#define PVPRANK_COMMANDER				   15
-#define PVPRANK_LIEUTENANT_COMMANDER		14
-#define PVPRANK_KNIGHT_CHAMPION			 13
-#define PVPRANK_KNIGHT_CAPTAIN			  12
-#define PVPRANK_KNIGHT_LIEUTENANT		   11
-#define PVPRANK_KNIGHT					  10
-#define PVPRANK_SERGEANT_MAJOR			  9
-#define PVPRANK_MASTER_SERGEANT			 8
-#define PVPRANK_SERGEANT					7
-#define PVPRANK_CORPORAL					6
-#define PVPRANK_PRIVATE					 5
-#define PVPRANK_DISHONORED				  4
-#define PVPRANK_EXILED					  3
-#define PVPRANK_OUTLAW					  2
-#define PVPRANK_PARIAH					  1
 
 #define SOUND_BATTLEGROUND_BEGIN			0xD6F
 #define SOUND_HORDE_SCORES				  0x1FED
@@ -206,14 +60,12 @@ private:
 #define SOUND_HORDE_BGALMOSTEND			 0x2108
 #define SOUND_ALLIANCE_BGALMOSTEND		  0x2109
 
-
-
 // AB define's
 #define AB_CAPTURED_STABLES_ALLIANCE		0x6E7
 #define AB_CAPTURED_STABLES_HORDE		   0x6E8
 #define AB_CAPTURING_STABLES_ALLIANCE	   0x6E9
 #define AB_CAPTURING_STABLES_HORDE		  0x6EA
-										 // 0x6EB is unknown
+// 0x6EB is unknown
 #define AB_CAPTURED_FARM_ALLIANCE		   0x6EC // 1 is captured by the alliance
 #define AB_CAPTURED_FARM_HORDE			  0x6ED // 1 is captured by the horde
 #define AB_CAPTURING_FARM_ALLIANCE		  0x6EE // 1 is capturing by the alliance
@@ -230,12 +82,12 @@ private:
 #define AB_CAPTURED_BLACKSMITH_HORDE		0x6F7
 #define AB_CAPTURING_BLACKSMITH_ALLIANCE	0x6F8
 #define AB_CAPTURING_BLACKSMITH_HORDE	   0x6F9
-										 // 0x6FA is unknown
+// 0x6FA is unknown
 #define AB_CAPTURED_GOLDMINE_ALLIANCE	   0x6FB
 #define AB_CAPTURED_GOLDMINE_HORDE		  0x6FC
 #define AB_CAPTURING_GOLDMINE_ALLIANCE	  0x6FD
 #define AB_CAPTURING_GOLDMINE_HORDE		 0x6FE
-										 // 0x6FF is unknown
+// 0x6FF is unknown
 #define AB_CAPTURED_LUMBERMILL_ALLIANCE	 0x700
 #define AB_CAPTURED_LUMBERMILL_HORDE		0x701
 #define AB_CAPTURING_LUMBERMILL_ALLIANCE	0x702
@@ -276,211 +128,169 @@ private:
 #define AV_CONTROLED_STORMPIKE_AID_STATION_ALLIANCE  0x52D //1 -> alliance controled
 #define AV_CONTROLED_STONEHEART_GRAVE_ALLIANCE  0x516 //1 -> alliance controled
 
-class SERVER_DECL Battleground : public EventableObject
+/* get level grouping for player */
+inline static uint32 GetLevelGrouping(uint32 level)
 {
-	friend class BattlegroundMgr;
+	if(level < 10)
+		return 0;
+	else if(level < 20)
+		return 1;
+	else if(level < 30)
+		return 2;
+	else if(level < 40)
+		return 3;
+	else if(level < 50)
+		return 4;
+	else if(level < 60)
+		return 5;
+	else
+		return 6;
+}
+#define MAX_LEVEL_GROUP 7
+#define MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG 1
+#define MAXIMUM_BATTLEGROUNDS_PER_LEVEL_GROUP 3
+
+class CBattlegroundManager : public Singleton<CBattlegroundManager>, public EventableObject
+{
+	/* Battleground Instance Map */
+	map<uint32, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
+	RWLock m_instanceLock;
+
+	/* Max Id */
+	uint32 m_maxBattlegroundId;
+	
+	/* Queue System */
+	// Instance Id -> list<Player guid> [ BattlegroundType ] [ Level Group ] (instance 0 - first available)
+	map<uint32, list<uint32> > m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
+	Mutex m_queueLock;
+
 public:
-	void RemovePlayerFromBattleground(Player * pPlayer);
+	CBattlegroundManager();
+	~CBattlegroundManager();
 
-	Mutex m_playerLock;
+	/* Packet Handlers */
+	void HandleBattlegroundListPacket(WorldSession * m_session, uint32 BattlegroundType);
 
-	/* Construction */
-	Battleground();
-	~Battleground();
+	/* Player Logout Handler */
+	void OnPlayerLogout(Player * plr);
 
-	/* Battleground */
-	bool m_Active;
-	bool m_start;
-	inline void SetName(std::string Name) { m_Name = Name; };
-	inline std::string GetName() { return m_Name; };
-	inline void SetID(uint32 ID) { m_ID = ID; };
-	inline uint32 GetID() { return m_ID; };
-	inline void SetMaxPlayers(uint32 MaxPlayers) { m_MaxPlayers = MaxPlayers; };
-	inline uint32 GetMaxPlayers() { return m_MaxPlayers; };
-	inline void SetLevelRange(uint32 min, uint32 max)
-	{
-		m_LevelMin = min;
-		m_LevelMax = max;
-	}
-	inline uint32 GetMinLevel() { return m_LevelMin; };
-	inline uint32 GetMaxLevel() { return m_LevelMax; };
-	
-	inline void SetMaxPlayersPerTeam(uint32 MaxPlayers) { m_MaxPlayersPerTeam = MaxPlayers; };
-	inline uint32 GetMaxPlayersPerTeam() { return m_MaxPlayersPerTeam; };
+	/* Handler On Update Event */
+	void EventQueueUpdate();
 
-	bool HasFreeSlots(uint32 Team);
-	
-	/* Player lists */
-	inline std::list<Player*>::iterator GetPlayersBegin() { return m_Players.begin(); };
-	inline std::list<Player*>::iterator GetPlayersEnd() { return m_Players.end(); };
+	/* Handle Battleground Join */
+	void HandleBattlegroundJoin(WorldSession * m_session, WorldPacket & pck);
 
-	inline std::list<Player*>::iterator GetQueuedPlayersBegin() { return m_QueuedPlayers.begin(); };
-	inline std::list<Player*>::iterator GetQueuedPlayersEnd() { return m_QueuedPlayers.end(); };
+	/* Remove Player From All Queues */
+	void RemovePlayerFromQueues(Player * plr);
 
-	std::map<uint64, uint64> m_ReviveQueue;					   // for area spirit healers
-	uint32 m_LastResurrect;
+	/* Create a battleground instance of type x */
+	CBattleground * CreateInstance(uint32 Type, uint32 LevelGroup);
 
-	void AddPlayer(Player* plr, bool Transport = false, bool SendPacket = false);
-	void RemovePlayer(Player *plr, bool Transport = false, bool SendPacket = false, bool BeforeEnd = true);
-	void RemoveAllPlayers(bool Transport = false, bool SendPacket = false);
+	/* Can we create a new instance of type x level group y? (NO LOCK!) */
+	bool CanCreateInstance(uint32 Type, uint32 LevelGroup);
 
-	/* Packet Building */
-	WorldPacket* BuildPlayerPositionsPacket(Player* Source);	 // Because we don't include source in packet
-	WorldPacket* BuildPVPLogDataPacket(Player *Source, uint8 BGGameStatus = 0, bool BGGameWin = false);// Because we don't include source in packet
-	void UpdatePVPData();									   // Updating after changes
-
-	/* Battleground Events */
-	virtual void HandleBanner(Player *p_caster,GameObject *go,uint32 spellid);
-	virtual void HandleBattlegroundEvent(Object *src, Object *dst, uint16 EventID, uint32 params1 = 0, uint32 params2 = 0);
-	virtual void HandleBattlegroundAreaTrigger(Player *plr, uint32 TriggerID);
-	virtual void SetupBattleground();
-	virtual void Start();
-	virtual void SpawnBattleground();
-	virtual void SpawnBuff(uint32 typeentry,uint32 bannerslot);
-	
-	void End();
-	
-	void EventResurrectPlayers();
-	void EventRemove();
-	void EventAlmostStart();
-	void EventStart();
-
-	/* Location */
-	inline void SetMapId(uint32 MapID) { m_MapId = MapID; };
-	inline uint32 GetMapId() { return m_MapId; };
-
-	void SetTeamStartLoc(uint32 TeamID, float X, float Y, float Z, float O);
-	inline float GetTeamStartLocX(uint32 TeamID) { return m_TeamStartLocX[TeamID]; };
-	inline float GetTeamStartLocY(uint32 TeamID) { return m_TeamStartLocY[TeamID]; };
-	inline float GetTeamStartLocZ(uint32 TeamID) { return m_TeamStartLocZ[TeamID]; };
-	inline float GetTeamStartLocO(uint32 TeamID) { return m_TeamStartLocO[TeamID]; };
-
-	/* Packet Transfer */
-	void SendPacketToTeam(uint32 TeamID, WorldPacket *packet);
-	void SendPacketToAll(WorldPacket *packet);
-
-	/* Worldstates */
-	std::map<uint32, uint32> WorldStateVars;
-	WorldPacket* BuildWorldStateInit();
-	WorldPacket* BuildclearWorldStates(uint32 mapid);
-	WorldPacket* BuildMessageChat(uint32 type, uint32 p2, const char* msg, uint8 p3, uint64 guid = 0);
-	void SetWorldStateValue(uint32 field, uint32 value);
-	void _EventUpdateWorldStates();
-
-	void SendMessageToPlayer(Player *plr, std::string msg, bool widetoo);
-	void SendCMessageToPlayer(Player *plr, const char* szmsg, bool widetoo);
-	void SendMessageToAll(std::string msg, bool widetoo);
-	void SendCMessageToAll(const char* szmsg, bool widetoo);
-		
-	GameObject* SpawnGameObject(uint32 entry, uint32 MapId, float x, float y, float z, float o, uint32 flags, uint32 faction, float scale);
-
-	inline uint32 GetTeamScore(uint32 TeamID)
-	{
-		ASSERT(TeamID > 1);
-		return m_TeamScores[TeamID];
-	}
-
-	inline void AddPoint(uint32 TeamID, uint32 Points = 1)
-	{
-		ASSERT(TeamID > 1);
-		m_TeamScores[TeamID] += Points;
-
-		// TODO: Update all players
-	}
-
-	inline void RemovePoint(uint32 TeamID, uint32 Points = 1)
-	{
-		ASSERT(TeamID > 1);
-		m_TeamScores[TeamID] -= Points;
-
-		// TODO: Update all players
-	}
-
-	inline WorldPacket MakeAreaTriggerMsg(const char* text, ...)
-	{
-		WorldPacket data;
-		char txt[256];
-		va_list ap;
-		va_start(ap, text);
-		vsnprintf(txt, 256, text, ap);
-		va_end(ap);
-		data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
-		data << (uint32)0 << txt << (uint8)0x00;
-		return data;
-	}  
-
-	void SendSoundToBattleground(uint32 sound_id);
-
-	bool bSpawned;
-	bool bStarted;
-	void OnPlayerJoined(Player *pPl);
-	void OnPlayerLeft(Player* pPl);
-	bool m_GameStatus; // false if game is running true if game has ended
-	bool m_GameWin; // false if horde wins true of alliance wins
-
-	inline bool GetBattleGroundStatus(){return m_GameStatus;}
-	inline void SetBattleGroundStatus(bool value){m_GameStatus = value;}
-
-	inline bool GetBattleGameWin(){return m_GameWin;}
-	inline void SetBattleGameWin(bool value){m_GameWin = value;}
-
-	inline MapMgr * GetMapMgr() { return m_MapMgr; }
-	inline void SetMapMgr(MapMgr* mapmgr) { m_MapMgr = mapmgr; }
-	inline void SetMap(Map* map_) { m_Map = map_; }
-	inline Map * GetMap() { return m_Map; }
-
-	inline void SetInstanceID(int32 instanceid) { m_InstanceId = instanceid; }
-	inline int32 GetInstanceID() { return m_InstanceId; }
-	
-	void CreateInstance();
-
-	inline uint32 GetBattlegroundType(void)
-	{
-		return m_BattlegroundType;
-	}
-
-	void SpawnSpiritGuide(float x, float y, float z, float o, uint32 horde);
-	virtual bool GetRepopCoordinates(Player * plr, LocationVector & vec);
-
-protected:
-	/* Battleground */
-	uint32 m_ID;
-	int32 m_InstanceId;
-	std::string m_Name;
-	uint32 m_LevelMin;
-	uint32 m_LevelMax;
-	uint32 m_BattlegroundType;   // 1 = Warsong Gulch, 2 = Arathi Basin, 3 = Alterac Valley
-	Group* m_HordeGroup;
-	Group* m_AllianceGroup;
-
-	/* Scorekeeping */
-public:
-	uint32 m_TeamScores[2];								// Usually Alliance/Horde
-	std::map<uint64, BattlegroundScore> m_PlayerScores;	// Player scores.. usually I would say by Player* pointer, but it's easier to build with guid
-	
-
-	/* Player lists */
-	std::list<Player*> m_Players;
-	std::list<Player*> m_QueuedPlayers;
-
-	int32 event_GetInstanceID() { return m_InstanceId; }
-
-protected:
-	uint32 m_MaxPlayersPerTeam;
-	uint32 m_MaxPlayers;
-
-	/* Location */
-	uint32 m_MapId;
-	float m_TeamStartLocX[2];
-	float m_TeamStartLocY[2];
-	float m_TeamStartLocZ[2];
-	float m_TeamStartLocO[2];
-
-	MapMgr *m_MapMgr;
-	Map * m_Map;
-
+	/* Deletes a battleground (called from MapMgr) */
+	void DeleteBattleground(CBattleground * bg);
 };
-	
-#define sBattlegroundMgr BattlegroundMgr::getSingleton()
+
+class CBattleground : public EventableObject
+{
+	MapMgr * m_mapMgr;
+	uint32 m_id;
+	uint32 m_levelGroup;
+
+	/* Our player set */
+	set<Player*> m_players;
+
+	/* Team->Player Map */
+	set<Player*> m_playersT[2];
+
+	/* World States. This should be moved to mapmgr instead for world pvp :/ */
+	map<uint32, uint32> m_worldStates;
+
+	/* PvP Log Data Map */
+	map<uint32, BGScore> m_pvpData;
+
+	/* Lock for all player data */
+	Mutex m_mainLock;
+
+	/* Player count per team */
+	uint32 m_playerCountPerTeam;
+
+	/* "pending" players */
+	set<Player*> m_pendPlayers[2];
+
+public:
+
+	/* Hook Functions */
+	virtual void HookOnPlayerDeath(Player * plr) = 0;
+
+	/* Repopping - different battlegrounds have different ways of handling this */
+	virtual bool HookHandleRepop(Player * plr) = 0;
+
+	/* In CTF battlegrounds mounting will cause you to lose your flag. */
+	virtual void HookOnMount(Player * plr) = 0;
+
+	/* Only used in CTF (as far as I know) */
+	virtual void HookFlagDrop(Player * plr, GameObject * obj) = 0;
+	virtual void HookFlagStand(Player * plr, GameObject * obj) = 0;
+
+	/* Used when a player kills a unit/player */
+	virtual void HookOnPlayerKill(Player * plr, Unit * pVictim) = 0;
+
+	/* On Area Trigger */
+	virtual void HookOnAreaTrigger(Player * plr, uint32 id) = 0;
+
+	/* Retreival Functions */
+	inline uint32 GetId() { return m_id; }
+	inline uint32 GetLevelGroup() { return m_levelGroup; }
+	inline MapMgr* GetMapMgr() { return m_mapMgr; }
+
+	/* Creating a battleground requires a pre-existing map manager */
+	CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup);
+	virtual ~CBattleground();
+
+	/* Send our current world states to a player . */
+	void SendWorldStates(Player * plr);
+
+	/* Send the pvp log data of all players to this player. */
+	void SendPVPData(Player * plr);
+
+	/* Get the starting position for this team. */
+	virtual LocationVector * GetStartingCoords(uint32 Team) = 0;
+
+	/* Send a packet to the entire battleground */
+	void DistributePacketToAll(WorldPacket * packet);
+
+	/* send a packet to only this team */
+	void DistributePacketToTeam(WorldPacket * packet, uint32 Team);
+
+	/* Full? */
+	inline bool IsFull() { return (!HasFreeSlots(0) && !HasFreeSlots(1)); }
+
+	/* Are we full? */
+	inline bool HasFreeSlots(uint32 Team) { m_mainLock.Acquire(); bool res = ((m_playersT[Team].size() + m_pendPlayers[Team].size()) >= m_playerCountPerTeam); m_mainLock.Release(); return res; }
+
+	/* Add Player */
+	void AddPlayer(Player * plr);
+
+	/* Remove Player */
+	void RemovePlayer(Player * plr);
+
+	/* Port Player */
+	void PortPlayer(Player * plr);
+
+	/* Gets the number of free slots */
+	inline uint32 GetFreeSlots(uint32 t)
+	{
+		m_mainLock.Acquire();
+		uint32 s = m_playerCountPerTeam - m_playersT[t].size() - m_pendPlayers[t].size();
+		m_mainLock.Release();
+		return s;
+	}
+};
+
+#define BattlegroundManager CBattlegroundManager::getSingleton( )
+
 	
 #endif

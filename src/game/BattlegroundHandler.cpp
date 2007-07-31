@@ -37,7 +37,7 @@ void WorldSession::HandleBattlefieldPortOpcode(WorldPacket &recv_data)
 	else
 	{
 		// if we are already in a BG
-		Battleground *lastbg = sBattlegroundMgr.GetBattleground(GetPlayer()->m_bgLastBattlegroundID);
+/*		Battleground *lastbg = sBattlegroundMgr.GetBattleground(GetPlayer()->m_bgLastBattlegroundID);
 		if(lastbg)
 			lastbg->RemovePlayer(GetPlayer(), false, false, false);
 			
@@ -46,14 +46,14 @@ void WorldSession::HandleBattlefieldPortOpcode(WorldPacket &recv_data)
 		if(!bg)
 			sLog.outError("BATTLEGROUND: Warning! Could not find battleground instance %d", GetPlayer()->m_bgBattlegroundID);
 		else
-			bg->AddPlayer(GetPlayer(), true, true);
+			bg->AddPlayer(GetPlayer(), true, true);*/
 	}
 }
 
 void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket &recv_data)
 {
 	//sLog.outDebug("BATTLEGROUND: Recieved CMSG_BATTLEFIELD_STATUS packet.");
-	
+	/*
 	if(!GetPlayer()->m_bgInBattleground || GetPlayer()->GetCurrentBattleground() == NULL)
 	{
 		WorldPacket pkt;
@@ -68,7 +68,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket &recv_data)
 	uint32 CurrentTime = uint32(time(NULL));
 	pkt = sBattlegroundMgr.BuildBattlegroundStatusPacket(0, bg->GetBattlegroundType(), bg->GetInstanceID(), 3, CurrentTime, 0);
 	SendPacket(pkt);
-	delete pkt;
+	delete pkt;*/
 }
 
 void WorldSession::HandleBattlefieldListOpcode(WorldPacket &recv_data)
@@ -81,10 +81,10 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 {
 	if(!pCreature)
 		return;
-	
+	/*
 	WorldPacket * pkt = sBattlegroundMgr.BuildBattlegroundListPacket(pCreature->GetGUID(), _player, mapid);
 	SendPacket(pkt);
-	delete pkt;
+	delete pkt;*/
 }
 
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)
@@ -95,17 +95,17 @@ void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket &recv_data)
 {
 	sLog.outString("Recieved CMSG_LEAVEBATTLEFIELD");
-	Battleground *bg = GetPlayer()->GetCurrentBattleground();
+	/*Battleground *bg = GetPlayer()->GetCurrentBattleground();
 	if(!bg)
 		return;
-	bg->RemovePlayer(GetPlayer(),true,true,!bg->m_GameStatus);
+	bg->RemovePlayer(GetPlayer(),true,true,!bg->m_GameStatus);*/
 }
 
 void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket &recv_data)
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 8);
-	if(!GetPlayer()->m_bgInBattleground) return;
+	/*if(!GetPlayer()->m_bgInBattleground) return;
 	Battleground *bg = GetPlayer()->GetCurrentBattleground();
 	if(!bg)
 		return;
@@ -120,7 +120,7 @@ void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket &recv_data)
 	ResTime *= 1000;	// 1000 ms per sec
 	rtime = ResTime;
 	data << guid << rtime;
-	SendPacket(&data);
+	SendPacket(&data);*/
 }
 
 void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket &recv_data)
@@ -128,25 +128,25 @@ void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket &recv_data)
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 8);
 	sLog.outString("Recieved CMSG_AREA_SPIRITHEALER_QUEUE");
-	uint64 guid;
+	/*uint64 guid;
 	recv_data >> guid;
 	sLog.outDetail("Guid: "I64FMT"", guid);
 	Battleground *bg = GetPlayer()->GetCurrentBattleground();
 	if(bg)
-		bg->m_ReviveQueue[guid] = _player->GetGUID();
+		bg->m_ReviveQueue[guid] = _player->GetGUID();*/
 }
 
 void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket &recv_data)
-{
+{/*
 	Battleground *bg = sBattlegroundMgr.GetBattleground(GetPlayer()->m_bgBattlegroundID);
 	if(bg == NULL) return;
 	WorldPacket *pkt = bg->BuildPlayerPositionsPacket(GetPlayer()); 
 	SendPacket(pkt);
-	delete pkt;
+	delete pkt;*/
 }
 
 void WorldSession::HandleBattleMasterJoinOpcode(WorldPacket &recv_data)
-{
+{/*
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 17);
 	sLog.outString("BATTLEGROUND: Recieved CMSG_BATTLEMASTER_JOIN");
@@ -171,11 +171,11 @@ void WorldSession::HandleBattleMasterJoinOpcode(WorldPacket &recv_data)
 		pkt = sBattlegroundMgr.BuildBattlegroundStatusPacket(0, BattleGroundType, (instance==0 ? 1 : instance), 2, 120, 0);
 		SendPacket(pkt);
 		delete pkt;
-	}
+	}*/
 }
 
 void WorldSession::HandleArenaJoinOpcode(WorldPacket &recv_data)
-{
+{/*
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 11);
 	sLog.outString("BATTLEGROUND: Recieved CMSG_ARENA_JOIN");
@@ -200,7 +200,7 @@ void WorldSession::HandleArenaJoinOpcode(WorldPacket &recv_data)
 		pkt = sBattlegroundMgr.BuildBattlegroundStatusPacket(0, 5, 1, 2, 120, 0); // ask for player to join
 		SendPacket(pkt);
 		delete pkt;
-	}
+	}*/
 }
 
 void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket &recv_data)
@@ -209,11 +209,11 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket &recv_data)
 }
 
 void WorldSession::HandlePVPLogDataOpcode(WorldPacket &recv_data)
-{
+{/*
 	Battleground *bg = sBattlegroundMgr.GetBattleground(GetPlayer()->m_bgBattlegroundID);
 	if(bg == NULL) return;
 	WorldPacket *pkt = bg->BuildPVPLogDataPacket(GetPlayer(), bg->GetBattleGroundStatus(), bg->GetBattleGameWin());
 	SendPacket(pkt);
-	delete pkt;
+	delete pkt;*/
 }
 

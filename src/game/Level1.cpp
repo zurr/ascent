@@ -281,10 +281,6 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession *m_session)
 
 		Player * plr = m_session->GetPlayer();
 
-		//incase they are ported out of a battleground
-		if(plr->m_bgInBattleground)
-			plr->GetCurrentBattleground()->RemovePlayer(plr, false);
-
 		if(plr->GetMapMgr()==chr->GetMapMgr())
 			chr->_Relocate(plr->GetMapId(),plr->GetPosition(),false,false);
 		else

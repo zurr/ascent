@@ -276,7 +276,7 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 	if(_player->isCasting())
 		_player->InterruptSpell();
 
-	if(_player->InGroup() && !_player->m_bgInBattleground)
+	if(_player->InGroup() && !_player->m_bg)
 	{
 		Group * party = _player->GetGroup();
 		if(party)
@@ -1111,21 +1111,16 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	case GAMEOBJECT_TYPE_FLAGSTAND:
 		{
 			// battleground/warsong gulch flag
-			// CAPTURE!
-			if(plyr->GetCurrentBattleground() != NULL)
-			{
-				// Send "capture" message to battleground
-				plyr->GetCurrentBattleground()->HandleBattlegroundEvent(plyr, obj, BGEVENT_WSG_CAPTURE_FLAG);
-			}
+			if(plyr->m_bg)
+				plyr->m_bg->HookFlagStand(plyr, obj);
+
 		}break;
 	case GAMEOBJECT_TYPE_FLAGDROP:
 		{
 			// Dropped flag
-			if(plyr->GetCurrentBattleground() != NULL)
-			{			
-				// Send "capture" message to battleground
-				plyr->GetCurrentBattleground()->HandleBattlegroundEvent(plyr, obj, BGEVENT_WSG_PICKUP_FLAG);
-			}
+			if(plyr->m_bg)
+				plyr->m_bg->HookFlagDrop(plyr, obj);
+
 		}break;
 	case GAMEOBJECT_TYPE_QUESTGIVER:
 		{

@@ -225,46 +225,6 @@ MapMgr* WorldCreator::GetInstance(uint32 instanceId)
 	return NULL;
 }
 
-void WorldCreator::CreateBattlegroundInstance(Battleground* m_Battleground)
-{
-	Map* instance_map = GetMap(m_Battleground->GetMapId());
-	// Create a new instance of this battleground.
-	ASSERT(instance_map);
-	
-	uint32 instanceId = GenerateInstanceID();
-	m_Battleground->SetInstanceID(instanceId);
-
-	MapMgr * mapMgr = instance_map->CreateMapMgrInstance(instanceId);
-	ASSERT(mapMgr);
-	mapMgr->m_battleground = m_Battleground;
-
-	m_Battleground->SetMapMgr(mapMgr);
-	m_Battleground->SetMap(instance_map);
-}
-
-void WorldCreator::DestroyBattlegroundInstance(Battleground* m_Battleground)
-{
-	Map* instance_map = GetMap(m_Battleground->GetMapId());
-	ASSERT(instance_map != NULL);
-
-	// this kills mapmgr
-	instance_map->DestroyMapMgrInstance(m_Battleground->GetInstanceID());
-
-	// null out remaining ptr's
-	m_Battleground->SetMapMgr(NULL);
-	m_Battleground->SetInstanceID(0);
-}
-
-void WorldCreator::DestroyBattlegroundInstance(uint32 mapid, uint32 instanceid)
-{
-	Map* instance_map = GetMap(mapid);
-	ASSERT(instance_map != NULL);
-
-	// this kills mapmgr
-	instance_map->DestroyMapMgrInstance(instanceid);
-}
-
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Instance Manager
 // instance creation and basic management

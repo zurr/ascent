@@ -33,6 +33,7 @@ class Player;
 class Pet;
 class Transporter;
 class Corpse;
+class CBattleground;
 
 
 enum MapMgrTimers
@@ -301,7 +302,7 @@ public:
 	GameObjectSet activeGameObjects;
 	CreatureSet activeCreatures;
 	EventableObjectHolder eventHolder;
-	Battleground * m_battleground;
+	CBattleground * m_battleground;
 };
 
 #endif

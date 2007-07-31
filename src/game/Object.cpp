@@ -1379,6 +1379,7 @@ void Object::UpdateOppFactionSet()
 
 void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras)
 {
+	Player * plr = 0;
 	if(!pVictim || !pVictim->isAlive())
 		return;
 	if(pVictim->GetTypeId() == TYPEID_PLAYER && static_cast<Player*>(pVictim)->GodModeCheat == true)
@@ -1424,7 +1425,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		if(IsPlayer() && !((Player*)this)->isInCombat())
 			sHookInterface.OnEnterCombat(((Player*)this), ((Player*)this));
 
-		Player * plr = 0;
+		plr = 0;
 		if(IsPet())
 			plr = static_cast<Pet*>(this)->GetPetOwner();
 		else if(IsPlayer())
@@ -1527,8 +1528,16 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	}
 
 	//* BATTLEGROUND DAMAGE COUNTER *//
-	if(IsPlayer() && ((Player*)this)->m_bgScore != 0 && pVictim != this)
-		((Player*)this)->m_bgScore->DamageDone += damage;
+	if(pVictim != this)
+	{
+		if(IsPlayer())
+			plr = ((Player*)this);
+		else if(IsPet())
+			plr = ((Pet*)this)->GetPetOwner();
+
+		if(plr && plr->m_bgScore)
+			plr->m_bgScore->DamageDone += damage;
+	}
    
 	uint32 health = pVictim->GetUInt32Value(UNIT_FIELD_HEALTH );
 
@@ -1700,58 +1709,40 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			}
 		}
 		/* -------------------------------- HONOR + BATTLEGROUND CHECKS ------------------------ */
-		if(this->IsPlayer())		// Honor System Checks
+		plr = 0;
+		if(IsPlayer())
+			plr = ((Player*)this);
+		else if(IsPet())
+			plr = ((Pet*)this)->GetPetOwner();
+		
+		if(plr)
 		{
-			if(pVictim->IsPlayer() && ((Player*)pVictim)->GetCurrentBattleground() != NULL && ((Player*)this)->GetCurrentBattleground() != NULL)
-			{
-				if(((Player*)pVictim)->m_bgInBattleground)
-				{					
-					pVictim->SetFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
+			if(plr->m_bg != 0)
+				plr->m_bg->HookOnPlayerKill(plr, pVictim);
 
-					// set loot
-					pVictim->loot.gold = rand() % 150 + 50;
-				}
-
-				if(((Player*)pVictim)->GetCurrentBattleground()->GetMapId() == 489)
-					((Player*)pVictim)->GetCurrentBattleground()->HandleBattlegroundEvent(this, pVictim, BGEVENT_WSG_PLAYER_KILL);
-				else if(((Player*)pVictim)->GetCurrentBattleground()->GetMapId() == 529)
-					((Player*)pVictim)->GetCurrentBattleground()->HandleBattlegroundEvent(this, pVictim, BGEVENT_AB_PLAYER_KILL);
-				else if(((Player*)pVictim)->GetCurrentBattleground()->GetMapId() == 30)
-					((Player*)pVictim)->GetCurrentBattleground()->HandleBattlegroundEvent(this, pVictim, BGEVENT_AV_PLAYER_KILL);
-			}
-			else if( pVictim->IsUnit() && ((Player*)this)->GetCurrentBattleground() != NULL )
-			{
-				
-				if(pVictim->GetEntry() == 11946) // Horde General Drek'Thar
-						((Player*)this)->GetCurrentBattleground()->HandleBattlegroundEvent(this, pVictim, BGEVENT_AV_GENERAL_DEAD_HORDE);
-				else if(pVictim->GetEntry() == 11948) // Alliance General Vanndar Stormpike
-						((Player*)this)->GetCurrentBattleground()->HandleBattlegroundEvent(this, pVictim, BGEVENT_AV_GENERAL_DEAD_ALLIANCE);
-				
-			}
-			
 			if(pVictim->IsPlayer())
 			{
-				sHookInterface.OnKillPlayer(((Player*)this), ((Player*)pVictim));
-				if(((Unit*)this)->getLevel() > pVictim->getLevel())
+				sHookInterface.OnKillPlayer(plr, ((Player*)pVictim));
+				if(plr->getLevel() > pVictim->getLevel())
 				{
-					unsigned int diff = ((Unit*)this)->getLevel() - pVictim->getLevel();
+					unsigned int diff = plr->getLevel() - pVictim->getLevel();
 					if(diff <= 8)
 					{
-						HonorHandler::OnPlayerKilledUnit(static_cast<Player*>(this), pVictim);
+						HonorHandler::OnPlayerKilledUnit(plr, pVictim);
 						SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
 					}
 					else RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
 				}
 				else
 				{
-					HonorHandler::OnPlayerKilledUnit(static_cast<Player*>(this), pVictim);
+					HonorHandler::OnPlayerKilledUnit(plr, pVictim);
 					SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
 				}
 			}
 			else
 			{
 				// REPUTATION
-				((Player*)this)->Reputation_OnKilledUnit(pVictim);
+				plr->Reputation_OnKilledUnit(pVictim);
 				RemoveFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_LASTKILLWITHHONOR);
 			}
 		}

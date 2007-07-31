@@ -1115,6 +1115,9 @@ void MapMgr::Do()
 
 	sThreadMgr.RemoveThread(this);
 
+	if(m_battleground)
+		BattlegroundManager.DeleteBattleground(m_battleground);
+
 	if(delete_pending)
 	{
 		thread_is_alive = false;
@@ -1128,15 +1131,6 @@ void MapMgr::Do()
 	// make sure this executes in the correct context. otherwise,
 	// with per-thread heap management we're gonna have issues.
 
-	if(m_battleground)
-	{
-		uint32 ID = m_battleground->GetID();
-		thread_is_alive = false;
-		sBattlegroundMgr.RemoveBattleground(ID);
-		sWorldCreator.DestroyBattlegroundInstance(GetMapId(), GetInstanceID());
-		return;
-	}
-	
 	// variable 't' never been initialized
 	if(RaidExpireTime && t >= RaidExpireTime)
 	{

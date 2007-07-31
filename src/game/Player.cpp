@@ -160,16 +160,16 @@ Player::Player ( uint32 high, uint32 low )
 	m_AllowAreaTriggerPort  = true;
 
 	// Battleground
-	m_bgInBattleground	  = false;
-	m_bgBattlegroundID	  = 0;
-	m_bgLastBattlegroundID  = 0;
 	m_bgEntryPointMap	   = 0;
 	m_bgEntryPointX		 = 0;	
 	m_bgEntryPointY		 = 0;
 	m_bgEntryPointZ		 = 0;
 	m_bgEntryPointO		 = 0;
+	m_bgQueueType = 0;
+	m_bgQueueInstanceId = 0;
+	m_bgIsQueued = false;
+	m_bg = 0;
 
-	m_bgTeam				= 0;
 	m_bgHasFlag			 = false;
 	m_bgEntryPointInstance  = 0;
 
@@ -3529,7 +3529,7 @@ void Player::RepopRequestedPlayer()
 	UpdateVisibility();
 
 	// If we're in battleground, remove the skinnable flag.. has bad effects heheh
-	if(m_bgInBattleground && HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_SKINNABLE))
+	if(HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_SKINNABLE))
 		RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_SKINNABLE);
 
 	CreateCorpse();
@@ -3599,13 +3599,8 @@ void Player::KillPlayer()
 	setDeathState(JUST_DIED);
 
 	// Battleground stuff
-	if(m_bgInBattleground && GetCurrentBattleground() != NULL)
-	{
-		if(GetCurrentBattleground()->GetMapId() == 489)
-			GetCurrentBattleground()->HandleBattlegroundEvent(this, NULL, BGEVENT_WSG_PLAYER_DEATH);
-		else if(GetCurrentBattleground()->GetMapId() == 529)
-			GetCurrentBattleground()->HandleBattlegroundEvent(this, NULL, BGEVENT_AB_PLAYER_DEATH);
-	}
+	if(m_bg)
+		m_bg->HookOnPlayerDeath(this);
 
 	EventDeath();
 	
@@ -3663,7 +3658,7 @@ void Player::CreateCorpse()
 	pCorpse->SetUInt32Value( CORPSE_FIELD_FLAGS, 4 );
 	pCorpse->SetUInt32Value( CORPSE_FIELD_DISPLAY_ID, GetUInt32Value(UNIT_FIELD_DISPLAYID) );
 
-	if(m_bgInBattleground)
+	if(m_bg)
 	{
 		// remove our lootable flags
 		if(HasFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE))
@@ -3790,16 +3785,15 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 	//float closestX = 0, closestY = 0, closestZ = 0, closestO = 0;
 	StorageContainerIterator<GraveyardTeleport> * itr;
 
-	Battleground * bg = GetCurrentBattleground();
 	LocationVector src(ox, oy, oz);
 	LocationVector dest(0, 0, 0, 0);
 	LocationVector temp;
 	float closest_dist = 999999.0f;
 	float dist;
 
-	if(bg != 0 && bg->GetRepopCoordinates(this, dest))
+	if(m_bg->HookHandleRepop(this))
 	{
-		// Do nothing :)
+		return;
 	}
 	else
 	{
@@ -5124,11 +5118,6 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 void Player::EventAllowTiggerPort(bool enable)
 {
 	m_AllowAreaTriggerPort = enable;
-}
-
-Battleground* Player::GetCurrentBattleground()
-{
-	return sBattlegroundMgr.GetBattleground(uint8(m_bgBattlegroundID));
 }
 
 uint32 Player::CalcTalentResetCost(uint32 resetnum)

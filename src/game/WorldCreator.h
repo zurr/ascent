@@ -100,9 +100,6 @@ public:
 	void InstanceSoftReset(MapMgr *mMapMgr);
 	void InstanceHardReset(MapMgr *mMapMgr);
 
-	void CreateBattlegroundInstance(Battleground* m_Battleground);
-	void DestroyBattlegroundInstance(Battleground* m_Battleground);
-	void DestroyBattlegroundInstance(uint32 mapid, uint32 instanceid); //only to be used after bg class is destroyed.
 	void BuildXMLStats(char * m_file);
 	void CreateMap(uint32 mapid) { _CreateMap(mapid); }
 

@@ -339,17 +339,6 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 				GetPlayer()->SetFlag(PLAYER_FLAGS, 0x02);
 				if(sWorld.GetKickAFKPlayerTime())
 					sEventMgr.AddEvent(GetPlayer(),&Player::SoftDisconnect,EVENT_PLAYER_SOFT_DISCONNECT,sWorld.GetKickAFKPlayerTime(),1);
-
-				// Kick me from my battleground now, since I'm useless.
-				uint32 battlegroundType = sBattlegroundMgr.GetBattleGroundTypeByMapId(GetPlayer()->GetMapId());
-				if(battlegroundType != 0)
-				{
-					Battleground *battleground = sBattlegroundMgr.GetBattlegroundByInstanceID(GetPlayer()->GetInstanceID(), battlegroundType);
-					if(battleground != NULL)
-					{
-						battleground->RemovePlayer(GetPlayer());
-					}
-				}
 			}			
 		} break;
 	case CHAT_MSG_DND:

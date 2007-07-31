@@ -1084,12 +1084,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 	if(!unitTarget || unitTarget->GetTypeId()!= TYPEID_PLAYER)
 		return;
 
-	if(m_spellInfo->Id != 1 && playerTarget->m_bgInBattleground)
-	{
-		Battleground * bg = playerTarget->GetCurrentBattleground();
-		if(bg)
-			sEventMgr.AddEvent(bg, &Battleground::RemovePlayerFromBattleground, playerTarget, EVENT_BATTLEGROUND_REMOVE, 1, 1);
-	}
+	/* TODO: Remove Player From bg */
 
 	// Try a dummy spell handler.
 	if(sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
@@ -3056,20 +3051,6 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 			p_caster->RemoveAura(p_caster->Seal);
 		}break;
 	}
-
-	if(!gameObjTarget)
-		return;
-	
-	Battleground *cbg = p_caster->GetCurrentBattleground();
-	
-	if(!cbg) 
-		return;
-	
-	if(p_caster->GetMapId() == 529)
-		((ArathiBasin*)cbg)->HandleBanner(p_caster,gameObjTarget,spellId);
-	else if(p_caster->GetMapId() == 30)
-		((AlteracValley*)cbg)->HandleBanner(p_caster,gameObjTarget,spellId);
-
 }
 
 void Spell::SpellEffectSanctuary(uint32 i) // Stop all attacks made to you

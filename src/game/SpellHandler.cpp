@@ -244,15 +244,10 @@ void WorldSession::HandleCancelAuraOpcode( WorldPacket& recvPacket)
 	recvPacket >> spellId;
 	Player *plyr = GetPlayer();
 	
-	if(plyr && plyr->GetCurrentBattleground() != NULL && spellId == (23333+(plyr->m_bgTeam*2)))
-		plyr->GetCurrentBattleground()->HandleBattlegroundEvent(plyr, NULL, BGEVENT_WSG_PLAYER_DIED_WITH_FLAG);
-	else
+	for(uint32 x = 0; x < MAX_AURAS+MAX_POSITIVE_AURAS; ++x)
 	{
-		for(uint32 x = 0; x < MAX_AURAS+MAX_POSITIVE_AURAS; ++x)
-		{
-			if(_player->m_auras[x] && _player->m_auras[x]->IsPositive() && _player->m_auras[x]->GetSpellId() == spellId)
-				_player->m_auras[x]->Remove();
-		}
+		if(_player->m_auras[x] && _player->m_auras[x]->IsPositive() && _player->m_auras[x]->GetSpellId() == spellId)
+			_player->m_auras[x]->Remove();
 	}
 	sLog.outDebug("removing aura %u",spellId);
 }

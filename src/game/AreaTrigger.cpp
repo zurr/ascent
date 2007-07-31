@@ -36,9 +36,9 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 	sQuestMgr.OnPlayerExploreArea(GetPlayer(),id);
 	
 	// if in BG handle is triggers
-	if(GetPlayer()->m_bgInBattleground && GetPlayer()->GetCurrentBattleground() != NULL)
+	if(_player->m_bg)
 	{
-		GetPlayer()->GetCurrentBattleground()->HandleBattlegroundAreaTrigger(GetPlayer(), id);
+		_player->m_bg->HookOnAreaTrigger(_player, id);
 		return;
 	}   
 
@@ -71,11 +71,11 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 		else if(pAreaTrigger->Mapid == 30)
 			pAreaTrigger->Mapid = 1;
 			
-		WorldPacket *pkt = sBattlegroundMgr.BuildBattlegroundListPacket(GetPlayer()->GetGUID(), _player,
+		/*WorldPacket *pkt = sBattlegroundMgr.BuildBattlegroundListPacket(GetPlayer()->GetGUID(), _player,
 			pAreaTrigger->Mapid);
 		SendPacket(pkt);
 		delete pkt;
-		return;
+		return;*/
 	}
 
 	bool bFailedPre = false;
