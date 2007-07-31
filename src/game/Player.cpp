@@ -3791,7 +3791,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 	float closest_dist = 999999.0f;
 	float dist;
 
-	if(m_bg->HookHandleRepop(this))
+	if(m_bg && m_bg->HookHandleRepop(this))
 	{
 		return;
 	}
