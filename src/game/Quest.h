@@ -96,8 +96,8 @@ enum QUEST_SHARE
 struct Quest
 {
 	uint32 id;
-	uint32 quest_sort;
 	uint32 zone_id;
+	uint32 quest_sort;
 	uint32 quest_flags;
 	uint32 min_level;
 	uint32 max_level;
