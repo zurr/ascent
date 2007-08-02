@@ -29,8 +29,13 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 {		
 	sLog.outDebug("AreaTrigger: %u", id);
 
-	WorldPacket data(80);
 	AreaTrigger * pAreaTrigger = AreaTriggerStorage.LookupEntry(id);
+
+	// Are we REALLY here?
+	if(_player->GetMapId() == pAreaTrigger->Mapid && (float)!_player->CalcDistance(LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z)) <= sWorld.m_UpdateDistance)
+		return;
+
+	WorldPacket data(80);
 
 	// Search quest log, find any exploration quests
 	sQuestMgr.OnPlayerExploreArea(GetPlayer(),id);

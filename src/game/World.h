@@ -468,6 +468,7 @@ public:
 	uint32 flood_seconds;
 	bool flood_message;
 	bool gm_skip_attunement;
+	float m_UpdateDistance;
 
 protected:
 	// update Stuff, FIXME: use diff
@@ -518,7 +519,6 @@ protected:
 	time_t m_lastTick;
 	uint32 TimeOut;
 
-	float m_UpdateDistance;
 	uint32 m_StartTime;
 	uint32 m_queueUpdateTimer;
 
