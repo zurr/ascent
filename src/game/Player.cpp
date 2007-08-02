@@ -7239,6 +7239,7 @@ void Player::CompleteLoading()
 	{
 		Kick(10000);
 		BroadcastMessage("This character is not allowed to play.");
+		BroadcastMessage("You have been banned for: %s", GetBanReason());
 	}
 }
 
