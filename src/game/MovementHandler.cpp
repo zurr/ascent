@@ -186,7 +186,8 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 					//it rL a*t*t
 					double coeff = 0.0000001*_player->m_fallTime*_player->m_fallTime;
 					uint32 damage = (uint32)(_player->GetUInt32Value(UNIT_FIELD_MAXHEALTH)*coeff);
-					// if(damage > GetPlayer()->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) { damage = GetPlayer()->GetUInt32Value(UNIT_FIELD_MAXHEALTH); }
+					if(damage > GetPlayer()->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) // Can only deal 100% damage.
+						damage = GetPlayer()->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
 
 					WorldPacket data(13);
 					data.SetOpcode(SMSG_ENVIRONMENTALDAMAGELOG);
