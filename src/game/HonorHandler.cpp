@@ -53,40 +53,9 @@ void HonorHandler::PerformStartupTasks()
 	sLog.outString("  - Checking for out of date players and moving their kill values...");
 	uint32 next_update = GetNextUpdateTime();
 	uint32 now_update = time(NULL);
-	QueryResult * result = CharacterDatabase.Query("SELECT guid, killsToday, killsYesterday, killsLifeTime, honorToday, honorYesterday, honorPoints FROM characters WHERE lastDailyReset < %u", next_update);
-	if(!result)
-	{
-		sLog.outString("  - No players need to be updated.");
-	}
-	else
-	{
-		Field * fields = result->Fetch();
-		do 
-		{
-			uint32 guid = fields[0].GetUInt32();
-			uint32 killsToday = fields[1].GetUInt32();
-			uint32 killsYesterday = fields[2].GetUInt32();
-			uint32 killsLifeTime = fields[3].GetUInt32();
-			uint32 honorToday = fields[4].GetUInt32();
-			uint32 honorYesterday = fields[5].GetUInt32();
-			uint32 honorPoints = fields[6].GetUInt32();
 
-			killsYesterday = killsToday;
-			honorYesterday = honorToday;
-			killsToday = honorToday = 0;
+	CharacterDatabase.WaitExecute("UPDATE characters SET lastDailyReset = %u, killsYesterday = killsToday, honorYesterday = honorToday, killsToday = 0, honorToday = 0 WHERE lastDailyReset < %u", now_update, next_update);
 
-			CharacterDatabase.WaitExecute("UPDATE characters SET lastDailyReset = %u WHERE guid = %u", now_update, guid);
-			CharacterDatabase.WaitExecute("UPDATE characters SET killsToday = %u WHERE guid = %u", killsToday, guid);
-			CharacterDatabase.WaitExecute("UPDATE characters SET killsYesterday = %u WHERE guid = %u", killsYesterday, guid);
-			CharacterDatabase.WaitExecute("UPDATE characters SET killsLifeTime = %u WHERE guid = %u", killsLifeTime, guid);
-			CharacterDatabase.WaitExecute("UPDATE characters SET honorToday = %u WHERE guid = %u", honorToday, guid);
-			CharacterDatabase.WaitExecute("UPDATE characters SET honorYesterday = %u WHERE guid = %u", honorYesterday, guid);
-			CharacterDatabase.WaitExecute("UPDATE characters SET honorPoints = %u WHERE guid = %u", honorPoints, guid);
-
-		} while(result->NextRow());
-		sLog.outString("  - Honor re-calculated for %u players.", result->GetRowCount());
-		delete result;
-	}
 	sLog.outString("Honor System Ready.");
 }
 
