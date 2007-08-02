@@ -290,9 +290,22 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession *m_session)
 	}
 	else
 	{
-		char buf[256];
-		snprintf((char*)buf,256,"Player (%s) does not exist or is not logged in.", args);
-		SystemMessage(m_session, buf);
+		std::string name = args;
+		PlayerInfo * pinfo = objmgr.GetPlayerInfoByName(name);
+		if(!pinfo)
+		{
+			char buf[256];
+			snprintf((char*)buf,256,"Player (%s) does not exist.", args);
+			SystemMessage(m_session, buf);
+		}
+		else
+		{
+			Player * pPlayer = m_session->GetPlayer();
+			CharacterDatabase.Execute("UPDATE characters SET mapId = %u, positionX = %u, positionY = %u, positionZ = %u, zoneId = %u", pPlayer->GetMapId(), pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetZoneId());
+			char buf[256];
+			snprintf((char*)buf,256,"(Offline) %s has been summoned.", args);
+			SystemMessage(m_session, buf);
+		}
 	}
 	return true;
 }
