@@ -1170,7 +1170,8 @@ void Player::BuildEnumData( WorldPacket * p_data )
 
 	*p_data << GetUInt32Value(PLAYER_GUILDID);// guild
 
-	if(rename_pending)  *p_data << uint32(0x00A04342);  // wtf blizz? :P
+	//if(rename_pending)  *p_data << uint32(0x00A04342);  // wtf blizz? :P
+    if(rename_pending)  *p_data << float(48.90625f); // no wtf blizz
 	else if(isDead())   *p_data << (uint32)8704; // Dead (displaying as Ghost)
 	else				*p_data << (uint32)1;	// Alive
 
@@ -4090,7 +4091,7 @@ void Player::UpdateMaxSkills()
 	}
 }
 
-void Player::smsg_InitialActions()
+void Player::SendInitialActions()
 {
 	m_session->OutPacket(SMSG_ACTION_BUTTONS, 480, &mActions);
 }
@@ -5352,7 +5353,7 @@ void Player::SendInitialLogonPackets()
 	smsg_InitialSpells();
 
 	//Initial Actions
-	smsg_InitialActions();
+	SendInitialActions();
 
 	//Factions
 	smsg_InitialFactions();
