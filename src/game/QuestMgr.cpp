@@ -814,11 +814,13 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 						if(!slotresult.Result)
 						{
 							plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-							return;
 						}
-						Item *itm = objmgr.CreateItem(qst->reward_item[i], plr);
-						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_itemcount[i]));
-						plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+						else
+						{
+							Item *itm = objmgr.CreateItem(qst->reward_item[i], plr);
+							itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_itemcount[i]));
+							plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+						}
 					}
 					else
 					{
@@ -848,11 +850,12 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 					if(!slotresult.Result)
 					{
 						plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-						return;
 					}
-					Item *itm = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
-					itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_choiceitemcount[reward_slot]));
-					plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+					{
+						Item *itm = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_choiceitemcount[reward_slot]));
+						plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+					}
 				}
 				else
 				{
@@ -942,11 +945,12 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 						if(!slotresult.Result)
 						{
 							plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-							return;
 						}
-						Item *itm = objmgr.CreateItem(qst->reward_item[i], plr);
-						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_itemcount[i]));
-						plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+						{
+							Item *itm = objmgr.CreateItem(qst->reward_item[i], plr);
+							itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_itemcount[i]));
+							plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+						}
 					}
 					else
 					{
@@ -976,11 +980,13 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 					if(!slotresult.Result)
 					{
 						plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-						return;
 					}
-					Item *itm = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
-					itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_choiceitemcount[reward_slot]));
-					plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+					else 
+					{
+						Item *itm = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+						itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_choiceitemcount[reward_slot]));
+						plr->GetItemInterface()->SafeAddItem(itm,slotresult.ContainerSlot, slotresult.Slot);
+					}
 				}
 				else
 				{
