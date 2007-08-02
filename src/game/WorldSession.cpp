@@ -104,6 +104,9 @@ int WorldSession::Update(uint32 InstanceID)
 			return 0;
 		}
 
+		if(_player && _player->DuelingWith)
+			_player->EndDuel(DUEL_WINNER_RETREAT);
+
 		bDeleted = true;
 		LogoutPlayer(true);
 		// 1 - Delete session completely.
