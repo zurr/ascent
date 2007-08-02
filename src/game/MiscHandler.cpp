@@ -1751,7 +1751,7 @@ void WorldSession::HandleDismountOpcode(WorldPacket& recv_data)
 {
 	sLog.outDebug( "WORLD: Received CMSG_DISMOUNT"  );
 
-	if( !_player->IsInWorld() )
+	if( !_player->IsInWorld() || _player->GetTaxiState())
 		return;
 
 	if( _player->m_MountSpellId )
