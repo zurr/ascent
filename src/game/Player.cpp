@@ -1171,7 +1171,6 @@ void Player::BuildEnumData( WorldPacket * p_data )
 	*p_data << GetUInt32Value(PLAYER_GUILDID);// guild
 
 	if(rename_pending)  *p_data << uint32(0x00A04342);  // wtf blizz? :P
-	else if(m_banned)   *p_data << (uint32)7;	// Banned (cannot login)
 	else if(isDead())   *p_data << (uint32)8704; // Dead (displaying as Ghost)
 	else				*p_data << (uint32)1;	// Alive
 
@@ -7234,6 +7233,13 @@ void Player::CompleteLoading()
 	// useless logon spell
 	Spell *logonspell = new Spell(this, sSpellStore.LookupEntry(836), false, NULL);
 	logonspell->prepare(&targets);
+
+	// Banned
+	if(IsBanned())
+	{
+		Kick(10000);
+		BroadcastMessage("This character is not allowed to play.");
+	}
 }
 
 void Player::OnWorldPortAck()

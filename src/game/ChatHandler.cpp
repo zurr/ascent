@@ -35,6 +35,12 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 	recv_data >> type;
 	recv_data >> lang;
 
+	if(GetPlayer()->IsBanned())
+	{
+		GetPlayer()->BroadcastMessage("You cannot do that when banned.");
+		return;
+	}
+
 	if(lang != -1 && !GetPermissionCount() && sWorld.flood_lines)
 	{
 		/* flood detection, wheeee! */
