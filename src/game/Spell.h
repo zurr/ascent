@@ -1421,6 +1421,8 @@ public:
 	void SendCastSuccess(Object * target);
 	void SendCastSuccess(const uint64& guid);
 
+	bool duelSpell;
+
 protected:
 	bool m_usesMana;
 	bool failed;//for 5sr

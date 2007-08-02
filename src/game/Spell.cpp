@@ -112,6 +112,7 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 	m_spellInfo = info;
 	m_caster = Caster;
 	//m_CastItem = NULL;
+	duelSpell = false;
 	switch(Caster->GetTypeId())
 	{
 		case TYPEID_PLAYER:
@@ -119,6 +120,8 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 		i_caster=NULL;
 		u_caster=(Unit*)Caster;
 		p_caster=(Player*)Caster;
+		if(p_caster->DuelingWith)
+			duelSpell = true;
 		break;
 
 		case TYPEID_UNIT:
@@ -126,6 +129,8 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 		i_caster=NULL;
 		p_caster=NULL;
 		u_caster=(Unit*)Caster;
+		if(u_caster->IsPet() && ((Pet*)u_caster)->GetPetOwner()->DuelingWith)
+			duelSpell = true;
 		break;
 
 		case TYPEID_ITEM:
@@ -1403,6 +1408,16 @@ void Spell::AddStartCooldown()
 
 void Spell::cast(bool check)
 {
+	if(duelSpell && (
+		(p_caster && p_caster->GetDuelState() != DUEL_STATE_STARTED) ||
+		(u_caster && u_caster->IsPet() && ((Pet*)u_caster)->GetPetOwner()->GetDuelState() != DUEL_STATE_STARTED)))
+	{
+		// Can't cast that!
+		SendInterrupted(SPELL_FAILED_TARGET_FRIENDLY);
+		finish();
+		return;
+	}
+
 	sLog.outDebug("Spell::cast %u, Unit: %u", m_spellInfo->Id, m_caster->GetGUIDLow());
 	if(check)
 	{
