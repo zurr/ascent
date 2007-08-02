@@ -322,7 +322,13 @@ void EventableObject::event_Relocate()
 		
 		// no need to do this if we don't have any events, though.
 		if(m_events.size())
+		{
+			/* shitty sanity check. xUdd sucks. */
+			if(!nh)
+				nh = sEventMgr.GetEventHolder(-1);
+
 			nh->AddObject(this);
+		}
 
 		// reset our m_holder pointer and instance id
 		m_event_Instanceid = nh->GetInstanceID();
