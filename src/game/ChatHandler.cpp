@@ -440,4 +440,29 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
 	}
 }
 
+void WorldSession::HandleReportSpamOpcode(WorldPacket & recvPacket)
+{
+	CHECK_PACKET_SIZE(recvPacket, 29);
+
+	WorldPacket data(SMSG_REPORT_SPAM_RESPONSE, 1);
+	data << (uint8)0; // unk?
+	GetPlayer()->GetSession()->SendPacket(&data);
+
+	/* This whole thing is guess-work */
+	uint8 unk1;
+	uint64 reportedGuid;
+	uint32 unk2;
+	uint32 messagetype;
+	uint32 unk3;
+	uint32 unk4;
+	std::string message;
+	recvPacket >> unk1 >> reportedGuid >> unk2 >> messagetype >> unk3 >> unk4 >> message;
+
+	Player * rPlayer = objmgr.GetPlayer(reportedGuid);
+	if(!rPlayer)
+		return;
+
+	sSocialMgr.AddIgnore(GetPlayer(), rPlayer->GetName());
+}
+
 

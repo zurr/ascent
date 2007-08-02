@@ -474,6 +474,7 @@ protected:
 	/// Chat opcodes (Chat.cpp)
 	void HandleMessagechatOpcode(WorldPacket& recvPacket);
 	void HandleTextEmoteOpcode(WorldPacket& recvPacket);
+	void HandleReportSpamOpcode(WorldPacket& recvPacket);
 
 	/// Corpse opcodes (Corpse.cpp)
 	void HandleCorpseReclaimOpcode( WorldPacket& recvPacket );

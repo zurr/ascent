@@ -824,6 +824,7 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_TOGGLE_CLOAK].handler							  = &WorldSession::HandleToggleCloakOpcode;
 	WorldPacketHandlers[CMSG_TOGGLE_HELM].handler							   = &WorldSession::HandleToggleHelmOpcode;
 	WorldPacketHandlers[CMSG_SET_VISIBLE_RANK].handler							= &WorldSession::HandleSetVisibleRankOpcode;
+	WorldPacketHandlers[CMSG_REPORT_SPAM].handler								= &WorldSession::HandleReportSpamOpcode;
 
 	WorldPacketHandlers[MSG_ADD_DYNAMIC_TARGET_OBSOLETE].handler				= &WorldSession::HandleAddDynamicTargetOpcode;
 
