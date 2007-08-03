@@ -2614,7 +2614,7 @@ bool Player::LoadFromDB(uint32 guid)
 		end = strchr(start,',');
 		if(!end)break;
 		*end=0;
-		Player::LoginAura la;
+		LoginAura la;
 		la.id = atol(start);
 		start = end +1;
 		end = strchr(start,',');
@@ -7240,7 +7240,7 @@ void Player::CompleteLoading()
 	{
 		Kick(10000);
 		BroadcastMessage("This character is not allowed to play.");
-		BroadcastMessage("You have been banned for: %s", GetBanReason());
+		BroadcastMessage("You have been banned for: %s", GetBanReason().c_str());
 	}
 }
 

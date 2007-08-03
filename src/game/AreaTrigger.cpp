@@ -32,7 +32,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 	AreaTrigger * pAreaTrigger = AreaTriggerStorage.LookupEntry(id);
 
 	// Are we REALLY here?
-	if((_player->GetMapId() == pAreaTrigger->Mapid) && _player->CalcDistance(LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z)) > sWorld.GetUpdateDistance())
+	LocationVector l(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z);
+	if((_player->GetMapId() == pAreaTrigger->Mapid) && _player->CalcDistance(l) > sWorld.GetUpdateDistance())
 		return;
 
 	WorldPacket data(80);

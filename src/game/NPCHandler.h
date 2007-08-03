@@ -98,7 +98,7 @@ struct GossipNpc
 
 struct trainertype
 {
-	char* partialname;
+	const char* partialname;
 	uint32 type;
 };
 
