@@ -1,0 +1,31 @@
+Index: src/game/BattlegroundMgr.cpp
+===================================================================
+--- src/game/BattlegroundMgr.cpp    (revision 988)
++++ src/game/BattlegroundMgr.cpp    (working copy)
+@@ -28,6 +28,7 @@
+    559,    // Nagrand Arena
+    562,    // Blades Edge Arena
+    566,    // Netherstorm BG
++    572,    // Ruins of Lordaeron Arena
+};
+
+const static CreateBattlegroundFunc BGCFuncs[BATTLEGROUND_NUM_TYPES] = {
+@@ -38,6 +39,7 @@
+    NULL,                        // Nagrand
+    NULL,                        // Blades Edge
+    NULL,                        // Netherstorm
++    NULL,                        // Ruins of Lordaeron
+};
+
+CBattlegroundManager::CBattlegroundManager() : EventableObject()
+Index: src/game/BattlegroundMgr.h
+===================================================================
+--- src/game/BattlegroundMgr.h    (revision 988)
++++ src/game/BattlegroundMgr.h    (working copy)
+@@ -35,6 +35,7 @@
+    BATTLEGROUND_BLADES_EDGE_ARENA,
+    BATTLEGROUND_ALL_ARENAS,
+    BATTLEGROUND_EYE_OF_THE_STORM,
++    BATTLEGROUND_RUINS_OF_LORDAERON_ARENA,
+    BATTLEGROUND_NUM_TYPES,
+};
