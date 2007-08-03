@@ -193,6 +193,9 @@ public:
 
 	/* Deletes a battleground (called from MapMgr) */
 	void DeleteBattleground(CBattleground * bg);
+
+	/* Build SMSG_BATTLEFIELD_STATUS */
+	void SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time);
 };
 
 class CBattleground : public EventableObject
@@ -201,6 +204,7 @@ protected:
 	time_t m_nextPvPUpdateTime;
 	MapMgr * m_mapMgr;
 	uint32 m_id;
+	uint32 m_type;
 	uint32 m_levelGroup;
 
 	/* Team->Player Map */
@@ -220,6 +224,9 @@ protected:
 
 	/* "pending" players */
 	set<Player*> m_pendPlayers[2];
+
+	/* starting time */
+	uint32 m_startTime;
 
 public:
 
@@ -251,7 +258,7 @@ public:
 	inline MapMgr* GetMapMgr() { return m_mapMgr; }
 
 	/* Creating a battleground requires a pre-existing map manager */
-	CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup);
+	CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup, uint32 type);
 	virtual ~CBattleground();
 
 	/* Send our current world states to a player . */
@@ -292,6 +299,9 @@ public:
 	/* Port Player */
 	void PortPlayer(Player * plr);
 	virtual void OnCreate() = 0;
+
+	/* Remove pending player */
+	void RemovePendingPlayer(Player * plr);
 
 	/* Gets the number of free slots */
 	inline uint32 GetFreeSlots(uint32 t)

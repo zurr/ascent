@@ -547,13 +547,8 @@ public:
 
     
     void EventPortToGM(Player *p);
-	inline uint32 GetTeam()
-	{
-		uint32 r=getRace();
-		if(r==RACE_DWARF || r== RACE_GNOME || r==RACE_HUMAN || r==RACE_NIGHTELF || r == RACE_DRAENEI)
-			return 0;
-		else return 1;
-	}
+	inline uint32 GetTeam() { return m_team; }
+
 	inline bool IsInFeralForm()
 	{
 		int s = GetShapeShift();
@@ -992,6 +987,7 @@ public:
 	void Reset_ToLevel1();
 	// Battlegrounds xD
 	CBattleground * m_bg;
+	CBattleground * m_pendingBattleground;
 	uint32 m_bgEntryPointMap;
 	float m_bgEntryPointX;	
 	float m_bgEntryPointY;
@@ -1144,7 +1140,7 @@ public:
 	bool m_Autojoin;
 	bool m_AutoAddMem;
 	void StopMirrorTimer(uint32 Type);
-	BGScore* m_bgScore;
+	BGScore m_bgScore;
 	void UpdateChanceFields();
 	//Honor Variables
 	uint32 m_honorToday;
@@ -1326,6 +1322,8 @@ public:
 
 	Creature * m_tempSummon;
 
+	void RemoveFromBattlegroundQueue();
+
 protected:
 	LocationVector m_summonPos;
 	uint32 m_summonInstanceId;
@@ -1476,6 +1474,7 @@ protected:
 	uint32	    trigger_on_stun;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so i'm forced to used a special variable
 	uint32	    trigger_on_stun_chance; //also using this for mage "Frostbite" talent
 
+	uint32 m_team;
 	float       m_lastRunSpeed;
 	float       m_lastRunBackSpeed;
 	float       m_lastSwimSpeed;

@@ -18,7 +18,7 @@
 #include "StdAfx.h"
 
 initialiseSingleton(CBattlegroundManager);
-typedef CBattleground*(*CreateBattlegroundFunc)(MapMgr* mgr,uint32 iid,uint32 group);
+typedef CBattleground*(*CreateBattlegroundFunc)(MapMgr* mgr,uint32 iid,uint32 group, uint32 type);
 
 const static uint32 BGMapIds[BATTLEGROUND_NUM_TYPES] = {
 	0,		// 0
@@ -375,9 +375,10 @@ void CBattleground::SendWorldStates(Player * plr)
 	plr->GetSession()->SendPacket(&data);
 }
 
-CBattleground::CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup) : m_mapMgr(mgr), m_id(id), m_levelGroup(levelgroup)
+CBattleground::CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_levelGroup(levelgroup), m_type(type)
 {
 	m_nextPvPUpdateTime = 0;
+	m_startTime = World::UNIXTIME;
 }
 
 CBattleground::~CBattleground()
@@ -396,9 +397,58 @@ void CBattleground::UpdatePvPData()
 
 void CBattleground::AddPlayer(Player * plr)
 {
+	m_mainLock.Acquire();
 
+	/* This is called when the player is added, not when they port. So, they're essentially still queued, but not inside the bg yet */
+	m_pendPlayers[plr->GetTeam()].insert(plr);
+
+	/* Send a packet telling them that they can enter */
+	BattlegroundManager.SendBattlefieldStatus(plr, 2, m_type, m_id, 120000);		// You will be removed from the queue in 2 minutes.
+
+	/* Add an event to remove them in 2 minutes time. */
+	sEventMgr.AddEvent(plr, &Player::RemoveFromBattlegroundQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 120000, 1);
+	plr->m_pendingBattleground = this;
+
+	m_mainLock.Release();
 }
 
+void CBattleground::RemovePendingPlayer(Player * plr)
+{
+	m_mainLock.Acquire();
+	m_pendPlayers[plr->GetTeam()].erase(plr);
+	m_mainLock.Release();
+}
+
+void CBattleground::PortPlayer(Player * plr)
+{
+	m_mainLock.Acquire();
+
+	/* This is where we actually teleport the player to the battleground. */
+	plr->m_bgEntryPointX = plr->GetPositionX();
+	plr->m_bgEntryPointY = plr->GetPositionY();
+	plr->m_bgEntryPointZ = plr->GetPositionZ();
+	plr->m_bgEntryPointMap = plr->GetMapId();
+	plr->m_bgEntryPointInstance = plr->GetInstanceID();
+
+	plr->SafeTeleport(BGMapIds[m_type], m_mapMgr->GetInstanceID(), GetStartingCoords(plr->GetTeam()));
+	BattlegroundManager.SendBattlefieldStatus(plr, 3, m_type, m_id, World::UNIXTIME - m_startTime);	// Elapsed time is the last argument
+
+	m_pendPlayers[plr->GetTeam()].erase(plr);
+	m_players[plr->GetTeam()].insert(plr);
+	plr->m_pendingBattleground = 0;
+	plr->m_bg = this;
+	
+	if(!plr->IsPvPFlagged())
+		plr->SetPvPFlag();
+
+	/* Reset the score */
+	memset(&plr->m_bgScore, 0, sizeof(BGScore));
+
+	/* send him the world states */
+	SendWorldStates(plr);
+
+	m_mainLock.Release();
+}
 CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGroup)
 {
 	CreateBattlegroundFunc cfunc = BGCFuncs[Type];
@@ -421,7 +471,7 @@ CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGr
 
 	/* Call the create function */
 	iid = ++m_maxBattlegroundId;
-	bg = cfunc(mgr, iid, LevelGroup);	
+	bg = cfunc(mgr, iid, LevelGroup, Type);	
 	Log.Success("BattlegroundManager", "Created battleground type %u for level group %u.", Type, LevelGroup);
 	return bg;
 }
@@ -488,4 +538,40 @@ void CBattleground::PlaySoundToTeam(uint32 Team, uint32 Sound)
 	WorldPacket data(SMSG_PLAY_SOUND, 4);
 	data << Sound;
 	DistributePacketToTeam(&data, Team);
+}
+
+void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time)
+{
+	WorldPacket data(SMSG_BATTLEFIELD_STATUS, 30);
+	if(Status == 0)
+		data << uint64(0) << uint32(0);
+	else
+	{
+		if(Type < 4 || Type == 7)
+			data << uint8(0) << uint8(2);
+		else
+			data << uint8(2) << uint8(10);
+
+		data << uint32(0);
+		data << Type;
+		data << uint16(0x1F90);
+		data << InstanceID;
+		data << uint8(plr->GetTeam());
+		data << Status;
+
+		switch(Status)
+		{
+		case 1:					// Waiting in queue
+			data << uint32(60) << uint32(0);				// Time / Elapsed time
+			break;
+		case 2:					// Ready to join!
+			data << BGMapIds[Type] << Time;
+			break;
+		case 3:
+			data << BGMapIds[Type] << uint32(0) << Time << uint8(1);
+			break;
+		}
+	}
+
+	plr->GetSession()->SendPacket(&data);
 }

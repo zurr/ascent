@@ -25,7 +25,7 @@ class WarsongGulch : public CBattleground
 	uint32 m_flagHolders[2];
 	list<GameObject*> m_gates;
 public:
-	WarsongGulch(MapMgr * mgr, uint32 id, uint32 lgroup);
+	WarsongGulch(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t);
 	~WarsongGulch();
 
 	void HookOnPlayerDeath(Player * plr);
@@ -43,5 +43,5 @@ public:
 	LocationVector GetStartingCoords(uint32 Team);
 	void DropFlag(Player * plr);
 
-	static CBattleground * Create(MapMgr * m, uint32 i, uint32 l) { return new WarsongGulch(m, i, l); }
+	static CBattleground * Create(MapMgr * m, uint32 i, uint32 l, uint32 t) { return new WarsongGulch(m, i, l, t); }
 };

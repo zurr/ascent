@@ -283,7 +283,6 @@ Player::Player ( uint32 high, uint32 low )
 
 	m_AreaID				= 0;
 	m_actionsDirty		  = false;
-	m_bgScore			   = 0;
 	cannibalizeCount		= 0;
 	rageFromDamageDealt	 = 0;
 
@@ -341,6 +340,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_lastMoveType = 0;
 	m_tempSummon = 0;
 	m_spellcomboPoints = 0;
+	m_pendingBattleground = 0;
 }
 
 
@@ -541,6 +541,11 @@ bool Player::Create(WorldPacket& data )
 		m_session->Disconnect();
 		return false;
 	}
+
+	if(myRace->team_id == 7)
+		m_team = 0;
+	else
+		m_team = 1;
 
 	sLog.outString("Account %s creating a %s %s %s", m_session->GetAccountName().c_str(), gender ? "Female" : "Male", 
 		sCharRaceStore.LookupString(myRace->name2), sCharClassStore.LookupString(myClass->name));
@@ -2261,6 +2266,11 @@ bool Player::LoadFromDB(uint32 guid)
 		printf("guid %u failed to login, no race or class dbc found. (race %u class %u)\n", (unsigned int)guid, (unsigned int)getRace(), (unsigned int)getClass());
 		return false;
 	}
+
+	if(myRace->team_id == 7)
+		m_team = 0;
+	else
+		m_team = 1;
 
 	SetNoseLevel();
 
@@ -8098,4 +8108,11 @@ void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32
 	WorldPacket data(SMSG_SUMMON_REQUEST, 50);
 	data << uint64(Requestor) << ZoneID << uint32(120000);		// 2 minutes
 	m_session->SendPacket(&data);
+}
+
+void Player::RemoveFromBattlegroundQueue()
+{
+	m_pendingBattleground->RemovePendingPlayer(this);
+	sChatHandler.SystemMessage(m_session, "You were removed from the queue for the battleground for not joining after 2 minutes.");
+	m_pendingBattleground = 0;
 }

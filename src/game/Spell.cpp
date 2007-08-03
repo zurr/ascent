@@ -3504,8 +3504,7 @@ void Spell::Heal(int32 amount)
 		{
 			SendHealSpellOnPlayer(p_caster, ((Player*)unitTarget), amount, critical);
 		}
-		if(p_caster->m_bgScore != 0 && p_caster != unitTarget)
-			p_caster->m_bgScore->HealingDone += amount;
+		p_caster->m_bgScore.HealingDone += amount;
 	}
 	uint32 curHealth = unitTarget->GetUInt32Value(UNIT_FIELD_HEALTH);
 	uint32 maxHealth = unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH);

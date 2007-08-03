@@ -17,7 +17,7 @@
 
 #include "StdAfx.h"
 
-WarsongGulch::WarsongGulch(MapMgr * mgr, uint32 id, uint32 lgroup) : CBattleground(mgr, id, lgroup)
+WarsongGulch::WarsongGulch(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
 	m_flagHolders[0] = m_flagHolders[1] = 0;
 	
@@ -106,8 +106,7 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 		plr->RemoveAura(23333+(plr->GetTeam() * 2));
 
 		/* capture flag points */
-		if(plr->m_bgScore)
-			plr->m_bgScore->Misc1++;
+		plr->m_bgScore.Misc1++;
 
 		PlaySoundToAll(plr->GetTeam() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
 		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, plr->GetGUID(), "$N captured the %s flag!", plr->GetTeam() ? "Alliance" : "Horde");
@@ -118,8 +117,7 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 		/* give each player on that team a bonus 82 honor - burlex: is this correct amount? */
 		for(set<Player*>::iterator itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
 		{
-			if(plr->m_bgScore)
-				plr->m_bgScore->BonusHonor += 82;
+			plr->m_bgScore.BonusHonor += 82;
 			HonorHandler::AddHonorPointsToPlayer(plr, 82);
 		}
 
@@ -155,11 +153,8 @@ void WarsongGulch::HookFlagDrop(Player * plr, GameObject * obj)
 			if(m_homeFlags[x]->IsInWorld() == false)
 				m_homeFlags[x]->PushToWorld(m_mapMgr);
 
-			if(plr->m_bgScore)
-			{
-				plr->m_bgScore->Misc2++;
-				UpdatePvPData();
-			}
+			plr->m_bgScore.Misc2++;
+			UpdatePvPData();
 
 			SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, plr->GetGUID(), "The %s flag was returned to its base by $N!", plr->GetTeam() ? "Horde" : "Alliance");
 			PlaySoundToAll(plr->GetTeam() ? SOUND_HORDE_RETURNED : SOUND_ALLIANCE_RETURNED);
@@ -201,15 +196,15 @@ void WarsongGulch::HookFlagStand(Player * plr, GameObject * obj)
 
 void WarsongGulch::HookOnPlayerKill(Player * plr, Unit * pVictim)
 {
-	if(pVictim->IsPlayer() && plr->m_bgScore)
-		plr->m_bgScore->KillingBlows++;
+	if(pVictim->IsPlayer())
+		plr->m_bgScore.KillingBlows++;
+
 	UpdatePvPData();
 }
 
 void WarsongGulch::HookOnHK(Player * plr)
 {
-	if(plr->m_bgScore)
-		plr->m_bgScore->HonorableKills++;
+	plr->m_bgScore.HonorableKills++;
 	UpdatePvPData();
 }
 
@@ -235,8 +230,7 @@ LocationVector WarsongGulch::GetStartingCoords(uint32 Team)
 
 void WarsongGulch::HookOnPlayerDeath(Player * plr)
 {
-	if(plr->m_bgScore)
-		plr->m_bgScore->Deaths++;
+	plr->m_bgScore.Deaths++;
 
 	/* do we have the flag? */
 	if(plr->m_bgHasFlag)

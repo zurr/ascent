@@ -1535,8 +1535,8 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		else if(IsPet())
 			plr = ((Pet*)this)->GetPetOwner();
 
-		if(plr && plr->m_bgScore)
-			plr->m_bgScore->DamageDone += damage;
+		if(plr)
+			plr->m_bgScore.DamageDone += damage;
 	}
    
 	uint32 health = pVictim->GetUInt32Value(UNIT_FIELD_HEALTH );
