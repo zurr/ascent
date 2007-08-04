@@ -67,7 +67,7 @@ void LogonConsole::ProcessCmd(char *cmd)
 	typedef void (LogonConsole::*PTranslater)(char *str);
 	struct SCmd
 	{
-		char *name;
+		const char *name;
 		PTranslater tr;
 	};
 

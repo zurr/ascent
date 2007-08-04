@@ -82,7 +82,7 @@ void CConsole::ProcessCmd(char *cmd)
 	typedef void (CConsole::*PTranslater)(char *str);
 	struct SCmd
 	{
-		char *name;
+		const char *name;
 		PTranslater tr;
 	};
 

@@ -24,7 +24,7 @@
 #define ascent_optional_argument      2
 struct ascent_option
 {
-	char *name;
+	const char *name;
 	int has_arg;
 	int *flag;
 	int val;

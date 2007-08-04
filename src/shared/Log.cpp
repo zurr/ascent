@@ -27,7 +27,7 @@ initialiseSingleton( WorldLog );
 
 time_t UNIXTIME;
 #ifndef WIN32
-static char* colorstrings[TBLUE+1] = {
+static const char* colorstrings[TBLUE+1] = {
 "",
 "\033[22;31m",
 "\033[22;32m",

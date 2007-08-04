@@ -106,15 +106,18 @@ struct Addr
 
 #define DEF_VALUE_NOT_SET 0xDEADBEEF
 
+#ifdef WIN32
+        static const char * default_config_file = "ascent.conf";
+        static const char * default_realm_config_file = "realms.conf";
+#else
+        static const char * default_config_file = CONFDIR "/ascent.conf";
+        static const char * default_realm_config_file = CONFDIR "/realms.conf";
+#endif
+
 bool Master::Run(int argc, char ** argv)
 {
-#ifdef WIN32
-	char * config_file = "ascent.conf";
-	char * realm_config_file = "realms.conf";
-#else
-	char * config_file = CONFDIR "/ascent.conf";
-	char * realm_config_file = CONFDIR "/realms.conf";
-#endif
+	char * config_file = (char*)default_config_file;
+	char * realm_config_file = (char*)default_realm_config_file;
 
 	int file_log_level = DEF_VALUE_NOT_SET;
 	int screen_log_level = DEF_VALUE_NOT_SET;
