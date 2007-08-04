@@ -618,7 +618,7 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribu
 			for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
 			{
 				plr = *itr;
-				if(plr != pPlayer && !plr->IsVisible(pPlayer))
+				if(plr != pPlayer && !plr->IsInRangeSet(pPlayer))
 					plr->GetSession()->SendPacket(data);
 			}
 		}

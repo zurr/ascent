@@ -947,6 +947,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 						{
 							plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
 						}
+						else
 						{
 							Item *itm = objmgr.CreateItem(qst->reward_item[i], plr);
 							itm->SetUInt32Value(ITEM_FIELD_STACK_COUNT, uint32(qst->reward_itemcount[i]));
