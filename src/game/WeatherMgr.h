@@ -20,10 +20,23 @@
 
 #define WEATHER_DENSITY_UPDATE 0.05f
 
+/// Weather sound effects defines
+enum WeatherSounds
+{
+     WEATHER_NOSOUND                = 0,
+     WEATHER_RAINLIGHT              = 8533,
+     WEATHER_RAINMEDIUM             = 8534,
+     WEATHER_RAINHEAVY              = 8535,
+     WEATHER_SNOWLIGHT              = 8536,
+     WEATHER_SNOWMEDIUM             = 8537,
+     WEATHER_SNOWHEAVY              = 8538,
+     WEATHER_SANDSTORMLIGHT         = 8556,
+     WEATHER_SANDSTORMMEDIUM        = 8557,
+     WEATHER_SANDSTORMHEAVY         = 8558
+};
+
 class WeatherInfo;
 class WeatherMgr;
-
-void BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density);
 
 class WeatherMgr :  public Singleton < WeatherMgr >
 {
@@ -31,8 +44,12 @@ public:
 	WeatherMgr();
 	~WeatherMgr();
 
-	void LoadFromDB();
-	void SendWeather(Player *plr);
+	void    LoadFromDB();
+	void    SendWeather(Player *plr);
+    void    BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density);
+
+protected:
+    uint32  _GetWeatherSoundEffect(const uint32 Effect, const float Density);
 
 private:
 	std::map<uint32, WeatherInfo*> m_zoneWeathers;
@@ -50,9 +67,9 @@ public:
 	void SendUpdate(Player *plr);
 
 protected:
-	void _GenerateWeather();
+	void    _GenerateWeather();
 
-	uint32 m_zoneId;
+    uint32 m_zoneId;
 
 	uint32 m_totalTime;
 	uint32 m_currentTime;
