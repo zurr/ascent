@@ -34,8 +34,6 @@ WeatherMgr::~WeatherMgr()
 	m_zoneWeathers.clear();
 }
 
-
-
 void WeatherMgr::LoadFromDB()
 {
 	sLog.outString("  Loading Weather...");
@@ -67,7 +65,7 @@ void WeatherMgr::SendWeather(Player *plr)
 
 	if (itr == m_zoneWeathers.end())
 	{
-		WorldPacket data(SMSG_WEATHER, 13);
+		WorldPacket data(SMSG_WEATHER, 9);
 		BuildWeatherPacket(&data, 0, 0);
 		plr->GetSession()->SendPacket( &data );
 		plr->m_lastSeenWeather = 0;
@@ -86,50 +84,13 @@ void WeatherMgr::BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Den
     {
         *data << uint32 (0);        // effect
         *data << float  (0.0f);     // Density
-        *data << uint32 (0);        // Sound id
         *data << uint8  (0);		// unknown
         return;
     }
     /// all other weather effects
     *data << Effect;
     *data << Density;
-    *data << _GetWeatherSoundEffect(Effect,Density);
     *data << uint8(0);
-}
-
-uint32 WeatherMgr::_GetWeatherSoundEffect(uint32 Effect, float Density)
-{
-    switch(Effect)
-    {
-    case 1:                                             //rain
-        if(Density<0.33333334f)
-            return WEATHER_RAINLIGHT;
-        else if(Density  <0.6666667f)
-            return WEATHER_RAINMEDIUM;
-        else
-            return WEATHER_RAINHEAVY;
-        break;
-    case 2:                                             //snow
-        if(Density<0.33333334f)
-            return WEATHER_SNOWLIGHT;
-        else if(Density<0.6666667f)
-            return WEATHER_SNOWMEDIUM;
-        else
-            return WEATHER_SNOWHEAVY;
-        break;
-    case 3:                                             //storm
-        if(Density<0.33333334f)
-            return WEATHER_SANDSTORMLIGHT;
-        else if(Density<0.6666667f)
-            return WEATHER_SANDSTORMMEDIUM;
-        else
-            return WEATHER_SANDSTORMHEAVY;
-        break;
-    case 0:                                             //fine
-    default:
-        return WEATHER_NOSOUND;
-        break;
-    }
 }
 
 WeatherInfo::WeatherInfo()
@@ -208,7 +169,7 @@ void WeatherInfo::Update()
 
 void WeatherInfo::SendUpdate()
 {
-	WorldPacket data(SMSG_WEATHER, 13);
+	WorldPacket data(SMSG_WEATHER, 9);
 	sWeatherMgr.BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
 	sWorld.SendZoneMessage(&data, m_zoneId, 0);
 }
@@ -220,7 +181,7 @@ void WeatherInfo::SendUpdate(Player *plr)
 
 	plr->m_lastSeenWeather = m_currentEffect;
 
-	WorldPacket data(SMSG_WEATHER, 13);
+	WorldPacket data(SMSG_WEATHER, 9);
 	sWeatherMgr.BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
 	plr->GetSession()->SendPacket( &data );
 }

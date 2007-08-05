@@ -48,9 +48,6 @@ public:
 	void    SendWeather(Player *plr);
     void    BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density);
 
-protected:
-    uint32  _GetWeatherSoundEffect(const uint32 Effect, const float Density);
-
 private:
 	std::map<uint32, WeatherInfo*> m_zoneWeathers;
 };
