@@ -19,6 +19,47 @@
 
 initialiseSingleton( WeatherMgr );
 
+void BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density)
+{
+	data->Initialize(SMSG_WEATHER);
+	if(Effect == 0)
+		*data << uint32(0) << float(0.5f) << uint8(1);		// this is blizzlike!
+	else
+	{
+		uint32 Value;
+		switch(Effect)
+		{
+		case 1:		// Rain
+			if(Density >= 2.0f)
+				Value = 5;
+			else if(Density >= 1.5f)
+				Value = 4;
+			else if(Density >= 1.0f)
+				Value = 3;
+			else if(Density >= 0.5f)
+				Value = 2;
+			else
+				Value = 1;
+			break;
+		case 2:		// Snow
+			if(Density >= 2.0f)
+				Value = 8;
+			else if(Density >= 1.0f)
+				Value = 7;
+			else
+				Value = 6;
+			break;
+
+		default:
+			*data << uint32(0) << float(0.5f) << uint8(1);
+			return;
+			break;
+		}
+
+		*data << Effect << Density << uint8(1);
+	}
+}
+
 WeatherMgr::WeatherMgr()
 {
 }
@@ -69,28 +110,13 @@ void WeatherMgr::SendWeather(Player *plr)
 		BuildWeatherPacket(&data, 0, 0);
 		plr->GetSession()->SendPacket( &data );
 		plr->m_lastSeenWeather = 0;
+
+		return;
 	}
 	else
 	{
 		itr->second->SendUpdate(plr);
 	}
-}
-
-void WeatherMgr::BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density)
-{
-    data->Initialize(SMSG_WEATHER);
-    /// effect 0 is no special weather
-    if(Effect == 0)
-    {
-        *data << uint32 (0);        // effect
-        *data << float  (0.0f);     // Density
-        *data << uint8  (0);		// unknown
-        return;
-    }
-    /// all other weather effects
-    *data << Effect;
-    *data << Density;
-    *data << uint8(0);
 }
 
 WeatherInfo::WeatherInfo()
@@ -164,13 +190,14 @@ void WeatherInfo::Update()
 			return;
 		}
 	}
+
 	SendUpdate();
 }
 
 void WeatherInfo::SendUpdate()
 {
 	WorldPacket data(SMSG_WEATHER, 9);
-	sWeatherMgr.BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
+	BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
 	sWorld.SendZoneMessage(&data, m_zoneId, 0);
 }
 
@@ -182,6 +209,6 @@ void WeatherInfo::SendUpdate(Player *plr)
 	plr->m_lastSeenWeather = m_currentEffect;
 
 	WorldPacket data(SMSG_WEATHER, 9);
-	sWeatherMgr.BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
+	BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
 	plr->GetSession()->SendPacket( &data );
 }
