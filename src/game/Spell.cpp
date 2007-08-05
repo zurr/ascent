@@ -2645,33 +2645,56 @@ uint8 Spell::CanCast(bool rangetolerate)
 {
 	if(objmgr.IsSpellDisabled(m_spellInfo->Id))
 		return SPELL_FAILED_ERROR;
-
-	float maxr = 0;
+	
 	Unit *target = NULL;
+    float maxr = 0;
+
 	if(m_targets.m_unitTarget)
 	{
+        // checks for players
 		if(p_caster)
 		{
 			if(!rangetolerate && !p_caster->CanCastDueToCooldown(m_spellInfo))
 				return SPELL_FAILED_NOT_READY;
+            
+            // players that are mounted can not cast spells, there are some rare situations what the client does not handle this correct
+            if( p_caster->IsMounted() )
+                return (uint8)SPELL_FAILED_NOT_ON_MOUNTED;
 		}
-		/*Unit* target = sObjHolder.GetCreature(m_targets.m_unitTarget);
-		if(!target)
-			Unit* target = sObjHolder.GetObject<Player>(m_targets.m_unitTarget);*/
-		target=m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+
+        target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
 	 
+        // checks that demand a target
 		if(target)
 		{
-			// disallow spell casting in sanctuary zones
-			// allow attacks in duels
-			if(p_caster && target->IsPlayer() && p_caster->DuelingWith != target && !isFriendly(p_caster, target))
-			{
-				AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
-				AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)target)->GetAreaID());
-				if(atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
-					return SPELL_FAILED_NOT_HERE;
-			}
+            // if the check requere's a player caster
+            if (p_caster)
+            {
+                // if the target should be a player
+                if (target->IsPlayer())
+                {
+                    // disallow spell casting in sanctuary zones
+                    // allow attacks in duels
+                    if (p_caster->DuelingWith != target && !isFriendly(p_caster, target))
+                    {
+                        AreaTable * atCaster = sAreaStore.LookupEntry(p_caster->GetAreaID());
+                        AreaTable * atTarget = sAreaStore.LookupEntry(((Player*)target)->GetAreaID());
+                        if(atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
+                            return SPELL_FAILED_NOT_HERE;
+                    }
 
+                    // scripted spell stuff, target is player
+                    switch (m_spellInfo->Id)
+                    {
+                        case 603: //curse of doom, can't be casted on players
+                        case 30910:
+                            {
+                                return SPELL_FAILED_TARGET_IS_PLAYER;
+                            }break;
+                    }
+                }
+            }
+			
 			if(m_spellInfo->EffectApplyAuraName[0]==2)//mind control
 			if(m_spellInfo->EffectBasePoints[0])//got level req;
 				if((int32)target->getLevel() > m_spellInfo->EffectBasePoints[0])
@@ -2679,19 +2702,9 @@ uint8 Spell::CanCast(bool rangetolerate)
 
 			// scripted spell stuff
 			switch (m_spellInfo->Id)
-			{
-			case 603: //curse of doom, can't be casted on players
-			case 30910:
-				{
-				if(target->IsPlayer())
-					return SPELL_FAILED_TARGET_IS_PLAYER;
-				}break;
-			
-			case 25997: // Eye for an Eye
-				{
-					// do not allow the spell to be cast
-					return SPELL_FAILED_SPELL_UNAVAILABLE;
-				}break;
+			{			
+            // disable spell
+            case 25997: // Eye for an Eye
 			case 38554: //Absorb Eye of Grillok
 				{
 					// do not allow spell to be cast
@@ -2707,9 +2720,12 @@ uint8 Spell::CanCast(bool rangetolerate)
 						return SPELL_FAILED_BAD_TARGETS;
 				}
 			}
-			
+
+            // if the target is not the unit caster and not the masters pet
 			if(target != u_caster && !m_caster->IsPet())
 			{
+                
+
 				// Dummy spells check
 				if (m_spellInfo->Id == 4130)// Banish Burning Exile
 				{
@@ -2733,17 +2749,6 @@ uint8 Spell::CanCast(bool rangetolerate)
 						return SPELL_FAILED_BAD_TARGETS;
 				}
 
-				// original spell check code
-				/*if(!(GetType() == SPELL_TYPE_MAGIC && !(m_spellInfo->Attributes & 0x10000)))
-					if(!u_caster->isInFront(target))
-						return SPELL_FAILED_NOT_INFRONT;
-
-				// check behind
-				if(m_spellInfo->Flags3 & FLAGS3_REQ_BEHIND_TARGET && m_spellInfo->Id != 20271)
-					if(target->isInFront(u_caster))
-						return SPELL_FAILED_NOT_BEHIND;*/
-
-
 				/***********************************************************
 				* Inface checks, these are checked in 2 ways
 				* 1e way is check for damage type, as 3 is always ranged
@@ -2756,7 +2761,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 				{
 					if (m_spellInfo->Spell_Dmg_Type == 3) // 3 is ranged so we do not need to check, we just need inface
 					{   // our spell is a ranged spell
-						if (!u_caster->isInFront(target))
+						if (!p_caster->isInFront(target))
 							return (uint8)SPELL_FAILED_UNIT_NOT_INFRONT;
 					}
 					else

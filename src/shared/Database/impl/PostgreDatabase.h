@@ -61,7 +61,7 @@ protected:
 	PGconn ** Connections;
 	char ** QueryBuffer;
 
-	ZThread::FastMutex DelayedQueryBufferMutex;
+	Mutex DelayedQueryBufferMutex;
 	char * DelayedQueryBuffer;
 
 	bool * InUseMarkers;
@@ -75,7 +75,7 @@ protected:
 
 	uint32 mNextPing;
 
-	ZThread::FastMutex mSearchMutex;
+	Mutex mSearchMutex;
 	PostgreDatabaseThread* mQueryThread;
 };
 

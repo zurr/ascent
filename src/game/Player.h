@@ -1081,7 +1081,10 @@ public:
 	
 	uint32 m_ShapeShifted;
 	uint32 m_MountSpellId;
-	bool bHasBindDialogOpen;
+    
+    inline bool IsMounted() {return m_MountSpellId; }
+	
+    bool bHasBindDialogOpen;
 	void RemoveSpellsFromLine(uint32 skill_line);
 	bool bGMTagOn;
 	uint32 TrackingSpell;

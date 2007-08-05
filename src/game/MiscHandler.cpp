@@ -1077,6 +1077,10 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	{
 		case GAMEOBJECT_TYPE_CHAIR:
 		{
+            /// if players are mounted they are not able to sit on a chair
+            if( plyr->IsMounted() )
+                return;
+
 			WorldPacket data(MSG_MOVE_HEARTBEAT, 66);
 			data << plyr->GetNewGUID();
 			data << uint64(0);

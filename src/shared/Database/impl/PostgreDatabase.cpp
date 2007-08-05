@@ -135,7 +135,7 @@ uint32 PostgreDatabase::GetConnection()
 				break;
 			}
 		}
-		ZThread::Thread::sleep(5);
+		Sleep(5);
 	}
 	return index;
 }
