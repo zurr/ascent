@@ -197,9 +197,10 @@ void WarsongGulch::HookFlagStand(Player * plr, GameObject * obj)
 void WarsongGulch::HookOnPlayerKill(Player * plr, Unit * pVictim)
 {
 	if(pVictim->IsPlayer())
+	{
 		plr->m_bgScore.KillingBlows++;
-
-	UpdatePvPData();
+		UpdatePvPData();
+	}
 }
 
 void WarsongGulch::HookOnHK(Player * plr)
@@ -235,6 +236,8 @@ void WarsongGulch::HookOnPlayerDeath(Player * plr)
 	/* do we have the flag? */
 	if(plr->m_bgHasFlag)
 		plr->RemoveAura( 23333 + (plr->GetTeam() * 2) );
+
+	UpdatePvPData();
 }
 
 void WarsongGulch::HookOnMount(Player * plr)

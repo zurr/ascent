@@ -1366,6 +1366,10 @@ void World::SetInitialWorldSettings()
 	sSpellStore.LookupEntry(16972)->RequiredShapeShift = mm;
 	sSpellStore.LookupEntry(16974)->RequiredShapeShift = mm;
 	sSpellStore.LookupEntry(16975)->RequiredShapeShift = mm;
+
+	/* aspect of the pack - change to AA */
+	sSpellStore.LookupEntry(13159)->Effect[0] = SPELL_EFFECT_APPLY_AREA_AURA;
+	sSpellStore.LookupEntry(13159)->Effect[1] = SPELL_EFFECT_APPLY_AREA_AURA;
 	
 	sLog.outString( "Starting Transport System...");
 	objmgr.LoadTransporters();

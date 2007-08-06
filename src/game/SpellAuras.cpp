@@ -651,6 +651,7 @@ void Aura::RemoveAuraVisual()
 
 void Aura::EventUpdateAA(float r)
 {
+	uint32 i;
 	/* burlex: cheap hack to get this to execute in the correct context always */
 	if(event_GetCurrentInstanceId() == -1)
 	{
@@ -702,11 +703,27 @@ void Aura::EventUpdateAA(float r)
 				// Add the aura if they don't have it.
 				if(!(*itr)->HasActiveAura(m_spellProto->Id) && (*itr)->GetInstanceID() == plr->GetInstanceID())
 				{
-					Aura * aura = new Aura(m_spellProto, -1, u_caster, (*itr));
-					aura->m_areaAura = true;
-					aura->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
-					(*itr)->AddAura(aura);
-					NewTargets.push_back((*itr)->GetGUID());
+					Aura * aura = NULL;
+					//aura->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
+					for(i = 0; i < m_modcount; ++i)
+					{
+						/* is this an area aura modifier? */
+						if(m_spellProto->Effect[m_modList[i].i] == SPELL_EFFECT_APPLY_AREA_AURA)
+						{
+							if(!aura)
+							{
+								aura = new Aura(m_spellProto, -1, u_caster, (*itr));
+								aura->m_areaAura = true;
+							}
+							aura->AddMod(m_modList[i].m_type, m_modList[i].m_amount,
+								m_modList[i].m_miscValue, m_modList[i].i);
+						}
+					}
+					if(aura)
+					{
+						(*itr)->AddAura(aura);
+						NewTargets.push_back((*itr)->GetGUID());
+					}
 				}
 			}
 		}
@@ -734,7 +751,7 @@ void Aura::EventUpdateAA(float r)
 			{
 				// execute in the correct context
                 if(iplr->GetInstanceID() != plr->GetInstanceID())
-					sEventMgr.AddEvent(((Unit*)iplr), &Unit::EventRemoveAura, m_spellProto->Id, EVENT_DELETE_TIMER, 500, 1);
+					sEventMgr.AddEvent(((Unit*)iplr), &Unit::EventRemoveAura, m_spellProto->Id, EVENT_DELETE_TIMER, 10, 1);
 				else
 					iplr->RemoveAura(m_spellProto->Id);
 			}
@@ -748,7 +765,11 @@ void Aura::EventUpdateAA(float r)
 
 		if(!group || !group->HasMember(iplr->GetGUID()))
 		{
-			iplr->RemoveAura(m_spellProto->Id);
+			// execute in the correct context
+			if(iplr->GetInstanceID() != plr->GetInstanceID())
+				sEventMgr.AddEvent(((Unit*)iplr), &Unit::EventRemoveAura, m_spellProto->Id, EVENT_DELETE_TIMER, 10, 1);
+			else
+				iplr->RemoveAura(m_spellProto->Id);
 			targets.erase(it2);
 		}
 	}
@@ -2750,6 +2771,10 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 		{
 			case 0x1931b37a:			// Stealth
 				SetPositive();
+				break;
+
+			case 0x25dab9ca:			// Dazed
+				SetNegative();
 				break;
 
 			default:

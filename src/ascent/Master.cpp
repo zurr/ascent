@@ -189,73 +189,61 @@ bool Master::Run(int argc, char ** argv)
 
 	if(do_check_conf)
 	{
-		printf("Checking config file: %s\n", config_file);
+		Log.Notice("Config", "Checking config file: %s", config_file);
 		if(Config.MainConfig.SetSource(config_file, true))
-			printf("  Passed without errors.\n");
+			Log.Success("Config", "Passed without errors.");
 		else
-			printf("  Encountered one or more errors.\n");
+			Log.Warning("Config", "Encountered one or more errors.");
 
-		printf("\nChecking config file: %s\n", realm_config_file);
+		Log.Notice("Config", "Checking config file: %s\n", realm_config_file);
 		if(Config.RealmConfig.SetSource(realm_config_file, true))
-			printf("  Passed without errors.\n");
+			Log.Success("Config", "Passed without errors.\n");
 		else
-			printf("  Encountered one or more errors.\n");
+			Log.Warning("Config", "Encountered one or more errors.\n");
 
 		/* test for die variables */
 		string die;
 		if(Config.MainConfig.GetString("die", "msg", &die) || Config.MainConfig.GetString("die2", "msg", &die))
-			printf("Die directive received: %s", die.c_str());
+			Log.Warning("Config", "Die directive received: %s", die.c_str());
 
 		return true;
 	}
 
-	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
-	sLog.outString("");
-	sLog.outString("Initializing File Loggers...");
+	Log.Notice("Hint", "The key combination <Ctrl-C> will safely shut down the server at any time.");
+	Log.Line();
+	Log.Notice("Log", "Initializing File Loggers...");
 	Crash_Log = new TextLogger(FormatOutputString("logs", "CrashLog", true).c_str(), false);
     
-	sLog.outString("Initializing Random Number Generators...");
 	uint32 seed = time(NULL);
 	new MTRand(seed);
 	srand(seed);
+	Log.Success("MTRand", "Initialized Random Number Generators.");
 
-	sLog.outString("Starting Thread Manager...\n");
 	new ThreadMgr;
+	Log.Success("ThreadMgr", "Started.");
 	uint32 LoadingTime = getMSTime();
 
-	sLog.outColor(TNORMAL, "Loading Config Files...\n");
-	sLog.outColor(TYELLOW, "  >> %s :: ", config_file);
+	Log.Notice("Config", "Loading Config Files...\n");
 	if(Config.MainConfig.SetSource(config_file))
-	{
-		sLog.outColor(TGREEN, "ok!");
-		sLog.outColor(TNORMAL, "\n");
-	}
+		Log.Success("Config", ">> ascent.conf");
 	else
 	{
-		sLog.outColor(TRED, "fail.");
-		sLog.outColor(TNORMAL, "\n");
+		Log.Error("Config", ">> ascent.conf");
 		return false;
 	}
 
-	/* test for die variables */
 	string die;
 	if(Config.MainConfig.GetString("die", "msg", &die) || Config.MainConfig.GetString("die2", "msg", &die))
 	{
-		printf("Die directive received: %s", die.c_str());
+		Log.Warning("Config", "Die directive received: %s", die.c_str());
 		return false;
 	}	
 
-
-	sLog.outColor(TYELLOW, "  >> %s :: ", realm_config_file);
 	if(Config.RealmConfig.SetSource(realm_config_file))
-	{
-		sLog.outColor(TGREEN, "ok!");
-		sLog.outColor(TNORMAL, "\n\n");
-	}
+		Log.Success("Config", ">> realms.conf");
 	else
 	{
-		sLog.outColor(TRED, "fail.");
-		sLog.outColor(TNORMAL, "\n\n");
+		Log.Error("Config", ">> realms.conf");
 		return false;
 	}
 

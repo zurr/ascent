@@ -3510,6 +3510,8 @@ void Spell::Heal(int32 amount)
 			SendHealSpellOnPlayer(p_caster, ((Player*)unitTarget), amount, critical);
 		}
 		p_caster->m_bgScore.HealingDone += amount;
+		if(p_caster->m_bg)
+			p_caster->m_bg->UpdatePvPData();
 	}
 	uint32 curHealth = unitTarget->GetUInt32Value(UNIT_FIELD_HEALTH);
 	uint32 maxHealth = unitTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH);

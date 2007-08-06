@@ -446,6 +446,9 @@ void CBattleground::PortPlayer(Player * plr)
 
 	/* send him the world states */
 	SendWorldStates(plr);
+	
+	/* update pvp data */
+	UpdatePvPData();
 
 	m_mainLock.Release();
 }

@@ -46,6 +46,7 @@ class WorldSession;
 #endif
 
 extern time_t UNIXTIME;		/* update this every loop to avoid the time() syscall! */
+#define LOG_USE_MUTEX
 
 class SERVER_DECL CLog : public Singleton< CLog >
 {
