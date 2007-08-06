@@ -301,7 +301,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession *m_session)
 		else
 		{
 			Player * pPlayer = m_session->GetPlayer();
-			CharacterDatabase.Execute("UPDATE characters SET mapId = %u, positionX = %u, positionY = %u, positionZ = %u, zoneId = %u", pPlayer->GetMapId(), pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetZoneId());
+			CharacterDatabase.Execute("UPDATE characters SET mapId = %u, positionX = %u, positionY = %u, positionZ = %u, zoneId = %u WHERE guid = %u;", pPlayer->GetMapId(), pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetZoneId(), pPlayer->GetGUIDLow());
 			char buf[256];
 			snprintf((char*)buf,256,"(Offline) %s has been summoned.", args);
 			SystemMessage(m_session, buf);
