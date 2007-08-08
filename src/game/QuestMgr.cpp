@@ -19,7 +19,7 @@
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {
-	uint32 status = CalcQuestStatus(quest_giver, plr, qst->qst, qst->type);
+	uint32 status = CalcQuestStatus(quest_giver, plr, qst->qst, qst->type, false);
 	if(status == QMGR_QUEST_FINISHED)
 	{
 		if(quest_giver->GetTypeId() == TYPEID_UNIT)
@@ -53,7 +53,7 @@ bool QuestMgr::isRepeatableQuestFinished(Player *plr, Quest *qst)
 	return true;
 }
 
-uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst)
+uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst, bool skiplevelcheck)
 {
 	std::list<uint32>::iterator itr;
 	uint32 status;
@@ -68,7 +68,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst)
 		    return QMGR_QUEST_REPEATABLE;
     }
 
-	if (plr->getLevel() < qst->min_level)
+	if (plr->getLevel() < qst->min_level && !skiplevelcheck)
 		return QMGR_QUEST_AVAILABLELOW_LEVEL;
 
 	if(qst->required_class)
@@ -94,7 +94,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst)
 	return status;
 }
 
-uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, Quest* qst, uint8 type)
+uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, Quest* qst, uint8 type, bool skiplevelcheck)
 {
 	QuestLogEntry* qle;
 
@@ -104,7 +104,7 @@ uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, Quest* qst, u
 	{
 		if (type & QUESTGIVER_QUEST_START)
 		{
-			return PlayerMeetsReqs(plr, qst);
+			return PlayerMeetsReqs(plr, qst, skiplevelcheck);
 		}
 	}
 	else

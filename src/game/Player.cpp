@@ -5590,7 +5590,7 @@ void Player::UpdateNearbyGameObjects()
 						std::list<QuestRelation*>::iterator itr2 = ((GameObject*)(*itr))->m_quests->begin();
 						for(;itr2!=((GameObject*)(*itr))->m_quests->end();++itr2)
 						{
-							uint32 status = sQuestMgr.CalcQuestStatus(NULL, this, (*itr2)->qst, (*itr2)->type);
+							uint32 status = sQuestMgr.CalcQuestStatus(NULL, this, (*itr2)->qst, (*itr2)->type, false);
 							if(status == QMGR_QUEST_AVAILABLE || status == QMGR_QUEST_REPEATABLE || status == QMGR_QUEST_FINISHED)
 							{
 								// Activate gameobject
