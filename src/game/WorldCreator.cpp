@@ -391,6 +391,20 @@ uint32 WorldCreator::CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid
 	return pInstance->GetInstanceID();
 }
 
+uint32 WorldCreator::CreateInstance(uint32 mapid, uint32 instanceid, MapMgr ** destptr)
+{
+	Map* instance_map = GetMap(mapid);
+	ASSERT(instance_map != NULL);
+
+	MapMgr * pInstance = instance_map->CreateMapMgrInstance(instanceid);
+	ASSERT(pInstance);
+	if(destptr)
+		*destptr = pInstance;
+
+	return pInstance->GetInstanceID();
+}
+
+
 MapMgr *WorldCreator::GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo *pMapInfo)
 {
 	MapMgr * mgr = GetMap(pMapInfo->mapid)->GetInstanceByGroup(pGroup, pPlayer);

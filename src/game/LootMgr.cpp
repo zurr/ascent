@@ -617,25 +617,28 @@ void LootRoll::PlayerRolled(Player *player, uint8 choice)
 	}
 
 	int roll = sRand.randInt(100);
-
-	if(rmap)
-	{
-		rmap->insert ( std::make_pair(player->GetGUID(), roll) );
-		roll=0xF9;
-	}
-	else
-	{
-		roll = 128;
-		choice = 128;
-		if(!_passedGuid)
-			_passedGuid = player->GetGUID();
-	}
-
 	// create packet
 	WorldPacket data(34);
 	data.SetOpcode(SMSG_LOOT_ROLL);
 	data << _guid << _slotid << player->GetGUID();
 	data << _itemid << _itemunk1 << _itemunk2;
+
+	if(rmap)
+	{
+		rmap->insert ( std::make_pair(player->GetGUID(), roll) );
+		if(choice == GREED)
+			data << uint8(0xF9) << uint8(0x00);
+		else
+			data << uint8(0xC1) << uint8(0x00);
+	}
+	else
+	{
+		if(!_passedGuid)
+			_passedGuid = player->GetGUID();
+
+		data << uint8(128) << uint8(128);
+	}
+
 	data << uint8(roll) << uint8(choice);
 	
 	if(player->InGroup())

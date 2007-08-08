@@ -1431,7 +1431,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		else if(IsPlayer())
 			plr = static_cast<Player*>(this);
 
-		if(pVictim->GetTypeId()==TYPEID_UNIT && plr) // Units can't tag..
+		if(pVictim->GetTypeId()==TYPEID_UNIT && plr && plr->GetTypeId() == TYPEID_PLAYER) // Units can't tag..
 		{
 			// Tagging
 			Creature *victim = static_cast<Creature*>(pVictim);

@@ -92,6 +92,7 @@ public:
 
 	//Normal instance management
 	uint32 CreateInstance(Group *pGroup, Player *pPlayer, uint32 mapid, uint32 instanceid = 0, uint32 creation = 0, MapMgr ** destptr = 0, uint32 difficulty = 0);
+	uint32 CreateInstance(uint32 mapid, uint32 instanceid, MapMgr ** destptr);
 
     void DeleteInstance(uint32 instanceid, uint32 mapid);
 	bool CheckInstanceForObject(Object *obj, MapInfo *pMapinfo);

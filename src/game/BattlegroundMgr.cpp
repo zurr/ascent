@@ -112,10 +112,15 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession * m_session, Worl
 		itr->second.push_back(pguid);
 	else
 	{
+		Log.Debug("BattlegroundManger", "Created queue for battleground type %u in levelgroup %u", bgtype, lgroup);
 		list<uint32> tmp;
 		tmp.push_back(pguid);
 		m_queuedPlayers[bgtype][lgroup].insert( make_pair( instance, tmp ) );
 	}
+	Log.Success("BattlegroundMgr", "Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->GetGUIDLow(), instance );
+
+	/* send the battleground status packet */
+	SendBattlefieldStatus(m_session->GetPlayer(), 1, bgtype, instance, 0);
 	m_queueLock.Release();
 
 	/* We will get updated next few seconds =) */
@@ -206,9 +211,10 @@ void CBattlegroundManager::EventQueueUpdate()
 							tempPlayerVec[plr->GetTeam()].push_back(plr);
 						}
 
-						if(tempPlayerVec[0].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG &&
-							tempPlayerVec[1].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG)
+						if(tempPlayerVec[0].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG/* &&
+							tempPlayerVec[1].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG*/)
 						{
+							Log.Debug("BattlegroundMgr", "Enough players to start battleground type %u for level group %u. Creating.", i, j);
 							/* Woot! Let's create a new instance! */
 							bg = CreateInstance(i, j);
 
@@ -466,7 +472,7 @@ CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGr
 	}
 
 	/* Create Map Manager */
-	if(sWorldCreator.CreateInstance(NULL, NULL, BGMapIds[Type], 0, 0, &mgr, 0) == false || !mgr)
+	if(sWorldCreator.CreateInstance(BGMapIds[Type], 0, &mgr) == false || !mgr)
 	{
 		Log.Error("BattlegroundManager", "CreateInstance() call failed for map %u, type %u, level group %u", BGMapIds[Type], Type, LevelGroup);
 		return NULL;		// Shouldn't happen
@@ -550,12 +556,13 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 		data << uint64(0) << uint32(0);
 	else
 	{
+		data << uint32(0);
+
 		if(Type < 4 || Type == 7)
 			data << uint8(0) << uint8(2);
 		else
 			data << uint8(2) << uint8(10);
 
-		data << uint32(0);
 		data << Type;
 		data << uint16(0x1F90);
 		data << InstanceID;
@@ -577,4 +584,14 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 	}
 
 	plr->GetSession()->SendPacket(&data);
+}
+
+void CBattleground::RemovePlayer(Player * plr)
+{
+
+}
+
+void CBattleground::SendPVPData(Player * plr)
+{
+
 }

@@ -314,6 +314,9 @@ public:
 
 	GameObject * SpawnGameObject(uint32 entry,uint32 MapId , float x, float y, float z, float o, uint32 flags, uint32 faction, float scale);
 	void UpdatePvPData();
+
+	inline uint32 GetStartTime() { return m_startTime; }
+	inline uint32 GetType() { return m_type; }
 };
 
 #define BattlegroundManager CBattlegroundManager::getSingleton( )
