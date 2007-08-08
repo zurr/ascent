@@ -99,6 +99,11 @@ public:
 		return new GameObject(HIGHGUID_GAMEOBJECT, m_GOHighGuid);
 	}
 
+	__inline uint32 GenerateGameobjectGuid()
+	{
+		return ++m_GOHighGuid;
+	}
+
 	__inline GameObject * GetGameObject(uint32 guid)
 	{
 		if(guid > m_GOHighGuid)

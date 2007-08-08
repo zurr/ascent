@@ -228,6 +228,13 @@ protected:
 	/* starting time */
 	uint32 m_startTime;
 
+	/* countdown stuff */
+	uint32 m_countdownStage;
+
+	/* winner stuff */
+	bool m_ended;
+	uint8 m_winningteam;
+
 public:
 
 	void SendChatMessage(uint32 Type, uint64 Guid, const char * Format, ...);
@@ -297,7 +304,7 @@ public:
 	virtual void OnRemovePlayer(Player * plr) = 0;
 
 	/* Port Player */
-	void PortPlayer(Player * plr);
+	void PortPlayer(Player * plr, bool skip_teleport = false);
 	virtual void OnCreate() = 0;
 
 	/* Remove pending player */
@@ -317,6 +324,18 @@ public:
 
 	inline uint32 GetStartTime() { return m_startTime; }
 	inline uint32 GetType() { return m_type; }
+
+	// events should execute in the correct context
+	int32 event_GetInstanceID();
+	void EventCreate();
+
+	virtual const char * GetName() = 0;
+	void EventCountdown();
+
+	virtual void Start();
+	virtual void OnStart() {}
+
+	void SetWorldState(uint32 Index, uint32 Value);
 };
 
 #define BattlegroundManager CBattlegroundManager::getSingleton( )

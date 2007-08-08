@@ -242,6 +242,9 @@ void WorldSession::LogoutPlayer(bool Save)
 		else
 			sWorld.AlliancePlayers--;
 
+		if(_player->m_bg)
+			_player->m_bg->RemovePlayer(_player);
+
 		// send info
 		sWorld.BroadcastExtendedMessage(0, "[SM:INFO:%u:%u]", sWorld.HordePlayers, sWorld.AlliancePlayers);
 

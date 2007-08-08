@@ -3138,6 +3138,18 @@ void Aura::SpellAuraModEffectImmunity(bool apply)
 {
 	if(m_spellProto->Id == 24937)
 		SetPositive();
+
+	if(m_spellProto->Id == 23333 || m_spellProto->Id == 23335)
+	{
+		if(!apply)
+		{
+            Player * plr = ((Player*)GetUnitCaster());
+			if(!plr || plr->GetTypeId() != TYPEID_PLAYER || !plr->m_bg || plr->m_bg->GetType() != BATTLEGROUND_WARSUNG_GULCH)
+				return;
+
+			((WarsongGulch*)plr->m_bg)->DropFlag(plr);
+		}
+	}
 }
 
 void Aura::SpellAuraModStateImmunity(bool apply)

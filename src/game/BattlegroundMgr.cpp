@@ -211,8 +211,8 @@ void CBattlegroundManager::EventQueueUpdate()
 							tempPlayerVec[plr->GetTeam()].push_back(plr);
 						}
 
-						if(tempPlayerVec[0].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG/* &&
-							tempPlayerVec[1].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG*/)
+						if(tempPlayerVec[0].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG &&
+							tempPlayerVec[1].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG)
 						{
 							Log.Debug("BattlegroundMgr", "Enough players to start battleground type %u for level group %u. Creating.", i, j);
 							/* Woot! Let's create a new instance! */
@@ -376,6 +376,10 @@ void CBattleground::SendWorldStates(Player * plr)
 	}
 
 	WorldPacket data(SMSG_INIT_WORLD_STATES, 10 + (m_worldStates.size() * 8));
+	data << m_mapMgr->GetMapId();
+	data << bflag;
+	data << uint32(m_worldStates.size());
+
 	for(map<uint32, uint32>::iterator itr = m_worldStates.begin(); itr != m_worldStates.end(); ++itr)
 		data << itr->first << itr->second;
 	plr->GetSession()->SendPacket(&data);
@@ -384,6 +388,9 @@ void CBattleground::SendWorldStates(Player * plr)
 CBattleground::CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_levelGroup(levelgroup), m_type(type)
 {
 	m_nextPvPUpdateTime = 0;
+	m_countdownStage = 0;
+	m_ended = false;
+	m_winningteam = 0;
 	m_startTime = World::UNIXTIME;
 }
 
@@ -396,6 +403,43 @@ void CBattleground::UpdatePvPData()
 {
 	if(World::UNIXTIME >= m_nextPvPUpdateTime)
 	{
+
+		m_mainLock.Acquire();
+		WorldPacket data(MSG_PVP_LOG_DATA, 50);
+		BGScore * bs;
+		data << uint8(0);
+		if(m_ended)
+		{
+			data << uint8(1);
+			data << uint8(m_winningteam);
+		}
+		else
+		{
+			data << uint8(0);		// If the game has ended - this will be 1
+
+			data << uint32(m_players[0].size() + m_players[1].size());
+			for(uint32 i = 0; i < 2; ++i)
+			{
+				for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+				{
+					data << (*itr)->GetGUID();
+					bs = &(*itr)->m_bgScore;
+
+					data << bs->KillingBlows;
+					data << bs->HonorableKills;
+					data << bs->Deaths;
+					data << bs->BonusHonor;
+					data << bs->DamageDone;
+					data << bs->HealingDone;
+					data << uint32(0x2);
+					data << bs->Misc1;
+					data << bs->Misc2;
+				}
+			}
+		}
+
+		DistributePacketToAll(&data);
+		m_mainLock.Release();
 
 		m_nextPvPUpdateTime = World::UNIXTIME + 2;
 	}
@@ -425,19 +469,26 @@ void CBattleground::RemovePendingPlayer(Player * plr)
 	m_mainLock.Release();
 }
 
-void CBattleground::PortPlayer(Player * plr)
+void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 {
 	m_mainLock.Acquire();
 
-	/* This is where we actually teleport the player to the battleground. */
-	plr->m_bgEntryPointX = plr->GetPositionX();
-	plr->m_bgEntryPointY = plr->GetPositionY();
-	plr->m_bgEntryPointZ = plr->GetPositionZ();
-	plr->m_bgEntryPointMap = plr->GetMapId();
-	plr->m_bgEntryPointInstance = plr->GetInstanceID();
+	WorldPacket data(SMSG_BATTLEGROUND_PLAYER_JOINED, 8);
+	data << plr->GetGUID();
+	DistributePacketToAll(&data);
 
-	plr->SafeTeleport(BGMapIds[m_type], m_mapMgr->GetInstanceID(), GetStartingCoords(plr->GetTeam()));
-	BattlegroundManager.SendBattlefieldStatus(plr, 3, m_type, m_id, World::UNIXTIME - m_startTime);	// Elapsed time is the last argument
+	if(!skip_teleport)
+	{
+		/* This is where we actually teleport the player to the battleground. */
+		plr->m_bgEntryPointX = plr->GetPositionX();
+		plr->m_bgEntryPointY = plr->GetPositionY();
+		plr->m_bgEntryPointZ = plr->GetPositionZ();
+		plr->m_bgEntryPointMap = plr->GetMapId();
+		plr->m_bgEntryPointInstance = plr->GetInstanceID();
+	
+		plr->SafeTeleport(BGMapIds[m_type], m_mapMgr->GetInstanceID(), GetStartingCoords(plr->GetTeam()));
+		BattlegroundManager.SendBattlefieldStatus(plr, 3, m_type, m_id, World::UNIXTIME - m_startTime);	// Elapsed time is the last argument
+	}
 
 	m_pendPlayers[plr->GetTeam()].erase(plr);
 	m_players[plr->GetTeam()].insert(plr);
@@ -455,6 +506,13 @@ void CBattleground::PortPlayer(Player * plr)
 	
 	/* update pvp data */
 	UpdatePvPData();
+
+	if(!m_countdownStage)
+	{
+		m_countdownStage = 1;
+		sEventMgr.AddEvent(this, &CBattleground::EventCountdown, EVENT_BATTLEGROUND_COUNTDOWN, 30000, 0);
+		sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 10000);
+	}
 
 	m_mainLock.Release();
 }
@@ -481,6 +539,8 @@ CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGr
 	/* Call the create function */
 	iid = ++m_maxBattlegroundId;
 	bg = cfunc(mgr, iid, LevelGroup, Type);	
+	mgr->m_battleground = bg;
+	sEventMgr.AddEvent(bg, &CBattleground::EventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1);
 	Log.Success("BattlegroundManager", "Created battleground type %u for level group %u.", Type, LevelGroup);
 	return bg;
 }
@@ -499,6 +559,10 @@ GameObject * CBattleground::SpawnGameObject(uint32 entry,uint32 MapId , float x,
 	go->SetUInt32Value(GAMEOBJECT_FACTION,faction);
 	go->SetFloatValue(OBJECT_FIELD_SCALE_X,scale);	
 	go->SetUInt32Value(GAMEOBJECT_FLAGS, flags);
+	go->SetFloatValue(GAMEOBJECT_POS_X, x);
+	go->SetFloatValue(GAMEOBJECT_POS_Y, y);
+	go->SetFloatValue(GAMEOBJECT_POS_Z, z);
+	go->SetFloatValue(GAMEOBJECT_FACING, o);
 	go->SetInstanceID(m_mapMgr->GetInstanceID());
 
 	return go;
@@ -588,10 +652,123 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 
 void CBattleground::RemovePlayer(Player * plr)
 {
+	WorldPacket data(SMSG_BATTLEGROUND_PLAYER_LEFT, 30);
+	data << plr->GetGUID();
 
+	m_mainLock.Acquire();
+	m_players[plr->GetTeam()].erase(plr);
+	DistributePacketToAll(&data);
+
+	plr->m_bg = 0;
+	memset(&plr->m_bgScore, 0, sizeof(BGScore));
+	OnRemovePlayer(plr);
+	
+	/* teleport out */
+	LocationVector vec(plr->m_bgEntryPointX, plr->m_bgEntryPointY, plr->m_bgEntryPointZ, plr->m_bgEntryPointO);
+	plr->SafeTeleport(plr->m_bgEntryPointMap, plr->m_bgEntryPointInstance, vec);
+
+	BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0);
+
+	/* send some null world states */
+	data.Initialize(SMSG_INIT_WORLD_STATES);
+	data << uint32(plr->m_bgEntryPointMap) << uint32(0) << uint32(0);
+	plr->GetSession()->SendPacket(&data);
+
+	m_mainLock.Release();
 }
 
 void CBattleground::SendPVPData(Player * plr)
 {
+	m_mainLock.Acquire();
+	WorldPacket data(MSG_PVP_LOG_DATA, 50);
+	BGScore * bs;
+	data << uint8(0);
+	if(m_ended)
+	{
+		data << uint8(1);
+		data << uint8(m_winningteam);
+	}
+	else
+	{
+		data << uint8(0);		// If the game has ended - this will be 1
 
+		data << uint32(m_players[0].size() + m_players[1].size());
+		for(uint32 i = 0; i < 2; ++i)
+		{
+			for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+			{
+				data << (*itr)->GetGUID();
+				bs = &(*itr)->m_bgScore;
+
+				data << bs->KillingBlows;
+				data << bs->HonorableKills;
+				data << bs->Deaths;
+				data << bs->BonusHonor;
+				data << bs->DamageDone;
+				data << bs->HealingDone;
+				data << uint32(0x2);
+				data << bs->Misc1;
+				data << bs->Misc2;
+			}
+		}
+	}
+
+	plr->GetSession()->SendPacket(&data);
+	m_mainLock.Release();
 }
+
+void CBattleground::EventCreate()
+{
+	OnCreate();
+}
+
+int32 CBattleground::event_GetInstanceID()
+{
+	return m_mapMgr->GetInstanceID();
+}
+
+void CBattleground::EventCountdown()
+{
+	/*if(m_countdownStage == 1)
+	{
+		m_countdownStage = 2;
+		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "One minute until the battle for %s begins!", GetName());
+	}
+	else if(m_countdownStage == 2)
+	{
+		m_countdownStage = 3;
+		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "Thirty seconds until the battle for %s begins!", GetName());
+	}
+	else if(m_countdownStage == 3)
+	{
+		m_countdownStage = 4;
+		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "Fifteen seconds until the battle for %s begins!", GetName());
+		sEventMgr.ModifyEventTime(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
+		sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
+	}
+	else
+	{*/
+		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "The battle for %s has begun!", GetName());
+		sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
+		Start();
+	/*}*/
+}
+
+void CBattleground::Start()
+{
+	OnStart();
+}
+
+void CBattleground::SetWorldState(uint32 Index, uint32 Value)
+{
+	map<uint32, uint32>::iterator itr = m_worldStates.find(Index);
+	if(itr == m_worldStates.end())
+		m_worldStates.insert( make_pair( Index, Value ) );
+	else
+		itr->second = Value;
+
+	WorldPacket data(SMSG_UPDATE_WORLD_STATE, 8);
+	data << itr->first << itr->second;
+	DistributePacketToAll(&data);
+}
+

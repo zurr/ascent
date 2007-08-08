@@ -219,6 +219,12 @@ public:
 		return ((uint8*)m_uint32Values)[i*4+i1];
 	}
 	
+	inline void SetNewGuid(uint32 Guid)
+	{
+		SetUInt32Value(OBJECT_FIELD_GUID, Guid);
+		m_wowGuid.Init(GetGUID());
+	}
+
 	void __fastcall SetUInt32Value( const uint32 index, const uint32 value );
 
 	//! Set uint64 property

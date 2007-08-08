@@ -2712,7 +2712,10 @@ bool ChatHandler::HandleGORotate(const char * args, WorldSession * m_session)
 	go->SaveToDB();
 
 	// despawn and respawn
-	go->Despawn(1000);
+	//go->Despawn(1000);
+	go->RemoveFromWorld();
+	go->SetNewGuid(m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid());
+	go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 	return true;
 }
 
@@ -2732,6 +2735,7 @@ bool ChatHandler::HandleGOMove(const char * args, WorldSession * m_session)
 	go->SetFloatValue(GAMEOBJECT_POS_Y, m_session->GetPlayer()->GetPositionY());
 	go->SetFloatValue(GAMEOBJECT_POS_Z, m_session->GetPlayer()->GetPositionZ());
 	go->SetFloatValue(GAMEOBJECT_FACING, m_session->GetPlayer()->GetOrientation());
+	go->SetNewGuid(m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid());
 	go->SaveToDB();
 	go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
 	return true;

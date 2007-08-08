@@ -3035,6 +3035,9 @@ void Player::OnPushToWorld()
 	
 	/* send weather */
 	sWeatherMgr.SendWeather(this);
+
+	if(m_mapMgr->m_battleground)
+		m_mapMgr->m_battleground->PortPlayer(this, true);
 }
 
 void Player::ResetHeartbeatCoords()
@@ -3045,6 +3048,9 @@ void Player::ResetHeartbeatCoords()
 
 void Player::RemoveFromWorld()
 {
+	if(m_bg)
+		m_bg->RemovePlayer(this);
+
 	if(m_tempSummon)
 	{
 		m_tempSummon->RemoveFromWorld(false);
@@ -8115,6 +8121,9 @@ void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32
 
 void Player::RemoveFromBattlegroundQueue()
 {
+	if(!m_pendingBattleground)
+		return;
+
 	m_pendingBattleground->RemovePendingPlayer(this);
 	sChatHandler.SystemMessage(m_session, "You were removed from the queue for the battleground for not joining after 2 minutes.");
 	m_pendingBattleground = 0;

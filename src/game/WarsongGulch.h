@@ -24,6 +24,7 @@ class WarsongGulch : public CBattleground
 	GameObject * m_dropFlags[2];
 	uint32 m_flagHolders[2];
 	list<GameObject*> m_gates;
+	uint32 m_scores[2];
 public:
 	WarsongGulch(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t);
 	~WarsongGulch();
@@ -44,4 +45,7 @@ public:
 	void DropFlag(Player * plr);
 
 	static CBattleground * Create(MapMgr * m, uint32 i, uint32 l, uint32 t) { return new WarsongGulch(m, i, l, t); }
+
+	const char * GetName() { return "Warsong Gulch"; }
+	void OnStart();
 };
