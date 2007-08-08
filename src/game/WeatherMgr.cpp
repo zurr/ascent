@@ -23,40 +23,35 @@ void BuildWeatherPacket(WorldPacket * data, uint32 Effect, float Density)
 {
 	data->Initialize(SMSG_WEATHER);
 	if(Effect == 0)
-		*data << uint32(0) << float(0.5f) << uint8(1);		// this is blizzlike!
+		*data << uint32(0) << float(0.0f) << uint8(0);		// this is blizzlike!
 	else
 	{
 		uint32 Value;
 		switch(Effect)
 		{
 		case 1:		// Rain
-			if(Density >= 2.0f)
-				Value = 5;
-			else if(Density >= 1.5f)
+			if(Density > 1.0f)
 				Value = 4;
-			else if(Density >= 1.0f)
-				Value = 3;
-			else if(Density >= 0.5f)
-				Value = 2;
 			else
-				Value = 1;
+				Value = 3;
 			break;
 		case 2:		// Snow
-			if(Density >= 2.0f)
-				Value = 8;
-			else if(Density >= 1.0f)
+			if(Density > 1.0f)
 				Value = 7;
 			else
-				Value = 6;
+				Value = 8;
+			break;
+		case 3:		// Weak Rain
+			Value = 1;
 			break;
 
 		default:
-			*data << uint32(0) << float(0.5f) << uint8(1);
+			*data << uint32(0) << float(0.0f) << uint8(0);
 			return;
 			break;
 		}
 
-		*data << Effect << Density << uint8(1);
+		*data << Value << Density << uint8(1);
 	}
 }
 

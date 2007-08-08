@@ -2740,6 +2740,7 @@ Unit *AIInterface::GetMostHated()
 			/* new target */
 			currentTarget.first = itr->first;
 			currentTarget.second = itr->second + itr->first->GetThreatModifyer();
+			m_currentHighestThreat = currentTarget.second;
 		}
 
 		/* there are no more checks needed here... the needed checks are done by CheckTarget() */
@@ -2812,6 +2813,7 @@ void AIInterface::WipeHateList()
 {
 	for(TargetMap::iterator itr = m_aiTargets.begin(); itr != m_aiTargets.end(); ++itr)
 		itr->second = 0;
+	m_currentHighestThreat = 0;
 }
 
 void AIInterface::WipeTargetList()
@@ -2819,6 +2821,7 @@ void AIInterface::WipeTargetList()
 	SetNextTarget(NULL);
 
 	m_nextSpell = NULL;
+	m_currentHighestThreat = 0;
 	m_aiTargets.clear();
 }
 
@@ -2898,10 +2901,19 @@ void AIInterface::CheckTarget(Unit* target)
 		UnitToFollow_backup = 0;
 	}
 
+	TargetMap::iterator it2 = m_aiTargets.find(target);
+	if(it2 != m_aiTargets.end())
+	{
+		m_aiTargets.erase(it2);
+	}
+
 	if (target == m_nextTarget)	 // no need to cast on these.. mem addresses are still the same
 	{
 		SetNextTarget(NULL);
 		m_nextSpell = NULL;
+		
+		// find the one with the next highest threat
+		GetMostHated();
 	}
 
 	if(target == UnitToFear)
@@ -2913,15 +2925,6 @@ void AIInterface::CheckTarget(Unit* target)
 	AssistTargetSet::iterator  itr = m_assistTargets.find(target);
 	if(itr != m_assistTargets.end())
 		m_assistTargets.erase(itr);
-
-	if (!m_aiTargets.size())
-		return;
-
-	TargetMap::iterator it2 = m_aiTargets.find(target);
-	if(it2 != m_aiTargets.end())
-	{
-		m_aiTargets.erase(it2);
-	}
 }
 
 uint32 AIInterface::_CalcThreat(uint32 damage, uint32 spellId, Unit* Attacker)

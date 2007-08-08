@@ -3032,6 +3032,9 @@ void Player::OnPushToWorld()
 
 	ResetHeartbeatCoords();
 	m_lastMoveType = 0;
+	
+	/* send weather */
+	sWeatherMgr.SendWeather(this);
 }
 
 void Player::ResetHeartbeatCoords()

@@ -35,12 +35,9 @@ bool ChatHandler::HandleWeatherCommand(const char* args, WorldSession *m_session
 		return false;
 
 	uint32 type = atol(ptype);
-	float intensity = (float)atol(args);
+	float intensity = atof(pintensity);
 
-	data.Initialize(SMSG_WEATHER);
-	data << (uint32)type;
-	data << (float)intensity;
-	data << (uint8)1;
+	BuildWeatherPacket(&data,type,intensity);
 	m_session->GetPlayer()->SendMessageToSet(&data,true);
 	sLog.outDebug("SENT SMSG_WEATHER");
 	return true;

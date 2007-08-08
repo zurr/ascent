@@ -430,8 +430,7 @@ void WorldSession::HandleTextEmoteOpcode( WorldPacket & recv_data )
 		data.Initialize(SMSG_TEXT_EMOTE);
 		data << (uint64)GetPlayer()->GetGUID();
 		data << (uint32)text_emote;
-		if( namelen > 1 )   data << (uint32)0x00;
-		else				data << (uint32)0xFF; //When nothing/self selected, no name is displayed. (default text)
+		data << unk;
 		data << (uint32)namelen;
 		if( namelen > 1 )   data.append(name, namelen);
 		else				data << (uint8)0x00;
