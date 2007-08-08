@@ -282,6 +282,7 @@ void CBattlegroundManager::EventQueueUpdate()
 						if(plr)
 						{
 							sChatHandler.SystemMessageToPlr(plr, "Your queue on battleground instance %u is no longer valid, the instance no longer exists.", it2->first);
+							SendBattlefieldStatus(plr, 0, 0, 0, 0);
 							plr->m_bgIsQueued = false;
 						}
 					}
@@ -341,6 +342,7 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player * plr)
 			}
 		}
 	}
+	plr->m_bgIsQueued = false;
     m_queueLock.Release();
 }
 
@@ -403,7 +405,6 @@ void CBattleground::UpdatePvPData()
 {
 	if(World::UNIXTIME >= m_nextPvPUpdateTime)
 	{
-
 		m_mainLock.Acquire();
 		WorldPacket data(MSG_PVP_LOG_DATA, 50);
 		BGScore * bs;
@@ -465,13 +466,29 @@ void CBattleground::AddPlayer(Player * plr)
 void CBattleground::RemovePendingPlayer(Player * plr)
 {
 	m_mainLock.Acquire();
+	
 	m_pendPlayers[plr->GetTeam()].erase(plr);
+	/* send a null bg update (so they don't join) */
+	BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0);
+	plr->m_pendingBattleground =0;
+
 	m_mainLock.Release();
 }
 
 void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 {
 	m_mainLock.Acquire();
+	if(m_ended)
+	{
+		sChatHandler.SystemMessage(plr->GetSession(), "You cannot join this battleground as it has already ended.");
+		BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0);
+		plr->m_pendingBattleground = 0;
+		m_mainLock.Release();
+		return;
+	}
+
+	/* remove from any auto queue remove events */
+	sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
 
 	WorldPacket data(SMSG_BATTLEGROUND_PLAYER_JOINED, 8);
 	data << plr->GetGUID();
@@ -514,8 +531,10 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 		sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 10000);
 	}
 
+	sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
 	m_mainLock.Release();
 }
+
 CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGroup)
 {
 	CreateBattlegroundFunc cfunc = BGCFuncs[Type];
@@ -547,6 +566,33 @@ CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGr
 
 void CBattlegroundManager::DeleteBattleground(CBattleground * bg)
 {
+	uint32 i = bg->GetType();
+	uint32 j = bg->GetLevelGroup();
+	Player * plr;
+
+	m_instanceLock.AcquireWriteLock();
+	m_instances[i].erase(bg->GetId());
+	
+	/* erase any queued players */
+	map<uint32, list<uint32> >::iterator itr = m_queuedPlayers[i][j].find(bg->GetId());
+	list<uint32>::iterator it2;
+	if(itr != m_queuedPlayers[i][j].end())
+	{
+		/* kill him! */
+		for(it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+		{
+			plr = objmgr.GetPlayer(*it2);
+			if(plr)
+			{
+				sChatHandler.SystemMessageToPlr(plr, "Your queue on battleground instance %u is no longer valid, the instance no longer exists.", bg->GetId());
+				SendBattlefieldStatus(plr, 0, 0, 0, 0);
+				plr->m_bgIsQueued = false;
+			}
+		}
+		m_queuedPlayers[i][j].erase(itr);
+	}
+
+	m_instanceLock.ReleaseWriteLock();
 
 }
 
@@ -674,6 +720,13 @@ void CBattleground::RemovePlayer(Player * plr)
 	data << uint32(plr->m_bgEntryPointMap) << uint32(0) << uint32(0);
 	plr->GetSession()->SendPacket(&data);
 
+	if(!m_ended && m_players[0].size() == 0 && m_players[1].size() == 0)
+	{
+		/* create an inactive event */
+		sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);						// 10mins
+		sEventMgr.AddEvent(this, &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 600000, 1);
+	}
+
 	m_mainLock.Release();
 }
 
@@ -729,7 +782,7 @@ int32 CBattleground::event_GetInstanceID()
 
 void CBattleground::EventCountdown()
 {
-	/*if(m_countdownStage == 1)
+	if(m_countdownStage == 1)
 	{
 		m_countdownStage = 2;
 		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "One minute until the battle for %s begins!", GetName());
@@ -747,11 +800,11 @@ void CBattleground::EventCountdown()
 		sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
 	}
 	else
-	{*/
+	{
 		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "The battle for %s has begun!", GetName());
 		sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
 		Start();
-	/*}*/
+	}
 }
 
 void CBattleground::Start()
@@ -772,3 +825,34 @@ void CBattleground::SetWorldState(uint32 Index, uint32 Value)
 	DistributePacketToAll(&data);
 }
 
+void CBattleground::Close()
+{
+	/* remove all players from the battleground */
+	m_mainLock.Acquire();
+	m_ended = true;
+	for(uint32 i = 0; i < 2; ++i)
+	{
+		set<Player*>::iterator itr;
+		Player * plr;
+		for(itr = m_players[i].begin(); itr != m_players[i].end();)
+		{
+			plr = *itr;
+			++itr;
+			RemovePlayer(plr);
+		}
+        
+		for(itr = m_pendPlayers[i].begin(); itr != m_pendPlayers[i].end(); ++itr)
+		{
+			RemovePendingPlayer(*itr);
+		}
+	}
+
+	/* call the virtual onclose for cleanup etc */
+	OnClose();
+
+	/* shut down the map thread. this will delete the battleground from the corrent context. */
+	m_mapMgr->SetThreadState(THREADSTATE_TERMINATE);
+	m_mapMgr->delete_pending = true;
+
+	m_mainLock.Release();
+}

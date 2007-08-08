@@ -334,6 +334,8 @@ public:
 
 	virtual void Start();
 	virtual void OnStart() {}
+	void Close();
+	virtual void OnClose() {}
 
 	void SetWorldState(uint32 Index, uint32 Value);
 };

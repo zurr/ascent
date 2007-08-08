@@ -245,6 +245,9 @@ void WorldSession::LogoutPlayer(bool Save)
 		if(_player->m_bg)
 			_player->m_bg->RemovePlayer(_player);
 
+		if(_player->m_bgIsQueued)
+			BattlegroundManager.RemovePlayerFromQueues(_player);
+
 		// send info
 		sWorld.BroadcastExtendedMessage(0, "[SM:INFO:%u:%u]", sWorld.HordePlayers, sWorld.AlliancePlayers);
 

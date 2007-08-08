@@ -135,6 +135,9 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 			m_nextPvPUpdateTime = 0;
 		}
 
+		sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
+		sEventMgr.AddEvent(((CBattleground*)this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1);
+
 		/* increment the score world state */
 		SetWorldState(plr->GetTeam() ? WSG_CURRENT_HORDE_SCORE : WSG_CURRENT_ALLIANCE_SCORE, m_scores[plr->GetTeam()]);
 
