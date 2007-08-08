@@ -58,7 +58,7 @@ Group::Group()
 
 	m_Leader = NULL;
 	m_Looter = NULL;
-	m_LootMethod = 0;
+	m_LootMethod = PARTY_LOOT_GROUP;
 	m_LootThreshold = 2;
 	m_SubGroupCount = 1;
 	m_MemberCount = 0;

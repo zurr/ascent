@@ -423,6 +423,25 @@ void LootRoll::Finalize()
 	int8 hightype = -1;
 	uint64 player = 0;
 
+	WorldPacket data(34);
+
+	/* grab any player */
+	Player * gplr = NULL;
+	for(std::map<uint64, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
+	{
+		gplr = _mgr->GetPlayer((uint32)itr->first);
+		if(gplr) break;
+	}
+	
+	if(!gplr)
+	{
+		for(std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
+		{
+			gplr = _mgr->GetPlayer((uint32)itr->first);
+			if(gplr) break;
+		}
+	}
+
 	for(std::map<uint64, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
 	{
 		if(itr->second > highest)
@@ -431,19 +450,30 @@ void LootRoll::Finalize()
 			player = itr->first;
 			hightype = NEED;
 		}
+
+		data.Initialize(SMSG_LOOT_ROLL);
+		data << _guid << _slotid << itr->first;
+		data << _itemid << _itemunk1 << _itemunk2;
+		data << uint8(itr->second) << uint8(NEED);
+		if(gplr && gplr->GetGroup())
+			gplr->GetGroup()->SendPacketToAll(&data);
 	}
 
-	if(highest == 0)
+	for(std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
 	{
-		for(std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
+		if(!highest && itr->second > highest)
 		{
-			if(itr->second > highest)
-			{
-				highest = itr->second;
-				player = itr->first;
-				hightype = GREED;
-			}
+			highest = itr->second;
+			player = itr->first;
+			hightype = GREED;
 		}
+
+		data.Initialize(SMSG_LOOT_ROLL);
+		data << _guid << _slotid << itr->first;
+		data << _itemid << _itemunk1 << _itemunk2;
+		data << uint8(itr->second) << uint8(GREED);
+		if(gplr && gplr->GetGroup())
+			gplr->GetGroup()->SendPacketToAll(&data);
 	}
 
 	Loot * pLoot = 0;
@@ -487,8 +517,7 @@ void LootRoll::Finalize()
 		if(_player)
 		{
 			/* all passed */
-			WorldPacket data(34);
-			data.SetOpcode(SMSG_LOOT_ALL_PASSED);
+			data.Initialize(SMSG_LOOT_ALL_PASSED);
 			data << _guid << _groupcount << _itemid << _itemunk1 << _itemunk2;
 			if(_player->InGroup())
 				_player->GetGroup()->SendPacketToAll(&data);
@@ -503,8 +532,7 @@ void LootRoll::Finalize()
 	}
 
     pLoot->items.at(_slotid).roll = 0;
-	WorldPacket data(34);
-	data.SetOpcode(SMSG_LOOT_ROLL_WON);
+	data.Initialize(SMSG_LOOT_ROLL_WON);
 	data << _guid << _slotid << _itemid << _itemunk1 << _itemunk2;
 	data << _player->GetGUID() << uint8(highest) << uint8(hightype);
 	if(_player->InGroup())
@@ -591,7 +619,10 @@ void LootRoll::PlayerRolled(Player *player, uint8 choice)
 	int roll = sRand.randInt(100);
 
 	if(rmap)
+	{
 		rmap->insert ( std::make_pair(player->GetGUID(), roll) );
+		roll=0xF9;
+	}
 	else
 	{
 		roll = 128;
@@ -605,7 +636,7 @@ void LootRoll::PlayerRolled(Player *player, uint8 choice)
 	data.SetOpcode(SMSG_LOOT_ROLL);
 	data << _guid << _slotid << player->GetGUID();
 	data << _itemid << _itemunk1 << _itemunk2;
-	data << uint8(roll) << choice;
+	data << uint8(roll) << uint8(choice);
 	
 	if(player->InGroup())
 		player->GetGroup()->SendPacketToAll(&data);
