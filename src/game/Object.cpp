@@ -39,7 +39,7 @@ Object::Object() : m_position(0,0,0,0), m_spawnLocation(0,0,0,0)
 	m_flySpeed = 7.0f;
 	m_backFlySpeed = 4.5f;
 
-	m_backWalkSpeed = 2.5f;
+	m_backWalkSpeed = 4.48f;	// this should really be named m_backRunSpeed
 	m_swimSpeed = 4.722222f;
 	m_backSwimSpeed = 2.5f;
 	m_turnRate = 3.141593f;

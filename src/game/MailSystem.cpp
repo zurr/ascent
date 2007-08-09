@@ -518,40 +518,12 @@ void WorldSession::HandleTakeItem(WorldPacket & recv_data )
 	data << uint32(MAIL_OK);
 	SendPacket(&data);
 	
-	// COD really makes this hell here. it means if the player isn't online, we gotta load them,
-	// change the coinage value and save them :(
-	if(message->cod > 0)
+	if( message->cod > 0 )
 	{
-		// take the cod charges from us
 		_player->ModUInt32Value(PLAYER_FIELD_COINAGE, -int32(message->cod));
-		Player * sender = objmgr.GetPlayer(message->sender_guid);
-		if(sender != 0)
-		{
-			// player is inworld... this is easy..
-			// prevent from executing in wrong context
-			uint32 field = PLAYER_FIELD_COINAGE;
-			if(sender->GetInstanceID() != _player->GetInstanceID())
-				sEventMgr.AddEvent(((Object*)sender), &Object::ModUInt32Value, field, (int32)message->cod, EVENT_DELETE_TIMER, 1, 1);
-			else
-				sender->ModUInt32Value(PLAYER_FIELD_COINAGE, message->cod);
-
-			// might as well send them a message
-			ChatHandler::getSingleton().SystemMessageToPlr(sender, "%s pays you %u copper for your %s (via cash on delivery).", 
-				_player->GetName(), message->cod, item->GetProto()->Name1);
-		}
-		else
-		{
-			// this is the hard part, the player is offline so we need to load them, 
-			// mod, and resave.
-			QueryResult * result = CharacterDatabase.Query("SELECT gold FROM characters WHERE guid=%u", message->sender_guid);
-			if(result)
-			{
-				uint32 gold = result->Fetch()[0].GetUInt32();
-				gold += message->cod;
-				delete result;
-				CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid=%u", gold, message->sender_guid);
-			}
-		}
+		string subject = "COD Payment: ";
+		subject += message->subject;
+		sMailSystem.SendAutomatedMessage(NORMAL, message->player_guid, message->sender_guid, subject, "", message->cod, 0, 0, 1);
 	}
 
 	// prolly need to send an item push here
