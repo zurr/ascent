@@ -57,6 +57,7 @@ enum MsTimeVariables
 #define UNIX_FLAVOUR_LINUX 1
 #define UNIX_FLAVOUR_BSD 2
 #define UNIX_FLAVOUR_OTHER 3
+#define UNIX_FLAVOUR_OSX 4
 
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
 #  define PLATFORM PLATFORM_WIN32
@@ -81,11 +82,37 @@ enum MsTimeVariables
 #endif
 
 #if PLATFORM == PLATFORM_UNIX || PLATFORM == PLATFORM_APPLE
+#ifdef HAVE_DARWIN
+#define UNIX_FLAVOUR UNIX_FLAVOUR_OSX
+#else
 #ifdef USE_KQUEUE
 #define UNIX_FLAVOUR UNIX_FLAVOUR_BSD
 #else
 #define UNIX_FLAVOUR UNIX_FLAVOUR_LINUX
 #endif
+#endif
+#endif
+
+#if PLATFORM == PLATFORM_WIN32
+#define PLATFORM_TEXT "Win32"
+#elif PLATFORM == PLATFORM_UNIX
+#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
+#define PLATFORM_TEXT "Linux"
+#elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
+#define PLATFORM_TEXT "FreeBSD"
+#elif UNIX_FLAVOUR == UNIX_FLAVOUR_OSX
+#define PLATFORM_TEXT "MacOSX"
+#else
+#define PLATFORM_TEXT "Unknown"
+#endif
+#else
+#define PLATFORM_TEXT "unknown"
+#endif
+
+#ifdef _DEBUG
+#define CONFIG "Debug"
+#else
+#define CONFIG "Release"
 #endif
 
 #if COMPILER == COMPILER_MICROSOFT

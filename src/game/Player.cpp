@@ -2921,13 +2921,21 @@ void Player::_LoadQuestLogEntry()
 
 QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
 {
-	for(int i = 0; i < 25; ++i)
+	/*for(int i = 0; i < 25; ++i)
 	{
 		if(m_questlog[i] != NULL)
 		{
 			if(m_questlog[i]->GetQuest() && m_questlog[i]->GetQuest()->id == quest)
 				return m_questlog[i];
 		}
+	}
+	return NULL;*/
+	uint32 x = PLAYER_QUEST_LOG_1_1;
+	uint32 y = 0;
+	for(; x < PLAYER_VISIBLE_ITEM_1_CREATOR && y < 25; x += 3, y++)
+	{
+		if(m_uint32Values[x] == quest)
+			return m_questlog[y];
 	}
 	return NULL;
 }

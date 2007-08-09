@@ -24,20 +24,9 @@
 #endif
 #include "../shared/ascent_getopt.h"
 
-#ifdef WIN32
-#define PLATFORM_TEXT "Win32"
-#define BANNER "Ascent/Win32-2.1.2-%u :: Logon Server"
-#else
-#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
-#define PLATFORM_TEXT "Linux"
-#define BANNER "Ascent/Linux-2.1.2-%u :: Logon Server"
-#elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
-#define PLATFORM_TEXT "FreeBSD"
-#define BANNER "Ascent/FreeBSD-2.1.2-%u :: Logon Server"
-#else
-#define PLATFORM_TEXT "Unix"
-#define BANNER "Ascent/Unix-2.1.2-%u :: Logon Server"
-#endif
+#define BANNER "Ascent r%u/%s-%s :: Logon Server"
+
+#ifndef WIN32
 #include <sched.h>
 #endif
 
@@ -188,7 +177,7 @@ void LogonServer::Run(int argc, char ** argv)
 		sLog.m_screenLogLevel = 3;
 	}
 	
-	sLog.outString(BANNER, g_getRevision());
+	sLog.outString(BANNER, g_getRevision(), Config, PLATFORM_TEXT);
 	sLog.outString("==============================================================================");
 	sLog.outString("");
 	if(do_version)

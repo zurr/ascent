@@ -21,20 +21,9 @@
 #include "../game/StdAfx.h"
 #include "../shared/ascent_getopt.h"
 
-#ifdef WIN32
-#define PLATFORM_TEXT "Win32"
-#define BANNER "Ascent/Win32-2.1.2-%u :: World Server"
-#else
-#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
-#define PLATFORM_TEXT "Linux"
-#define BANNER "Ascent/Linux-2.1.2-%u :: World Server"
-#elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
-#define PLATFORM_TEXT "FreeBSD"
-#define BANNER "Ascent/FreeBSD-2.1.2-%u :: World Server"
-#else
-#define PLATFORM_TEXT "Unix"
-#define BANNER "Ascent/Unix-2.1.2-%u :: World Server"
-#endif
+#define BANNER "Ascent r%u/%s-%s :: World Server"
+
+#ifndef WIN32
 #include <sched.h>
 #endif
 
@@ -174,7 +163,7 @@ bool Master::Run(int argc, char ** argv)
 	}
 	
 	Log.Notice("Startup", "==========================================================");
-	Log.Notice("Startup", BANNER, g_getRevision());
+	Log.Notice("Startup", BANNER, g_getRevision(), CONFIG, PLATFORM_TEXT);
 	Log.Notice("Startup", "http://www.ascentemu.com/");
 	Log.Notice("Startup", "");
 	Log.Notice("Startup", "Copyright (c) 2007 Ascent Team. All Rights Reserved.");

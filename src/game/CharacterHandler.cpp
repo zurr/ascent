@@ -20,27 +20,6 @@
 #include "../shared/AuthCodes.h"
 #include "../shared/svn_revision.h"
 
-#if PLATFORM == PLATFORM_WIN32
-#define PLATFORM_TEXT "Win32"
-#elif PLATFORM == PLATFORM_UNIX
-#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
-#define PLATFORM_TEXT "Linux"
-#elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
-#define PLATFORM_TEXT "FreeBSD"
-#else
-#define PLATFORM_TEXT "Unknown"
-#endif
-#else
-#define PLATFORM_TEXT "unknown"
-#endif
-
-#define SERVER_NAME "AscentEmu"
-#ifdef _DEBUG
-#define CONFIG "Debug"
-#else
-#define CONFIG "Release"
-#endif
-
 bool VerifyName(const char * name, size_t nlen)
 {
 	static char * bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
@@ -626,24 +605,14 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	_player->BroadcastMessage(sWorld.GetMotd());
 
 	// Send revision (if enabled)
-	if(sWorld.sendRevisionOnJoin)
+	uint32 rev = g_getRevision();
+	_player->BroadcastMessage("You are playing on %sAscent r%u/%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE,
+		rev, CONFIG, PLATFORM_TEXT, MSG_COLOR_LIGHTBLUE);
+
+	if(sWorld.SendStatsOnJoin)
 	{
-		uint32 rev = g_getRevision();
-		if(!sWorld.SendStatsOnJoin) {
-			_player->BroadcastMessage("Server: %s%s%s Core v2.1.2-%u-%s/%s|r %s %s", MSG_COLOR_LIGHTBLUE, 
-				SERVER_NAME, MSG_COLOR_WHITE, rev, CONFIG, PLATFORM_TEXT, __DATE__, __TIME__);
-		} else {
-			_player->BroadcastMessage("Server Version: %s%s%s Core v2.1.2.%u-%s/%s|r %s\nOnline Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_LIGHTBLUE, 
-				SERVER_NAME, MSG_COLOR_WHITE, rev, CONFIG, PLATFORM_TEXT, __DATE__, 
-				MSG_COLOR_WHITE, sWorld.GetSessionCount(), MSG_COLOR_WHITE, sWorld.PeakSessionCount, MSG_COLOR_WHITE, sWorld.mAcceptedConnections);
-		}
-	}
-	else
-	{
-		if(sWorld.SendStatsOnJoin) {
-			_player->BroadcastMessage("This server has %u players currently online, with a peak of %u, and has accepted %u connections since its startup.", 
-				sWorld.GetSessionCount(), sWorld.PeakSessionCount, sWorld.mAcceptedConnections );
-		}
+		_player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
+			MSG_COLOR_WHITE, sWorld.GetSessionCount(), MSG_COLOR_WHITE, sWorld.PeakSessionCount, MSG_COLOR_WHITE, sWorld.mAcceptedConnections);
 	}
 
 	// Calculate rested experience if there is time between lastlogoff and now
