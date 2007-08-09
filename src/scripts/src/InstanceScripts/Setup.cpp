@@ -10,30 +10,30 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)	// Comment any 
 {
     SetupDeadmines(mgr);
     SetupMoltenCore(mgr);
-    //SetupShadowfangKeep(mgr);
+    SetupShadowfangKeep(mgr);
 	SetupZulGurub(mgr);
-	//SetupBotanica(mgr);
+	SetupBotanica(mgr);
 	SetupBlackwingLair(mgr);
 	SetupNaxxramas(mgr);
 	SetupOnyxiasLair(mgr);
-	//SetupTheSteamvault(mgr);
-	//SetupTheEye(mgr);
-	//SetupManaTombs(mgr);
-	//SetupAuchenaiCrypts(mgr);
-	//SetupSethekkHalls(mgr);
-	//SetupTheSlavePens(mgr);
-	//SetupTheUnderbog(mgr);
-	//SetupGruulsLair(mgr);
-	//SetupBattleOfMountHyjal(mgr);
-	//SetupShadowLabyrinth(mgr);
-	//SetupBloodFurnace(mgr);
-	//SetupScholomance(mgr);
-	//SetupTheShatteredHalls(mgr);
-	//SetupHellfireRamparts(mgr);
-	//SetupGuardAI(mgr);
-	//SetupBlackTemple(mgr);
-	//SetupArcatraz(mgr);
-	//SetupTheMechanar(mgr);
+	SetupTheSteamvault(mgr);
+	SetupTheEye(mgr);
+	SetupManaTombs(mgr);
+	SetupAuchenaiCrypts(mgr);
+	SetupSethekkHalls(mgr);
+	SetupTheSlavePens(mgr);
+	SetupTheUnderbog(mgr);
+	SetupGruulsLair(mgr);
+	SetupBattleOfMountHyjal(mgr);
+	SetupShadowLabyrinth(mgr);
+	SetupBloodFurnace(mgr);
+	SetupScholomance(mgr);
+	SetupTheShatteredHalls(mgr);
+	SetupHellfireRamparts(mgr);
+	SetupGuardAI(mgr);
+	SetupBlackTemple(mgr);
+	SetupArcatraz(mgr);
+	SetupTheMechanar(mgr);
 }
 
 #ifdef WIN32
