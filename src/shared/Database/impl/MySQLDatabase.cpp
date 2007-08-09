@@ -17,6 +17,7 @@
 
 #include "../DatabaseEnv.h"
 #include "../../CrashHandler.h"
+#include "../../NGLog.h"
 
 #ifdef DATABASE_SUPPORT_MYSQL
 
@@ -47,7 +48,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int Port, const ch
 	mPort = Port;
 
 	Connections = new MysqlCon[mConnectionCount];
-	sLog.outString("Connecting to MySQL Database on %s with (%s : *********)", mHostname.c_str(), mUsername.c_str());
+	Log.Notice("Database", "Connecting to MySQL on %s with (%s : *********)", mHostname.c_str(), mUsername.c_str());
 	
 	for(int i = 0; i < mConnectionCount; ++i)
 	{

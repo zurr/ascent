@@ -145,10 +145,12 @@ inline static uint32 GetLevelGrouping(uint32 level)
 		return 4;
 	else if(level < 60)
 		return 5;
-	else
+	else if(level < 70)
 		return 6;
+	else
+		return 7;
 }
-#define MAX_LEVEL_GROUP 7
+#define MAX_LEVEL_GROUP 8
 #define MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG 1
 #define MAXIMUM_BATTLEGROUNDS_PER_LEVEL_GROUP 3
 

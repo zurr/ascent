@@ -43,7 +43,7 @@ const static CreateBattlegroundFunc BGCFuncs[BATTLEGROUND_NUM_TYPES] = {
 CBattlegroundManager::CBattlegroundManager() : EventableObject()
 {
 	m_maxBattlegroundId = 0;
-	sEventMgr.AddEvent(this, &CBattlegroundManager::EventQueueUpdate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 10000, 0);
+	sEventMgr.AddEvent(this, &CBattlegroundManager::EventQueueUpdate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 20000, 0);
 }
 
 CBattlegroundManager::~CBattlegroundManager()
@@ -571,6 +571,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground * bg)
 	Player * plr;
 
 	m_instanceLock.AcquireWriteLock();
+	m_queueLock.Acquire();
 	m_instances[i].erase(bg->GetId());
 	
 	/* erase any queued players */
@@ -592,6 +593,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground * bg)
 		m_queuedPlayers[i][j].erase(itr);
 	}
 
+	m_queueLock.Release();
 	m_instanceLock.ReleaseWriteLock();
 
 }

@@ -2729,7 +2729,7 @@ Unit *AIInterface::GetMostHated()
         ++it2;
 
 		/* check the target is valid */
-		if(!itr->first->isAlive() || !isAttackable(m_Unit, itr->first))
+		if(itr->first->GetInstanceID() != m_Unit->GetInstanceID() || !itr->first->isAlive() || !isAttackable(m_Unit, itr->first))
 		{
 			m_aiTargets.erase(itr);
 			continue;
@@ -2879,7 +2879,7 @@ bool AIInterface::GetIsTaunted()
 {
 	if(isTaunted)
 	{
-		if(!tauntedBy || !tauntedBy->isAlive() || !m_Unit->GetMapMgr()->GetUnit(tauntedBy->GetGUID()))
+		if(!tauntedBy || !tauntedBy->isAlive())
 		{
 			isTaunted = false;
 			tauntedBy = NULL;
@@ -2952,6 +2952,7 @@ uint32 AIInterface::_CalcThreat(uint32 damage, uint32 spellId, Unit* Attacker)
 void AIInterface::WipeReferences()
 {
 	m_nextSpell = 0;
+	m_currentHighestThreat = 0;
 	m_aiTargets.clear();
 	SetNextTarget(NULL);
 	UnitToFear = 0;
