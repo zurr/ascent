@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="InstanceScripts"
 	ProjectGUID="{EE39B48B-C598-4AAF-9EF0-199402933EE5}"
 	RootNamespace="InstanceScripts"
@@ -203,87 +203,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\src\InstanceScripts\GuardAI.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_Arcatraz.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_AuchenaiCrypts.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_BloodFurnace.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_Botanica.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\src\InstanceScripts\Instance_Deadmines.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\src\InstanceScripts\Instance_HellfireRamparts.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_ManaTombs.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_Scholomance.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_SethekkHalls.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_ShadowfangKeep.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_ShadowLabyrinth.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheMechanar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheShatteredHalls.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheSlavePens.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheSteamvault.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheUnderbog.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_BlackTemple.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\src\InstanceScripts\Raid_BlackwingLair.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_CoT_BattleOfMountHyjal.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_GruulsLair.cpp"
 				>
 			</File>
 			<File
@@ -296,10 +220,6 @@
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Raid_OnyxiasLair.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_TheEye.cpp"
 				>
 			</File>
 			<File

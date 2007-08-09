@@ -134,67 +134,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\src\InstanceScripts\GuardAI.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_Arcatraz.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_AuchenaiCrypts.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_BloodFurnace.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_Botanica.cpp">
-			</File>
-			<File
 				RelativePath="..\src\InstanceScripts\Instance_Deadmines.cpp">
 			</File>
 			<File
-				RelativePath="..\src\InstanceScripts\Instance_HellfireRamparts.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_ManaTombs.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_Scholomance.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_SethekkHalls.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_ShadowfangKeep.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_ShadowLabyrinth.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheMechanar.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheShatteredHalls.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheSlavePens.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheSteamvault.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Instance_TheUnderbog.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_BlackTemple.cpp">
-			</File>
-			<File
 				RelativePath="..\src\InstanceScripts\Raid_BlackwingLair.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_CoT_BattleOfMountHyjal.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_GruulsLair.cpp">
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Raid_MoltenCore.cpp">
@@ -204,9 +147,6 @@
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Raid_OnyxiasLair.cpp">
-			</File>
-			<File
-				RelativePath="..\src\InstanceScripts\Raid_TheEye.cpp">
 			</File>
 			<File
 				RelativePath="..\src\InstanceScripts\Raid_ZulGurub.cpp">
