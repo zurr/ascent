@@ -225,7 +225,7 @@ protected:
 	uint32 m_playerCountPerTeam;
 
 	/* "pending" players */
-	set<Player*> m_pendPlayers[2];
+	set<uint32> m_pendPlayers[2];
 
 	/* starting time */
 	uint32 m_startTime;

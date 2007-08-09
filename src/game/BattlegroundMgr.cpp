@@ -451,7 +451,7 @@ void CBattleground::AddPlayer(Player * plr)
 	m_mainLock.Acquire();
 
 	/* This is called when the player is added, not when they port. So, they're essentially still queued, but not inside the bg yet */
-	m_pendPlayers[plr->GetTeam()].insert(plr);
+	m_pendPlayers[plr->GetTeam()].insert(plr->GetGUIDLow());
 
 	/* Send a packet telling them that they can enter */
 	BattlegroundManager.SendBattlefieldStatus(plr, 2, m_type, m_id, 120000);		// You will be removed from the queue in 2 minutes.
@@ -467,7 +467,7 @@ void CBattleground::RemovePendingPlayer(Player * plr)
 {
 	m_mainLock.Acquire();
 	
-	m_pendPlayers[plr->GetTeam()].erase(plr);
+	m_pendPlayers[plr->GetTeam()].erase(plr->GetGUIDLow());
 	/* send a null bg update (so they don't join) */
 	BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0);
 	plr->m_pendingBattleground =0;
@@ -507,7 +507,7 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 		BattlegroundManager.SendBattlefieldStatus(plr, 3, m_type, m_id, World::UNIXTIME - m_startTime);	// Elapsed time is the last argument
 	}
 
-	m_pendPlayers[plr->GetTeam()].erase(plr);
+	m_pendPlayers[plr->GetTeam()].erase(plr->GetGUIDLow());
 	m_players[plr->GetTeam()].insert(plr);
 	plr->m_pendingBattleground = 0;
 	plr->m_bg = this;
@@ -835,6 +835,8 @@ void CBattleground::Close()
 	for(uint32 i = 0; i < 2; ++i)
 	{
 		set<Player*>::iterator itr;
+		set<uint32>::iterator it2;
+		uint32 guid;
 		Player * plr;
 		for(itr = m_players[i].begin(); itr != m_players[i].end();)
 		{
@@ -843,9 +845,16 @@ void CBattleground::Close()
 			RemovePlayer(plr);
 		}
         
-		for(itr = m_pendPlayers[i].begin(); itr != m_pendPlayers[i].end(); ++itr)
+		for(it2 = m_pendPlayers[i].begin(); it2 != m_pendPlayers[i].end();)
 		{
-			RemovePendingPlayer(*itr);
+			guid = *it2;
+			++it2;
+			plr = objmgr.GetPlayer(guid);
+
+			if(plr)
+				RemovePendingPlayer(plr);
+			else
+				m_pendPlayers[i].erase(guid);
 		}
 	}
 

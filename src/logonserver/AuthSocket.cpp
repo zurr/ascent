@@ -303,7 +303,11 @@ void AuthSocket::SendProofError(uint8 Error, uint8 * M2)
 	buffer[1] = Error;
 	if(M2 == 0)
 	{
+#ifdef USING_BIG_ENDIAN
+		*(uint32*)&buffer[2] = swap32(3);
+#else
 		*(uint32*)&buffer[2] = 3;
+#endif
 		Send(buffer, 6);
 		return;
 	}
