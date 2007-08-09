@@ -177,7 +177,7 @@ void LogonServer::Run(int argc, char ** argv)
 		sLog.m_screenLogLevel = 3;
 	}
 	
-	sLog.outString(BANNER, g_getRevision(), Config, PLATFORM_TEXT);
+	sLog.outString(BANNER, g_getRevision(), CONFIG, PLATFORM_TEXT);
 	sLog.outString("==============================================================================");
 	sLog.outString("");
 	if(do_version)
