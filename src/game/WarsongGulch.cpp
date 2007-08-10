@@ -54,6 +54,8 @@ WarsongGulch::WarsongGulch(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t) : C
 	}
 
 	m_scores[0] = m_scores[1] = 0;
+
+	m_playerCountPerTeam = 10;
 }
 
 WarsongGulch::~WarsongGulch()
@@ -400,6 +402,13 @@ void WarsongGulch::OnCreate()
 	SetWorldState(WSG_MAX_SCORE, 3);
 	SetWorldState(WSG_CURRENT_ALLIANCE_SCORE, 0);
 	SetWorldState(WSG_CURRENT_HORDE_SCORE, 0);
+
+	/* spawn spirit guides */
+	// Alliance Spirit Guide
+	SpawnSpiritGuide(1423.218872f, 1554.663574f, 342.833801f, 3.124139f, 0);
+
+	// Horde Spirit Guide
+	SpawnSpiritGuide(1032.644775f, 1388.316040f, 340.559937f, 0.043200f, 1);
 }
 
 void WarsongGulch::OnStart()
@@ -419,5 +428,4 @@ void WarsongGulch::OnStart()
 
 	/* correct? - burlex */
 	PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
-
 }

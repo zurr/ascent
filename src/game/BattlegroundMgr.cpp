@@ -368,10 +368,11 @@ void CBattleground::SendWorldStates(Player * plr)
 		return;
 
 	uint32 bflag = 0;
+	uint32 bflag2 = 0;
 
 	switch(m_mapMgr->GetMapId())
 	{
-	case  489: bflag = 0x0CCD; break;
+	case  489: bflag = 0x0CCD; bflag2 = 0x0CF9; break;
 	case  529: bflag = 0x0D1E; break;
 	case   30: bflag = 0x0A25; break;
 	case  562: bflag = 0x0E76; break;
@@ -380,6 +381,7 @@ void CBattleground::SendWorldStates(Player * plr)
 	WorldPacket data(SMSG_INIT_WORLD_STATES, 10 + (m_worldStates.size() * 8));
 	data << m_mapMgr->GetMapId();
 	data << bflag;
+	data << bflag2;
 	data << uint32(m_worldStates.size());
 
 	for(map<uint32, uint32>::iterator itr = m_worldStates.begin(); itr != m_worldStates.end(); ++itr)
@@ -394,11 +396,13 @@ CBattleground::CBattleground(MapMgr * mgr, uint32 id, uint32 levelgroup, uint32 
 	m_ended = false;
 	m_winningteam = 0;
 	m_startTime = World::UNIXTIME;
+	m_lastResurrect = World::UNIXTIME;
+	sEventMgr.AddEvent(this, &CBattleground::EventResurrectPlayers, EVENT_BATTLEGROUND_QUEUE_UPDATE, 30000, 0);
 }
 
 CBattleground::~CBattleground()
 {
-
+	sEventMgr.RemoveEvents(this);
 }
 
 void CBattleground::UpdatePvPData()
@@ -866,4 +870,104 @@ void CBattleground::Close()
 	m_mapMgr->delete_pending = true;
 
 	m_mainLock.Release();
+}
+
+void CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, uint32 horde)
+{
+	if(horde > 1)
+		horde = 1;
+
+	CreatureInfo * pInfo = CreatureNameStorage.LookupEntry(13116 + horde);
+	if(pInfo == 0)
+	{
+		return;
+	}
+
+	Creature * pCreature = m_mapMgr->CreateCreature();
+
+	pCreature->Create(pInfo->Name, m_mapMgr->GetMapId(), x, y, z, o);
+
+	pCreature->SetInstanceID(m_mapMgr->GetInstanceID());
+	pCreature->SetUInt32Value(OBJECT_FIELD_ENTRY, 13116 + horde);
+	pCreature->SetFloatValue(OBJECT_FIELD_SCALE_X, 1.0f);
+
+	pCreature->SetUInt32Value(UNIT_FIELD_HEALTH, 100000);
+	pCreature->SetUInt32Value(UNIT_FIELD_POWER1, 4868);
+	pCreature->SetUInt32Value(UNIT_FIELD_POWER3, 200);
+	pCreature->SetUInt32Value(UNIT_FIELD_POWER5, 2000000);
+
+	pCreature->SetUInt32Value(UNIT_FIELD_MAXHEALTH, 10000);
+	pCreature->SetUInt32Value(UNIT_FIELD_MAXPOWER1, 4868);
+	pCreature->SetUInt32Value(UNIT_FIELD_MAXPOWER3, 200);
+	pCreature->SetUInt32Value(UNIT_FIELD_MAXPOWER5, 2000000);
+
+	pCreature->SetUInt32Value(UNIT_FIELD_LEVEL, 60);
+	pCreature->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, 84 - horde);
+	pCreature->SetUInt32Value(UNIT_FIELD_BYTES_0, 0 | (2 << 8) | (1 << 16));
+
+	pCreature->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, 22802);
+	pCreature->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, 2 | (0xA << 8) | (2 << 16) | (0x11 << 24));
+	pCreature->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO_01, 2);
+
+	pCreature->SetUInt32Value(UNIT_FIELD_FLAGS, 4928);
+
+	pCreature->SetUInt32Value(UNIT_FIELD_AURA, 22011);
+	pCreature->SetUInt32Value(UNIT_FIELD_AURAFLAGS, 9);
+	pCreature->SetUInt32Value(UNIT_FIELD_AURALEVELS, 0x3C);
+	pCreature->SetUInt32Value(UNIT_FIELD_AURAAPPLICATIONS, 0xFF);
+
+	pCreature->SetUInt32Value(UNIT_FIELD_BASEATTACKTIME, 2000);
+	pCreature->SetUInt32Value(UNIT_FIELD_BASEATTACKTIME_01, 2000);
+	pCreature->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 0.208f);
+	pCreature->SetFloatValue(UNIT_FIELD_COMBATREACH, 1.5f);
+
+	pCreature->SetUInt32Value(UNIT_FIELD_DISPLAYID, 13337 + horde);
+	pCreature->SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID, 13337 + horde);
+
+	pCreature->SetUInt32Value(UNIT_CHANNEL_SPELL, 22011);
+	pCreature->SetUInt32Value(UNIT_MOD_CAST_SPEED, 1065353216);
+
+	pCreature->SetUInt32Value(UNIT_NPC_FLAGS, 64);
+	pCreature->SetUInt32Value(UNIT_FIELD_BYTES_2, 1 | (0x10 << 8));
+
+	pCreature->DisableAI();
+	pCreature->PushToWorld(m_mapMgr);
+}
+
+void CBattleground::QueuePlayerForResurrect(Player * plr)
+{
+	m_resurrectQueue[plr->GetTeam()].insert(plr->GetGUIDLow());
+}
+
+#define RESURRECT_SPELL 21074   // Spirit Healer Res
+void CBattleground::EventResurrectPlayers()
+{
+	Player * plr;
+	set<uint32>::iterator itr;
+	WorldPacket data(50);
+	for(uint32 i = 0; i < 2; ++i)
+	{
+		for(itr = m_resurrectQueue[i].begin(); itr != m_resurrectQueue[i].end(); ++itr)
+		{
+			plr = m_mapMgr->GetPlayer(*itr);
+			if(plr && plr->isDead())
+			{
+                data.Initialize(SMSG_SPELL_START);
+				data << plr->GetNewGUID() << plr->GetNewGUID() << uint32(RESURRECT_SPELL) << uint16(0) << uint32(0) << uint16(2) << plr->GetGUID();
+				plr->SendMessageToSet(&data, true);
+
+				data.Initialize(SMSG_SPELL_GO);
+				data << plr->GetNewGUID() << plr->GetNewGUID() << uint32(RESURRECT_SPELL) << uint8(0) << uint8(1) << uint8(1) << plr->GetGUID() << uint8(0) << uint16(2)
+					<< plr->GetGUID();
+				plr->SendMessageToSet(&data, true);
+
+				plr->ResurrectPlayer();
+				plr->SetUInt32Value(UNIT_FIELD_HEALTH, plr->GetUInt32Value(UNIT_FIELD_HEALTH));
+				plr->SetUInt32Value(UNIT_FIELD_POWER1, plr->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
+				plr->SetUInt32Value(UNIT_FIELD_POWER4, plr->GetUInt32Value(UNIT_FIELD_MAXPOWER4));
+			}
+		}
+		m_resurrectQueue[i].clear();
+	}
+	m_lastResurrect = World::UNIXTIME;
 }

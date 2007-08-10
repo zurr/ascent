@@ -237,6 +237,10 @@ protected:
 	bool m_ended;
 	uint8 m_winningteam;
 
+	/* resurrect queue */
+	set<uint32> m_resurrectQueue[2];
+	uint32 m_lastResurrect;
+
 public:
 
 	void SendChatMessage(uint32 Type, uint64 Guid, const char * Format, ...);
@@ -340,6 +344,11 @@ public:
 	virtual void OnClose() {}
 
 	void SetWorldState(uint32 Index, uint32 Value);
+	void SpawnSpiritGuide(float x, float y, float z, float o, uint32 horde);
+
+	inline uint32 GetLastResurrect() { return m_lastResurrect; }
+	void QueuePlayerForResurrect(Player * plr);
+	void EventResurrectPlayers();
 };
 
 #define BattlegroundManager CBattlegroundManager::getSingleton( )

@@ -26,10 +26,7 @@ void WorldSession::HandleBattlefieldPortOpcode(WorldPacket &recv_data)
 	 */
 
 	if(_player->m_pendingBattleground)
-	{
-		_player->BroadcastMessage("[debug] Porting to bg instance %u", _player->m_pendingBattleground->GetId());
 		_player->m_pendingBattleground->PortPlayer(_player);
-	}
 }
 
 void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket &recv_data)
@@ -74,36 +71,21 @@ void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket &recv_data)
 void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket &recv_data)
 {
 	if(!_player->IsInWorld()) return;
-	CHECK_PACKET_SIZE(recv_data, 8);
-	/*if(!GetPlayer()->m_bgInBattleground) return;
-	Battleground *bg = GetPlayer()->GetCurrentBattleground();
-	if(!bg)
-		return;
-	
-	sLog.outString("Recieved CMSG_AREA_SPIRITHEALER_QUERY");
 	uint64 guid;
-	uint32 rtime;
 	recv_data >> guid;
+	
+	uint32 restime = (_player->m_bg->GetLastResurrect() + 30) - World::UNIXTIME;
 	WorldPacket data(SMSG_AREA_SPIRIT_HEALER_TIME, 12);
-	uint32 NextRes = bg->m_LastResurrect + 30;	// 30 secs between
-	uint32 ResTime = NextRes - (uint32(time(NULL)));
-	ResTime *= 1000;	// 1000 ms per sec
-	rtime = ResTime;
-	data << guid << rtime;
-	SendPacket(&data);*/
+	data << guid << restime;
+	SendPacket(&data);
 }
 
 void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket &recv_data)
 {
 	if(!_player->IsInWorld()) return;
-	CHECK_PACKET_SIZE(recv_data, 8);
-	sLog.outString("Recieved CMSG_AREA_SPIRITHEALER_QUEUE");
-	/*uint64 guid;
+	uint64 guid;
 	recv_data >> guid;
-	sLog.outDetail("Guid: "I64FMT"", guid);
-	Battleground *bg = GetPlayer()->GetCurrentBattleground();
-	if(bg)
-		bg->m_ReviveQueue[guid] = _player->GetGUID();*/
+	_player->m_bg->QueuePlayerForResurrect(_player);
 }
 
 void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket &recv_data)
