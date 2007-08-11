@@ -1759,8 +1759,16 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
 	if(apply)
 	{
 		SetPositive();
-		sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal,(uint32)mod->m_amount,
-			EVENT_AURA_PERIODIC_HEAL,	GetSpellProto()->EffectAmplitude[mod->i],0);
+        	if (GetSpellProto()->Id == 28880)
+	        {
+	            sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal,(uint32)(mod->m_amount+3*(GetUnitCaster()->getLevel()-1)),
+		            EVENT_AURA_PERIODIC_HEAL,    GetSpellProto()->EffectAmplitude[mod->i],0);
+	        }
+		else
+		{
+			sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal,(uint32)mod->m_amount,
+				EVENT_AURA_PERIODIC_HEAL,	GetSpellProto()->EffectAmplitude[mod->i],0);
+		}
 	}
 }
 
