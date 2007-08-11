@@ -1475,10 +1475,20 @@ void Spell::cast(bool check)
 			if(m_spellInfo->Effect[i] && m_spellInfo->Effect[i]!=27)
 				 FillTargetMap(i);
 
-		if(p_caster && p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_REMAIN_STEALTHED))
+		if(p_caster)
 		{
-			p_caster->RemoveAura(p_caster->m_stealth);
+			if(m_spellInfo->NameHash == 0xD790D50B)
+			{
+				/* slam - reset attack timer */
+				p_caster->setAttackTimer(0, true);
+				p_caster->setAttackTimer(0, false);
+			}
+			if(p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_REMAIN_STEALTHED))
+			{
+				p_caster->RemoveAura(p_caster->m_stealth);
+			}
 		}
+
 		/*if (m_spellInfo->RecoveryTime && m_caster->IsPlayer() && m_caster->IsInWorld())
 		{
 			WorldPacket data(SMSG_SPELL_COOLDOWN, 15);
