@@ -1473,6 +1473,7 @@ void QuestMgr::LoadExtraQuestStuff()
 			qst->count_reward_item = qst->count_reward_choiceitem = qst->count_required_item = qst->reward_xp_as_money = 0;
 
 		qst->required_mobtype[0] = qst->required_mobtype[1] = qst->required_mobtype[2] = qst->required_mobtype[3] = 0;
+		qst->count_requiredquests = 0;
 
 		for(int i = 0 ; i < 4; ++i)
 		{

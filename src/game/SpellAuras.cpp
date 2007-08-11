@@ -3241,6 +3241,25 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		pts.procCharges = GetSpellProto()->procCharges;
 		pts.LastTrigger = 0;
 		pts.deleted = false;
+
+		/* We have a custom formula for seal of command. */
+		if(m_spellProto->NameHash == 0xC5C30B39)
+		{
+			// default chance of proc
+			pts.procChance = 25;
+
+			/* The formula for SoC proc rate is: [ 7 / ( 60 / Weapon Speed ) - from wowwiki */
+			if(m_target->IsPlayer())
+			{
+				float weapspeed = 1.0f;
+				Item * itm = ((Player*)m_target)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+				if(itm)
+					weapspeed = itm->GetProto()->Delay;
+				pts.procChance = FL2UINT( float(7.0f / (60.0f / weapspeed)) );
+				if(pts.procChance >= 50.0f)
+					pts.procChance = 50.0f;
+			}
+		}
 /*		pts.ospinfo = m_spellProto;
 		pts.spinfo = sSpellStore.LookupEntry(pts.spellId);
 		if(!pts.spinfo)
@@ -5370,7 +5389,7 @@ void Aura::SpellAuraModHaste(bool apply)
 void Aura::SpellAuraForceReaction(bool apply)
 {
 	// hackfix for spectacles
-	if(m_spellProto->EffectApplyAuraName[0] == SPELL_AURA_MOD_INVISIBILITY_DETECTION)
+	if(m_spellProto->EffectApplyAuraName[0] == SPELL_AURA_MOD_INVISIBILITY_DETECTION || m_target->GetTypeId() == TYPEID_PLAYER)
 		return;
 
 	if (apply)

@@ -611,12 +611,18 @@ bool ItemInterface::SafeFullRemoveItemByGuid(uint64 guid)
 //-------------------------------------------------------------------//
 Item *ItemInterface::GetInventoryItem(int8 slot)
 {
+	Item * ret;
 	if(slot == INVENTORY_SLOT_NOT_SET || slot > MAX_INVENTORY_SLOT)
 	{
 		return NULL;
 	}
 
-	return m_pItems[(int)slot];
+	/* hackfix for corrupted items getting returned */
+	ret = m_pItems[(int)slot];
+	if(ret && ret->GetTypeId() != TYPEID_ITEM && ret->GetTypeId() != TYPEID_CONTAINER)
+		return NULL;
+
+	return ret;
 }
 
 //-------------------------------------------------------------------//
@@ -624,22 +630,30 @@ Item *ItemInterface::GetInventoryItem(int8 slot)
 //-------------------------------------------------------------------//
 Item *ItemInterface::GetInventoryItem(int8 ContainerSlot, int8 slot)
 {
-
+	Item * ret;
 	if(ContainerSlot == INVENTORY_SLOT_NOT_SET)
 	{
 		if(slot == INVENTORY_SLOT_NOT_SET || slot > MAX_INVENTORY_SLOT)
 		{
 			return NULL;
 		}
-		return m_pItems[(int)slot];
+		ret = m_pItems[(int)slot];
+		if(ret && ret->GetTypeId() != TYPEID_ITEM && ret->GetTypeId() != TYPEID_CONTAINER)
+			return NULL;
+
+		return ret;
 	}
 	else
 	{
 		if(IsBagSlot(ContainerSlot))
 		{
-			if(m_pItems[(int)ContainerSlot])
+			ret = m_pItems[(int)ContainerSlot];
+			if(ret)
 			{
-				return static_cast<Container*>(m_pItems[(int)ContainerSlot])->GetItem(slot);
+				if(ret->GetTypeId() != TYPEID_CONTAINER)
+					return NULL;
+				else
+					return ((Container*)ret)->GetItem(slot);
 			}
 		}
 	}

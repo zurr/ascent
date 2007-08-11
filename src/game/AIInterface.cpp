@@ -84,6 +84,8 @@ AIInterface::AIInterface()
 	next_spell_time = 0;
 	m_hasWaypointEvents = false;
 	waiting_for_cooldown = false;
+	m_AIState_backup = m_AIState;
+	UnitToFollow_backup = NULL;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)

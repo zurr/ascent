@@ -32,8 +32,15 @@ public:
 	bool AddItemToFreeSlot(Item *pItem);
 	inline Item *GetItem(int8 slot)
 	{
+		Item * ret;
 		if((uint8)slot < GetProto()->ContainerSlots)
-			return m_Slot[slot];
+		{
+			ret = m_Slot[slot];
+			if(ret && ret->GetTypeId() != TYPEID_CONTAINER && ret->GetTypeId() != TYPEID_ITEM)
+				return ret;
+			else
+				return NULL;
+		}
 		else
 			return 0;
 	}

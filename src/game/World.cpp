@@ -1022,6 +1022,18 @@ void World::SetInitialWorldSettings()
 			sp->procCharges=-1;*/
 		if(sp->proc_interval!=0)
 			sp->procFlags |= PROC_REMOVEONUSE;
+
+		/* Seal of Command - Proc Chance */
+		if(sp->NameHash == 0xC5C30B39)
+			sp->procChance = 25;
+		
+		/* Seal of Jusice - Proc Chance */
+		if(sp->NameHash == 0xCC6D4182)
+			sp->procChance = 25;
+
+		/* Decapitate */
+		if(sp->NameHash == 0xB6C3243C)
+			sp->procChance = 30;
 	}
 	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
 	SpellEntry * parentsp = sSpellStore.LookupEntry(30823);
