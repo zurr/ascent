@@ -19,7 +19,7 @@
 #define WOWSERVER_COMMON_H
 
 /* Define this if you're using a big-endian machine (todo: replace with autoconf */
-#define USING_BIG_ENDIAN 1
+//#define USING_BIG_ENDIAN 1
 
 #ifdef WIN32
 #pragma warning(disable:4996)

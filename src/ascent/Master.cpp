@@ -21,7 +21,7 @@
 #include "../game/StdAfx.h"
 #include "../shared/ascent_getopt.h"
 
-#define BANNER "Ascent r%u/%s-%s :: World Server"
+#define BANNER "Ascent r%u/%s-%s-%s :: World Server"
 
 #ifndef WIN32
 #include <sched.h>
@@ -163,7 +163,7 @@ bool Master::Run(int argc, char ** argv)
 	}
 	
 	Log.Notice("Startup", "==========================================================");
-	Log.Notice("Startup", BANNER, g_getRevision(), CONFIG, PLATFORM_TEXT);
+	Log.Notice("Startup", BANNER, g_getRevision(), CONFIG, PLATFORM_TEXT, ARCH);
 	Log.Notice("Startup", "http://www.ascentemu.com/");
 	Log.Notice("Startup", "");
 	Log.Notice("Startup", "Copyright (c) 2007 Ascent Team. All Rights Reserved.");

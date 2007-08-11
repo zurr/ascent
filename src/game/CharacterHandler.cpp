@@ -606,8 +606,8 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 
 	// Send revision (if enabled)
 	uint32 rev = g_getRevision();
-	_player->BroadcastMessage("You are playing on %sAscent r%u/%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE,
-		rev, CONFIG, PLATFORM_TEXT, MSG_COLOR_LIGHTBLUE);
+	_player->BroadcastMessage("You are playing on %sAscent r%u/%s-%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE,
+		rev, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
 
 	if(sWorld.SendStatsOnJoin)
 	{
