@@ -73,7 +73,7 @@ void LogonCommServerSocket::OnRead()
 				recvCrypto.Process((unsigned char*)&remaining, (unsigned char*)&remaining, 4);
 			}
 
-#ifndef USING_BIG_ENDIAN
+#ifdef USING_BIG_ENDIAN
 			opcode = swap16(opcode);
 #else
 			/* reverse byte order */

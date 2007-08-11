@@ -71,7 +71,12 @@ void AuthSocket::HandleChallenge()
 
 	// Check the rest of the packet is complete.
 	uint8 * ReceiveBuffer = this->GetReadBuffer(0);
+#ifdef USING_BIG_ENDIAN
 	uint16 full_size = swap16(*(uint16*)&ReceiveBuffer[2]);
+#else
+	uint16 full_size = *(uint16*)&ReceiveBuffer[2];
+#endif
+
 	sLog.outDetail("[AuthChallenge] got header, body is 0x%02X bytes", full_size);
 
 	if(GetReadBufferSize() < uint32(full_size+4))
@@ -94,8 +99,13 @@ void AuthSocket::HandleChallenge()
 //#endif
  
 	// Check client build.
+#ifdef USING_BIG_ENDIAN
 	if(swap16(m_challenge.build) > LogonServer::getSingleton().max_build ||
 		swap16(m_challenge.build) < LogonServer::getSingleton().min_build)
+#else
+	if(m_challenge.build > LogonServer::getSingleton().max_build ||
+		m_challenge.build < LogonServer::getSingleton().min_build)
+#endif
 	{
 		SendChallengeError(CE_WRONG_BUILD_NUMBER);
 		return;
