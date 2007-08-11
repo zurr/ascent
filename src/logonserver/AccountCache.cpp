@@ -368,7 +368,7 @@ void InformationCore::SendRealms(AuthSocket * Socket)
 
 	// Re-calculate size.
 #ifdef USING_BIG_ENDIAN
-	*(uint16*)&data.contents()[1] = swap16(data.size() - 3);
+	*(uint16*)&data.contents()[1] = swap16(uint16(data.size() - 3));
 #else
 	*(uint16*)&data.contents()[1] = data.size() - 3;
 #endif

@@ -67,8 +67,8 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int Port, const ch
 bool MySQLDatabase::Connect(MysqlCon * con)
 {
 	MYSQL* Descriptor = mysql_init(NULL);
-	if(mysql_options(Descriptor, MYSQL_SET_CHARSET_NAME, "utf8"))
-		sLog.outString("sql: Could not set utf8 character set [!!]");
+	//if(mysql_options(Descriptor, MYSQL_SET_CHARSET_NAME, "utf8"))
+	//	sLog.outString("sql: Could not set utf8 character set [!!]");
 
    // MYSQL* Descriptor2 = Descriptor;
 	// Set reconnect
@@ -84,7 +84,7 @@ bool MySQLDatabase::Connect(MysqlCon * con)
 		mUsername.c_str(), mPassword.c_str(), "", mPort, NULL, 0);
 	if(con->con == NULL)
 	{
-		sLog.outError("sql: Connection failed. Reason was `%s`", mysql_error(Descriptor));
+		printf("sql: Connection failed. Reason was `%s`", mysql_error(Descriptor));
 		return false;
 	}
 	

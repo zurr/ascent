@@ -34,6 +34,12 @@ using namespace std;
 #include <sys/event.h>
 #define CONFIG_USE_KQUEUE
 
+#elif UNIX_FLAVOUR == UNIX_FLAVOUR_OSX
+// select: kqueue
+#include <sys/event.h>
+#define CONFIG_USE_KQUEUE
+
+
 #endif
 
 #endif

@@ -18,6 +18,9 @@
 #ifndef WOWSERVER_COMMON_H
 #define WOWSERVER_COMMON_H
 
+/* Define this if you're using a big-endian machine (todo: replace with autoconf */
+#define USING_BIG_ENDIAN 1
+
 #ifdef WIN32
 #pragma warning(disable:4996)
 #endif
@@ -83,11 +86,14 @@ enum MsTimeVariables
 
 #if PLATFORM == PLATFORM_UNIX || PLATFORM == PLATFORM_APPLE
 #ifdef HAVE_DARWIN
+#define PLATFORM_TEXT "MacOSX"
 #define UNIX_FLAVOUR UNIX_FLAVOUR_OSX
 #else
 #ifdef USE_KQUEUE
+#define PLATFORM_TEXT "FreeBSD"
 #define UNIX_FLAVOUR UNIX_FLAVOUR_BSD
 #else
+#define PLATFORM_TEXT "Linux"
 #define UNIX_FLAVOUR UNIX_FLAVOUR_LINUX
 #endif
 #endif
@@ -95,24 +101,18 @@ enum MsTimeVariables
 
 #if PLATFORM == PLATFORM_WIN32
 #define PLATFORM_TEXT "Win32"
-#elif PLATFORM == PLATFORM_UNIX
-#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
-#define PLATFORM_TEXT "Linux"
-#elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
-#define PLATFORM_TEXT "FreeBSD"
-#elif UNIX_FLAVOUR == UNIX_FLAVOUR_OSX
-#define PLATFORM_TEXT "MacOSX"
-#else
-#define PLATFORM_TEXT "Unknown"
-#endif
-#else
-#define PLATFORM_TEXT "unknown"
 #endif
 
 #ifdef _DEBUG
 #define CONFIG "Debug"
 #else
 #define CONFIG "Release"
+#endif
+
+#ifdef USING_BIG_ENDIAN
+#define ARCH "PPC"
+#else
+#define ARCH "X86"
 #endif
 
 #if COMPILER == COMPILER_MICROSOFT
@@ -273,9 +273,6 @@ typedef uint8_t uint8;
 typedef uint32_t DWORD;
 
 #endif
-
-/* Define this if you're using a big-endian machine (todo: replace with autoconf */
-/*#define USING_BIG_ENDIAN 1*/
 
 /* these can be optimized into assembly */
 inline static void swap16(uint16* p) { *p = (*p >> 8) | (*p << 8); }
