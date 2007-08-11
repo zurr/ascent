@@ -1777,7 +1777,9 @@ void Aura::EventPeriodicHeal(uint32 amount)
 		{
 			bonus += float2int32(((Player*)c)->SpellHealDoneByInt[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT3));
 			bonus += float2int32(((Player*)c)->SpellHealDoneBySpr[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT4));
+			bonus += c->HealDoneMod[GetSpellProto()->School];
 		}
+	bonus += m_target->HealTakenMod[GetSpellProto()->School];
 
 	if(bonus)
 	{
@@ -1787,15 +1789,13 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
 		if(GetDuration())
 		{
-			int ticks=GetDuration()/amp;
-			bonus=bonus/ticks;
+			int ticks= (amp) ? GetDuration()/amp : 0;
+			bonus= (ticks) ? bonus/ticks : 0;
 		}else bonus = 0;
 	}
-	
-	bonus+=m_target->HealTakenMod[GetSpellProto()->School];
-		
-	bonus += float2int32(m_target->HealTakenPctMod[GetSpellProto()->School]*amount);
-	int add = amount+bonus;
+	int add = bonus+amount;
+	if (c)
+		add += float2int32(add*(m_target->HealTakenPctMod[GetSpellProto()->School]+c->HealDonePctMod[GetSpellProto()->School]/100.0f));
 	uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) + (uint32)add;
 	
 	if(newHealth <= m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH))
