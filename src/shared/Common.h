@@ -349,8 +349,8 @@ inline static void swap64(int64* p) { *p = ((*p >> 56)) | ((*p >> 40) & 0x000000
 
 inline static int16 swap16(int16 p) { return (p >> 8) | (p << 8); }
 inline static int32 swap32(int32 p) { return (p >> 24) | ((p >> 8) & 0xff00) | ((p << 8) & 0xff0000) | (p << 24); }
-inline static int64 swap64(int64 p)  { p = ((p >> 56)) | ((p >> 40) & 0x000000000000ff00ULL) | ((p >> 24) & 0x0000000000ff0000ULL) | ((p >> 8 ) & 0x00000000ff000000ULL) |
-								((p << 8 ) & 0x000000ff00000000ULL) | ((p << 24) & 0x0000ff0000000000ULL) | ((p << 40) & 0x00ff000000000000ULL) | ((p << 56)); }
+inline static int64 swap64(int64 p)  { return (((p >> 56)) | ((p >> 40) & 0x000000000000ff00ULL) | ((p >> 24) & 0x0000000000ff0000ULL) | ((p >> 8 ) & 0x00000000ff000000ULL) |
+								((p << 8 ) & 0x000000ff00000000ULL) | ((p << 24) & 0x0000ff0000000000ULL) | ((p << 40) & 0x00ff000000000000ULL) | ((p << 56))); }
 
 /* 
 Scripting system exports/imports

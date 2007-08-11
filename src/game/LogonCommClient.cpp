@@ -57,8 +57,12 @@ void LogonCommClientSocket::OnRead()
 				_recvCrypto.Process((uint8*)&remaining, (uint8*)&remaining, 4);
 			}
 
+#ifdef USING_BIG_ENDIAN
+			opcode = swap16(opcode);
+#else
 			// convert network byte order
 			remaining = ntohl(remaining);
+#endif
 		}
 
 		// do we have a full packet?
@@ -174,8 +178,13 @@ void LogonCommClientSocket::SendPacket(WorldPacket * data)
 
 	BurstBegin();
 
+#ifndef USING_BIG_ENDIAN
 	header.opcode = data->GetOpcode();
 	header.size   = ntohl(data->size());
+#else
+	header.opcode = swap16(uint16(data->GetOpcode()));
+	header.size   = data->size();
+#endif
 
 	if(use_crypto)
 		_sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
@@ -371,7 +380,11 @@ void LogonCommClientSocket::CompressAndSend(ByteBuffer & uncompressed)
 		return;
 	}
 
+#ifdef USING_BIG_ENDIAN
+	*(uint32*)data.contents() = swap32(uint32(uncompressed.size()));
+#else
 	*(uint32*)data.contents() = uncompressed.size();
+#endif
 	data.resize(stream.total_out + 4);
 	SendPacket(&data);
 }
