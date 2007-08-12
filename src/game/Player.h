@@ -914,7 +914,7 @@ public:
 	
 	inline void delayAttackTimer(int32 delay)
 	{
-		if(!time)
+		if(!delay)
 			return;
 
 		m_attackTimer += delay;
