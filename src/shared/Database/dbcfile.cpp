@@ -17,7 +17,7 @@
 
 #include "dbcfile.h"
 #include <stdio.h>
-
+#include "../Common.h"
 DBCFile::DBCFile()
 {
 	
@@ -39,7 +39,7 @@ bool DBCFile::open(const char*fn)
 #ifdef USING_BIG_ENDIAN
 	recordCount = swap32(recordCount);
 	fieldCount = swap32(fieldCount);
-	recordCount = swap32(recordCount);
+	recordSize = swap32(recordSize);
 	stringSize = swap32(stringSize);
 #endif
 	
