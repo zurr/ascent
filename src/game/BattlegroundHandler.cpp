@@ -70,7 +70,7 @@ void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket &recv_data)
 
 void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket &recv_data)
 {
-	if(!_player->IsInWorld()) return;
+	if(!_player->IsInWorld() && _player->m_bg) return;
 	uint64 guid;
 	recv_data >> guid;
 	
@@ -82,7 +82,7 @@ void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket &recv_data)
 
 void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket &recv_data)
 {
-	if(!_player->IsInWorld()) return;
+	if(!_player->IsInWorld() && _player->m_bg) return;
 	uint64 guid;
 	recv_data >> guid;
 	_player->m_bg->QueuePlayerForResurrect(_player);

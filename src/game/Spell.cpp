@@ -503,7 +503,7 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								float rsq=range*range;
 								for(itr = m_aiTargets->begin(); itr != m_aiTargets->end();itr++)
 								{
-									if( m_caster->GetMapMgr()->GetUnit(itr->first->GetGUID()) &&
+									if( /*m_caster->GetMapMgr()->GetUnit(itr->first->GetGUID()) &&*/ itr->first->GetMapMgr() == m_caster->GetMapMgr() && 
 										itr->first->isAlive() &&
 										m_caster->GetDistanceSq(itr->first) <= rsq )
 									{
