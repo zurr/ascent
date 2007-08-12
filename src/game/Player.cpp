@@ -1152,9 +1152,17 @@ void Player::BuildEnumData( WorldPacket * p_data )
 	*p_data << GetGUID();
 	*p_data << m_name;
 	//uint32 bytes = GetUInt32Value(UNIT_FIELD_BYTES_0);
+#ifdef USING_BIG_ENDIAN
+	SetUInt32Value(UNIT_FIELD_BYTES_0, swap32(UNIT_FIELD_BYTES_0));
+#endif
+
 	*p_data << GetByte(UNIT_FIELD_BYTES_0,0);//uint8(bytes & 0xff); // race
 	*p_data << GetByte(UNIT_FIELD_BYTES_0,1);//uint8((bytes >> 8) & 0xff); // class
 	*p_data << GetByte(UNIT_FIELD_BYTES_0,2);//uint8((bytes >> 16) & 0xff); // gender
+
+#ifdef USING_BIG_ENDIAN
+	SetUInt32Value(UNIT_FIELD_BYTES_0, swap32(UNIT_FIELD_BYTES_0));
+#endif
 
 	*p_data << GetUInt32Value(PLAYER_BYTES);
 	/*
@@ -1165,7 +1173,11 @@ void Player::BuildEnumData( WorldPacket * p_data )
 	*p_data << uint8((bytes >> 24) & 0xff); //haircolor
 */
 	///bytes = GetUInt32Value(PLAYER_BYTES_2);
+#ifdef USING_BIG_ENDIAN
+	*p_data << GetByte(PLAYER_BYTES_2,3);//uint8(bytes & 0xff); //facialhair
+#else
 	*p_data << GetByte(PLAYER_BYTES_2,0);//uint8(bytes & 0xff); //facialhair
+#endif
 
 	*p_data << uint8(getLevel()); //level
 
@@ -2946,10 +2958,12 @@ void Player::SetQuestLogSlot(QuestLogEntry *entry, uint32 slot)
 {
 	if(entry == (QuestLogEntry*)0x00000001)
 	{
+#ifdef WIN32
 		Crash_Log->AddFormat("bad quest log:\n");
 		CStackWalker ws;
 		ws.ShowCallstack();
 		return;
+#endif
 	}
 	m_questlog[slot] = entry;
 }

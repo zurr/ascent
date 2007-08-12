@@ -18,8 +18,18 @@
 #ifndef WOWSERVER_COMMON_H
 #define WOWSERVER_COMMON_H
 
-/* Define this if you're using a big-endian machine (todo: replace with autoconf */
-//#define USING_BIG_ENDIAN 1
+/* Define this if you're using a big-endian machine */
+#ifdef BYTE_ORDER
+#if BYTE_ORDER == BIG_ENDIAN
+#define USING_BIG_ENDIAN 1
+#ifdef HAVE_BYTESWAP_H
+#include <byteswap.h>
+#endif
+#ifdef HAVE_SYS_ENDIAN_H
+#include <sys/endian.h>
+#endif
+#endif
+#endif
 
 #ifdef WIN32
 #pragma warning(disable:4996)
@@ -275,10 +285,17 @@ typedef uint32_t DWORD;
 #endif
 
 /* these can be optimized into assembly */
-inline static void swap16(uint16* p) { *p = ((*p >> 8) & 0xff) | (*p << 8); }
+#ifdef USING_BIG_ENDIAN
+
+/*inline static void swap16(uint16* p) { *p = ((*p >> 8) & 0xff) | (*p << 8); }
 inline static void swap32(uint32* p) { *p = ((*p >> 24 & 0xff)) | ((*p >> 8) & 0xff00) | ((*p << 8) & 0xff0000) | (*p << 24); }
 inline static void swap64(uint64* p) { *p = ((*p >> 56)) | ((*p >> 40) & 0x000000000000ff00ULL) | ((*p >> 24) & 0x0000000000ff0000ULL) | ((*p >> 8 ) & 0x00000000ff000000ULL) |
-								((*p << 8 ) & 0x000000ff00000000ULL) | ((*p << 24) & 0x0000ff0000000000ULL) | ((*p << 40) & 0x00ff000000000000ULL) | ((*p << 56)); }
+								((*p << 8 ) & 0x000000ff00000000ULL) | ((*p << 24) & 0x0000ff0000000000ULL) | ((*p << 40) & 0x00ff000000000000ULL) | ((*p << 56)); }*/
+
+inline static void swap16(uint16* p) { *p = bswap_16((uint16_t)*p); }
+inline static void swap32(uint32* p) { *p = bswap_32((uint32_t)*p); }
+inline static void swap64(uint64* p) { *p = bswap_64((uint64_t)*p);; }
+
 inline static float swapfloat(float p)
 {
 	union { float asfloat; uint8 asbytes[4]; } u1, u2;
@@ -337,7 +354,7 @@ inline static void swapdouble(double * p)
 	*p = u2.asfloat;
 }
 
-inline static uint16 swap16(uint16 p) { return ((p >> 8) & 0xff) | (p << 8); }
+/*inline static uint16 swap16(uint16 p) { return ((p >> 8) & 0xff) | (p << 8); }
 inline static uint32 swap32(uint32 p) { return ((p >> 24) & 0xff) | ((p >> 8) & 0xff00) | ((p << 8) & 0xff0000) | (p << 24); }
 inline static uint64 swap64(uint64 p)  { p = (((p >> 56) & 0xff)) | ((p >> 40) & 0x000000000000ff00ULL) | ((p >> 24) & 0x0000000000ff0000ULL) | ((p >> 8 ) & 0x00000000ff000000ULL) |
 								((p << 8 ) & 0x000000ff00000000ULL) | ((p << 24) & 0x0000ff0000000000ULL) | ((p << 40) & 0x00ff000000000000ULL) | ((p << 56)); }
@@ -350,8 +367,21 @@ inline static void swap64(int64* p) { *p = ((*p >> 56) & 0xff) | ((*p >> 40) & 0
 inline static int16 swap16(int16 p) { return ((p >> 8) & 0xff) | (p << 8); }
 inline static int32 swap32(int32 p) { return ((p >> 24) & 0xff) | ((p >> 8) & 0xff00) | ((p << 8) & 0xff0000) | (p << 24); }
 inline static int64 swap64(int64 p)  { return ((((p >> 56) & 0xff)) | ((p >> 40) & 0x000000000000ff00ULL) | ((p >> 24) & 0x0000000000ff0000ULL) | ((p >> 8 ) & 0x00000000ff000000ULL) |
-								((p << 8 ) & 0x000000ff00000000ULL) | ((p << 24) & 0x0000ff0000000000ULL) | ((p << 40) & 0x00ff000000000000ULL) | ((p << 56))); }
+								((p << 8 ) & 0x000000ff00000000ULL) | ((p << 24) & 0x0000ff0000000000ULL) | ((p << 40) & 0x00ff000000000000ULL) | ((p << 56))); }*/
 
+inline static uint16 swap16(uint16 p) { return bswap_16((uint16_t)p); }
+inline static uint32 swap32(uint32 p) { return bswap_32((uint32_t)p); }
+inline static uint64 swap64(uint64 p)  { return bswap_64((uint64_t)p); }
+
+inline static void swap16(int16* p) { *p = bswap_16((uint16_t)*p); }
+inline static void swap32(int32* p) { *p = bswap_32((uint32_t)*p); }
+inline static void swap64(int64* p) { *p = bswap_64((uint64_t)*p); }
+
+inline static int16 swap16(int16 p) { return bswap_16((uint16_t)p); }
+inline static int32 swap32(int32 p) { return bswap_32((uint32_t)p); }
+inline static int64 swap64(int64 p)  { return bswap_64((uint64_t)p); }
+
+#endif
 /* 
 Scripting system exports/imports
 */
