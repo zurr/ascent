@@ -197,7 +197,6 @@ bool MySQLDatabase::SendQuery(MysqlCon *con, const char* Sql, bool Self)
 {
 	//dunno what it does ...leaving untouched 
 	int result = mysql_query(con->con, Sql);
-	printf("SQL: %s\n", Sql);
 	if(result > 0)
 	{
 		//sLog.outDetail("Sql query failed due to [%s], Query: [%s]", mysql_error(con->con ), Sql);

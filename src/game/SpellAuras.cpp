@@ -1102,7 +1102,10 @@ void Aura::EventPeriodicDamage(uint32 amount)
 		uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION;
 		uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
 		c->HandleProc(aproc, mtarget, sp, float2int32(res));
+		c->m_procCounter = 0;
+		
 		mtarget->HandleProc(vproc,c,sp, float2int32(res));
+		mtarget->m_procCounter = 0;
 	}
 }
 

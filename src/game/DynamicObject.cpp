@@ -159,7 +159,10 @@ void DynamicObject::UpdateTargets()
 				}
 				target->AddAura(pAura);
 				if(p_caster)
+				{
 					p_caster->HandleProc(PROC_ON_CAST_SPECIFIC_SPELL | PROC_ON_CAST_SPELL,target, m_spellProto);
+					p_caster->m_procCounter = 0;
+				}
 
 				// add to target list
 				targets.insert(target);

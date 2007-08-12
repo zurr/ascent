@@ -352,10 +352,10 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 	{
 		//Start Quest Timer Event Here
 		//sEventMgr.AddEvent(GetPlayer(), &Player::EventTimedQuestExpire, qst, qle, static_cast<uint32>(log_slot), EVENT_TIMED_QUEST_EXPIRE, qst->time * 1000, 1);
-		uint32 qtime = static_cast<uint32>(time(NULL) + qst->time);
+		//uint32 qtime = static_cast<uint32>(time(NULL) + qst->time);
 		//GetPlayer()->SetUInt32Value(log_slot+2, qtime);
-		GetPlayer()->SetUInt32Value(PLAYER_QUEST_LOG_1_01 + (log_slot * 3), qtime);
-		GetPlayer()->timed_quest_slot = log_slot;
+		//GetPlayer()->SetUInt32Value(PLAYER_QUEST_LOG_1_01 + (log_slot * 3), qtime);
+		//GetPlayer()->timed_quest_slot = log_slot;
 	}
 
 	if(qst->count_required_item || qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)	// gameobject quests deactivate

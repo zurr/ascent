@@ -299,6 +299,9 @@ void AuctionHouse::SendBidListPacket(Player * plr, WorldPacket * packet)
 			++count;
 		}			
 	}
+#ifdef USING_BIG_ENDIAN
+	swap32((uint32*)&data.contents()[0]);
+#endif
 	data << count;
 	auctionLock.ReleaseReadLock();
 	plr->GetSession()->SendPacket(&data);
@@ -327,6 +330,9 @@ void AuctionHouse::SendOwnerListPacket(Player * plr, WorldPacket * packet)
 		}			
 	}
 	data << count;
+#ifdef USING_BIG_ENDIAN
+	swap32((uint32*)&data.contents()[0]);
+#endif
 	auctionLock.ReleaseReadLock();
 	plr->GetSession()->SendPacket(&data);
 }
@@ -605,6 +611,9 @@ void AuctionHouse::SendAuctionList(Player * plr, WorldPacket * packet)
 	
 	// total count
 	data << uint32(start_index + counted_items);
+#ifdef USING_BIG_ENDIAN
+	swap32((uint32*)&data.contents()[0]);
+#endif
 
 	auctionLock.ReleaseReadLock();
 	plr->GetSession()->SendPacket(&data);

@@ -211,6 +211,7 @@ Unit::Unit()
 
 	polySpell = 0;
 	RangedDamageTaken = 0;
+	m_procCounter = 0;
 //	fearSpell = 0;
 }
 
@@ -481,6 +482,7 @@ void Unit::GiveGroupXP(Unit *pVictim, Player *PlayerInGroup)
 
 void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32 dmg)
 {
+	++m_procCounter;
 	bool can_delete = !bProcInUse;
 	bProcInUse = true;
 
@@ -538,6 +540,13 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 			SM_FIValue(SM_FChanceOfSuccess, (int32*)&proc_Chance, ospinfo->SpellGroupType);
 			if(spellId && Rand(proc_Chance))
 			{
+				/* hmm whats a reasonable value here */
+				if(m_procCounter > 10)
+				{
+					/* something has proced over 10 times in a loop :/ dump the spellids to the crashlog, as the crashdump will most likely be useless. */
+					Crash_Log->AddLineFormat("HandleProc %u SpellId %u (%s)", flag, spellId, sSpellStore.LookupString(sSpellStore.LookupEntry(spellId)->Name));
+				}
+
 				//check if we can trigger due to time limitation
 				if(ospinfo->proc_interval)
 				{
@@ -1542,10 +1551,14 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	// hack fix for stormstirke loop here.
 	if(damage_type != DUALWIELD && !disable_proc)
     {
-	    if( !(ability && ability->NameHash == 0x2535ed19) )
-		    this->HandleProc(aproc,pVictim, ability,realdamage);
+		if( !(ability && ability->NameHash == 0x2535ed19) )
+		{
+			this->HandleProc(aproc,pVictim, ability,realdamage);
+			m_procCounter = 0;
+		}
 
-	    pVictim->HandleProc(vproc,this, ability,realdamage);
+		pVictim->HandleProc(vproc,this, ability,realdamage);
+		m_procCounter = 0;
 	}
 	
 	if(pVictim->GetTypeId() == TYPEID_UNIT)

@@ -2534,7 +2534,10 @@ void Spell::HandleAddAura(uint64 guid)
 		Target->RemoveAurasByBuffType(m_spellInfo->buffType, m_caster->GetGUID());
 	// spells that proc on spell cast, some talents
 	if(p_caster && !m_triggeredSpell)
+	{
 		p_caster->HandleProc(PROC_ON_CAST_SPECIFIC_SPELL | PROC_ON_CAST_SPELL,Target, m_spellInfo);
+		p_caster->m_procCounter = 0;
+	}
 
 	std::map<uint32,Aura*>::iterator itr=Target->tmpAura.find(m_spellInfo->Id);
 	if(itr!=Target->tmpAura.end())
@@ -3879,7 +3882,11 @@ void Spell::SendCastSuccess(const uint64& guid)
 	// fuck bytebuffers
 	unsigned char buffer[13];
 	uint32 c = FastGUIDPack(guid, buffer, 0);
+#ifdef USING_BIG_ENDIAN
+	*(uint32*)&buffer[c] = swap32(m_spellInfo->Id);			c += 4;
+#else
 	*(uint32*)&buffer[c] = m_spellInfo->Id;			c += 4;
+#endif
 
 	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }

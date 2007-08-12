@@ -631,6 +631,7 @@ public:
 	void Strike(Unit *pVictim,uint32 damage_type,SpellEntry *ability,int32 add_damage,int32 pct_dmg_mod,uint32,bool);
 //	void PeriodicAuraLog(Unit *pVictim, SpellEntry* spellID, uint32 damage, uint32 damageType);
 	//void SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage);
+	uint32 m_procCounter;
 	void HandleProc(uint32 flag, Unit* Victim, SpellEntry* CastingSpell,uint32 dmg=-1);
 	void HandleProcDmgShield(uint32 flag, Unit* Victim);//almost the same as handleproc :P
 //	void HandleProcSpellOnSpell(Unit* Victim,uint32 damage,bool critical);//nasty, some spells proc other spells

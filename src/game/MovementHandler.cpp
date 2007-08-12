@@ -90,7 +90,11 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
 	memcpy(&movement_packet[pos], recv_data.contents(), recv_data.size());
+#ifdef USING_BIG_ENDIAN
+	*(uint32*)&movement_packet[pos + 4] = swap32(getMSTime());
+#else
 	*(uint32*)&movement_packet[pos + 4] = getMSTime();
+#endif
 	_player->OutPacketToSet(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet, false);
 
 	//Setup Transporter Positioning
@@ -296,7 +300,11 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
 	memcpy(&movement_packet[pos], recv_data.contents(), recv_data.size());
+#ifdef USING_BIG_ENDIAN
+	*(uint32*)&movement_packet[pos + 4] = swap32(getMSTime());
+#else
 	*(uint32*)&movement_packet[pos + 4] = getMSTime();
+#endif
 	_player->OutPacketToSet(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet, false);
 
 	//Setup Transporter Positioning

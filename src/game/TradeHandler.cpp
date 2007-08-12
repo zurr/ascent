@@ -190,7 +190,8 @@ void WorldSession::HandleSetTradeGold(WorldPacket & recv_data)
 	if(_player->mTradeTarget == 0)
 		return;
 
-	uint32 Gold = *(uint32*)recv_data.contents();
+	uint32 Gold;
+	recv_data >> Gold;
 
 	if(_player->mTradeGold != Gold)
 	{

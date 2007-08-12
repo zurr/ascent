@@ -133,7 +133,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 		sLog.outDetail("Incomplete copy of AUTH_SESSION recieved.");
 		return;
 	}
-	printf("%u %u %s 0x%.8X\n", mClientBuild, unk2, account.c_str(), mClientSeed);
+
 	// Send out a request for this account.
 	mRequestID = sLogonCommHandler.ClientConnected(account, this);
 	
@@ -336,7 +336,6 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 
 void WorldSocket::OnRead()
 {
-	printf("OnRead()\n");
 	for(;;)
 	{
 		// Check for the header if we don't have any bytes to wait for.
@@ -357,7 +356,6 @@ void WorldSocket::OnRead()
 #ifdef USING_BIG_ENDIAN
 			mRemaining = mSize = Header.size - 4;
 			mOpcode = swap32(Header.cmd);
-			printf("Header was %u bytes and opcode %u\n", mSize, mOpcode);
 #else
 			mRemaining = mSize = ntohs(Header.size) - 4;
 			mOpcode = Header.cmd;

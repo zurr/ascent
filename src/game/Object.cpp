@@ -1599,6 +1599,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	{
 		//warlock - seed of corruption
 		pVictim->HandleProc(PROC_ON_DIE,pVictim,NULL);
+		pVictim->m_procCounter = 0;
 
 		/* victim died! */
 		if(pVictim->IsPlayer())
@@ -2083,7 +2084,9 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	if(this->IsUnit() && allowProc && spellInfo->Id != 25501)
 	{
 		static_cast<Unit*>(this)->HandleProc(aproc,pVictim,spellInfo, float2int32(res));
+		static_cast<Unit*>(this)->m_procCounter = 0;
 		pVictim->HandleProc(vproc,(Unit*)this,spellInfo, float2int32(res));
+		pVictim->m_procCounter = 0;
 	}
 	
 	DealDamage(pVictim, float2int32(res),  2, 0, spellID);

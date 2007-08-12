@@ -1362,7 +1362,9 @@ void Player::GiveXP(uint32 xp, const uint64 &guid, bool allowbonus)
 	}
 	// Set the update bit
 	SetUInt32Value(PLAYER_XP, newxp);
+	
 	HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, NULL);
+	m_procCounter = 0;
 }
 
 void Player::smsg_InitialSpells()
@@ -2921,7 +2923,7 @@ void Player::_LoadQuestLogEntry()
 
 QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
 {
-	/*for(int i = 0; i < 25; ++i)
+	for(int i = 0; i < 25; ++i)
 	{
 		if(m_questlog[i] != NULL)
 		{
@@ -2929,19 +2931,26 @@ QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
 				return m_questlog[i];
 		}
 	}
-	return NULL;*/
-	uint32 x = PLAYER_QUEST_LOG_1_1;
+	return NULL;
+	/*uint32 x = PLAYER_QUEST_LOG_1_1;
 	uint32 y = 0;
 	for(; x < PLAYER_VISIBLE_ITEM_1_CREATOR && y < 25; x += 3, y++)
 	{
 		if(m_uint32Values[x] == quest)
 			return m_questlog[y];
 	}
-	return NULL;
+	return NULL;*/
 }
 
 void Player::SetQuestLogSlot(QuestLogEntry *entry, uint32 slot)
 {
+	if(entry == (QuestLogEntry*)0x00000001)
+	{
+		Crash_Log->AddFormat("bad quest log:\n");
+		CStackWalker ws;
+		ws.ShowCallstack();
+		return;
+	}
 	m_questlog[slot] = entry;
 }
 
@@ -6196,14 +6205,22 @@ void Player::ProcessPendingUpdates()
 	uint8 * update_buffer = new uint8[buffer_size];
 	uint32 c = 0;
 
+#ifdef USING_BIG_ENDIAN
+	*(uint32*)&update_buffer[c] = swap32(uint32(((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount)));	c += 4;
+#else
 	*(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);	c += 4;
+#endif
 	update_buffer[c] = 1;																			   ++c;
 
 	// append any out of range updates
 	if(mOutOfRangeIdCount)
 	{
 		update_buffer[c]				= UPDATETYPE_OUT_OF_RANGE_OBJECTS;			 ++c;
+#ifdef USING_BIG_ENDIAN
+		*(uint32*)&update_buffer[c]	 = swap32(mOutOfRangeIdCount);						  c += 4;
+#else
 		*(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
+#endif
 		memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
 		mOutOfRangeIds.clear();
 		mOutOfRangeIdCount = 0;
@@ -6296,7 +6313,11 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
 	}
 
 	// fill in the full size of the compressed stream
+#ifdef USING_BIG_ENDIAN
+	*(uint32*)&buffer[0] = swap32(size);
+#else
 	*(uint32*)&buffer[0] = size;
+#endif
 
 	// send it
 	m_session->OutPacket(SMSG_COMPRESSED_UPDATE_OBJECT, stream.total_out + 4, buffer);
