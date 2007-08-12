@@ -1275,7 +1275,8 @@ void Spell::prepare(SpellCastTargets * targets)
 		if(!i_caster)
 		{
 			if(p_caster && m_timer > 0 && !m_triggeredSpell)
-				p_caster->setAttackTimer(m_timer + 1000, false);
+				p_caster->delayAttackTimer(m_timer+1000);
+//				p_caster->setAttackTimer(m_timer + 1000, false);
 		}
 	}
 
@@ -1304,7 +1305,7 @@ void Spell::cancel()
 
 	if(m_spellState == SPELL_STATE_CASTING)
 	{
-		if(u_caster)	   
+		if(u_caster)
 			u_caster->RemoveAura(m_spellInfo->Id);
 	
 		if(m_timer > 0 || m_delayed)
@@ -1339,8 +1340,10 @@ void Spell::cancel()
 					delete ((GameObject*)(p_caster->GetSummonedObject()));
 					p_caster->SetSummonedObject(NULL);
 				}
-				p_caster->setAttackTimer(1000, false);
-			 }					
+				if (m_timer > 0)
+					p_caster->delayAttackTimer(-m_timer);
+//				p_caster->setAttackTimer(1000, false);
+			 }
 		}
 		SendChannelUpdate(0);
 	}
@@ -1744,50 +1747,57 @@ void Spell::cast(bool check)
 }
 
 void Spell::AddTime(uint32 type)
-{	    
-    if(u_caster && u_caster->IsPlayer())
-    {
-	    if(m_spellInfo->SpellGroupType && u_caster)
-	    {
-		    float ch=0;
-		    SM_FFValue(u_caster->SM_PNonInterrupt,&ch,m_spellInfo->SpellGroupType);
-		    if(Rand(ch))
-			    return;
-	    }
-	    if(p_caster)
-	    {
-		    if(Rand(p_caster->SpellDelayResist[type]))
-			    return;
-	    }
-	    if(m_spellState==SPELL_STATE_PREPARING)
-	    {
-		    uint32 delay = m_castTime/4;
-		    m_timer+=delay;
-		    if(m_timer>m_castTime)
-			    m_timer=m_castTime;
-    		
-		    WorldPacket data(SMSG_SPELL_DELAYED, 13);
-		    data << u_caster->GetNewGUID();
-		    data << uint32(delay);
-		    u_caster->SendMessageToSet(&data, true);
-    		
-		    if(!p_caster)
-		    {
-			    if(m_caster->GetTypeId() == TYPEID_UNIT)
-				    u_caster->GetAIInterface()->AddStopTime(delay);
-		    }
+{
+	if(u_caster && u_caster->IsPlayer())
+	{
+		if(m_spellInfo->SpellGroupType && u_caster)
+		{
+			float ch=0;
+			SM_FFValue(u_caster->SM_PNonInterrupt,&ch,m_spellInfo->SpellGroupType);
+			if(Rand(ch))
+				return;
+		}
+		if(p_caster)
+		{
+			if(Rand(p_caster->SpellDelayResist[type]))
+				return;
+		}
+		if(m_spellState==SPELL_STATE_PREPARING)
+		{
+			uint32 delay = m_castTime/4;
+			m_timer+=delay;
+			if(m_timer>m_castTime)
+				m_timer=m_castTime;
+
+			WorldPacket data(SMSG_SPELL_DELAYED, 13);
+			data << u_caster->GetNewGUID();
+			data << uint32(delay);
+			u_caster->SendMessageToSet(&data, true);
+
+			if(!p_caster)
+			{
+				if(m_caster->GetTypeId() == TYPEID_UNIT)
+					u_caster->GetAIInterface()->AddStopTime(delay);
+			}
 			//in case cast is delayed, make sure we do not exit combat 
-			else sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL,true);
-	    }
-	    else if(m_spellInfo->ChannelInterruptFlags != 48140)
-	    {		
-		    m_timer-=GetDuration()/3;
-		    m_delayed = true;
-		    if(m_timer>0)
-			    SendChannelUpdate(m_timer);
-    		
-	    }
-    }
+			else
+			{
+//				sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL,true);
+				// also add a new delay to offhand and main hand attacks to avoid cutting the cast short
+				p_caster->delayAttackTimer(delay);
+			}
+		}
+		else if(m_spellInfo->ChannelInterruptFlags != 48140)
+		{
+			int32 delay = GetDuration()/3;
+			m_timer-=delay;
+			p_caster->delayAttackTimer(-delay);
+			m_delayed = true;
+			if(m_timer>0)
+				SendChannelUpdate(m_timer);
+
+		}
+	}
 }
 
 void Spell::update(uint32 difftime)
@@ -3873,6 +3883,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
+
 
 
 

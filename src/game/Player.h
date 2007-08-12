@@ -912,6 +912,22 @@ public:
 		else sEventMgr.ModifyEventTimeLeft(this,EVENT_ATTACK_TIMEOUT,time+PLAYER_ATTACK_TIMEOUT_INTERVAL,true);
 	}
 	
+	inline void delayAttackTimer(int32 delay)
+	{
+		if(!time)
+			return;
+
+		m_attackTimer += delay;
+		m_attackTimer_1 += delay;
+
+		if (delay > 0)
+		{
+			if(sEventMgr.HasEvent(this,EVENT_ATTACK_TIMEOUT))
+			{
+				sEventMgr.ModifyEventTimeLeft(this,EVENT_ATTACK_TIMEOUT,delay+PLAYER_ATTACK_TIMEOUT_INTERVAL,true);
+			}
+		}
+	}
 	
 	void SetShapeShift(uint8 ss);
 
