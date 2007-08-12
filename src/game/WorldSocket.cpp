@@ -86,8 +86,13 @@ void WorldSocket::OutPacket(uint16 opcode, uint16 len, const void* data)
 	// Encrypt the packet
 	// First, create the header.
 	ServerPktHeader Header;
+#ifdef USING_BIG_ENDIAN
+	Header.size = len + 2;
+	Header.cmd = swap16(opcode);
+#else
 	Header.cmd = opcode;
 	Header.size = ntohs(len + 2);
+#endif
 	_crypt.EncryptSend((uint8*)&Header, 4);
 
 	// Pass the header to our send buffer
@@ -128,7 +133,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 		sLog.outDetail("Incomplete copy of AUTH_SESSION recieved.");
 		return;
 	}
-
+	printf("%u %u %s 0x%.8X\n", mClientBuild, unk2, account.c_str(), mClientSeed);
 	// Send out a request for this account.
 	mRequestID = sLogonCommHandler.ClientConnected(account, this);
 	
@@ -200,13 +205,14 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 	sha.UpdateData((uint8 *)&mSeed, 4);
 	sha.UpdateBigNumbers(&BNK, NULL);
 	sha.Finalize();
-
+#ifndef USING_BIG_ENDIAN
 	if (memcmp(sha.GetDigest(), digest, 20))
 	{
 		// AUTH_UNKNOWN_ACCOUNT = 21
 		OutPacket(SMSG_AUTH_RESPONSE, 1, "\x15");
 		return;
 	}
+#endif
 
 	// Allocate session
 	mSession = new WorldSession(AccountID, AccountName, this);
@@ -330,6 +336,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 
 void WorldSocket::OnRead()
 {
+	printf("OnRead()\n");
 	for(;;)
 	{
 		// Check for the header if we don't have any bytes to wait for.
@@ -347,9 +354,14 @@ void WorldSocket::OnRead()
 
 			// Decrypt the header
 			_crypt.DecryptRecv((uint8*)&Header, 6);
-
+#ifdef USING_BIG_ENDIAN
+			mRemaining = mSize = Header.size - 4;
+			mOpcode = swap32(Header.cmd);
+			printf("Header was %u bytes and opcode %u\n", mSize, mOpcode);
+#else
 			mRemaining = mSize = ntohs(Header.size) - 4;
 			mOpcode = Header.cmd;
+#endif
 		}
 
 		WorldPacket * Packet;

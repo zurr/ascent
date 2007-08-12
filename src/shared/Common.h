@@ -19,7 +19,7 @@
 #define WOWSERVER_COMMON_H
 
 /* Define this if you're using a big-endian machine (todo: replace with autoconf */
-//#define USING_BIG_ENDIAN 1
+#define USING_BIG_ENDIAN 1
 
 #ifdef WIN32
 #pragma warning(disable:4996)
@@ -405,7 +405,7 @@ Scripting system exports/imports
 // fix buggy MSVC's for variable scoping to be reliable =S
 #define for if(true) for
 
-#ifdef GNL_BIG_ENDIAN
+#ifdef USING_BIG_ENDIAN
 #  define GNL_LOWER_WORD_BYTE	4
 #else
 #  define GNL_LOWER_WORD_BYTE	0
@@ -420,7 +420,7 @@ static inline int float2int32(const float value)
   union { int asInt[2]; double asDouble; } n;
   n.asDouble = value + 6755399441055744.0;
   
-#if GNL_BIG_ENDIAN
+#if USING_BIG_ENDIAN
   return n.asInt [1];
 #else
   return n.asInt [0];
@@ -433,7 +433,7 @@ static inline int long2int32(const double value)
   union { int asInt[2]; double asDouble; } n;
   n.asDouble = value + 6755399441055744.0;
 
-#if GNL_BIG_ENDIAN
+#if USING_BIG_ENDIAN
   return n.asInt [1];
 #else
   return n.asInt [0];
