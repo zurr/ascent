@@ -28,16 +28,13 @@ DBC::DBC() {
 }
 
 void DBC::Load(const char *filename) {
-printf("s\n", filename);	
-FILE *f = fopen(filename, "rb");
+	FILE *f = fopen(filename, "rb");
 	if(!f)
 	{
 		printf("DBC %s Doesnt exist!\n",filename);
 		return;
 	}
 
-	//char buffer[256] = {(char)NULL};
-	//fread(buffer, 4, 1, f);
 	fseek(f, 4, SEEK_SET);
 	fread(&rows,4, 1, f);
 	fread(&cols, 4, 1, f);
@@ -45,21 +42,16 @@ FILE *f = fopen(filename, "rb");
 	//int percol = weird2/cols;
 	fread(&dblength, 4, 1, f);
 #ifdef USING_BIG_ENDIAN
-//printf("0x%.8X 0x%.8X\n", rows, swap32(rows));	
 	swap32(&rows);
 	swap32(&cols);
 	swap32(&weird2);
 	swap32(&dblength);
-	printf("%s: %u rows, %u cols, %u weird2, %u dblength\n", filename, rows, cols, weird2, dblength);
 #endif
-printf("1: allocating %u bytes\n", rows * cols * sizeof(int));	
+
 	tbl = new unsigned int[rows * cols];
-printf("2: allocating %u bytes\n", dblength);
 	db = new char[dblength];
-printf("3: allocating %u bytes\n", cols * sizeof(DBCFmat));
 	format = new DBCFmat[cols];
 	strcpy(name,filename);
-printf("Allocations done\n");
 	fread(tbl,rows*cols*4,1,f);
 	fread(db,dblength,1,f);
 
@@ -72,9 +64,9 @@ printf("Allocations done\n");
 	fclose(f);
 	loaded = true;
 
-//#ifdef DBC_PRINT
+#ifdef DBC_PRINT
 		printf("DBC %s loaded.\n",filename);
-//#endif
+#endif
 }
 
 

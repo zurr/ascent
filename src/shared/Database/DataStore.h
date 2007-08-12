@@ -84,9 +84,7 @@ public:
 		++high;
 
 		// dump to index array
-		printf("high: %u\n", high);		
-dataIndex = new T*[high];
-		printf("done\n");
+		dataIndex = new T*[high];
 		memset(dataIndex, 0, sizeof(uint32) * high);
 	std::map<uint32, void*>::iterator itr = itemp.begin();
 		for(; itr != itemp.end(); ++itr)
