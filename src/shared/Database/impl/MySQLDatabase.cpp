@@ -67,13 +67,13 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int Port, const ch
 bool MySQLDatabase::Connect(MysqlCon * con)
 {
 	MYSQL* Descriptor = mysql_init(NULL);
-	if(mysql_options(Descriptor, MYSQL_SET_CHARSET_NAME, "utf8"))
+	/*if(mysql_options(Descriptor, MYSQL_SET_CHARSET_NAME, "utf8"))
 	{
-		/* reinitialize without utf8 */
+
 		mysql_close(Descriptor);
 		Descriptor = mysql_init(NULL);
 		sLog.outString("sql: Could not set utf8 character set [!!]");
-	}
+	}*/
 
    // MYSQL* Descriptor2 = Descriptor;
 	// Set reconnect
