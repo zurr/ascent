@@ -29,14 +29,45 @@ bool Charge(uint32 i, Spell* pSpell)
     {
     case 100:   // Charge Rank 1
         rage_to_gen = 90;
+		if(pSpell->p_caster)
+		{
+			for(set<uint32>::iterator itr = pSpell->p_caster->mSpells.begin(); itr != pSpell->p_caster->mSpells.end(); ++itr)
+			{
+				if(*itr == 12697)
+					rage_to_gen += 60;
+				if(*itr == 12285)
+					rage_to_gen += 30;
+			}
+		}		
         break;
 
     case 6178:  // Charge Rank 2
         rage_to_gen = 120;
+		if(pSpell->p_caster)
+		{
+			for(set<uint32>::iterator itr = pSpell->p_caster->mSpells.begin(); itr != pSpell->p_caster->mSpells.end(); ++itr)
+			{
+				if(*itr == 12697)
+					rage_to_gen += 60;
+				if(*itr == 12285)
+					rage_to_gen += 30;
+			}
+		}
         break;
 
     default:    // Charge Rank 3 +
         rage_to_gen = 150;
+		if(pSpell->p_caster)
+		{
+			for(set<uint32>::iterator itr = pSpell->p_caster->mSpells.begin(); itr != pSpell->p_caster->mSpells.end(); ++itr)
+			{
+				if(*itr == 12697)
+					rage_to_gen += 60;
+				if(*itr == 12285)
+					rage_to_gen += 30;
+			}
+		}
+
         break;
     }
 

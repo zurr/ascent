@@ -1684,6 +1684,19 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
 		if(motherspell)
 			totalEnergy = (motherspell->EffectBasePoints[0]+1)*ProcedOnSpell->manaCost/100;
 	}
+	else if (m_spellInfo->Id==2687){
+		totalEnergy = curEnergy+damage;
+		if(p_caster)
+		{
+			for(set<uint32>::iterator itr = p_caster->mSpells.begin(); itr != p_caster->mSpells.end(); ++itr)
+			{
+				if(*itr == 12818)
+					totalEnergy += 60;
+				else if(*itr == 12301)
+					totalEnergy += 30;
+			}
+		}
+	}
 	else  totalEnergy = curEnergy+damage;
 	if(totalEnergy > maxEnergy)
 		unitTarget->SetUInt32Value(POWER_TYPE,maxEnergy);
