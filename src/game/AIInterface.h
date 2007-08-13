@@ -327,6 +327,7 @@ public:
 
 	inline void SetWaypointMap(WayPointMap * m) { m_waypoints = m; }
 	bool m_hasWaypointEvents;
+	bool m_isGuard;
 
 private:
 	bool m_AllowedToEnterCombat;
@@ -402,7 +403,6 @@ private:
 	MovementState m_MovementState;
 	uint32 m_guardTimer;
 	int32 m_currentHighestThreat;
-	bool m_isGuard;
 
 };
 #endif
