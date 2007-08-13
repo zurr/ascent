@@ -544,10 +544,11 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 			if(spellId && Rand(proc_Chance))
 			{
 				/* hmm whats a reasonable value here */
-				if(m_procCounter > 10)
+				if(m_procCounter > 15)
 				{
 					/* something has proced over 10 times in a loop :/ dump the spellids to the crashlog, as the crashdump will most likely be useless. */
 					Crash_Log->AddLineFormat("HandleProc %u SpellId %u (%s)", flag, spellId, sSpellStore.LookupString(sSpellStore.LookupEntry(spellId)->Name));
+					return;
 				}
 
 				//check if we can trigger due to time limitation

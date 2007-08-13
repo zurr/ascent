@@ -627,7 +627,7 @@ public:
 	Standing            GetStandingRank(uint32 Faction);
 	bool                IsHostileBasedOnReputation(FactionDBC * dbc);
 	void                UpdateInrangeSetsBasedOnReputation();
-	void                Reputation_OnKilledUnit(Unit * pUnit);
+	void                Reputation_OnKilledUnit(Unit * pUnit, bool InnerLoop);
 	void                Reputation_OnTalk(FactionDBC * dbc);
 	static Standing     GetReputationRankFromStanding(int32 Standing_);
 	

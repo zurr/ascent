@@ -384,11 +384,27 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 	}
 }
 
-void Player::Reputation_OnKilledUnit(Unit * pUnit)
+void Player::Reputation_OnKilledUnit(Unit * pUnit, bool InnerLoop)
 {
 	// add rep for on kill
 	if(pUnit->GetTypeId() != TYPEID_UNIT || pUnit->IsPet())
 		return;
+
+	if(!InnerLoop && m_Group)
+	{
+		/* loop the rep for group members */
+		m_Group->getLock().Acquire();
+		GroupMembersSet::iterator it;
+		for(uint32 i = 0; i < m_Group->GetSubGroupCount(); ++i)
+		{
+			for(it = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); it != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++it)
+			{
+				(*it)->Reputation_OnKilledUnit(pUnit, true);
+			}
+		}
+		m_Group->getLock().Release();
+		return;
+	}
 
 	int team = GetTeam();
 	ReputationModifier * modifier = objmgr.GetReputationModifier(pUnit->GetEntry(), pUnit->m_factionDBC->ID);
