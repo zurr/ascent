@@ -189,7 +189,7 @@ Spell::~Spell()
 	if(u_caster && u_caster->GetCurrentSpell() == this)
 		u_caster->SetCurrentSpell(NULL); 
 	
-	if(cancastresult == -1)
+	if(cancastresult == -1 && !failed)
 		RemoveItems();
 }
 
