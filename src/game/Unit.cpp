@@ -2075,6 +2075,30 @@ bool Unit::RemoveAura(uint32 spellId)
 	return false;
 }
 
+bool Unit::RemoveAuras(uint32 * SpellIds)
+{
+	if(!SpellIds || *SpellIds == 0)
+		return false;
+
+	uint32 x=0,y;
+	bool res = false;
+	for(;x<MAX_AURAS+MAX_PASSIVE_AURAS;x++)
+	{
+		if(m_auras[x])
+		{
+			for(y=0;SpellIds[y] != 0;++y)
+			{
+				if(m_auras[x]->GetSpellId()==SpellIds[y])
+				{
+					m_auras[x]->Remove();
+					res = true;
+				}
+			}
+		}
+	}
+	return res;
+}
+
 bool Unit::RemoveAura(uint32 spellId, uint64 guid)
 {   
 	for(uint32 x=0;x<MAX_AURAS+MAX_PASSIVE_AURAS;x++)

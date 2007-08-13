@@ -235,8 +235,9 @@ void Spell::SpellEffectInstantKill(uint32 i)
 	case 19443:
 		{
 		}break;
-	/*case 18788: //Demonic Sacrifice (508745)
-		switch(pPet->GetEntry())
+	case 18788: //Demonic Sacrifice (508745)
+		uint32 spellid1 = 0;
+		switch(unitTarget->GetEntry())
 		{
 			case 416: //Imp
 			{   
@@ -256,10 +257,21 @@ void Spell::SpellEffectInstantKill(uint32 i)
 			{
 				spellid1 = 18791;
 			}break;
-		}*/
+			case 17252: //felguard
+			{
+				spellid1 = 35701;
+			}break;
+		}
+		//now caster gains this buff
+		if (spellid1 && spellid1 != 0)
+		{
+			u_caster->CastSpell(u_caster, sSpellStore.LookupEntry(spellid1), true);
+		}
 	}
 
-	m_caster->SpellNonMeleeDamageLog(unitTarget, m_spellInfo->Id, unitTarget->GetUInt32Value(UNIT_FIELD_HEALTH), true);
+	//instant kill effects don't have a log
+	//m_caster->SpellNonMeleeDamageLog(unitTarget, m_spellInfo->Id, unitTarget->GetUInt32Value(UNIT_FIELD_HEALTH), true);
+	m_caster->DealDamage(unitTarget, unitTarget->GetUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
 }
 
 void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
@@ -2567,6 +2579,9 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
 	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(ci)
 	{
+		//if demonic sacrifice auras are still active, remove them
+		uint32 spids[] = { 18789, 18790, 18791, 18792, 35701, 0 };
+		p_caster->RemoveAuras(spids);
 		Pet *summon = objmgr.CreatePet();
 		summon->SetInstanceID(m_caster->GetInstanceID());
 		summon->CreateAsSummon(m_spellInfo->EffectMiscValue[i], ci, NULL, u_caster, m_spellInfo, 1, 0);
@@ -3746,17 +3761,18 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
 
 void Spell::SpellEffectSummonDemon(uint32 i)
 {
-	if(!p_caster || p_caster->getClass() != WARLOCK)
+	if(!p_caster/* ||  p_caster->getClass() != WARLOCK */) //summoning a demon shouldn't be warlock only, see spells 25005, 24934, 24810 etc etc
 		return;
 	Pet *pPet = p_caster->GetSummon();
 	if(pPet)
 	{
 		pPet->Dismiss(false);
 	}
-   
+
 	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(ci)
 	{
+
 		pPet = objmgr.CreatePet();
 		pPet->SetInstanceID(p_caster->GetInstanceID());
 		pPet->CreateAsSummon(m_spellInfo->EffectMiscValue[i], ci, NULL, p_caster, m_spellInfo, 1, 300000);
