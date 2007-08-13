@@ -64,6 +64,8 @@ public:
 	void OnPlayerExploreArea(Player* plr, uint32 AreaID);
 	void OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint32 reward_slot);
 
+	void GiveQuestRewardReputation(Player* plr, Quest* qst, Object *qst_giver);
+
 	uint32 GenerateQuestXP(Player *pl, Quest *qst);
 
 	void SendQuestInvalid( INVALID_REASON reason, Player *plyr);

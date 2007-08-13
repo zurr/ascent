@@ -231,6 +231,11 @@ bool ChatHandler::HandleAddInvItemCommand(const char *args, WorldSession *m_sess
 		Item *item;
 		item = objmgr.CreateItem( itemid, chr);
 		item->SetUInt32Value(ITEM_FIELD_STACK_COUNT, ((count > it->MaxCount) ? it->MaxCount : count));
+		if ( it->MaxCount == 1 && cCount )
+		{ // let's think of count as a randomprop
+			item->SetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID, count);
+			item->ApplyRandomProperties();
+		}
 	  
 		if(!chr->GetItemInterface()->AddItemToFreeSlot(item))
 		{
@@ -692,4 +697,5 @@ bool ChatHandler::HandleSilentPlayerCommand(const char* args, WorldSession *m_se
 
 	return true;
 }
+
 

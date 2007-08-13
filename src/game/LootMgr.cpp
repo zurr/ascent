@@ -32,6 +32,22 @@ bool Rand(float chance)
 	return p >= val;
 }
 
+template <class T>  // works for anything that has the field 'chance' and is stored in plain array
+const T& RandomChoice( const T* variant, int count )
+{
+  float totalChance = 0;
+  for( int i = 0; i < count; i++)
+    totalChance += variant[i].chance;
+  float val = sRand.rand(totalChance);
+  for( int i = 0; i < count; i++)
+  {
+    val -= variant[i].chance;
+    if (val <= 0) return variant[i];
+  }
+  // should not come here, buf if it does, we should return something reasonable
+  return variant[count-1];
+}
+
 LootMgr::LootMgr()
 {}
 
@@ -236,7 +252,7 @@ void LootMgr::PushLoot(StoreLootList *list,Loot * loot)
 	if(list->items[x].item.itemid)// this check is needed until loot DB is fixed
 	{
 		ItemPrototype *itemproto = ItemPrototypeStorage.LookupEntry(list->items[x].item.itemid);
-		if(Rand(list->items[x].chance * sWorld.getRate(RATE_DROP)) )//|| itemproto->Class == ITEM_CLASS_QUEST)
+		if(Rand(list->items[x].chance * sWorld.getRate(RATE_DROP0 + itemproto->Quality)) )//|| itemproto->Class == ITEM_CLASS_QUEST)
 		{
 			for(i = 0; i < loot->items.size(); ++i)
 			{
@@ -266,32 +282,8 @@ void LootMgr::PushLoot(StoreLootList *list,Loot * loot)
 			itm.passed = false;
 			
 			if (list->items[x].prop && itemproto->Quality > 1)
-			{
-				for (uint32 k = 0; k < list->items[x].prop->iPropsCount ;k++)
-				{
-					if (Rand(list->items[x].prop->pProps[k].chance))
-					{
-						itm.iRandomProperty=list->items[x].prop->pProps[k].prop;
-						break;
-					}
-				}
-			}
-			/*if(itemproto->RandomPropId>0)
-				if(itemproto->Quality > 1)//green +
-					if(Rand(25))//25% chance to get rnd prop
-					{//let's find some rnd bonus
-						RandomProps *rp=NULL;
-						while(1)
-						{
-							uint32 b=rand()%_propCount;//
-							rp= sRandomPropStore.LookupEntry(b);
-							if(rp)
-							{
-								itm.iRandomProperty=rp->ID;
-								break;
-							}
-						}			
-					}						*/		
+        itm.iRandomProperty = RandomChoice<LootProp>(list->items[x].prop->pProps, list->items[x].prop->iPropsCount).prop;
+
 			loot->items.push_back(itm);
 		}	
 	}
@@ -313,7 +305,7 @@ void LootMgr::FillGOLoot(Loot * loot,uint32 loot_id)
 {
 	loot->items.clear ();
 	loot->gold =0;
-	
+
 	LootStore::iterator tab =GOLoot.find(loot_id);
 	if( GOLoot.end()==tab)return;
 	else PushLoot(&tab->second,loot);

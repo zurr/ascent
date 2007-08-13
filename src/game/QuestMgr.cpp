@@ -735,6 +735,41 @@ void QuestMgr::OnPlayerExploreArea(Player* plr, uint32 AreaID)
 	}
 }
 
+void QuestMgr::GiveQuestRewardReputation(Player* plr, Quest* qst, Object *qst_giver)
+{
+	// Reputation reward
+	for(int z = 0; z < 2; z++)
+	{
+		uint32 fact = 19;   // default to 19 if no factiondbc
+		uint32 amt  = uint32(float(GenerateQuestXP(plr, qst)) * 0.1f);   // guess
+		if(!qst->reward_repfaction[z])
+		{
+			if(z == 1)
+				break;
+
+			// Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
+			if(qst_giver->GetTypeId() == TYPEID_UNIT)
+				if(((Creature*)qst_giver)->m_factionDBC != NULL)
+					fact = ((Creature*)qst_giver)->m_factionDBC->ID;
+			if(qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)
+				fact = qst_giver->GetUInt32Value(GAMEOBJECT_FACTION);
+		}
+		else
+		{
+			fact = qst->reward_repfaction[z];
+			if(qst->reward_repvalue[z])
+				amt = qst->reward_repvalue[z];
+		}
+
+		if(qst->reward_replimit)
+			if(plr->GetStanding(fact) >= (int32)qst->reward_replimit)
+				continue;
+	  
+		amt *= sWorld.getRate(RATE_QUESTREPUTATION); // reputation rewards 
+		plr->ModStanding(fact, amt);
+	}
+}
+
 void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint32 reward_slot)
 {
     QuestLogEntry *qle = NULL;
@@ -765,37 +800,9 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
     //details: hmm as i can remember, repeatable quests give faction rep still after first completation
     if(IsQuestRepeatable(qst))
     {
-        // Reputation reward
-	    for(int z = 0; z < 2; z++)
-	    {
-		    uint32 fact = 19;   // default to 19 if no factiondbc
-		    uint32 amt  = uint32(float(GenerateQuestXP(plr, qst)) * 0.1f * sWorld.getRate(RATE_QUESTREPUTATION));   // guess
-		    if(!qst->reward_repfaction[z])
-		    {
-			    if(z == 1)
-				    break;
-
-			    // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
-			    if(qst_giver->GetTypeId() == TYPEID_UNIT)
-				    if(((Creature*)qst_giver)->m_factionDBC != NULL)
-					    fact = ((Creature*)qst_giver)->m_factionDBC->ID;
-			    if(qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)
-				    fact = qst_giver->GetUInt32Value(GAMEOBJECT_FACTION);
-		    }
-		    else
-		    {
-			    fact = qst->reward_repfaction[z];
-			    if(qst->reward_repvalue[z])
-				    amt = qst->reward_repvalue[z];
-		    }
-
-		    if(qst->reward_replimit)
-			    if(plr->GetStanding(fact) >= (int32)qst->reward_replimit)
-				    continue;
-
-		    plr->ModStanding(fact, amt);
-	    }
-        // Static Item reward
+			// Reputation reward
+			GiveQuestRewardReputation(plr, qst, qst_giver);
+      // Static Item reward
 	    for(uint32 i = 0; i < 4; ++i)
 	    {
 		    if(qst->reward_item[i])
@@ -894,39 +901,9 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
     else
     {
 	    plr->ModUInt32Value(PLAYER_FIELD_COINAGE, qst->reward_money);
-
-    	
+  	
 	    // Reputation reward
-	    for(int z = 0; z < 2; z++)
-	    {
-		    uint32 fact = 19;   // default to 19 if no factiondbc
-		    uint32 amt  = uint32(float(GenerateQuestXP(plr, qst)) * 0.1f * sWorld.getRate(RATE_QUESTREPUTATION));   // guess
-		    if(!qst->reward_repfaction[z])
-		    {
-			    if(z == 1)
-				    break;
-
-			    // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
-			    if(qst_giver->GetTypeId() == TYPEID_UNIT)
-				    if(((Creature*)qst_giver)->m_factionDBC != NULL)
-					    fact = ((Creature*)qst_giver)->m_factionDBC->ID;
-			    if(qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)
-				    fact = qst_giver->GetUInt32Value(GAMEOBJECT_FACTION);
-		    }
-		    else
-		    {
-			    fact = qst->reward_repfaction[z];
-			    if(qst->reward_repvalue[z])
-				    amt = qst->reward_repvalue[z];
-		    }
-
-		    if(qst->reward_replimit)
-			    if(plr->GetStanding(fact) >= (int32)qst->reward_replimit)
-				    continue;
-
-		    plr->ModStanding(fact, amt);
-	    }
-
+			GiveQuestRewardReputation(plr, qst, qst_giver);
 	    // Static Item reward
 	    for(uint32 i = 0; i < 4; ++i)
 	    {

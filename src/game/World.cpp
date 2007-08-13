@@ -1954,7 +1954,13 @@ void World::Rehash(bool load)
 	setRate(RATE_POWER1,Config.MainConfig.GetFloatDefault("Rates", "Power1",1));
 	setRate(RATE_POWER2,Config.MainConfig.GetFloatDefault("Rates", "Power2",1));
 	setRate(RATE_POWER3,Config.MainConfig.GetFloatDefault("Rates", "Power4",1));
-	setRate(RATE_DROP,Config.MainConfig.GetFloatDefault("Rates", "Drop",1));
+	setRate(RATE_DROP0,Config.MainConfig.GetFloatDefault("Rates", "DropGrey",1));
+  setRate(RATE_DROP1,Config.MainConfig.GetFloatDefault("Rates", "DropWhite",1));
+  setRate(RATE_DROP2,Config.MainConfig.GetFloatDefault("Rates", "DropGreen",1));
+  setRate(RATE_DROP3,Config.MainConfig.GetFloatDefault("Rates", "DropBlue",1));
+  setRate(RATE_DROP4,Config.MainConfig.GetFloatDefault("Rates", "DropPurple",1));
+  setRate(RATE_DROP5,Config.MainConfig.GetFloatDefault("Rates", "DropOrange",1));
+  setRate(RATE_DROP6,Config.MainConfig.GetFloatDefault("Rates", "DropArtifact",1));
 	setRate(RATE_XP,Config.MainConfig.GetFloatDefault("Rates", "XP",1));
 	setRate(RATE_RESTXP,Config.MainConfig.GetFloatDefault("Rates", "RestXP", 1));
 	setRate(RATE_QUESTXP,Config.MainConfig.GetFloatDefault("Rates", "QuestXP", 1));
