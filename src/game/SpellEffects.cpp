@@ -2711,11 +2711,12 @@ void Spell::SpellEffectPickpocket(uint32 i) // pickpocket
 	{
 		SendCastResult(SPELL_FAILED_TARGET_NO_POCKETS);
 		return;
-	}		
+	}
+			
+  lootmgr.FillPickpocketingLoot(&((Creature*)unitTarget)->loot,unitTarget->GetEntry());
 
 	uint32 _rank = ((Creature*)unitTarget)->GetCreatureName()->Rank ;
 	unitTarget->loot.gold = float2int32((_rank+1) * unitTarget->getLevel() * (sRand.randInt(5) + 1) * sWorld.getRate(RATE_DROP));
-	unitTarget->loot.items.clear();
 
 	p_caster->SendLoot(unitTarget->GetGUID(), 2);
 	target->SetPickPocketed(true);

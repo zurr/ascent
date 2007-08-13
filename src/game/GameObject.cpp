@@ -508,7 +508,8 @@ void GameObject::EndFishing(Player* player, bool abort )
 				RemoveFromWorld();
 			delete this;*/
 
-			ExpireAndDelete();
+			//ExpireAndDelete();
+			sEventMgr.AddEvent(this, &GameObject::ExpireAndDelete(), EVENT_GAMEOBJECT_EXPIRE, 10000, 1);
 			return;
 		}
 	}

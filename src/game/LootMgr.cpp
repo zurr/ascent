@@ -45,6 +45,7 @@ void LootMgr::LoadLoot()
 	LoadLootTables("fishingloot",&FishingLoot);
 	LoadLootTables("itemloot", &ItemLoot);
 	LoadLootTables("prospectingloot", &ProspectingLoot);
+	LoadLootTables("pickpocketingloot", &PickpocketingLoot);
 }
 
 void LootMgr::LoadLootProp(uint32 id)
@@ -104,6 +105,9 @@ LootMgr::~LootMgr()
   for(LootStore::iterator iter=ProspectingLoot.begin(); iter != ProspectingLoot.end(); ++iter)
   delete [] iter->second.items;
 
+ for(LootStore::iterator iter=PickpocketingLoot.begin(); iter != PickpocketingLoot.end(); ++iter)
+ delete [] iter->second.items;
+ 
   for(PropStore::iterator iter = LootProperties.begin(); iter != LootProperties.end(); ++iter)
   {
 	  delete iter->second->pProps;
@@ -188,7 +192,7 @@ void LootMgr::LoadLootTables(const char * szTableName,LootStore * LootTable)
 				if(!proto)
 				{
 					list.items[ind].item.itemid=0;
-					//sLog.outDetail("WARNING: Loot %u contains item %u that does not exist in the DB.",entry_id,(*itr2).itemid);
+					sLog.outDetail("WARNING: Loot %u contains item that does not exist in the DB.",entry_id);
 				}
 				else
 				{
@@ -315,6 +319,16 @@ void LootMgr::FillGOLoot(Loot * loot,uint32 loot_id)
 	else PushLoot(&tab->second,loot);
 }
 
+void LootMgr::FillPickpocketingLoot(Loot * loot,uint32 loot_id)
+{
+ loot->items.clear ();
+ loot->gold =0;
+
+ LootStore::iterator tab =PickpocketingLoot.find(loot_id);
+ if( PickpocketingLoot.end()==tab)return;
+ else PushLoot(&tab->second,loot);
+}
+
 //Puts 1 item always, no random properties
 void LootMgr::FillProfessionLoot(LootStore * store,Loot * loot,uint32 loot_id)
 {
@@ -372,6 +386,14 @@ bool LootMgr::CanGODrop(uint32 LootId,uint32 itemid)
 		if(list->items[x].item.itemid==itemid)
 			return true;
 	return false;
+}
+
+//THIS should be cached 
+bool LootMgr::IsPickpocketable(uint32 creatureId)
+{
+	LootStore::iterator tab =PickpocketingLoot.find(creatureId);
+	if( PickpocketingLoot.end()==tab)return false;
+	else return true;
 }
 
 //THIS should be cached 
