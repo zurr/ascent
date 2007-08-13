@@ -86,6 +86,7 @@ AIInterface::AIInterface()
 	waiting_for_cooldown = false;
 	m_AIState_backup = m_AIState;
 	UnitToFollow_backup = NULL;
+	m_isGuard = false;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
@@ -113,6 +114,7 @@ void AIInterface::Init(Unit *un, AIType at, MovementType mt)
 	m_sourceY = un->GetPositionY();
 	m_sourceZ = un->GetPositionZ();
 	m_guardTimer = getMSTime();
+	m_isGuard = isGuard(un->GetEntry());
 }
 
 AIInterface::~AIInterface()
@@ -236,7 +238,11 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				if(Target != NULL)
 					AttackReaction(Target, 1, 0);
 				else
+				{
 					firstLeaveCombat = true;
+					if(m_isGuard)
+						m_Unit->UpdateSpeed();
+				}
 
 				/*SpellEntry* spell = getSpellEntry(2054);
 				Affect* aff = new Affect(spell, 6000, m_Unit->GetGUID());
@@ -1203,6 +1209,9 @@ Unit* AIInterface::FindTarget()
 			}
 		}
 		crange = _CalcCombatRange(pUnit,false);
+		if(m_isGuard)
+			crange *= 2;
+
 		z_diff = fabs(m_Unit->GetPositionZ() - pUnit->GetPositionZ());
 		if(z_diff > crange)
 		{
@@ -1245,6 +1254,9 @@ Unit* AIInterface::FindTarget()
 
 	if( target )
 	{
+		if(m_isGuard)
+			m_Unit->m_runSpeed = PLAYER_NORMAL_RUN_SPEED * 2.5f;
+
 		AttackReaction(target, 1, 0);
 		if(target->IsPlayer())
 		{
@@ -2985,4 +2997,50 @@ void AIInterface::AddSpellCooldown(SpellEntry * pSpell, AI_Spell * sp)
 {
 	uint32 Cooldown = pSpell->CategoryRecoveryTime > pSpell->RecoveryTime ? pSpell->CategoryRecoveryTime : pSpell->RecoveryTime;
 	m_spellCooldown[pSpell->Id] = getMSTime() + Cooldown;
+}
+
+bool isGuard(uint32 id)
+{
+	switch(id)
+	{
+		/* stormwind guards */
+	case 68:
+	case 1423:
+	case 1756:
+	case 15858:
+	case 15859:
+	case 16864:
+	case 20556:
+	case 18948:
+	case 18949:
+	case 1642:
+		/* ogrimmar guards */
+	case 3296:
+	case 15852:
+	case 15853:
+	case 15854:
+	case 18950:
+		/* undercity guards */
+	case 5624:
+	case 18971:
+	case 16432:
+		/* exodar */
+	case 16733:
+	case 18815:
+		/* thunder bluff */
+	case 3084:
+		/* silvermoon */
+	case 16221:
+	case 17029:
+	case 16222:
+		/* ironforge */
+	case 727:
+	case 5595:
+	case 12996:
+		/* darnassus? */
+		{
+			return true;
+		}break;
+	}
+	return false;
 }

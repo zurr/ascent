@@ -158,6 +158,9 @@ struct AI_Spell
 	float maxrange;
 };
 
+bool isGuard(uint32 id);
+uint32 getGuardId(uint32 id);
+
 typedef HM_NAMESPACE::hash_map<Unit*, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
@@ -399,6 +402,7 @@ private:
 	MovementState m_MovementState;
 	uint32 m_guardTimer;
 	int32 m_currentHighestThreat;
+	bool m_isGuard;
 
 };
 #endif
