@@ -87,6 +87,7 @@ AIInterface::AIInterface()
 	m_AIState_backup = m_AIState;
 	UnitToFollow_backup = NULL;
 	m_isGuard = false;
+	m_fastMove = false;
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
@@ -240,7 +241,10 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				{
 					firstLeaveCombat = true;
 					if(m_isGuard)
-						m_Unit->UpdateSpeed();
+					{
+						m_Unit->m_runSpeed *= 2.0f;
+						m_fastMove = true;
+					}
 				}
 
 				/*SpellEntry* spell = getSpellEntry(2054);
@@ -1209,7 +1213,7 @@ Unit* AIInterface::FindTarget()
 		}
 		crange = _CalcCombatRange(pUnit,false);
 		if(m_isGuard)
-			crange *= 2;
+			crange *= 4;
 
 		z_diff = fabs(m_Unit->GetPositionZ() - pUnit->GetPositionZ());
 		if(z_diff > crange)
@@ -1254,7 +1258,10 @@ Unit* AIInterface::FindTarget()
 	if( target )
 	{
 		if(m_isGuard)
-			m_Unit->m_runSpeed = PLAYER_NORMAL_RUN_SPEED * 2.5f;
+		{
+			m_Unit->m_runSpeed *= 2.0f;
+			m_fastMove = true;
+		}
 
 		AttackReaction(target, 1, 0);
 		if(target->IsPlayer())
@@ -2201,6 +2208,12 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 		{
 			if(m_timeMoved == m_timeToMove) //reached destination
 			{
+				if(m_fastMove)
+				{
+					m_Unit->UpdateSpeed();
+					m_fastMove = false;
+				}
+
 				if(m_moveType == MOVEMENTTYPE_WANTEDWP)//We reached wanted wp stop now
 					m_moveType = MOVEMENTTYPE_DONTMOVEWP;
 
