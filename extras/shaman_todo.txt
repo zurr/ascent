@@ -98,3 +98,53 @@ make Nature's grace to use SM variables. Preferably Spell:Calceffect
 [09:11:33] Spell::cast 29202, Unit: 7
 [09:11:33] WORLD: Spell effect id = 6, damage = 100
 [09:11:33] WORLD: target = 7 , Spell Aura id = 109, SpellId  = 29202, i = 0, apply = true
+
+Spells:
+
+windfury weapon don't give attack power and doesn't work (give 3 attacks) the spell need give two extra attacks in more of the primary attack and need can be crti attack
+Stoneclaw totem doesn't work
+Frost shock don't slow ennemy when they are on mount
+Cure Disease don't work
+Magma Totem rank3 and up can't be learn at trainer
+Grounding Totem don't work
+Windfury Totem don't work
+Fire Nova Totem don't work
+Sentry Totem don't work
+Flametongue Totem rank5 don't work and magic damage stuff don't up the damage of the spell
+Disease Cleansing Totem don't work
+Mana Tide Totem don't work
+Shamanistic Rage don't work
+Flametongue Weapon don't work
+Wrath of Air Totem don't work
+Earth Elemental Totem don't work
+Bloodlust don't give the effect on friends and members but on ennemy
+Heroism don't work
+Totem of Wrath don't work
+Stormstrike have not 100% luck of damage an ennemy in pvp and don't attack in same time with two weapons (Dual Wield) and don't up damage on two seconds attacks (melee and spells)
+Purge don't work
+Poison Cleansing Totem don't work
+Water Shield don't work
+
+talents:
+
+Mental Quickness don't work
+Ancestral Healing don't work
+Healing Way don't work
+Focused Mind don't work
+Purification don't work
+Nature's Blessing don't work
+Nature's Guardian don't work
+Elemental Focus don't work
+Eye of the Storm don't work
+Elemental Devastation don't work
+Elemental Fury don't work
+Unrelenting Storm don't work
+Elemental Mastery don't have 100% luck to make a crit and don't reduce 100% of cost the mana spell
+Lightning Overload don't work
+Elemental Shields don't work
+Tidal Mastery don't work
+Improved Lightning Shield don't work
+
+
+Sorry for my bad english and if you have some probs for debug ask me
+Darkmugen @ shaman fan :]

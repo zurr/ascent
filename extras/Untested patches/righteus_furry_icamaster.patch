@@ -1,0 +1,13 @@
+Index: SpellAuras.cpp
+===================================================================
+--- SpellAuras.cpp    (revision 1055)
++++ SpellAuras.cpp    (working copy)
+@@ -4400,7 +4400,7 @@
+    if(apply)
+    {
+        val = mod->m_amount/100.0;
+-        if(val < 0)
++        if(val <= 0)
+            SetPositive();
+        else
+            SetNegative();

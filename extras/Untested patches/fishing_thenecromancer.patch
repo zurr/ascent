@@ -1,0 +1,13 @@
+Index: game/GameObject.cpp
+===================================================================
+--- game/GameObject.cpp   (revision 976)
++++ game/GameObject.cpp   (working copy)
+@@ -507,7 +507,7 @@
+             RemoveFromWorld();
+          delete this;*/
+
+-         ExpireAndDelete();
++         //ExpireAndDelete();
+          return;
+       }
+    }
