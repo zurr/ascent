@@ -5139,6 +5139,7 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 
 				if(m_Group)
 				{
+					m_Group->Lock();
 					for(uint32 i = 0; i < m_Group->GetSubGroupCount(); ++i)
 					{
 						for(GroupMembersSet::iterator itr = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); itr != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
@@ -5149,6 +5150,7 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 							}
 						}
 					}
+					m_Group->Unlock();
 				}
 				else
 				{

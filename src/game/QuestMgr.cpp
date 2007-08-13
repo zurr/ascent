@@ -622,6 +622,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim)
 			if(pGroup->GetGroupType() != GROUP_TYPE_PARTY) return;  // Raid's don't get shared kills.
 
 			GroupMembersSet::iterator gitr;
+			pGroup->Lock();
 			for(uint32 k = 0; k < pGroup->GetSubGroupCount(); k++)
 			{
 				for(gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
@@ -662,6 +663,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim)
 					}
 				}
 			}
+			pGroup->Unlock();
 		}
 	}
 }

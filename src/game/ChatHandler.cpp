@@ -149,10 +149,12 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 
 				if(sgr)
 				{
+					_player->GetGroup()->Lock();
 					for(GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
 					{
 						(*itr)->GetSession()->SendPacket(data);
 					}
+					_player->GetGroup()->Unlock();
 				}
 			}
 			else

@@ -717,6 +717,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 
 			if(sgr)
 			{
+				_player->GetGroup()->Lock();
 				GroupMembersSet::iterator itr;
 				for(itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
 				{
@@ -771,6 +772,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 						pPlayer->SetQuestSharer(pguid);
 					}
 				}
+				_player->GetGroup()->Unlock();
 			}
 		}
 	}

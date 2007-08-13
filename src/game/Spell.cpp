@@ -554,6 +554,8 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 							p->GetGroup()->GetSubGroup(p->GetSubGroup()) : 0;
 
 						if(subgroup)
+						{
+							p->GetGroup()->Lock();
 							for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 							{
 								if(m_caster == (*itr)) 
@@ -564,6 +566,8 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 									break;
 								}
 							}
+							p->GetGroup()->Unlock();
+						}
 					}break;
 				case EFF_TARGET_SINGLE_FRIEND:
 				case 45:// Chain,!!only for healing!! for chain lightning =6 
@@ -628,6 +632,8 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : 0;
 
 							if( pGroup )
+							{
+								p_caster->GetGroup()->Lock();
 								for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
 									itr != pGroup->GetGroupMembersEnd(); ++itr)
 								{
@@ -639,6 +645,8 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 										break;
 									}
 								}
+								p_caster->GetGroup()->Unlock();
+							}
 						}
 					}break;
 				case 38:{//Dummy Target
@@ -823,6 +831,7 @@ void Spell::FillTargetMap(uint32 i)
 
 			if(subgroup)
 			{				
+				p->GetGroup()->Lock();
 				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 				  {
 					  if(m_caster == (*itr)) 
@@ -830,6 +839,7 @@ void Spell::FillTargetMap(uint32 i)
 					  if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
 						  SafeAddTarget(tmpMap,(*itr)->GetGUID());
 				  }
+				  p->GetGroup()->Unlock();
 			 }
 				}break;
 		case 21: {// Single Target Friend
@@ -960,6 +970,7 @@ void Spell::FillTargetMap(uint32 i)
 
 						if(pGroup)
 						{
+							p->GetGroup()->Lock();
 							for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
 								itr != pGroup->GetGroupMembersEnd(); ++itr)
 							{
@@ -968,6 +979,7 @@ void Spell::FillTargetMap(uint32 i)
 								if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
 								SafeAddTarget(tmpMap,(*itr)->GetGUID());
 							}
+							p->GetGroup()->Unlock();
 						}
 					}
 				}
@@ -992,8 +1004,10 @@ void Spell::FillTargetMap(uint32 i)
 
 			if(subgroup)
 			{
+				Target->GetGroup()->Lock();
 				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 					  SafeAddTarget(tmpMap,(*itr)->GetGUID());
+				Target->GetGroup()->Unlock();
 			}
 			else
 			{
@@ -1067,6 +1081,7 @@ void Spell::FillTargetMap(uint32 i)
 
 				if(pGroup)
 				{
+					p_caster->GetGroup()->Lock();
 					for(itr = pGroup->GetGroupMembersBegin();
 						itr != pGroup->GetGroupMembersEnd(); ++itr)
 					{
@@ -1079,6 +1094,7 @@ void Spell::FillTargetMap(uint32 i)
 								break;
 						}
 					}
+					p_caster->GetGroup()->Unlock();
 				}
 			}//find nearby friendly target
 			else
@@ -1157,22 +1173,26 @@ void Spell::FillTargetMap(uint32 i)
 				SafeAddTarget(tmpMap,m_targets.m_unitTarget);
 				}break;
 		case 61:{ // targets with the same group/raid and the same class
-			Player * Target = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
-			if(!Target)
-				break;
-			
-			SubGroup * subgroup = Target->GetGroup() ?
-				Target->GetGroup()->GetSubGroup(Target->GetSubGroup()) : 0;
+					Player * Target = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
+					if(!Target)
+						break;
+					
+					SubGroup * subgroup = Target->GetGroup() ?
+						Target->GetGroup()->GetSubGroup(Target->GetSubGroup()) : 0;
 
-			if(subgroup)
-				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
-				{
-					if(Target->getClass() != (*itr)->getClass()) 
-						continue;
-					SafeAddTarget(tmpMap,(*itr)->GetGUID());
-				}
+					if(subgroup)
+					{
+						Target->GetGroup()->Lock();
+						for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
+						{
+							if(Target->getClass() != (*itr)->getClass()) 
+								continue;
+							SafeAddTarget(tmpMap,(*itr)->GetGUID());
+						}
+						Target->GetGroup()->Unlock();
+					}
 				}break;
-			}
+		}
 		}
 }
 

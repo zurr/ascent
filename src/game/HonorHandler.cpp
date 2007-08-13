@@ -125,6 +125,7 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
             Group *pGroup = pPlayer->GetGroup();
             Player *gPlayer = NULL;
             int32 GroupPoints;
+			pGroup->Lock();
             GroupPoints = (Points / (pGroup->MemberCount() ? pGroup->MemberCount() : 1));
             GroupMembersSet::iterator gitr;
 			for(uint32 k = 0; k < pGroup->GetSubGroupCount(); k++)
@@ -153,6 +154,7 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
 
                 }
             }
+			pGroup->Unlock();
         
         }
         else

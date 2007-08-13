@@ -695,6 +695,7 @@ void Aura::EventUpdateAA(float r)
 
 	if(group)
 	{
+		plr->GetGroup()->Lock();
 		GroupMembersSet::iterator itr = group->GetGroupMembersBegin();
 		for(; itr != group->GetGroupMembersEnd(); ++itr)
 		{
@@ -727,6 +728,7 @@ void Aura::EventUpdateAA(float r)
 				}
 			}
 		}
+		plr->GetGroup()->Unlock();
 	}
 
 	// Update the existing players in the target set.

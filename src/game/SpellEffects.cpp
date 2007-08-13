@@ -2453,12 +2453,14 @@ void Spell::SpellEffectSummonObject(uint32 i)
 
 			if(pGroup)
 			{
+				p_caster->GetGroup()->Lock();
 				for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
 					itr != pGroup->GetGroupMembersEnd(); ++itr)
 				{
 					if(m_caster != (*itr))
 					(*itr)->GetSession()->SendPacket(pkt);
 				}
+				p_caster->GetGroup()->Unlock();
 			}
 			delete pkt;
 		}

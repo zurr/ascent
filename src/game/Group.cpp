@@ -144,6 +144,7 @@ SubGroup * Group::FindFreeSubGroup()
 
 bool Group::AddMember(Player* pPlayer)
 {
+	m_groupLock.Acquire();
 	if(!IsFull())
 	{
 		SubGroup* subgroup = FindFreeSubGroup();
@@ -169,11 +170,13 @@ bool Group::AddMember(Player* pPlayer)
 		UpdateAllOutOfRangePlayersFor(pPlayer);
 		Update();	// Send group update
 
+		m_groupLock.Release();
 		return true;
 
 	}
 	else
 	{
+		m_groupLock.Release();
 		return false;
 	}
 }
@@ -199,6 +202,7 @@ void Group::Update()
 	uint32 i=0,j=0;
 	SubGroup *sg1=NULL;
 	SubGroup *sg2=NULL;
+	m_groupLock.Acquire();
 
 	for(i=0;i<m_SubGroupCount;i++)
 	{
@@ -261,10 +265,13 @@ void Group::Update()
 				(*itr1)->removeSoulStone();
 		}		
 	}
+
+	m_groupLock.Release();
 }
 
 void Group::Disband()
 {
+	m_groupLock.Acquire();
 	uint32 i = 0;
 	for(i = 0; i < m_SubGroupCount; i++)
 	{
@@ -272,6 +279,7 @@ void Group::Disband()
 		sg->Disband(true);
 	}
 
+	m_groupLock.Release();
 	delete this;	// destroy ourselves, the destructor removes from eventmgr and objectmgr.
 }
 
@@ -310,18 +318,24 @@ Player* Group::FindFirstPlayer()
 {
 //	SubGroup *sg = NULL;
 	GroupMembersSet::iterator itr;
+	m_groupLock.Acquire();
 
 	uint32 i = 0;
-	for(; i < m_SubGroupCount; i++)
-		for(itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+	for(; i < m_SubGroupCount; i++) {
+		for(itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr) {
+			m_groupLock.Release();
 			return (*itr);   // return first
+		}
+	}
 
+	m_groupLock.Release();
 	return NULL;
 }
 
 void Group::RemovePlayer(Player* pPlayer)
 {
 	WorldPacket data;
+	m_groupLock.Acquire();
 	
 	SubGroup *sg = GetSubGroup(pPlayer->GetSubGroup());
 	ASSERT(sg); // something wrong here if that isn't right
@@ -346,6 +360,7 @@ void Group::RemovePlayer(Player* pPlayer)
 	{
 		if(m_disbandOnNoMembers)
 		{
+			m_groupLock.Release();
 			Disband();
 			return;
 		}
@@ -368,6 +383,8 @@ void Group::RemovePlayer(Player* pPlayer)
 	}
 	else
 		Update();
+
+	m_groupLock.Release();
 }
 
 void Group::SendPacketToAll(WorldPacket *packet)
@@ -380,6 +397,7 @@ void Group::ExpandToRaid()
 	// Very simple ;)
 
 	uint32 i = 1;
+	m_groupLock.Acquire();
 	m_SubGroupCount = 8;
 
 	for(; i < m_SubGroupCount; i++)
@@ -387,6 +405,7 @@ void Group::ExpandToRaid()
 
 	m_GroupType = GROUP_TYPE_RAID;
 	Update();
+	m_groupLock.Release();
 }
 
 void Group::SetLooter(Player *pPlayer, uint8 method, uint16 threshold)
@@ -402,6 +421,7 @@ Player* Group::GetnextRRlooter()
 {
 	//another methode would be to directly store a node from list so we can jump directly to next one. But that is not safe :P
 	GroupMembersSet::iterator itr1;
+	m_groupLock.Acquire();
 	Player *firsthit=NULL,*prevp=NULL;
 	for(int i = 0; i < m_SubGroupCount; i++)
 	{
@@ -410,11 +430,15 @@ Player* Group::GetnextRRlooter()
 			if(firsthit==NULL)
 				firsthit = (*itr1);
 			if(prevp==lastRRlooter)
+			{
+				m_groupLock.Release();
 				return (*itr1);
+			}
 			prevp = (*itr1);
 		}
 	}
 	//if we got here it means player eighter exited group or it was last one
+	m_groupLock.Release();
 	return firsthit;
 }
 
@@ -422,25 +446,38 @@ void Group::SendPacketToAllButOne(WorldPacket *packet, Player *pSkipTarget)
 {
 	GroupMembersSet::iterator itr;
 	uint32 i = 0;
+	m_groupLock.Acquire();
 	for(; i < m_SubGroupCount; i++)
 		for(itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
 			if((*itr) != pSkipTarget) (*itr)->GetSession()->SendPacket(packet);
+
+	m_groupLock.Release();
 }
 
 bool Group::HasMember(Player * pPlayer)
 {
 	GroupMembersSet::iterator itr;
 	uint32 i = 0;
-	for(; i < m_SubGroupCount; i++)
-		for(itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
-			if((*itr) == pPlayer) return true;
+	m_groupLock.Acquire();
 
+	for(; i < m_SubGroupCount; i++) {
+		for(itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr) {
+			if((*itr) == pPlayer)
+			{
+				m_groupLock.Release();
+				return true;
+			}
+		}
+	}
+
+	m_groupLock.Release();
 	return false;
 }
 
 void Group::MovePlayer(Player *pPlayer, uint8 subgroup)
 {
 	ASSERT(subgroup < m_SubGroupCount);
+	m_groupLock.Acquire();
 	SubGroup *sgr = GetSubGroup(pPlayer->GetSubGroup());
 	
 	sgr->RemovePlayer(pPlayer);
@@ -450,21 +487,25 @@ void Group::MovePlayer(Player *pPlayer, uint8 subgroup)
 	sgr->AddPlayer(pPlayer);
 
 	Update();
+	m_groupLock.Release();
 }
 
 void Group::SetSubGroupLeader(Player *pPlayer, uint8 subgroup)
 {
 	sLog.outString("Set subgroup %d leader to %s", (uint32)subgroup, pPlayer->GetName());
+	m_groupLock.Acquire();
 	ASSERT(subgroup < m_SubGroupCount);
 	SubGroup *group = m_SubGroups[subgroup];
 	if(group->GetID() != pPlayer->GetSubGroup())
 	{
 		sLog.outString("GROUP: Tried to set leader of subgroup %d and player %s is not in that group", group->GetID(), pPlayer->GetName());
+		m_groupLock.Release();
 		return;
 	}
 
 	group->m_SubGroupLeader = pPlayer;
 	Update();
+	m_groupLock.Release();
 }
 
 void Group::SendNullUpdate(Player *pPlayer)
@@ -614,6 +655,7 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribu
 	{
 		Player * plr;
 		float dist = sWorld.m_UpdateDistance;
+		m_groupLock.Acquire();
 		for(uint32 i = 0; i < m_SubGroupCount; ++i)
 		{
 			for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
@@ -627,6 +669,7 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribu
 				}
 			}
 		}
+		m_groupLock.Release();
 	}
 
 	if(!Packet)
@@ -649,6 +692,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 	UpdateMask hisMask;
 	hisMask.SetCount(PLAYER_END);
 
+	m_groupLock.Acquire();
 	for(uint32 i = 0; i < m_SubGroupCount; ++i)
 	{
 		for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
@@ -701,6 +745,8 @@ void Group::UpdateAllOutOfRangePlayersFor(Player * pPlayer)
 			}
 		}
 	}
+
+	m_groupLock.Release();
 }
 
 void Group::HandleUpdateFieldChange(uint32 Index, Player * pPlayer)

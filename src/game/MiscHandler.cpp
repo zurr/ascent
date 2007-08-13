@@ -238,6 +238,7 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 
 			GroupMembersSet::iterator itr;
 			SubGroup * sgrp;
+			party->getLock().Acquire();
 			for(uint32 i = 0; i < party->GetSubGroupCount(); i++)
 			{
 				sgrp = party->GetSubGroup(i);
@@ -247,6 +248,7 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 						targets.push_back((*itr));
 				}
 			}
+			party->getLock().Release();
 
 			if(!targets.size())
 				return;
@@ -288,6 +290,7 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 				uint32 real_count = 0;
 				SubGroup *s;
 				GroupMembersSet::iterator itr;
+				party->Lock();
 				for(uint32 i = 0; i < party->GetSubGroupCount(); ++i)
 				{
 					s = party->GetSubGroup(i);
@@ -300,6 +303,7 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 						}
 					}
 				}
+				party->Unlock();
 				*(uint8*)&data.contents()[0] = real_count;
 
 				party->SendPacketToAll(&data);

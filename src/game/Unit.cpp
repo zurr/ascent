@@ -391,7 +391,8 @@ void Unit::GiveGroupXP(Unit *pVictim, Player *PlayerInGroup)
 	//change on 2007 04 22 by Zack
 	//we only take into count players that are near us, on same map
 	GroupMembersSet::iterator itr;
-	for(uint32 i = 0; i < pGroup->GetSubGroupCount(); i++)
+	pGroup->Lock();
+	for(uint32 i = 0; i < pGroup->GetSubGroupCount(); i++) {
 		for(itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
 		{
 			pGroupGuy = (*itr);
@@ -414,6 +415,8 @@ void Unit::GiveGroupXP(Unit *pVictim, Player *PlayerInGroup)
 					pHighLvlPlayer = pGroupGuy;
 			}
 		}
+	}
+	pGroup->Unlock();
 	if(active_player_count<1) //killer is always close to the victim. This should never execute
 	{
 		if(PlayerInGroup == 0) PlayerInGroup = pGroup->GetLeader();
@@ -2850,6 +2853,7 @@ void Unit::VampiricEmbrace(uint32 dmg,Unit* tgt)
 	if(pGroup)
 	{
 		GroupMembersSet::iterator itr;
+		((Player*)this)->GetGroup()->Lock();
 		for(itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)
 		{
 			if((*itr) == this)
@@ -2876,6 +2880,7 @@ void Unit::VampiricEmbrace(uint32 dmg,Unit* tgt)
 			}
 			this->SendMessageToSet(&data, true);
 		}
+		((Player*)this)->GetGroup()->Unlock();
 	}
 
 }
@@ -2908,6 +2913,7 @@ void Unit::VampiricTouch(uint32 dmg,Unit* tgt)
 		if(pGroup)
         {
                 GroupMembersSet::iterator itr;
+				((Player*)this)->GetGroup()->Lock();
                 for(itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)
                 {
                         if((*itr) == this)
@@ -2928,6 +2934,7 @@ void Unit::VampiricTouch(uint32 dmg,Unit* tgt)
                                         this->SetUInt32Value(UNIT_FIELD_POWER1, cm);
                         }
                 }
+				((Player*)this)->GetGroup()->Unlock();
         }
 }
 

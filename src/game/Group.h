@@ -167,6 +167,9 @@ public:
 
 	uint64 m_targetIcons[8];
 	bool m_disbandOnNoMembers;
+	inline Mutex& getLock() { return m_groupLock; }
+	inline void Lock() { m_groupLock.Acquire(); }
+	inline void Unlock() { return m_groupLock.Release(); }
 
 protected:
 	
@@ -181,6 +184,7 @@ protected:
 	SubGroup* m_SubGroups[8];
 	uint8 m_SubGroupCount;
 	uint32 m_MemberCount;
+	Mutex m_groupLock;
 };
 
 #endif  // _GROUP_H_

@@ -1823,6 +1823,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 								// Loop party players and push update data.
 								GroupMembersSet::iterator itr;
 								SubGroup * sGrp;
+								pGroup->Lock();
 								for(uint32 Index = 0; Index < pGroup->GetSubGroupCount(); ++Index)
 								{
 									sGrp = pGroup->GetSubGroup(Index);
@@ -1833,6 +1834,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 											(*itr)->PushUpdateData(&buf, 1);
 									}
 								}
+								pGroup->Unlock();
 							}break;
 						case PARTY_LOOT_MASTER:
 							{
