@@ -2002,7 +2002,18 @@ void Spell::SendSpellStart()
 		case SPELL_RANGED_THROW:  // throw
 			{
 				if(Item *itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
+				{
 					ip=itm->GetProto();
+						/* Throwing Weapon Patch by Supalosa
+							p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
+							(Supalosa: Instead of removing one from the stack, remove one from durability)
+							We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
+						*/
+
+					// burlex - added a check here anyway (wpe suckers :P)
+					if(itm->GetDurability() > 0)
+						itm->SetDurability( itm->GetDurability() - 1 );
+				}
 			}break;
 		default:
 			{
@@ -2713,6 +2724,13 @@ uint8 Spell::CanCast(bool rangetolerate)
             // if the check requere's a player caster
             if (p_caster)
             {
+				if(m_spellInfo->Id == SPELL_RANGED_THROW)
+				{
+					Item * itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+					if(!itm || itm->GetDurability() == 0)
+						return (uint8)SPELL_FAILED_NO_AMMO;
+				}
+
                 // if the target should be a player
                 if (target->IsPlayer())
                 {
