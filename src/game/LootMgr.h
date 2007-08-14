@@ -76,6 +76,9 @@ typedef struct
 {
 	_LootItem item;
 	float chance;
+	float chance2;
+	uint32 mincount;
+	uint32 maxcount;
 	LootPropTable *prop;
 }StoreLootItem;
 
@@ -94,6 +97,15 @@ typedef struct
 	uint32 gold;
 	LooterSet looters;
 }Loot;
+
+struct tempy
+{
+	uint32 itemid;
+	float chance;
+	float chance_2;
+	uint32 mincount;
+	uint32 maxcount;
+};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -120,8 +132,8 @@ public:
 	typedef HM_NAMESPACE::hash_map<uint32,  LootPropTable*> PropStore; 
 	
 	void FillProfessionLoot(LootStore * store,Loot * loot,uint32 loot_id);
-	void FillCreatureLoot(Loot * loot,uint32 loot_id);
-	void FillGOLoot(Loot * loot,uint32 loot_id);
+	void FillCreatureLoot(Loot * loot,uint32 loot_id, bool heroic);
+	void FillGOLoot(Loot * loot,uint32 loot_id, bool heroic);
 	void FillItemLoot(Loot *loot, uint32 loot_id);
 	void FillPickpocketingLoot(Loot *loot, uint32 loot_id);
 
@@ -145,7 +157,7 @@ public:
  
 private:
 	void LoadLootTables(const char * szTableName,LootStore * LootTable);
-	void PushLoot(StoreLootList *list,Loot * loot);
+	void PushLoot(StoreLootList *list,Loot * loot, bool heroic);
 	PropStore	LootProperties;
    // uint32 _propCount;
 };

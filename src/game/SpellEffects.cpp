@@ -1864,7 +1864,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 				{
 //					lootmgr.FillProfessionLoot(&lootmgr.GOLoot,&gameObjTarget->loot,
 //						gameObjTarget->GetEntry());
-					lootmgr.FillGOLoot(&gameObjTarget->loot,gameObjTarget->GetEntry());
+					lootmgr.FillGOLoot(&gameObjTarget->loot,gameObjTarget->GetEntry(), gameObjTarget->GetMapMgr() ? (gameObjTarget->GetMapMgr()->iInstanceMode ? true : false) : false);
 				}	
 				loottype=2;
 			}
@@ -1908,7 +1908,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 
 			if(gameObjTarget->loot.items.size() == 0)
 			{
-				lootmgr.FillGOLoot(&gameObjTarget->loot,gameObjTarget->GetEntry());
+				lootmgr.FillGOLoot(&gameObjTarget->loot,gameObjTarget->GetEntry(), gameObjTarget->GetMapMgr() ? (gameObjTarget->GetMapMgr()->iInstanceMode ? true : false) : false);
 			}
 			loottype=1;
 		}
