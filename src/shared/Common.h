@@ -18,17 +18,6 @@
 #ifndef WOWSERVER_COMMON_H
 #define WOWSERVER_COMMON_H
 
-/* Define this if you're using a big-endian machine */
-#ifndef WIN32
-#if BYTE_ORDER == BIG_ENDIAN
-#define USING_BIG_ENDIAN 1
-#include <machine/byte_order.h>
-#define bswap_16(x) NXSwapShort(x)
-#define bswap_32(x) NXSwapInt(x)
-#define bswap_64(x) NXSwapLongLong(x)
-#endif
-#endif
-
 #ifdef WIN32
 #pragma warning(disable:4996)
 #endif
@@ -51,6 +40,19 @@ enum MsTimeVariables
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
+#endif
+
+/* Define this if you're using a big-endian machine */
+#ifndef WIN32
+#ifdef HAVE_DARWIN
+#if BYTE_ORDER == BIG_ENDIAN
+#define USING_BIG_ENDIAN 1
+#include <machine/byte_order.h>
+#define bswap_16(x) NXSwapShort(x)
+#define bswap_32(x) NXSwapInt(x)
+#define bswap_64(x) NXSwapLongLong(x)
+#endif
+#endif
 #endif
 
 #include <stdio.h>
