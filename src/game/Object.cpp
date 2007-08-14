@@ -1040,11 +1040,16 @@ void Object::ModFloatValue(const uint32 index, const float value )
 void Object::SetUInt64Value( const uint32 index, const uint64 value )
 {
 	assert( index + 1 < m_valuesCount );
+#ifndef USING_BIG_ENDIAN
 	if(m_uint32Values[index] == GUID_LOPART(value) && m_uint32Values[index+1] == GUID_HIPART(value))
 		return;
 
 	m_uint32Values[ index ] = *((uint32*)&value);
 	m_uint32Values[ index + 1 ] = *(((uint32*)&value) + 1);
+#else
+	m_uint32Values[index+1] = value & 0xffffffff;
+	m_uint32Values[index] = (value >> 32) & 0xffffffff;
+#endif
 
 	if(IsInWorld())
 	{

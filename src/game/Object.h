@@ -193,7 +193,12 @@ public:
 	inline const uint64& GetUInt64Value( uint32 index ) const
 	{
 		ASSERT( index + uint32(1) < m_valuesCount );
+#ifdef USING_BIG_ENDIAN
+		/* these have to be swapped here :< */
+		return uint64((uint64(m_uint32Values[index]) << 32) | m_uint32Values[1]);
+#else
 		return *((uint64*)&(m_uint32Values[ index ]));
+#endif
 	}
 
 	//! Get float property
