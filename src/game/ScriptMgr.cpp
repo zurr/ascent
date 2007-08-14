@@ -156,6 +156,9 @@ char *ext;
 
 void ScriptMgr::UnloadScripts()
 {
+	if(HookInterface::getSingletonPtr())
+		delete HookInterface::getSingletonPtr();
+
 	LibraryHandleMap::iterator itr = _handles.begin();
 	for(; itr != _handles.end(); ++itr)
 	{

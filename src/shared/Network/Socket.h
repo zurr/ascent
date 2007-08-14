@@ -318,6 +318,13 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 	map<Socket*, time_t> deletionQueue;
 	Mutex lock;
 public:
+	~SocketGarbageCollector()
+	{
+		map<Socket*, time_t>::iterator i;
+		for(i=deletionQueue.begin();i!=deletionQueue.end();++i)
+			delete i->first;
+	}
+
 	void Update()
 	{
 		map<Socket*, time_t>::iterator i, i2;

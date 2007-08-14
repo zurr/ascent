@@ -104,6 +104,13 @@ MapMgr::~MapMgr()
 		}
 	}
 
+	for(set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+	{
+		if((*itr)->IsInWorld())
+			(*itr)->RemoveFromWorld();
+		delete (*itr);
+	}
+
 	sLog.outString("	Instance %d deleted (MapId: %u)" , m_instanceID, _mapId);
 	sLog.outString("	Instance closed successfully.");
 

@@ -88,6 +88,11 @@ Map::~Map()
 			}
 		}
 	}
+
+	for(CreatureSpawnList::iterator i = staticSpawns.CreatureSpawns.begin(); i != staticSpawns.CreatureSpawns.end(); ++i)
+		delete *i;
+	for(GOSpawnList::iterator i = staticSpawns.GOSpawns.begin(); i != staticSpawns.GOSpawns.end(); ++i)
+		delete *i;
 }
 
 MapMgr * Map::GetInstance(uint32 instanceId)

@@ -79,9 +79,8 @@ void Socket::_OnConnect()
 #ifdef CONFIG_USE_IOCP
 	AssignToCompletionPort();
 	SetupReadEvent();
-#else
-	sSocketMgr.AddSocket(this);
 #endif
+	sSocketMgr.AddSocket(this);
 
 	// Call virtual onconnect
 	OnConnect();
@@ -181,9 +180,7 @@ void Socket::Disconnect()
 	m_connected = false;
 
 	// remove from mgr
-#ifndef CONFIG_USE_IOCP
 	sSocketMgr.RemoveSocket(this);
-#endif
 
 	SocketOps::CloseSocket(m_fd);
 

@@ -162,6 +162,7 @@ void CommandTableStorage::Dealloc()
 	free( _petCommandTable );
 	free( _recallCommandTable );
 	free( _honorCommandTable );
+	free(_commandTable);
 }
 
 void CommandTableStorage::Init()
