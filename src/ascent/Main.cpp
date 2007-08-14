@@ -53,8 +53,8 @@ int main(int argc, char ** argv)
 	// Activate Crash Handler
 	StartCrashHandler();
 
-	/*THREAD_TRY_EXECUTION
-	{*/
+	THREAD_TRY_EXECUTION
+	{
 #endif
 		if(!sMaster.Run(argc, argv))
 		{
@@ -63,8 +63,8 @@ int main(int argc, char ** argv)
 			sLog.outString("Server exited without failure. Hit any key to close this window.");
 		}
 #ifdef WIN32
-	/*}
-	THREAD_HANDLE_CRASH;*/
+	}
+	THREAD_HANDLE_CRASH;
 #endif
 
 	exit(0);
