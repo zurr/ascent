@@ -579,7 +579,7 @@ inline void reverse_array(uint8 * pointer, size_t count)
 	uint8 * temp = (uint8*)malloc(count);
 	memcpy(temp, pointer, count);
 	for(size_t x = 0; x < count; ++x)
-		pointer[x] = temp[count-x];
+		pointer[x] = temp[count-x-1];
 	free(temp);
 }
 

@@ -85,6 +85,7 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 			// added to catch an assertion failure at Player::LoadFromDB function.
 			plr->LoadFromDB_Light( fields, guid );
 			sLog.outDebug("Loaded char guid "I64FMTD" [%s] from account %d for enum build.",guid,plr->GetName(), GetAccountId());
+			printf("Guid: "I64FMT"\n", plr->GetGUID());
 			plr->BuildEnumData( &data );
 			_side|=(plr->GetTeam()+1);
 
@@ -418,10 +419,13 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	if(!plr->LoadFromDB(playerGuid))
 	{
 		// kick em.
-		sCheatLog.writefromsession(this, "Tried to log in with invalid player guid %u.", playerGuid);
-		Disconnect();
+		//sCheatLog.writefromsession(this, "Tried to log in with invalid player guid %u.", playerGuid);
+		//Disconnect();
 		plr->ok_to_remove = true;
 		delete plr;
+                uint8 respons = CHAR_LOGIN_NO_CHARACTER;
+                OutPacket(SMSG_CHARACTER_LOGIN_FAILED, 1, &respons);
+
 		return false;
 	}
 

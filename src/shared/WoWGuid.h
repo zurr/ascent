@@ -200,9 +200,6 @@ private:
 				j++;
 			}
 		compiled = true;
-#ifdef USING_BIG_ENDIAN
-		oldguid = swap64(oldguid);
-#endif
 	}
 
 
