@@ -396,6 +396,7 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	sLog.outDebug( "WORLD: Recvd Player Logon Message" );
 
 	recv_data >> playerGuid; // this is the GUID selected by the player
+	printf("%u "I64FMT"\n", (uint32)playerGuid, playerGuid);
 	PlayerLogin((uint32)playerGuid, 0, 0);
 }
 
@@ -414,7 +415,7 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	plr->SetSession(this);
 	m_bIsWLevelSet = false;
 
-	if(!plr->LoadFromDB(GUID_LOPART(playerGuid)))
+	if(!plr->LoadFromDB(playerGuid))
 	{
 		// kick em.
 		sCheatLog.writefromsession(this, "Tried to log in with invalid player guid %u.", playerGuid);

@@ -19,15 +19,13 @@
 #define WOWSERVER_COMMON_H
 
 /* Define this if you're using a big-endian machine */
-#ifdef BYTE_ORDER
+#ifndef WIN32
 #if BYTE_ORDER == BIG_ENDIAN
 #define USING_BIG_ENDIAN 1
-#ifdef HAVE_BYTESWAP_H
-#include <byteswap.h>
-#endif
-#ifdef HAVE_SYS_ENDIAN_H
-#include <sys/endian.h>
-#endif
+#include <machine/byte_order.h>
+#define bswap_16(x) NXSwapShort(x)
+#define bswap_32(x) NXSwapInt(x)
+#define bswap_64(x) NXSwapLongLong(x)
 #endif
 #endif
 
@@ -423,10 +421,17 @@ Scripting system exports/imports
 
 #endif
 
+#ifdef USING_BIG_ENDIAN
+#define GUID_HIPART(x) (*((uint32*)&(x)))
+#define GUID_LOPART(x) (*(((uint32*)&(x))+1))
+#define UINT32_HIPART(x) (*((uint16*)&(x)))
+#define UINT32_LOPART(x) (*(((uint16*)&(x))+1))
+#else
 #define GUID_HIPART(x) (*(((uint32*)&(x))+1))
 #define GUID_LOPART(x) (*((uint32*)&(x)))
 #define UINT32_HIPART(x) (*(((uint16*)&(x))+1))
 #define UINT32_LOPART(x) (*((uint16*)&(x)))
+#endif
 
 #define atol(a) strtoul( a, NULL, 10)
 

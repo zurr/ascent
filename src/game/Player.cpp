@@ -1152,17 +1152,17 @@ void Player::BuildEnumData( WorldPacket * p_data )
 	*p_data << GetGUID();
 	*p_data << m_name;
 	//uint32 bytes = GetUInt32Value(UNIT_FIELD_BYTES_0);
-#ifdef USING_BIG_ENDIAN
-	SetUInt32Value(UNIT_FIELD_BYTES_0, swap32(UNIT_FIELD_BYTES_0));
-#endif
+//#ifdef USING_BIG_ENDIAN
+	//SetUInt32Value(UNIT_FIELD_BYTES_0, swap32(UNIT_FIELD_BYTES_0));
+//#endif
 
 	*p_data << GetByte(UNIT_FIELD_BYTES_0,0);//uint8(bytes & 0xff); // race
 	*p_data << GetByte(UNIT_FIELD_BYTES_0,1);//uint8((bytes >> 8) & 0xff); // class
 	*p_data << GetByte(UNIT_FIELD_BYTES_0,2);//uint8((bytes >> 16) & 0xff); // gender
 
-#ifdef USING_BIG_ENDIAN
-	SetUInt32Value(UNIT_FIELD_BYTES_0, swap32(UNIT_FIELD_BYTES_0));
-#endif
+//#ifdef USING_BIG_ENDIAN
+	//SetUInt32Value(UNIT_FIELD_BYTES_0, swap32(UNIT_FIELD_BYTES_0));
+//#endif
 
 	*p_data << GetUInt32Value(PLAYER_BYTES);
 	/*
