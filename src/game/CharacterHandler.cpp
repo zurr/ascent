@@ -436,7 +436,11 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
 	memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 
+#ifndef USING_BIG_ENDIAN
 	StackWorldPacket<20> datab(CMSG_DUNGEON_DIFFICULTY);
+#else
+	WorldPacket data(CMSG_DUNGEON_DIFFICULTY, 20);
+#endif
 	datab << plr->iInstanceType;
 	datab << uint32(0x01);
 	datab << uint32(0x00);
@@ -476,7 +480,11 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	}
 
 	// account data == UI config
+#ifndef USING_BIG_ENDIAN
 	StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_MD5);
+#else
+	WorldPacket data(SMSG_ACCOUNT_DATA_MD5, 128);
+#endif
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -515,7 +523,11 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 			if(plr->GetMapId() != pTrans->GetMapId())	   // loaded wrong map
 			{
 				plr->SetMapId(pTrans->GetMapId());
+#ifndef USING_BIG_ENDIAN
 				StackWorldPacket<20> dataw(SMSG_NEW_WORLD);
+#else
+				WorldPacket dataw(SMSG_NEW_WORLD, 20);
+#endif
 				dataw << pTrans->GetMapId() << c_tposx << c_tposy << c_tposz << plr->GetOrientation();
 				SendPacket(&dataw);
 

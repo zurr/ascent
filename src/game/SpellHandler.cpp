@@ -214,7 +214,11 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
         if(GetPlayer()->m_currentSpell && GetCastTime(sCastTime.LookupEntry(spellInfo->CastingTimeIndex)))
         {
+#ifndef USING_BIG_ENDIAN
             StackWorldPacket<9> data(SMSG_CAST_RESULT);
+#else
+			WorldPacket data(SMSG_CAST_RESULT, 9);
+#endif
             data << spellInfo->Id;
 		    data << (uint8)SPELL_FAILED_SPELL_IN_PROGRESS;
             _player->GetSession()->SendPacket(&data);

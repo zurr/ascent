@@ -4143,7 +4143,16 @@ void Player::UpdateMaxSkills()
 
 void Player::SendInitialActions()
 {
+#ifndef USING_BIG_ENDIAN
 	m_session->OutPacket(SMSG_ACTION_BUTTONS, 480, &mActions);
+#else
+	/* we can't do this the fast way on ppc, due to endianness */
+	WorldPacket data(SMSG_ACTION_BUTTONS, 480);
+	for(uint32 i = 0; i < 480; ++i)
+	{
+		data << mActions[i].Action << mActions[i].Type << mActions[i].Misc;
+	}
+#endif
 }
 
 void Player::setAction(uint8 button, uint16 action, uint8 type, uint8 misc)
@@ -5375,8 +5384,11 @@ void Player::SendInitialLogonPackets()
 {
 	// Initial Packets... they seem to be re-sent on port.
 	m_session->OutPacket(SMSG_SET_REST_START, 4, &m_timeLogoff);
-
+#ifndef USING_BIG_ENDIAN
 	StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
+#else
+	WorldPacket data(SMSG_BINDPOINTUPDATE, 32);
+#endif
 	data << m_bind_pos_x;
 	data << m_bind_pos_y;
 	data << m_bind_pos_z;

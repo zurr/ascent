@@ -1586,7 +1586,11 @@ void AIInterface::SendMoveToPacket(float toX, float toY, float toZ, float toO, u
 	0x00000100 - Run
 	0x00000300 - Fly
 	*/
+#ifndef USING_BIG_ENDIAN
 	StackWorldPacket<60> data(SMSG_MONSTER_MOVE);
+#else
+	WorldPacket data(SMSG_MONSTER_MOVE, 60);
+#endif
 	data << m_Unit->GetNewGUID();
 	data << m_Unit->GetPositionX() << m_Unit->GetPositionY() << m_Unit->GetPositionZ();
 	data << getMSTime();
