@@ -154,7 +154,12 @@ inline unsigned int FastGUIDPack(const uint64 & oldguid, unsigned char * buffer,
 	uint8 guidmask = 0;
 
 	int j = 1 + pos;
+#ifdef USING_BIG_ENDIAN
+	uint64 t = swap64(oldguid);
+	uint8 * test = (uint8*)&t;
+#else
 	uint8 * test = (uint8*)&oldguid;
+#endif
 
 	if (*test) //7*8
 	{

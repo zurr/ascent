@@ -574,6 +574,15 @@ struct WayPoint
 
 };
 
+inline void reverse_array(uint8 * pointer, size_t count)
+{
+	uint8 * temp = (uint8*)malloc(count);
+	memcpy(temp, pointer, count);
+	for(size_t x = 0; x < count; ++x)
+		pointer[x] = temp[count-x];
+	free(temp);
+}
+
 typedef HM_NAMESPACE::hash_map<uint32, WayPoint*> WayPointMap;
 
 #endif

@@ -428,6 +428,11 @@ public:
 			printf("\n");
 		}
 
+	inline void reverse()
+	{
+		std::reverse(_storage.begin(), _storage.end());
+	}
+
 protected:
 	// read and write positions
 	size_t _rpos, _wpos;
