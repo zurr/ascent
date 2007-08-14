@@ -258,7 +258,7 @@ void CBattlegroundManager::EventQueueUpdate()
 			// Now process the players bound to a specific instance id.
 			m_instanceLock.AcquireReadLock();
 
-			for(it5 = m_queuedPlayers[i][j].begin(); it5 != m_queuedPlayers[i][j].end(); ++it5)
+			for(it5 = m_queuedPlayers[i][j].begin(); it5 != m_queuedPlayers[i][j].end();)
 			{
 				it2 = it5;
 				++it5;
