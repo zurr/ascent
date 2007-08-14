@@ -4152,6 +4152,7 @@ void Player::SendInitialActions()
 	{
 		data << mActions[i].Action << mActions[i].Type << mActions[i].Misc;
 	}
+	m_session->SendPacket(&data);
 #endif
 }
 
@@ -5401,8 +5402,11 @@ void Player::SendInitialLogonPackets()
 	data << (uint8)4;
 	data << armor_proficiency ; 
 	GetSession()->SendPacket(&data);
-
+#ifndef USING_BIG_ENDIAN
 	data.Clear();
+#else
+	data.clear();
+#endif
 	data << (uint8)2;
 	data << weapon_proficiency; 
 	GetSession()->SendPacket(&data);

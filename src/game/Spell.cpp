@@ -1945,7 +1945,7 @@ void Spell::SendCastResult(int16 result)
 #ifndef USING_BIG_ENDIAN
 	StackWorldPacket<9> data(SMSG_CAST_RESULT);
 #else
-	WorldPacket datA(SMSG_CAST_RESULT, 9);
+	WorldPacket data(SMSG_CAST_RESULT, 9);
 #endif
 	if(result != -1)
 		failed = true;

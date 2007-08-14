@@ -1047,8 +1047,8 @@ void Object::SetUInt64Value( const uint32 index, const uint64 value )
 	m_uint32Values[ index ] = *((uint32*)&value);
 	m_uint32Values[ index + 1 ] = *(((uint32*)&value) + 1);
 #else
-	m_uint32Values[index+1] = value & 0xffffffff;
-	m_uint32Values[index] = (value >> 32) & 0xffffffff;
+	m_uint32Values[index] = value & 0xffffffff;
+	m_uint32Values[index+1] = (value >> 32) & 0xffffffff;
 #endif
 
 	if(IsInWorld())

@@ -114,7 +114,11 @@ public:
 	virtual void RemoveFromWorld();
 
 	// guid always comes first
+#ifndef USING_BIG_ENDIAN
 	inline const uint64& GetGUID() const { return *((uint64*)m_uint32Values); }
+#else
+	inline const uint64 GetGUID() const { return GetUInt64Value(0); }
+#endif
 	inline const WoWGuid& GetNewGUID() const { return m_wowGuid; }
 	inline uint32 GetEntry(){return m_uint32Values[3];}
 	
@@ -190,12 +194,16 @@ public:
 	}
 
 	//! Get uint64 property
+#ifdef USING_BIG_ENDIAN
+        __inline const uint64 GetUInt64Value( uint32 index ) const
+#else
 	inline const uint64& GetUInt64Value( uint32 index ) const
+#endif
 	{
 		ASSERT( index + uint32(1) < m_valuesCount );
 #ifdef USING_BIG_ENDIAN
 		/* these have to be swapped here :< */
-		return uint64((uint64(m_uint32Values[index]) << 32) | m_uint32Values[1]);
+		return uint64((uint64(m_uint32Values[index+1]) << 32) | m_uint32Values[index]);
 #else
 		return *((uint64*)&(m_uint32Values[ index ]));
 #endif

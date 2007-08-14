@@ -439,7 +439,7 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 #ifndef USING_BIG_ENDIAN
 	StackWorldPacket<20> datab(CMSG_DUNGEON_DIFFICULTY);
 #else
-	WorldPacket data(CMSG_DUNGEON_DIFFICULTY, 20);
+	WorldPacket datab(CMSG_DUNGEON_DIFFICULTY, 20);
 #endif
 	datab << plr->iInstanceType;
 	datab << uint32(0x01);
@@ -501,7 +501,11 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 		MD5_Update(&ctx, acct_data->data, acct_data->sz);
 		uint8 md5hash[MD5_DIGEST_LENGTH];
 		MD5_Final(md5hash, &ctx);
+#ifndef USING_BIG_ENDIAN
 		data.Write(md5hash, MD5_DIGEST_LENGTH);
+#else
+		data.append(md5hash, MD5_DIGEST_LENGTH);
+#endif
 	}
 	SendPacket(&data);
 
