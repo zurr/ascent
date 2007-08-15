@@ -1167,7 +1167,11 @@ void MapMgr::AddObject(Object *obj)
 
 Unit* MapMgr::GetUnit(const uint64 & guid)
 {
+#ifdef USING_BIG_ENDIAN
+	switch (((uint32*)&guid)[0])
+#else
 	switch (((uint32*)&guid)[1])
+#endif
 	{
 	case	HIGHGUID_PLAYER:
 		return GetPlayer((uint32)guid);
@@ -1185,7 +1189,11 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
 
 Object* MapMgr::_GetObject(const uint64 & guid)
 {
+#ifdef USING_BIG_ENDIAN
+	switch (((uint32*)&guid)[0])
+#else
 	switch (((uint32*)&guid)[1])
+#endif
 	{
 	case	HIGHGUID_GAMEOBJECT:
 		return GetGameObject((uint32)guid);
