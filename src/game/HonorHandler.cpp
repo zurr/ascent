@@ -63,6 +63,9 @@ void HonorHandler::PerformStartupTasks()
 
 int32 HonorHandler::CalculateHonorPointsForKill(Player *pPlayer, Unit* pVictim)
 {
+	if(pVictim->HasActiveAura(2479)) // How dishonorable, you fiend!
+		return 0;
+
 	// this sucks.. ;p
 	if(!pVictim)
 	{
