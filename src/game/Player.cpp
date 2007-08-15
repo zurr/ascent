@@ -6303,6 +6303,9 @@ void Player::ProcessPendingUpdates()
 bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer)
 {
 	uint32 destsize = size + size/10 + 16;
+	int rate = sWorld.getIntRate(INTRATE_COMPRESSION);
+	if(size > 30000)
+		rate = 9;		// max
 
 	// set up stream
 	z_stream stream;
@@ -6310,7 +6313,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
 	stream.zfree  = 0;
 	stream.opaque = 0;
 	
-	if(deflateInit(&stream, sWorld.getIntRate(INTRATE_COMPRESSION)) != Z_OK)
+	if(deflateInit(&stream, rate) != Z_OK)
 	{
 		sLog.outError("deflateInit failed.");
 		return false;
@@ -6482,7 +6485,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
 	AreaTable * at = sAreaStore.LookupEntry(GetAreaID());
 	if(at->category == AREAC_SANCTUARY || at->AreaFlags & AREA_SANCTUARY)
 	{
-		Unit * pUnit = (GetSelection() == 0) ? 0 : (m_mapMgr ? m_mapMgr->GetUnit(GetSelection()));
+		Unit * pUnit = (GetSelection() == 0) ? 0 : (m_mapMgr ? m_mapMgr->GetUnit(GetSelection()) : 0);
 		if(pUnit && DuelingWith != pUnit)
 		{
 			EventAttackStop();
