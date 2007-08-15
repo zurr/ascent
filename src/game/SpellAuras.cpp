@@ -202,9 +202,9 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//missing = 181
 		&Aura::SpellAuraIncreaseArmorByPctInt,//missing = 182 //used //Apply Aura: Increase Armor by % of Intellect //http://www.thottbot.com/?sp=28574  SPELL_AURA_INC_ARMOR_BY_PCT_INT
 		&Aura::SpellAuraNULL,//missing = 183 //used //Apply Aura: Decrease Critical Threat by % (Spells) //http://www.thottbot.com/?sp=28746
-		&Aura::SpellAuraNULL,//missing = 184
-		&Aura::SpellAuraNULL,//missing = 185 //used //Apply Aura: Reduces Attacker Chance to Hit with Ranged //http://www.thottbot.com/?sp=30895
-		&Aura::SpellAuraNULL,//missing = 186 //used //Apply Aura: Reduces Attacker Chance to Hit with Spells (Spells) //http://www.thottbot.com/?sp=30895
+		&Aura::SpellAuraReduceAttackerMHitChance,//184//Apply Aura: Reduces Attacker Chance to Hit with Melee //http://www.thottbot.com/s31678
+		&Aura::SpellAuraReduceAttackerRHitChance,//185//Apply Aura: Reduces Attacker Chance to Hit with Ranged //http://www.thottbot.com/?sp=30895
+		&Aura::SpellAuraReduceAttackerSHitChance,//186//Apply Aura: Reduces Attacker Chance to Hit with Spells (Spells) //http://www.thottbot.com/?sp=30895
 		&Aura::SpellAuraReduceEnemyMCritChance,//missing = 187 //used //Apply Aura: Reduces Attacker Chance to Crit with Melee (Ranged?) //http://www.thottbot.com/?sp=30893
 		&Aura::SpellAuraReduceEnemyRCritChance,//missing = 188 //used //Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?) //http://www.thottbot.com/?sp=30893
 		&Aura::SpellAuraIncreaseRating,//missing = 189 //Apply Aura: Increases Rating
@@ -6134,6 +6134,38 @@ void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
 		}
 	}
 }
+
+void Aura::SpellAuraReduceAttackerMHitChance(bool apply)
+{
+	if (!m_target->IsPlayer())
+		return;
+	if(apply)
+		static_cast<Player*>(m_target)->m_resist_hit[0]+=mod->m_amount;
+	else
+		static_cast<Player*>(m_target)->m_resist_hit[0]-=mod->m_amount;
+}
+
+void Aura::SpellAuraReduceAttackerRHitChance(bool apply)
+{
+	if (!m_target->IsPlayer())
+		return;
+	if(apply)
+		static_cast<Player*>(m_target)->m_resist_hit[1]+=mod->m_amount;
+	else
+		static_cast<Player*>(m_target)->m_resist_hit[1]-=mod->m_amount;
+}
+
+void Aura::SpellAuraReduceAttackerSHitChance(bool apply)
+{
+	if (!m_target->IsPlayer())
+		return;
+	if(apply)
+		static_cast<Player*>(m_target)->m_resist_hit[2]+=mod->m_amount;
+	else
+		static_cast<Player*>(m_target)->m_resist_hit[2]-=mod->m_amount;
+}
+
+
 
 void Aura::SpellAuraReduceEnemyMCritChance(bool apply)
 {

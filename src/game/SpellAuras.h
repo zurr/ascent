@@ -217,6 +217,7 @@ enum MOD_TYPES
 	SPELL_AURA_INCREASE_SPELL_DAMAGE_VS_TYPE = 180,	 // Increase Spell Damage Type
 	SPELL_AURA_INCREASE_ARMOR_BASED_ON_INTELLECT_PCT = 182, // Increase Armor based on Intellect
 	SPELL_AURA_DECREASE_CRIT_THREAT = 183,			  // Decrease Critical Threat by
+	SPELL_AURA_DECREASE_ATTACKER_CHANCE_TO_HIT_MELEE = 184,//Reduces Attacker Chance to Hit with Melee
 	SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_HIT_RANGED = 185,// Reduces Attacker Chance to Hit with Ranged 
 	SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_HIT_SPELLS = 186,// Reduces Attacker Chance to Hit with Spells
 	SPELL_AURA_DECREASE_ATTACKER_CHANGE_TO_CRIT_MELEE = 187,// Reduces Attacker Chance to Crit with Melee (Ranged?)
@@ -515,6 +516,9 @@ public:
 	void SpellAuraIncreaseSpellDamageBySpr(bool apply);
 	void SpellAuraIncreaseHealingBySpr(bool apply);
 	void SpellAuraIncreaseArmorByPctInt(bool apply);
+	void SpellAuraReduceAttackerMHitChance(bool apply);
+	void SpellAuraReduceAttackerRHitChance(bool apply);
+	void SpellAuraReduceAttackerSHitChance(bool apply);
 	void SpellAuraReduceEnemyMCritChance(bool apply);
 	void SpellAuraReduceEnemyRCritChance(bool apply);
 	void SpellAuraIncreaseTimeBetweenAttacksPCT(bool apply);

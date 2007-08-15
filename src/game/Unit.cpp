@@ -1133,14 +1133,11 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 			if(IsPlayer())
 			{
 				float spellHitMod = static_cast<Player*>(this)->GetHitFromSpell();
-				if(resistchance <= spellHitMod)
-					resistchance = 0;
-				else
-					resistchance -= spellHitMod;
+				resistchance -= spellHitMod;
 			}
 		}
-		//something strange. so commit.
-		//resistchance += resistchance*PowerCostPctMod[(*dmg).damage_type];
+		if (pVictim->IsPlayer())
+			resistchance-=static_cast<Player*>(pVictim)->m_resist_hit[2];
 		if (resistchance<1)
 			resistchance=1.0f;
 		if(Rand(resistchance))
@@ -1305,8 +1302,15 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	if(pVictim->IsPlayer())
 	{
 		if((damage_type != RANGED))
+		{
 			crit += static_cast<Player*>(pVictim)->res_M_crit_get();
-		else crit += static_cast<Player*>(pVictim)->res_R_crit_get(); //this could be ability but in that case we overwrite the value
+			hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[0];
+		}
+		else 
+		{
+			crit += static_cast<Player*>(pVictim)->res_R_crit_get(); //this could be ability but in that case we overwrite the value
+			hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[1];
+		}
 	}
 
 //  if we get a negative chance .. we will never use it again
@@ -1316,7 +1320,6 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	float vsk = (self_skill*0.04);
 	dodge -= vsk;
 	parry -= vsk;
-	
 
 	//this is official formula, don't use anything else!
 	float hitchance = 95.0 -(victim_skill-self_skill)*0.04 +hitmodifier;

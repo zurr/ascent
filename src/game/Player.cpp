@@ -329,6 +329,10 @@ Player::Player ( uint32 high, uint32 low )
 	UpdateLastSpeeds();
 
 	m_resist_critical[0]=m_resist_critical[1]=0;
+	for (uint32 x =0;x<3;x++)
+	{
+		m_resist_hit[x]=0;
+	}
 	ok_to_remove = false;
 	trigger_on_stun = 0;
 	trigger_on_stun_chance = 100;
