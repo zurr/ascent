@@ -6475,6 +6475,24 @@ void Player::ZoneUpdate(uint32 ZoneId)
 	m_zoneId = ZoneId;
 	sHookInterface.OnZone(this, ZoneId);
 
+	AreaTable * at = sAreaStore.LookupEntry(GetAreaID());
+	if(at->category == AREAC_SANCTUARY || at->AreaFlags & AREA_SANCTUARY)
+	{
+		Unit * pUnit = (GetSelection() == 0) ? 0 : (m_mapMgr ? m_mapMgr->GetUnit(GetSelection()));
+		if(pUnit && DuelingWith != pUnit)
+		{
+			EventAttackStop();
+			smsg_AttackStop(pUnit);
+		}
+
+		if(m_currentSpell)
+		{
+			Unit * target = m_currentSpell->GetUnitTarget();
+			if(target && target != DuelingWith && target != this)
+				m_currentSpell->cancel();
+		}
+	}
+
 	/*std::map<uint32, AreaTable*>::iterator iter = sWorld.mZoneIDToTable.find(ZoneId);
 	if(iter == sWorld.mZoneIDToTable.end())
 		return;
