@@ -1014,6 +1014,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 			c->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
 			
 			float bonus_damage = c->GetDamageDoneMod(school);
+			bonus_damage += float(m_target->DamageTakenMod[school]);
 			if(c->IsPlayer())
 			{
 				bonus_damage += static_cast<Player*>(c)->SpellDmgDoneByInt[school] * c->GetUInt32Value(UNIT_FIELD_STAT3);
@@ -1026,8 +1027,8 @@ void Aura::EventPeriodicDamage(uint32 amount)
 			if(!amp) 
 				amp=	((EventableObject*)this)->event_GetEventPeriod(EVENT_AURA_PERIODIC_DAMAGE);
 
-			int ticks=GetDuration()/amp;
-			res+=bonus_damage/ticks;
+			int ticks= (amp) ? GetDuration()/amp : 0;
+			res+= (ticks) ? bonus_damage/ticks : 0;
 			
 			if(m_spellProto->SpellGroupType)
 			{
@@ -1041,7 +1042,6 @@ void Aura::EventPeriodicDamage(uint32 amount)
 			else
 			{
 				res *= c->GetDamageDonePctMod(school) * m_target->DamageTakenPctMod[school];
-				res += float(m_target->DamageTakenMod[school]);
 				if(res < 0) res = 0;
 			}
 		}

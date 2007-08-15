@@ -1973,7 +1973,9 @@ bool ChatHandler::HandleMassSummonCommand(const char* args, WorldSession* m_sess
 		plr = itr->second;
 		if(plr->GetSession() && plr->IsInWorld())
 		{
-			plr->SafeTeleport(summoner->GetMapId(), summoner->GetInstanceID(), summoner->GetPosition());
+			//plr->SafeTeleport(summoner->GetMapId(), summoner->GetInstanceID(), summoner->GetPosition());
+			/* let's do this the blizz way */
+			plr->SummonRequest(summoner->GetGUIDLow(), summoner->GetZoneId(), summoner->GetMapId(), summoner->GetInstanceID(), summoner->GetPosition());
 		}
 	}
 	objmgr._playerslock.ReleaseReadLock();
@@ -2016,9 +2018,16 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
 		plr = itr->second;
 		if(plr->GetSession() && plr->IsInWorld())
 		{
-			Spell * sp = new Spell(plr, info, true, 0);
-			SpellCastTargets targets(plr->GetGUID());
-			sp->prepare(&targets);
+			if(plr->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
+			{
+				sEventMgr.AddEvent(((Unit*)plr), &Unit::EventCastSpell, ((Unit*)plr), info, EVENT_PLAYER_CHECKFORCHEATS, 100, 1);
+			}
+			else
+			{
+				Spell * sp = new Spell(plr, info, true, 0);
+				SpellCastTargets targets(plr->GetGUID());
+				sp->prepare(&targets);
+			}
 		}
 	}
 	objmgr._playerslock.ReleaseReadLock();

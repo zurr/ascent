@@ -3916,3 +3916,10 @@ void Unit::GetSpeedDecrease()
 
 	m_speedModifier += m_slowdown;
 }
+
+void Unit::EventCastSpell(Unit * Target, SpellEntry * Sp)
+{
+	Spell * pSpell = new Spell(Target, Sp, true, NULL);
+	SpellCastTargets targets(Target->GetGUID());
+	pSpell->prepare(&targets);
+}
