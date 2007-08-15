@@ -334,6 +334,7 @@ Player::Player ( uint32 high, uint32 low )
 	trigger_on_stun_chance = 100;
 	m_modphyscritdmgPCT = 0;
 	m_RootedCritChanceBonus = 0;
+	m_ModInterrMRegenPCT = 0;
 	m_rap_mod_pct = 0;
 	m_modblockvalue = 0;
 	m_summoner = m_summonInstanceId = m_summonMapId = 0;
@@ -5851,7 +5852,7 @@ void Player::CalcStat(uint32 type)
 	   CalcResistance(0);
 }
 
-void Player::RegenerateMana()
+void Player::RegenerateMana(float RegenPct)
 {
 	const static float ClassMultiplier[12]={
 		0,0,0.2,0.25,0,0.25,0,0.2,0.25,0.2,0,0.2};
@@ -5869,7 +5870,7 @@ void Player::RegenerateMana()
 			amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*PctPowerRegenModifier[POWER_TYPE_MANA];
 
 			//Apply shit from conf file
-			amt *= sWorld.getRate(RATE_POWER1);
+			amt *= sWorld.getRate(RATE_POWER1)*RegenPct;
 
 			//Near values from official
 			// wowwiki says no faster mp while resting, anyways this is wrong it reduces instead of increasing.
@@ -5960,7 +5961,7 @@ void Player::LooseRage()
 	}
 }
 
-void Player::RegenerateEnergy()
+void Player::RegenerateEnergy(float RegenPct)
 {
 	uint32 cur = GetUInt32Value(UNIT_FIELD_POWER4);
 	uint32 mh = GetUInt32Value(UNIT_FIELD_MAXPOWER4);

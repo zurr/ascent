@@ -138,6 +138,7 @@ Unit::Unit()
 	m_attackTimer = 0;
 	m_H_regenTimer = 2000;
 	m_P_regenTimer = 2000;
+	m_P_I_regenTimer = 2000;
 
 
 	//	if(GetTypeId() == TYPEID_PLAYER) //only player for now
@@ -285,9 +286,15 @@ void Unit::Update( uint32 p_time )
 		    m_H_regenTimer -= p_time;
 	    //most of the times the 2 timers will be the same (except on spell casts)
 	    if(p_time >= m_P_regenTimer)
-		    RegeneratePower();	
+		    RegeneratePower(false);	
 	    else
+		{
+			if (p_time >= m_P_I_regenTimer&&this->IsPlayer())
+				RegeneratePower(true);
+			else
+				m_P_I_regenTimer -= p_time;
 		    m_P_regenTimer -= p_time;
+		}
 
 		if(m_aiInterface != NULL && m_useAI)
 			m_aiInterface->Update(p_time);
@@ -1001,10 +1008,11 @@ void Unit::RegenerateHealth()
 	}
 }
 
-void Unit::RegeneratePower()
+void Unit::RegeneratePower(bool isinterrupted)
 {
         // This is only 2000 IF the power is not rage
     m_P_regenTimer = 2000;//set next regen time 
+	m_P_I_regenTimer = 2000;//set next interrupted regen time
 
 	if (!isAlive())
 		return;
@@ -1013,13 +1021,18 @@ void Unit::RegeneratePower()
 	if(this->IsPlayer())
 	{
 		uint32 powertype = GetPowerType();
+		float RegenPct = 1.0f;
 		switch(powertype)
 		{
 		case POWER_TYPE_MANA:
-			static_cast<Player*>(this)->RegenerateMana();
+			if (isinterrupted)
+				RegenPct = static_cast<Player*>(this)->m_ModInterrMRegenPCT/100.0f;
+			static_cast<Player*>(this)->RegenerateMana(RegenPct);
 			break;
 		case POWER_TYPE_ENERGY:
-			static_cast<Player*>(this)->RegenerateEnergy();
+			if (isinterrupted)
+				RegenPct = 0.0f;
+			static_cast<Player*>(this)->RegenerateEnergy(RegenPct);
 			break;
 		}
 		
@@ -1043,7 +1056,7 @@ void Unit::RegeneratePower()
 
 		// druids regen mana when shapeshifted
 		if(getClass() == DRUID && powertype != POWER_TYPE_MANA)
-			static_cast<Player*>(this)->RegenerateMana();
+			static_cast<Player*>(this)->RegenerateMana(RegenPct);
 
 		// These only NOT in combat
 		if(!static_cast<Player*>(this)->isInCombat())
@@ -1052,6 +1065,7 @@ void Unit::RegeneratePower()
 	        if(powertype == POWER_TYPE_RAGE)
 			{
 		        m_P_regenTimer = 3000;
+				m_P_I_regenTimer = 3000;
 		        static_cast<Player*>(this)->LooseRage();
 			}
 		}

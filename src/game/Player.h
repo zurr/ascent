@@ -1048,6 +1048,7 @@ public:
 	float SpellHealDoneBySpr[7];
 	uint32 m_modphyscritdmgPCT;
 	uint32 m_RootedCritChanceBonus;
+	uint32 m_ModInterrMRegenPCT;
 	
 	uint32 FlatStatModPos[5];
 	uint32 FlatStatModNeg[5];
@@ -1071,9 +1072,9 @@ public:
 	void CalcStat(uint32 t);
 	float CalcRating(uint32 t);
 	void RecalcAllRatings();
-	void RegenerateMana();
+	void RegenerateMana(float RegenPct);
 	void RegenerateHealth(bool inCombat);
-	void RegenerateEnergy();
+	void RegenerateEnergy(float RegenPct);
 	void LooseRage();
 	uint32 SoulStone;
 	uint32 SoulStoneReciever;

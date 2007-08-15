@@ -1887,7 +1887,10 @@ void Spell::finish()
 		u_caster->m_canMove = true;
  
 		if(m_usesMana && !failed && u_caster->GetPowerType()==POWER_TYPE_MANA) 
+		{
 			u_caster->setPRegenTimer(5000); /* 5 Seconds */
+			u_caster->setPIRegenTimer(2000);
+		}
 	}
 	/* Mana Regenerates while in combat but not for 5 seconds after each spell */
 	/* Only if the spell uses mana, will it cause a regen delay.
@@ -3932,13 +3935,4 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
-
-
-
-
-
-
-
-
-
 

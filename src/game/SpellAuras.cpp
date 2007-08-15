@@ -5289,8 +5289,13 @@ void Aura::SpellAuraModIncreaseHealthPerc(bool apply)
 
 void Aura::SpellAuraModManaRegInterrupt(bool apply)
 {
-	//make regen always active
-	// allows you to continue %30 of mana regen in combat
+	if (m_target->IsPlayer())
+	{
+		if (apply)
+			static_cast<Player*>(m_target)->m_ModInterrMRegenPCT += mod->m_amount;
+		else
+			static_cast<Player*>(m_target)->m_ModInterrMRegenPCT -= mod->m_amount;
+	}
 }
 
 void Aura::SpellAuraModTotalStatPerc(bool apply)
