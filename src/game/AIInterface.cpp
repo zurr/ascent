@@ -2636,9 +2636,10 @@ AI_Spell *AIInterface::getSpell()
 	AI_Spell * sp;
 	uint32 cast_time;
 	AI_Spell * def_spell = 0;
-	for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+	for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end();)
 	{
         sp = *itr;
+		++itr;
 		if(sp->agent == AGENT_SPELL)
 		{
 			switch(sp->spellType)

@@ -1130,10 +1130,13 @@ void Spell::FillTargetMap(uint32 i)
 			}break;
 		case 53:{// Target Area by Players CurrentSelection()
 			Unit *Target = NULL;
-			if(p_caster)
-				Target = m_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
-			else
-				Target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+			if(m_caster->IsInWorld())
+			{
+				if(p_caster)
+					Target = m_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
+				else
+					Target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+			}
 
 			if(!Target)
 				break;
