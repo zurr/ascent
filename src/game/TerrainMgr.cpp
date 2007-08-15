@@ -114,6 +114,15 @@ bool TerrainMgr::LoadTerrainHeader()
 	if(fread(CellOffsets, TERRAIN_HEADER_SIZE, 1, FileDescriptor) < 1)
 		return false;
 
+#ifdef USING_BIG_ENDIAN
+	uint32 x,y;
+	for(x=0;x<512;++x) {
+		for(y=0;y<512;++y) {
+			CellOffsets[x][y] = swap32(CellOffsets[x][y]);
+		}
+	}
+#endif
+
 	return true;
 
 #else
@@ -201,6 +210,24 @@ bool TerrainMgr::LoadCellInformation(uint32 x, uint32 y)
 
 		// Read from our file into this newly created struct.
 		fread(CellInformation[x][y], sizeof(CellTerrainInformation), 1, FileDescriptor);
+
+#ifdef USING_BIG_ENDIAN
+		uint32 i,j;
+		/* Swap all the data */
+
+		for(i = 0; j < 2; ++j) {
+			for(j = 0; j < 2; ++j) {
+				CellInformation[x][y]->AreaID[i][j] = swap16(CellInformation[x][y]->AreaID[i][j]);
+				CellInformation[x][y]->LiquidLevel = swapfloat(CellInformation[x][y]->LiquidLevel[i][j]);
+			}
+		}
+
+		for(i = 0; i < 32; ++j) {
+			for(j = 0; j < 32; ++j) {
+				CellInformation[x][y]->Z[i][j] = swapfloat(CellInformation[x][y]->Z[i][j]);
+			}
+		}
+#endif
 	}
 #endif
 	// Release the mutex.
