@@ -397,7 +397,6 @@ void WorldSession::HandlePlayerLoginOpcode( WorldPacket & recv_data )
 	sLog.outDebug( "WORLD: Recvd Player Logon Message" );
 
 	recv_data >> playerGuid; // this is the GUID selected by the player
-	printf("%u "I64FMT"\n", (uint32)playerGuid, playerGuid);
 	PlayerLogin((uint32)playerGuid, 0, 0);
 }
 

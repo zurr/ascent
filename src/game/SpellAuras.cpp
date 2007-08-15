@@ -2931,7 +2931,11 @@ void Aura::SpellAuraModShapeshift(bool apply)
 				//m_target->SetUInt32Value(UNIT_FIELD_BASEATTACKTIME,oldap);
 				m_target->SetByte(UNIT_FIELD_BYTES_0,3,POWER_TYPE_MANA);
 				if(m_target->m_stealth)
-					m_target->RemoveAura(m_target->m_stealth);//prowl
+				{
+					uint32 sp = m_target->m_stealth;
+					m_target->m_stealth = 0;
+					m_target->RemoveAura(sp);//prowl
+				}
 			}  
 			((Player*)m_target)->UpdateAttackSpeed();
 
@@ -4126,7 +4130,11 @@ void Aura::SpellAuraMounted(bool apply)
 		return;
 
 	if(m_target->IsStealth())
-		m_target->RemoveAura(m_target->m_stealth);
+	{
+		uint32 id = m_target->m_stealth;
+		m_target->m_stealth = 0;
+		m_target->RemoveAura(id);
+	}
 
 	Player * plr = static_cast<Player*>(m_target);
 	if(apply)

@@ -1508,7 +1508,10 @@ void Spell::cast(bool check)
 			}
 			if(p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_REMAIN_STEALTHED))
 			{
-				p_caster->RemoveAura(p_caster->m_stealth);
+				uint32 stealthid = p_caster->m_stealth;
+				p_caster->m_stealth = 0;
+
+				p_caster->RemoveAura(stealthid);
 			}
 		}
 

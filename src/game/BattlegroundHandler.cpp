@@ -54,7 +54,7 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 
 	/* we should have a bg id selection here. */
 	uint32 t = BATTLEGROUND_WARSUNG_GULCH;
-	BattlegroundManager.HandleBattlegroundListPacket(this, t);
+	//BattlegroundManager.HandleBattlegroundListPacket(this, t);
 }
 
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)
