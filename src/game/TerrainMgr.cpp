@@ -218,7 +218,7 @@ bool TerrainMgr::LoadCellInformation(uint32 x, uint32 y)
 		for(i = 0; j < 2; ++j) {
 			for(j = 0; j < 2; ++j) {
 				CellInformation[x][y]->AreaID[i][j] = swap16(CellInformation[x][y]->AreaID[i][j]);
-				CellInformation[x][y]->LiquidLevel = swapfloat(CellInformation[x][y]->LiquidLevel[i][j]);
+				CellInformation[x][y]->LiquidLevel[i][j] = swapfloat(CellInformation[x][y]->LiquidLevel[i][j]);
 			}
 		}
 
