@@ -5925,6 +5925,8 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 		break;
 
 	case SMT_DUMMY:
+		if(GetSpellProto()->dummy==457) AffectedGroups=1;
+		if(GetSpellProto()->dummy==86) AffectedGroups=256;
 		SendModifierLog(&m_target->SM_FDummy,val,AffectedGroups,mod->m_miscValue);
 		break;
 
