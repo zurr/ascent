@@ -606,6 +606,8 @@ public:
 		Target->SendMessageToSet(&data, true);
 	}
 
+	bool WasCastInDuel() { return m_castInDuel; }
+
 	SpellEntry * m_spellProto;
 	Modifier * mod;
 	AreaAuraList targets;//this is only used for AA
@@ -646,6 +648,7 @@ private:
 	Modifier m_modList[3];
 
 	uint32 m_dynamicValue;
+	bool m_castInDuel;
 
 protected:
 	uint32 m_casterfaction;

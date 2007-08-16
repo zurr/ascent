@@ -6709,11 +6709,26 @@ void Player::EndDuel(uint8 WinCondition)
 	sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_COUNTDOWN);
 	sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
 
+	for(uint32 x = 0; x < MAX_AURAS; ++x)
+	{
+		if(!m_auras[x]) continue;
+		if(m_auras[x]->WasCastInDuel())
+			m_auras[x]->Remove();
+	}
+
 	m_duelState = DUEL_STATE_FINISHED;
 	if(DuelingWith == 0) return;
 
 	sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
 	sEventMgr.RemoveEvents(DuelingWith, EVENT_PLAYER_DUEL_COUNTDOWN);
+
+	for(uint32 x = 0; x < MAX_AURAS; ++x)
+	{
+		if(!DuelingWith->m_auras[x]) continue;
+		if(DuelingWith->m_auras[x]->WasCastInDuel())
+			DuelingWith->m_auras[x]->Remove();
+	}
+
 	DuelingWith->m_duelState = DUEL_STATE_FINISHED;
 
 	//Announce Winner

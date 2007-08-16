@@ -319,6 +319,7 @@ Object * Aura::GetCaster()
 
 Aura::Aura(SpellEntry *proto, int32 duration,Object* caster, Unit *target)
 {
+	m_castInDuel = false;
 	m_spellProto = proto;
 	m_duration   = duration;
 
@@ -328,6 +329,14 @@ Aura::Aura(SpellEntry *proto, int32 duration,Object* caster, Unit *target)
 		p_target = ((Player*)m_target);
 	else
 		p_target = 0;
+
+	if(caster->GetTypeId() == TYPEID_PLAYER && target->GetTypeId() == TYPEID_PLAYER)
+	{
+		if(((Player*)caster)->DuelingWith == ((Player*)target))
+		{
+			m_castInDuel = true;
+		}
+	}
 
 	//SetCasterFaction(caster->_getFaction());
 
