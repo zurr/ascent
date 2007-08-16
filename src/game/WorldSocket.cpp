@@ -39,7 +39,7 @@ struct ServerPktHeader
 };
 #pragma pack(pop)
 
-WorldSocket::WorldSocket(SOCKET fd) : Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE)
+WorldSocket::WorldSocket(SOCKET fd) : Socket(fd, sWorld.SocketSendBufSize, sWorld.SocketRecvBufSize)
 {
 	Authed = false;
 	mSize = mOpcode = mRemaining = 0;
@@ -54,7 +54,9 @@ WorldSocket::WorldSocket(SOCKET fd) : Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLD
 
 WorldSocket::~WorldSocket()
 {
-
+	WorldPacket * pck;
+	while((pck = _queue.Pop()))
+		delete pck;
 }
 
 void WorldSocket::OnDisconnect()
@@ -74,11 +76,74 @@ void WorldSocket::OnDisconnect()
 
 void WorldSocket::OutPacket(uint16 opcode, uint16 len, const void* data)
 {
-	bool rv;
-	if(opcode == 0 || !IsConnected())
+	OUTPACKET_RESULT res = _OutPacket(opcode, len, data);
+	if(res == OUTPACKET_RESULT_SUCCESS)
 		return;
 
+	if(res == OUTPACKET_RESULT_NO_ROOM_IN_BUFFER)
+	{
+		/* queue the packet */
+		queueLock.Acquire();
+		WorldPacket * pck = new WorldPacket(opcode, len);
+		if(len) pck->append((const uint8*)data, len);
+		_queue.Push(pck);
+		queueLock.Release();
+	}
+}
+
+void WorldSocket::UpdateQueuedPackets()
+{
+	queueLock.Acquire();
+	if(!_queue.HasItems())
+	{
+		queueLock.Release();
+		return;
+	}
+
+	WorldPacket * pck;
+	while((pck = _queue.front()))
+	{
+		/* try to push out as many as you can */
+		switch(_OutPacket(pck->GetOpcode(), pck->size(), pck->size() ? pck->contents() : NULL))
+		{
+		case OUTPACKET_RESULT_SUCCESS:
+			{
+				delete pck;
+				_queue.pop_front();
+			}break;
+
+		case OUTPACKET_RESULT_NO_ROOM_IN_BUFFER:
+			{
+				/* still connected */
+				queueLock.Release();
+				return;
+			}break;
+
+		default:
+			{
+				/* kill everything in the buffer */
+				while((pck == _queue.Pop()))
+					delete pck;
+				queueLock.Release();
+				return;
+			}break;
+		}
+	}
+	queueLock.Release();
+}
+
+OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, uint16 len, const void* data)
+{
+	bool rv;
+	if(!IsConnected())
+		return OUTPACKET_RESULT_NOT_CONNECTED;
+
 	BurstBegin();
+	if((m_writeByteCount + len + 4) >= m_writeBufferSize)
+	{
+		BurstEnd();
+		return OUTPACKET_RESULT_NO_ROOM_IN_BUFFER;
+	}
 
 	// Packet logger :)
 	sWorldLog.LogPacket(len, opcode, (const uint8*)data, 1);
@@ -106,6 +171,7 @@ void WorldSocket::OutPacket(uint16 opcode, uint16 len, const void* data)
 
 	if(rv) BurstPush();
 	BurstEnd();
+	return rv ? OUTPACKET_RESULT_SUCCESS : OUTPACKET_RESULT_SOCKET_ERROR;
 }
 
 void WorldSocket::OnConnect()

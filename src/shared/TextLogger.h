@@ -103,6 +103,38 @@ public:
 		return ret;
 	}
 
+	T front()
+	{
+		m_lock.Acquire();
+		if(first == 0)
+		{
+			m_lock.Release();
+			return reinterpret_cast<T>(0);
+		}
+
+		T ret = first->element;
+		m_lock.Release();
+		return ret;
+	}
+
+	void pop_front()
+	{
+		m_lock.Acquire();
+		if(first == 0)
+		{
+			m_lock.Release();
+			return;
+		}
+
+		node * td = first;
+		first = td->next;
+		if(!first)
+			last = 0;
+
+		delete td;
+		m_lock.Release();
+	}
+
 	inline bool HasItems()
 	{
 		bool ret;

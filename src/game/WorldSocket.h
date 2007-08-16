@@ -31,6 +31,14 @@ class WorldPacket;
 class SocketHandler;
 class WorldSession;
 
+enum OUTPACKET_RESULT
+{
+	OUTPACKET_RESULT_SUCCESS = 1,
+	OUTPACKET_RESULT_NO_ROOM_IN_BUFFER = 2,
+	OUTPACKET_RESULT_NOT_CONNECTED = 3,
+	OUTPACKET_RESULT_SOCKET_ERROR = 4,
+};
+
 class WorldSocket : public Socket
 {
 public:
@@ -42,6 +50,7 @@ public:
 	inline void SendPacket(StackBufferBase * packet) { if(!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
 	void __fastcall OutPacket(uint16 opcode, uint16 len, const void* data);
+	OUTPACKET_RESULT __fastcall _OutPacket(uint16 opcode, uint16 len, const void* data);
    
 	inline uint32 GetLatency() { return _latency; }
 
@@ -57,6 +66,8 @@ public:
 	inline void SetSession(WorldSession * session) { mSession = session; }
 	inline WorldSession * GetSession() { return mSession; }
 	bool Authed;
+
+	void UpdateQueuedPackets();
 	
 protected:
 	
@@ -75,6 +86,8 @@ private:
 
 	WorldSession *mSession;
 	WorldPacket * pAuthenticationPacket;
+	FastQueue<WorldPacket*, DummyLock> _queue;
+	Mutex queueLock;
 
 	WowCrypt _crypt;
 	uint32 _latency;

@@ -168,9 +168,6 @@ public:
 			_socket->OutPacket(opcode, 0, NULL);
 	}
 
-	bool SendThrottledPacket(WorldPacket * packet, bool allocated);
-	void UpdateThrottledPackets();
-
 	uint32 m_currMsTime;
 	uint32 m_lastPing;
 
@@ -649,7 +646,6 @@ private:
 	AccountDataEntry sAccountData[8];
 
 	FastQueue<WorldPacket*, Mutex> _recvQueue;
-	FastQueue<WorldPacket*, Mutex> _throttledQueue;
 	char *permissions;
 	int permissioncount;
 
@@ -657,11 +653,9 @@ private:
 	uint32 _latency;
 	uint32 client_build;
 	uint32 instanceId;
+	uint8 _updatecount;
 public:
 	static void InitPacketHandlerTable();
-
-	time_t packetThrottleTimeout;
-	uint32 packetThrottleCount;
 	uint32 floodLines;
 	uint32 floodTime;
 };

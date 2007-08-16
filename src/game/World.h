@@ -449,6 +449,8 @@ public:
 	void EventDeleteBattleground(Battleground * BG);
 	uint32 mInWorldPlayerCount;
 	uint32 mAcceptedConnections;
+	uint32 SocketSendBufSize;
+	uint32 SocketRecvBufSize;
 
 	inline void AddExtendedSession(WorldSession * session) { mExtendedSessions.insert(session); }
 	inline void RemoveExtendedSession(WorldSession * session) { mExtendedSessions.erase(session); }

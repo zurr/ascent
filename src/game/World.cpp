@@ -43,6 +43,8 @@ World::World()
 	HordePlayers = 0;
 	AlliancePlayers = 0;
 	gm_skip_attunement = false;
+	SocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
+	SocketRecvBufSize = WORLDSOCKET_RECVBUF_SIZE;
 }
 
 World::~World()
@@ -1979,6 +1981,8 @@ void World::Rehash(bool load)
 	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "Screen", 1));
 	sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", -1));
 	gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
+	SocketRecvBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "RecvBufSize", WORLDSOCKET_RECVBUF_SIZE);
+	SocketSendBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "SendBufSize", WORLDSOCKET_SENDBUF_SIZE);
 
 	bool log_enabled = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
 	if(Anticheat_Log->IsOpen())

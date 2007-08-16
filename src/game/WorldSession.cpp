@@ -26,7 +26,7 @@
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
 WorldSession::WorldSession(uint32 id, string Name, WorldSocket *sock) : _player(0), _socket(sock), _accountId(id), _accountName(Name),
-_logoutTime(0), permissions(NULL), permissioncount(0), _loggingOut(false), instanceId(0), packetThrottleTimeout(0), packetThrottleCount(0)
+_logoutTime(0), permissions(NULL), permissioncount(0), _loggingOut(false), instanceId(0)
 {
 	memset(movement_packet, 0, sizeof(movement_packet));
 	m_currMsTime = getMSTime();
@@ -34,6 +34,7 @@ _logoutTime(0), permissions(NULL), permissioncount(0), _loggingOut(false), insta
 	m_bIsWLevelSet = false;
 	floodLines = 0;
 	floodTime = World::UNIXTIME;
+	_updatecount = 0;
 
 	for(uint32 x=0;x<8;x++)
 		sAccountData[x].data=NULL;	
@@ -61,9 +62,6 @@ WorldSession::~WorldSession()
 	WorldPacket *packet;
 
 	while((packet = _recvQueue.Pop()))
-		delete packet;
-
-	while((packet = _throttledQueue.Pop()))
 		delete packet;
 
 	for(uint32 x=0;x<8;x++)
@@ -190,7 +188,9 @@ int WorldSession::Update(uint32 InstanceID)
 	}
 
 	// 0 - OK!
-	/*UpdateThrottledPackets();*/
+	if(!((++_updatecount) % 2) && _socket)
+		_socket->UpdateQueuedPackets();
+		
 	return 0;
 }
 
@@ -874,49 +874,6 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
 
 	AddLine(out);
 	va_end(ap);
-}
-
-bool WorldSession::SendThrottledPacket(WorldPacket * packet, bool allocated)
-{
-	if(World::UNIXTIME < packetThrottleTimeout)
-	{
-		if(allocated)
-			_throttledQueue.Push(packet);
-		else
-			_throttledQueue.Push(new WorldPacket(*packet));
-
-		return false;
-	}
-
-	if(++packetThrottleCount > 15)
-	{
-		// 2 second delay between throttles
-		packetThrottleTimeout = World::UNIXTIME + 3;
-	}
-
-	SendPacket(packet);
-	return true;
-}
-
-void WorldSession::UpdateThrottledPackets()
-{
-	if(packetThrottleTimeout)
-	{
-		if(World::UNIXTIME < packetThrottleTimeout)
-			return;
-		else
-		{
-			packetThrottleCount = 0;
-			packetThrottleTimeout = 0;
-		}
-	}
-
-	WorldPacket * pck;
-	while((pck = _throttledQueue.Pop()))
-	{
-		SendPacket(pck);
-		delete pck;
-	}
 }
 
 #ifdef CLUSTERING

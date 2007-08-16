@@ -99,7 +99,7 @@ public:
 
 	inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 
-private:
+protected:
 
 	// Called when connection is opened.
 	void _OnConnect();
