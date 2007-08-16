@@ -3885,6 +3885,10 @@ uint32 GetDiminishingGroup(uint32 NameHash)
 		break;
 
 	case 0x2266F1F2:		// Polymorph
+	case 0xB15D524E:		// Chicken
+	case 0xA73086F1:		// Pig
+	case 0x0128F8E9:		// Turtle
+	case 0xBD6B76DC:		// Good ol' sheep
 		{
 			grp = 10;
 			pve = true;   
