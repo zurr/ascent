@@ -470,7 +470,7 @@ void WorldSession::HandleAuctionSellItem( WorldPacket & recv_data )
 	// Re-save item without its owner.
 	pItem->RemoveFromWorld();
 	pItem->SetOwner(0);
-	pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0);
+	pItem->SaveToDB(INVENTORY_SLOT_NOT_SET, 0,true);
 
 	// Create auction structure.
 	Auction * auct = new Auction;
