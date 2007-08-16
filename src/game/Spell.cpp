@@ -3773,16 +3773,26 @@ void ApplyDiminishingReturnTimer(uint32 * Duration, Unit * Target, SpellEntry * 
 	switch(Target->m_diminishCount[Grp])
 	{
 	case 0: // Full effect
+		if (Target->IsPlayer() && Dur > 10000)
+		{
+			Dur = 10000;
+		}
 		break;
 		
 	case 1: // Reduced by 50%
 		Dur *= 0.5f;
+		if (Target->IsPlayer() && Dur > 5000)
+		{
+			Dur = 5000;
+		}
 		break;
 
-		// TODO Guess what reducing something with 75% is not * 0.15 its * 0.25
 	case 2: // Reduced by 75%
-		//Dur *= 0.15f;
 		Dur *= 0.25f;
+		if (Target->IsPlayer() && Dur > 2500)
+		{
+			Dur = 2500;
+		}
 		break;
 
 	default:// Target immune to spell
