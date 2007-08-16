@@ -173,7 +173,8 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 		data << pSpell->RequiredSkillLineValue;
 		data << pSpell->RequiredSpell;
 
-		data << Spacer << Spacer;
+		data << Spacer;//this is like a spell owerride or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
+		data << Spacer;
 	}
 
 	string Text = pTrainer->TalkMessage;

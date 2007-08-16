@@ -363,7 +363,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 		float dist = m_caster->CalcDistance(unitTarget);
 		float time = ((dist*1000.0)/m_spellInfo->speed);
 		if(time <= 100)
-			m_caster->SpellNonMeleeDamageLog(unitTarget,m_spellInfo->Id, dmg, true);
+			m_caster->SpellNonMeleeDamageLog(unitTarget,m_spellInfo->Id, dmg, pSpellId==0);
 		else
 		{
 			damageToHit = dmg;
@@ -378,12 +378,12 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 		uint32 dmg_type = GetType();
 		if(dmg_type == SPELL_TYPE_MAGIC)		
 		{
-			m_caster->SpellNonMeleeDamageLog(unitTarget,m_spellInfo->Id, dmg, true);
+			m_caster->SpellNonMeleeDamageLog(unitTarget,m_spellInfo->Id, dmg, pSpellId==0);
 		}
 		else 
 		{
 			if(u_caster)
-				u_caster->Strike(unitTarget,dmg_type,m_spellInfo,0,0,dmg, false);
+				u_caster->Strike(unitTarget,dmg_type,m_spellInfo,0,0,dmg, pSpellId==0);
 		}
 	}   
 }
@@ -942,70 +942,16 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			//FIXME:Cure a sickly animal afflicted by the taint of poisoning
 		}break;
 	case 20473://holy shock r1 
+	case 20929://holy shock rank2
+	case 20930:
+	case 27174:
+	case 33072:
 		{/*Blasts the target with Holy energy, causing $25912s1 Holy damage to an enemy, or $25914s1 healing to an ally." */
 			uint32 sp;
 			if(isAttackable(unitTarget,u_caster))
-				sp=25912;
+				sp=m_spellInfo->EffectTriggerSpell[0];
 			else
-				sp=25914;
-			SpellCastTargets tgt;
-			tgt.m_unitTarget = unitTarget->GetGUID();
-			SpellEntry  * inf =sSpellStore.LookupEntry(sp);
-			Spell * spe = new Spell(u_caster,inf,true,NULL);
-			spe->prepare(&tgt);
-		}break;
-	case 20929://holy shock rank2
-		{
-			uint32 sp;
-			if(isAttackable(unitTarget,u_caster))
-				sp=25911;
-			else
-				sp=25913;
-			SpellCastTargets tgt;
-			tgt.m_unitTarget = unitTarget->GetGUID();
-			SpellEntry  * inf =sSpellStore.LookupEntry(sp);
-			Spell * spe = new Spell(u_caster,inf,true,NULL);
-			spe->prepare(&tgt);
-		}break;
-	case 20930:
-		{
-			uint32 sp;
-			if(isAttackable(unitTarget,u_caster))
-				sp=25902;
-			else
-				sp=25903;
-			SpellCastTargets tgt;
-			tgt.m_unitTarget = unitTarget->GetGUID();
-			SpellEntry  * inf =sSpellStore.LookupEntry(sp);
-			Spell * spe = new Spell(u_caster,inf,true,NULL);
-			spe->prepare(&tgt);
-		}break;
-	case 27174:
-		{
-			if(!u_caster || !unitTarget)
-				return;
-
-			uint32 sp;
-			if(isAttackable(unitTarget,u_caster))
-				sp=27176;
-			else
-				sp=27175;
-			SpellCastTargets tgt;
-			tgt.m_unitTarget = unitTarget->GetGUID();
-			SpellEntry  * inf =sSpellStore.LookupEntry(sp);
-			Spell * spe = new Spell(u_caster,inf,true,NULL);
-			spe->prepare(&tgt);
-		}break;
-	case 33072:
-			{
-				if(!u_caster || !unitTarget)
-					return;
-
-			uint32 sp;
-			if(isAttackable(unitTarget,u_caster))
-				sp=33073;
-			else
-				sp=33074;
+				sp=m_spellInfo->EffectTriggerSpell[1];
 			SpellCastTargets tgt;
 			tgt.m_unitTarget = unitTarget->GetGUID();
 			SpellEntry  * inf =sSpellStore.LookupEntry(sp);
@@ -2716,7 +2662,15 @@ void Spell::SpellEffectDistract(uint32 i) // Distract
 		return;
 
 	if(m_targets.m_destX != 0.0f || m_targets.m_destY != 0.0f || m_targets.m_destZ != 0.0f)
-		unitTarget->GetAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
+	{
+//		unitTarget->GetAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
+		uint32 Stare_duration=GetDuration();
+		if(Stare_duration>30*60*1000)
+			Stare_duration=10000;//if we try to stare for more then a half an hour then better not stare at all :P (bug)
+		float newo=unitTarget->calcAngle(unitTarget->GetPositionX(),unitTarget->GetPositionY(),m_targets.m_destX,m_targets.m_destY);
+		unitTarget->GetAIInterface()->StopMovement(Stare_duration);
+		unitTarget->SetFacing(newo);
+	}
 
 	//Smoke Emitter 164870
 	//Smoke Emitter Big 179066

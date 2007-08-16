@@ -785,7 +785,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 							{
 								if(!CastingSpell)
 									continue;//this should not ocur unless we made a fuckup somewhere
-								if(CastingSpell->School!=SCHOOL_SHADOW || victim==this) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
+								if(CastingSpell->School!=SCHOOL_SHADOW || !IsDamagingSpell(CastingSpell)) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
 									continue;
 							}break;
 						//shaman - windfurry weapon
@@ -803,7 +803,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								uint32 AP_owerride=GetAP() + spellInfo->EffectBasePoints[0]+1;
 								float dmg = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
 								SpellEntry *sp_for_the_logs = sSpellStore.LookupEntry(spellId);
-								Strike(victim,NORMAL_DAMAGE,sp_for_the_logs,2*dmg,0,0,true);
+								Strike(victim,NORMAL_DAMAGE,sp_for_the_logs,dmg,0,0,true);
+								Strike(victim,NORMAL_DAMAGE,sp_for_the_logs,dmg,0,0,true);
 								//nothing else to be done for this trigger
 								continue;
 							}break;
@@ -823,6 +824,14 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 									proc_Chance = static_cast<Player*>(this)->m_comboPoints*ospinfo->EffectBasePoints[1];
 								else continue;
 								if(!Rand(proc_Chance))
+									continue;
+							}break;
+						//Blackout
+						case 15269:
+							{
+								if(!CastingSpell)
+									continue;//this should not ocur unless we made a fuckup somewhere
+								if(CastingSpell->School!=SCHOOL_SHADOW && !IsDamagingSpell(CastingSpell))
 									continue;
 							}break;
 /*						//paladin - illumination
@@ -2058,7 +2067,7 @@ void Unit::AddAura(Aura *aur)
 	// Reaction from enemy AI
 	if(GetTypeId() == TYPEID_UNIT && !aur->IsPositive())	  // Creature
 	{
-		if(isAlive() && aur->m_spellProto->NameHash!=4287212498) //no threat for hunter's mark
+		if(isAlive() && CanAgroHash(aur->m_spellProto->NameHash)) //no threat for hunter's mark
 		{
 			Unit * pCaster = aur->GetUnitCaster();
 			if(!pCaster) return;
@@ -3923,15 +3932,23 @@ int32 Unit::GetRAP()
 	return	0;
 }
 
-void Unit::GetSpeedDecrease()
+bool Unit::GetSpeedDecrease()
 {
+	int32 before=m_speedModifier;
 	m_speedModifier -= m_slowdown;
 	m_slowdown = 0;
-	map< uint32, pair<SpellEntry*, uint32> >::iterator itr = speedReductionMap.begin();
+	map< uint32, int32 >::iterator itr = speedReductionMap.begin();
 	for(; itr != speedReductionMap.end(); ++itr)
-		m_slowdown = min(m_slowdown, (itr->second.first->EffectBasePoints[itr->second.second] + 1));
+		m_slowdown = min(m_slowdown, itr->second);
+
+	if(m_slowdown<-100)
+		m_slowdown = 100; //do not walk backwards !
 
 	m_speedModifier += m_slowdown;
+	//save bandwidth :P
+	if(m_speedModifier!=before)
+		return true;
+	return false;
 }
 
 void Unit::EventCastSpell(Unit * Target, SpellEntry * Sp)
@@ -3939,4 +3956,17 @@ void Unit::EventCastSpell(Unit * Target, SpellEntry * Sp)
 	Spell * pSpell = new Spell(Target, Sp, true, NULL);
 	SpellCastTargets targets(Target->GetGUID());
 	pSpell->prepare(&targets);
+}
+
+void Unit::SetFacing(float newo)
+{
+	SetOrientation(newo);
+	WorldPacket data(40);
+	data.SetOpcode(MSG_MOVE_SET_FACING);
+	data << GetNewGUID();
+	data << (uint32)0; //flags
+	data << (uint32)0; //time
+	data << GetPositionX() << GetPositionY() << GetPositionZ() << newo;
+	data << (uint32)0; //unk
+	SendMessageToSet( &data, false );
 }

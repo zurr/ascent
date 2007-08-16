@@ -51,6 +51,10 @@ SMT_RESIST_DISPEL - check if it is used
 ==========================================================================
 Zack - test my shit :
 
+ - touch of weakness
+ - blackout
+ - troll berserking
+
 ==========================================================================
 
 maybe later :P

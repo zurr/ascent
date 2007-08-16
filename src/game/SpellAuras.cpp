@@ -1633,6 +1633,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 			m_target->SetFlag(UNIT_FIELD_FLAGS, 0x04);
 			m_target->setAItoUse(true);
 		}
+		m_target->m_pacified++;
 		m_target->GetAIInterface()->HandleEvent(EVENT_WANDER, m_target, 0); 
 	}
 	else
@@ -1644,6 +1645,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 			m_target->GetAIInterface()->StopMovement(1);
 			m_target->setAItoUse(false);
 		}
+		m_target->m_pacified--;
 		m_target->GetAIInterface()->HandleEvent(EVENT_UNWANDER, m_target, 0);
 		//somebody made us dizzy. It's paybacktime
 		Unit *m_caster = GetUnitCaster();
@@ -2814,20 +2816,20 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 			if(caster->IsPlayer() && m_target)
 				static_cast<Player*>(caster)->EventStunOrImmobilize(m_target);
 		}
-		m_target->speedReductionMap.insert(make_pair(m_spellProto->Id, make_pair(m_spellProto,mod->i)));
+		m_target->speedReductionMap.insert(make_pair(m_spellProto->Id, mod->m_amount));
 		//m_target->m_slowdown=this;
 		//m_target->m_speedModifier += mod->m_amount;
 	}
 	else
 	{
-		map< uint32, pair<SpellEntry*, uint32> >::iterator itr = m_target->speedReductionMap.find(m_spellProto->Id);
+		map< uint32, int32 >::iterator itr = m_target->speedReductionMap.find(m_spellProto->Id);
 		if(itr != m_target->speedReductionMap.end())
 			m_target->speedReductionMap.erase(itr);
 		//m_target->m_speedModifier -= mod->m_amount;
 		//m_target->m_slowdown=NULL;
 	}
-	m_target->GetSpeedDecrease();
-	m_target->UpdateSpeed();
+	if(m_target->GetSpeedDecrease())
+		m_target->UpdateSpeed();
 
 }
 
@@ -3427,7 +3429,7 @@ void Aura::SpellAuraModBlockPerc(bool apply)
 		else 
 			amt = -mod->m_amount;
 
-		static_cast<Player*>(m_target)->SetBlockFromSpell(static_cast<Player*>(m_target)->GetBlockFromSpell() + amt );
+		static_cast<Player*>(m_target)->SetBlockFromSpellPCT(static_cast<Player*>(m_target)->GetBlockFromSpellPCT() + amt );
 		static_cast<Player*>(m_target)->UpdateChances();
 	}
 }
@@ -5564,7 +5566,7 @@ void Aura::SpellAuraModShieldBlockPCT(bool apply)
 		else 
 			amt = -mod->m_amount;
 
-		static_cast<Player*>(m_target)->SetBlockFromSpellPCT(static_cast<Player*>(m_target)->GetBlockFromSpellPCT() + amt );
+		static_cast<Player*>(m_target)->SetBlockFromSpell(static_cast<Player*>(m_target)->GetBlockFromSpell() + amt );
 		static_cast<Player*>(m_target)->UpdateChances();
 	}
 }

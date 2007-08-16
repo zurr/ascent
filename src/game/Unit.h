@@ -930,8 +930,8 @@ public:
 	// Affect Speed
 	int32 m_speedModifier;
 	int32 m_slowdown;
-	map< uint32, pair<SpellEntry*, uint32> > speedReductionMap;
-	void GetSpeedDecrease();
+	map< uint32, int32 > speedReductionMap;
+	bool GetSpeedDecrease();
 	int32 m_mountedspeedModifier;
 	int32 m_flyspeedModifier;
 	void UpdateSpeed(bool delay = false);
@@ -996,6 +996,8 @@ public:
 	void Root();
 	void Root(uint32 time);
 	void Unroot();
+
+	void SetFacing(float newo);//only working if creature is idle
 
 	void RemoveAurasByBuffType(uint32 buff_type, uint64 guid);
 	bool HasAurasOfBuffType(uint32 buff_type, uint64 guid);

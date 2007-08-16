@@ -867,6 +867,99 @@ enum SpellTypes
 	SPELL_TYPE_FINISHING_MOVE		= 524288, 
 };
 
+
+inline bool CanAgro(uint32 spell_id)
+{
+	return true;
+}
+
+inline bool CanAgroHash(uint32 spellhashname)
+{
+	switch(spellhashname)
+	{
+		case 4287212498: //hunter's mark
+			return false;
+	}
+	return true;
+}
+
+inline bool IsDamagingSpell(SpellEntry *sp)
+{
+	switch (sp->Effect[0])
+	{
+		case SPELL_EFFECT_SCHOOL_DAMAGE:
+		case SPELL_EFFECT_ENVIRONMENTAL_DAMAGE:
+		case SPELL_EFFECT_HEALTH_LEECH:
+		case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+		case SPELL_EFFECT_ADD_EXTRA_ATTACKS:
+		case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+		case SPELL_EFFECT_POWER_BURN:
+		case SPELL_EFFECT_ATTACK:
+			return true;
+	}
+	switch (sp->Effect[1])
+	{
+		case SPELL_EFFECT_SCHOOL_DAMAGE:
+		case SPELL_EFFECT_ENVIRONMENTAL_DAMAGE:
+		case SPELL_EFFECT_HEALTH_LEECH:
+		case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+		case SPELL_EFFECT_ADD_EXTRA_ATTACKS:
+		case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+		case SPELL_EFFECT_POWER_BURN:
+		case SPELL_EFFECT_ATTACK:
+			return true;
+	}
+	switch (sp->Effect[2])
+	{
+		case SPELL_EFFECT_SCHOOL_DAMAGE:
+		case SPELL_EFFECT_ENVIRONMENTAL_DAMAGE:
+		case SPELL_EFFECT_HEALTH_LEECH:
+		case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+		case SPELL_EFFECT_ADD_EXTRA_ATTACKS:
+		case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+		case SPELL_EFFECT_POWER_BURN:
+		case SPELL_EFFECT_ATTACK:
+			return true;
+	}
+	if(	sp->Effect[0]==SPELL_EFFECT_APPLY_AURA ||
+		sp->Effect[0]==SPELL_EFFECT_APPLY_AREA_AURA)
+	{
+		switch (sp->EffectApplyAuraName[0])
+		{
+			case 3://SPELL_AURA_PERIODIC_DAMAGE:
+			case 43://SPELL_AURA_PROC_TRIGGER_DAMAGE:
+			case 89://SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+			case 162://SPELL_AURA_POWER_BURN:
+				return true;
+		}
+	}
+	if(	sp->Effect[1]==SPELL_EFFECT_APPLY_AURA ||
+		sp->Effect[1]==SPELL_EFFECT_APPLY_AREA_AURA)
+	{
+		switch (sp->EffectApplyAuraName[1])
+		{
+			case 3://SPELL_AURA_PERIODIC_DAMAGE:
+			case 43://SPELL_AURA_PROC_TRIGGER_DAMAGE:
+			case 89://SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+			case 162://SPELL_AURA_POWER_BURN:
+				return true;
+		}
+	}
+	if(	sp->Effect[2]==SPELL_EFFECT_APPLY_AURA ||
+		sp->Effect[2]==SPELL_EFFECT_APPLY_AREA_AURA)
+	{
+		switch (sp->EffectApplyAuraName[2])
+		{
+			case 3://SPELL_AURA_PERIODIC_DAMAGE:
+			case 43://SPELL_AURA_PROC_TRIGGER_DAMAGE:
+			case 89://SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+			case 162://SPELL_AURA_POWER_BURN:
+				return true;
+		}
+	}
+	return false;
+}
+
 inline bool IsInrange(float x1,float y1, float z1, Object * o,float square_r)
 {
 	float r = o->GetDistanceSq(x1, y1, z1);

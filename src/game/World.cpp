@@ -1000,6 +1000,34 @@ void World::SetInitialWorldSettings()
 				sp->EffectTriggerSpell[0]=atoi(startofid);
 			}
 		}
+		else if(strstr(nametext, "Holy Shock"))
+		{
+			//check if we can find in the desription
+			char *startofid=strstr(desc, "causing $");
+			if(startofid)
+			{
+				startofid += strlen("causing $");
+				sp->EffectTriggerSpell[0]=atoi(startofid);
+			}
+			//check if we can find in the desription
+			startofid=strstr(desc, " or $");
+			if(startofid)
+			{
+				startofid += strlen(" or $");
+				sp->EffectTriggerSpell[1]=atoi(startofid);
+			}
+		}
+		else if(strstr(nametext, "Touch of Weakness"))
+		{
+			//check if we can find in the desription
+			char *startofid=strstr(desc, "cause $");
+			if(startofid)
+			{
+				startofid += strlen("causing $");
+				sp->EffectTriggerSpell[0]=atoi(startofid);
+				sp->EffectTriggerSpell[1]=sp->EffectTriggerSpell[0]; //later versions of this spell changed to eff[1] the aura
+			}
+		}
 		//some procs trigger at intervals
 		else if(strstr(nametext, "Water Shield"))
 		{
@@ -1295,6 +1323,32 @@ void World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation[1]=128;
 		sp->EffectSpellGroupRelation[2]=128;
 		sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
+	}
+	//Seal of Justice -lowered proc chance (experimental values !)
+	sp = sSpellStore.LookupEntry(20164);
+	if(sp)
+		sp->procChance = 20;
+	sp = sSpellStore.LookupEntry(31895);
+	if(sp)
+		sp->procChance = 20;
+	//make Berserking a simple spell 
+	sp = sSpellStore.LookupEntry(20554);
+	if(sp)
+	{
+		sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 26635;
+	}
+	sp = sSpellStore.LookupEntry(26296);
+	if(sp)
+	{
+		sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 26635;
+	}
+	sp = sSpellStore.LookupEntry(26297);
+	if(sp)
+	{
+		sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 26635;
 	}
 	//winfury weapon changes. Start to hate these day by day
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(283);
