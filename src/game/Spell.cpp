@@ -1579,7 +1579,7 @@ void Spell::cast(bool check)
 					//0 - remove, -1 don't remove otherwise inc count
 					if(cha)
 					{
-						i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,1);
+						i_caster->ModUInt32Value(ITEM_FIELD_SPELL_CHARGES,-1);
 						i_caster->m_isDirty = true;
 						//i_caster->Update ();
 					}
@@ -1596,6 +1596,11 @@ void Spell::cast(bool check)
 						}
 						i_caster=NULL;
 					}
+                    else if(!cha && proto->Class == ITEM_CLASS_QUEST)
+                    {
+                        this->cancel();
+                        return;
+                    }
 				}
 			}
 		}
