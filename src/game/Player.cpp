@@ -2809,6 +2809,22 @@ void Player::LoadFromDB_Light(Field *fields, uint32 guid)
 	// set race dbc
 	myRace = sCharRaceStore.LookupEntry(getRace());
 	myClass = sCharClassStore.LookupEntry(getClass());
+
+    // set race dbc
+	myRace = sCharRaceStore.LookupEntry(getRace());
+	myClass = sCharClassStore.LookupEntry(getClass());
+	if(!myClass || !myRace)
+	{
+		// bad character
+		printf("guid %u failed to login, no race or class dbc found. (race %u class %u)\n", (unsigned int)guid, (unsigned int)getRace(), (unsigned int)getClass());
+		return;
+	}
+
+	if(myRace->team_id == 7)
+		m_team = 0;
+	else
+		m_team = 1;
+
 	rename_pending = get_next_field.GetBool();
 #undef get_next_field
 }
