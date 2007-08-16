@@ -4313,7 +4313,7 @@ void Player::UpdateChances()
 	tmp+=CalcRating(2);//dodge rating
 	SetFloatValue(PLAYER_DODGE_PERCENTAGE,min(tmp,95.0));
 
-	tmp = 5.0f + GetUInt32Value(UNIT_FIELD_STAT0) / 22.0 + this->GetBlockFromSpellPCT();
+	tmp = 5.0f + GetUInt32Value(UNIT_FIELD_STAT0) / 22.0 + this->GetBlockFromSpell();
 	tmp+=CalcRating(4);//block rating
 	SetFloatValue(PLAYER_BLOCK_PERCENTAGE,min(tmp,95.0));
 
