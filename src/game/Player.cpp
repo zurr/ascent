@@ -6201,6 +6201,13 @@ void Player::PushUpdateData(ByteBuffer *data, uint32 updatecount)
 	// imagine the bytebuffer getting appended from 2 threads at once! :D
 	_bufferS.Acquire();
 
+	/* this is a safe barrier. */
+	if(bUpdateBuffer.size() >= 40000)
+	{
+        /* force an update to push out our pending data */
+		ProcessPendingUpdates();
+	}
+
 	mUpdateCount += updatecount;
 	bUpdateBuffer.append(*data);
 
