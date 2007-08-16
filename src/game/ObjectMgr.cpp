@@ -1141,6 +1141,9 @@ Item * ObjectMgr::LoadItem(uint64 guid)
 	if(result)
 	{
 		ItemPrototype * pProto = ItemPrototypeStorage.LookupEntry(result->Fetch()[2].GetUInt32());
+		if(!pProto)
+			return NULL;
+
 		if(pProto->InventoryType == INVTYPE_BAG)
 		{
 			Container * pContainer = new Container(HIGHGUID_CONTAINER,guid);
