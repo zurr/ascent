@@ -1990,29 +1990,30 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 
 	if(this->IsUnit())
 	{
-		static_cast<Unit*>(this)->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
+		Unit* caster = (Unit*)(this);
+		caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
 		
-		if(IsPlayer())
+		if(caster->IsPlayer())
 		{
-			res += static_cast<Player*>(this)->SpellDmgDoneByInt[school] * this->GetUInt32Value(UNIT_FIELD_STAT3);
-			res += static_cast<Player*>(this)->SpellDmgDoneBySpr[school] * this->GetUInt32Value(UNIT_FIELD_STAT4);
+			res += static_cast<Player*>(caster)->SpellDmgDoneByInt[school] * caster->GetUInt32Value(UNIT_FIELD_STAT3);
+			res += static_cast<Player*>(caster)->SpellDmgDoneBySpr[school] * caster->GetUInt32Value(UNIT_FIELD_STAT4);
 		}
 		
-		int32 plus_damage = static_cast<Unit*>(this)->GetDamageDoneMod(school);
+		int32 plus_damage = caster->GetDamageDoneMod(school);
 
-		if(((Creature*)pVictim)->GetCreatureName() && IsPlayer()&& !pVictim->IsPlayer())
-			plus_damage += static_cast<Player*>(this)->IncreaseDamageByType[((Creature*)pVictim)->GetCreatureName()->Type];
+		if(((Creature*)pVictim)->GetCreatureName() && caster->IsPlayer()&& !pVictim->IsPlayer())
+			plus_damage += static_cast<Player*>(caster)->IncreaseDamageByType[((Creature*)pVictim)->GetCreatureName()->Type];
 
 
 		int32 bonus_damage = float2int32(plus_damage * dmgdoneaffectperc);
 		if(spellInfo->SpellGroupType)
 		{
-			SM_FIValue(static_cast<Unit*>(this)->SM_FPenalty, &bonus_damage, spellInfo->SpellGroupType);
+			SM_FIValue(caster->SM_FPenalty, &bonus_damage, spellInfo->SpellGroupType);
 			res += bonus_damage;
 
 			int32 ures = (int32)res;
-			SM_FIValue(static_cast<Unit*>(this)->SM_FDamageBonus, &ures, spellInfo->SpellGroupType);
-			SM_PIValue(static_cast<Unit*>(this)->SM_PDamageBonus, &ures, spellInfo->SpellGroupType);
+			SM_FIValue(caster->SM_FDamageBonus, &ures, spellInfo->SpellGroupType);
+			SM_PIValue(caster->SM_PDamageBonus, &ures, spellInfo->SpellGroupType);
 			res = (float)ures;
 		}
 		else
@@ -2025,16 +2026,19 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			res = 0;
 		else
 		{
-			res *= static_cast<Unit*>(this)->GetDamageDonePctMod(school) * pVictim->DamageTakenPctMod[school];
+			res *= caster->GetDamageDonePctMod(school) * pVictim->DamageTakenPctMod[school];
+			if (caster->DamageDoneModPCT[school])
+				res += res*caster->DamageDoneModPCT[school];
+
 			res += float(pVictim->DamageTakenMod[school]);
 			if(res < 0) res = 0;	
-			float CritChance = static_cast<Unit*>(this)->spellcritperc + static_cast<Unit*>(this)->SpellCritChanceSchool[school] + pVictim->AttackerSpellCritChanceMod[school];
+			float CritChance = caster->spellcritperc + caster->SpellCritChanceSchool[school] + pVictim->AttackerSpellCritChanceMod[school];
 
-			if (this->IsPlayer()&&(pVictim->m_rooted-pVictim->m_stunned))	
-				CritChance += static_cast<Player*>(this)->m_RootedCritChanceBonus;
+			if (caster->IsPlayer()&&(pVictim->m_rooted-pVictim->m_stunned))	
+				CritChance += static_cast<Player*>(caster)->m_RootedCritChanceBonus;
 
 			if(spellInfo->SpellGroupType)
-				SM_FFValue(static_cast<Unit*>(this)->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
+				SM_FFValue(caster->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
 
 			critical = Rand(CritChance);
 
@@ -2048,7 +2052,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				float b = res/2;
 
 				if(spellInfo->SpellGroupType)
-					SM_PFValue(static_cast<Unit*>(this)->SM_PCriticalDamage, &b, spellInfo->SpellGroupType);
+					SM_PFValue(caster->SM_PCriticalDamage, &b, spellInfo->SpellGroupType);
 
 				res += b;
 
@@ -2115,6 +2119,14 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		{
 			if(static_cast<Unit*>(this)->isAlive())
 				static_cast<Unit*>(this)->VampiricTouch(float2int32(res), pVictim);
+		}
+		if (pVictim->isAlive()&&this->IsUnit())
+		{
+			if (spellID==32379||spellID==32996)
+			{
+				DealDamage((Unit*)this,float2int32(res),2,0,spellID);
+				SendSpellNonMeleeDamageLog(this,this,spellID,float2int32(res),school,0,0,false,0,false,this->IsPlayer());
+			}
 		}
 	}
 }

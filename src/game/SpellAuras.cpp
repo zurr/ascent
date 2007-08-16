@@ -1051,6 +1051,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 			else
 			{
 				res *= c->GetDamageDonePctMod(school) * m_target->DamageTakenPctMod[school];
+				res += res*c->DamageDoneModPCT[school];
 				if(res < 0) res = 0;
 			}
 		}
@@ -4187,20 +4188,16 @@ void Aura::SpellAuraMounted(bool apply)
 
 void Aura::SpellAuraModDamagePercDone(bool apply)
 {
-	float val;
-	if(apply)
-	{
-		val = mod->m_amount/100.0;
-		if(val<0)
-			SetNegative();
-		else
-			SetPositive();
-	}
-	else
-		val =- mod->m_amount/100.0;
+	printf("MOD: A %d T %d I %d M %d",mod->m_amount,mod->m_type,mod->i,mod->m_miscValue);
+	float val = (apply) ? mod->m_amount/100.0f : -mod->m_amount/100.0f;
+
+/* Shady: Don't know what this does, but it's not good. 
+Cause this aura effects only spells by school or combination of it.
+Don't know why there is any weapon modifiers.
 
 	if(m_target->IsPlayer())
 	{
+
 		//126 == melee,
 		//127 == evrything
 		//else - schools
@@ -4216,7 +4213,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
 				}
 			}
 		}else
-		*/
+		*
 		//if(mod->m_miscValue&1 || mod->m_miscValue == 126)
 		{
 			if(apply)
@@ -4241,7 +4238,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
 						((Player*)m_target)->damagedone.erase(i);
 						break;
 					}
-				}*/
+				}*
 				static_cast<Player*>(m_target)->damagedone.erase(GetSpellId());
 			}
 		}
@@ -4256,8 +4253,24 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
 			}
 		}
 	}
-
 	m_target->CalcDamage();
+*/
+	switch (GetSpellId()) //dirty or mb not fix bug with wand specializations
+	{
+	case 6057:
+	case 6085:
+	case 14524:
+	case 14525:
+	case 14526:
+	case 14527:
+	case 14528:
+		return;
+	}
+	for (uint32 x=0;x<7;x++)
+	{
+		m_target->DamageDoneModPCT[x] += val;
+	}
+
 }
 
 void Aura::SpellAuraModPercStat(bool apply)	
@@ -6106,36 +6119,18 @@ void Aura::SpellAuraModPowerCostPCT(bool apply)
 void Aura::SpellAuraIncreaseArmorByPctInt(bool apply)
 {
 	uint32 i_Int = m_target->GetUInt32Value(UNIT_FIELD_STAT3);
-	uint32 Flag = mod->m_miscValue;
 
 	int32 amt = float2int32(i_Int * ((float)mod->m_amount / 100.0f));
-	if(apply)
-	{
-		m_dynamicValue = amt;
-		if(amt > 0)
-			SetPositive();
-		else
-			SetNegative();
-	}
-	else 
-		amt = m_dynamicValue;
+	amt *= (!apply) ? -1 : 1;
 
 	for(uint32 x=0;x<7;x++)
 	{
-		if(Flag & (((uint32)1)<< x))
+		if(mod->m_miscValue & (((uint32)1)<< x))
 		{
 			if(m_target->GetTypeId() == TYPEID_PLAYER)
 			{
-				if(mod->m_amount > 0)
-				{
-					static_cast<Player*>(m_target)->FlatResistanceModifierPos[x] += amt;
-				}
-				else
-				{
-					static_cast<Player*>(m_target)->FlatResistanceModifierNeg[x] -= amt;
-				}
+				static_cast<Player*>(m_target)->FlatResistanceModifierPos[x] += amt;
 				static_cast<Player*>(m_target)->CalcResistance(x);
-
 			}
 			else if(m_target->GetTypeId() == TYPEID_UNIT)
 			{

@@ -168,6 +168,7 @@ Unit::Unit()
 		HealTakenMod[x] = 0;
 		HealTakenPctMod[x] = 0;
 		DamageTakenMod[x] = 0;
+		DamageDoneModPCT[x]= 0;
 		SchoolCastPrevent[x]=0;
 		DamageTakenPctMod[x] = 1;
 		SpellCritChanceSchool[x] = 0;
@@ -1396,7 +1397,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 //-----------ROLL RESULT PROC-------
 	uint32 abs = 0;
 	switch(r)
-	{
+	{ 
 	case 0: //miss
 		hit_status |= HITSTATUS_MISS;
 
@@ -1485,6 +1486,8 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			else
 			{
 				dmg.full_damage = float2int32(dmg.full_damage*pVictim->DamageTakenPctMod[0]); 
+				if (this->DamageDoneModPCT[0])
+					dmg.full_damage += float2int32(dmg.full_damage*this->DamageDoneModPCT[0]);
 				if(pct_dmg_mod)
 					dmg.full_damage = (dmg.full_damage*pct_dmg_mod)/100;
 			}
