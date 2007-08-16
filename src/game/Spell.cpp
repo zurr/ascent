@@ -3961,3 +3961,110 @@ void Spell::SendCastSuccess(const uint64& guid)
 	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
 
+bool IsBeneficSpell(SpellEntry *sp)
+{
+	uint32 cur;
+	for(uint32 i=0;i<3;i++)
+		for(uint32 j=0;j<2;j++)
+		{
+			if(j==0)
+				cur = sp->EffectImplicitTargetA[i];
+			else // if(j==1)
+				cur = sp->EffectImplicitTargetB[i];		
+			switch(cur)
+			{
+				case EFF_TARGET_SELF:
+				case EFF_TARGET_PET:
+				case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
+				case EFF_TARGET_SINGLE_FRIEND:
+				case 45:// Chain,!!only for healing!! for chain lightning =6 
+				case 57:// Targeted Party Member
+				case 27: // target is owner of pet
+				case EFF_TARGET_MINION:// Minion Target
+				case 33://Party members of totem, inside given range
+				case EFF_TARGET_SINGLE_PARTY:// Single Target Party Member
+				case EFF_TARGET_ALL_PARTY: // all Members of the targets party
+				case EFF_TARGET_SELF_FISHING://Fishing
+				case 46://Unknown Summon Atal'ai Skeleton
+				case 47:// Portal
+				case 52:	// Lightwells, etc
+				case 40://Activate Object target(probably based on focus)
+				case EFF_TARGET_TOTEM_EARTH:
+				case EFF_TARGET_TOTEM_WATER:
+				case EFF_TARGET_TOTEM_AIR:
+				case EFF_TARGET_TOTEM_FIRE:// Totem
+				case 61: // targets with the same group/raid and the same class
+					return true;
+			}//end switch
+		}//end for
+	return false;
+}
+
+AI_SpellTargetType RecommandAISpellTargetType(SpellEntry *sp)
+{
+	uint32 cur;
+	for(uint32 i=0;i<3;i++)
+		for(uint32 j=0;j<2;j++)
+		{
+			if(j==0)
+				cur = sp->EffectImplicitTargetA[i];
+			else // if(j==1)
+				cur = sp->EffectImplicitTargetB[i];		
+			switch(cur)
+			{
+				case EFF_TARGET_NONE:
+				case EFF_TARGET_GAMEOBJECT:
+				case EFF_TARGET_GAMEOBJECT_ITEM:// Gameobject/Item Target
+				case EFF_TARGET_SELF_FISHING://Fishing
+				case 47:// Portal
+				case 52:	// Lightwells, etc
+				case 40://Activate Object target(probably based on focus)
+					return TTYPE_NULL;
+
+				case EFF_TARGET_SELF:
+				case 38://Dummy Target
+					return TTYPE_CASTER;
+
+				case EFF_TARGET_ALL_ENEMY_IN_AREA: // All Enemies in Area of Effect (TEST)
+				case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT: // All Enemies in Area of Effect instant (e.g. Flamestrike)
+				case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:// All Enemies in Area of Effect(Blizzard/Rain of Fire/volley) channeled
+					return TTYPE_DESTINATION;
+
+				case 4: // dono related to "Wandering Plague", "Spirit Steal", "Contagion of Rot", "Retching Plague" and "Copy of Wandering Plague"
+				case EFF_TARGET_PET:
+				case EFF_TARGET_SINGLE_ENEMY:// Single Target Enemy
+				case 77:					// grep: i think this fits
+				case 8: // related to Chess Move (DND), Firecrackers, Spotlight, aedm, Spice Mortar
+				case EFF_TARGET_IN_FRONT_OF_CASTER:
+				case 31:// related to scripted effects
+				case 53:// Target Area by Players CurrentSelection()
+				case 54:// Targets in Front of the Caster
+				case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
+				case EFF_TARGET_SINGLE_FRIEND:
+				case 45:// Chain,!!only for healing!! for chain lightning =6 
+				case 57:// Targeted Party Member
+				case EFF_TARGET_DUEL: 
+				case 27: // target is owner of pet
+				case EFF_TARGET_MINION:// Minion Target
+				case 33://Party members of totem, inside given range
+				case EFF_TARGET_SINGLE_PARTY:// Single Target Party Member
+				case EFF_TARGET_ALL_PARTY: // all Members of the targets party
+				case EFF_TARGET_TOTEM_EARTH:
+				case EFF_TARGET_TOTEM_WATER:
+				case EFF_TARGET_TOTEM_AIR:
+				case EFF_TARGET_TOTEM_FIRE:// Totem
+				case 61: // targets with the same group/raid and the same class
+					return TTYPE_SINGLETARGET;
+
+					// spells like 17278:Cannon Fire and 21117:Summon Son of Flame A
+				case 17: // A single target at a xyz location or the target is a possition xyz
+				case 18:// Land under caster.Maybe not correct
+				case 46://Unknown Summon Atal'ai Skeleton
+				case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
+					return TTYPE_SOURCE;
+
+			}//end switch
+		}//end for
+	return TTYPE_NULL;// this means a new spell :P
+}
+

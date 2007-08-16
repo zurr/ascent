@@ -164,6 +164,9 @@ inline void SM_PFValue(int32*m, float *v,uint32 group)
 			(*v)+= ((*v)*m[x])/100.0;
 }
 
+bool IsBeneficSpell(SpellEntry *sp);
+AI_SpellTargetType RecommandAISpellTargetType(SpellEntry *sp);
+
 enum SPELL_TYPE
 {
 	SPELL_TYPE_MELEE,

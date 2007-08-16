@@ -147,6 +147,26 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 			sp->minrange = GetMinRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
 			sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
+			/*
+			//now apply the morron filter
+			if(sp->procChance==0)
+			{
+				//printf("SpellId %u in ai_agent for %u is invalid.\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
+				delete sp;
+				continue;
+			}
+			if(sp->spellType==0)
+			{
+				//right now only these 2 are used
+				if(IsBeneficSpell(sp->spell))
+					sp->spellType==STYPE_HEAL;
+				else sp->spellType==STYPE_BUFF;
+			}
+			if(sp->spelltargetType==0)
+				sp->spelltargetType = RecommandAISpellTargetType(sp->spell);
+			if(sp->cooldown)
+				sp->cooldown=sp->spell->RecoveryTime;
+				*/
 		}
 
 		if(sp->agent == AGENT_RANGED)

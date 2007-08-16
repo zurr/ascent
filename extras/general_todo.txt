@@ -54,6 +54,7 @@ Zack - test my shit :
  - touch of weakness
  - blackout
  - troll berserking
+ - ai_agents fillup
 
 ==========================================================================
 
