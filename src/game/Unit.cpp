@@ -1253,7 +1253,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		if(pVictim->m_objectTypeId == TYPEID_UNIT) 
 		{ 
 			Creature * c = (Creature*)(pVictim);
-			if (c&&c->GetCreatureName()->Rank == 3) //boss
+			if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
 			{
 				victim_skill = max(victim_skill,(this->getLevel()+3)*5); //used max to avoid situation when lowlvl hits boss.
 			}
