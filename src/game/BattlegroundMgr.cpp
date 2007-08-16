@@ -28,6 +28,7 @@ const static uint32 BGMapIds[BATTLEGROUND_NUM_TYPES] = {
 	559,	// Nagrand Arena
 	562,	// Blades Edge Arena
 	566,	// Netherstorm BG
+	572,    // Ruins of Lordaeron Arena
 };
 
 const static CreateBattlegroundFunc BGCFuncs[BATTLEGROUND_NUM_TYPES] = {
@@ -38,6 +39,7 @@ const static CreateBattlegroundFunc BGCFuncs[BATTLEGROUND_NUM_TYPES] = {
 	NULL,						// Nagrand
 	NULL,						// Blades Edge
 	NULL,						// Netherstorm
+	NULL,                        // Ruins of Lordaeron
 };
 
 CBattlegroundManager::CBattlegroundManager() : EventableObject()

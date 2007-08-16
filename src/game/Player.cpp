@@ -4309,7 +4309,7 @@ void Player::UpdateChances()
 	const float baseDodge[12] = { 0, 0, 0.75, 0.64, 0, 3, 0, 1.75, 3.25, 2, 0, 0.75 };
 	const float dodgeRatio[12] = { 0, 30, 30, 40, 21, 30, 0, 30, 30, 30, 0, 30 };
  
-	float tmp = baseDodge[clss] + (GetUInt32Value( UNIT_FIELD_STAT1) / dodgeRatio[clss]) + (GetSkillAmt(SKILL_DEFENSE)*.04) + this->GetDodgeFromSpell();
+	float tmp = baseDodge[clss] + (GetUInt32Value( UNIT_FIELD_STAT1) / dodgeRatio[clss]) + this->GetDodgeFromSpell();
 	tmp+=CalcRating(2);//dodge rating
 	SetFloatValue(PLAYER_DODGE_PERCENTAGE,min(tmp,95.0));
 
@@ -4317,7 +4317,7 @@ void Player::UpdateChances()
 	tmp+=CalcRating(4);//block rating
 	SetFloatValue(PLAYER_BLOCK_PERCENTAGE,min(tmp,95.0));
 
-	tmp = 5.0f + GetSkillAmt(SKILL_DEFENSE)*.04  + this->GetParryFromSpell();
+	tmp = 5.0f + this->GetParryFromSpell();
 	tmp+=CalcRating(3);
 	SetFloatValue(PLAYER_PARRY_PERCENTAGE,max(0,min(tmp,95.0))); //let us not use negative parry. Some spells decrease it
 /* The formula is generated as follows:

@@ -1188,61 +1188,59 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			return;
 		}
 	}
-	/*if(this->IsPlayer())
-	{
-		((Player*)this)->CombatModeDelay = COMBAT_DECAY_TIME;
-	}
-	else if(this->IsPet())
-	{
-		Player*p = ((Pet*)this)->GetPetOwner();
-		if(p)
-			p->CombatModeDelay = COMBAT_DECAY_TIME;
-	}*/
 
 	dealdamage dmg			  = {0,0,0};
 	
 	Item * it = NULL;
 	
+	float hitchance          = 0.0f;
 	float dodge				 = 0.0f;
-	float block				 = 0.0f;
-	float crit				  = 0.0f;
 	float parry				 = 0.0f;
+	float glanc              = 0.0f;
+	float block				 = 0.0f;
+	float crit				 = 0.0f;
+	float crush              = 0.0f;
 
-	uint32 targetEvent		  = 0;
-	uint32 hit_status		   = 0;
+	uint32 targetEvent		 = 0;
+	uint32 hit_status		 = 0;
 
-	uint32 blocked_damage	   = 0;
-	int32  realdamage		   = 0;
+	uint32 blocked_damage	 = 0;
+	int32  realdamage		 = 0;
 
-	uint32 vstate			   = 1;
-	uint32 aproc				= 0;
-	uint32 vproc				= 0;
+	uint32 vstate			 = 1;
+	uint32 aproc			 = 0;
+	uint32 vproc			 = 0;
 	   
-	float hitmodifier		   = 0;
+	float hitmodifier		 = 0;
 	int32 self_skill;
 	int32 victim_skill;
-	uint32 SubClassSkill		= 0;
+	uint32 SubClassSkill	 = 0;
 
 	bool backAttack			 = isInBack( pVictim );
-	uint32 vskill = 0;
+	uint32 vskill            = 0;
 	
-	
+//------------VICTIM SKILLS------------
 	if(pVictim->IsPlayer())
 	{
 		vskill = ((Player*)pVictim)->GetSkillAmt(SKILL_DEFENSE);
 		if((damage_type != RANGED) && !backAttack)
 		{
 			it = ((Player*)pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+//block chance
 			if(it && it->GetProto()->InventoryType==INVTYPE_SHIELD)
 			{
 				block = pVictim->GetFloatValue(PLAYER_BLOCK_PERCENTAGE);
 			}
-			dodge = pVictim->GetFloatValue(PLAYER_DODGE_PERCENTAGE);
-			
-//			if(((Player*)pVictim)->HasSpell(3127))//only players that have parry skill/spell may parry
-//				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
+//dodge chance
+			if (pVictim->m_stunned<=0) 
+			{
+				dodge = pVictim->GetFloatValue(PLAYER_DODGE_PERCENTAGE);
+			}
+//parry
 			if(pVictim->can_parry)
+			{
 				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
+			}
 		}
 		victim_skill = float2int32(vskill+((Player*)pVictim)->CalcRating(1)); // you compare weapon and defense skills not weapon and weapon
 	}
@@ -1250,10 +1248,17 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	{
 		if(damage_type != RANGED && !backAttack)
 			dodge = pVictim->GetUInt32Value(UNIT_FIELD_STAT1) / 14.5;
-
 		victim_skill = pVictim->getLevel() * 5;
+		if(pVictim->m_objectTypeId == TYPEID_UNIT) 
+		{ 
+			Creature * c = (Creature*)(pVictim);
+			if (c&&c->GetCreatureName()->Rank == 3) //boss
+			{
+				victim_skill = max(victim_skill,(this->getLevel()+3)*5); //used max to avoid situation when lowlvl hits boss.
+			}
+		} 
 	}
-
+//----------ATTACKER SKILLLS----------
 	if(this->IsPlayer())
 	{	  
 		self_skill=0;
@@ -1263,51 +1268,57 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		
 		if(disarmed)
 			it = NULL;
-		else if(damage_type == MELEE)//melee,
+		switch(damage_type)
 		{
+		case MELEE://melee,
 			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 			hitmodifier+=pr->CalcRating(5);
 			self_skill = float2int32(pr->CalcRating(20));
-		}
-		else if(damage_type == DUALWIELD)//dual wield
-		{
+			break;
+		case DUALWIELD://dual wield
 			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 			hitmodifier+=pr->CalcRating(5);
 			self_skill = float2int32(pr->CalcRating(21));
-		}
-		else if(damage_type == RANGED)
-		{
+			break;
+		case RANGED: //ranged
 			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 			hitmodifier+=pr->CalcRating(6);
 			self_skill = float2int32(pr->CalcRating(0));
+			break;
 		}
 
-		if(it)
-			SubClassSkill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
-		else 
-			SubClassSkill=SKILL_UNARMED;
-
-		if(SubClassSkill == SKILL_FIST_WEAPONS)
-			SubClassSkill=SKILL_UNARMED;
+		if (it)
+			SubClassSkill = GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
+		if (SubClassSkill==SKILL_FIST_WEAPONS) 
+			SubClassSkill = SKILL_UNARMED;
 
 		self_skill += pr->GetSkillAmt(SubClassSkill);
 		
 		crit = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
-
-		// block shit
-		if(vskill && block != 0.0f)
-		{
-			int diff = (int)vskill - (int)self_skill;
-			float fdiff = (float)diff * 0.04f;
-			block += fdiff;
-		}
 	}
 	else
 	{
 		self_skill = this->getLevel() * 5;
-		crit = (this->getLevel()-pVictim->getLevel()+1)*5+(self_skill-victim_skill)*0.04;//don't ask me ... that's on wowwiki
+		if(m_objectTypeId == TYPEID_UNIT) 
+		{ 
+			Creature * c = (Creature*)(this);
+			if (c&&c->GetCreatureName()->Rank == 3) //boss
+				self_skill = max(self_skill,(pVictim->getLevel()+3)*5);//used max to avoid situation when lowlvl hits boss.
+		} 
+		crit = 5.0f; //will be modified later
 	}
-
+//------other chances------
+//crushing blow chance
+	if(pVictim->IsPlayer()&&!this->IsPlayer()&&!ability)
+	{
+		crush = max( 0.0 , -15.0+2.0*((float)self_skill-(float)min(pVictim->getLevel()*5,victim_skill))); 
+	}
+//glancing blow chance
+	if (this->IsPlayer()&&!pVictim->IsPlayer()&&!ability)
+	{
+		glanc = max( 0.0 , 10.0 + (float)victim_skill - (float)min(this->getLevel()*5,self_skill));
+	}
+//---------CHANCES MODS
 	if(pVictim->IsPlayer())
 	{
 		if((damage_type != RANGED))
@@ -1321,30 +1332,72 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[1];
 		}
 	}
+//vs not standing player there must be 100% crit.
+	if (pVictim->IsPlayer()&&pVictim->GetStandState()) //every not standing state is >0
+	{
+		hitchance = 100.0f;
+		dodge = 0.0f;
+		parry = 0.0f;
+		block = 0.0f;
+		crush = 0.0f;
+		crit = 100.0f;
+	}
+//ranged attacks can't be dodge, parry or glancing blow
+	if (damage_type==RANGED) 
+	{
+		dodge=0.0f;
+		parry=0.0f;
+		glanc=0.0f;
+	}
+//penalties for dualwield and two-handed weapons
+	else
+		if (this->IsPlayer())
+		{
+			it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+			if(it && it->GetProto()->InventoryType==INVTYPE_WEAPON && !ability)//dualwield to-hit penalty
+				hitmodifier -= 19.0;
+			else
+			{
+				it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+				if(it && it->GetProto()->InventoryType==INVTYPE_2HWEAPON)//2 handed weapon to-hit penalty
+  					hitmodifier -= 4.0;
+			}
+		}
+// Mods by skill diff.
+	float vsk = (float)self_skill-(float)victim_skill;
+	dodge = max(0.0,dodge-vsk*0.04);
+	if (parry)
+		parry = max(0.0,parry-vsk*0.04);
+	if (block)
+		block = max(0.0,block-vsk*0.04);
+	crit = max(0.0,crit+ ( (pVictim->IsPlayer()) ? (vsk*0.04) : (min(vsk*0.2,0.0)) ));
+	hitchance = max(hitchance,95.0f+vsk+hitmodifier);
 
-//  if we get a negative chance .. we will never use it again
-//	if(crit<0) 
-//		crit=0;
-
-	float vsk = (self_skill*0.04);
-	dodge -= vsk;
-	parry -= vsk;
-
-	//this is official formula, don't use anything else!
-	float hitchance = 95.0 -(victim_skill-self_skill)*0.04 +hitmodifier;
-	// grep tweak: previously 95.0f
-	
-	//(((float)(self_skill+this->getLevel())/(float)(victim_skill+pVictim->getLevel()))*125.0f + hitmodifier );
-	
 	if(ability && ability->SpellGroupType)
 	{
 		SM_FFValue(SM_CriticalChance,&crit,ability->SpellGroupType);
 		SM_FFValue(SM_FResist,&hitchance,ability->SpellGroupType);
 	}
-	
-	uint32 abs = 0;
-	if((!ability) && hitchance < 100.0f && Rand(100.0f - hitchance)) //Miss
+//-----Cummulative chances
+	float chances[7];
+	chances[0]=max(0.0f,100.0f-hitchance);
+	chances[1]=chances[0]+dodge;
+	chances[2]=chances[1]+parry;
+	chances[3]=chances[2]+glanc;
+	chances[4]=chances[3]+block;
+	chances[5]=chances[4]+crit;
+	chances[6]=chances[5]+crush;
+	float Roll = sRand.rand()*100.0f;
+	uint32 r = 0;
+	while (r<7&&Roll>chances[r])
 	{
+		r++;
+	}
+//-----------ROLL RESULT PROC-------
+	uint32 abs = 0;
+	switch(r)
+	{
+	case 0: //miss
 		hit_status |= HITSTATUS_MISS;
 
 		// dirty ai agro fix
@@ -1352,9 +1405,8 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		// grep: dirty fix for this
 		if(pVictim->GetTypeId() == TYPEID_UNIT)
 			pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
-	}
-	else if ((!ability)&&Rand(dodge)) //Dodge
-	{
+		break;
+	case 1://dodge
 		CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
 		CALL_SCRIPT_EVENT(this, OnDodged)(this);
 		targetEvent = 1;
@@ -1367,9 +1419,8 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				sEventMgr.AddEvent(pVictim,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_DODGE_BLOCK,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000,1);
 			else sEventMgr.ModifyEventTimeLeft(pVictim,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000);
 		}
-	}
-	else if ((!ability)&&Rand(parry)) //Parry
-	{
+		break;
+	case 2://parry
 		CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
 		CALL_SCRIPT_EVENT(this, OnParried)(this);
 		targetEvent = 3;
@@ -1380,18 +1431,22 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			pVictim->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_PARRY);	//SB@L: Enables spells requiring parry
 			if(!sEventMgr.HasEvent(pVictim,EVENT_PARRY_FLAG_EXPIRE))
 				sEventMgr.AddEvent(pVictim,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_PARRY,EVENT_PARRY_FLAG_EXPIRE,5000,1);
-			else sEventMgr.ModifyEventTimeLeft(pVictim,EVENT_PARRY_FLAG_EXPIRE,5000);
+			else 
+				sEventMgr.ModifyEventTimeLeft(pVictim,EVENT_PARRY_FLAG_EXPIRE,5000);
+			if( ((Player*)pVictim)->getClass()==1 || ((Player*)pVictim)->getClass()==4 )//warriors for 'revenge' and rogues for 'riposte'
+			{
+				pVictim->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_DODGE_BLOCK);	//SB@L: Enables spells requiring dodge
+				if(!sEventMgr.HasEvent(pVictim,EVENT_DODGE_BLOCK_FLAG_EXPIRE))
+					sEventMgr.AddEvent(pVictim,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_DODGE_BLOCK,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000,1);
+				else 
+					sEventMgr.ModifyEventTimeLeft(pVictim,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000);
+			}
 		}
-	}
-	else//hit 
-	{
-
+		break;
+	default: //not miss,dodge or parry
 		hit_status |= HITSTATUS_HITANIMATION;//hit animation on victim
-
 		if(pVictim->SchoolImmunityList[0])
-		{
 			vstate = IMMUNE;		
-		}
 		else
 		{
 			vproc |= PROC_ON_ANY_DAMAGE_VICTIM;			
@@ -1429,7 +1484,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				dmg.full_damage = 0;
 			else
 			{
-				dmg.full_damage *= float2int32(pVictim->DamageTakenPctMod[0]); 
+				dmg.full_damage = float2int32(dmg.full_damage*pVictim->DamageTakenPctMod[0]); 
 				if(pct_dmg_mod)
 					dmg.full_damage = (dmg.full_damage*pct_dmg_mod)/100;
 			}
@@ -1437,112 +1492,113 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			dmg.full_damage += pVictim->DamageTakenMod[0]+add_damage;
 			if(dmg.damage_type == RANGED)
 			{
-				//dmg.full_damage += pVictim->RangedDamageTaken;
 				dmg.full_damage += (((dmg.full_damage/100)*pVictim->RangedDamageTakenPct) + pVictim->RangedDamageTaken);
 			}
 			
 			if(dmg.full_damage < 0)
 				dmg.full_damage = 0;
-
-			if (Rand(block) && pVictim->GetTypeId() == TYPEID_PLAYER) //Block block can only appear if we have shield!
+//check for speacial hits.
+			switch(r)
 			{
-				Item * shield = ((Player*)pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-				if(shield)
+			case 3: //glancing blow by and012345
 				{
-					targetEvent = 2;
-					pVictim->Emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
-//					blocked_damage = shield->GetProto()->Block+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
-					//patch from Onemore
-					//blocked_damage = shield->GetProto()->Block*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20;
-					blocked_damage = uint32((shield->GetProto()->Block + ((Player*)pVictim)->m_modblockvalue)*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20);
-
-					if(dmg.full_damage <= (int32)blocked_damage)
+					int32 skill_difference = (victim_skill - min(this->getLevel()*5,self_skill));
+					float low_dmg_mod = 1.5 - (0.05 * skill_difference);
+					if (this->getClass() == MAGE || this->getClass() == PRIEST || this->getClass() == WARLOCK) //casters = additional penalty.
 					{
-						CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, blocked_damage);
-						CALL_SCRIPT_EVENT(this, OnBlocked)(pVictim, blocked_damage);
-						vstate = BLOCK;
-						vproc |= PROC_ON_BLOCK_VICTIM;
+						low_dmg_mod -= 0.7;
 					}
-				}
-			}
-			else if (Rand(crit)) //Crictical Hit
-			{
-				hit_status |= HITSTATUS_CRICTICAL;
-				int32 dmgbonus = dmg.full_damage;
-				if(ability && ability->SpellGroupType)
-					SM_FIValue(SM_PCriticalDamage,&dmgbonus,ability->SpellGroupType);
-				dmg.full_damage += dmgbonus;
-				if(IsPlayer())
-				{
-					if(damage_type != RANGED && !ability)
+					if (low_dmg_mod<0.01)
+						low_dmg_mod = 0.01f;
+					if (low_dmg_mod>0.91)
+						low_dmg_mod = 0.91f;
+					float high_dmg_mod = 1.2 - (0.03 * skill_difference);
+					if (this->getClass() == MAGE || this->getClass() == PRIEST || this->getClass() == WARLOCK) //casters = additional penalty.
 					{
-						float critextra=static_cast<Player*>(this)->m_modphyscritdmgPCT;
-						dmg.full_damage += int32((dmg.full_damage*critextra/100.0f));
+						high_dmg_mod -= 0.3;
 					}
-					if(!pVictim->IsPlayer())
-						dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);
-				}
-				
-				// burlex: this causes huge damage increases. I'm not sure what it's meant to accompilsh either, so
-				//         i'm gonna comment it.
+					if (high_dmg_mod>0.99)
+						high_dmg_mod = 0.99f;
+					if (high_dmg_mod<0.2)
+						high_dmg_mod = 0.2f;
 
-				/*dmg.full_damage = (dmg.full_damage*(100+dmgbonus))/100;*/
-				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
-				vproc |= PROC_ON_CRIT_HIT_VICTIM;
-				aproc |= PROC_ON_CRIT_ATTACK;
-
-				if(this->IsPlayer())
-				{
-					this->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_CRITICAL);	//SB@L: Enables spells requiring critical strike
-					if(!sEventMgr.HasEvent(this,EVENT_CRIT_FLAG_EXPIRE))
-						sEventMgr.AddEvent((Unit*)this,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_CRITICAL,EVENT_CRIT_FLAG_EXPIRE,5000,1);
-					else sEventMgr.ModifyEventTimeLeft(this,EVENT_CRIT_FLAG_EXPIRE,5000);
-				}
-
-				CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.full_damage);
-				CALL_SCRIPT_EVENT(this, OnCritHit)(pVictim, dmg.full_damage);
-			}
-			else
-			{
-				//check for crushing hit			
-				if(!this->IsPlayer())
-				{	
-					if(this->getLevel()-pVictim->getLevel() >=3)
+					float damage_reduction = (high_dmg_mod + low_dmg_mod) / 2;
+					if(damage_reduction > 0)
 					{
-						if(Rand((self_skill-victim_skill)*2))
+							dmg.full_damage = (damage_reduction * dmg.full_damage);
+					}
+					hit_status |= HITSTATUS_GLANCING;
+				}
+				break;
+			case 4: //block
+				{
+					Item * shield = ((Player*)pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+					if(shield)
+					{
+						targetEvent = 2;
+						pVictim->Emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
+						blocked_damage = uint32((shield->GetProto()->Block + ((Player*)pVictim)->m_modblockvalue)*(1.0+((Player*)pVictim)->GetBlockFromSpell()/100)+pVictim->GetUInt32Value(UNIT_FIELD_STAT0)/20);
+
+						if(dmg.full_damage <= (int32)blocked_damage)
 						{
-							hit_status |= HITSTATUS_CRUSHINGBLOW;
-							// full_damage is a uint32, now, multiplying it by 1.5 is the same thing as multiplying it by 1
-							// i'm pretty sure this isn't supposed to be, maybe put full_damage in a tmp double variable, make
-							// the math and recast back to uint32 ? os full_damage should be a double ?
-							// for now i do the first assumption
-							//dmg.full_damage *= 1.5;
-							double tmpDmg = (double)dmg.full_damage;
-							tmpDmg *= 1.5;
-							dmg.full_damage = (uint32)tmpDmg;
+							CALL_SCRIPT_EVENT(pVictim, OnTargetBlocked)(this, blocked_damage);
+							CALL_SCRIPT_EVENT(this, OnBlocked)(pVictim, blocked_damage);
+							vstate = BLOCK;
+							vproc |= PROC_ON_BLOCK_VICTIM;
+						}
+						if(pVictim->IsPlayer())//not necessary now but we'll have blocking mobs in future
+						{                                                          
+							pVictim->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_DODGE_BLOCK);	//SB@L: Enables spells requiring dodge
+							if(!sEventMgr.HasEvent(pVictim,EVENT_DODGE_BLOCK_FLAG_EXPIRE))
+								sEventMgr.AddEvent(pVictim,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_DODGE_BLOCK,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000,1);
+							else 
+								sEventMgr.ModifyEventTimeLeft(pVictim,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000);
 						}
 					}
 				}
-/*				else if(!pVictim->IsPlayer()&&(!ability))	//glancing
+				break;
+			case 5: //crit
 				{
-					if(damage_type != RANGED)
+					hit_status |= HITSTATUS_CRICTICAL;
+					int32 dmgbonus = dmg.full_damage;
+					if(ability && ability->SpellGroupType)
+						SM_FIValue(SM_PCriticalDamage,&dmgbonus,ability->SpellGroupType);
+					dmg.full_damage += dmgbonus;
+					if(IsPlayer())
 					{
-						if(Rand(10 + victim_skill - self_skill))
+						if(damage_type != RANGED && !ability)
 						{
-							double damage_reduction = (10 + victim_skill - self_skill);
-							if(damage_reduction > 0)
-							{
-								dmg.full_damage -= (damage_reduction*dmg.full_damage)/100;
-                                if(dmg.full_damage <= 0)
-								{
-									dmg.full_damage = 1;
-								}
-								hit_status |= HITSTATUS_GLANCING;
-							}
+							float critextra=static_cast<Player*>(this)->m_modphyscritdmgPCT;
+							dmg.full_damage += int32((dmg.full_damage*critextra/100.0f));
 						}
+						if(!pVictim->IsPlayer())
+							dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);
 					}
-				}*/
-			}	
+					
+					pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
+					vproc |= PROC_ON_CRIT_HIT_VICTIM;
+					aproc |= PROC_ON_CRIT_ATTACK;
+
+					if(this->IsPlayer())
+					{
+						this->SetFlag(UNIT_FIELD_AURASTATE,AURASTATE_FLAG_CRITICAL);	//SB@L: Enables spells requiring critical strike
+						if(!sEventMgr.HasEvent(this,EVENT_CRIT_FLAG_EXPIRE))
+							sEventMgr.AddEvent((Unit*)this,&Unit::EventAurastateExpire,(uint32)AURASTATE_FLAG_CRITICAL,EVENT_CRIT_FLAG_EXPIRE,5000,1);
+						else sEventMgr.ModifyEventTimeLeft(this,EVENT_CRIT_FLAG_EXPIRE,5000);
+					}
+
+					CALL_SCRIPT_EVENT(pVictim, OnTargetCritHit)(this, dmg.full_damage);
+					CALL_SCRIPT_EVENT(this, OnCritHit)(pVictim, dmg.full_damage);
+				}
+				break;
+			case 6: //crushing blow
+				hit_status |= HITSTATUS_CRUSHINGBLOW;
+				dmg.full_damage = (dmg.full_damage*3)/2;
+				break;
+			default: //hit
+				break;	
+			}
+
 			//absorb apply
 			uint32 dm = dmg.full_damage;
 			abs = pVictim->AbsorbDamage(0,(uint32*)&dm);
@@ -1575,6 +1631,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				hit_status |= HITSTATUS_ABSORBED;
 			}
 		}
+		break;
 	}
 	//vstate=1-wound,2-dodge,3-parry,4-interrupt,5-block,6-evade,7-immune,8-deflect
 	
