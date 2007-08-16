@@ -1023,9 +1023,10 @@ void World::SetInitialWorldSettings()
 			char *startofid=strstr(desc, "cause $");
 			if(startofid)
 			{
-				startofid += strlen("causing $");
+				startofid += strlen("cause $");
 				sp->EffectTriggerSpell[0]=atoi(startofid);
 				sp->EffectTriggerSpell[1]=sp->EffectTriggerSpell[0]; //later versions of this spell changed to eff[1] the aura
+				sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_TAGRGET_SELF;
 			}
 		}
 		//some procs trigger at intervals
