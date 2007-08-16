@@ -2064,6 +2064,13 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	}
 	uint32 ress=(uint32)res;
 	uint32 abs_dmg = pVictim->AbsorbDamage(school, &ress);
+	uint32 ms_abs_dmg= pVictim->ManaShieldAbsorb(ress);
+	if (ms_abs_dmg)
+	{
+		ress-=ms_abs_dmg;
+		abs_dmg += ms_abs_dmg;
+	}
+
 	res=(float)ress;
 	dealdamage dmg;
 	dmg.damage_type = school;
@@ -2072,7 +2079,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	dmg.full_damage = ress;
 	dmg.resisted_damage = 0;
 	// make it say resisted :p
-	if(res == 0)
+	if(res <= 0)
 		dmg.resisted_damage = dmg.full_damage = 1;
 	
 	if(this->IsUnit())
@@ -2124,8 +2131,10 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		{
 			if (spellID==32379||spellID==32996)
 			{
-				DealDamage((Unit*)this,float2int32(res),2,0,spellID);
-				SendSpellNonMeleeDamageLog(this,this,spellID,float2int32(res),school,0,0,false,0,false,this->IsPlayer());
+				uint32 damage = (uint32)res;
+				uint32 absorbed = static_cast<Unit*>(this)->AbsorbDamage(school,&damage);
+				DealDamage((Unit*)this,damage,2,0,spellID);
+				SendSpellNonMeleeDamageLog(this,this,spellID,damage,school,absorbed,0,false,0,false,this->IsPlayer());
 			}
 		}
 	}
