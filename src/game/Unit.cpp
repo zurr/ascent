@@ -1303,7 +1303,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		if(m_objectTypeId == TYPEID_UNIT) 
 		{ 
 			Creature * c = (Creature*)(this);
-			if (c&&c->GetCreatureName()->Rank == 3) //boss
+			if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
 				self_skill = max(self_skill,(pVictim->getLevel()+3)*5);//used max to avoid situation when lowlvl hits boss.
 		} 
 		crit = 5.0f; //will be modified later
