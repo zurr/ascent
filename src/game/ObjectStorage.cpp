@@ -89,7 +89,10 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 		while(!itr->AtEnd())
 		{
 			ci = itr->Get();
+
 			ci->lowercase_name = string(ci->Name);
+			for(uint32 j = 0; j < ci->lowercase_name.length(); ++j)
+				ci->lowercase_name[j] = tolower(ci->lowercase_name[j]); // Darvaleo 2008/08/15 - Copied lowercase conversion logic from ItemPrototype task
 
 			if(!itr->Inc())
 				break;
