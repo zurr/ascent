@@ -45,6 +45,25 @@ void WSClient::OnRead()
 		if(_remaining && GetReadBufferSize() < _remaining)
 			break;
 
+		if(_cmd == ISMSG_WOW_PACKET)
+		{
+			/* optimized version for packet passing, to reduce latency! ;) */
+			uint32 sid = *(uint32*)&m_readBuffer[0];
+			uint32 sz  = *(uint32*)&m_readBuffer[4];
+			uint16 op  = *(uint16*)&m_readBuffer[8];
+			WorldSession * session = sClusterInterface.GetSession(sid);
+			if(session != NULL)
+			{
+				WorldPacket * pck = new WorldPacket(op, sz);
+				pck->resize(sz);
+				memcpy((void*)pck->contents(), &m_readBuffer[10], sz);
+				session->QueuePacket(pck);
+			}
+			RemoveReadBufferBytes(sz + 10/*header*/, false);
+			_cmd = 0;
+			continue;
+		}
+
 		WorldPacket * pck = new WorldPacket(_cmd, _remaining);
 		_cmd = 0;
 		pck->resize(_remaining);
