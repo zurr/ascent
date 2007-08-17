@@ -2673,7 +2673,7 @@ void Spell::SpellEffectDistract(uint32 i) // Distract
 		uint32 Stare_duration=GetDuration();
 		if(Stare_duration>30*60*1000)
 			Stare_duration=10000;//if we try to stare for more then a half an hour then better not stare at all :P (bug)
-		float newo=unitTarget->calcAngle(unitTarget->GetPositionX(),unitTarget->GetPositionY(),m_targets.m_destX,m_targets.m_destY);
+		float newo=unitTarget->calcRadAngle(unitTarget->GetPositionX(),unitTarget->GetPositionY(),m_targets.m_destX,m_targets.m_destY);
 		unitTarget->GetAIInterface()->StopMovement(Stare_duration);
 		unitTarget->SetFacing(newo);
 	}

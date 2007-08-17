@@ -4289,6 +4289,17 @@ bool Unit::HasNegativeAuraWithNameHash(uint32 name_hash)
 	return false;
 }
 
+bool Unit::HasNegativeAura(uint32 spell_id)
+{
+	for(uint32 x = MAX_POSITIVE_AURAS; x < MAX_AURAS; ++x)
+	{
+		if(m_auras[x] && m_auras[x]->GetSpellProto()->Id == spell_id)
+			return true;
+	}
+
+	return false;
+}
+
 uint32 Unit::AddAuraVisual(uint32 spellid, uint32 count, bool positive)
 {
 	int32 free = -1;

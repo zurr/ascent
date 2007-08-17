@@ -820,6 +820,23 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
 				if(distance >= combatReach[0] && distance <= combatReach[1]) // Target is in Range -> Attack
 				{
+#ifdef ENABLE_CREATURE_DAZE
+					//now if the target is facing his back to us then we could just cast dazed on him :P
+					//as dar as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
+					if(CREATURE_SPELL_TO_DAZE && m_nextTarget->IsPlayer() && Rand(CREATURE_CHANCE_TO_DAZE))
+					{
+						float our_facing=m_Unit->calcRadAngle(m_Unit->GetPositionX(),m_Unit->GetPositionY(),m_nextTarget->GetPositionX(),m_nextTarget->GetPositionY());
+						float his_facing=m_nextTarget->GetOrientation();
+						if(abs(our_facing-his_facing)<CREATURE_DAZE_TRIGGER_ANGLE && !m_nextTarget->HasNegativeAura(CREATURE_SPELL_TO_DAZE))
+						{
+							SpellEntry *info = sSpellStore.LookupEntry(CREATURE_SPELL_TO_DAZE);
+							Spell *sp = new Spell(m_Unit, info, false, NULL);
+							SpellCastTargets targets;
+							targets.m_unitTarget = m_nextTarget->GetGUID();
+							sp->prepare(&targets);
+						}
+					}
+#endif
 					if(UnitToFollow != NULL)
 					{
 						UnitToFollow = NULL; //we shouldn't be following any one

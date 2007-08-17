@@ -1004,6 +1004,7 @@ public:
 	bool HasAurasOfBuffType(uint32 buff_type, uint64 guid);
 	bool HasAurasWithNameHash(uint32 name_hash);
 	bool HasNegativeAuraWithNameHash(uint32 name_hash); //just to reduce search range in some cases
+	bool HasNegativeAura(uint32 spell_id); //just to reduce search range in some cases
 
 	AuraCheckResponse AuraCheck(uint32 name_hash, uint32 rank);
 	AuraCheckResponse AuraCheck(uint32 name_hash, uint32 rank, Aura* aur);
