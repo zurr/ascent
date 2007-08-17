@@ -390,6 +390,7 @@ public:
 	}
 };
 
+#ifndef SCRIPTLIB
 template<class T>
 StorageContainerIterator<T> * ArrayStorageContainer<T>::MakeIterator()
 {
@@ -401,6 +402,7 @@ StorageContainerIterator<T> * HashMapStorageContainer<T>::MakeIterator()
 {
 	return new HashMapStorageIterator<T>(this);
 }
+#endif
 
 template<class T, class StorageType>
 class SERVER_DECL Storage
