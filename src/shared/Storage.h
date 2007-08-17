@@ -21,7 +21,7 @@
 /** Base iterator class, returned by MakeIterator() functions.
  */
 template<class T>
-class StorageContainerIterator
+class SERVER_DECL StorageContainerIterator
 {
 protected:
 	/** Currently referenced object
@@ -52,7 +52,7 @@ public:
 };
 
 template<class T>
-class ArrayStorageContainer
+class SERVER_DECL ArrayStorageContainer
 {
 public:
 	/** This is where the magic happens :P
@@ -183,7 +183,7 @@ public:
 };
 
 template<class T>
-class HashMapStorageContainer
+class SERVER_DECL HashMapStorageContainer
 {
 public:
 	typename HM_NAMESPACE::hash_map<uint32, T*> _map;
@@ -292,7 +292,7 @@ public:
 };
 
 template<class T>
-class ArrayStorageIterator : public StorageContainerIterator<T>
+class SERVER_DECL ArrayStorageIterator : public StorageContainerIterator<T>
 {
 	ArrayStorageContainer<T> * Source;
 	uint32 MyIndex;
@@ -343,7 +343,7 @@ public:
 };
 
 template<class T>
-class HashMapStorageIterator : public StorageContainerIterator<T>
+class SERVER_DECL HashMapStorageIterator : public StorageContainerIterator<T>
 {
 	HashMapStorageContainer<T> * Source;
 	typename HM_NAMESPACE::hash_map<uint32, T*>::iterator itr;
@@ -403,7 +403,7 @@ StorageContainerIterator<T> * HashMapStorageContainer<T>::MakeIterator()
 }
 
 template<class T, class StorageType>
-class Storage
+class SERVER_DECL Storage
 {
 protected:
 	StorageType _storage;
@@ -498,7 +498,7 @@ public:
 };
 
 template<class T, class StorageType>
-class SQLStorage : public Storage<T, StorageType>
+class SERVER_DECL SQLStorage : public Storage<T, StorageType>
 {
 public:
 	SQLStorage() : Storage<T, StorageType>() {}

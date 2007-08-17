@@ -14,3 +14,22 @@
  * POSSIBILITY OF SUCH DAMAGES.
  *
  */
+
+class Arena : public CBattleground
+{
+	set<GameObject*> m_gates;
+public:
+	Arena(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t);
+	virtual ~Arena();
+
+	virtual bool HookOnHandleRepop() = 0;
+	void OnAddPlayer(Player * plr);
+	void OnRemovePlayer(Player * plr);
+	void OnCreate();
+	void HookOnPlayerDeath(Player * plr);
+	void HookOnPlayerKill(Player * plr, Unit * pVictim);
+	void HookOnHK(Player * plr);
+	virtual LocationVector GetStartingCoords(uint32 Team);
+	virtual const char * GetName() { return "Arena"; }
+	void OnStart();
+};

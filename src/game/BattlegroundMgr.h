@@ -204,6 +204,9 @@ public:
 class CBattleground : public EventableObject
 {
 protected:
+	/* Groups */
+	Group * m_groups[2];
+
 	time_t m_nextPvPUpdateTime;
 	MapMgr * m_mapMgr;
 	uint32 m_id;
