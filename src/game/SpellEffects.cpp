@@ -2539,8 +2539,14 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
 	if(ci)
 	{
 		//if demonic sacrifice auras are still active, remove them
-		uint32 spids[] = { 18789, 18790, 18791, 18792, 35701, 0 };
-		p_caster->RemoveAuras(spids);
+		//uint32 spids[] = { 18789, 18790, 18791, 18792, 35701, 0 };
+		//p_caster->RemoveAuras(spids);
+		p_caster->RemoveAura(18789);
+		p_caster->RemoveAura(18790);
+		p_caster->RemoveAura(18791);
+		p_caster->RemoveAura(18792);
+		p_caster->RemoveAura(35701);
+
 		Pet *summon = objmgr.CreatePet();
 		summon->SetInstanceID(m_caster->GetInstanceID());
 		summon->CreateAsSummon(m_spellInfo->EffectMiscValue[i], ci, NULL, u_caster, m_spellInfo, 1, 0);

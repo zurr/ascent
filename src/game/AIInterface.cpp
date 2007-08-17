@@ -1348,7 +1348,7 @@ bool AIInterface::FindFriends(float dist)
 
 	for( itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); itr++ )
 	{
-		if((*itr)->GetTypeId() != TYPEID_UNIT)
+		if(!(*itr) || (*itr)->GetTypeId() != TYPEID_UNIT)
 			continue;
 
 		pUnit = static_cast<Unit*>((*itr));
