@@ -1514,6 +1514,22 @@ void World::SendGlobalMessage(WorldPacket *packet, WorldSession *self)
 
 	m_sessionlock.ReleaseReadLock();
 }
+void World::SendFactionMessage(WorldPacket *packet, uint8 teamId)
+{
+	m_sessionlock.AcquireReadLock();
+	SessionMap::iterator itr;
+	Player * plr;
+	for(itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+	{
+		plr = itr->second->GetPlayer();
+		if(!plr || !plr->IsInWorld())
+			continue;
+
+		if(plr->GetTeam() == teamId)
+			itr->second->SendPacket(packet);
+	}
+	m_sessionlock.ReleaseReadLock();
+}
 
 void World::SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *self)
 {

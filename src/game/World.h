@@ -351,6 +351,7 @@ public:
 	void SendWorldWideScreenText(const char *text, WorldSession *self = 0);
 	void SendGlobalMessage(WorldPacket *packet, WorldSession *self = 0);
 	void SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *self = 0);
+	void SendFactionMessage(WorldPacket *packet, uint8 teamId);
 
 	inline void SetStartTime(uint32 val) { m_StartTime = val; }
 	inline uint32 GetUptime(void) { return (uint32)time(NULL) - m_StartTime; }
