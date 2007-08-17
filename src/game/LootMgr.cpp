@@ -204,6 +204,9 @@ void LootMgr::LoadLootTables(const char * szTableName,LootStore * LootTable)
 
 		last_entry = entry_id;
 	} while( result->NextRow() );
+	//last list was not pushed in
+	if(last_entry != 0 && ttab.size())
+		db_cache.push_back( make_pair( last_entry, ttab) );
 	pos = 0;
 	total = db_cache.size();
 	ItemPrototype* proto;
