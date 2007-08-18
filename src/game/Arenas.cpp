@@ -71,7 +71,18 @@ void Arena::OnCreate()
 	{
 		/* loraedeon */
 	case 572: {
-		
+		obj = SpawnGameObject(185917, 572, 1278.647705, 1730.556641, 31.605574, 1.684245, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.746058f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, 0.665881f);
+		m_gates.insert(obj);
+
+		obj = SpawnGameObject(185918, 572, 1293.560791, 1601.937988, 31.605574, -1.457349, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, -0.665881f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, 0.746058f);
+		m_gates.insert(obj);
+
 			  }break;
 
 		/* blades edge arena */
@@ -103,7 +114,30 @@ void Arena::OnCreate()
 
 		/* nagrand arena */
 	case 559: {
-		
+		obj = SpawnGameObject(183979, 559, 4090.064453, 2858.437744, 10.236313, 0.492805, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.243916f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, 0.969796f);
+		obj->PushToWorld(m_mapMgr);
+
+		obj = SpawnGameObject(183980, 559, 4081.178955, 2874.970459, 12.391714, 0.492805, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.243916f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, 0.969796f);
+		m_gates.insert(obj);
+
+		obj = SpawnGameObject(183977, 559, 4023.709473, 2981.776611, 10.701169, -2.648788, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.969796f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, -0.243916f);
+		obj->PushToWorld(m_mapMgr);
+
+		obj = SpawnGameObject(183978, 559, 4031.854248, 2966.833496, 12.646200, -2.648788, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.969796f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, -0.243916f);
+		m_gates.insert(obj);
+
 			  }break;
 	}
 
@@ -173,8 +207,8 @@ void Arena::UpdatePlayerCounts()
 	UpdatePvPData();
 	PlaySoundToAll(m_winningteam ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
 
-	sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
-	sEventMgr.AddEvent(((CBattleground*)this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1);
+				sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
+			sEventMgr.AddEvent(((CBattleground*)this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1);
 }
 
 LocationVector Arena::GetStartingCoords(uint32 Team)

@@ -58,7 +58,7 @@ bool ChatHandler::HandlePlaySoundCommand(const char* args, WorldSession *m_sessi
 bool ChatHandler::HandleSetBattlefieldStatusCommand(const char* args, WorldSession *m_session)
 {
 	uint32 type = atoi(args);
-	BattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), 1, type, 0 , 0);
+	BattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), 1, type, 0 , 0, m_session->GetPlayer()->GetMapId());
 	return true;
 }
 

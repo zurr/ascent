@@ -34,11 +34,11 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket &recv_data)
 	/* This is done based on whether we are queued, inside, or not in a battleground.
 	 */
 	if(_player->m_pendingBattleground)		// Ready to port
-		BattlegroundManager.SendBattlefieldStatus(_player, 2, _player->m_pendingBattleground->GetType(), _player->m_pendingBattleground->GetId(), 120000);
+		BattlegroundManager.SendBattlefieldStatus(_player, 2, _player->m_pendingBattleground->GetType(), _player->m_pendingBattleground->GetId(), 120000, 0);
 	else if(_player->m_bg)					// Inside a bg
-		BattlegroundManager.SendBattlefieldStatus(_player, 3, _player->m_bg->GetType(), _player->m_bg->GetId(), World::UNIXTIME - _player->m_bg->GetStartTime());
+		BattlegroundManager.SendBattlefieldStatus(_player, 3, _player->m_bg->GetType(), _player->m_bg->GetId(), World::UNIXTIME - _player->m_bg->GetStartTime(), _player->GetMapId());
 	else									// None
-		BattlegroundManager.SendBattlefieldStatus(_player, 0, 0, 0, 0);	
+		BattlegroundManager.SendBattlefieldStatus(_player, 0, 0, 0, 0, 0);	
 }
 
 void WorldSession::HandleBattlefieldListOpcode(WorldPacket &recv_data)

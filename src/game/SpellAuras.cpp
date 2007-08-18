@@ -2261,6 +2261,9 @@ void Aura::SpellAuraModDetect(bool apply)
 void Aura::SpellAuraModInvisibility(bool apply)
 {
 	SetPositive();
+	if(m_spellProto->Effect[mod->i] == 128)
+		return;
+
 	m_target->m_invisible = apply;
 	m_target->UpdateVisibility();
 }

@@ -198,7 +198,7 @@ public:
 	void DeleteBattleground(CBattleground * bg);
 
 	/* Build SMSG_BATTLEFIELD_STATUS */
-	void SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time);
+	void SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId);
 };
 
 class CBattleground : public EventableObject

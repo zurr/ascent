@@ -134,7 +134,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession * m_session, Worl
 	Log.Success("BattlegroundManager", "Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->GetGUIDLow(), instance );
 
 	/* send the battleground status packet */
-	SendBattlefieldStatus(m_session->GetPlayer(), 1, bgtype, instance, 0);
+	SendBattlefieldStatus(m_session->GetPlayer(), 1, bgtype, instance, 0, BGMapIds[bgtype]);
 	m_session->GetPlayer()->m_bgIsQueued = true;
 	m_session->GetPlayer()->m_bgQueueInstanceId = instance;
 	m_session->GetPlayer()->m_bgQueueType = bgtype;
@@ -319,7 +319,7 @@ void CBattlegroundManager::EventQueueUpdate()
 						if(plr)
 						{
 							sChatHandler.SystemMessageToPlr(plr, "Your queue on battleground instance %u is no longer valid, the instance no longer exists.", it2->first);
-							SendBattlefieldStatus(plr, 0, 0, 0, 0);
+							SendBattlefieldStatus(plr, 0, 0, 0, 0, 0);
 							plr->m_bgIsQueued = false;
 						}
 					}
@@ -413,6 +413,7 @@ void CBattleground::SendWorldStates(Player * plr)
 	case  489: bflag = 0x0CCD; bflag2 = 0x0CF9; break;
 	case  529: bflag = 0x0D1E; break;
 	case   30: bflag = 0x0A25; break;
+	case  559: bflag = 3698; break;
 	
 	default:		/* arenas */
 		bflag  = 0x0E76;
@@ -474,7 +475,19 @@ void CBattleground::UpdatePvPData()
 		m_mainLock.Acquire();
 		WorldPacket data(MSG_PVP_LOG_DATA, 50);
 		BGScore * bs;
-		data << uint8(0);
+		/*if(m_type >= BATTLEGROUND_ARENA_2V2 && m_type <= BATTLEGROUND_ARENA_5V5 && !m_ended)
+		{
+			data << uint8(1);
+			data << uint32(0x6C0EF0F4);
+			data << uint32(0x00000400);
+			data << uint32(0x01010000);
+			data << uint32(0x00000009);
+			data << uint32(0x001A070E);
+			data << uint32(0x00000000);
+		}
+		else*/
+            data << uint8(0);
+
 		if(m_ended)
 		{
 			data << uint8(1);
@@ -541,7 +554,7 @@ void CBattleground::AddPlayer(Player * plr)
 	m_pendPlayers[plr->GetTeam()].insert(plr->GetGUIDLow());
 
 	/* Send a packet telling them that they can enter */
-	BattlegroundManager.SendBattlefieldStatus(plr, 2, m_type, m_id, 120000);		// You will be removed from the queue in 2 minutes.
+	BattlegroundManager.SendBattlefieldStatus(plr, 2, m_type, m_id, 120000, m_mapMgr->GetMapId());		// You will be removed from the queue in 2 minutes.
 
 	/* Add an event to remove them in 2 minutes time. */
 	sEventMgr.AddEvent(plr, &Player::RemoveFromBattlegroundQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 120000, 1);
@@ -556,7 +569,7 @@ void CBattleground::RemovePendingPlayer(Player * plr)
 	
 	m_pendPlayers[plr->GetTeam()].erase(plr->GetGUIDLow());
 	/* send a null bg update (so they don't join) */
-	BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0);
+	BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0, 0);
 	plr->m_pendingBattleground =0;
 
 	m_mainLock.Release();
@@ -568,7 +581,7 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 	if(m_ended)
 	{
 		sChatHandler.SystemMessage(plr->GetSession(), "You cannot join this battleground as it has already ended.");
-		BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0);
+		BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0, 0);
 		plr->m_pendingBattleground = 0;
 		m_mainLock.Release();
 		return;
@@ -591,7 +604,7 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 		plr->m_bgEntryPointInstance = plr->GetInstanceID();
 	
 		plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), GetStartingCoords(plr->GetTeam()));
-		BattlegroundManager.SendBattlefieldStatus(plr, 3, m_type, m_id, World::UNIXTIME - m_startTime);	// Elapsed time is the last argument
+		BattlegroundManager.SendBattlefieldStatus(plr, 3, m_type, m_id, World::UNIXTIME - m_startTime, m_mapMgr->GetMapId());	// Elapsed time is the last argument
 	}
 
 	m_pendPlayers[plr->GetTeam()].erase(plr->GetGUIDLow());
@@ -722,7 +735,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground * bg)
 			if(plr)
 			{
 				sChatHandler.SystemMessageToPlr(plr, "Your queue on battleground instance %u is no longer valid, the instance no longer exists.", bg->GetId());
-				SendBattlefieldStatus(plr, 0, 0, 0, 0);
+				SendBattlefieldStatus(plr, 0, 0, 0, 0, 0);
 				plr->m_bgIsQueued = false;
 			}
 		}
@@ -797,19 +810,16 @@ void CBattleground::PlaySoundToTeam(uint32 Team, uint32 Sound)
 	DistributePacketToTeam(&data, Team);
 }
 
-void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time)
+void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId)
 {
 	WorldPacket data(SMSG_BATTLEFIELD_STATUS, 30);
 	if(Status == 0)
 		data << uint64(0) << uint32(0);
 	else
 	{
-		data << uint32(0);
-
-		if(Type < BATTLEGROUND_ARENA_2V2 || Type == BATTLEGROUND_EYE_OF_THE_STORM)
-			data << uint8(0) << uint8(2);
-		else
+		if(Type >= BATTLEGROUND_ARENA_2V2 && Type <= BATTLEGROUND_ARENA_5V5)
 		{
+			data << uint32(1);
 			switch(Type)
 			{
 			case BATTLEGROUND_ARENA_2V2:
@@ -825,12 +835,21 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 				break;
 			}
 			data << uint8(0xC);
+			data << uint32(6);
+			data << uint16(0x1F90);
+			data << uint32(11);
+			data << uint8(0);		// 1 = rated match
 		}
-
-		data << Type;
-		data << uint16(0x1F90);
-		data << InstanceID;
-		data << uint8(plr->GetTeam());
+		else
+		{
+			data << uint32(0);
+			data << uint8(0) << uint8(2);
+			data << Type;
+			data << uint16(0x1F90);
+			data << InstanceID;
+			data << uint8(plr->GetTeam());
+		}
+		
 		data << Status;
 
 		switch(Status)
@@ -839,10 +858,13 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 			data << uint32(60) << uint32(0);				// Time / Elapsed time
 			break;
 		case 2:					// Ready to join!
-			data << BGMapIds[Type] << Time;
+			data << MapId << Time;
 			break;
 		case 3:
-			data << BGMapIds[Type] << uint32(0) << Time << uint8(1);
+			/*if(Type >= BATTLEGROUND_ARENA_2V2 && Type <= BATTLEGROUND_ARENA_5V5)
+				data << MapId << uint32(0x0001D4C0) << uint32(0x0002FC8A) << uint8(0);
+			else*/
+				data << MapId << uint32(0) << Time << uint8(1);
 			break;
 		}
 	}
@@ -877,7 +899,7 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 		LocationVector vec(plr->m_bgEntryPointX, plr->m_bgEntryPointY, plr->m_bgEntryPointZ, plr->m_bgEntryPointO);
 		plr->SafeTeleport(plr->m_bgEntryPointMap, plr->m_bgEntryPointInstance, vec);
 
-		BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0);
+		BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0, 0);
 
 		/* send some null world states */
 		data.Initialize(SMSG_INIT_WORLD_STATES);
@@ -900,7 +922,19 @@ void CBattleground::SendPVPData(Player * plr)
 	m_mainLock.Acquire();
 	WorldPacket data(MSG_PVP_LOG_DATA, 50);
 	BGScore * bs;
-	data << uint8(0);
+	/*if(m_type >= BATTLEGROUND_ARENA_2V2 && m_type <= BATTLEGROUND_ARENA_5V5 && !m_ended)
+	{
+		data << uint8(1);
+		data << uint32(0x6C0EF0F4);
+		data << uint32(0x00000400);
+		data << uint32(0x01010000);
+		data << uint32(0x00000009);
+		data << uint32(0x001A070E);
+		data << uint32(0x00000000);
+	}
+	else*/
+		data << uint8(0);
+
 	if(m_ended)
 	{
 		data << uint8(1);
@@ -1151,7 +1185,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession * m_session, uint32 Batt
 	Log.Success("BattlegroundMgr", "Player %u is now in battleground queue for {Arena %u}", m_session->GetPlayer()->GetGUIDLow(), BattlegroundType );
 
 	/* send the battleground status packet */
-	SendBattlefieldStatus(m_session->GetPlayer(), 1, BattlegroundType, 0 , 0);
+	SendBattlefieldStatus(m_session->GetPlayer(), 1, BattlegroundType, 0 , 0, 0);
 	m_session->GetPlayer()->m_bgIsQueued = true;
 	m_session->GetPlayer()->m_bgQueueInstanceId = 0;
 	m_session->GetPlayer()->m_bgQueueType = BattlegroundType;
