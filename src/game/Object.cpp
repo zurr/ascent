@@ -1637,7 +1637,6 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 					AreaTable * at = sAreaStore.LookupEntry(AreaId);
 					if(at)
 					{
-						sLog.outString("Sending SMSG_ZONE_UNDER_ATTACK.");
 						WorldPacket data(SMSG_ZONE_UNDER_ATTACK, 4);
 						data << (uint32)at->ZoneId;
 						sWorld.SendFactionMessage(&data, team);
