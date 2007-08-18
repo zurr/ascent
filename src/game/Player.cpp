@@ -346,6 +346,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_tempSummon = 0;
 	m_spellcomboPoints = 0;
 	m_pendingBattleground = 0;
+	m_deathVision = false;
 }
 
 
@@ -3101,7 +3102,7 @@ void Player::ResetHeartbeatCoords()
 void Player::RemoveFromWorld()
 {
 	if(m_bg)
-		m_bg->RemovePlayer(this);
+		m_bg->RemovePlayer(this, true);
 
 	if(m_tempSummon)
 	{
@@ -4771,7 +4772,7 @@ bool Player::CanSee(Object* obj)
 				{
 					// if we're in corpse state, we can't see anything but other dead players.
 					// otherwise, we can still see everything
-					if(getDeathState() != CORPSE)
+					if(getDeathState() != CORPSE || m_deathVision)
 						return true;
 					else
 						return false;
@@ -7043,7 +7044,7 @@ void Player::UpdatePvPArea()
                 }
             }
 
-            if(at->AreaFlags & AREA_PVP_ARENA)
+            if(at->AreaFlags & AREA_PVP_ARENA && !m_bg)			/* ffa pvp arenas will come later */
             {
                 if(!IsPvPFlagged()) SetPvPFlag();
 

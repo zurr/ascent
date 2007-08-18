@@ -146,7 +146,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectNULL,//unknown - 125 // Reduce Threat by % //http://www.thottbot.com/?sp=32835
 		&Spell::SpellEffectNULL,//unknown - 126 // Steal Beneficial Buff (Magic) //http://www.thottbot.com/?sp=30449
 		&Spell::SpellEffectProspecting,//unknown - 127 // Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
-		&Spell::SpellEffectNULL,//unknown - 128 // Adjust a stats by %: Mod Stat // ITS FLAT
+		&Spell::SpellEffectApplyAura128,//unknown - 128 // Adjust a stats by %: Mod Stat // ITS FLAT
 		&Spell::SpellEffectNULL,//unknown - 129 // Mod Dmg % (Spells)
 		&Spell::SpellEffectNULL,//unknown - 130 // no spells
 		&Spell::SpellEffectNULL,//unknown - 131 // no spells
@@ -4101,4 +4101,10 @@ void Spell::SpellEffectSpawn(uint32 i)
 		u_caster->GetAIInterface()->SendMoveToPacket(coord[i][0],coord[i][1],coord[i][2],0.0f,0,u_caster->GetAIInterface()->getMoveFlags());
 	  }
 	}
+}
+
+void Spell::SpellEffectApplyAura128(uint32 i)
+{
+	if(m_spellInfo->EffectApplyAuraName[i] != 0)
+		SpellEffectApplyAura(i);
 }

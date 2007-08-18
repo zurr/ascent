@@ -1354,6 +1354,7 @@ public:
 	void SpellEffectEnchantHeldItem(uint32 i);
 	void SpellEffectAddHonor(uint32 i);
 	void SpellEffectSpawn(uint32 i);
+	void SpellEffectApplyAura128(uint32 i);
 
 	void Heal(int32 amount);
 

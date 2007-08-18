@@ -418,8 +418,8 @@ void GossipScript::GossipHello(Creature* pCreature, Player* Plr, bool AutoSend)
 	if(flags & UNIT_NPC_FLAG_TABARDCHANGER)
 		Menu->AddItem(0, "I want to create a guild crest.", 9);
 
-	/*if(flags & UNIT_NPC_FLAG_BATTLEFIELDPERSON)
-		Menu->AddItem(0, "I would like to go to the battleground.", 10);*/
+	if(flags & UNIT_NPC_FLAG_BATTLEFIELDPERSON)
+		Menu->AddItem(0, "I would like to go to the battleground.", 10);
 
 	if( pTrainer &&
 		pTrainer->RequiredClass &&					  // class trainer

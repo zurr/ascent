@@ -1342,6 +1342,7 @@ public:
 #endif
 
 	Creature * m_tempSummon;
+	bool m_deathVision;
 
 	void RemoveFromBattlegroundQueue();
 

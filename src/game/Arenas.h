@@ -34,7 +34,14 @@ public:
 	LocationVector GetStartingCoords(uint32 Team);
 	virtual const char * GetName() { return "Arena"; }
 	void OnStart();
-	bool CanPlayerJoin(Player * plr) { return !m_started; }
+	bool CanPlayerJoin(Player * plr)
+	{
+		if(m_started)
+			return false;
+		else
+			return true;
+	}
+
 	bool CreateCorpse(Player * plr) { return false; }
 
 	/* dummy stuff */

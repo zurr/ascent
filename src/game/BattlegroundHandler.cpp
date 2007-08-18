@@ -54,7 +54,15 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 
 	/* we should have a bg id selection here. */
 	uint32 t = BATTLEGROUND_WARSUNG_GULCH;
-	//BattlegroundManager.HandleBattlegroundListPacket(this, t);
+	if(pCreature->GetCreatureName())
+	{
+		if(strstr(pCreature->GetCreatureName()->SubName, "Arena") != NULL)
+			t = BATTLEGROUND_ARENA_2V2;
+		else if(strstr(pCreature->GetCreatureName()->SubName, "Warsong") != NULL)
+			t = BATTLEGROUND_WARSUNG_GULCH;
+	}
+
+    BattlegroundManager.HandleBattlegroundListPacket(this, t);
 }
 
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)
@@ -65,7 +73,7 @@ void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket &recv_data)
 {
 	if(_player->m_bg && _player->IsInWorld())
-		_player->m_bg->RemovePlayer(_player);
+		_player->m_bg->RemovePlayer(_player, false);
 }
 
 void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket &recv_data)
@@ -97,12 +105,41 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket &recv_dat
 
 void WorldSession::HandleBattleMasterJoinOpcode(WorldPacket &recv_data)
 {
+	/* are we already in a queue? */
+	if(_player->m_bgIsQueued)
+		BattlegroundManager.RemovePlayerFromQueues(_player);
+
 	if(_player->IsInWorld())
 		BattlegroundManager.HandleBattlegroundJoin(this, recv_data);
 }
 
 void WorldSession::HandleArenaJoinOpcode(WorldPacket &recv_data)
 {
+	/* are we already in a queue? */
+	if(_player->m_bgIsQueued)
+		BattlegroundManager.RemovePlayerFromQueues(_player);
+
+	uint32 bgtype=0;
+	uint64 guid;
+	uint8 arenacategory;
+    recv_data >> guid >> arenacategory;
+	switch(arenacategory)
+	{
+	case 0:		// 2v2
+		bgtype = BATTLEGROUND_ARENA_2V2;
+		break;
+
+	case 1:		// 3v3
+		bgtype = BATTLEGROUND_ARENA_3V3;
+		break;
+
+	case 2:		// 5v5
+		bgtype = BATTLEGROUND_ARENA_5V5;
+		break;
+	}
+
+	if(bgtype != 0)
+		BattlegroundManager.HandleArenaJoin(this, bgtype);
 }
 
 void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket &recv_data)

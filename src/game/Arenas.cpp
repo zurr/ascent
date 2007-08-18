@@ -35,6 +35,7 @@ Arena::~Arena()
 void Arena::OnAddPlayer(Player * plr)
 {
 	/* cast arena readyness buff */
+	plr->m_deathVision = true;
 	plr->CastSpell(plr, ARENA_PREPARATION, true);
 	UpdatePlayerCounts();
 }
@@ -42,6 +43,7 @@ void Arena::OnAddPlayer(Player * plr)
 void Arena::OnRemovePlayer(Player * plr)
 {
 	/* remove arena readyness buff */
+	plr->m_deathVision = false;
 	plr->RemoveAura(ARENA_PREPARATION);
 	UpdatePlayerCounts();
 }
@@ -64,6 +66,47 @@ void Arena::HookOnPlayerDeath(Player * plr)
 
 void Arena::OnCreate()
 {
+	GameObject * obj;
+	switch(m_mapMgr->GetMapId())
+	{
+		/* loraedeon */
+	case 572: {
+		
+			  }break;
+
+		/* blades edge arena */
+	case 562: {
+		obj = SpawnGameObject(183972, 562, 6177.707520, 227.348145, 3.604374, -2.260201, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.90445f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, -0.426569f);
+		obj->PushToWorld(m_mapMgr);
+
+		obj = SpawnGameObject(183973, 562, 6189.546387, 241.709854, 3.101481, 0.881392, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.426569f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, 0.904455f);
+		m_gates.insert(obj);
+
+		obj = SpawnGameObject(183970, 562, 6299.115723, 296.549438, 3.308032, 0.881392, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.426569f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, 0.904455f);
+		obj->PushToWorld(m_mapMgr);
+
+		obj = SpawnGameObject(183971, 562, 6287.276855, 282.187714, 3.810925, -2.260201, 32, 1375, 1.0f);
+		obj->SetUInt32Value(GAMEOBJECT_STATE, 1);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_02, 0.904455f);
+		obj->SetFloatValue(GAMEOBJECT_ROTATION_03, -0.426569f);
+		m_gates.insert(obj);
+			  }break;
+
+		/* nagrand arena */
+	case 559: {
+		
+			  }break;
+	}
+
 	/* push gates into world */
 	for(set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
 		(*itr)->PushToWorld(m_mapMgr);
@@ -84,7 +127,7 @@ void Arena::OnStart()
 {
 	/* remove arena readyness buff */
 	for(uint32 i = 0; i < 2; ++i) {
-		for(set<Player*>::iterator itr = m_players[0].begin(); itr != m_players[1].end(); ++itr) {
+		for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr) {
 			(*itr)->RemoveAura(ARENA_PREPARATION);
 		}
 	}
@@ -101,31 +144,86 @@ void Arena::OnStart()
 
 void Arena::UpdatePlayerCounts()
 {
+	if(m_ended)
+		return;
+
 	uint32 players[2] = {0,0};
 	for(uint32 i = 0; i < 2; ++i) {
 		for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr) {
 			if((*itr)->isAlive())
-				players[i]++;
+				players[(*itr)->GetTeam()]++;
 		}
 	}
 
 	SetWorldState(ARENA_WORLD_STATE_A_PLAYER_COUNT, players[0]);
 	SetWorldState(ARENA_WORLD_STATE_H_PLAYER_COUNT, players[1]);
+
+	if(!m_started)
+		return;
+
+	if(players[1] == 0)
+		m_winningteam = 1;
+	else if(players[0] == 0)
+		m_winningteam = 0;
+	else
+		return;
+
+	m_ended = true;
+	m_nextPvPUpdateTime = 0;
+	UpdatePvPData();
+	PlaySoundToAll(m_winningteam ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
+
+	sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
+	sEventMgr.AddEvent(((CBattleground*)this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1);
 }
 
 LocationVector Arena::GetStartingCoords(uint32 Team)
 {
 	// 559, 562, 572
+	/*
+	A start
+	H start
+	Repop
+	572 1295.322388 1585.953369 31.605387
+	572 1277.105103 1743.956177 31.603209
+	572 1286.112061 1668.334961 39.289127
+
+	562 6184.806641 236.643463 5.037095
+	562 6292.032227 287.570343 5.003577
+	562 6241.171875 261.067322 0.891833
+
+	559 4085.861328 2866.750488 12.417445
+	559 4027.004883 2976.964844 11.600499
+	559 4057.042725 2918.686523 13.051933
+	*/
 	switch(m_mapMgr->GetMapId())
 	{
 		/* loraedeon */
 	case 572:
+		{
+			if(Team)
+				return LocationVector(1277.105103, 1743.956177, 31.603209);
+			else
+				return LocationVector(1295.322388, 1585.953369, 31.605387);
+		}break;
+
 		/* blades edge arena */
 	case 562:
+		{
+			if(Team)
+				return LocationVector(6292.032227, 287.570343, 5.003577);
+			else
+				return LocationVector(6184.806641, 236.643463, 5.037095);
+		}break;
+
 		/* nagrand arena */
 	case 559:
-		return LocationVector(0,0,0,0);
-		break;
+		{
+			if(Team)
+				return LocationVector(4027.004883, 2976.964844, 11.600499);
+			else
+				return LocationVector(4085.861328, 2866.750488, 12.417445);
+		}break;
 	}
 
 	return LocationVector(0,0,0,0);
@@ -133,7 +231,43 @@ LocationVector Arena::GetStartingCoords(uint32 Team)
 
 bool Arena::HookHandleRepop(Player * plr)
 {
-	/* repop in the middle of the arena */
+	// 559, 562, 572
+	/*
+	A start
+	H start
+	Repop
+	572 1295.322388 1585.953369 31.605387
+	572 1277.105103 1743.956177 31.603209
+	572 1286.112061 1668.334961 39.289127
+
+	562 6184.806641 236.643463 5.037095
+	562 6292.032227 287.570343 5.003577
+	562 6241.171875 261.067322 0.891833
+
+	559 4085.861328 2866.750488 12.417445
+	559 4027.004883 2976.964844 11.600499
+	559 4057.042725 2918.686523 13.051933
+	*/
+	LocationVector dest(0,0,0,0);
+	switch(m_mapMgr->GetMapId())
+	{
+		/* loraedeon */
+	case 572: {
+			dest.ChangeCoords(1286.112061, 1668.334961, 39.289127);
+		}break;
+
+		/* blades edge arena */
+	case 562: {
+			dest.ChangeCoords(6241.171875, 261.067322, 0.891833);
+		}break;
+
+		/* nagrand arena */
+	case 559: {
+			dest.ChangeCoords(4057.042725, 2918.686523, 13.051933);
+		}break;
+	}
+
+	plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
 	return true;
 }
 

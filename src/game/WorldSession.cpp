@@ -243,7 +243,7 @@ void WorldSession::LogoutPlayer(bool Save)
 			sWorld.AlliancePlayers--;
 
 		if(_player->m_bg)
-			_player->m_bg->RemovePlayer(_player);
+			_player->m_bg->RemovePlayer(_player, true);
 
 		if(_player->m_bgIsQueued)
 			BattlegroundManager.RemovePlayerFromQueues(_player);

@@ -174,6 +174,7 @@ public:
 
 	/* Packet Handlers */
 	void HandleBattlegroundListPacket(WorldSession * m_session, uint32 BattlegroundType);
+	void HandleArenaJoin(WorldSession * m_session, uint32 BattlegroundType);
 
 	/* Player Logout Handler */
 	void OnPlayerLogout(Player * plr);
@@ -299,17 +300,17 @@ public:
 	void PlaySoundToAll(uint32 Sound);
 
 	/* Full? */
-	inline bool IsFull() { return (!HasFreeSlots(0) && !HasFreeSlots(1)); }
+	inline bool IsFull() { return !(HasFreeSlots(0) && HasFreeSlots(1)); }
 
 	/* Are we full? */
-	inline bool HasFreeSlots(uint32 Team) { m_mainLock.Acquire(); bool res = ((m_players[Team].size() + m_pendPlayers[Team].size()) >= m_playerCountPerTeam); m_mainLock.Release(); return res; }
+	inline bool HasFreeSlots(uint32 Team) { m_mainLock.Acquire(); bool res = ((m_players[Team].size() + m_pendPlayers[Team].size()) < m_playerCountPerTeam); m_mainLock.Release(); return res; }
 
 	/* Add Player */
 	void AddPlayer(Player * plr);
 	virtual void OnAddPlayer(Player * plr) = 0;
 
 	/* Remove Player */
-	void RemovePlayer(Player * plr);
+	void RemovePlayer(Player * plr, bool logout);
 	virtual void OnRemovePlayer(Player * plr) = 0;
 
 	/* Port Player */

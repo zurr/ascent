@@ -39,6 +39,9 @@ bool ChatHandler::HandleBGInfoCommnad(const char *args, WorldSession *m_session)
 
 bool ChatHandler::HandleBattlegroundCommand(const char* args, WorldSession *m_session)
 {
+	Player * plr = getSelectedChar(m_session, true);
+	if(!plr) return true;
+	BattlegroundManager.HandleBattlegroundListPacket(plr->GetSession(), atoi(args));
 	return true;
 }
 
@@ -54,7 +57,9 @@ bool ChatHandler::HandlePlaySoundCommand(const char* args, WorldSession *m_sessi
 
 bool ChatHandler::HandleSetBattlefieldStatusCommand(const char* args, WorldSession *m_session)
 {
-	return false;
+	uint32 type = atoi(args);
+	BattlegroundManager.SendBattlefieldStatus(m_session->GetPlayer(), 1, type, 0 , 0);
+	return true;
 }
 
 bool ChatHandler::HandleBattlegroundExitCommand(const char* args, WorldSession* m_session)
