@@ -31,11 +31,10 @@ enum BattleGroundTypes
 	BATTLEGROUND_ALTERAC_VALLEY = 1,
 	BATTLEGROUND_WARSUNG_GULCH,
 	BATTLEGROUND_ARATHI_BASIN,
-	BATTLEGROUND_NAGRAND_ARENA,
-	BATTLEGROUND_BLADES_EDGE_ARENA,
-	BATTLEGROUND_ALL_ARENAS,
+	BATTLEGROUND_ARENA_2V2,
+	BATTLEGROUND_ARENA_3V3,
+	BATTLEGROUND_ARENA_5V5,
 	BATTLEGROUND_EYE_OF_THE_STORM,
-	BATTLEGROUND_RUINS_OF_LORDAERON_ARENA,
 	BATTLEGROUND_NUM_TYPES,
 };
 
@@ -353,6 +352,8 @@ public:
 	inline uint32 GetLastResurrect() { return m_lastResurrect; }
 	void QueuePlayerForResurrect(Player * plr);
 	void EventResurrectPlayers();
+	virtual bool CanPlayerJoin(Player * plr) { return true; }
+	virtual bool CreateCorpse(Player * plr) { return true; }
 };
 
 #define BattlegroundManager CBattlegroundManager::getSingleton( )

@@ -18,18 +18,28 @@
 class Arena : public CBattleground
 {
 	set<GameObject*> m_gates;
+	bool m_started;
 public:
-	Arena(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t);
+	Arena(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
 	virtual ~Arena();
 
-	virtual bool HookOnHandleRepop() = 0;
+	bool HookHandleRepop(Player * plr);
 	void OnAddPlayer(Player * plr);
 	void OnRemovePlayer(Player * plr);
 	void OnCreate();
 	void HookOnPlayerDeath(Player * plr);
 	void HookOnPlayerKill(Player * plr, Unit * pVictim);
 	void HookOnHK(Player * plr);
-	virtual LocationVector GetStartingCoords(uint32 Team);
+	void UpdatePlayerCounts();
+	LocationVector GetStartingCoords(uint32 Team);
 	virtual const char * GetName() { return "Arena"; }
 	void OnStart();
+	bool CanPlayerJoin(Player * plr) { return !m_started; }
+	bool CreateCorpse(Player * plr) { return false; }
+
+	/* dummy stuff */
+	void HookOnMount(Player * plr) {}
+	void HookFlagDrop(Player * plr, GameObject * obj) {}
+	void HookFlagStand(Player * plr, GameObject * obj) {}
+	void HookOnAreaTrigger(Player * plr, uint32 id);
 };

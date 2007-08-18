@@ -25,10 +25,10 @@ const static uint32 BGMapIds[BATTLEGROUND_NUM_TYPES] = {
 	30,		// AV
 	489,	// WSG
 	529,	// AB
-	559,	// Nagrand Arena
-	562,	// Blades Edge Arena
+	0,		// 2v2
+	0,		// 3v3
+	0,		// 5v5
 	566,	// Netherstorm BG
-	572,    // Ruins of Lordaeron Arena
 };
 
 const static CreateBattlegroundFunc BGCFuncs[BATTLEGROUND_NUM_TYPES] = {
@@ -36,10 +36,10 @@ const static CreateBattlegroundFunc BGCFuncs[BATTLEGROUND_NUM_TYPES] = {
 	NULL,						// AV
 	&WarsongGulch::Create,		// WSG
 	NULL,						// AB
-	NULL,						// Nagrand
-	NULL,						// Blades Edge
+	NULL,						// 2v2
+	NULL,						// 3v3
+	NULL,						// 5v5
 	NULL,						// Netherstorm
-	NULL,                        // Ruins of Lordaeron
 };
 
 CBattlegroundManager::CBattlegroundManager() : EventableObject()
@@ -576,6 +576,42 @@ CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGr
 	CBattleground * bg;
 	uint32 iid;
 
+	if(Type == BATTLEGROUND_ARENA_2V2 || Type == BATTLEGROUND_ARENA_3V3 || Type == BATTLEGROUND_ARENA_5V5)
+	{
+		/* arenas follow a different procedure. */
+		static const uint32 arena_map_ids[3] = { 559, 562, 572 };
+		uint32 mapid = arena_map_ids[sRand.randInt(3)];
+		uint32 players_per_side;
+        if(sWorldCreator.CreateInstance(mapid, 0, &mgr) == false || !mgr)
+		{
+			Log.Error("BattlegroundManager", "Arena CreateInstance() call failed for map %u, type %u, level group %u", mapid, Type, LevelGroup);
+			return NULL;		// Shouldn't happen
+		}
+
+		switch(Type)
+		{
+		case BATTLEGROUND_ARENA_2V2:
+			players_per_side = 2;
+			break;
+
+		case BATTLEGROUND_ARENA_3V3:
+			players_per_side = 3;
+			break;
+
+		case BATTLEGROUND_ARENA_5V5:
+			players_per_side = 5;
+			break;
+		}
+
+		iid = ++m_maxBattlegroundId;
+        bg = new Arena(mgr, iid, LevelGroup, Type, players_per_side);
+		mgr->m_battleground = bg;
+		Log.Success("BattlegroundManager", "Created arena battleground type %u for level group %u on map %u.", Type, LevelGroup, mapid);
+		sEventMgr.AddEvent(bg, &CBattleground::EventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1);
+		return bg;
+	}
+
+
 	if(cfunc == NULL)
 	{
 		Log.Error("BattlegroundManager", "Could not find CreateBattlegroundFunc pointer for type %u level group %u", Type, LevelGroup);
@@ -704,10 +740,10 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 	{
 		data << uint32(0);
 
-		if(Type < 4 || Type == 7)
+		if(Type < BATTLEGROUND_ARENA_2V2 || Type == BATTLEGROUND_EYE_OF_THE_STORM)
 			data << uint8(0) << uint8(2);
 		else
-			data << uint8(2) << uint8(10);
+			data << uint8(3) << uint8(0xC);
 
 		data << Type;
 		data << uint16(0x1F90);
@@ -748,6 +784,10 @@ void CBattleground::RemovePlayer(Player * plr)
 	/* are we in the group? */
 	if(plr->GetGroup() == m_groups[plr->GetTeam()])
 		plr->GetGroup()->RemovePlayer(plr);
+
+	/* revive the player if he is dead */
+	if(!plr->isAlive())
+		plr->ResurrectPlayer();
 	
 	/* teleport out */
 	LocationVector vec(plr->m_bgEntryPointX, plr->m_bgEntryPointY, plr->m_bgEntryPointZ, plr->m_bgEntryPointO);

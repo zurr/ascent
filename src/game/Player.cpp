@@ -3603,7 +3603,10 @@ void Player::RepopRequestedPlayer()
 	if(HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_SKINNABLE))
 		RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_SKINNABLE);
 
-	CreateCorpse();
+	bool corpse = (m_bg != NULL) ? m_bg->CreateCorpse(this) : true;
+	if(corpse)
+		CreateCorpse();
+	
 	BuildPlayerRepop();
 
 	pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
@@ -3623,12 +3626,15 @@ void Player::RepopRequestedPlayer()
 		RepopAtGraveyard(GetPositionX(),GetPositionY(),GetPositionZ(),GetMapId());
 	}
 	
-	SpawnCorpseBody();
+	if(corpse)
+	{
+		SpawnCorpseBody();
 
-	/* Send Spirit Healer Location */
-	WorldPacket data(SMSG_SPIRIT_HEALER_POS, 16);
-	data << m_mapId << m_position;
-	m_session->SendPacket(&data);
+		/* Send Spirit Healer Location */
+		WorldPacket data(SMSG_SPIRIT_HEALER_POS, 16);
+		data << m_mapId << m_position;
+		m_session->SendPacket(&data);
+	}
 }
 
 void Player::ResurrectPlayer()
