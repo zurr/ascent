@@ -647,7 +647,7 @@ public:
 	void EventCastSpell(Unit * Target, SpellEntry * Sp);
 
 	bool isCasting();
-	   void CalculateResistanceReduction(Unit *pVictim,dealdamage *dmg) ;
+    void CalculateResistanceReduction(Unit *pVictim,dealdamage *dmg) ;
 	void RegenerateHealth();
 	void RegeneratePower(bool isinterrupted);
 	inline void setHRegenTimer(uint32 time) {m_H_regenTimer = time; }

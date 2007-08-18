@@ -140,20 +140,28 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectApplyPetAura,//SPELL_EFFECT_APPLY_PET_AURA - 119
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_TELEPORT_GRAVEYARD - 120//Not used
 		&Spell::SpellEffectDummyMelee,//SPELL_EFFECT_DUMMYMELEE	- 121
-		&Spell::SpellEffectNULL,//unknown - 122 //http://www.thottbot.com/?sp=31247
+		&Spell::SpellEffectNULL,//unknown - 122 //not used
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_FILMING - 123 // http://www.thottbot.com/?sp=27998: flightpath 
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_PULL - 124 //http://www.thottbot.com/?sp=28337
 		&Spell::SpellEffectNULL,//unknown - 125 // Reduce Threat by % //http://www.thottbot.com/?sp=32835
-		&Spell::SpellEffectNULL,//unknown - 126 // Steal Beneficial Buff (Magic) //http://www.thottbot.com/?sp=30449
+		&Spell::SpellEffectNULL,//SPELL_EFFECT_SPELL_STEAL - 126 // Steal Beneficial Buff (Magic) //http://www.thottbot.com/?sp=30449
 		&Spell::SpellEffectProspecting,//unknown - 127 // Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
 		&Spell::SpellEffectApplyAura128,//unknown - 128 // Adjust a stats by %: Mod Stat // ITS FLAT
-		&Spell::SpellEffectNULL,//unknown - 129 // Mod Dmg % (Spells)
-		&Spell::SpellEffectNULL,//unknown - 130 // no spells
-		&Spell::SpellEffectNULL,//unknown - 131 // no spells
-		&Spell::SpellEffectNULL,//unknown - 132 // no spells
-		&Spell::SpellEffectNULL,//unknown - 133 // trigger spell related to Leatherworking and blacksmithing
-		&Spell::SpellEffectNULL,//unknown - 134 // related to credits:S
-		&Spell::SpellEffectNULL,//unknown - 135 // related to summon pet:S IMPLEMENT THIS ONE
+		&Spell::SpellEffectNULL,// unknown - 129 // Mod Dmg % (Spells)
+		&Spell::SpellEffectNULL,// unknown - 130 // http://www.thottbot.com/s34477
+		&Spell::SpellEffectNULL,// unknown - 131 // test spell
+		&Spell::SpellEffectNULL,// unknown - 132 // no spells
+		&Spell::SpellEffectNULL,// SPELL_EFFECT_FORGET_SPECIALIZATION - 133 // http://www.thottbot.com/s36441 // I think this is a gm/npc spell
+		&Spell::SpellEffectNULL,// unknown - 134 // related to summoning objects and removing them, http://www.thottbot.com/s39161
+		&Spell::SpellEffectNULL,// unknown - 135 // no spells
+        &Spell::SpellEffectNULL,// unknown - 136 // http://www.thottbot.com/s41542 and http://www.thottbot.com/s39703
+        &Spell::SpellEffectNULL,// unknown - 137 // http://www.thottbot.com/s41542
+        &Spell::SpellEffectNULL,// unknown - 138 // related to superjump or even "*jump" spells http://www.thottbot.com/?e=Unknown%20138
+        &Spell::SpellEffectNULL,// unknown - 139 // no spells
+        &Spell::SpellEffectNULL,// unknown - 140 // triggers spell? I think only visual spell triggers
+        &Spell::SpellEffectNULL,// unknown - 141 // triggers spell, magic one,  (Mother spell) http://www.thottbot.com/s41065
+        &Spell::SpellEffectNULL,// unknown - 142 // triggers some kind of "Put spell on target" thing... (dono for sure) http://www.thottbot.com/s40872 and http://www.thottbot.com/s33076
+        &Spell::SpellEffectNULL,// unknown - 143 // Master -> deamon effecting spell, http://www.thottbot.com/s25228 and http://www.thottbot.com/s35696
 };
 
 void Spell::SpellEffectNULL(uint32 i)

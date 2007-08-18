@@ -245,10 +245,14 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//224
 		&Aura::SpellAuraNULL,//225
 		&Aura::SpellAuraNULL,//226
-		&Aura::SpellAuraNULL,//227
-		&Aura::SpellAuraNULL,//228
-		&Aura::SpellAuraNULL,//229
+		&Aura::SpellAuraNULL,//227 Inflicts [SPELL DAMAGE] damage to enemies in a cone in front of the caster. (based on combat range) http://www.thottbot.com/s40938
+		&Aura::SpellAuraNULL,//228 Stealth Detection. http://www.thottbot.com/s34709
+		&Aura::SpellAuraNULL,//229 Apply Aura:Reduces the damage your pet takes from area of effect attacks http://www.thottbot.com/s35694
 		&Aura::SpellAuraIncreaseMaxHealth,//230 Increase Max Health (commanding shout);
+        //231 curse a target http://www.thottbot.com/s40303
+        //232
+        //233
+        //234 Apply Aura: Reduces Silence or Interrupt effects, Item spell magic http://www.thottbot.com/s42184
 };
 /*
 inline void ApplyFloatSM(float ** m,float v,uint32 mask, float def)
