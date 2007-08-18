@@ -41,5 +41,27 @@ void WorldSession::HandleDuelCancelled(WorldPacket & recv_data)
 {
 	if(_player->DuelingWith == 0)
 		return;
-	_player->DuelingWith->EndDuel(DUEL_WINNER_RETREAT);
-}
+	if (_player->m_duelState == DUEL_STATE_STARTED)
+	{
+	 _player->DuelingWith->EndDuel(DUEL_WINNER_KNOCKOUT);
+    return;
+	}
+	WorldPacket data(SMSG_DUEL_COMPLETE, 1);
+	data << uint8(0);
+	SendPacket(&data);
+	_player->DuelingWith->m_session->SendPacket(&data);
+	GameObject *arbiter = _player->GetMapMgr() ? _player->GetMapMgr()->GetGameObject(_player->GetUInt32Value(PLAYER_DUEL_ARBITER)) : 0;
+	if(arbiter)
+	{
+			arbiter->RemoveFromWorld();
+			delete arbiter;
+ 		}
+	_player->SetUInt64Value(PLAYER_DUEL_ARBITER, 0);
+	_player->DuelingWith->SetUInt64Value(PLAYER_DUEL_ARBITER, 0);
+	_player->SetUInt32Value(PLAYER_DUEL_TEAM, 0);
+	_player->DuelingWith->SetUInt32Value(PLAYER_DUEL_TEAM, 0);
+	_player->DuelingWith->DuelingWith = NULL;
+	_player->DuelingWith = NULL;
+
+	}
+
