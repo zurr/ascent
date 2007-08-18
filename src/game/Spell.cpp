@@ -3916,6 +3916,50 @@ uint32 GetDiminishingGroup(uint32 NameHash)
 		grp = 13;
 		break;
 
+	case 0x898B6207:        // Hibernate
+		grp=14;
+		break;
+
+	case 0x73812928:        // Cyclone
+		{
+			grp = 15;
+			pve = true;
+		}break;
+
+	case 0xAD3ABF60:        // Celestial Focus
+		{
+			grp = 16;
+			pve = true;
+		}break;
+
+	case 0x72676492:        // Impact
+		{
+			grp = 17;
+			pve = true;
+		}break;
+
+	case 0x9018F6EA:        // Blackout
+		{
+			grp = 18;
+			pve = true;
+		}break;
+
+	case 0x3D46465A:        // Banish
+		grp = 19;
+		break;
+
+	case 0x593D7EC7:        // Freezing Trap
+		grp = 20;
+		break;
+
+	case 0x94675337:        // Scare Beast
+		grp = 21;
+		break;
+
+	case 0x9B34BCDA:        // Enslave Demon
+		grp = 22;
+		break;
+
 	}
 	uint32 ret;
 	if(pve)
