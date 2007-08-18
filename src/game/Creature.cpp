@@ -737,9 +737,15 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	SetUInt32Value(OBJECT_FIELD_ENTRY,proto->Id);
 	SetFloatValue(OBJECT_FIELD_SCALE_X,proto->Scale);
 	
-	SetUInt32Value(UNIT_FIELD_HEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
-	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
-	SetUInt32Value(UNIT_FIELD_MAXHEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+	//SetUInt32Value(UNIT_FIELD_HEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+	//SetUInt32Value(UNIT_FIELD_BASE_HEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+	//SetUInt32Value(UNIT_FIELD_MAXHEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+	uint32 health = proto->MinHealth + sRand.randInt(proto->MaxHealth - proto->MinHealth);
+	if(mode)
+		health = long2int32(double(health) * 1.5);
+	SetUInt32Value(UNIT_FIELD_HEALTH, health);
+	SetUInt32Value(UNIT_FIELD_MAXHEALTH, health);
+	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, health);
 
 	SetUInt32Value(UNIT_FIELD_POWER1,proto->Mana);
 	SetUInt32Value(UNIT_FIELD_MAXPOWER1,proto->Mana);
@@ -753,7 +759,11 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	if(spawn->displayid != creature_info->DisplayID)
 		setGender(1);   // Female
 	
-    SetUInt32Value(UNIT_FIELD_LEVEL, (mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
+    //SetUInt32Value(UNIT_FIELD_LEVEL, (mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
+	SetUInt32Value(UNIT_FIELD_LEVEL, proto->MinLevel + (sRand.randInt(proto->MaxLevel - proto->MinLevel)));
+	if(mode && info)
+		ModUInt32Value(UNIT_FIELD_LEVEL, info->lvl_mod_a);
+
 	for(uint32 i = 0; i < 7; ++i)
 		SetUInt32Value(UNIT_FIELD_RESISTANCES+i,proto->Resistances[i]);
 
@@ -915,9 +925,14 @@ void Creature::Load(CreatureProto * proto_, float x, float y, float z)
 	SetUInt32Value(OBJECT_FIELD_ENTRY,proto->Id);
 	SetFloatValue(OBJECT_FIELD_SCALE_X,proto->Scale);
 
-	SetUInt32Value(UNIT_FIELD_HEALTH, proto->Health);
-	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, proto->Health);
-	SetUInt32Value(UNIT_FIELD_MAXHEALTH, proto->Health);
+	//SetUInt32Value(UNIT_FIELD_HEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+	//SetUInt32Value(UNIT_FIELD_BASE_HEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+	//SetUInt32Value(UNIT_FIELD_MAXHEALTH, (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+	uint32 health = proto->MinHealth + sRand.randInt(proto->MaxHealth - proto->MinHealth);
+
+	SetUInt32Value(UNIT_FIELD_HEALTH, health);
+	SetUInt32Value(UNIT_FIELD_MAXHEALTH, health);
+	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, health);
 
 	SetUInt32Value(UNIT_FIELD_POWER1,proto->Mana);
 	SetUInt32Value(UNIT_FIELD_MAXPOWER1,proto->Mana);
@@ -925,8 +940,11 @@ void Creature::Load(CreatureProto * proto_, float x, float y, float z)
 
 	SetUInt32Value(UNIT_FIELD_DISPLAYID,creature_info->DisplayID);
 	SetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID,creature_info->DisplayID);
+	SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID,proto->MountedDisplayID);
 
-	SetUInt32Value(UNIT_FIELD_LEVEL, proto->Level);
+	//SetUInt32Value(UNIT_FIELD_LEVEL, (mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
+	SetUInt32Value(UNIT_FIELD_LEVEL, proto->MinLevel + (sRand.randInt(proto->MaxLevel - proto->MinLevel)));
+
 	for(uint32 i = 0; i < 7; ++i)
 		SetUInt32Value(UNIT_FIELD_RESISTANCES+i,proto->Resistances[i]);
 

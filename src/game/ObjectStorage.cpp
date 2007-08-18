@@ -22,7 +22,7 @@
 const char * gItemPrototypeFormat						= "uuuussssuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuffuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuu";
 const char * gCreatureNameFormat						= "ussuuuuuuuffcc";
 const char * gGameObjectNameFormat						= "uuusuuuuuuuuuuuuuuuuuuuuuuuu";
-const char * gCreatureProtoFormat						= "uuuuufuuffuffuuuuuuuuuuuuuuuuuuffsuu";
+const char * gCreatureProtoFormat						= "uuuuuuufuuffuffuuuuuuuuuuuuuuuuuuffsuuuu";
 const char * gAreaTriggerFormat							= "uuuusffffuu";
 const char * gItemPageFormat							= "usu";
 const char * gNpcTextFormat								= "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
@@ -67,8 +67,10 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 					itr->Get()->start_auras.insert( id );
 			}
 
-			if(!itr->Get()->Health)
-				itr->Get()->Health = 1;
+			if(!itr->Get()->MinHealth)
+				itr->Get()->MinHealth = 1;
+			if(!itr->Get()->MaxHealth)
+				itr->Get()->MaxHealth = 1;
 
 			cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
 			cn->m_fleeHealth = 0.0f;

@@ -206,6 +206,9 @@ inline MTRand::uint32 MTRand::randIntInternal(bool lock)
 
 inline MTRand::uint32 MTRand::randInt( const uint32& n )
 {
+	if(n == 0)
+		return 0;
+
 	m_Lock.Acquire();
 
 	// Find which bits are used in n

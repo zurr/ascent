@@ -54,9 +54,11 @@ struct CreatureInfo
 struct CreatureProto
 {
 	uint32 Id;
-	uint32 Level;
+	uint32 MinLevel;
+	uint32 MaxLevel;
 	uint32 Faction;
-	uint32 Health;
+	uint32 MinHealth;
+	uint32 MaxHealth;
 	uint32 Mana;
 	float  Scale;
 	uint32	NPCFLags;
@@ -83,6 +85,8 @@ struct CreatureProto
 	char * aura_string;
 	uint32 boss;
 	uint32 money;
+	uint32 invisibility_type;
+	uint32 death_state;
 
 	/* AI Stuff */
 	bool m_canRangedAttack;
