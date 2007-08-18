@@ -49,8 +49,8 @@ void WSClient::OnRead()
 		{
 			/* optimized version for packet passing, to reduce latency! ;) */
 			uint32 sid = *(uint32*)&m_readBuffer[0];
-			uint32 sz  = *(uint32*)&m_readBuffer[4];
-			uint16 op  = *(uint16*)&m_readBuffer[8];
+			uint16 op  = *(uint16*)&m_readBuffer[4];
+			uint32 sz  = *(uint32*)&m_readBuffer[6];			
 			WorldSession * session = sClusterInterface.GetSession(sid);
 			if(session != NULL)
 			{
@@ -70,8 +70,15 @@ void WSClient::OnRead()
 		Read(_remaining, (uint8*)pck->contents());
 
 		/* we could handle auth here */
-		printf("Got packet from RS: %u\n", pck->GetOpcode());
-		sClusterInterface.QueuePacket(pck);
+		switch(_cmd)
+		{
+		case ISMSG_AUTH_REQUEST:
+			sClusterInterface.HandleAuthRequest(*pck);
+			delete pck;
+			break;
+		default:
+			sClusterInterface.QueuePacket(pck);
+		}		
 	}
 }
 

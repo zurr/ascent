@@ -140,7 +140,7 @@ void Session::HandleCharacterEnum(WorldPacket & pck)
 
 void Session::HandlePlayerLogin(WorldPacket & pck)
 {
-	WorldPacket data(SMSG_CHARACTER_LOGIN_FAILED, 10);
+	WorldPacket data(SMSG_CHARACTER_LOGIN_FAILED, 30);
 	LocationVector LoginCoord;
 	Instance * dest;
 	ASSERT(!m_currentPlayer);
@@ -158,7 +158,7 @@ void Session::HandlePlayerLogin(WorldPacket & pck)
 	RPlayerInfo * p = m_currentPlayer;
 
 	/* Load player data */
-	QueryResult * result = CharacterDatabase.Query("SELECT acct, name, level, guildid, positionX, positionY, zoneId, mapId, race, class, gender, instance_id FROM characters WHERE guid = %u", guid);
+	QueryResult * result = CharacterDatabase.Query("SELECT acct, name, level, guildid, positionX, positionY, zoneId, mapId, race, class, gender, instance_id, entrypointmap, entrypointx, entrypointy, entrypointz, entrypointo FROM characters WHERE guid = %u", guid);
 	if(result)
 	{
 		Field * f = result->Fetch();
@@ -177,6 +177,8 @@ void Session::HandlePlayerLogin(WorldPacket & pck)
 		p->GMPermissions = m_GMPermissions;
 		p->Account_Flags = m_accountFlags;
 		p->InstanceId = f[11].GetUInt32();
+		p->RecoveryMapId = f[12].GetUInt32();
+		p->RecoveryPosition.ChangeCoords(f[13].GetFloat(), f[14].GetFloat(), f[15].GetFloat(), f[16].GetFloat());
 		delete result;
 	}
 	else
@@ -184,6 +186,7 @@ void Session::HandlePlayerLogin(WorldPacket & pck)
 		data << uint8(CHAR_LOGIN_NO_CHARACTER);
 		SendPacket(&data);
 		sClientMgr.DestroyRPlayerInfo(guid);
+		m_currentPlayer = NULL;
 		return;
 	}
 
@@ -205,6 +208,13 @@ void Session::HandlePlayerLogin(WorldPacket & pck)
 
 			/* obtain instance */
 			dest = sClusterMgr.GetInstanceByMapId(m_currentPlayer->MapId);
+			if(dest)
+			{
+				data.SetOpcode(SMSG_NEW_WORLD);
+                data << m_currentPlayer->MapId << m_currentPlayer->RecoveryPosition << float(0);
+				SendPacket(&data);
+				data.clear();
+			}
 		}
 	}
 
@@ -215,6 +225,7 @@ void Session::HandlePlayerLogin(WorldPacket & pck)
 		data << uint8(CHAR_LOGIN_NO_WORLD);
 		SendPacket(&data);
 		sClientMgr.DestroyRPlayerInfo(guid);
+		m_currentPlayer = NULL;
 		return;
 	}
 

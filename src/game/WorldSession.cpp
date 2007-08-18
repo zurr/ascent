@@ -187,10 +187,12 @@ int WorldSession::Update(uint32 InstanceID)
 		return 1;
 	}
 
+#ifndef CLUSTERING
 	// 0 - OK!
 	if(!((++_updatecount) % 2) && _socket)
 		_socket->UpdateQueuedPackets();
-		
+#endif
+
 	return 0;
 }
 

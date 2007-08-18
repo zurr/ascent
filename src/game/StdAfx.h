@@ -19,7 +19,7 @@
 #define __STDAFX_H
 
 #define _GAME
-/*#define CLUSTERING*/
+//#define CLUSTERING
 
 #include <list>
 #include <vector>

@@ -16,6 +16,7 @@
  */
 
 #include "RStdAfx.h"
+#include "svn_revision.h"
 
 WSSocket::WSSocket(SOCKET fd) : Socket(fd, 100000, 100000)
 {
@@ -32,6 +33,15 @@ WSSocket::~WSSocket()
 
 void WSSocket::HandleAuthRequest(WorldPacket & pck)
 {
+	uint8 key[20];
+	uint32 build;
+	string ver;
+	pck.read(key, 20);
+	pck >> build;
+	pck >> ver;
+
+	Log.Notice("WSSocket", "Auth reply, server is %s build %u", ver.c_str(), build);
+
 	// accept it
 	WorldPacket data(ISMSG_AUTH_RESULT, 4);
 	data << uint32(1);
@@ -60,8 +70,8 @@ void WSSocket::OnRead()
 		{
 			/* optimized version for packet passing, to reduce latency! ;) */
 			uint32 sid = *(uint32*)&m_readBuffer[0];
-			uint32 sz  = *(uint32*)&m_readBuffer[4];
-			uint16 op  = *(uint16*)&m_readBuffer[8];
+			uint16 op  = *(uint16*)&m_readBuffer[4];
+			uint32 sz  = *(uint32*)&m_readBuffer[6];
 			Session * session = sClientMgr.GetSession(sid);
 			if(session != NULL && session->GetSocket() != NULL)
 				session->GetSocket()->OutPacket(op, sz, m_readBuffer + 10);
@@ -182,6 +192,6 @@ void WSSocket::SendWoWPacket(Session * from, WorldPacket * pck)
 void WSSocket::OnConnect()
 {
 	WorldPacket data(ISMSG_AUTH_REQUEST, 4);
-	data << uint32(1);
+	data << uint32(g_getRevision());
 	SendPacket(&data);
 }

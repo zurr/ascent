@@ -4259,6 +4259,9 @@ uint32 Player::GetTutorialInt(uint32 intId )
 
 void Player::SetTutorialInt(uint32 intId, uint32 value)
 {
+	if(intId >= 8)
+		return;
+
 	ASSERT( (intId < 8) );
 	m_Tutorials[intId] = value;
 	tutorialsDirty = true;
@@ -8259,4 +8262,9 @@ void Player::RemoveFromBattlegroundQueue()
 	m_pendingBattleground->RemovePendingPlayer(this);
 	sChatHandler.SystemMessage(m_session, "You were removed from the queue for the battleground for not joining after 2 minutes.");
 	m_pendingBattleground = 0;
+}
+
+void Player::EventRemoveAndDelete()
+{
+
 }

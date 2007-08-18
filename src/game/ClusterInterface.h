@@ -33,7 +33,13 @@ class ClusterInterface : public Singleton<ClusterInterface>
 	FastQueue<WorldPacket*, Mutex> _pckQueue;
 	time_t _lastConnectTime;
 	WorldSession * _sessions[MAX_SESSIONS];
+	bool m_connected;
+	uint8 key[20];
+	uint32 m_latency;
+
 public:
+
+	string GenerateVersionString();
 
 	static ClusterInterfaceHandler PHandlers[IMSG_NUM_TYPES];
 	static void InitHandlers();
