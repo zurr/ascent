@@ -4840,7 +4840,7 @@ bool Player::CanSee(Object* obj)
 					
 					if ( ((Unit*)obj)->IsSpiritHealer() )
 						return false;
-					uint32 val = obj->GetUInt32Value(UNIT_FIELD_PADDING);
+					uint32 val = ((Unit*)obj)->m_invisibityFlag;
 					if(val > INVISIBILTY_FLAG_NONE)
 					{
 						if (val < INVISIBILTY_FLAG_TOTAL)

@@ -90,6 +90,7 @@ Creature::Creature(uint32 high, uint32 low)
 	SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,1);
 	m_custom_waypoint_map = 0;
 	m_escorter = 0;
+	m_limbostate = false;
 }
 
 
@@ -187,6 +188,18 @@ void Creature::OnRespawn()
 		Skinned = false;
 		Tagged = false;
 		TaggerGuid = 0;
+
+		/* creature death state */
+		if(proto && proto->death_state == 1)
+		{
+			uint32 newhealth = m_uint32Values[UNIT_FIELD_HEALTH] / 100;
+			if(!newhealth)
+				newhealth = 1;
+			SetUInt32Value(UNIT_FIELD_HEALTH, 1);
+			m_limbostate = true;
+			bInvincible = true;
+			SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DEAD);
+		}
 
 		//empty loot
 		loot.items.clear();
@@ -549,6 +562,9 @@ void Creature::CalcStat(uint32 type)
 
 void Creature::RegenerateHealth()
 {
+	if(m_limbostate)
+		return;
+
 	uint32 cur=GetUInt32Value(UNIT_FIELD_HEALTH);
 	uint32 mh=GetUInt32Value(UNIT_FIELD_MAXHEALTH);
 	if(cur>=mh)return;
@@ -909,6 +925,18 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	m_aiInterface->m_hasWaypointEvents = ScriptSystem->HasEventType(GetEntry(), CREATURE_EVENT_ON_REACH_WP);
 	m_aiInterface->m_isGuard = isGuard(GetEntry());
 
+	/* creature death state */
+	if(proto->death_state == 1)
+	{
+		uint32 newhealth = m_uint32Values[UNIT_FIELD_HEALTH] / 100;
+		if(!newhealth)
+			newhealth = 1;
+		SetUInt32Value(UNIT_FIELD_HEALTH, 1);
+		m_limbostate = true;
+		bInvincible = true;
+		SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DEAD);
+	}
+	m_invisibityFlag = proto->invisibility_type;
 	return true;
 }
 
@@ -1068,6 +1096,19 @@ void Creature::Load(CreatureProto * proto_, float x, float y, float z)
 	has_waypoint_text = objmgr.HasMonsterSay(GetEntry(), MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
 	m_aiInterface->m_hasWaypointEvents = ScriptSystem->HasEventType(GetEntry(), CREATURE_EVENT_ON_REACH_WP);
 	m_aiInterface->m_isGuard = isGuard(GetEntry());
+
+	/* creature death state */
+	if(proto->death_state == 1)
+	{
+		uint32 newhealth = m_uint32Values[UNIT_FIELD_HEALTH] / 100;
+		if(!newhealth)
+			newhealth = 1;
+		SetUInt32Value(UNIT_FIELD_HEALTH, 1);
+		m_limbostate = true;
+		bInvincible = true;
+		SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DEAD);
+	}
+	m_invisibityFlag = proto->invisibility_type;
 }
 
 void Creature::OnPushToWorld()
@@ -1138,3 +1179,16 @@ void Creature::DestroyCustomWaypointMap()
 		m_aiInterface->SetWaypointMap(0);
 	}
 }
+
+void Creature::RemoveLimboState(Unit * healer)
+{
+	if(!m_limbostate != true)
+		return;
+
+	m_limbostate = false;
+	SetUInt32Value(UNIT_NPC_EMOTESTATE, m_spawn ? m_spawn->emote_state : 0);
+	SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+	ScriptSystem->OnCreatureEvent(this, healer ? healer : this, CREATURE_EVENT_ON_LEAVE_LIMBO);
+	bInvincible = false;
+}
+

@@ -214,6 +214,7 @@ Unit::Unit()
 	polySpell = 0;
 	RangedDamageTaken = 0;
 	m_procCounter = 0;
+	m_invisibityFlag = 0;
 //	fearSpell = 0;
 }
 

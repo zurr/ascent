@@ -1040,6 +1040,7 @@ public:
 
 	//solo target auras
 	uint32 polySpell;
+	uint16 m_invisibityFlag;
 //	uint32 fearSpell;
 	
 protected:

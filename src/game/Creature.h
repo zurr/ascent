@@ -419,9 +419,12 @@ public:
 	WayPointMap * m_custom_waypoint_map;
 	Player * m_escorter;
 	void DestroyCustomWaypointMap();
+	bool IsInLimboState() { return m_limbostate; }
+	void RemoveLimboState(Unit * healer);
 
 protected:
 	CreatureAIScript *_myScriptClass;
+	bool m_limbostate;
 	GossipScript *_gossipScript;
 	Trainer* mTrainer;
 
