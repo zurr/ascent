@@ -2927,10 +2927,12 @@ void Unit::RemoveNegativeAuras()
 	{
 		if(m_auras[x])
 		{
-			if(m_auras[x]->GetSpellId()!=15007)//resurrection sickness
-			{
-				m_auras[x]->Remove();
-			}
+            if(m_auras[x]->GetSpellProto()->Flags4 & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+                continue;
+            else
+            {
+			    m_auras[x]->Remove();
+            }
 		}
 	}
 }
@@ -3818,10 +3820,17 @@ bool Unit::HasAura(uint32 visualid)
 void Unit::DropAurasOnDeath()
 {
 	for(uint32 x=0;x<MAX_AURAS;x++)
-	if(m_auras[x] && m_auras[x]->GetSpellProto()->Attributes!=671088640)//flask
-	{
-		m_auras[x]->Remove();
-	}
+    {
+        if(m_auras[x])
+        {
+            if(m_auras[x] && m_auras[x]->GetSpellProto()->Flags4 & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+                continue;
+            else
+	        {
+		        m_auras[x]->Remove();
+	        }
+        }
+    }
 }
 
 void Unit::UpdateSpeed(bool delay /* = false */)

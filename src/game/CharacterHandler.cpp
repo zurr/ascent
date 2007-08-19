@@ -668,6 +668,8 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	if(enter_world)
 	{
 		plr->SendInitialLogonPackets();
+
+        plr->CastPassiveSpellsAndAuras();
 		plr->AddToWorld();
 	}
 

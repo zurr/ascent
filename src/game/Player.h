@@ -607,7 +607,8 @@ public:
     SpellSet            m_SSSPecificSpells;
     SpellSet            mSpells;
     SpellSet            mDeletedSpells;
-	
+
+	void CastPassiveSpellsAndAuras();
     /************************************************************************/
     /* Actionbar                                                            */
     /************************************************************************/

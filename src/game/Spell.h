@@ -419,6 +419,11 @@ enum Flags3
 	
 };
 
+enum Flags4
+{
+    CAN_PERSIST_AND_CASTED_WHILE_DEAD = 0x100000,
+};
+
 enum SpellCastFlags
 {
 	CAST_FLAG_UNKNOWN1		   = 0x2,

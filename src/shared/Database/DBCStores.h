@@ -183,7 +183,7 @@ struct SpellEntry
 	uint32 Attributes;					  //7
 	uint32 AttributesEx;					//8
 	uint32 Flags3;						  //9
-	uint32 field10;						 //10 // Flags to
+	uint32 Flags4;						 //10 // Flags to
 	uint32 field11;						 //11 // Flags....
 	uint32 unk201_1;						//12 // Flags 2.0.1 unknown one
 	uint32 RequiredShapeShift;			  //13 // Flags BitMask for shapeshift spells

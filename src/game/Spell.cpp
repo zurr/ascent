@@ -1612,7 +1612,7 @@ void Spell::cast(bool check)
 			//******************** SHOOT SPELLS ***********************
 			//* Flags are now 1,4,19,22 (4718610) //0x480012
 
-			if (m_spellInfo->field10 & 0x8000 && m_caster->IsPlayer() && m_caster->IsInWorld())
+			if (m_spellInfo->Flags4 & 0x8000 && m_caster->IsPlayer() && m_caster->IsInWorld())
 			{
 				WorldPacket data(SMSG_SPELL_COOLDOWN, 15);
 				data << (uint32)m_spellInfo->Id << m_caster->GetNewGUID();
@@ -3257,7 +3257,7 @@ void Spell::RemoveItems()
 
 	Player* p_caster = (Player*)m_caster;
 
-	if(m_spellInfo->Flags3 == 131072 || m_spellInfo->field10 & 0x8000) //0x8000 //0x20000
+	if(m_spellInfo->Flags3 == 131072 || m_spellInfo->Flags4 & 0x8000) //0x8000 //0x20000
 	{
 		p_caster->GetItemInterface()->RemoveItemAmt(p_caster->GetUInt32Value(PLAYER_AMMO_ID),1);
 	}
