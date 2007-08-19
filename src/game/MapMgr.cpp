@@ -174,8 +174,8 @@ void MapMgr::PushObject(Object *obj)
 		objCell->Init(x, y, _mapId, this);
 	}
 
-	uint32 endX = x < _sizeX ? x + 1 : _sizeX;
-	uint32 endY = y < _sizeY ? y + 1 : _sizeY;
+	uint32 endX = (x <= _sizeX) ? x + 1 : (_sizeX-1);
+	uint32 endY = (y <= _sizeY) ? y + 1 : (_sizeY-1);
 	uint32 startX = x > 0 ? x - 1 : 0;
 	uint32 startY = y > 0 ? y - 1 : 0;
 	uint32 posX, posY;
@@ -556,8 +556,8 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	// Update in-range set for new objects
 	//////////////////////////////////////
 
-	uint32 endX = cellX < _sizeX ? cellX + 1 : _sizeX;
-	uint32 endY = cellY < _sizeY ? cellY + 1 : _sizeY;
+	uint32 endX = cellX <= _sizeX ? cellX + 1 : (_sizeX-1);
+	uint32 endY = cellY <= _sizeY ? cellY + 1 : (_sizeY-1);
 	uint32 startX = cellX > 0 ? cellX - 1 : 0;
 	uint32 startY = cellY > 0 ? cellY - 1 : 0;
 	uint32 posX, posY;
@@ -780,8 +780,8 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, int radius)
 {
 	Instance_Map_InstanceId_Holder * pInstance =  sInstanceSavingManager.GetInstance(GetMapId(), GetInstanceID());
 	CellSpawns * sp;
-	uint32 endX = x + radius < _sizeX ? x + radius : _sizeX;
-	uint32 endY = y + radius < _sizeY ? y + radius : _sizeY;
+	uint32 endX = (x + radius) <= _sizeX ? x + radius : (_sizeX-1);
+	uint32 endY = (y + radius) <= _sizeY ? y + radius : (_sizeY-1);
 	uint32 startX = x - radius > 0 ? x - radius : 0;
 	uint32 startY = y - radius > 0 ? y - radius : 0;
 	uint32 posX, posY;
@@ -849,8 +849,8 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, int radius)
 
 bool MapMgr::_CellActive(uint32 x, uint32 y)
 {
-	uint32 endX = x < _sizeX ? x + 1 : _sizeX;
-	uint32 endY = y < _sizeY ? y + 1 : _sizeY;
+	uint32 endX = (x <= _sizeX) ? x + 1 : (_sizeX-1);
+	uint32 endY = (y <= _sizeY) ? y + 1 : (_sizeY-1);
 	uint32 startX = x > 0 ? x - 1 : 0;
 	uint32 startY = y > 0 ? y - 1 : 0;
 	uint32 posX, posY;
@@ -917,8 +917,8 @@ void MapMgr::ChangeFarsightLocation(Player *plr, Creature *farsight)
 	{
 		uint32 cellX = GetPosX(farsight->GetPositionX());
 		uint32 cellY = GetPosY(farsight->GetPositionY());
-		uint32 endX = cellX < _sizeX ? cellX + 1 : _sizeX;
-		uint32 endY = cellY < _sizeY ? cellY + 1 : _sizeY;
+		uint32 endX = (cellX <= _sizeX) ? cellX + 1 : (_sizeX-1);
+		uint32 endY = (cellY <= _sizeY) ? cellY + 1 : (_sizeY-1);
 		uint32 startX = cellX > 0 ? cellX - 1 : 0;
 		uint32 startY = cellY > 0 ? cellY - 1 : 0;
 		uint32 posX, posY;

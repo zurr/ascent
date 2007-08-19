@@ -8263,8 +8263,9 @@ void Player::RemoveFromBattlegroundQueue()
 	sChatHandler.SystemMessage(m_session, "You were removed from the queue for the battleground for not joining after 2 minutes.");
 	m_pendingBattleground = 0;
 }
-
+#ifdef CLUSTERING
 void Player::EventRemoveAndDelete()
 {
 
 }
+#endif

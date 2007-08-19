@@ -862,14 +862,12 @@ public:
 	void UpdateHit(int32 hit);
    
 	bool canCast(SpellEntry *m_spellInfo);
-	inline float GetBlockFromSpellPCT() { return m_blockfromspellPCT; }
 	inline float GetBlockFromSpell() { return m_blockfromspell; }
 	inline float GetSpellCritFromSpell() { return m_spellcritfromspell; }
 	inline float GetHitFromMeleeSpell() { return m_hitfrommeleespell; }
 	inline float GetHitFromSpell() { return m_hitfromspell; }
 	inline float GetParryFromSpell() { return m_parryfromspell; }
 	inline float GetDodgeFromSpell() { return m_dodgefromspell; }
-	void SetBlockFromSpellPCT(float value) { m_blockfromspellPCT = value; }
 	void SetBlockFromSpell(float value) { m_blockfromspell = value; }
 	void SetSpellCritFromSpell(float value) { m_spellcritfromspell = value; }
 	void SetParryFromSpell(float value) { m_parryfromspell = value; }

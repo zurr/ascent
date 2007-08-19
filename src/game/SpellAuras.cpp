@@ -3437,7 +3437,8 @@ void Aura::SpellAuraModBlockPerc(bool apply)
 		else 
 			amt = -mod->m_amount;
 
-		static_cast<Player*>(m_target)->SetBlockFromSpellPCT(static_cast<Player*>(m_target)->GetBlockFromSpellPCT() + amt );
+		//static_cast<Player*>(m_target)->SetBlockFromSpellPCT(static_cast<Player*>(m_target)->GetBlockFromSpellPCT() + amt );
+		static_cast<Player*>(m_target)->SetBlockFromSpell(static_cast<Player*>(m_target)->GetBlockFromSpell() + amt);
 		static_cast<Player*>(m_target)->UpdateChances();
 	}
 }
