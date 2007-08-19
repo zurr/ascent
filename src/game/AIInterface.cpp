@@ -827,7 +827,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					{
 						float our_facing=m_Unit->calcRadAngle(m_Unit->GetPositionX(),m_Unit->GetPositionY(),m_nextTarget->GetPositionX(),m_nextTarget->GetPositionY());
 						float his_facing=m_nextTarget->GetOrientation();
-						if(abs(our_facing-his_facing)<CREATURE_DAZE_TRIGGER_ANGLE && !m_nextTarget->HasNegativeAura(CREATURE_SPELL_TO_DAZE))
+						if(fabs(our_facing-his_facing)<CREATURE_DAZE_TRIGGER_ANGLE && !m_nextTarget->HasNegativeAura(CREATURE_SPELL_TO_DAZE))
 						{
 							SpellEntry *info = sSpellStore.LookupEntry(CREATURE_SPELL_TO_DAZE);
 							Spell *sp = new Spell(m_Unit, info, false, NULL);
