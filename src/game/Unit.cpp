@@ -3837,11 +3837,17 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 {
 	if(!HasFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT ))
 	{
-		m_runSpeed = PLAYER_NORMAL_RUN_SPEED*(1.0f + ((float)m_speedModifier)/100.0f);
+		if(IsPlayer())
+			m_runSpeed = PLAYER_NORMAL_RUN_SPEED*(1.0f + ((float)m_speedModifier)/100.0f);
+		else
+			m_runSpeed = MONSTER_NORMAL_RUN_SPEED*(1.0f + ((float)m_speedModifier)/100.0f);
 	}
 	else
 	{
-		m_runSpeed = PLAYER_NORMAL_RUN_SPEED*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
+		if(IsPlayer())
+			m_runSpeed = PLAYER_NORMAL_RUN_SPEED*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
+		else
+			m_runSpeed = MONSTER_NORMAL_RUN_SPEED*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
 	}
 
 	m_flySpeed = PLAYER_NORMAL_FLIGHT_SPEED*(1.0f + ((float)m_flyspeedModifier)/100.0f);

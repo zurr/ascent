@@ -30,7 +30,8 @@ extern SERVER_DECL SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtra
 extern SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >	GraveyardStorage;
 extern SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >			TeleportCoordStorage;
 extern SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
-extern SERVER_DECL SQLStorage<MapInfo, HashMapStorageContainer<MapInfo> >						WorldMapInfoStorage;
+extern SERVER_DECL SQLStorage<MapInfo, HashMapStorageContainer<MapInfo> >		WorldMapInfoStorage;
+extern SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >			ZoneGuardStorage;
 
 void Storage_FillTaskList(TaskList & tl);
 void Storage_Cleanup();

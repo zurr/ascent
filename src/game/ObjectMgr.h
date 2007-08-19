@@ -80,6 +80,13 @@ struct FishingZoneEntry
 	uint32 MaxSkill;
 };
 
+struct ZoneGuardEntry
+{
+	uint32 ZoneID;
+	uint32 AllianceEntry;
+	uint32 HordeEntry;
+};
+
 struct ItemPage
 {
     uint32 id;

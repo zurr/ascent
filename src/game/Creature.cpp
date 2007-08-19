@@ -66,7 +66,7 @@ Creature::Creature(uint32 high, uint32 low)
 		StatModPct[x]=0;
 		FlatStatMod[x]=0;
 	}
-	m_runSpeed=PLAYER_NORMAL_RUN_SPEED;
+	m_runSpeed=MONSTER_NORMAL_RUN_SPEED;
 
 	totemOwner = NULL;
 	totemSlot = -1;
@@ -1192,3 +1192,31 @@ void Creature::RemoveLimboState(Unit * healer)
 	bInvincible = false;
 }
 
+// Generates 3 random waypoints around the NPC
+void Creature::SetGuardWaypoints()
+{
+	if(!GetMapMgr()) return;
+
+	GetAIInterface()->setMoveType(1);
+	for(int i = 1; i <= 4; i++)
+	{
+		float ang = rand()/100.0;
+		float ran = (rand()%(100))/10.0;
+		while(ran < 1)
+			ran = (rand()%(100))/10.0;
+
+		WayPoint * wp = new WayPoint;
+		wp->id = i;
+		wp->flags = 0;
+		wp->waittime = 800;  /* these guards are antsy :P */
+		wp->x = GetSpawnX()+ran*sin(ang);
+		wp->y = GetSpawnY()+ran*cos(ang);
+		wp->z = GetMapMgr()->GetLandHeight(wp->x, wp->y);
+		wp->o = 0;
+		wp->backwardemoteid = 0;
+		wp->backwardemoteoneshot = 0;
+		wp->forwardemoteid = 0;
+		wp->forwardemoteoneshot = 0;
+		GetAIInterface()->addWayPoint(wp);
+	}
+}

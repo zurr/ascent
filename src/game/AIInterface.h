@@ -336,6 +336,7 @@ public:
 	bool m_hasWaypointEvents;
 	bool m_isGuard;
 	bool m_fastMove;
+	void setGuardTimer(uint32 timer) { m_guardTimer = timer; }
 
 private:
 	bool m_AllowedToEnterCombat;

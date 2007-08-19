@@ -33,6 +33,7 @@ const char * gTeleportCoordFormat						= "uxufffx";
 const char * gPvPAreaFormat								= "ush";
 const char * gFishingFormat								= "uuu";
 const char * gWorldMapInfoFormat						= "uuuuufffusuuuuu";
+const char * gZoneGuardsFormat							= "uuu";
 
 /** SQLStorage symbols
  */
@@ -48,7 +49,8 @@ SERVER_DECL SQLStorage<SpellExtraInfo, HashMapStorageContainer<SpellExtraInfo> >
 SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >		GraveyardStorage;
 SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >			TeleportCoordStorage;
 SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >		FishingZoneStorage;
-SERVER_DECL SQLStorage<MapInfo, HashMapStorageContainer<MapInfo> >							WorldMapInfoStorage;
+SERVER_DECL SQLStorage<MapInfo, HashMapStorageContainer<MapInfo> >			WorldMapInfoStorage;
+SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >	ZoneGuardStorage;
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
@@ -260,6 +262,7 @@ void Storage_FillTaskList(TaskList & tl)
 	make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
 	make_task(NpcTextStorage, GossipText, HashMapStorageContainer, "npc_text", gNpcTextFormat);
 	make_task(WorldMapInfoStorage, MapInfo, HashMapStorageContainer, "worldmap_info", gWorldMapInfoFormat);
+	make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
 }
 
 void Storage_Cleanup()
@@ -292,6 +295,7 @@ void Storage_Cleanup()
 	FishingZoneStorage.Cleanup();
 	NpcTextStorage.Cleanup();
 	WorldMapInfoStorage.Cleanup();
+	ZoneGuardStorage.Cleanup();
 }
 
 bool Storage_ReloadTable(const char * TableName)
@@ -323,6 +327,8 @@ bool Storage_ReloadTable(const char * TableName)
 		TeleportCoordStorage.Reload();
 	else if(!stricmp(TableName, "worldmap_info"))		// WorldMapInfo
 		WorldMapInfoStorage.Reload();
+	else if(!stricmp(TableName, "zoneguards"))
+		ZoneGuardStorage.Reload();
 	else
 		return false;
 	return true;

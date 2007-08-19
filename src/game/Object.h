@@ -419,6 +419,8 @@ public:
 	}
 
 	void GMScriptEvent(void * function, uint32 argc, uint32 * argv, uint32 * argt);
+	inline uint32 GetInRangeOppFactCount() { return m_oppFactsInRange.size(); }
+
 
 protected:
 	Object (  );

@@ -17,6 +17,7 @@
 
 #include "StdAfx.h"
 
+
 AIInterface::AIInterface()
 {
 	m_waypoints=NULL;
@@ -1401,53 +1402,67 @@ bool AIInterface::FindFriends(float dist)
 	}
 
 	// check if we're a civillan, in which case summon guards on a despawn timer
-	/*if(m_Unit->GetCreatureName() && m_Unit->GetCreatureName()->Civilian && getMSTime() > m_guardTimer && m_Unit->GetMapId() < 2)
+	uint8 civilian = (((Creature*)m_Unit)->GetCreatureName()) ? (((Creature*)m_Unit)->GetCreatureName()->Civilian) : 0;
+	uint32 family = (((Creature*)m_Unit)->GetCreatureName()) ? (((Creature*)m_Unit)->GetCreatureName()->Type) : 0;
+	if(family == HUMANOID && civilian && getMSTime() > m_guardTimer && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
 	{
-		switch(m_Unit->GetCreatureName()->Family)
-		{
-		case UNDEAD:
-		case HUMANOID:
-			break;
-		default:
+		uint16 AreaId = m_Unit->GetMapMgr()->GetAreaID(m_Unit->GetPositionX(),m_Unit->GetPositionY());
+		AreaTable * at = sAreaStore.LookupEntry(AreaId);
+		if(!at)
 			return result;
-			break;
-		}
 
-		m_Unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Guards, help me!");
+
+		ZoneGuardEntry * zoneSpawn = ZoneGuardStorage.LookupEntry(at->ZoneId);
+		if(!zoneSpawn) return result;
 		
-		uint32 guardid = 1423;
-		if(m_Unit->m_factionDBC->factionGroupReputationFrame == 67) // horde
-			guardid = 3296; // ogri
-		CreatureSpawnTemplate * pSpawnTemplate = objmgr.GetCreatureSpawnTemplate(guardid);
-		if(pSpawnTemplate != 0)
+		CharRaceEntry * race = sCharRaceStore.LookupEntry(m_Unit->getRace());
+		if(!race)
+			return result;
+		uint32 guardid = (race->team_id != 7) ? zoneSpawn->AllianceEntry : zoneSpawn->HordeEntry;
+		if(!guardid) return result;
+
+		uint32 languageid = (race->team_id == 7) ? LANG_COMMON : LANG_ORCISH;
+		m_Unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, languageid, "Guards, help me!");
+		CreatureInfo * ci = CreatureNameStorage.LookupEntry(guardid);
+		if(!ci)
+			return result;
+
+		float x = m_Unit->GetPositionX() + (float)( (float)(rand() % 150 + 100) / 1000.0f );
+		float y = m_Unit->GetPositionY() + (float)( (float)(rand() % 150 + 100) / 1000.0f );
+		float z = m_Unit->GetPositionZ();
+		float adt_z = m_Unit->GetMapMgr()->GetLandHeight(x, y);
+		if(fabs(z - adt_z) < 3)
+			z = adt_z;
+
+		CreatureProto * cp = CreatureProtoStorage.LookupEntry(guardid);
+		if(!cp) return result;
+
+		for(int i = 1; i <= m_Unit->GetInRangeOppFactCount(); i++)
 		{
-			Creature *pCreature = sObjHolder.CreateCreature();
-			// FIXME: Summon hardcoded stormwind guard/ogrimmar grunt
-			float x = m_Unit->GetPositionX() + (float)( (float)(rand() % 150 + 100) / 1000.0f );
-			float y = m_Unit->GetPositionY() + (float)( (float)(rand() % 150 + 100) / 1000.0f );
-			float z = m_Unit->GetPositionZ();
-			float adt_z = m_Unit->GetMapMgr()->GetLandHeight(x, y);
-			if(fabs(z - adt_z) < 3)
-				z = adt_z;
+			if(i >= 3)
+				break;
 
-			pCreature->Create(pSpawnTemplate, m_Unit->GetMapId(), x, y, z, 0);
-			pCreature->SetInstanceID(m_Unit->GetInstanceID());
-			pCreature->SetZoneId(m_Unit->GetZoneId());
-			
-			pCreature->AddToWorld();
-
-			// set despawn timer
-			// at 5mins
-			sEventMgr.AddEvent(pCreature, &Creature::Despawn, EVENT_CREATURE_SAFE_DELETE, 60*5*1000, 1);
-
-			for(it = m_aiTargets.begin(); it != m_aiTargets.end(); ++it)
+			Creature * guard = m_Unit->GetMapMgr()->CreateCreature();
+			guard->Load(cp, x, y, z);
+			guard->SetInstanceID(m_Unit->GetInstanceID());
+			guard->SetZoneId(m_Unit->GetZoneId());
+			guard->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP); /* shitty DBs */
+		
+			if(guard->CanAddToWorld())
+				sEventMgr.AddEvent(guard, &Creature::AddToWorld, EVENT_UNK, sRand.randInt(8)*1000, 1); /* staggered, not all at once :) */
+			else
 			{
-				pCreature->GetAIInterface()->AttackReaction(it->first, 1, 0);
+				guard->SafeDelete();
+				return result;
 			}
+			
+			sEventMgr.AddEvent(guard, &Creature::SetGuardWaypoints, EVENT_UNK, 10000, 1);
+			sEventMgr.AddEvent(guard, &Creature::SafeDelete, EVENT_CREATURE_SAFE_DELETE, 60*5*1000, 1);
+
 		}
 
 		m_guardTimer = getMSTime() + 15000;
-	}*/
+	}
 
 	return result;
 }

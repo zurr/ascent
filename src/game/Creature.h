@@ -421,6 +421,7 @@ public:
 	void DestroyCustomWaypointMap();
 	bool IsInLimboState() { return m_limbostate; }
 	void RemoveLimboState(Unit * healer);
+	void SetGuardWaypoints();
 
 protected:
 	CreatureAIScript *_myScriptClass;
