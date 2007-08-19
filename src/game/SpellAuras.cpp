@@ -4196,7 +4196,6 @@ void Aura::SpellAuraMounted(bool apply)
 
 void Aura::SpellAuraModDamagePercDone(bool apply)
 {
-	printf("MOD: A %d T %d I %d M %d",mod->m_amount,mod->m_type,mod->i,mod->m_miscValue);
 	float val = (apply) ? mod->m_amount/100.0f : -mod->m_amount/100.0f;
 
 /* Shady: Don't know what this does, but it's not good. 
