@@ -141,7 +141,6 @@ void CleanCache()
                 delete mcell_cache[i][j];
                 mcell_cache[i][j] = 0;
             }
-
         }
     }
 }
@@ -158,8 +157,8 @@ bool LoadADT(char* filename)
 	}
 	mcells=new mcell;
 
-	wmoc.x =65*TILESIZE;
-	wmoc.z =65*TILESIZE;
+	wmoc.x =65.0f*TILESIZE;
+	wmoc.z =65.0f*TILESIZE;
 
 	size_t mcnk_offsets[256], mcnk_sizes[256];
 
@@ -207,7 +206,7 @@ bool LoadADT(char* filename)
 			}
 		}
 
-		if(fourcc == 0x4d444446)			// MMDF
+		if(fourcc == 0x4d444446)			// MDDF
 		{
 			/* model instances */
 			int model_count = size/36;
@@ -226,7 +225,7 @@ bool LoadADT(char* filename)
 			}
 		}
 
-		if(fourcc==0x4d43494e)
+		if(fourcc==0x4d43494e) //MCIN
 		{
 		//	printf("Found chunks info\n");
 			// mapchunk offsets/sizes
@@ -239,7 +238,7 @@ bool LoadADT(char* filename)
 		//break;
 		}
 		else 
-			if(fourcc==0x4d4f4446)
+			if(fourcc==0x4d4f4446) //MODF
 			{
 			
 			/*	if(size)
@@ -342,7 +341,6 @@ struct MapChunkHeader {
 	uint32 effectId;
 };
 
-
 inline
 void LoadMapChunk(MPQFile & mf, chunk*_chunk)
 {
@@ -380,8 +378,7 @@ void LoadMapChunk(MPQFile & mf, chunk*_chunk)
 	//	printf("\n sz=%d",size);
 		size_t nextpos = mf.getPos()  + size;
 
-
-		if(fourcc==0x4d435654)
+		if(fourcc==0x4d435654) //MCVT
 		 {
 			for (int j=0; j<17; j++)
 			for (int i=0; i<((j%2)?8:9); i++) 
@@ -398,13 +395,13 @@ void LoadMapChunk(MPQFile & mf, chunk*_chunk)
 				}
 		}
 		 else
-			if(fourcc==0x4d434e52)
+			if(fourcc==0x4d434e52) //MCNR
 			{
 			nextpos = mf.getPos() + 0x1C0; // size fix
 
 			}
 		else
-			/*if(fourcc==0x4d434c51)
+			/*if(fourcc==0x4d434c51) //MCLQ
 			{
 				// liquid / water level
 			//	bool haswater;
@@ -679,7 +676,6 @@ bool ConvertADT(uint32 x, uint32 y, FILE * out_file, char* name)
             out.LiquidLevel[ly][ly] = mcells->ch[yc][xc].waterlevel;
         }
     }
-
 
     // Convert it into antrix cell format.
     for(uint32 cx=(x%CellsPerTile)*MAP_RESOLUTION/CellsPerTile;cx<(x%CellsPerTile)*MAP_RESOLUTION/CellsPerTile+MAP_RESOLUTION/CellsPerTile;cx++)
