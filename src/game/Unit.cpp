@@ -1176,8 +1176,8 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 	//sLog.outDebug("calc resistance - damage: %d , dmg type: %d , dmg abs: %d\n",*damage,damage_type,*dmgabs);
 }
 
-/* New attack system, change to #ifdef 1 to enable */
-#if 0
+/* New attack system, change to #ifdef 1 to enable and 0 to disable*/
+#if 1
 void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc)
 {
 	if (!pVictim->isAlive() || !isAlive()  || IsStunned() || IsPacified())
