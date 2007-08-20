@@ -2089,7 +2089,7 @@ bool AIInterface::showWayPoints(uint32 wpid, Player* pPlayer, bool Backwards)
 			//Create on client
 			ByteBuffer buf(2500);
 			uint32 count = pWayPoint->BuildCreateUpdateBlockForPlayer(&buf, pPlayer);
-			pPlayer->PushUpdateData(&buf, count);
+			pPlayer->PushCreationData(&buf, count);
 
 			//root the object
 			WorldPacket data1;

@@ -212,7 +212,7 @@ void MapMgr::PushObject(Object *obj)
 		sLog.outDetail("Creating player "I64FMT" for himself.", obj->GetGUID());
 		ByteBuffer pbuf(10000);
 		count = plObj->BuildCreateUpdateBlockForPlayer(&pbuf, plObj);
-		plObj->PushUpdateData(&pbuf, count);
+		plObj->PushCreationData(&pbuf, count);
 	}
 
 	//Add to the cell's object list
@@ -267,7 +267,7 @@ void MapMgr::PushObject(Object *obj)
 			for(set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
 			{
 				count = (*itr)->BuildCreateUpdateBlockForPlayer(buf, plObj);
-				plObj->PushUpdateData(buf, count);
+				plObj->PushCreationData(buf, count);
 			}
 		}
 	}
@@ -597,7 +597,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 			fRange = 0.0f;			 // unlimited distance for people on same boat
 		else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER))
 			fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-		else
+        else
 			fRange = m_UpdateDistance;	  // normal distance
 
 		if ( curObj != obj &&
@@ -617,7 +617,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 					{
 						CHECK_BUF;
 						count = obj->BuildCreateUpdateBlockForPlayer(*buf, plObj2);
-						plObj2->PushUpdateData(*buf, count);
+						plObj2->PushCreationData(*buf, count);
 						plObj2->AddVisibleObject(obj);
 						(*buf)->clear();
 					}
@@ -629,7 +629,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 					{
 						CHECK_BUF;
 						count = curObj->BuildCreateUpdateBlockForPlayer(*buf, plObj);
-						plObj->PushUpdateData(*buf, count);
+						plObj->PushCreationData(*buf, count);
 						plObj->AddVisibleObject(curObj);
 						(*buf)->clear();
 					}
@@ -652,7 +652,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 					{
 						CHECK_BUF;
 						count = obj->BuildCreateUpdateBlockForPlayer(*buf, plObj2);
-						plObj2->PushUpdateData(*buf, count);
+						plObj2->PushCreationData(*buf, count);
 						plObj2->AddVisibleObject(obj);
 						(*buf)->clear();
 					}
@@ -671,7 +671,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 					{
 						CHECK_BUF;
 						count = curObj->BuildCreateUpdateBlockForPlayer(*buf, plObj);
-						plObj->PushUpdateData(*buf, count);
+						plObj->PushCreationData(*buf, count);
 						plObj->AddVisibleObject(curObj);
 						(*buf)->clear();
 					}
@@ -942,7 +942,7 @@ void MapMgr::ChangeFarsightLocation(Player *plr, Creature *farsight)
 						{
 							ByteBuffer buf;
 							count = obj->BuildCreateUpdateBlockForPlayer(&buf, plr);
-							plr->PushUpdateData(&buf, count);
+							plr->PushCreationData(&buf, count);
 							plr->m_visibleFarsightObjects.insert(obj);
 						}
 					}

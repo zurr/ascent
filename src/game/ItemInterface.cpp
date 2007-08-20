@@ -234,7 +234,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 					item->PushToWorld(m_pOwner->GetMapMgr());
 					ByteBuffer buf(2500);
 					uint32 count = item->BuildCreateUpdateBlockForPlayer( &buf, m_pOwner );
-					m_pOwner->PushUpdateData(&buf, count);
+					m_pOwner->PushCreationData(&buf, count);
 				}
 				m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot*2), item->GetGUID());
 			}

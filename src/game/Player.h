@@ -1128,6 +1128,7 @@ public:
 	bool bProcessPending;
 	Mutex _bufferS;
 	void PushUpdateData(ByteBuffer *data, uint32 updatecount);
+    void PushCreationData(ByteBuffer *data, uint32 updatecount);
 	void PushOutOfRange(const WoWGuid & guid);
 	void ProcessPendingUpdates();
 	bool __fastcall CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer);
@@ -1358,7 +1359,9 @@ protected:
 	void _SetVisibleBits(UpdateMask *updateMask, Player *target) const;
 /* Update system components */
 	ByteBuffer bUpdateBuffer;
+    ByteBuffer bCreationBuffer;
 	uint32 mUpdateCount;
+    uint32 mCreationCount;
 	uint32 mOutOfRangeIdCount;
 	ByteBuffer mOutOfRangeIds;
 	SplineMap _splineMap;

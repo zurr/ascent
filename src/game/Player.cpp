@@ -267,6 +267,8 @@ Player::Player ( uint32 high, uint32 low )
 	pctReputationMod		= 0;
 	roll					= 0;
 	mUpdateCount			= 0;
+    mCreationCount          = 0;
+    bCreationBuffer.reserve(50000);
 	bUpdateBuffer.reserve(50000);//ought to be > than enough ;)
 	mOutOfRangeIds.reserve(20000);
 	mOutOfRangeIdCount	  = 0;
@@ -6262,35 +6264,112 @@ void Player::PushOutOfRange(const WoWGuid & guid)
 	_bufferS.Release();
 }
 
+void Player::PushCreationData(ByteBuffer *data, uint32 updatecount)
+{
+    	// imagine the bytebuffer getting appended from 2 threads at once! :D
+	_bufferS.Acquire();
+
+	/* this is a safe barrier. */
+	if(bCreationBuffer.size() >= 40000)
+	{
+        /* force an update to push out our pending data */
+		ProcessPendingUpdates();
+	}
+
+	mCreationCount += updatecount;
+	bCreationBuffer.append(*data);
+
+	// add to process queue
+	if(m_mapMgr && !bProcessPending)
+	{
+		bProcessPending = true;
+		m_mapMgr->PushToProcessed(this);
+	}
+	
+	_bufferS.Release();
+
+}
+
 void Player::ProcessPendingUpdates()
 {
 	_bufferS.Acquire();
-    if(!bUpdateBuffer.size() && !mOutOfRangeIds.size())
+    if(!bUpdateBuffer.size() && !mOutOfRangeIds.size() && !bCreationBuffer.size())
 	{
 		_bufferS.Release();
 		return;
 	}
 
-	uint32 buffer_size = bUpdateBuffer.size() + 10 + (mOutOfRangeIds.size() * 9);
-	uint8 * update_buffer = new uint8[buffer_size];
+
+    uint32 bBuffer_size =  bCreationBuffer.size() + 10 + (mOutOfRangeIds.size() * 9);
+    uint8 * update_buffer;
+    //we got creation packets. Join them with out of range packets and skip update ones.
+    if(bCreationBuffer.size())
+    {
+	    update_buffer = new uint8[bBuffer_size];
+    }
 	uint32 c = 0;
 
-#ifdef USING_BIG_ENDIAN
-	*(uint32*)&update_buffer[c] = swap32(uint32(((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount)));	c += 4;
-#else
-	*(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);	c += 4;
-#endif
+    //build out of range updates if creation updates are queued
+    if(bCreationBuffer.size())
+    {
+        #ifdef USING_BIG_ENDIAN
+	        *(uint32*)&update_buffer[c] = swap32(uint32(((mOutOfRangeIds.size() > 0) ? (mCreationCount + 1) : mCreationCount)));	c += 4;
+        #else
+	        *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mCreationCount + 1) : mCreationCount);	c += 4;
+        #endif
+	        update_buffer[c] = 1;																			   ++c;
+
+            // append any out of range updates
+	    if(mOutOfRangeIdCount)
+	    {
+		    update_buffer[c]				= UPDATETYPE_OUT_OF_RANGE_OBJECTS;			 ++c;
+            #ifdef USING_BIG_ENDIAN
+		            *(uint32*)&update_buffer[c]	 = swap32(mOutOfRangeIdCount);						  c += 4;
+            #else
+		            *(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
+            #endif
+		            memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
+		            mOutOfRangeIds.clear();
+		            mOutOfRangeIdCount = 0;
+	    }
+        if(bCreationBuffer.size())
+		memcpy(&update_buffer[c], bCreationBuffer.contents(), bCreationBuffer.size());  c += bCreationBuffer.size();
+
+        // clear our update buffer
+	    bCreationBuffer.clear();
+	    mCreationCount = 0;
+
+        // compress update packet
+	    // while we said 350 before, i'm gonna make it 500 :D
+	    if(c < sWorld.compression_threshold || !CompressAndSendUpdateBuffer(c, update_buffer))
+	    {
+		    // send uncompressed packet -> because we failed
+		    m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
+	    }
+    	
+	    delete [] update_buffer;
+    }
+    
+	uint32 aBuffer_size =  bUpdateBuffer.size() + 10 + (mOutOfRangeIds.size() * 9);
+    update_buffer = new uint8[aBuffer_size];
+	c = 0;
+
+    #ifdef USING_BIG_ENDIAN
+	    *(uint32*)&update_buffer[c] = swap32(uint32(((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount)));	c += 4;
+    #else
+	    *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);	c += 4;
+    #endif
 	update_buffer[c] = 1;																			   ++c;
 
 	// append any out of range updates
 	if(mOutOfRangeIdCount)
 	{
 		update_buffer[c]				= UPDATETYPE_OUT_OF_RANGE_OBJECTS;			 ++c;
-#ifdef USING_BIG_ENDIAN
-		*(uint32*)&update_buffer[c]	 = swap32(mOutOfRangeIdCount);						  c += 4;
-#else
-		*(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
-#endif
+        #ifdef USING_BIG_ENDIAN
+		        *(uint32*)&update_buffer[c]	 = swap32(mOutOfRangeIdCount);						  c += 4;
+        #else
+		        *(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
+        #endif
 		memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
 		mOutOfRangeIds.clear();
 		mOutOfRangeIdCount = 0;
@@ -6313,7 +6392,7 @@ void Player::ProcessPendingUpdates()
 		// send uncompressed packet -> because we failed
 		m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
 	}
-	
+    
 	delete [] update_buffer;
 
 	// send any delayed packets
@@ -7289,9 +7368,60 @@ void Player::CalculateBaseStats()
 
 void Player::CompleteLoading()
 {	
-    SpellCastTargets targets;
-    targets.m_unitTarget = this->GetGUID();
+    // cast passive initial spells	  -- grep note: these shouldnt require plyr to be in world
+	SpellSet::iterator itr;
+	SpellEntry *info;
+	SpellCastTargets targets;
+	targets.m_unitTarget = this->GetGUID();
 	targets.m_targetMask = 0x2;
+
+	for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+	{
+		info = sSpellStore.LookupEntry(*itr);
+
+		if(info && (info->Attributes & ATTRIBUTES_PASSIVE)  ) // passive
+		{
+			Spell * spell=new Spell(this,info,true,NULL);
+			spell->prepare(&targets);
+			if(info->RequiredShapeShift && (getClass()==DRUID || getClass()==WARRIOR))
+				m_SSSPecificSpells.insert(info->Id);
+		}
+	}
+
+   
+	std::list<LoginAura>::iterator i =  loginauras.begin();
+
+    for(;i!=loginauras.end(); i++)
+	{
+
+		//check if we already have this aura
+//		if(this->HasActiveAura((*i).id))
+//			continue;
+		//how many times do we intend to put this oura on us
+/*		uint32 count_appearence=0;
+		std::list<LoginAura>::iterator i2 =  i;
+		for(;i2!=loginauras.end();i2++)
+			if((*i).id==(*i2).id)
+			{
+				count_appearence++;
+			}
+*/
+		SpellEntry * sp = sSpellStore.LookupEntry((*i).id);
+		Aura * a = new Aura(sp,(*i).dur,this,this);
+		
+		for(uint32 x =0;x<3;x++)
+        {
+		    if(sp->Effect[x]==SPELL_EFFECT_APPLY_AURA)
+		    {
+			    a->AddMod(sp->EffectApplyAuraName[x],sp->EffectBasePoints[x]+1,sp->EffectMiscValue[x],x);
+		    }
+        }
+		this->AddAura(a);		//FIXME: must save amt,pos/neg
+		//Somehow we should restore number of appearence. Right now i have no idea how :(
+//		if(count_appearence>1)
+//			this->AddAuraVisual((*i).id,count_appearence-1,a->IsPositive());
+	}
+
  // grep: Set health and mana to saved values on login
 	SetUInt32Value(UNIT_FIELD_HEALTH, load_health);
 	SetUInt32Value(UNIT_FIELD_POWER1, load_mana); 
@@ -7356,29 +7486,6 @@ void Player::OnWorldPortAck()
 		}
 	}
 
-	if(isDead())
-	{
-		if(HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE))
-		{
-			SpellCastTargets tgt;
-			tgt.m_unitTarget=GetGUID();
-			if(getRace()==RACE_NIGHTELF)
-			{
-				SpellEntry *inf=sSpellStore.LookupEntry(20584);
-				Spell*sp=new Spell(this,inf, true,NULL);
-				sp->prepare(&tgt);
-				inf=sSpellStore.LookupEntry(9036);
-				sp=new Spell(this,inf,true,NULL);
-				sp->prepare(&tgt);
-			}
-			else
-			{
-				SpellEntry *inf=sSpellStore.LookupEntry(8326);
-				Spell*sp=new Spell(this,inf,true,NULL);
-				sp->prepare(&tgt);
-			}
-		}
-	}
 	if(pMapinfo)
 	{
 		WorldPacket data(4);
@@ -8211,59 +8318,59 @@ void Player::RemoveFromBattlegroundQueue()
 
 void Player::CastPassiveSpellsAndAuras()
 {
-    // cast passive initial spells	  -- grep note: these shouldnt require plyr to be in world
-	SpellSet::iterator itr;
-	SpellEntry *info;
-	SpellCastTargets targets;
-	targets.m_unitTarget = this->GetGUID();
-	targets.m_targetMask = 0x2;
-
-	for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
-	{
-		info = sSpellStore.LookupEntry(*itr);
-
-		if(info && (info->Attributes & ATTRIBUTES_PASSIVE)  ) // passive
-		{
-			Spell * spell=new Spell(this,info,true,NULL);
-			spell->prepare(&targets);
-			if(info->RequiredShapeShift && (getClass()==DRUID || getClass()==WARRIOR))
-				m_SSSPecificSpells.insert(info->Id);
-		}
-	}
-
-   
-	std::list<LoginAura>::iterator i =  loginauras.begin();
-
-    for(;i!=loginauras.end(); i++)
-	{
-
-		//check if we already have this aura
-//		if(this->HasActiveAura((*i).id))
-//			continue;
-		//how many times do we intend to put this oura on us
-/*		uint32 count_appearence=0;
-		std::list<LoginAura>::iterator i2 =  i;
-		for(;i2!=loginauras.end();i2++)
-			if((*i).id==(*i2).id)
-			{
-				count_appearence++;
-			}
-*/
-		SpellEntry * sp = sSpellStore.LookupEntry((*i).id);
-		Aura * a = new Aura(sp,(*i).dur,this,this);
-		
-		for(uint32 x =0;x<3;x++)
-        {
-		    if(sp->Effect[x]==SPELL_EFFECT_APPLY_AURA)
-		    {
-			    a->AddMod(sp->EffectApplyAuraName[x],sp->EffectBasePoints[x]+1,sp->EffectMiscValue[x],x);
-		    }
-        }
-		this->AddAura(a);		//FIXME: must save amt,pos/neg
-		//Somehow we should restore number of appearence. Right now i have no idea how :(
-//		if(count_appearence>1)
-//			this->AddAuraVisual((*i).id,count_appearence-1,a->IsPositive());
-	}
+//    // cast passive initial spells	  -- grep note: these shouldnt require plyr to be in world
+//	SpellSet::iterator itr;
+//	SpellEntry *info;
+//	SpellCastTargets targets;
+//	targets.m_unitTarget = this->GetGUID();
+//	targets.m_targetMask = 0x2;
+//
+//	for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+//	{
+//		info = sSpellStore.LookupEntry(*itr);
+//
+//		if(info && (info->Attributes & ATTRIBUTES_PASSIVE)  ) // passive
+//		{
+//			Spell * spell=new Spell(this,info,true,NULL);
+//			spell->prepare(&targets);
+//			if(info->RequiredShapeShift && (getClass()==DRUID || getClass()==WARRIOR))
+//				m_SSSPecificSpells.insert(info->Id);
+//		}
+//	}
+//
+//   
+//	std::list<LoginAura>::iterator i =  loginauras.begin();
+//
+//    for(;i!=loginauras.end(); i++)
+//	{
+//
+//		//check if we already have this aura
+////		if(this->HasActiveAura((*i).id))
+////			continue;
+//		//how many times do we intend to put this oura on us
+///*		uint32 count_appearence=0;
+//		std::list<LoginAura>::iterator i2 =  i;
+//		for(;i2!=loginauras.end();i2++)
+//			if((*i).id==(*i2).id)
+//			{
+//				count_appearence++;
+//			}
+//*/
+//		SpellEntry * sp = sSpellStore.LookupEntry((*i).id);
+//		Aura * a = new Aura(sp,(*i).dur,this,this);
+//		
+//		for(uint32 x =0;x<3;x++)
+//        {
+//		    if(sp->Effect[x]==SPELL_EFFECT_APPLY_AURA)
+//		    {
+//			    a->AddMod(sp->EffectApplyAuraName[x],sp->EffectBasePoints[x]+1,sp->EffectMiscValue[x],x);
+//		    }
+//        }
+//		this->AddAura(a);		//FIXME: must save amt,pos/neg
+//		//Somehow we should restore number of appearence. Right now i have no idea how :(
+////		if(count_appearence>1)
+////			this->AddAuraVisual((*i).id,count_appearence-1,a->IsPositive());
+//	}
 
 }
 
