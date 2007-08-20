@@ -431,7 +431,7 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 	}
 
 	//moved from the start of the function. Test if this changes something regarding "inwater" state
-	if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || _player->GodModeCheat)
+	if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->GodModeCheat)
 		return;
 
 	if(m_bIsWLevelSet && (movement_info.z + _player->m_noseLevel) < m_wLevel)
