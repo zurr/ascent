@@ -35,7 +35,6 @@ ObjectMgr::ObjectMgr()
 	m_mailid = 0;
 	m_hiPlayerGuid = 0;
 	m_hiCorpseGuid = 0;
-	m_transporters = 0;
 }
 
 
@@ -120,7 +119,7 @@ ObjectMgr::~ObjectMgr()
 		delete l;
 	}
 
-	if(m_transporters)
+	/*if(m_transporters)
 	{
 		for(uint32 i = 1; i <= this->TransportersCount; ++i)
 		{
@@ -131,7 +130,7 @@ ObjectMgr::~ObjectMgr()
 			}
 		}
 		delete [] m_transporters;
-	}
+	}*/
 
 	/*BURSTORAGEREWRITEFIX*/
 	/*sLog.outString("Deleting Prototypes/Waypoints/AISpells...");
@@ -142,6 +141,11 @@ ObjectMgr::~ObjectMgr()
 			delete (*i);
 		delete p;
 	}*/
+
+    for(HM_NAMESPACE::hash_map<uint64, Transporter*>::iterator i = mTransports.begin(); i != mTransports.end(); ++i)
+	{
+		delete i->second;
+	}
 
 	for(HM_NAMESPACE::hash_map<uint32, WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
 	{
@@ -2497,21 +2501,38 @@ Corpse * ObjectMgr::GetCorpse(uint32 corpseguid)
 	return rv;
 }
 
-Transporter * ObjectMgr::GetTransporter(uint32 guid)
+Transporter * ObjectMgr::GetTransporter(uint64 guid)
 {
-	if(guid > TransportersCount)
-		return 0;
+	Transporter * rv;
+	_TransportLock.Acquire();
+	HM_NAMESPACE::hash_map<uint64, Transporter*>::const_iterator itr = mTransports.find(guid);
+	rv = (itr != mTransports.end()) ? itr->second : 0;
+	_TransportLock.Release();
+	return rv;
+}
 
-	return m_transporters[guid];
+void ObjectMgr::AddTransport(Transporter *pTransporter)
+{
+    _TransportLock.Acquire();
+    mTransports[pTransporter->GetGUID()]=pTransporter;
+ 	_TransportLock.Release();
 }
 
 Transporter * ObjectMgr::GetTransporterByEntry(uint32 entry)
 {
-	for(uint32 i = 1; i <= TransportersCount; ++i)
-		if(m_transporters[i] && m_transporters[i]->GetEntry() == entry)
-			return m_transporters[i];
-	
-	return 0;
+    Transporter * rv = 0;
+	_TransportLock.Acquire();
+	HM_NAMESPACE::hash_map<uint64, Transporter*>::iterator itr = mTransports.begin();
+	for(; itr != mTransports.end(); ++itr)
+	{
+		if(itr->second->GetEntry() == entry)
+		{
+			rv = itr->second;
+			break;
+		}
+	}
+    _TransportLock.Release();
+	return rv;
 }
 
 void ObjectMgr::LoadGuildCharters()

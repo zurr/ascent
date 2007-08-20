@@ -865,6 +865,7 @@ enum Opcodes {
 	SMSG_FLIGHT_SPLINE_SYNC                      = 904,	//(0x0388)
 	SMSG_REALM_SPLIT_STATE_RESPONSE              = 907,	//(0x038B)
 	CMSG_REALM_SPLIT_STATE_REQUEST               = 908,	//(0x038C)
+    CMSG_TRANSPORT_STEP_IN_OUT                   = 909, //(0x038D)
 	CMSG_GROUP_PROMOTE                           = 910,	//(0x038E)
 	SMSG_TICKCOUNT_QUERY                         = 912,	//(0x0390)
 	CMSG_TICKCOUNT_QUERY_RESPONSE                = 913,	//(0x0391)

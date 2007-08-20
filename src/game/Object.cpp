@@ -138,11 +138,11 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer *data, Player *target)
 						flags = 0x4A;
 				}break;
 
-			//case GAMEOBJECT_TYPE_TRANSPORT:
-			//	{
-			//		/* deeprun tram, etc */
-			//		flags = 0x5A;
-			//	}break;
+			case GAMEOBJECT_TYPE_TRANSPORT:
+				{
+					/* deeprun tram, etc */
+					flags = 0x5A;
+				}break;
 
 			case GAMEOBJECT_TYPE_DUEL_ARBITER:
 				{
@@ -345,9 +345,9 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2,
 	{
 		if(flags & 0x2)
 		{
-			*data << (float)0;
-			*data << (float)0;
-			*data << (float)0;
+			*data << (float)m_position.x;
+			*data << (float)m_position.y;
+			*data << (float)m_position.z;
 			*data << (float)m_position.o;
 		}
 		else

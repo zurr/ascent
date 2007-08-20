@@ -287,6 +287,7 @@ public:
 	typedef HM_NAMESPACE::hash_map<uint32, skilllinespell*> SLMap;
 	typedef HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*> VendorMap;
 	typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
+    typedef HM_NAMESPACE::hash_map<uint64, Transporter*> TransportMap;
 	
 	typedef HM_NAMESPACE::hash_map<uint32, Trainer*> TrainerMap;
 	typedef HM_NAMESPACE::hash_map<uint32, std::vector<TrainerSpell*> > TrainerSpellMap;
@@ -310,6 +311,7 @@ public:
 	HM_NAMESPACE::hash_map<uint32, Corpse*>m_corpses;
 	Mutex _corpseslock;
 	Mutex m_corpseguidlock;
+    Mutex _TransportLock;
 	uint32 m_hiCorpseGuid;
 	
 	Item * CreateItem(uint32 entry,Player * owner);
@@ -415,6 +417,7 @@ public:
 	
 	void LoadTransporters();
 	void ProcessGameobjectQuests();
+    void AddTransport(Transporter * pTransporter);
    
 	void GenerateTrainerSpells();
 	bool AddTrainerSpell(uint32 entry, SpellEntry *pSpell);
@@ -451,7 +454,7 @@ public:
 		return r;
 	}
 
-	Transporter * GetTransporter(uint32 guid);
+	Transporter * GetTransporter(uint64 guid);
 	Transporter * GetTransporterByEntry(uint32 entry);
 
 	Charter * CreateCharter(uint32 LeaderGuid);
@@ -508,8 +511,7 @@ protected:
 	set<uint32> m_disabled_spells;
 	set<uint32> m_disabled_trainer_spells;
 
-	Transporter ** m_transporters;
-	uint32 TransportersCount;
+	uint64 TransportersCount;
 	HM_NAMESPACE::hash_map<uint32,PlayerInfo*> m_playersinfo;
 	
 	HM_NAMESPACE::hash_map<uint32,WayPointMap*> m_waypoints;//stored by spawnid
@@ -542,6 +544,8 @@ protected:
 
 	//Corpse Collector
 	CorpseCollectorMap mCorpseCollector;
+
+    TransportMap mTransports;
 
 	ItemSetContentMap mItemSets;
 

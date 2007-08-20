@@ -386,11 +386,8 @@ void ObjectMgr::LoadTransporters()
 	if(!QR) return;
 	uint32 guid = 0;
 
-	int total = QR->GetRowCount();
+	int64 total = QR->GetRowCount();
 	TransportersCount=total;
-	m_transporters = new Transporter*[total+1];
-	memset(m_transporters, 0, sizeof(Transporter*)*(total + 1));
-//	int i = 0;
 	do 
 	{
 		uint32 entry = QR->Fetch()[0].GetUInt32();
@@ -401,10 +398,9 @@ void ObjectMgr::LoadTransporters()
 		{
 			sLog.outError("Transporter %s failed creation for some reason.", QR->Fetch()[1].GetString());
 			delete pTransporter;
-			m_transporters[guid]=NULL;
 		}else
 		{
-			m_transporters[guid]=pTransporter;
+            AddTransport(pTransporter);
 		}
 
 	} while(QR->NextRow());

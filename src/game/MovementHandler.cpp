@@ -102,11 +102,10 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	{
 		if(!_player->m_TransporterGUID)
 		{
-			GetPlayer()->m_TransporterGUID = movement_info.transGuid;
-			
 			_player->m_CurrentTransporter = objmgr.GetTransporter(movement_info.transGuid);
 			if(_player->m_CurrentTransporter)
 			{
+                GetPlayer()->m_TransporterGUID = movement_info.transGuid;
 				_player->m_CurrentTransporter->AddPlayer(_player);
 			}
 		}
@@ -153,11 +152,6 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		{
 			if( !_player->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation) )
 			{
-				/*WorldPacket * movedata = GetPlayer( )->BuildTeleportAckMsg(LocationVector(GetPlayer()->GetPositionX(),
-					GetPlayer()->GetPositionY(), GetPlayer()->GetPositionZ(), GetPlayer()->GetOrientation()) );
-
-				SendPacket(movedata);
-				delete movedata;*/
 				GetPlayer()->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
 				GetPlayer()->KillPlayer();
 			}
@@ -215,7 +209,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		}
 	}
 
-	// speedhack protection
+	//// speedhack protection
 	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
@@ -300,11 +294,11 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
 	memcpy(&movement_packet[pos], recv_data.contents(), recv_data.size());
-#ifdef USING_BIG_ENDIAN
-	*(uint32*)&movement_packet[pos + 4] = swap32(getMSTime());
-#else
-	*(uint32*)&movement_packet[pos + 4] = getMSTime();
-#endif
+    #ifdef USING_BIG_ENDIAN
+	    *(uint32*)&movement_packet[pos + 4] = swap32(getMSTime());
+    #else
+	    *(uint32*)&movement_packet[pos + 4] = getMSTime();
+    #endif
 	_player->OutPacketToSet(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet, false);
 
 	//Setup Transporter Positioning
@@ -312,10 +306,10 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	{
 		if(!_player->m_TransporterGUID)
 		{
-			GetPlayer()->m_TransporterGUID = movement_info.transGuid;
 			_player->m_CurrentTransporter = objmgr.GetTransporter(movement_info.transGuid);
 			if(_player->m_CurrentTransporter)
 			{
+                GetPlayer()->m_TransporterGUID = movement_info.transGuid;
 				_player->m_CurrentTransporter->AddPlayer(_player);
 			}
 		}
@@ -361,11 +355,6 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 		{
 			if(!GetPlayer( )->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation) )
 			{
-				/*WorldPacket * movedata = GetPlayer( )->BuildTeleportAckMsg(LocationVector(GetPlayer()->GetPositionX(),
-					GetPlayer()->GetPositionY(), GetPlayer()->GetPositionZ(), GetPlayer()->GetOrientation()) );
-
-				SendPacket(movedata);
-				delete movedata;*/
 				GetPlayer()->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
 				GetPlayer()->KillPlayer();
 			}

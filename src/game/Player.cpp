@@ -8370,6 +8370,7 @@ void Player::CastPassiveSpellsAndAuras()
 //		//Somehow we should restore number of appearence. Right now i have no idea how :(
 ////		if(count_appearence>1)
 ////			this->AddAuraVisual((*i).id,count_appearence-1,a->IsPositive());
+
 //	}
 
 }

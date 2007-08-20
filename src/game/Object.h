@@ -22,8 +22,8 @@ class Unit;
 
 enum HIGHGUID {
 	HIGHGUID_PLAYER		= 0x00000000,
-	HIGHGUID_UNIT		  = 0x00000001,
-	HIGHGUID_GAMEOBJECT	= 0x00000002, //0x1FA70000, elevators 0x1FAA0000 for trams(only this one works for elevators but not for trams lol)
+	HIGHGUID_UNIT		= 0x00000001,
+	HIGHGUID_GAMEOBJECT	= 0x00000002, //0x1FAA0000, //0x1FA70000, elevators 0x1FAA0000 for trams(only this one works for elevators but not for trams lol)
 	HIGHGUID_CORPSE		= 0x00000003,
 	HIGHGUID_DYNAMICOBJECT = 0x00000004,
 	HIGHGUID_ITEM		  = 0x00000005,
