@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <assert.h>
 
 #include "adt.h"
 #include "mpq_libmpq.h"
@@ -100,6 +101,8 @@ Returns the cell x co-ordinate.
 */
 inline uint32 ConvertGlobalXCoordinate(float x)
 {
+	float a1 = _maxX - x;
+	float a2 = a1 / _cellSize;
 	return uint32((_maxX-x)/_cellSize);
 }
 
@@ -625,6 +628,8 @@ bool ConvertADT(uint32 x, uint32 y, FILE * out_file, char* name)
     // Figure out what rock we're under :P
     uint32 tile_x = x / CellsPerTile;
     uint32 tile_y = y / CellsPerTile;
+	float xbase = tile_x * TILESIZE;
+	float ybase = tile_y * TILESIZE;
 
     // For some odd reason, this stuff is reversed.. who knows why..
     char mpq_filename[256];
@@ -688,6 +693,17 @@ bool ConvertADT(uint32 x, uint32 y, FILE * out_file, char* name)
         }
     }
 
+	/* null out the walkable space */
+	for(uint32 xc=(x%CellsPerTile)*MAP_WALKABLE_RESOLUTION/CellsPerTile;xc<(x%CellsPerTile)*MAP_WALKABLE_RESOLUTION/CellsPerTile+MAP_WALKABLE_RESOLUTION/CellsPerTile;xc++)
+	{
+		for(uint32 yc=(y%CellsPerTile)*MAP_WALKABLE_RESOLUTION/CellsPerTile;yc<(y%CellsPerTile)*MAP_WALKABLE_RESOLUTION/CellsPerTile+MAP_WALKABLE_RESOLUTION/CellsPerTile;yc++)
+		{
+			uint32 lx=xc%(MAP_WALKABLE_RESOLUTION/CellsPerTile);
+			uint32 ly=yc%(MAP_WALKABLE_RESOLUTION/CellsPerTile);
+			
+		}
+	}
+
 	if(mcells->model_instances.size())
 	{
 		vector<model*> loaded_models;
@@ -703,10 +719,15 @@ bool ConvertADT(uint32 x, uint32 y, FILE * out_file, char* name)
 			{
 				m = new model;
 				if(!m->Load(mcells->model_ids[i->modelid].c_str()))
+				{
 					delete m;
+					continue;
+				}
 				else
 				{
 					loaded_models[i->modelid] = m;
+					/*i->posx -= xbase;
+					i->posy -= ybase;*/
 				}
 			}
 			else
@@ -722,20 +743,38 @@ bool ConvertADT(uint32 x, uint32 y, FILE * out_file, char* name)
 			float min_y = i->posy - sy;
 			float max_x = i->posx + sx;
 			float max_y = i->posy + sy;
+#define check_x_coord(p) if(p < _minX) { p = _minX; } if(p > _maxX) { p = _maxX; }
+#define check_y_coord(p) if(p < _minY) { p = _minY; } if(p > _maxY) { p = _maxY; }
 
-			/* calculate internal offsets in mcell for these coordinates */
-			uint32 start_x = uint32(ConvertInternalXCoordinate(min_x, ConvertGlobalXCoordinate(min_x)));
-			uint32 start_y = uint32(ConvertInternalYCoordinate(min_y, ConvertGlobalYCoordinate(min_y)));
-			uint32 end_x = uint32(ConvertInternalXCoordinate(max_x, ConvertGlobalXCoordinate(max_x)));
-			uint32 end_y = uint32(ConvertInternalYCoordinate(min_y, ConvertGlobalYCoordinate(max_y)));
-			for(uint32 x = start_x; x <= end_x; ++x) {
-				for(uint32 y = start_y; y <= end_y; ++y) {
-					out.Walkable[x][y] = false;
-					/*cell->walkable_graph[x][y] = false;*/
+			check_x_coord(min_x);
+			check_x_coord(max_x);
+			check_y_coord(min_y);
+			check_y_coord(max_y);
 
-					/* todo: make this walkable change to water, etc. */
-				}
+			if(min_x == max_x || min_y == max_y)
+			{
+				printf("Instance %s at\n   %f %f %f is out of range.\n", mcells->model_ids[i->modelid].c_str(),i->posx, i->posy, i->posz);
+				continue;
 			}
+
+			uint32 MIN_CELL_X = ConvertGlobalXCoordinate(min_x)/8;
+			uint32 MAX_CELL_Y = ConvertGlobalYCoordinate(max_y)/8;
+			uint32 MAX_CELL_X = ConvertGlobalXCoordinate(max_x)/8;
+			uint32 MIN_CELL_Y = ConvertGlobalYCoordinate(min_y)/8;
+			if(MIN_CELL_X != tile_x || MAX_CELL_X != tile_x)
+			{
+				printf("Instance %s at\n   %f %f %f is on incorrect tile. {X}\n", mcells->model_ids[i->modelid].c_str(),i->posx, i->posy, i->posz);
+				continue;
+			}
+
+			if(MIN_CELL_Y != tile_y || MAX_CELL_Y != tile_y)
+			{
+				printf("Instance %s at\n   %f %f %f is on incorrect tile. {Y}\n", mcells->model_ids[i->modelid].c_str(),i->posx, i->posy, i->posz);
+				continue;
+			}
+
+			printf("woot1");
+
 		}
 	}
 

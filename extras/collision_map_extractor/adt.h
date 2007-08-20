@@ -22,6 +22,13 @@ struct Vector
 	float x;
 	float y;
 	float z;
+
+	void Fix()
+	{
+		float save = z;
+		z = -y;
+		y = save;
+	}
 };
 
 struct ModelHeader {
@@ -114,7 +121,9 @@ class model
 	// after calculation of boundingbox
 	float sizex;
 	float sizey;
+	char * file2;
 public:
+	~model();
 	bool Load(const char * filename);
 	inline float GetSizeX() { return sizex; }
 	inline float GetSizeY() { return sizey; }
@@ -157,6 +166,11 @@ class WMOManager;
 void fixname(std::string &name);
 #pragma pack(push, 1)
 
+#define TILESIZE (533.33333f)
+#define CHUNKSIZE ((TILESIZE) / 16.0f)
+#define UNITSIZE (CHUNKSIZE / 8.0f)
+#define ZEROPOINT (32.0f * (TILESIZE))
+
 typedef struct  
 {
 	int d1;
@@ -171,9 +185,13 @@ typedef struct
 	/* wtf crack blizz devs smoking? */
 	void fix_coords()
 	{
-		float save = posz;
+		/*float save = posz;
 		posz = -posy;
-		posy = save;
+		posy = save;*/
+		float save[3] = {posx,posy,posz};
+		posx = -(save[2] - ZEROPOINT);
+		posy = -(save[0] - ZEROPOINT);
+		posz = save[1];
 	}
 }model_instance;
 #pragma pack(pop)

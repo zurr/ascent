@@ -227,3 +227,13 @@ int main(int argc, char * arg[])
 
 	return 0; // Exit The Program
 }
+
+
+int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
+				   HINSTANCE	hPrevInstance,		// Previous Instance
+				   LPSTR		lpCmdLine,			// Command Line Parameters
+				   int			nCmdShow)			// Window Show State
+{
+	main(0,NULL);
+	return 0;
+}

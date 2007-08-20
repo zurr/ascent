@@ -37,7 +37,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib_d.lib winmm.lib"
+				AdditionalDependencies="zlib_d.lib winmm.lib opengl32.lib glu32.lib glaux.lib"
 				OutputFile="ad debug.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
