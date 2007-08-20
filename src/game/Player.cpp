@@ -7438,7 +7438,7 @@ void Player::CompleteLoading()
 		Corpse * corpse = objmgr.GetCorpseByOwner(GetGUIDLow());
 		if(corpse == 0)
 		{
-            this->RepopAtGraveyard(GetPositionX(),GetPositionY(),GetPositionZ(), GetOrientation());
+            RepopAtGraveyard(GetPositionX(),GetPositionY(),GetPositionZ(), GetOrientation());
 		}
 		else
 		{
@@ -8314,65 +8314,6 @@ void Player::RemoveFromBattlegroundQueue()
 	m_pendingBattleground->RemovePendingPlayer(this);
 	sChatHandler.SystemMessage(m_session, "You were removed from the queue for the battleground for not joining after 2 minutes.");
 	m_pendingBattleground = 0;
-}
-
-void Player::CastPassiveSpellsAndAuras()
-{
-//    // cast passive initial spells	  -- grep note: these shouldnt require plyr to be in world
-//	SpellSet::iterator itr;
-//	SpellEntry *info;
-//	SpellCastTargets targets;
-//	targets.m_unitTarget = this->GetGUID();
-//	targets.m_targetMask = 0x2;
-//
-//	for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
-//	{
-//		info = sSpellStore.LookupEntry(*itr);
-//
-//		if(info && (info->Attributes & ATTRIBUTES_PASSIVE)  ) // passive
-//		{
-//			Spell * spell=new Spell(this,info,true,NULL);
-//			spell->prepare(&targets);
-//			if(info->RequiredShapeShift && (getClass()==DRUID || getClass()==WARRIOR))
-//				m_SSSPecificSpells.insert(info->Id);
-//		}
-//	}
-//
-//   
-//	std::list<LoginAura>::iterator i =  loginauras.begin();
-//
-//    for(;i!=loginauras.end(); i++)
-//	{
-//
-//		//check if we already have this aura
-////		if(this->HasActiveAura((*i).id))
-////			continue;
-//		//how many times do we intend to put this oura on us
-///*		uint32 count_appearence=0;
-//		std::list<LoginAura>::iterator i2 =  i;
-//		for(;i2!=loginauras.end();i2++)
-//			if((*i).id==(*i2).id)
-//			{
-//				count_appearence++;
-//			}
-//*/
-//		SpellEntry * sp = sSpellStore.LookupEntry((*i).id);
-//		Aura * a = new Aura(sp,(*i).dur,this,this);
-//		
-//		for(uint32 x =0;x<3;x++)
-//        {
-//		    if(sp->Effect[x]==SPELL_EFFECT_APPLY_AURA)
-//		    {
-//			    a->AddMod(sp->EffectApplyAuraName[x],sp->EffectBasePoints[x]+1,sp->EffectMiscValue[x],x);
-//		    }
-//        }
-//		this->AddAura(a);		//FIXME: must save amt,pos/neg
-//		//Somehow we should restore number of appearence. Right now i have no idea how :(
-////		if(count_appearence>1)
-////			this->AddAuraVisual((*i).id,count_appearence-1,a->IsPositive());
-
-//	}
-
 }
 
 #ifdef CLUSTERING
