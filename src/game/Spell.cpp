@@ -2734,7 +2734,7 @@ uint8 Spell::CanCast(bool rangetolerate)
                 return (uint8)SPELL_FAILED_NOT_ON_MOUNTED;
 		}
 
-        target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+		target = (m_caster->IsInWorld()) ? m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget) : NULL;
 	 
         // checks that demand a target
 		if(target)

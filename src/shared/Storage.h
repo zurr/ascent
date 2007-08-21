@@ -113,7 +113,7 @@ public:
 	 */
 	T * AllocateEntry(uint32 Entry)
 	{
-		if(Entry > _max || _array[Entry] != 0)
+		if(Entry >= _max || _array[Entry] != 0)
 			return reinterpret_cast<T*>(0);
 
 		_array[Entry] = new T;
@@ -124,7 +124,7 @@ public:
 	 */
 	bool DeallocateEntry(uint32 Entry)
 	{
-		if(Entry > _max || _array[Entry] == 0)
+		if(Entry >= _max || _array[Entry] == 0)
 			return false;
 
 		delete _array[Entry];
@@ -136,7 +136,7 @@ public:
 	 */
 	T * LookupEntry(uint32 Entry)
 	{
-		if(Entry > _max)
+		if(Entry >= _max)
 			return reinterpret_cast<T*>(0);
 		else
 			return _array[Entry];

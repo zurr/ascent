@@ -2344,6 +2344,15 @@ bool Player::LoadFromDB(uint32 guid)
 	uint32 field = PLAYER_SKILL_INFO_1_1;
 	uint32 val;
 	const ItemProf * prof;
+	if(!strchr(start, ' '))
+	{
+		/* no skills - reset to defaults */
+		for(std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss!=info->skills.end(); ss++)
+		{
+			if(ss->skillid && ss->currentval && ss->maxval && !::GetSpellForLanguage(ss->skillid))
+				AddSkillLine(ss->skillid, ss->currentval, ss->maxval);		
+		}
+	}
 
 	char * f = strdup(start);
 	start = f;

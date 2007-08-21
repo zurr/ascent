@@ -39,6 +39,10 @@ bool ChatHandler::HandleBGInfoCommnad(const char *args, WorldSession *m_session)
 
 bool ChatHandler::HandleBattlegroundCommand(const char* args, WorldSession *m_session)
 {
+	uint32 type = atoi(args);
+	if(type != 1 && type != 3 && type != 4 && type != 5)
+		return false;
+
 	Player * plr = getSelectedChar(m_session, true);
 	if(!plr) return true;
 	BattlegroundManager.HandleBattlegroundListPacket(plr->GetSession(), atoi(args));
