@@ -43,6 +43,7 @@ World::World()
 	HordePlayers = 0;
 	AlliancePlayers = 0;
 	gm_skip_attunement = false;
+	show_gm_in_who_list = true;
 #ifndef CLUSTERING
 	SocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
 	SocketRecvBufSize = WORLDSOCKET_RECVBUF_SIZE;
@@ -2122,6 +2123,7 @@ void World::Rehash(bool load)
 	flood_lines = Config.MainConfig.GetIntDefault("FloodProtection", "Lines", 0);
 	flood_seconds = Config.MainConfig.GetIntDefault("FloodProtection", "Seconds", 0);
 	flood_message = Config.MainConfig.GetBoolDefault("FloodProtection", "SendMessage", false);
+	show_gm_in_who_list = Config.MainConfig.GetBoolDefault("Server", "ShowGMInWhoList", true);
 	if(!flood_lines || !flood_seconds)
 		flood_lines = flood_seconds = 0;
 }

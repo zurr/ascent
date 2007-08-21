@@ -478,6 +478,7 @@ public:
 	bool flood_message;
 	bool gm_skip_attunement;
 	float m_UpdateDistance;
+	bool show_gm_in_who_list;
 
 protected:
 	// update Stuff, FIXME: use diff
