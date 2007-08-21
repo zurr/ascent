@@ -7447,7 +7447,7 @@ void Player::CompleteLoading()
 		Corpse * corpse = objmgr.GetCorpseByOwner(GetGUIDLow());
 		if(corpse == 0)
 		{
-            RepopAtGraveyard(GetPositionX(),GetPositionY(),GetPositionZ(), GetOrientation());
+			sEventMgr.AddEvent(this, &Player::RepopAtGraveyard, GetPositionX(),GetPositionY(),GetPositionZ(), GetOrientation(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1);
 		}
 		else
 		{

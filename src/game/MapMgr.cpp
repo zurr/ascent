@@ -163,8 +163,9 @@ void MapMgr::PushObject(Object *obj)
 
 	if(x >= _sizeX || y >= _sizeY)
 	{
-		obj->SetMapMgr(0);
-		return;		
+		obj->SetPosition(0,0,0,0,false);
+		x = GetPosX(obj->GetPositionX());
+		y = GetPosY(obj->GetPositionY());
 	}
 
 	MapCell *objCell = GetCell(x,y);
