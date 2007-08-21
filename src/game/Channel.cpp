@@ -394,7 +394,7 @@ void Channel::Say(Player *p, const char *what, Player *t)
 		MakeNotOn(&data);
 		SendToOne(&data,p);
 	}
-	else if(players[p].muted)
+	else if(players[p].muted || (GetName() == "WorldDefense" && t->GetPVPRank() < 11))
 	{
 		MakeYouCantSpeak(&data);
 		SendToOne(&data,p);
