@@ -337,4 +337,46 @@ inline bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
 	}
 	return combatSupport;
 }
+
+
+inline bool isAlliance(Object* objA)// A is alliance?
+{
+	FactionTemplateDBC * m_sw_faction = sFactionTmpStore.LookupEntry(11);
+	FactionDBC * m_sw_factionDBC = sFactionStore.LookupEntry(72);
+	if(!objA || objA->m_factionDBC == NULL || objA->m_faction == NULL)
+		return true;
+
+	if(m_sw_faction == objA->m_faction || m_sw_factionDBC == objA->m_factionDBC)
+		return true;
+
+	bool hostile = false;
+	uint32 faction = m_sw_faction->Faction;
+	uint32 host = objA->m_faction->HostileMask;
+
+	if(faction & host)
+		return false;
+
+	// check friend/enemy list
+	for(uint32 i = 0; i < 4; i++)
+	{
+		if(objA->m_faction->EnemyFactions[i] == faction)
+			return false;
+	}
+
+	faction = objA->m_faction->Faction;
+	host = m_sw_faction->HostileMask;
+
+	if(faction & host)
+		return false;
+
+	// check friend/enemy list
+	for(uint32 i = 0; i < 4; i++)
+	{
+		if(objA->m_faction->EnemyFactions[i] == faction)
+			return false;
+	}
+
+	return true;
+}
+
 #endif
