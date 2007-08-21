@@ -2975,3 +2975,39 @@ bool ChatHandler::HandleSendRunSpeedChange(const char * args, WorldSession * m_s
 	m_session->GetPlayer()->GetSession()->SendPacket(&data);
 	return true;
 }
+
+bool ChatHandler::HandleAddGuardCommand(const char * args, WorldSession * m_session)
+{
+	uint32 guardId;
+	uint8 factionId;
+	if(sscanf(args, "%u %u", &guardId, &factionId) != 2)
+		return false;
+
+	if(factionId < 0 || factionId > 1)
+	{
+		RedSystemMessage(m_session, "Invalid faction. Options are 0 (Alliance) and 1 (Horde).");
+		return true;
+	}
+
+	if(!CreatureProtoStorage.LookupEntry(guardId) || !CreatureNameStorage.LookupEntry(guardId))
+	{
+		RedSystemMessage(m_session, "We cannot find a creature entry for %u.", guardId);
+		return true;
+	}
+
+	AreaTable * at = sAreaStore.LookupEntry(m_session->GetPlayer()->GetMapMgr()->GetAreaID(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY()));
+	if(!at || !at->ZoneId)
+	{
+		RedSystemMessage(m_session, "TerrainMgr was unable to locate an AreaID. This is a core bug.");
+		return true;
+	}
+	uint32 zoneId = at->ZoneId;
+	string fieldName = ((bool)factionId) ? "hordeEntry" : "allianceEntry";
+	uint32 startTime = getMSTime();
+	WorldDatabase.WaitExecute("REPLACE INTO zoneguards (zoneId, %s) VALUES (%u, %u)", fieldName.c_str(), zoneId, guardId);
+	ZoneGuardStorage.Reload();
+
+	CreatureInfo * ci = CreatureNameStorage.LookupEntry(guardId);
+	GreenSystemMessage(m_session, "Guard [%s] added to zone %u in %u ms.", ci->Name, zoneId, getMSTime() - startTime);
+	return true;
+}

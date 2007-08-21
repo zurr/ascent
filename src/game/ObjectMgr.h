@@ -83,8 +83,8 @@ struct FishingZoneEntry
 struct ZoneGuardEntry
 {
 	uint32 ZoneID;
-	uint32 AllianceEntry;
 	uint32 HordeEntry;
+	uint32 AllianceEntry;
 };
 
 struct ItemPage

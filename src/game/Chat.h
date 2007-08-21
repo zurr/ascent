@@ -439,6 +439,8 @@ protected:
 	bool HandleAIAgentDebugBegin(const char * args, WorldSession * m_session);
 	bool HandleAIAgentDebugContinue(const char * args, WorldSession * m_session);
 	bool HandleAIAgentDebugSkip(const char * args, WorldSession * m_session);
+
+	bool HandleAddGuardCommand(const char * args, WorldSession * m_session);
 };
 
 
