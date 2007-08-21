@@ -1587,6 +1587,7 @@ float AIInterface::_CalcCombatRange(Unit* target, bool ranged)
 
 	range = (((powf(targetradius,2)*targetscale) + selfreach) + ((selfradius*selfscale) + rang));
 	if(range > 28.29f) range = 28.29f;
+	if(range < 1.0f) range = 1.0f;
 	return range;
 }
 
