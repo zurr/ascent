@@ -1098,10 +1098,8 @@ void Unit::RegeneratePower(bool isinterrupted)
 
 void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 {
-	//	   lvl diff:  0+   1+   2+   3+	4+	5+	6+
-	float resistPvE[7]={4.0f,5.0f,6.0f,17.0f,28.0f,39.0f,50.0f};
-	//	   lvl diff:  0+   1+   2+   3+	4+	5+	6+
-	float resistPvP[7]={4.0f,5.0f,6.0f,13.0f,20.0f,27.0f,34.0f};
+	//	   lvl diff:  0+   1+   2+
+	float resist[3]={4.0f,5.0f,6.0f};
 
 	int32 lvldiff = 0;
 	float resistchance = 1.0f;
@@ -1110,10 +1108,7 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 	bool pvp = false;
 	
 	if(GetTypeId() == TYPEID_PLAYER && pVictim->GetTypeId() == TYPEID_PLAYER) //PvP
-	{
-		pvp = true;
 		miscchance = 7.0f;
-	}
 	else
 		miscchance = 11.0f;
 
@@ -1137,10 +1132,10 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 	
 		if(lvldiff >= 0)
 		{
-			if(lvldiff < 7) 
-				resistchance = pvp ? resistPvP[lvldiff] : resistPvE[lvldiff];
+			if(lvldiff < 3) 
+				resistchance = resist[lvldiff];
 			else
-				resistchance = pvp ? resistPvP[6] : resistPvE[6] + miscchance*(lvldiff-6);
+				resistchance = resist[2] + miscchance*(lvldiff-2);
 			if(IsPlayer())
 			{
 				float spellHitMod = static_cast<Player*>(this)->GetHitFromSpell();
@@ -1219,7 +1214,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	float hitmodifier		 = 0;
 	int32 self_skill;
 	int32 victim_skill;
-	uint32 SubClassSkill	 = 0;
+	uint32 SubClassSkill	 = SKILL_UNARMED;
 
 	bool backAttack			 = isInBack( pVictim );
 	uint32 vskill            = 0;
@@ -1242,13 +1237,12 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				dodge = pVictim->GetFloatValue(PLAYER_DODGE_PERCENTAGE);
 			}
 //parry
-			if(pVictim->can_parry)
+			if(pVictim->can_parry && !disarmed)
 			{
 				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
 			}
 		}
 		victim_skill = float2int32(vskill+((Player*)pVictim)->CalcRating(1)); // you compare weapon and defense skills not weapon and weapon
-		printf("VS %d ",victim_skill-vskill);
 	}
 	else
 	{
@@ -1272,22 +1266,20 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		Player *pr = ((Player*)this);
 		hitmodifier = (uint32)pr->GetHitFromMeleeSpell();  
 		
-		if(disarmed)
-			it = NULL;
 		switch(damage_type)
 		{
 		case MELEE://melee,
-			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+			it = (disarmed) ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 			hitmodifier+=pr->CalcRating(5);
 			self_skill = float2int32(pr->CalcRating(20));
 			break;
 		case DUALWIELD://dual wield
-			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+			it = (disarmed) ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 			hitmodifier+=pr->CalcRating(5);
 			self_skill = float2int32(pr->CalcRating(21));
 			break;
 		case RANGED: //ranged
-			it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+			it = (disarmed) ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 			hitmodifier+=pr->CalcRating(6);
 			self_skill = float2int32(pr->CalcRating(0));
 			break;
@@ -1358,6 +1350,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		parry=0.0f;
 		glanc=0.0f;
 	}
+//dirty fix for gray mobs. I decide to apply this for avoiding high lvl tanks in low lvl dungeons.
 //penalties for dualwield and two-handed weapons
 	else
 		if (this->IsPlayer())
