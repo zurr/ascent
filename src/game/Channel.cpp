@@ -516,6 +516,9 @@ bool Channel::IsDefaultChannel()
 	if( !strncmp(cName, "Guild Recruitment", 17)
 		)
 		return true;
+	if( !strncmp(cName, "WorldDefense", 12)
+		)
+		return true;
 
 	return false;
 }
