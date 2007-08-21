@@ -3004,7 +3004,10 @@ bool ChatHandler::HandleAddGuardCommand(const char * args, WorldSession * m_sess
 	uint32 zoneId = at->ZoneId;
 	string fieldName = ((bool)factionId) ? "hordeEntry" : "allianceEntry";
 	uint32 startTime = getMSTime();
-	WorldDatabase.WaitExecute("REPLACE INTO zoneguards (zoneId, %s) VALUES (%u, %u)", fieldName.c_str(), zoneId, guardId);
+	if(!ZoneGuardStorage.LookupEntry(zoneId))
+		WorldDatabase.WaitExecute("INSERT INTO zoneguards (zoneId, %s) VALUES (%u, %u)", fieldName.c_str(), zoneId, guardId);
+	else
+		WorldDatabase.WaitExecute("UPDATE zoneguards SET %s = %u WHERE zoneId = %u", fieldName.c_str(), guardId, zoneId);
 	ZoneGuardStorage.Reload();
 
 	CreatureInfo * ci = CreatureNameStorage.LookupEntry(guardId);
