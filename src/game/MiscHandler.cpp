@@ -521,8 +521,11 @@ void WorldSession::HandleWhoOpcode( WorldPacket & recv_data )
 		if(!plr->GetSession() || !plr->IsInWorld())
 			continue;
 
-		if(!sWorld.show_gm_in_who_list && plr->GetSession()->HasGMPermissions() && !HasGMPermissions())
-			continue;
+		if(!sWorld.show_gm_in_who_list && !HasGMPermissions())
+		{
+			if(plr->GetSession()->HasGMPermissions())
+				continue;
+		}
 
 		// Team check
 		if(!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions())
