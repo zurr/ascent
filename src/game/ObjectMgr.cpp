@@ -1185,8 +1185,8 @@ void ObjectMgr::CorpseCollectorLoad()
 		  pCorpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
 		  pCorpse->SetZoneId(fields[5].GetUInt32());
 		  pCorpse->SetMapId(fields[6].GetUInt32());
-		  pCorpse->LoadValues( fields[7].GetString());
-		  pCorpse->SetInstanceID(fields[8].GetUInt32());
+		  pCorpse->SetInstanceID(fields[7].GetUInt32());
+		  pCorpse->LoadValues( fields[8].GetString());
 		  if(pCorpse->GetUInt32Value(CORPSE_FIELD_DISPLAY_ID) == 0)
 		  {
 			  delete pCorpse;
