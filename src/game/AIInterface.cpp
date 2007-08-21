@@ -1406,25 +1406,20 @@ bool AIInterface::FindFriends(float dist)
 	uint32 family = (((Creature*)m_Unit)->GetCreatureName()) ? (((Creature*)m_Unit)->GetCreatureName()->Type) : 0;
 	if(family == HUMANOID && civilian && getMSTime() > m_guardTimer && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
 	{
-		sLog.outString("Condition 1");
 		uint16 AreaId = m_Unit->GetMapMgr()->GetAreaID(m_Unit->GetPositionX(),m_Unit->GetPositionY());
 		AreaTable * at = sAreaStore.LookupEntry(AreaId);
 		if(!at)
 			return result;
 
-		sLog.outString("Condition 2");
 		ZoneGuardEntry * zoneSpawn = ZoneGuardStorage.LookupEntry(at->ZoneId);
 		if(!zoneSpawn) return result;
 
 		uint32 team = 1; // horde default
 		if(isAlliance(m_Unit))
 			team = 0;
-	
-		sLog.outString("Condition 3. | Team %u", team);
 
 		uint32 guardid = zoneSpawn->AllianceEntry;
 		if(team == 1) guardid = zoneSpawn->HordeEntry;
-		sLog.outString("Got guardId: %u", guardid);
 		if(!guardid) return result;
 
 		uint32 languageid = (team == 0) ? LANG_COMMON : LANG_ORCISH;
@@ -1433,7 +1428,6 @@ bool AIInterface::FindFriends(float dist)
 		if(!ci)
 			return result;
 
-		sLog.outString("Condition 5");
 		float x = m_Unit->GetPositionX() + (float)( (float)(rand() % 150 + 100) / 1000.0f );
 		float y = m_Unit->GetPositionY() + (float)( (float)(rand() % 150 + 100) / 1000.0f );
 		float z = m_Unit->GetPositionZ();
