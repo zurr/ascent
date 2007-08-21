@@ -1317,12 +1317,15 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 //crushing blow chance
 	if(pVictim->IsPlayer()&&!this->IsPlayer()&&!ability)
 	{
-		crush = max( 0.0 , -15.0+2.0*((float)self_skill-(float)min(pVictim->getLevel()*5,victim_skill))); 
+		if ((float)self_skill-(float)min(pVictim->getLevel()*5,victim_skill)>=15.0f)
+			crush = max( 0.0f , -15.0f+2.0f*((float)self_skill-(float)min(pVictim->getLevel()*5,victim_skill))); 
+		else 
+			crush = 0.0f;
 	}
 //glancing blow chance
 	if (this->IsPlayer()&&!pVictim->IsPlayer()&&!ability)
 	{
-		glanc = max( 0.0 , 10.0 + (float)victim_skill - (float)min(this->getLevel()*5,self_skill));
+		glanc = max( 0.0f , 10.0f + (float)victim_skill - (float)min(this->getLevel()*5,self_skill));
 	}
 //---------CHANCES MODS
 	if(pVictim->IsPlayer())
@@ -1361,12 +1364,12 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		{
 			it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 			if(it && it->GetProto()->InventoryType==INVTYPE_WEAPON && !ability)//dualwield to-hit penalty
-				hitmodifier -= 19.0;
+				hitmodifier -= 19.0f;
 			else
 			{
 				it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 				if(it && it->GetProto()->InventoryType==INVTYPE_2HWEAPON)//2 handed weapon to-hit penalty
-  					hitmodifier -= 4.0;
+  					hitmodifier -= 4.0f;
 			}
 		}
 // Mods by skill diff.
@@ -1408,13 +1411,12 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	chances[4]=chances[3]+block;
 	chances[5]=chances[4]+crit;
 	chances[6]=chances[5]+crush;
-	float Roll = sRand.rand()*100.0f;
+	float Roll = (float)sRand.randInt(100);
 	uint32 r = 0;
 	while (r<7&&Roll>chances[r])
 	{
 		r++;
 	}
-	uint32 r2 = r; //just attemplt to avoid linux bug.
 //-----------ROLL RESULT PROC-------
 //printf("%d, C: %f %f %f %f %f %f %f S: %d %d R: %d Roll: %f\n",IsPlayer(),chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],self_skill,victim_skill,r,Roll);
 	uint32 abs = 0;
@@ -1523,7 +1525,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			if(dmg.full_damage < 0)
 				dmg.full_damage = 0;
 //check for speacial hits.
-			switch(r2)
+			switch(r)
 			{
 			case 3: //glancing blow by and012345
 				{
