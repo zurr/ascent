@@ -1248,6 +1248,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			}
 		}
 		victim_skill = float2int32(vskill+((Player*)pVictim)->CalcRating(1)); // you compare weapon and defense skills not weapon and weapon
+		printf("VS %d ",victim_skill-vskill);
 	}
 	else
 	{
@@ -1376,7 +1377,22 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	if (block)
 		block = max(0.0,block-vsk*0.04);
 	crit = max(0.0,crit+ ( (pVictim->IsPlayer()) ? (vsk*0.04) : (min(vsk*0.2,0.0)) ));
-	hitchance = max(hitchance,95.0f+vsk+hitmodifier);
+	if (vsk>0)
+			hitchance = max(hitchance,95.0f+vsk*0.02+hitmodifier);
+	else
+	{
+		if (pVictim->IsPlayer())
+		{
+			hitchance = max(hitchance,95.0f+vsk*0.04+hitmodifier);
+		}
+		else
+		{
+			if (vsk<-10)
+				hitchance = max(hitchance,94.9f+(vsk+10)*0.06+hitmodifier);
+			else
+				hitchance = max(hitchance,95.0f+vsk*0.01+hitmodifier);
+		}
+	}
 
 	if(ability && ability->SpellGroupType)
 	{
@@ -1398,7 +1414,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	{
 		r++;
 	}
+	uint32 r2 = r; //just attemplt to avoid linux bug.
 //-----------ROLL RESULT PROC-------
+//printf("%d, C: %f %f %f %f %f %f %f S: %d %d R: %d Roll: %f\n",IsPlayer(),chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],self_skill,victim_skill,r,Roll);
 	uint32 abs = 0;
 	switch(r)
 	{ 
@@ -1505,7 +1523,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			if(dmg.full_damage < 0)
 				dmg.full_damage = 0;
 //check for speacial hits.
-			switch(r)
+			switch(r2)
 			{
 			case 3: //glancing blow by and012345
 				{
