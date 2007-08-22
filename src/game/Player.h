@@ -1269,11 +1269,13 @@ public:
 	
 	uint64 m_comboTarget;
 	int8 m_comboPoints;
+	bool m_retainComboPoints;
 	int8 m_spellcomboPoints; // rogue talent Ruthlessness will change combopoints while consuming them. solutions 1) add post cast prochandling, 2) delay adding the CP
 	void UpdateComboPoints();
-	inline void AddComboPoint(uint64 target, int8 count)
+
+	inline void AddComboPoints(uint64 target, uint8 count)
 	{
-		if(m_comboTarget == target)
+        if(m_comboTarget == target)
 			m_comboPoints += count;
 		else
 		{
@@ -1282,8 +1284,8 @@ public:
 		}
 		UpdateComboPoints();
 	}
-	inline void SetComboPoint(uint64 target, int8 count) { m_comboTarget = target; m_comboPoints = count; UpdateComboPoints(); }
-	inline void ResetComboPoints() { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints=0; UpdateComboPoints(); }
+
+	inline void NullComboPoints() { if(!m_retainComboPoints) { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints=0; } UpdateComboPoints(); }
 	Unit *GetSoloSpellTarget(uint32 spell_id);
 	void  SetSoloSpellTarget(uint32 spellid,uint64 newtarget);
 	uint32 m_speedChangeCounter;

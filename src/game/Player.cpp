@@ -349,6 +349,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_spellcomboPoints = 0;
 	m_pendingBattleground = 0;
 	m_deathVision = false;
+	m_retainComboPoints = false;
 }
 
 
@@ -8019,8 +8020,16 @@ void Player::UpdateComboPoints()
 
 	if(m_comboTarget != 0)
 	{
-		c = FastGUIDPack(m_comboTarget, buffer, 0);
-		buffer[c++] = m_comboPoints;
+		Unit * target = (m_mapMgr != NULL) ? m_mapMgr->GetUnit(m_comboTarget) : NULL;
+		if(!target || target->isDead() || GetSelection() != m_comboTarget)
+		{
+			buffer[0] = buffer[1] = 0;
+		}
+		else
+		{
+			c = FastGUIDPack(m_comboTarget, buffer, 0);
+			buffer[c++] = m_comboPoints;
+		}
 	}
 	else
 		buffer[0] = buffer[1] = 0;

@@ -3141,7 +3141,7 @@ void Spell::SpellEffectAddComboPoints(uint32 i) // Add Combo Points
 		//p_caster->m_spellcomboPoints+=damage;
 		return;
 	}
-	p_caster->AddComboPoint(p_caster->GetSelection(), damage);
+	p_caster->AddComboPoints(p_caster->GetSelection(), damage);
 }
 
 void Spell::SpellEffectDuel(uint32 i) // Duel

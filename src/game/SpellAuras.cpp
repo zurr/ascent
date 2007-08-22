@@ -5514,15 +5514,8 @@ void Aura::SpellAuraModResistanceExclusive(bool apply)
 
 void Aura::SpellAuraRetainComboPoints(bool apply)
 {
-	if(!GetCaster()->IsPlayer())
-		return;
-
-	Player *p_caster = static_cast<Player*>(GetCaster());
-
-	if(apply)
-		p_caster->AddComboPoint(p_caster->GetSelection(), mod->m_amount);
-	else
-		p_caster->AddComboPoint(p_caster->GetSelection(), -mod->m_amount);
+	if(m_target->IsPlayer())
+		((Player*)m_target)->m_retainComboPoints = apply;
 }
 
 void Aura::SpellAuraResistPushback(bool apply)

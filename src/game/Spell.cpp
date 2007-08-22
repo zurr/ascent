@@ -1917,10 +1917,14 @@ void Spell::finish()
 		{
 			if(p_caster->m_spellcomboPoints)
 			{
-				p_caster->SetComboPoint(p_caster->GetSelection(),p_caster->m_spellcomboPoints);
+				//p_caster->SetComboPoint(p_caster->GetSelection(),p_caster->m_spellcomboPoints);
+				//p_caster->m_spellcomboPoints=0;
+				p_caster->m_comboTarget = p_caster->GetSelection();
+				p_caster->m_comboPoints = p_caster->m_spellcomboPoints;
 				p_caster->m_spellcomboPoints=0;
 			}
-			else p_caster->ResetComboPoints();
+			else
+				p_caster->NullComboPoints();
 		}
 		if(m_delayed)
 		{

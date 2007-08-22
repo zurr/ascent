@@ -732,30 +732,10 @@ void WorldSession::HandleSetSelectionOpcode( WorldPacket & recv_data )
 {
 	uint64 guid;
 	recv_data >> guid;
-
-	if( GetPlayer( ) != 0 )
-		GetPlayer( )->SetSelection(guid);
-	else
-		return;
+	_player->SetSelection(guid);
 
 	if(_player->m_comboPoints)
-	{
-		if(guid != 0)
-		{
-			if(_player->m_comboTarget != guid)
-			{
-				// if its a new Target set Combo Points Target to 0
-				_player->ResetComboPoints();
-			}
-			else
-			{
-				// same target - check if we're dead or not
-				Unit * target = _player->GetMapMgr()->GetUnit(guid);
-				if(!target || target->isDead())
-					_player->ResetComboPoints();
-			}
-		}
-	}
+		_player->UpdateComboPoints();
 
 	_player->SetUInt64Value(UNIT_FIELD_TARGET, guid);
 	if(guid == 0 && _player->getAttackTarget())
