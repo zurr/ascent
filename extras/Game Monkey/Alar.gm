@@ -1,0 +1,52 @@
+/********************************/
+/*    Al'ar Phoenix God         */
+/********************************/
+
+global alar_spell_flame_patch_cast= function(mob) {
+.CastSpell(35383); // Cast Spell Flame Patch on Target ( Works not fine ) ( Need CastSpellOnTarget(); Function )
+};
+
+global alar_spell_enraged= function(mob){
+.CastSpell(41447); // Enrage Spell Buffs himself
+};
+
+global alar_minions_spawn = function(mob)
+{
+.SpawnMonster(19551, 313.739685, -4.496290, -2.388968); // Spawn his Minions
+.SpawnMonster(19551, 315.453796, 5.631794, -2.388968);
+.SpawnMonster(19551, 308.332092, 1.797824, -2.389424);
+};
+
+global alar_entercombat = function(mob)
+{
+.RegisterTimer(60000, alar_minions_spawn, 99);  // Setting Timer every Minute to Spawn 3 Minions
+.RegisterTimer(20000, alar_spell_flame_patch_cast, 99); // Setting Timer to Cast Flame Patch every 20 Seconds
+.RegisterTimer(180000, alar_spell_enraged, 2); // Setting Timer Al'ar get Enraged after 2 Minutes of Fight
+};
+.RegisterUnitEvent(19514, 1, alar_entercombat);
+
+global alar_leavecombat = function(mob)
+{
+.DeregisterTimer(); // Deleting all Timers when Leaves Combat
+};
+.RegisterUnitEvent(19514, 2, alar_leavecombat);
+
+global alarminiondespawn = function(mob)
+{
+.DespawnAllUnitsInRadius(19551, 100);  // Deleting all Minions when Minions Leaves Combat
+};
+.RegisterUnitEvent(19551, 2, alarminiondespawn);
+
+global alar_killedtarget = function(mob)
+{
+.SendYellMessage("I told you not to fight me."); // Yells this when Player is killed by Al'ar
+};
+.RegisterUnitEvent(19514, 3, alar_killedtarget);
+
+global alar_died = function(mob)
+{
+.SendYellMessage("My... Lord will kill you.....all..."); // Yells when he dies.
+.DeregisterTimer(); // Deleting all Timers when he dies
+.DespawnAllUnitsInRadius(19551, 100);
+};
+.RegisterUnitEvent(19514, 4, alar_died);

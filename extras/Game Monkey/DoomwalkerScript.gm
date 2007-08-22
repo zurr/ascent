@@ -1,0 +1,51 @@
+//******************************* DOOMWALKER AI SCRIPT REV2 ************************
+
+global doomwalker_earthquake = function(plr)
+{
+.CastSpell(39835);
+.SendYellMessage("Magnitude set. Release. ");
+.PlaySoundToSet(11346);
+};
+
+global doomwalker_overrun = function(plr)
+{
+.CastSpell(32636);
+.SendYellMessage("Trajectory locked.");
+.PlaySoundToSet(11347);
+};
+
+global doomwlaker_mark_of_death= function(plr) { .CastSpell(37128); };
+global doomwlaker_chain_lightning= function(plr) { .CastSpell(28167); };
+
+global doomwalker_entercombat = function(plr)
+{
+.SendYellMessage("Do not proceed. You will be eliminated.");
+.PlaySoundToSet(11344);
+
+.RegisterTimer(35000, doomwalker_earthquake, 99);
+.RegisterTimer(25000, doomwalker_overrun, 99);
+.RegisterTimer(65000, doomwlaker_mark_of_death, 99);
+.RegisterTimer(45000, doomwlaker_chain_lightning, 99);
+};
+.RegisterUnitEvent(17711, 1, doomwalker_entercombat);
+
+global doomwalker_leavecombat = function(plr)
+{
+.DeregisterTimer();
+};
+.RegisterUnitEvent(17711, 2, doomwalker_leavecombat);
+
+global doomwalker_killedtarget = function(plr)
+{
+.SendYellMessage("Target exterminated.");
+.PlaySoundToSet(11351);
+};
+.RegisterUnitEvent(17711, 3, doomwalker_killedtarget);
+
+global doomwalker_died = function(plr)
+{
+.SendYellMessage("System failure in five... four...");
+.PlaySoundToSet(11352);
+.DeregisterTimer();
+};
+.RegisterUnitEvent(17711, 4, doomwalker_died);
