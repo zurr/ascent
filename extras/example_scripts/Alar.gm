@@ -1,14 +1,8 @@
 /* ###### Al'ar AI Script ###### */
 
-/*global alar_spell_cast = function(mob)
-{
-.CastSpell();
-.SendYellMessage("Wahh my Cast will own you alllllllllll.");
-};*/
-
 global alar_minions_spawn = function(mob)
 {
-.SendYellMessage("My Child will kill you.");
+.SendYellMessage("My child will kill you.");
 .SpawnMonster(19551, 313.739685, -4.496290, -2.388968);
 .SpawnMonster(19551, 315.453796, 5.631794, -2.388968);
 .SpawnMonster(19551, 308.332092, 1.797824, -2.389424);

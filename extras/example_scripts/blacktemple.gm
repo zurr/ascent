@@ -33,7 +33,7 @@ global najentus_dead=100;
 
 global najentus_killedtarget = function(plr)
 {
-//.SendChatMessage("Your sucess short lived!");
+//.SendChatMessage("Your success short lived!");
 //.PlaySoundToSet(11455);
 .SendChatMessage("Time for you to go!");
 .PlaySoundToSet(11456);
@@ -111,7 +111,7 @@ global supremus_killedtarget = function(plr)
 {
 .SendChatMessage("Your fate is written!");
 .PlaySoundToSet(11124);
-//.SendChatMessage("The chaos I have sown here is but a taste....");
+//.SendChatMessage("The chaos I have sewn here is but a taste....");
 //.PlaySoundToSet(11125);
 };
 .RegisterUnitEvent(22898, 3, supremus_killedtarget);
@@ -188,7 +188,7 @@ global anger_dead; if (anger_dead==100) { .DeregisterTimer(); }
 global essence_of_anger_entercombat = function(plr)
 {
 global anger_dead=1;
-.SendChatMessage("Beware - I live.");
+.SendChatMessage("Beware -- I live.");
 .PlaySoundToSet(11399);
 //.SendChatMessage("So foolish.");
 //.PlaySoundToSet(11400);
@@ -381,7 +381,7 @@ global gurtogg_killedtarget = function(plr)
 global gurtogg_died = function(plr)
 {
 global gurtogg_dead=100;
-.SendChatMessage("Arrghhh!!!!");
+.SendChatMessage("Arrghhh!");
 .PlaySoundToSet(11439);
 };
 .RegisterUnitEvent(22948, 4, gurtogg_died);
