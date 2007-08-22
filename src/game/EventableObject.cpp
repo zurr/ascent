@@ -97,6 +97,12 @@ void EventableObject::event_RemoveByPointer(TimedEvent * ev)
 void EventableObject::event_RemoveEvents(uint32 EventType)
 {
 	m_lock.Acquire();
+	if(!m_events.size())
+	{
+		m_lock.Release();
+		return;
+	}
+
 	if(EventType == EVENT_REMOVAL_FLAG_ALL)
 	{
 		EventMap::iterator itr = m_events.begin();
@@ -136,6 +142,11 @@ void EventableObject::event_RemoveEvents()
 void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,bool unconditioned)
 {
 	m_lock.Acquire();
+	if(!m_events.size())
+	{
+		m_lock.Release();
+		return;
+	}
 
 	EventMap::iterator itr = m_events.find(EventType);
 	if(itr != m_events.end())
@@ -155,6 +166,11 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,boo
 void EventableObject::event_ModifyTime(uint32 EventType, uint32 Time)
 {
 	m_lock.Acquire();
+	if(!m_events.size())
+	{
+		m_lock.Release();
+		return;
+	}
 
 	EventMap::iterator itr = m_events.find(EventType);
 	if(itr != m_events.end())
@@ -172,6 +188,11 @@ void EventableObject::event_ModifyTime(uint32 EventType, uint32 Time)
 void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 {
 	m_lock.Acquire();
+	if(!m_events.size())
+	{
+		m_lock.Release();
+		return;
+	}
 
 	EventMap::iterator itr = m_events.find(EventType);
 	if(itr != m_events.end())
@@ -191,6 +212,12 @@ bool EventableObject::event_HasEvent(uint32 EventType)
 {
 	bool ret = false;
 	m_lock.Acquire();
+	if(!m_events.size())
+	{
+		m_lock.Release();
+		return false;
+	}
+
 	//ret = m_events.find(EventType) == m_events.end() ? false : true;
 	EventMap::iterator itr = m_events.find(EventType);
 	if(itr != m_events.end())
