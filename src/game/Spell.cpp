@@ -2128,10 +2128,7 @@ void Spell::SendSpellGo()
 			{
 				   Item * it=p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 				if(it)
-				{
 					ip = it->GetProto();
-					   p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
-				}
 			}break;
 		default:
 			{
