@@ -184,7 +184,7 @@ global patheleon_the_calculator_died = function(plr)
 global gatewatcher_gyrokill_saw_blade = function(plr)
 {
 .CastSpell(35318);
-.SendYellMessage("If my devision is correct, you should be quiet dead!");
+.SendYellMessage("If my division is correct, you should be quite dead!");
 .PlaySoundToSet(11105);
 };
 
@@ -229,7 +229,7 @@ global gatewatcher_gyrokill_died = function(plr)
 global gatewatcher_ironhand_jack_hammer = function(plr)
 {
 .CastSpell(35327);
-.SendYellMessage("Low tech yet quiet effective!");
+.SendYellMessage("Low tech, yet quiet effective!");
 .PlaySoundToSet(11113);
 };
 
