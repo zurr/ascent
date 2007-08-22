@@ -1620,27 +1620,36 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		/* Zone Under Attack */
 		if(pVictim->GetMapId() == 0 || pVictim->GetMapId() == 1 || pVictim->GetMapId() == 530 /* continent maps only */
 			&& !pVictim->IsPlayer()
-			&& !pVictim->IsPet())
+			&& !pVictim->IsPet()
+			&& (IsPlayer() || IsPet())
+			)
 		{
 			// Only NPCs that bear the PvP flag can be truly representing their faction.
 			if(((Creature*)pVictim)->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP))
 			{
-				uint8 team = 1; // Send to Horde
-				if(isAlliance(pVictim))
-					team = 0; // Send to Alliance, then
+				Player * pAttacker = NULL;
+				if(IsPet())
+					pAttacker = ((Pet*)this)->GetPetOwner();
+				else
+					pAttacker = ((Player*)this);
 
-				// getzoneId is fucked, so we'll use terrainmgr. :>
-				uint16 AreaId = pVictim->GetMapMgr()->GetAreaID(pVictim->GetPositionX(),pVictim->GetPositionY());
-				AreaTable * at = sAreaStore.LookupEntry(AreaId);
-				if(at)
+				uint8 teamId = (uint8)pAttacker->GetTeam();
+				if(teamId == 0) // Swap it.
+					teamId = 1;
+				else
+					teamId = 0;
+				uint32 AreaID = pVictim->GetMapMgr()->GetAreaID(pVictim->GetPositionX(), pVictim->GetPositionY());
+				if(!AreaID)
+					AreaID = pAttacker->GetZoneId(); // Failsafe for a shitty TerrainMgr
+
+				if(AreaID)
 				{
 					WorldPacket data(SMSG_ZONE_UNDER_ATTACK, 4);
-					data << (uint32)at->AreaId;
-					sWorld.SendFactionMessage(&data, team);
+					data << AreaID;
+					sWorld.SendFactionMessage(&data, teamId);
 				}
 			}
 		}
-	/* End Zone Under Attack */
 		
 		if(pVictim->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) > 0)
 		{
