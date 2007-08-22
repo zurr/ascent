@@ -1,3 +1,97 @@
+global Gruul_HurtfulStrike = function(mob)
+{
+    .SendChatMessage("Scream");
+    .CastSpell(33813);
+    .PlaySoundToSet(11360);
+};
+
+global Gruul_Growth = function(mob)
+{
+    .SendChatMessage("No Escape");
+    .CastSpell(40318);
+    .PlaySoundToSet(11362);
+};
+
+global Gruul_Reverberation = function(mob)
+{
+    .SendChatMessage("Scurry");
+    .CastSpell(36297);
+    .PlaySoundToSet(11359);
+};
+
+global Gruul_CaveIn = function(mob)
+{
+    .SendChatMessage("Beg For Life");
+    .CastSpell(36240);
+    .PlaySoundToSet(11357);
+};
+
+global Gruul_GroundSlam = function(mob)
+{
+    .SendChatMessage("Unworthy!");
+    .CastSpell(33525);
+    .PlaySoundToSet(11356);
+};
+
+global Gruul_Grasp = function(mob)
+{
+    .SendChatMessage("Stay!");
+    .CastSpell(33572);
+    .PlaySoundToSet(11358);
+};
+
+global Gruul_stoned = function(mob)
+{
+    .CastSpell(33652);
+};
+
+global Gruul_Shatter = function(mob)
+{
+    .SendChatMessage("Beg for life");
+    .CastSpell(33654);
+    .PlaySoundToSet(11360);
+};
+
+global Gruul_EnterCombat = function(mob)
+{
+    .SendChatMessage("Come and die!");
+    .PlaySoundToSet(11355);
+    .RegisterTimer(120000, Gruul_HurtfulStrike, 0);
+    .RegisterTimer(60000, Gruul_Growth, 30);
+    .RegisterTimer(180000, Gruul_Reverberation, 0);
+    .RegisterTimer(150000, Gruul_CaveIn, 0);
+    .RegisterTimer(220000, Gruul_GroundSlam, 0);
+    .RegisterTimer(230000, Gruul_Grasp, 0);
+    .RegisterTimer(200000, Gruul_Stoned, 0);
+    .RegisterTimer(300000, Gruul_Shatter, 0);
+        
+};
+    .RegisterUnitEvent(19044, 1, Gruul_EnterCombat);
+
+
+global Gruul_leaveCombat = function(mob)
+{
+    .DeregisterTimer();
+};
+    .RegisterUnitEvent(19044, 2, Gruul_leaveCombat);
+
+global Gruul_KillTarget = function(mob)
+{
+    .SendChatMessage("Die!!!");
+    .PlaySoundToSet(11361);
+};
+    .RegisterUnitEvent(19044, 3, Gruul_KillTarget);
+
+global Gruul_died = function(mob)
+{
+    .SendChatMessage("No More!");
+    .PlaySoundToSet(11363);
+    .DeregisterTimer();
+};
+    .RegisterUnitEvent(19044, 4, Gruul_died);
+
+
+
 //High King Maulgar Script//
 
 global Maulgar_ArcingSmash = function(mob)
@@ -72,6 +166,51 @@ global Seer_died = function(mob)
 	.DeregisterTimer();
 };
 	.RegisterUnitEvent(18836, 4, Seer_died);
+
+
+
+//Kiggler the Crazed//
+
+global Kiggler_Polymorph = function(mob)
+{
+    .CastSpell(33173);
+};
+
+global Kiggler_bolt = function(mob)
+{
+    .CastSpell(36152);
+};
+
+global Kiggler_Shock = function(mob)
+{
+    .CastSpell(33175);
+};
+
+global Kiggler_Explosion = function(mob)
+{
+    .CastSpell(33237);
+};
+
+global Kiggler_EnterCombat = function(mob)
+{
+    .RegisterTimer(180000, Kiggler_Polymorph, 0);
+    .RegisterTimer(30000, Kiggler_bolt, 0);
+    .RegisterTimer(60000, Kiggler_Shock, 0);
+    .RegisterTimer(85000, Kiggler_Explosion, 0);
+};
+    .RegisterUnitEvent(18835, 1, Kiggler_EnterCombat);
+
+global Kiggler_LeaveCombat = function(mob)
+{
+    .DeregisterTimer();
+};
+    .RegisterUnitEvent(18835, 2, Kiggler_LeaveCombat);
+
+global Kiggler_died = function(mob)
+{
+    .DeregisterTimer();
+};
+    .RegisterUnitEvent(18835, 4, Kiggler_died);
 
 
 //Krosh Firehand//
