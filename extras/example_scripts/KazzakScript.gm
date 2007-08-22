@@ -1,0 +1,32 @@
+global KazzakSpawn=function(mob)
+{
+.SendYellMessage("I remember well the sting of defeat at the conclusion of the Third War. I have waited far too long for my revenge. Now the shadow of the Legion falls over this world. It is only a matter of time until all of your failed creation... is undone.");
+};
+
+.RegisterUnitEvent(18728, 6, KazzakSpawn);
+
+global KazzakAggro=function(mob)
+{
+.SendYellMessage("All mortals will perish!");
+};
+.RegisterUnitEvent(18728, 1, KazzakAggro);
+
+global KazzakKillPlayer=function(mob)
+{
+.CastSpell(32966);
+.SendYellMessage("Your own strength feeds me, $N!");
+};
+.RegisterUnitEvent(18728, 3, KazzakKillPlayer);
+
+global KazzakWipe=function(mob)
+{
+.SendYellMessage("The universe will be remade.");
+};
+.RegisterUnitEvent(18728, 2, KazzakWipe);
+
+global KazzakDies=function(mob)
+{
+.SendYellMessage("The Legion... will never... fall.");
+.DeregisterTimer();
+};
+.RegisterUnitEvent(18728, 4, KazzakDies);

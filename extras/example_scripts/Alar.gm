@@ -1,0 +1,49 @@
+/* ###### Al'ar AI Script ###### */
+
+/*global alar_spell_cast = function(mob)
+{
+.CastSpell();
+.SendYellMessage("Wahh my Cast will own you alllllllllll.");
+};*/
+
+global alar_minions_spawn = function(mob)
+{
+.SendYellMessage("My Child will kill you.");
+.SpawnMonster(19551, 313.739685, -4.496290, -2.388968);
+.SpawnMonster(19551, 315.453796, 5.631794, -2.388968);
+.SpawnMonster(19551, 308.332092, 1.797824, -2.389424);
+};
+
+global alar_entercombat = function(mob)
+{
+.SendYellMessage("Ar, Sh, Na, ....");
+
+.RegisterTimer(30000, alar_minions_spawn, 99);
+//.RegisterTimer(20000, alar_spell_cast, 99);
+};
+.RegisterUnitEvent(19514, 1, alar_entercombat);
+
+global alar_leavecombat = function(mob)
+{
+.DeregisterTimer();
+};
+.RegisterUnitEvent(19514, 2, alar_leavecombat);
+
+global alar_killedtarget = function(mob)
+{
+.SendYellMessage("I told you not to fight me.");
+};
+.RegisterUnitEvent(19514, 3, alar_killedtarget);
+
+global alar_minions_killedtarget = function(mob)
+{
+.SendYellMessage("I told you not to fight me.");
+};
+.RegisterUnitEvent(19551, 3, alar_minions_killedtarget);
+
+global alar_died = function(mob)
+{
+.SendYellMessage("My... Lord will kill you.....all...");
+.DeregisterTimer();
+};
+.RegisterUnitEvent(19514, 4, alar_died);

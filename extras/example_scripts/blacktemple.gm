@@ -1,0 +1,837 @@
+//****************** BLACK TEMPLE OBDB2 SCRIPT - 13.08.2007 ********************
+//TODO: AKAMA MUST HAVE FLAGS '0'
+
+//***************** HIGH WARLORD NAJENTUS
+
+global najentus_needle_spine = function(plr)
+{
+.CastSpell(39835);
+.SendChatMessage("Stick around!");
+.PlaySoundToSet(11451);
+//.SendChatMessage("I'll deal with you later!");};
+//.PlaySoundToSet(11452);
+};
+
+global najentus_crashing_wave = function(plr) { .CastSpell(40100); global najentus_dead; if (najentus_dead==100) { .DeregisterTimer(); } };
+
+global najentus_entercombat = function(plr)
+{
+global najentus_dead=1;
+.SendChatMessage("You will die, in the name of Lady Vashj!");
+.PlaySoundToSet(11450);
+
+.RegisterTimer(30000, najentus_crashing_wave, 99);
+.RegisterTimer(20000, najentus_needle_spine, 99);
+};
+.RegisterUnitEvent(22887, 1, najentus_entercombat);
+
+global najentus_leavecombat = function(plr)
+{
+global najentus_dead=100;
+};
+.RegisterUnitEvent(22887, 2, najentus_leavecombat);
+
+global najentus_killedtarget = function(plr)
+{
+//.SendChatMessage("Your sucess short lived!");
+//.PlaySoundToSet(11455);
+.SendChatMessage("Time for you to go!");
+.PlaySoundToSet(11456);
+};
+.RegisterUnitEvent(22887, 3, najentus_killedtarget);
+
+global najentus_died = function(plr)
+{
+global najentus_dead=100;
+.SendChatMessage("Lord Illidan will... crush you.");
+.PlaySoundToSet(11459);
+};
+.RegisterUnitEvent(22887, 4, najentus_died);
+
+//***************** SUPREMUS
+
+global supremus_molten_flame = function(plr)
+{
+global supremus_dead; if (supremus_dead==100) { .DeregisterTimer(); }
+if (supremus_phase==1)
+{
+.CastSpell(40265);
+}
+};
+
+global supremus_hateful_strike = function(plr) {
+global supremus_dead; if (supremus_dead==100) { .DeregisterTimer(); }
+if (supremus_phase==1)
+	{
+	.CastSpell(41926);
+	}
+};
+
+global supremus_change_phase = function(plr) {
+global supremus_dead; if (supremus_dead==100) { .DeregisterTimer(); }
+if (supremus_phase==1)
+	{
+//	supremus_phase=2;
+	} else {
+	supremus_phase=1;
+	}
+};
+
+global supremus_moves = function(plr) {
+global supremus_dead; if (supremus_dead==100) { .DeregisterTimer(); }
+if (phase==2)
+	{
+	//dunno how to implement this - need supremus vulcano proto and a way to change the target
+	.SendChatMessage("We span the universe, as countless as the stars!");
+	.PlaySoundToSet(11131);	//We span the universe, as countless as the stars!
+	}
+};
+
+global supremus_entercombat = function(plr)
+{
+.SendChatMessage("Bear witness to the agent of your demise!");
+.PlaySoundToSet(11123);
+global supremus_phase=1;
+global supremus_dead=1;
+
+.RegisterTimer(35000, supremus_moves, 99);
+.RegisterTimer(60000, supremus_change_phase, 99);
+.RegisterTimer(25000, supremus_hateful_strike, 99);
+.RegisterTimer(40000, supremus_molten_flame, 99);
+};
+.RegisterUnitEvent(22898, 1, supremus_entercombat);
+
+global supremus_leavecombat = function(plr)
+{
+global supremus_dead=100;
+};
+.RegisterUnitEvent(22898, 2, supremus_leavecombat);
+
+global supremus_killedtarget = function(plr)
+{
+.SendChatMessage("Your fate is written!");
+.PlaySoundToSet(11124);
+//.SendChatMessage("The chaos I have sown here is but a taste....");
+//.PlaySoundToSet(11125);
+};
+.RegisterUnitEvent(22898, 3, supremus_killedtarget);
+
+global supremus_died = function(plr)
+{
+.SendChatMessage("I am merely one of... infinite multitudes.");
+.PlaySoundToSet(11126);
+global supremus_dead=100;
+};
+.RegisterUnitEvent(22898, 4, supremus_died);
+
+//***************** SHADE OF AKAMA
+
+global shade_of_akama_spawn_akama = function(plr)
+{
+.SpawnMonster(22990, 446.089, 426.441, 118.538);
+};
+
+global shade_of_akama_entercombat = function(plr)
+{
+.RegisterTimer(120000, shade_of_akama_spawn_akama, 1);	//wait 2min then spawn akama
+};
+.RegisterUnitEvent(22841, 1, shade_of_akama_entercombat);
+
+global shade_of_akama_leavecombat = function(plr)
+{
+.DeregisterTimer();
+//.Despawn(1000, 999999);
+};
+.RegisterUnitEvent(22841, 2, shade_of_akama_leavecombat);
+
+global shade_of_akama_died = function(plr)
+{
+.DeregisterTimer();
+//.Despawn(1000, 999999);
+};
+.RegisterUnitEvent(22841, 4, shade_of_akama_died);
+
+global shade_of_akama_spawn = function(plr)
+{
+//.Despawn(1000, 999999);
+//.SetCombatCapable(0);
+};
+.RegisterUnitEvent(22841, 6, shade_of_akama_spawn);
+
+//***************** ASHTONGUE CHANNELER
+
+global ashtongue_channeler_spawn = function(plr)
+{
+//Can't get castspellontarget to work, it crashes ascent, dammit!!!
+//.SetCombatCapable(0);
+//.CastSpellOnTarget(40884, 1067037);
+//.CastSpell(40884);
+};
+.RegisterUnitEvent(23421, 6, ashtongue_channeler_spawn);
+
+//***************** ESSENCE OF ANGER
+
+global essence_of_anger_seethe = function(plr) { 
+global anger_dead; if (anger_dead==100) { .DeregisterTimer(); }
+	.SendChatMessage("Beware cowards!");
+	.PlaySoundToSet(11405);
+	.CastSpell(41364);
+	};
+global essence_of_anger_soul_scream = function(plr) { global anger_dead; if (anger_dead==100) { .DeregisterTimer(); }	.CastSpell(41545);	};
+global essence_of_anger_spite = function(plr) { 
+global anger_dead; if (anger_dead==100) { .DeregisterTimer(); }
+	.SendChatMessage("On your knees!");
+	.PlaySoundToSet(11403);
+	.CastSpell(41377);
+	};
+
+global essence_of_anger_entercombat = function(plr)
+{
+global anger_dead=1;
+.SendChatMessage("Beware - I live.");
+.PlaySoundToSet(11399);
+//.SendChatMessage("So foolish.");
+//.PlaySoundToSet(11400);
+
+.RegisterTimer(30000, essence_of_anger_seethe, 99);
+.RegisterTimer(20000, essence_of_anger_soul_scream, 99);
+.RegisterTimer(40000, essence_of_anger_spite, 99);
+};
+.RegisterUnitEvent(23420, 1, essence_of_anger_entercombat);
+
+global essence_of_anger_leavecombat = function(plr)
+{
+global anger_dead=100;
+};
+.RegisterUnitEvent(23420, 2, essence_of_anger_leavecombat);
+
+global essence_of_anger_killedtarget = function(plr)
+{
+.SendChatMessage("Enough! No more!");
+.PlaySoundToSet(11402);
+//.SendChatMessage("Hahahaha!");
+//.PlaySoundToSet(11401);
+};
+.RegisterUnitEvent(23420, 3, essence_of_anger_killedtarget);
+
+global essence_of_anger_died = function(plr)
+{
+global anger_dead=100;
+.SendChatMessage("I won't be ignored.");
+.PlaySoundToSet(11404);
+};
+.RegisterUnitEvent(23420, 4, essence_of_anger_died);
+
+//***************** ESSENCE OF DESIRE
+
+global essence_of_desire_rune_shield = function(plr) { 
+	global desire_dead; if (desire_dead==100) { .DeregisterTimer(); }
+	.SendChatMessage("Be careful what you wish for.");
+	.PlaySoundToSet(11411);
+	.CastSpell(41431);
+	};
+global essence_of_desire_soul_deaden = function(plr) { global desire_dead; if (desire_dead==100) { .DeregisterTimer(); } .CastSpell(41410);	};
+global essence_of_desire_spirit_shock = function(plr) {	global desire_dead; if (desire_dead==100) { .DeregisterTimer(); } .CastSpell(41426);	};
+
+global essence_of_desire_entercombat = function(plr)
+{
+global desire_dead=1;
+.SendChatMessage("You can have anything you desire... for a price.");
+.PlaySoundToSet(11408);
+
+.RegisterTimer(70000, essence_of_desire_rune_shield, 99);
+.RegisterTimer(20000, essence_of_desire_soul_deaden, 99);
+.RegisterTimer(40000, essence_of_desire_spirit_shock, 99);
+};
+.RegisterUnitEvent(23419, 1, essence_of_desire_entercombat);
+
+global essence_of_desire_leavecombat = function(plr)
+{
+global desire_dead=100;
+};
+.RegisterUnitEvent(23419, 2, essence_of_desire_leavecombat);
+
+global essence_of_desire_killedtarget = function(plr)
+{
+.SendChatMessage("Fulfilment is at hand.");
+.PlaySoundToSet(11409);
+};
+.RegisterUnitEvent(23419, 3, essence_of_desire_killedtarget);
+
+global essence_of_desire_died = function(plr)
+{
+global desire_dead=100;
+.SendChatMessage("I'll be waiting.");
+.PlaySoundToSet(11413);
+.SpawnMonster(23420, 495.017, 188.407, 94.5386);	// Spawns next essence
+.Delete();	//delete essence
+};
+.RegisterUnitEvent(23419, 4, essence_of_desire_died);
+
+//***************** ESSENCE OF SUFFERING
+
+global essence_of_suffering_fixate = function(plr) { global suffering_dead; if (suffering_dead==100) { .DeregisterTimer(); }	.CastSpell(40414);	};
+global essence_of_suffering_enrage = function(plr) { global suffering_dead; if (suffering_dead==100) { .DeregisterTimer(); } .CastSpell(28798);	};
+global essence_of_suffering_soul_drain = function(plr) { global suffering_dead; if (suffering_dead==100) { .DeregisterTimer(); } .CastSpell(41303);	};
+
+global essence_of_suffering_entercombat = function(plr)
+{
+global suffering_dead=1;
+.SendChatMessage("Pain and suffering are all that await you.");
+.PlaySoundToSet(11415);
+
+.RegisterTimer(30000, essence_of_suffering_fixate, 99);
+.RegisterTimer(20000, essence_of_suffering_enrage, 99);
+.RegisterTimer(40000, essence_of_suffering_soul_drain, 99);
+};
+.RegisterUnitEvent(23418, 1, essence_of_suffering_entercombat);
+
+global essence_of_suffering_leavecombat = function(plr)
+{
+global suffering_dead=100;
+};
+.RegisterUnitEvent(23418, 2, essence_of_suffering_leavecombat);
+
+global essence_of_suffering_killedtarget = function(plr)
+{
+.SendChatMessage("Look at what you made me do.");
+.PlaySoundToSet(11417);
+};
+.RegisterUnitEvent(23418, 3, essence_of_suffering_killedtarget);
+
+global essence_of_suffering_died = function(plr)
+{
+global suffering_dead=100;
+.SendChatMessage("I don't want to go back!");
+.PlaySoundToSet(11420);
+.SpawnMonster(23419, 495.017, 188.407, 94.5386);	// Spawns next essence
+.Delete();	//delete essence
+};
+.RegisterUnitEvent(23418, 4, essence_of_suffering_died);
+
+//***************** GURTOGG BLOODBOIL
+
+global gurtogg_phases = function(plr) {
+global gurtogg_dead; if (gurtogg_dead==100) { .DeregisterTimer(); }
+global spell_tick;
+global gurtogg_phase;
+spell_tick=spell_tick+1;
+
+if (gurtogg_phase==1) {
+if (spell_tick==1) { .CastSpell(42005); } else	//bloodboil
+if (spell_tick==2) { .CastSpell(40481); } else	//acidic wound
+if (spell_tick==3) { .CastSpell(32752); } else	//disorient
+if (spell_tick==4) { .CastSpell(38576); } else	//knockback
+if (spell_tick==5) { .CastSpell(40599); } else	//arcing smash
+if (spell_tick==6) { .CastSpell(40508); }	//fel acid
+if (spell_tick==6) { 
+	spell_tick=0;
+	gurtogg_phase=2;
+	.SendChatMessage("I hunger!");
+	.PlaySoundToSet(11436); }	//reset spells and change phase
+}
+if (gurtogg_phase==2) {
+if (spell_tick==1) { .CastSpell(40508); }	//fel rage - phase 2 starts with fel rage
+if (spell_tick==2) { .CastSpell(40599); } else	//arcing smash
+if (spell_tick==3) { .CastSpell(40508); }	//fel acid
+if (spell_tick==4) { .CastSpell(40629); }	//acid geyser
+if (spell_tick==4) { 
+	spell_tick=0; 
+	gurtogg_phase=1;
+	.SendChatMessage("Drink your blood! Eat your flesh!");
+	.PlaySoundToSet(11435); }	//reset spells and change phase
+}
+};	//gurtogg_phases
+
+global gurtogg_enrage = function(plr) {
+global gurtogg_dead; if (gurtogg_dead==100) { .DeregisterTimer(); }
+global gurtogg_enraged=1;
+.SendChatMessage("I'll rip the meat from your bones!");
+.PlaySoundToSet(11437);
+};
+
+global gurtogg_entercombat = function(plr)
+{
+global gurtogg_dead=1;
+.SendChatMessage("Horde will crush you!");
+.PlaySoundToSet(11432);
+
+global gurtogg_phase=1;
+global spell_tick=0;
+global gurtogg_enraged=0;
+
+.RegisterTimer(610000, gurtogg_enrage, 999);
+.RegisterTimer(10000, gurtogg_phases, 999);
+};
+.RegisterUnitEvent(22948, 1, gurtogg_entercombat);
+
+global gurtogg_leavecombat = function(plr)
+{
+global gurtogg_dead=100;
+};
+.RegisterUnitEvent(22948, 2, gurtogg_leavecombat);
+
+global gurtogg_killedtarget = function(plr)
+{
+.SendChatMessage("Time to feast!");
+.PlaySoundToSet(11433);
+};
+.RegisterUnitEvent(22948, 3, gurtogg_killedtarget);
+
+global gurtogg_died = function(plr)
+{
+global gurtogg_dead=100;
+.SendChatMessage("Arrghhh!!!!");
+.PlaySoundToSet(11439);
+};
+.RegisterUnitEvent(22948, 4, gurtogg_died);
+
+//***************** TERON GOREFIEND
+
+global teron_phases = function(plr) {
+global teron_dead; if (teron_dead==100) { .DeregisterTimer(); }
+global spell_tick;
+spell_tick=spell_tick+1;
+if (spell_tick==1) { .CastSpell(40188); } else	//Doom Blossom
+if (spell_tick==2) { .CastSpell(40251); } else	//Shadow of Death
+if (spell_tick==3) { .CastSpell(40243); } else	//Crushing Shadows
+if (spell_tick==4) { .CastSpell(40239); } else	//Incinerate
+if (spell_tick==5) { .CastSpell(40327); } else	//Atrophy
+if (spell_tick==6) { .CastSpell(40325); } else	//Spirit Strike
+if (spell_tick==7) { .CastSpell(40157); } else	//Spirit Lance
+if (spell_tick==8) { .CastSpell(40314); } else	//Spirit Volley
+if (spell_tick==9) { .CastSpell(40175); } else	//Spirit Chains
+if (spell_tick==10) { .CastSpell(40322); }	//Spirit Shield
+
+if (spell_tick==10) { spell_tick=0; }	//reset spells and change phase
+};
+
+global teron_enrage = function(plr) {
+global teron_dead; if (teron_dead==100) { .DeregisterTimer(); }
+global teron_enraged=1;
+.SendChatMessage("YOU WILL SHOW THE PROPER RESPECT!");
+.PlaySoundToSet(11520);
+};
+
+global teron_entercombat = function(plr)
+{
+global teron_dead=1;
+.SendChatMessage("Vengeance is mine!");
+.PlaySoundToSet(11513);
+
+global teron_phase=1;
+global spell_tick=0;
+global teron_enraged=0;
+
+.RegisterTimer(600000, teron_enrage, 999);
+.RegisterTimer(10000, teron_phases, 999);
+};
+.RegisterUnitEvent(22871, 1, teron_entercombat);
+
+global teron_leavecombat = function(plr)
+{
+global teron_dead=100;
+};
+.RegisterUnitEvent(22871, 2, teron_leavecombat);
+
+global teron_killedtarget = function(plr)
+{
+.SendChatMessage("I have use for you!");
+.PlaySoundToSet(11514);
+};
+.RegisterUnitEvent(22871, 3, teron_killedtarget);
+
+global teron_died = function(plr)
+{
+global teron_dead=100;
+.SendChatMessage("The wheel...spins...again....");
+.PlaySoundToSet(11521);
+};
+.RegisterUnitEvent(22871, 4, teron_died);
+
+global teron_spawn = function(plr)
+{
+.SendChatMessage("I was the first, you know. For me, the wheel of death has spun many times. <laughs> So much time has passed. I have a lot of catching up to do...");
+.PlaySoundToSet(11512);
+};
+.RegisterUnitEvent(22871, 6, teron_spawn);
+
+//***************** MOTHER SHAHRAZ
+
+global shahraz_phases = function(plr) {
+global shahraz_dead; if (shahraz_dead==100) { .DeregisterTimer(); }
+global spell_tick;
+spell_tick=spell_tick+1;
+if (spell_tick==1) { .CastSpell(40860); } else	//Vile Beam
+if (spell_tick==2) { .CastSpell(40861); } else	//Wicked Beam
+if (spell_tick==3) { .CastSpell(40869); } else	//Fatal Attraction
+if (spell_tick==4) { .CastSpell(40816); } else	//Saber Lash
+if (spell_tick==5) { .CastSpell(38905); }	//Prismatic Shield
+if (spell_tick==5) {
+ spell_tick=0; 
+ .SendChatMessage("You seem a little tense.");
+ .PlaySoundToSet(11505);
+ }	//reset spells and change phase
+};
+
+global shahraz_enrage = function(plr) {
+global shahraz_dead; if (shahraz_dead==100) { .DeregisterTimer(); }
+global shahraz_enraged=1;
+.SendChatMessage("Stop toying with my emotions!");
+.PlaySoundToSet(11510);
+};
+
+global shahraz_entercombat = function(plr)
+{
+global shahraz_dead=1;
+.SendChatMessage("So, business... or pleasure?");
+.PlaySoundToSet(11504);
+
+global shahraz_phase=1;
+global spell_tick=0;
+global shahraz_enraged=0;
+
+.RegisterTimer(600000, shahraz_enrage, 999);
+.RegisterTimer(10000, shahraz_phases, 999);
+};
+.RegisterUnitEvent(22947, 1, shahraz_entercombat);
+
+global shahraz_leavecombat = function(plr)
+{
+global shahraz_dead=100;
+};
+.RegisterUnitEvent(22947, 2, shahraz_leavecombat);
+
+global shahraz_killedtarget = function(plr)
+{
+.SendChatMessage("Easy come, easy go.");
+.PlaySoundToSet(11508);
+};
+.RegisterUnitEvent(22947, 3, shahraz_killedtarget);
+
+global shahraz_died = function(plr)
+{
+global shahraz_dead=100;
+.SendChatMessage("I wasn't finished.");
+.PlaySoundToSet(11511);
+};
+.RegisterUnitEvent(22947, 4, shahraz_died);
+
+//***************** ILLIDARI COUNCIL
+//Lady Malande
+global malande_entercombat = function(plr) {
+.SendChatMessage("Flee or die!");
+.PlaySoundToSet(11482); };
+.RegisterUnitEvent(22951, 1, malande_entercombat);
+
+global malande_leavecombat = function(plr) {
+};
+.RegisterUnitEvent(22951, 2, malande_leavecombat);
+
+global malande_killedtarget = function(plr) {
+.SendChatMessage("My work is done.");
+.PlaySoundToSet(11483); };
+.RegisterUnitEvent(22951, 3, malande_killedtarget);
+
+global malande_died = function(plr) {
+.SendChatMessage("Destiny... awaits!");
+.PlaySoundToSet(11485); };
+.RegisterUnitEvent(22951, 4, malande_died);
+
+//Gathios the Shatterer
+global shatterer_entercombat = function(plr) {
+.SendChatMessage("I have better things to do!");
+.PlaySoundToSet(11422); };
+.RegisterUnitEvent(22949, 1, shatterer_entercombat);
+
+global shatterer_leavecombat = function(plr) {
+};
+.RegisterUnitEvent(22949, 2, shatterer_leavecombat);
+
+global shatterer_killedtarget = function(plr) {
+.SendChatMessage("Selama amor'anore!");
+.PlaySoundToSet(11423); };
+.RegisterUnitEvent(22949, 3, shatterer_killedtarget);
+
+global shatterer_died = function(plr) {
+.SendChatMessage("Lord Illidan... I...");
+.PlaySoundToSet(11425); };
+.RegisterUnitEvent(22949, 4, shatterer_died);
+
+//High Nethermancer Zerevor
+global zerevor_phases = function(plr) {
+global zerevor_dead; if (zerevor_dead==100) { .DeregisterTimer(); }
+global spell_tick;
+spell_tick=spell_tick+1;
+if (spell_tick==1) { .CastSpell(41483); } else	//Arcane Bolt
+if (spell_tick==2) { .CastSpell(20680); } else	//Blizzard
+if (spell_tick==3) { .CastSpell(41379); } else	//Flamestrike
+if (spell_tick==4) { .CastSpell(41478); }		//Dampen Magic
+if (spell_tick==4) {
+ spell_tick=0;  }	//reset spells
+};
+
+global zerevor_entercombat = function(plr) {
+global zerevor_dead=1;
+global spell_tick=0;
+.RegisterTimer(10000, zerevor_phases, 999);
+
+//.SendChatMessage("");
+.PlaySoundToSet(11440); };
+.RegisterUnitEvent(22950, 1, zerevor_entercombat);
+
+global zerevor_leavecombat = function(plr) {
+global zerevor_dead=100; };
+.RegisterUnitEvent(22950, 2, zerevor_leavecombat);
+
+global zerevor_killedtarget = function(plr) {
+//.SendChatMessage("");
+.PlaySoundToSet(11441); };
+.RegisterUnitEvent(22950, 3, zerevor_killedtarget);
+
+global zerevor_died = function(plr) {
+global zerevor_dead=100;
+//.SendChatMessage("");
+.PlaySoundToSet(11443); };
+.RegisterUnitEvent(22950, 4, zerevor_died);
+
+//Veras Darkshadow
+global veras_entercombat = function(plr) {
+.SendChatMessage("You wish to test me?");
+.PlaySoundToSet(11524); };
+.RegisterUnitEvent(22952, 1, veras_entercombat);
+
+global veras_leavecombat = function(plr) {
+.DeregisterTimer(); };
+.RegisterUnitEvent(22952, 2, veras_leavecombat);
+
+global veras_killedtarget = function(plr) {
+.SendChatMessage("A glorious kill!");
+.PlaySoundToSet(11526); };
+.RegisterUnitEvent(22952, 3, veras_killedtarget);
+
+global veras_died = function(plr) {
+.SendChatMessage("You got lucky!");
+.PlaySoundToSet(11527); };
+.RegisterUnitEvent(22952, 4, veras_died);
+
+//********************** Illidan Stormrage <The Betrayer>
+//illidan emotes:
+//27-ready to fight
+//52-smash the ground
+//53-enrage
+
+global illidan_phases = function(plr) {
+global illidan_dead; if (illidan_dead==100) { .DeregisterTimer(); }
+global illidan_phase;
+global spell_tick;
+global illidan_shadow_form;
+spell_tick=spell_tick+1;
+if (illidan_phase==1) {
+if (spell_tick==1) { .CastSpell(41032); } else	//SHEAR
+if (spell_tick==2) { .CastSpell(41914); } else	//PARASITIC SHADOWFIEND
+if (spell_tick==3) { .CastSpell(40832); spell_tick=0; } 			//FLAME_CRASH
+} else
+if (illidan_phase==2) {
+if (spell_tick==1) { .CastSpell(40598); spell_tick=0; }		//FIREBALL
+} else
+if (illidan_phase==3) {
+if (illidan_shadow_form==1) {
+if (spell_tick==1) { .CastSpell(41032); } else	//SHEAR
+if (spell_tick==2) { .CastSpell(41914); } else	//PARASITIC SHADOWFIEND
+if (spell_tick==3) { .CastSpell(40832); spell_tick=0; } 			//FLAME_CRASH
+} else //phase 3 shadow form
+if (illidan_shadow_form==2) {
+if (spell_tick==1) { .CastSpell(41078); } else		//SHADOW_BLAST
+if (spell_tick==2) { .CastSpell(40314); spell_tick=0; illidan_shadow_form=1; } 	//Spirit Volley, shadow form off, emote
+}		//illidan shadow form
+} else
+if (illidan_phase==4) {
+if (spell_tick==1) { .CastSpell(41032); } else	//SHEAR 41032
+if (spell_tick==2) { .CastSpell(40832); } else	//FLAME_CRASH 40832
+if (spell_tick==3) { 	.SendChatMessage("You've wasted too much time mortals, now you shall fall!");
+.PlaySoundToSet(11474); .CastSpell(34971); spell_tick=0; } 	//ENRAGE
+}
+};	//illidan_phases
+
+global illidan_changephase = function(plr) {
+global illidan_dead; if (illidan_dead==100) { .DeregisterTimer(); }
+global illidan_phase;
+global maiev_spawned;
+global illidan_shadow_form;
+illidan_phase=illidan_phase+1;
+
+if (illidan_phase==2) {
+	.Emote(254);	//Liftoff - he won't stay this way - dammit!
+//	.SetCombatCapable(0);	
+}
+else
+if (illidan_phase==3) {
+	.Emote(293);	//Land
+//	.SetCombatCapable(1);
+	.SendChatMessage("Behold the power... of the demon within!");
+	.PlaySoundToSet(11475);
+	.CastSpell(40510);		//Demon
+	illidan_shadow_form=2;
+}
+else
+if (illidan_phase==4) {
+	if (maiev_spawned!=100) {
+	.CastSpell(40647);		//SHADOW_PRISON
+//	.SpawnMonster(21699, 747.36, 260.757, 353.02);	//spawn maiev
+	.SpawnMonster(21699, 677.67, 305.028, 353.192);	//spawn maiev next to illidan
+
+	maiev_spawned=100;
+	}
+} else
+if (illidan_phase==5) { illidan_phase=4; }	//stay on phase 4 until the end
+};
+
+global illidan_entercombat = function(plr) {
+global illidan_dead=1;
+.SendChatMessage("You are not prepared!");
+.PlaySoundToSet(11466);
+
+global spell_tick=0;
+global illidan_phase=1;
+.RegisterTimer(10000, illidan_phases, 999);	//phase cast - 10 sec
+.RegisterTimer(60000, illidan_changephase, 999);	//phase change - 60 sec
+//.CastSpell(40511);
+};
+.RegisterUnitEvent(22917, 1, illidan_entercombat);
+
+global illidan_leavecombat = function(plr) {
+global illidan_dead=100; };
+.RegisterUnitEvent(22917, 2, illidan_leavecombat);
+
+global illidan_killedtarget = function(plr) {
+.SendChatMessage("This is too easy!");
+.PlaySoundToSet(11472); };
+.RegisterUnitEvent(22917, 3, illidan_killedtarget);
+
+global illidan_died = function(plr) {
+global illidan_dead=100;
+.SendChatMessage("You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.");
+.PlaySoundToSet(11478); };
+.RegisterUnitEvent(22917, 4, illidan_died);
+
+global illidan_dialog = function(plr) {
+global illidan_dialog_timer;
+global akama_illidan_dialog;
+if (akama_illidan_dialog==100) {
+illidan_dialog_timer=illidan_dialog_timer+1;
+if (illidan_dialog_timer==2) { .SendChatMessage("Akama... your duplicity is hardly surprising. I should have slaughtered you and your malformed brethren long ago."); .PlaySoundToSet(11463); .Emote(378); }
+if (illidan_dialog_timer==27) { .SendChatMessage("Boldly said. But I remain unconvinced."); .PlaySoundToSet(11464); .Emote(378); }
+if (illidan_dialog_timer>40) {
+//.SetCombatCapable(1);
+.DeregisterTimer(); }
+}//if (akama_illidan_dialog==100)
+};
+
+global illidan_spawn = function(plr) {
+//reset vars
+global illidan_spawned=1;
+global akama_illidan_dialog=1;
+global illidan_dialog_timer=1;
+//.SetCombatCapable(0);
+//.CastSpell(39656);	//Illidan intro
+.RegisterTimer(1000, illidan_dialog, 999);
+};
+.RegisterUnitEvent(22917, 6, illidan_spawn);
+
+//************************************ AKAMA
+global akama_dialog = function(plr) {
+
+global akama_dead; if (akama_dead==100) { .DeregisterTimer(); }
+global akama_illidan_dialog;
+global illidan_dialog_timer;
+
+if (akama_illidan_dialog==100) {
+if (illidan_dialog_timer==15) { .SendChatMessage("We've come to end your reign, Illidan. My people and all of Outland shall be free!"); .Emote(378); .PlaySoundToSet(11389); }
+if (illidan_dialog_timer==35) { .SendChatMessage("The time has come! The moment is at hand!"); .Emote(378); .PlaySoundToSet(11380); }
+
+if (illidan_dialog_timer>40) {	//end of blabbing, let's fight
+.SetCombatCapable(1);
+.CreateWaypoint(677.675, 305.028,353.192, 3.14, 0, 256, 0);
+.MoveToWaypoint(2);
+akama_illidan_dialog=1;
+illidan_dialog_timer=1;
+.DeregisterTimer();
+}	//should run to illidan to start a fight
+}	//if (illidan_dialog_timer>40)
+};
+
+global akama_spell1 = function(plr) {
+global akama_dead; if (akama_dead==100) { .DeregisterTimer(); }
+.CastSpell(40535);	//HEALING_POTION 40535
+};
+
+global akama_spell2 = function(plr) {
+global akama_dead; if (akama_dead==100) { .DeregisterTimer(); }
+.CastSpell(20217);	//BLESSING_OF_KINGS 20217
+};
+
+global akama_illidan_spawn = function(plr) {
+global illidan_spawned;
+global akama_illidan_dialog;
+global illidan_dialog_timer;
+global illidan_enabled_trigger;
+
+if (illidan_spawned==100) { //move akama to dialog place
+akama_illidan_dialog=100;
+illidan_dialog_timer=1;
+illidan_spawned=1;
+.RegisterTimer(1000, akama_dialog, 999);
+.CreateCustomWaypointMap();
+.CreateWaypoint(754.164, 304.07, 352.996, 3.165, 0, 256, 0);
+.CreateWaypoint(745.201, 304.387, 352.996, 3.165, 0, 256, 0);
+.SetMovementType(11);
+}//if (illidan_spawned==100)
+};
+
+global akama_spawn = function(plr) {
+//reset vars
+global illidan_spawned=1;
+global akama_illidan_dialog=1;
+global illidan_dialog_timer=1;
+.RegisterTimer(5000, akama_illidan_spawn, 999);
+};
+.RegisterUnitEvent(22990, 6, akama_spawn);
+
+global akama_entercombat = function(plr) {
+global akama_dead=1;
+.RegisterTimer(10000, akama_spell1, 999);	//drink healing potion, every 10 seconds
+.CastSpell(20217);	//blessing of kings, first cast
+.RegisterTimer(600000, akama_spell2, 999); //cast blessings of kings, every 10 mins
+};
+.RegisterUnitEvent(22990, 1, akama_entercombat);
+
+global akama_leavecombat = function(plr) { global akama_dead=100; };
+.RegisterUnitEvent(22990, 2, akama_leavecombat);
+
+global akama_died = function(plr) { global akama_dead=100; };
+.RegisterUnitEvent(22990, 4, akama_died);
+
+//******************************************* Maiev Shadowsong
+
+global maiev_spawn = function(plr) {
+.SetCombatCapable(0);
+.SendChatMessage("Their fury pales before mine, Illidan. We have some unsettled business between us."); .Emote(378); .PlaySoundToSet(11491);
+.SendChatMessage("Ah, my long hunt is finally over. Today, Justice will be done!"); .Emote(378); .PlaySoundToSet(11492);
+.CreateWaypoint(677.675, 305.028,353.192, 3.14, 0, 256, 0);
+.MoveToWaypoint(0);
+.SetMovementType(11);
+};
+.RegisterUnitEvent(21699, 6, maiev_spawn);
+
+//******************************************** Illidan area trigger
+
+global Illidan_trigger = function(plr)
+{ 
+global akama_illidan_dialog;
+if (akama_illidan_dialog!=100){
+global illidan_spawned=100; }
+};
+
+// registration
+this.RegisterAreaTriggerEvent(4648, Illidan_trigger);

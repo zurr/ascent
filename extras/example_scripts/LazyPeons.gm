@@ -1,0 +1,46 @@
+global LazyPeonsEventStart = function(mob)
+{
+   // Create all custom waypoints for the peon
+   .CreateCustomWaypointMap();  
+   .CreateWaypoint(-624.821167, -4350.199707, 41.068184, -1.768413, 22000, 256, 0);
+  
+   // Set the peon's movement type
+   .SetMovementType(11);
+};
+
+global LazyPeonsWaypoint = function(waypoint_id)
+{
+    if(waypoint_id == 1)
+    {
+    .Emote(234);
+    .TimedEmote(234, 1000);
+    .TimedEmote(234, 2000);
+    .TimedEmote(234, 3000);
+    .TimedEmote(234, 4000);
+    .TimedEmote(234, 5000);
+    .TimedEmote(234, 6000);
+    .TimedEmote(234, 7000);
+    .TimedEmote(234, 8000);
+    .TimedEmote(234, 9000);
+    .TimedEmote(234, 10000);
+    .TimedEmote(234, 11000);
+    .TimedEmote(234, 12000);
+    .TimedEmote(234, 13000);
+    .TimedEmote(234, 14000);
+    .TimedEmote(234, 15000);
+    .TimedEmote(234, 16000);
+    .TimedEmote(234, 17000);
+    .TimedEmote(234, 18000);
+    .TimedEmote(234, 19000);
+    .TimedEmote(234, 20000);
+    .CreateWaypoint(-620.840881, -4337.538574, 41.155373, 1.266232, 0, 256, 0);
+    }
+    if(waypoint_id == 2)
+    {
+        .DestroyCustomWaypointMap();
+    }
+};
+
+//Register the events
+.RegisterUnitEvent(10556, 6, LazyPeonsEventStart);
+.RegisterUnitEvent(10556, 8, LazyPeonsWaypoint);
