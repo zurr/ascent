@@ -1,6 +1,0 @@
-global Maraudon_Celebras = function(unit)
-{
-	.SpawnMonster(13716,726.106,77.9764,-86.5913);
-	.Despawn(180000, 0);
-};
-.RegisterUnitEvent(12225, 4, Maraudon_Celebras);
