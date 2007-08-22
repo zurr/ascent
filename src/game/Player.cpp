@@ -1805,7 +1805,7 @@ void Player::addSpell(uint32 spell_id)
 
 		default:
 			{
-				if(skill->id != SKILL_POISONS)
+				if(skill->id != SKILL_POISONS && skill->id != SKILL_LOCKPICKING)
 					max = 1;
 			}break;
 		}
@@ -4173,7 +4173,7 @@ void Player::UpdateMaxSkills()
 		{
 			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
 			if(!sp) continue;
-			if (sp->type != SKILL_TYPE_WEAPON && sp->id != 40)continue; // raise max to weapons and poison
+			if (sp->type != SKILL_TYPE_WEAPON && sp->id != SKILL_POISONS && sp->id != SKILL_LOCKPICKING)continue; // raise max to weapons, poison and lockpicking
 			uint32 val=GetUInt32Value(i+1)%0x10000+getLevel()*5*0x10000;
 			SetUInt32Value(i+1,val);
 		}		   
