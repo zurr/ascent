@@ -1373,7 +1373,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		parry = max(0.0,parry-vsk*0.04);
 	if (block)
 		block = max(0.0,block-vsk*0.04);
-	crit = max(0.0,crit+ ( (pVictim->IsPlayer()) ? (vsk*0.04) : (min(vsk*0.2,0.0)) ));
+	crit = max(0.0,crit+ ( (pVictim->IsPlayer()) ? (vsk*0.04) : (min(vsk*0.2,0.0)) )); 
+//Shady: this is wowwikilike, but i don't think its balanced so i replaced it with another one.
+/*
 	if (vsk>0)
 			hitchance = max(hitchance,95.0f+vsk*0.02+hitmodifier);
 	else
@@ -1388,6 +1390,26 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 				hitchance = max(hitchance,94.9f+(vsk+10)*0.06+hitmodifier);
 			else
 				hitchance = max(hitchance,95.0f+vsk*0.01+hitmodifier);
+		}
+	}
+*/
+	if (vsk>0)
+		hitchance = max(hitchance,95.0f+vsk*0.02+hitmodifier);
+	else
+	{
+		if (pVictim->IsPlayer())
+		{
+			if (pVictim->getLevel()-this->getLevel()>5 && this->IsPlayer())
+				hitchance = max(hitchance,95.0f+vsk*0.7+hitmodifier);
+			else
+				hitchance = max(hitchance,95.0f+vsk*0.04+hitmodifier);
+		}
+		else
+		{
+			if (vsk<-10)
+				hitchance = max(hitchance,100.0f+vsk+hitmodifier);
+			else
+				hitchance = max(hitchance,95.0f+vsk*0.5+hitmodifier);
 		}
 	}
 

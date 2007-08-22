@@ -168,6 +168,9 @@ inline uint32 CalculateXpToGive(Unit *pVictim, Unit *pAttacker)
 	if(victimI)
 		if(victimI->Type == CRITTER)
 			return 0;
+	//not wowwikilike but more balanced
+	if (pVictim->getLevel()-pAttacker->getLevel()>10)
+		return 0;
 
 	uint32 max_level = sWorld.Expansion1LevelCap;
 	if(pAttacker->IsPlayer())
