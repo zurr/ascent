@@ -1635,7 +1635,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 				if(at)
 				{
 					WorldPacket data(SMSG_ZONE_UNDER_ATTACK, 4);
-					data << (uint32)at->ZoneId;
+					data << (uint32)at->AreaId;
 					sWorld.SendFactionMessage(&data, team);
 				}
 			}
