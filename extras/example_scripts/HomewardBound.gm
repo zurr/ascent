@@ -96,7 +96,7 @@ global OnHomewardBoundStart = function(mob, plr)
    mob.StopMovement(3000);
                       
    // Send his chat message.
-   mob.SendChatMessage("Please help me, you gotta protect me and stuff, I can't fight on my own!");
+//   mob.SendChatMessage("Please help me, you gotta protect me and stuff, I can't fight on my own!");
 
    // Set his NPC flags to 0, so no one else can accept the quest.
    mob.SetNPCFlags(0);
@@ -108,7 +108,6 @@ global OnHomewardBoundCheck = function(mob, plr)
 {
    if(mob.HasEscortTarget() == 1)
    {
-      plr.SendSystemMessage("Someone else is already doing that quest.");
       return 0;
    }
   

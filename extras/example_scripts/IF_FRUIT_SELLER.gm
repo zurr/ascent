@@ -26,7 +26,7 @@ global IF_FRUIT_SELLER_WAYPOINT = function(waypoint_id)
 
 if(waypoint_id == 3) {.SendChatMessage("Sink your teeth into a fresh, ripe apple.");}
 if(waypoint_id == 6) {.SendChatMessage("Juicy fruits for sale!");}
-if(waypoint_id == 7) {.SendChatMessage("Stright from the lush forests of Elwynn, get your fresh fruit right here.");}
+if(waypoint_id == 7) {.SendChatMessage("Straight from the lush forests of Elwynn, get your fresh fruit right here.");}
 };
 
 .RegisterUnitEvent(7978, 8,IF_FRUIT_SELLER_WAYPOINT );
