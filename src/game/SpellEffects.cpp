@@ -1047,6 +1047,49 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 
 void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 {
+	if(m_spellInfo->NameHash == 0x068d7654 && unitTarget && p_caster && p_caster->IsInWorld())		// Shadowstep
+	{
+		/* this is rather tricky actually. we have to calculate the orientation of the creature/player, and then calculate a little bit of distance behind that. */
+		float ang;
+		if(unitTarget == m_caster)
+		{
+			/* try to get a selection */
+			unitTarget = m_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
+			if(!unitTarget)
+				return;
+		}
+
+		if(unitTarget->GetTypeId() == TYPEID_UNIT)
+		{
+			if(unitTarget->GetUInt64Value(UNIT_FIELD_TARGET) != 0)
+			{
+				/* We're chasing a target. We have to calculate the angle to this target, this is our orientation. */
+				ang = m_caster->calcAngle(m_caster->GetPositionX(), m_caster->GetPositionY(), unitTarget->GetPositionX(), unitTarget->GetPositionY());
+
+				/* convert degree angle to radians */
+				ang = ang * M_PI / 180.0f;
+			}
+			else
+			{
+				/* Our orientation has already been set. */
+				ang = unitTarget->GetOrientation();
+			}
+		}
+		else
+		{
+			/* Players orientation is sent in movement packets */
+			ang = unitTarget->GetOrientation();
+		}
+
+		const static float shadowstep_distance = 1.0f;			/* 1.0 feet behind the target */
+		float new_x = unitTarget->GetPositionX() - (shadowstep_distance * cosf(ang));
+		float new_y = unitTarget->GetPositionY() - (shadowstep_distance * sinf(ang));
+		
+		/* Send a movement packet to "charge" at this target. Similar to warrior charge. */
+		p_caster->SafeTeleport(p_caster->GetMapId(), p_caster->GetInstanceID(), LocationVector(new_x, new_y, unitTarget->GetPositionZ(), unitTarget->GetOrientation()));
+		return;
+	}
+
 	if(!unitTarget || unitTarget->GetTypeId()!= TYPEID_PLAYER)
 		return;
 

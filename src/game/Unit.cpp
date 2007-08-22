@@ -1873,9 +1873,9 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		int32 m_extra = m_extrastriketargets;
 		for(set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end() && m_extra; ++itr)
 		{
-			if((*itr)->IsUnit() && CalcDistance(*itr) < 10.0f && isAttackable(this, (*itr)))
+			if((*itr) != pVictim && (*itr)->IsUnit() && CalcDistance(*itr) < 10.0f && isAttackable(this, (*itr)))
 			{
-				Strike( ((Unit*)pVictim), damage_type, ability, add_damage, pct_dmg_mod, exclusive_damage, false );
+				Strike( ((Unit*)*itr), damage_type, ability, add_damage, pct_dmg_mod, exclusive_damage, false );
 				--m_extra;
 			}
 		}

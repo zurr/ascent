@@ -1444,6 +1444,9 @@ void World::SetInitialWorldSettings()
 	sSpellStore.LookupEntry(13159)->Effect[0] = SPELL_EFFECT_APPLY_AREA_AURA;
 	sSpellStore.LookupEntry(13159)->Effect[1] = SPELL_EFFECT_APPLY_AREA_AURA;
 	
+	/* shadowstep - change proc flags */
+	sSpellStore.LookupEntry(36563)->procFlags = 0;
+
 	sLog.outString( "Starting Transport System...");
 	objmgr.LoadTransporters();
 
