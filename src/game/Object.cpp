@@ -1633,6 +1633,9 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 				else
 					pAttacker = ((Player*)this);
 
+				if(!pAttacker)
+					return;
+
 				uint8 teamId = (uint8)pAttacker->GetTeam();
 				if(teamId == 0) // Swap it.
 					teamId = 1;
