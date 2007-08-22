@@ -714,6 +714,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 	if(m_AIType != AITYPE_PET && disable_melee)
 		return;
 
+	//just make sure we are not hitting self. This was reported as an exploit.Should never ocure anyway
+	if(m_nextTarget==m_Unit)
+		m_nextTarget=GetMostHated();
+
 	uint16 agent = m_aiCurrentAgent;
 
 	// If creature is very far from spawn point return to spawnpoint
@@ -994,9 +998,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					CALL_SCRIPT_EVENT(m_Unit, OnFlee)(m_nextTarget);
 
 				m_AIState = STATE_FLEEING;
-				m_nextTarget = m_Unit;
-
-				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+				//removed by Zack : somehow creature starts to attack sefl. Just making sure it is not this one
+//				m_nextTarget = m_Unit;
+//				m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+				SetNextTarget(NULL);
 				m_Unit->setAttackTarget(0);
 				m_Unit->clearAttackers(true);
 
