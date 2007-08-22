@@ -7,7 +7,7 @@ global Gruul_HurtfulStrike = function(mob)
 
 global Gruul_Growth = function(mob)
 {
-    .SendChatMessage("No Escape");
+    .SendChatMessage("Die");
     .CastSpell(40318);
     .PlaySoundToSet(11362);
 };
@@ -21,7 +21,7 @@ global Gruul_Reverberation = function(mob)
 
 global Gruul_CaveIn = function(mob)
 {
-    .SendChatMessage("Beg For Life");
+    .SendChatMessage("No Escape");
     .CastSpell(36240);
     .PlaySoundToSet(11357);
 };
@@ -47,7 +47,7 @@ global Gruul_stoned = function(mob)
 
 global Gruul_Shatter = function(mob)
 {
-    .SendChatMessage("Beg for life");
+    .SendChatMessage("No Escape");
     .CastSpell(33654);
     .PlaySoundToSet(11360);
 };
@@ -56,14 +56,14 @@ global Gruul_EnterCombat = function(mob)
 {
     .SendChatMessage("Come and die!");
     .PlaySoundToSet(11355);
-    .RegisterTimer(120000, Gruul_HurtfulStrike, 0);
+    .RegisterTimer(30000, Gruul_HurtfulStrike, 0);
     .RegisterTimer(60000, Gruul_Growth, 30);
-    .RegisterTimer(180000, Gruul_Reverberation, 0);
-    .RegisterTimer(150000, Gruul_CaveIn, 0);
-    .RegisterTimer(220000, Gruul_GroundSlam, 0);
-    .RegisterTimer(230000, Gruul_Grasp, 0);
-    .RegisterTimer(200000, Gruul_Stoned, 0);
-    .RegisterTimer(300000, Gruul_Shatter, 0);
+    .RegisterTimer(15000, Gruul_Reverberation, 0);
+    .RegisterTimer(35000, Gruul_CaveIn, 0);
+    .RegisterTimer(22000, Gruul_GroundSlam, 0);
+    .RegisterTimer(43000, Gruul_Grasp, 0);
+    .RegisterTimer(120000, Gruul_Stoned, 0);
+    .RegisterTimer(130000, Gruul_Shatter, 0);
         
 };
     .RegisterUnitEvent(19044, 1, Gruul_EnterCombat);
@@ -77,14 +77,14 @@ global Gruul_leaveCombat = function(mob)
 
 global Gruul_KillTarget = function(mob)
 {
-    .SendChatMessage("Die!!!");
+    .SendChatMessage("No More");
     .PlaySoundToSet(11361);
 };
     .RegisterUnitEvent(19044, 3, Gruul_KillTarget);
 
 global Gruul_died = function(mob)
 {
-    .SendChatMessage("No More!");
+    .SendChatMessage("Unworthy");
     .PlaySoundToSet(11363);
     .DeregisterTimer();
 };
@@ -112,7 +112,7 @@ global Maulgar_Whirlwind = function(mob)
 global Maulgar_EnterCombat = function(mob)
 {
 	.RegisterTimer(60000, Maulgar_ArcingSmash, 0);
-	.RegisterTimer(120000, Maulgar_MightyBlow, 0);
+	.RegisterTimer(40000, Maulgar_MightyBlow, 0);
 	.RegisterTimer(30000, Maulgar_Whirlwind, 0);
 };
 	.RegisterUnitEvent(18831, 1, Maulgar_EnterCombat);
@@ -149,9 +149,9 @@ global Seer_Heal = function(mob)
 
 global Seer_EnterCombat = function(mob)
 {
-	.RegisterTimer(120000, Seer_Shield, 0);
-	.RegisterTimer(140000, Seer_PrayerOfHealing, 0);
-	.RegisterTimer(80000, Seer_Heal, 0);
+	.RegisterTimer(22000, Seer_Shield, 0);
+	.RegisterTimer(18000, Seer_PrayerOfHealing, 0);
+	.RegisterTimer(30000, Seer_Heal, 0);
 };
 	.RegisterUnitEvent(18836 ,1, Seer_EnterCombat);
 
@@ -193,10 +193,10 @@ global Kiggler_Explosion = function(mob)
 
 global Kiggler_EnterCombat = function(mob)
 {
-    .RegisterTimer(180000, Kiggler_Polymorph, 0);
+    .RegisterTimer(18000, Kiggler_Polymorph, 0);
     .RegisterTimer(30000, Kiggler_bolt, 0);
-    .RegisterTimer(60000, Kiggler_Shock, 0);
-    .RegisterTimer(85000, Kiggler_Explosion, 0);
+    .RegisterTimer(25000, Kiggler_Shock, 0);
+    .RegisterTimer(45000, Kiggler_Explosion, 0);
 };
     .RegisterUnitEvent(18835, 1, Kiggler_EnterCombat);
 
@@ -233,7 +233,7 @@ global Krosh_BlastWave = function(mob)
 global Krosh_EnterCombat = function(mob)
 {
 	.RegisterTimer(60000, Krosh_Fireball, 0);
-	.RegisterTimer(120000, Krosh_Shield, 0);
+	.RegisterTimer(22000, Krosh_Shield, 0);
 	.RegisterTimer(30000, Krosh_BlastWave, 0);
 };
 	.RegisterUnitEvent(18832, 1, Krosh_EnterCombat);
@@ -271,9 +271,9 @@ global Olm_Coil = function(mob)
 
 global Olm_EnterCombat = function(mob)
 {
-	.RegisterTimer(120000, Olm_Decay, 0);
-	.RegisterTimer(180000, Olm_Pet, 0);
-	.RegisterTimer(100000, Olm_Coil, 0);
+	.RegisterTimer(12000, Olm_Decay, 0);
+	.RegisterTimer(18000, Olm_Pet, 0);
+	.RegisterTimer(10000, Olm_Coil, 0);
 };
 	.RegisterUnitEvent(18834, 1, Olm_EnterCombat);
 

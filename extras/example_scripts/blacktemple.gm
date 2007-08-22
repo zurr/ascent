@@ -33,7 +33,7 @@ global najentus_dead=100;
 
 global najentus_killedtarget = function(plr)
 {
-//.SendChatMessage("Your success short lived!");
+//.SendChatMessage("Your sucess short lived!");
 //.PlaySoundToSet(11455);
 .SendChatMessage("Time for you to go!");
 .PlaySoundToSet(11456);
@@ -111,7 +111,7 @@ global supremus_killedtarget = function(plr)
 {
 .SendChatMessage("Your fate is written!");
 .PlaySoundToSet(11124);
-//.SendChatMessage("The chaos I have sewn here is but a taste....");
+//.SendChatMessage("The chaos I have sown here is but a taste....");
 //.PlaySoundToSet(11125);
 };
 .RegisterUnitEvent(22898, 3, supremus_killedtarget);
@@ -188,7 +188,7 @@ global anger_dead; if (anger_dead==100) { .DeregisterTimer(); }
 global essence_of_anger_entercombat = function(plr)
 {
 global anger_dead=1;
-.SendChatMessage("Beware -- I live.");
+.SendChatMessage("Beware - I live.");
 .PlaySoundToSet(11399);
 //.SendChatMessage("So foolish.");
 //.PlaySoundToSet(11400);
@@ -381,7 +381,7 @@ global gurtogg_killedtarget = function(plr)
 global gurtogg_died = function(plr)
 {
 global gurtogg_dead=100;
-.SendChatMessage("Arrghhh!");
+.SendChatMessage("Arrghhh!!!!");
 .PlaySoundToSet(11439);
 };
 .RegisterUnitEvent(22948, 4, gurtogg_died);
@@ -751,7 +751,7 @@ if (illidan_dialog_timer==15) { .SendChatMessage("We've come to end your reign, 
 if (illidan_dialog_timer==35) { .SendChatMessage("The time has come! The moment is at hand!"); .Emote(378); .PlaySoundToSet(11380); }
 
 if (illidan_dialog_timer>40) {	//end of blabbing, let's fight
-.SetCombatCapable(1);
+//.SetCombatCapable(1);
 .CreateWaypoint(677.675, 305.028,353.192, 3.14, 0, 256, 0);
 .MoveToWaypoint(2);
 akama_illidan_dialog=1;
@@ -815,12 +815,12 @@ global akama_died = function(plr) { global akama_dead=100; };
 //******************************************* Maiev Shadowsong
 
 global maiev_spawn = function(plr) {
-.SetCombatCapable(0);
+//.SetCombatCapable(0);
 .SendChatMessage("Their fury pales before mine, Illidan. We have some unsettled business between us."); .Emote(378); .PlaySoundToSet(11491);
-.SendChatMessage("Ah, my long hunt is finally over. Today, Justice will be done!"); .Emote(378); .PlaySoundToSet(11492);
-.CreateWaypoint(677.675, 305.028,353.192, 3.14, 0, 256, 0);
-.MoveToWaypoint(0);
-.SetMovementType(11);
+//.SendChatMessage("Ah, my long hunt is finally over. Today, Justice will be done!"); .Emote(378); .PlaySoundToSet(11492);
+//.CreateWaypoint(677.675, 305.028,353.192, 3.14, 0, 256, 0);
+//.MoveToWaypoint(0);
+//.SetMovementType(11);
 };
 .RegisterUnitEvent(21699, 6, maiev_spawn);
 
