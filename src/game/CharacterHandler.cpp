@@ -46,7 +46,7 @@ void CapitalizeString(string& arg)
 
 void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 {	
-	uint32 start_time = getMSTime();
+	/*uint32 start_time = getMSTime();
 
 	// loading characters
 	QueryResult* result = CharacterDatabase.Query("SELECT guid, level, race, class, gender, bytes, bytes2, guildid, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, forced_rename_pending FROM characters WHERE acct=%u ORDER BY guid", GetAccountId());
@@ -102,6 +102,121 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 	data.put<uint8>(0, num);
 
 	sLog.outDetail("[Character Enum] Built in %u ms.", getMSTime() - start_time);
+	SendPacket( &data );*/
+	struct player_item
+	{
+		uint32 displayid;
+		uint8 invtype;
+	};
+
+	player_item items[20];
+	uint32 slot;
+	uint32 i;
+	ItemPrototype * proto;
+
+	uint32 start_time = getMSTime();
+
+	// loading characters
+	QueryResult* result = CharacterDatabase.Query("SELECT guid, level, race, class, gender, bytes, bytes2, guildid, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, forced_rename_pending FROM characters WHERE acct=%u ORDER BY guid", GetAccountId());
+	QueryResult * res;
+	CreatureInfo *info = NULL;
+	uint8 num = 0;
+
+	// should be more than enough.. 200 bytes per char..
+	WorldPacket data((result ? result->GetRowCount() * 200 : 1));	
+
+	// parse m_characters and build a mighty packet of
+	// characters to send to the client.
+	data.SetOpcode(SMSG_CHAR_ENUM);
+
+	data << num;
+	if( result )
+	{
+		uint64 guid;
+		uint8 Class;
+		uint32 bytes2;
+		Field *fields;
+		do
+		{
+			fields = result->Fetch();
+			guid = fields[0].GetUInt32();
+			bytes2 = fields[6].GetUInt32();
+			Class = fields[3].GetUInt8();			
+
+			/* build character enum, w0000t :p */
+			data << fields[0].GetUInt64();		// guid
+			data << fields[8].GetString();		// name
+			data << fields[2].GetUInt8();		// race
+			data << fields[3].GetUInt8();		// class
+			data << fields[4].GetUInt8();		// gender
+			data << fields[5].GetUInt32();		// PLAYER_BYTES
+			data << uint8(bytes2 & 0xFF);		// facial hair
+			data << fields[1].GetUInt8();		// Level
+			data << fields[13].GetUInt32();		// zoneid
+			data << fields[12].GetUInt32();		// Mapid
+			data << fields[11].GetFloat();		// X
+			data << fields[10].GetFloat();		// Y
+			data << fields[9].GetFloat();		// Z
+			data << fields[7].GetUInt32();		// GuildID
+
+			if(fields[14].GetBool())
+				data << (uint32)7;	// Banned (cannot login)
+			else if(fields[17].GetBool())
+				data << uint32(0x00A04342);  // wtf blizz? :P (rename pending)
+			else if(fields[16].GetUInt32() != 0)
+				data << (uint32)8704; // Dead (displaying as Ghost)
+			else
+				data << uint32(1);		// alive
+
+			data << fields[15].GetUInt8();		// Rest State
+
+			if(Class==9 || Class==3)
+			{
+				res = CharacterDatabase.Query("SELECT entryid FROM playerpets WHERE ownerguid=%u AND active=1", guid);
+
+				if(res)
+				{
+					info = CreatureNameStorage.LookupEntry(res->Fetch()[0].GetUInt32());
+					delete res;
+				}
+			}
+
+			if(info)  //PET INFO uint32 displayid,	uint32 level,		 uint32 familyid
+				data << uint32(info->DisplayID) << uint32(10) << uint32(info->Family);
+			else
+				data << uint32(0) << uint32(0) << uint32(0);
+
+			res = CharacterDatabase.Query("SELECT slot, entry FROM playeritems WHERE ownerguid=%u and containerslot=-1 and slot < 19 and slot >= 0", guid);
+
+			memset(items, 0, sizeof(player_item) * 20);
+			if(res)
+			{
+				do 
+				{
+					proto = ItemPrototypeStorage.LookupEntry(res->Fetch()[1].GetUInt32());
+					if(proto)
+					{
+						slot = res->Fetch()[0].GetUInt32();
+						items[slot].displayid = proto->DisplayInfoID;
+						items[slot].invtype = proto->InventoryType;
+					}
+				} while(res->NextRow());
+				delete res;
+			}
+
+			for( i = 0; i < 20; ++i )
+				data << items[i].displayid << items[i].invtype;
+
+			num++;
+		}
+		while( result->NextRow() );
+
+		delete result;
+	}
+
+	data.put<uint8>(0, num);
+
+	Log.Debug("Character Enum", "Built in %u ms.", getMSTime() - start_time);
 	SendPacket( &data );
 }
 
