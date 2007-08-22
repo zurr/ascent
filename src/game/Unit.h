@@ -920,6 +920,7 @@ public:
 	int32 m_stunned;
 	bool m_invisible;
 	int32 m_extraattacks;   
+	int32 m_extrastriketargets;
 	//std::set<SpellEntry*> m_onStrikeSpells;
 
 	int32 m_noInterrupt;

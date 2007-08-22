@@ -5399,6 +5399,15 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
 
 void Aura::SpellAuraModHaste(bool apply)
 {
+	if(m_spellProto->NameHash == 0x540d4874)
+	{
+		/* blade flurry - attack a nearby opponent */
+		if(apply)
+			m_target->m_extrastriketargets++;
+		else
+			m_target->m_extrastriketargets--;
+	}
+
 	if(mod->m_amount<0)
 		SetNegative();
 	else 
