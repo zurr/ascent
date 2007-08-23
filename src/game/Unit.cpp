@@ -1715,7 +1715,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
 				}
 				if (r>2)
-					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d WI:%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d D:%d RD:%d BD:%d AD:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),dw,chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r,dmg->full_damage,dmg->resisted_damage,blocked_damage,abs);
+					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d WI:%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d BD:%d AD:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),dw,chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r,blocked_damage,abs);
 				else
 					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d WI:%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),dw,chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r);
 				fclose(fin);
