@@ -1344,6 +1344,8 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		crush = 0.0f;
 		crit = 100.0f;
 	}
+	//for debug
+	uint32 dw=0;
 //ranged attacks can't be dodge, parry or glancing blow
 	if (damage_type==RANGED) 
 	{
@@ -1358,12 +1360,18 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		{
 			it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 			if(it && it->GetProto()->InventoryType==INVTYPE_WEAPON && !ability)//dualwield to-hit penalty
+			{
 				hitmodifier -= 19.0f;
+				dw=2;
+			}
 			else
 			{
 				it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 				if(it && it->GetProto()->InventoryType==INVTYPE_2HWEAPON)//2 handed weapon to-hit penalty
+				{
   					hitmodifier -= 4.0f;
+					dw=1;
+				}
 			}
 		}
 // Mods by skill diff.
@@ -1434,42 +1442,6 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		r++;
 	}
 //-----------ROLL RESULT PROC-------
-
-	/* Debug for Linux users. Switch to true to enable or false to disable. Will be deleted after bugfix
-	If u r Linux WoW admin - u can post debug file on ascent forums. */
-	if (true)
-	{
-		if (!ability)
-		{
-			FILE *fin;
-			fin = fopen("strike.txt", "a");
-			long size;
-			fseek(fin, 0, SEEK_END);
-			size = ftell(fin);
-			if (size>10000)
-				fclose(fin);
-			else
-			{
-				uint32 mode;
-				int32 aclass,vclass;
-				if (this->IsPlayer())
-				{
-					mode = (pVictim->IsPlayer()) ? 2 : 1;
-					aclass = this->getClass();
-					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
-				}
-				else
-				{
-					mode = (pVictim->IsPlayer()) ? 0 : 8;
-					aclass = -1;
-					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
-				}
-				fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r);
-				fclose(fin);
-			}
-		}
-	}
-	/* Debug end */
 
 	uint32 abs = 0;
 	switch(r)
@@ -1712,6 +1684,48 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		}
 		break;
 	}
+
+	/* Debug for Linux users. Switch to true to enable or false to disable. Will be deleted after bugfix
+	If u r Linux WoW admin - u can post debug file on ascent forums. */
+	if (true)
+	{
+		if (!ability)
+		{
+			FILE *fin;
+			fin = fopen("strike.txt", "a");
+			long size;
+			fseek(fin, 0, SEEK_END);
+			size = ftell(fin);
+			if (size>10000)
+				fclose(fin);
+			else
+			{
+				uint32 mode;
+				int32 aclass,vclass;
+				if (this->IsPlayer())
+				{
+					mode = (pVictim->IsPlayer()) ? 2 : 1;
+					aclass = this->getClass();
+					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
+				}
+				else
+				{
+					mode = (pVictim->IsPlayer()) ? 0 : 8;
+					aclass = -1;
+					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
+				}
+				if (r>2)
+					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d WI:%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d D:%d RD:%d BD:%d AD:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),dw,chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r,dmg->full_damage,dmg->resisted_damage,blocked_damage,abs);
+				else
+					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d WI:%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),dw,chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r);
+				fclose(fin);
+			}
+		}
+	}
+	/* Debug end */
+
+
+
 	//vstate=1-wound,2-dodge,3-parry,4-interrupt,5-block,6-evade,7-immune,8-deflect
 	
 	// hack fix for stormstirke loop here.
