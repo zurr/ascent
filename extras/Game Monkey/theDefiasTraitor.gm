@@ -48,7 +48,7 @@ global OnDefiasTraitorCheck = function(mob, plr)
 {
    if(mob.HasEscortTarget() == 1)
    {
-      plr.SendSystemMessage("Someone else is already doing that quest.");
+      //plr.SendSystemMessage("Someone else is already doing that quest.");
       return 0;
    }
    
