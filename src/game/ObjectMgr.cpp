@@ -2121,7 +2121,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 
 				// Calculate next level XP
 				uint32 nextLvlXP = 0;
-				if( Level > 0 && Level <= 30 )
+/*				if( Level > 0 && Level <= 30 )
 				{
 					nextLvlXP = ((int)((((double)(8 * Level * ((Level * 5) + 45)))/100)+0.5))*100;
 				}
@@ -2133,6 +2133,14 @@ void ObjectMgr::GenerateLevelUpInfo()
 				{
 					nextLvlXP = ((int)((((double)(((8 * Level) + 6) * ((Level * 5) + 45)))/100)+0.5))*100;
 				}
+				else
+				{
+					nextLvlXP = ((int)((((double)(((8 * Level) + ((Level - 30) * 5)) * ((Level * 5) + 45)))/100)+0.5))*100;
+				}*/
+
+				//this is a fixed table taken from 2.3.0 wow. This can;t get more blizzlike with the "if" cases ;)
+				if((Level-1)<MAX_PREDEFINED_NEXTLEVELXP)
+					nextLvlXP = NextLevelXp[(Level-1)];
 				else
 				{
 					nextLvlXP = ((int)((((double)(((8 * Level) + ((Level - 30) * 5)) * ((Level * 5) + 45)))/100)+0.5))*100;
