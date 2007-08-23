@@ -1087,6 +1087,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)  // Teleport Units
 		
 		/* Send a movement packet to "charge" at this target. Similar to warrior charge. */
 		p_caster->SafeTeleport(p_caster->GetMapId(), p_caster->GetInstanceID(), LocationVector(new_x, new_y, unitTarget->GetPositionZ(), unitTarget->GetOrientation()));
+		
 		return;
 	}
 

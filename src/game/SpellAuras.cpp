@@ -715,7 +715,7 @@ void Aura::EventUpdateAA(float r)
 			if((*itr) != plr && (*itr)->GetDistanceSq(u_caster) <= r)
 			{
 				// Add the aura if they don't have it.
-				if(!(*itr)->HasActiveAura(m_spellProto->Id) && (*itr)->GetInstanceID() == plr->GetInstanceID())
+				if(!(*itr)->HasActiveAura(m_spellProto->Id) && (*itr)->GetInstanceID() == plr->GetInstanceID() && (*itr)->isAlive())
 				{
 					Aura * aura = NULL;
 					//aura->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
@@ -5863,8 +5863,18 @@ void Aura::SpellAuraIncreaseCricticalTypePCT(bool apply)
 
 void Aura::SpellAuraIncreasePartySpeed(bool apply)
 {
-	//DK:need case 22 fix on fill targetmap
-	//implicittargetb is 33?
+	if(m_target->GetTypeId() == TYPEID_PLAYER && m_target->isAlive() && m_target->GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID) == 0)
+	{
+		if(apply)
+		{
+			m_target->m_speedModifier += mod->m_amount;
+		}
+		else
+		{
+			m_target->m_speedModifier -= mod->m_amount;
+		}
+		m_target->UpdateSpeed();
+	}
 }
 
 void Aura::SpellAuraIncreaseSpellDamageBySpr(bool apply)
