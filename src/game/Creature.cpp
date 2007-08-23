@@ -1196,6 +1196,7 @@ void Creature::RemoveLimboState(Unit * healer)
 void Creature::SetGuardWaypoints()
 {
 	if(!GetMapMgr()) return;
+	if(!GetCreatureName()) return;
 
 	GetAIInterface()->setMoveType(1);
 	for(int i = 1; i <= 4; i++)
@@ -1217,6 +1218,8 @@ void Creature::SetGuardWaypoints()
 		wp->backwardemoteoneshot = 0;
 		wp->forwardemoteid = 0;
 		wp->forwardemoteoneshot = 0;
+		wp->backwardskinid = GetCreatureName()->DisplayID;
+		wp->forwardskinid = GetCreatureName()->DisplayID;
 		GetAIInterface()->addWayPoint(wp);
 	}
 }
