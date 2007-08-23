@@ -113,15 +113,14 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 
 		GetPlayer()->GetItemInterface()->SafeAddItem(item,slotresult.ContainerSlot, slotresult.Slot);
 		
-		if (it->Class == 12)		// Quest item
-			sQuestMgr.OnPlayerItemPickup(GetPlayer(),item);
+		sQuestMgr.OnPlayerItemPickup(GetPlayer(),item);
 	}
 	else 
 	{	
 		add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + amt);
 		add->m_isDirty = true;
-		if (it->Class == 12)		// Quest item
-			sQuestMgr.OnPlayerItemPickup(GetPlayer(),add);
+
+		sQuestMgr.OnPlayerItemPickup(GetPlayer(),add);
 	}
 
 	pLoot->items.at(lootSlot).iItemsCount=0;
@@ -1543,8 +1542,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
 	player->GetItemInterface()->SafeAddItem(item,slotresult.ContainerSlot, slotresult.Slot);
 	
-	if (it->Class == 12)		// Quest item
-		sQuestMgr.OnPlayerItemPickup(player,item);
+	sQuestMgr.OnPlayerItemPickup(player,item);
 
 	pLoot->items.at(slotid).iItemsCount=0;
 

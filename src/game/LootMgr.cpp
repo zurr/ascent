@@ -623,15 +623,13 @@ void LootRoll::Finalize()
 
 		_player->GetItemInterface()->SafeAddItem(item,slotresult.ContainerSlot, slotresult.Slot);
 
-		if (it->Class == 12)		// Quest item
-			sQuestMgr.OnPlayerItemPickup(_player,item);
+		sQuestMgr.OnPlayerItemPickup(_player,item);
 	}
 	else 
 	{	
 		add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + amt);
 		add->m_isDirty = true;
-		if (it->Class == 12)		// Quest item
-			sQuestMgr.OnPlayerItemPickup(_player,add);
+		sQuestMgr.OnPlayerItemPickup(_player,add);
 	}
 
 	pLoot->items.at(_slotid).iItemsCount=0;
