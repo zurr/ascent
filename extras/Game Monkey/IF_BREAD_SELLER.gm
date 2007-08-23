@@ -16,5 +16,5 @@ if(waypoint_id == 2) {.SendChatMessage("Come get yer fresh bread!");}
 if(waypoint_id == 6) {.SendChatMessage("Fresh bread for sale!");}
 };
 
-.RegisterUnitEvent(5109, 8,IF_BREAD_SELLER_WAYPOINT);
+//.RegisterUnitEvent(5109, 8,IF_BREAD_SELLER_WAYPOINT);
 
