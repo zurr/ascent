@@ -1255,7 +1255,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			Creature * c = (Creature*)(pVictim);
 			if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
 			{
-				victim_skill = max(victim_skill,(this->getLevel()+3)*5); //used max to avoid situation when lowlvl hits boss.
+				victim_skill = max(victim_skill,((int32)this->getLevel()+3)*5); //used max to avoid situation when lowlvl hits boss.
 			}
 		} 
 	}
@@ -1302,7 +1302,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		{ 
 			Creature * c = (Creature*)(this);
 			if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
-				self_skill = max(self_skill,(pVictim->getLevel()+3)*5);//used max to avoid situation when lowlvl hits boss.
+				self_skill = max(self_skill,((int32)pVictim->getLevel()+3)*5);//used max to avoid situation when lowlvl hits boss.
 		} 
 		crit = 5.0f; //will be modified later
 	}
@@ -1310,15 +1310,17 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 //crushing blow chance
 	if(pVictim->IsPlayer()&&!this->IsPlayer()&&!ability)
 	{
-		if ((float)self_skill-(float)min(pVictim->getLevel()*5,victim_skill)>=15.0f)
-			crush = max( 0.0f , -15.0f+2.0f*((float)self_skill-(float)min(pVictim->getLevel()*5,victim_skill))); 
+		if ((float)self_skill-min((float)(pVictim->getLevel()*5),(float)victim_skill)>=15.0f)
+			crush = -15.0f+2.0f*((float)self_skill-min((float)(pVictim->getLevel()*5),(float)victim_skill)); 
 		else 
 			crush = 0.0f;
 	}
 //glancing blow chance
 	if (this->IsPlayer()&&!pVictim->IsPlayer()&&!ability)
 	{
-		glanc = max( 0.0f , 10.0f + (float)victim_skill - (float)min(this->getLevel()*5,self_skill));
+		glanc = 10.0f + (float)victim_skill - min((float)(this->getLevel()*5),(float)self_skill);
+		if (glanc<0)
+			glanc = 0.0f;
 	}
 //---------CHANCES MODS
 	if(pVictim->IsPlayer())
@@ -1553,7 +1555,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			{
 			case 3: //glancing blow by and012345
 				{
-					int32 skill_difference = (victim_skill - min(this->getLevel()*5,self_skill));
+					int32 skill_difference = (victim_skill - min((int32)(this->getLevel()*5),(int32)self_skill));
 					float low_dmg_mod = 1.5 - (0.05 * skill_difference);
 					if (this->getClass() == MAGE || this->getClass() == PRIEST || this->getClass() == WARLOCK) //casters = additional penalty.
 					{
