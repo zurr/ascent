@@ -897,16 +897,23 @@ void InstanceSavingManagement::AddInactiveInstance(InactiveInstance * ia)
 
 void InstanceSavingManagement::RemoveSavedInstance(uint32 instance_id)
 {
+    inactiveInstancesMutex.Acquire();
 	map<uint32, InactiveInstance*>::iterator itr = inactiveInstances.find(instance_id);
-	if(itr == inactiveInstances.end()) return;
+	if(itr == inactiveInstances.end()) 
+    {
+        inactiveInstancesMutex.Release();
+        return;
+    }
 
 	delete itr->second;
 	inactiveInstances.erase(itr);
+    inactiveInstancesMutex.Release();
 }
 
 void InstanceSavingManagement::CreateInactiveInstance(MapMgr * mgr)
 {
 	// called on mapmgr expire..
+
 	InactiveInstance * ia = new InactiveInstance;
 	ia->Creation = mgr->CreationTime;
 	ia->InstanceId = mgr->GetInstanceID();
