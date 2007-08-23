@@ -205,6 +205,7 @@ enum MOD_TYPES
 	SPELL_AURA_MOD_CRIT_DAMAGE_BONUS_MELEE = 163,		// Mod Critical Damage Bonus (Physical)
 	SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS = 165,	// Melee AP Attacker Bonus
 	SPELL_AURA_MOD_ATTACK_POWER_PCT = 166,			  // Mod Attack Power
+	SPELL_AURA_MOD_RANGED_ATTACK_POWER_PCT = 167,        // Mod Ranged Attack Power %
 	SPELL_AURA_INCREASE_DAMAGE = 168,				   // Increase Damage Type
 	SPELL_AURA_INCREASE_CRITICAL = 169,				 // Increase Critical Type
 	SPELL_AURA_DETECT_AMORE = 170,					  // Detect Amore
@@ -509,6 +510,7 @@ public:
 	void SpellAuraPowerBurn(bool apply);
 	void SpellAuraModCritDmgPhysical(bool apply);
 	void SpellAuraModPAttackPower(bool apply);
+	void SpellAuraModRangedAttackPowerPct(bool apply);
 	void SpellAuraAPAttackerBonus(bool apply);
 	void SpellAuraIncreaseDamageTypePCT(bool apply);
 	void SpellAuraIncreaseCricticalTypePCT(bool apply);
