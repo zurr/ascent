@@ -1747,6 +1747,9 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket & recv_data)
 		return;
 	}
 
+	if(_player->isInCombat())
+		return;
+
 	_player->SafeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, 
 		_player->m_summonPos);
 

@@ -3260,12 +3260,16 @@ void Spell::SpellEffectStuck(uint32 i)
     if(!playerTarget)
         return;
 
+	
 	playerTarget->SafeTeleport(playerTarget->GetBindMapId(), 0, playerTarget->GetBindPositionX(), playerTarget->GetBindPositionY(), playerTarget->GetBindPositionZ(), 3.14f);
 }
 
 void Spell::SpellEffectSummonPlayer(uint32 i)
 {
 	if(!playerTarget)
+		return;
+
+	if(m_caster->GetMapMgr()->GetMapInfo() && m_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL && m_caster->GetMapId() != playerTarget->GetMapId())
 		return;
 	
 	playerTarget->SummonRequest(m_caster->GetGUIDLow(), m_caster->GetZoneId(), m_caster->GetMapId(),
