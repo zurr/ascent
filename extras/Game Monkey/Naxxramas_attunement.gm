@@ -17,8 +17,8 @@ global Naxxramas_Attunement_Check = function(plr)
             return 1;
         }
     }
-    plr.SendAreaTriggerMessage("You need to be level 58, Honored or higher with the Argent Dawn, and have completed the quest : The Dread Citadel - Naxxramas");
-    plr.BroadcastMessage(1,"You need to be level 58, Honored or higher with the Argent Dawn, and have completed the quest : The Dread Citadel - Naxxramas");
+    //plr.SendAreaTriggerMessage("You need to be level 58, Honored or higher with the Argent Dawn, and have completed the quest : The Dread Citadel - Naxxramas");
+    //plr.BroadcastMessage(1,"You need to be level 58, Honored or higher with the Argent Dawn, and have completed the quest : The Dread Citadel - Naxxramas");
     return 0;
 };
 

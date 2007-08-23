@@ -14,8 +14,8 @@ global Karazhan_Attunement_Check = function(plr)
             plr.JoinInstance(532, -11087.3, -1977.47, 49.6135, 51.8056);
             return 1;
     }
-    plr.SendAreaTriggerMessage("You need to be in a Raid Group, be level 68 and have completed the quest : Return to Khadgar");
-    plr.BroadcastMessage(1,"You need to be in a Raid Group, be level 68 and have completed the quest : Return to Khadgar");
+    //plr.SendAreaTriggerMessage("You need to be in a Raid Group, be level 68 and have completed the quest : Return to Khadgar");
+    //plr.BroadcastMessage(1,"You need to be in a Raid Group, be level 68 and have completed the quest : Return to Khadgar");
     return 0;
 };
 

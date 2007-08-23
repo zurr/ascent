@@ -17,8 +17,8 @@ global MoltenCore_Attunement_Check = function(plr)
 			plr.JoinInstance(409, 1089.6, -470.19, -106.41, 0.0); 
             return 1;
     }
-	plr.SendAreaTriggerMessage("You need to be in a Raid Group, be level 58 and have completed the quest : Attunement to the Core");
-    plr.BroadcastMessage(1,"You need to be in a Raid Group, be level 58 and have completed the quest : Attunement to the Core");
+//plr.SendAreaTriggerMessage("You need to be in a Raid Group, be level 58 and have completed the quest : Attunement to the Core");
+    //plr.BroadcastMessage(1,"You need to be in a Raid Group, be level 58 and have completed the quest : Attunement to the Core");
     return 0;
 };
 

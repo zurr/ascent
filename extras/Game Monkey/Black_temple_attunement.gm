@@ -14,8 +14,8 @@ global BlackTemple_Attunement_Check = function(plr)
             plr.JoinInstance(564, 97.0894, 1001.96, -86.8798, 350.1);
             return 1;
     }
-    plr.SendAreaTriggerMessage("You need to be level 68 and have completed the quest : A Distraction for Akama");
-    plr.BroadcastMessage(1,"You need to be level 68 and have completed the quest : A Distraction for Akama");
+    //plr.SendAreaTriggerMessage("You need to be level 68 and have completed the quest : A Distraction for Akama");
+    //plr.BroadcastMessage(1,"You need to be level 68 and have completed the quest : A Distraction for Akama");
     return 0;
 };
 

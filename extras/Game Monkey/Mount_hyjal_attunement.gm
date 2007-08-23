@@ -13,8 +13,8 @@ global BattleForMtHyjal_Attunement_Check = function(plr)
             plr.JoinInstance(534, 5070.39, -1736.84, 1328.01, 168.455);
             return 1;
     }
-    plr.SendAreaTriggerMessage("You need to be level 68 and have completed the quest : The Vials of Eternity");
-    plr.BroadcastMessage(1,"You need to be level 68 and have completed the quest : The Vials of Eternity");
+    //plr.SendAreaTriggerMessage("You need to be level 68 and have completed the quest : The Vials of Eternity");
+    //plr.BroadcastMessage(1,"You need to be level 68 and have completed the quest : The Vials of Eternity");
     return 0;
 };
 
