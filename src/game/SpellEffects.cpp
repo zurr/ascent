@@ -431,6 +431,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		if(playerTarget->GetUInt32Value(UNIT_FIELD_POWER1) > playerTarget->GetUInt32Value(UNIT_FIELD_MAXPOWER1))
 			playerTarget->SetUInt32Value(UNIT_FIELD_POWER1,playerTarget->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
 
+		SendHealManaSpellOnPlayer(p_caster, playerTarget, damage, 0);
 		}break;
 	case 14185:
 		{
@@ -480,6 +481,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			if(gain > max)
 				gain = max;
 			unitTarget->SetUInt32Value(UNIT_FIELD_POWER1, gain);
+			SendHealManaSpellOnPlayer(p_caster, ((Player*)unitTarget), count*12, 0);
 		}break;
 	case 4141:// Summon Myzrael
 		{
@@ -1156,6 +1158,7 @@ void Spell::SpellEffectPowerDrain(uint32 i)  // Power Drain
 	if(amt>m)amt=m;
 
 	u_caster->SetUInt32Value(powerField,amt);	
+	SendHealManaSpellOnPlayer(u_caster, u_caster, damage,m_spellInfo->EffectMiscValue[i]);
 }
 
 void Spell::SpellEffectHealthLeech(uint32 i) // Health Leech
@@ -1668,6 +1671,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
 		return;
 
 	uint32 POWER_TYPE=UNIT_FIELD_POWER1+m_spellInfo->EffectMiscValue[i];
+	SendHealManaSpellOnPlayer(u_caster, unitTarget, damage, m_spellInfo->EffectMiscValue[i]);
 
 	uint32 curEnergy = (uint32)unitTarget->GetUInt32Value(POWER_TYPE);
 	uint32 maxEnergy = (uint32)unitTarget->GetUInt32Value(POWER_TYPE+6);
@@ -3785,6 +3789,7 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
 	}
 
 	// get the current mana, get the max mana. Calc if we overflow
+	SendHealManaSpellOnPlayer(m_caster, unitTarget, RetreivedMana, 0);
 	RetreivedMana += float(unitTarget->GetUInt32Value(UNIT_FIELD_POWER1));
 	uint32 max = unitTarget->GetUInt32Value(UNIT_FIELD_MAXPOWER1);
 	if((uint32)RetreivedMana > max)

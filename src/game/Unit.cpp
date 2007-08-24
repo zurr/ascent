@@ -3633,7 +3633,7 @@ void Unit::VampiricEmbrace(uint32 dmg,Unit* tgt)
 	uint32 heal = (dmg*perc) / 100;
 
 	WorldPacket data;
-	data.SetOpcode(SMSG_HEALSPELL_ON_PLAYER_OBSOLETE);
+	data.SetOpcode(SMSG_HEALSPELL_ON_PLAYER);
 	
 	data << this->GetNewGUID();
 	data << this->GetNewGUID();

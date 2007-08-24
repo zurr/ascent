@@ -3520,11 +3520,11 @@ void Spell::_DamageRangeUpdate()
 	}*/
 }
 
-void Spell::SendHealSpellOnPlayer(Player* caster, Player* target, uint32 dmg,bool critical)
+void Spell::SendHealSpellOnPlayer(Object* caster, Object* target, uint32 dmg,bool critical)
 {
-	if(!caster || !target)
+	if(!caster || !target || !target->IsPlayer())
 		return;
-	WorldPacket data(SMSG_HEALSPELL_ON_PLAYER_OBSOLETE, 27);
+	WorldPacket data(SMSG_HEALSPELL_ON_PLAYER, 27);
 	// Bur: I know it says obsolete, but I just logged this tonight and got this packet.
 	
 	data << target->GetNewGUID();
@@ -3532,6 +3532,22 @@ void Spell::SendHealSpellOnPlayer(Player* caster, Player* target, uint32 dmg,boo
 	data << uint32(m_spellInfo->Id);
 	data << uint32(dmg);	// amt healed
 	data << uint8(critical);	 //this is crical message
+
+	caster->SendMessageToSet(&data, true);
+}
+
+void Spell::SendHealManaSpellOnPlayer(Object * caster, Object * target, uint32 dmg, uint32 powertype)
+{
+	if(!caster || !target || !target->IsPlayer())
+		return;
+
+	WorldPacket data(SMSG_HEALMANASPELL_ON_PLAYER, 30);
+
+	data << target->GetNewGUID();
+	data << caster->GetNewGUID();
+	data << m_spellInfo->Id;
+	data << powertype;
+	data << dmg;
 
 	caster->SendMessageToSet(&data, true);
 }
