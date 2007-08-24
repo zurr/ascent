@@ -341,6 +341,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_modphyscritdmgPCT = 0;
 	m_RootedCritChanceBonus = 0;
 	m_ModInterrMRegenPCT = 0;
+	m_RegenManaOnSpellResist=0;
 	m_rap_mod_pct = 0;
 	m_modblockvalue = 0;
 	m_summoner = m_summonInstanceId = m_summonMapId = 0;

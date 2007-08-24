@@ -2006,28 +2006,27 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 
 void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage, bool allowProc,bool no_remove_auras)
 {
+//==========================================================================================
+//==============================Unacceptable Cases Processing===============================
+//==========================================================================================
 	if(!pVictim || !pVictim->isAlive())
 		return;
 
 	SpellEntry *spellInfo = sSpellStore.LookupEntry( spellID );
 	if(!spellInfo)
         return;
-	SpellCastTime *sd = sCastTime.LookupEntry(spellInfo->CastingTimeIndex);
-
-	// affect the plus damage by duration
-	float castaff = GetCastTime(sd);
-	if(castaff < 1500) castaff = 1500;
-	else
-	if(castaff > 7000) castaff = 7000;
-
-	float dmgdoneaffectperc = castaff / 3500;
- 
+//==========================================================================================
+//==============================Variables Initialization====================================
+//========================================================================================== 
 	uint32 school = spellInfo->School;
 	float res = float(damage);
 	uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION;
 	uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
 	bool critical = false;
-
+//==========================================================================================
+//==============================+Spell Damage Bonus Calculations============================
+//==========================================================================================
+//------------------------------by stats----------------------------------------------------
 	if(this->IsUnit())
 	{
 		Unit* caster = (Unit*)(this);
@@ -2038,13 +2037,27 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			res += static_cast<Player*>(caster)->SpellDmgDoneByInt[school] * caster->GetUInt32Value(UNIT_FIELD_STAT3);
 			res += static_cast<Player*>(caster)->SpellDmgDoneBySpr[school] * caster->GetUInt32Value(UNIT_FIELD_STAT4);
 		}
-		
+//------------------------------by school---------------------------------------------------
 		int32 plus_damage = caster->GetDamageDoneMod(school);
-
+//------------------------------by victim type----------------------------------------------
 		if(((Creature*)pVictim)->GetCreatureName() && caster->IsPlayer()&& !pVictim->IsPlayer())
 			plus_damage += static_cast<Player*>(caster)->IncreaseDamageByType[((Creature*)pVictim)->GetCreatureName()->Type];
+//------------------------------by victim taken---------------------------------------------
+		plus_damage += float(pVictim->DamageTakenMod[school]);
+//==========================================================================================
+//==============================+Spell Damage Bonus Modifications===========================
+//==========================================================================================
+//------------------------------by cast duration--------------------------------------------
+		SpellCastTime *sd = sCastTime.LookupEntry(spellInfo->CastingTimeIndex);
+		float castaff = GetCastTime(sd);
+		if(castaff < 1500) castaff = 1500;
+		else
+			if(castaff > 7000) castaff = 7000;
 
-
+		float dmgdoneaffectperc = castaff / 3500;
+//==========================================================================================
+//==============================Bonus Adding To Main Damage=================================
+//==========================================================================================
 		int32 bonus_damage = float2int32(plus_damage * dmgdoneaffectperc);
 		if(spellInfo->SpellGroupType)
 		{
@@ -2060,20 +2073,20 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		{
 			res += bonus_damage;
 		}
-
-
+//==========================================================================================
+//==============================Post +SpellDamage Bonus Modifications=======================
+//==========================================================================================
 		if(res < 0)
 			res = 0;
 		else
 		{
-			res *= caster->GetDamageDonePctMod(school) * pVictim->DamageTakenPctMod[school];
+//------------------------------by school----------------------------------------------
+			res *= caster->GetDamageDonePctMod(school);
 			if (caster->DamageDoneModPCT[school])
-				res += res*caster->DamageDoneModPCT[school];
-
-			res += float(pVictim->DamageTakenMod[school]);
-			if(res < 0) res = 0;	
+				res *= caster->DamageDoneModPCT[school];
+			res *=pVictim->DamageTakenPctMod[school];
+//------------------------------critical strike chance--------------------------------------	
 			float CritChance = caster->spellcritperc + caster->SpellCritChanceSchool[school] + pVictim->AttackerSpellCritChanceMod[school];
-
 			if (caster->IsPlayer()&&(pVictim->m_rooted-pVictim->m_stunned))	
 				CritChance += static_cast<Player*>(caster)->m_RootedCritChanceBonus;
 
@@ -2081,19 +2094,14 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				SM_FFValue(caster->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
 
 			critical = Rand(CritChance);
-
-			if (critical) //Spell Crictical Hit
+//==========================================================================================
+//==============================Spell Critical Hit==========================================
+//==========================================================================================
+			if (critical)
 			{		
-				//int32 dmgbonus = 0;
-				//if(spellInfo->SpellGroupType)
-					//SM_FIValue(static_cast<Unit*>(this)->SM_PCriticalDamage, &dmgbonus, spellInfo->SpellGroupType);
-
-			   // res *= 1.5f;
 				float b = res/2;
-
 				if(spellInfo->SpellGroupType)
 					SM_PFValue(caster->SM_PCriticalDamage, &b, spellInfo->SpellGroupType);
-
 				res += b;
 
 				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
@@ -2102,6 +2110,10 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			}
 		}
 	}
+//==========================================================================================
+//==============================Post Roll Calculations======================================
+//==========================================================================================
+//------------------------------absorption--------------------------------------------------	
 	uint32 ress=(uint32)res;
 	uint32 abs_dmg = pVictim->AbsorbDamage(school, &ress);
 	uint32 ms_abs_dmg= pVictim->ManaShieldAbsorb(ress);
@@ -2114,20 +2126,17 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	res=(float)ress;
 	dealdamage dmg;
 	dmg.damage_type = school;
-	// ress above is typecasted to float, comming from int, going to int down here..... jesus
-	//dmg.full_damage = res;
 	dmg.full_damage = ress;
 	dmg.resisted_damage = 0;
-	// make it say resisted :p
 	if(res <= 0)
 		dmg.resisted_damage = dmg.full_damage = 1;
-	
+//------------------------------resistance reducing-----------------------------------------	
 	if(this->IsUnit())
 	{
 		static_cast<Unit*>(this)->CalculateResistanceReduction(pVictim,&dmg);
 		res = dmg.full_damage - dmg.resisted_damage;
 	}
-
+//------------------------------special states----------------------------------------------
 	if(pVictim->GetTypeId() == TYPEID_PLAYER && static_cast<Player*>(pVictim)->GodModeCheat == true)
 	{
 		res = dmg.full_damage;
@@ -2136,7 +2145,9 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 
 	//DK:FIXME->SplitDamage
 	
-	// Send spell log
+//==========================================================================================
+//==============================Data Sending ProcHandling===================================
+//==========================================================================================
 	SendSpellNonMeleeDamageLog(this, pVictim, spellID, float2int32(res), school, abs_dmg, dmg.resisted_damage, false, 0, critical, IsPlayer());
 	
 	if(this->IsUnit() && allowProc && spellInfo->Id != 25501)
@@ -2152,7 +2163,26 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	if (pVictim->GetCurrentSpell())
 		pVictim->GetCurrentSpell()->AddTime(school);
 
-	
+//==========================================================================================
+//==============================Post Damage Processing======================================
+//==========================================================================================
+	if (dmg.resisted_damage==dmg.full_damage)
+	{		//Magic Absorption
+		if (pVictim->IsPlayer())
+		{
+			if (static_cast<Player*>(pVictim)->m_RegenManaOnSpellResist)
+			{
+				SpellEntry buff = sSpellStore.LookupEntry( 29442 );
+				Spell spell = new Spell(pVictim,buff,false,SPELL_AURA_NONE);
+				spell->cast();
+				Player* pl = (Player*)pVictim;
+				uint32 curmana = pl->GetUInt32Value(UNIT_FIELD_POWER1);
+				uint32 maxmana = pl->GetUInt32Value(UNIT_FIELD_POWER1);
+				curmana+=(uint32)(maxmana*pl->m_RegenManaOnSpellResist);
+				SetUInt32Value(UNIT_FIELD_POWER1,(curmana >= maxmana) ? maxmana : curmana);
+			}
+		}
+	}
 	if(school == SHADOW_DAMAGE)
 	{
                 //VampiricEmbrace
@@ -2168,8 +2198,8 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				static_cast<Unit*>(this)->VampiricTouch(float2int32(res), pVictim);
 		}
 		if (pVictim->isAlive()&&this->IsUnit())
-		{
-			if (spellID==32379||spellID==32996)
+		{    //Shadow Word:Death
+			if (spellID==32379||spellID==32996) 
 			{
 				uint32 damage = (uint32)res;
 				uint32 absorbed = static_cast<Unit*>(this)->AbsorbDamage(school,&damage);

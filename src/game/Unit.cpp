@@ -1175,21 +1175,23 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 /* New attack system, change to #ifdef 1 to enable and 0 to disable*/
 #if 1
 
+
 void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc)
 {
+//==========================================================================================
+//==============================Unacceptable Cases Processing===============================
+//==========================================================================================
 	if (!pVictim->isAlive() || !isAlive()  || IsStunned() || IsPacified())
-	{
 		return;
-	}
 	if(!isInFront(pVictim))
-	{
 		if(IsPlayer())
 		{
 			static_cast<Player*>(this)->GetSession()->OutPacket(SMSG_ATTACKSWING_BADFACING);
 			return;
 		}
-	}
-
+//==========================================================================================
+//==============================Variables Initialization====================================
+//==========================================================================================
 	dealdamage dmg			  = {0,0,0};
 	
 	Item * it = NULL;
@@ -1220,31 +1222,34 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	bool backAttack			 = isInBack( pVictim );
 	uint32 vskill            = 0;
 	
-//------------VICTIM SKILLS------------
+//==========================================================================================
+//==============================Victim Skill Base Calculation===============================
+//==========================================================================================
 	if(pVictim->IsPlayer())
 	{
 		vskill = ((Player*)pVictim)->GetSkillAmt(SKILL_DEFENSE);
 		if((damage_type != RANGED) && !backAttack)
 		{
+//--------------------------------block chance----------------------------------------------
 			it = ((Player*)pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-//block chance
 			if(it && it->GetProto()->InventoryType==INVTYPE_SHIELD)
 			{
 				block = pVictim->GetFloatValue(PLAYER_BLOCK_PERCENTAGE);
 			}
-//dodge chance
+//--------------------------------dodge chance----------------------------------------------
 			if (pVictim->m_stunned<=0) 
 			{
 				dodge = pVictim->GetFloatValue(PLAYER_DODGE_PERCENTAGE);
 			}
-//parry
+//--------------------------------parry chance----------------------------------------------
 			if(pVictim->can_parry && !disarmed)
 			{
 				parry = pVictim->GetFloatValue(PLAYER_PARRY_PERCENTAGE);
 			}
 		}
-		victim_skill = float2int32(vskill+((Player*)pVictim)->CalcRating(1)); // you compare weapon and defense skills not weapon and weapon
+		victim_skill = float2int32(vskill+((Player*)pVictim)->CalcRating(1));
 	}
+//--------------------------------mob defensive chances-------------------------------------
 	else
 	{
 		if(damage_type != RANGED && !backAttack)
@@ -1259,11 +1264,12 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			}
 		} 
 	}
-//----------ATTACKER SKILLLS----------
+//==========================================================================================
+//==============================Attacker Skill Base Calculation=============================
+//==========================================================================================
 	if(this->IsPlayer())
 	{	  
 		self_skill=0;
-		//Finding subclass skill
 		Player *pr = ((Player*)this);
 		hitmodifier = (uint32)pr->GetHitFromMeleeSpell();  
 		
@@ -1278,6 +1284,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			it = (disarmed) ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 			hitmodifier+=pr->CalcRating(5);
 			self_skill = float2int32(pr->CalcRating(21));
+			hit_status |= HITSTATUS_DUALWIELD;//animation
 			break;
 		case RANGED: //ranged
 			it = (disarmed) ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -1291,8 +1298,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		if (SubClassSkill==SKILL_FIST_WEAPONS) 
 			SubClassSkill = SKILL_UNARMED;
 
-		self_skill += pr->GetSkillAmt(SubClassSkill);
-		
+		self_skill += pr->GetSkillAmt(SubClassSkill);	
 		crit = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
 	}
 	else
@@ -1306,8 +1312,10 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		} 
 		crit = 5.0f; //will be modified later
 	}
-//------other chances------
-//THE SHIT to avoid Linux bug. 
+//==========================================================================================
+//==============================Special Chances Base Calculation============================
+//==========================================================================================
+//<THE SHIT> to avoid Linux bug. 
 float diffVcapped = (float)self_skill;
 if (pVictim->getLevel()*5>victim_skill)
 	diffVcapped -=(float)victim_skill;
@@ -1319,9 +1327,9 @@ if (this->getLevel()*5>self_skill)
 	diffAcapped -=(float)self_skill;
 else
 	diffAcapped -=(float)(this->getLevel()*5);
-//-----SHIT END
+//<SHIT END>
 
-//crushing blow chance
+//--------------------------------crushing blow chance--------------------------------------
 	if(pVictim->IsPlayer()&&!this->IsPlayer()&&!ability)
 	{
 		if (diffVcapped>=15.0f)
@@ -1329,14 +1337,17 @@ else
 		else 
 			crush = 0.0f;
 	}
-//glancing blow chance
+//--------------------------------glancing blow chance--------------------------------------
 	if (this->IsPlayer()&&!pVictim->IsPlayer()&&!ability)
 	{
 		glanc = 10.0f + diffAcapped;
 		if (glanc<0)
 			glanc = 0.0f;
 	}
-//---------CHANCES MODS
+//==========================================================================================
+//==============================Advanced Chances Modifications==============================
+//==========================================================================================
+//--------------------------------by talents------------------------------------------------
 	if(pVictim->IsPlayer())
 	{
 		if((damage_type != RANGED))
@@ -1350,7 +1361,7 @@ else
 			hitmodifier += static_cast<Player*>(pVictim)->m_resist_hit[1];
 		}
 	}
-//vs not standing player there must be 100% crit.
+//--------------------------------by victim state-------------------------------------------
 	if (pVictim->IsPlayer()&&pVictim->GetStandState()) //every not standing state is >0
 	{
 		hitchance = 100.0f;
@@ -1360,14 +1371,13 @@ else
 		crush = 0.0f;
 		crit = 100.0f;
 	}
-//ranged attacks can't be dodge, parry or glancing blow
+//--------------------------------by damage type and by weapon type-------------------------
 	if (damage_type==RANGED) 
 	{
 		dodge=0.0f;
 		parry=0.0f;
 		glanc=0.0f;
 	}
-//penalties for dualwield and two-handed weapons
 	else
 		if (this->IsPlayer())
 		{
@@ -1381,7 +1391,7 @@ else
   					hitmodifier -= 4.0f;
 			}
 		}
-// Mods by skill diff.
+//--------------------------------by skill difference---------------------------------------
 	float vsk = (float)self_skill-(float)victim_skill;
 	dodge = max(0.0,dodge-vsk*0.04);
 	if (parry)
@@ -1396,9 +1406,7 @@ else
 	else
 	{
 		if (pVictim->IsPlayer())
-		{
 			hitchance = max(hitchance,95.0f+vsk*0.04+hitmodifier);
-		}
 		else
 		{
 			if (vsk<-10)
@@ -1433,7 +1441,10 @@ else
 		SM_FFValue(SM_CriticalChance,&crit,ability->SpellGroupType);
 		SM_FFValue(SM_FResist,&hitchance,ability->SpellGroupType);
 	}
-//-----Cummulative chances
+//==========================================================================================
+//==============================One Roll Processing=========================================
+//==========================================================================================
+//--------------------------------cummulative chances generation----------------------------
 	float chances[7];
 	chances[0]=max(0.0f,100.0f-hitchance);
 	chances[1]=chances[0]+dodge;
@@ -1442,18 +1453,19 @@ else
 	chances[4]=chances[3]+block;
 	chances[5]=chances[4]+crit;
 	chances[6]=chances[5]+crush;
+//--------------------------------roll------------------------------------------------------
 	float Roll = (float)sRand.randInt(100);
 	uint32 r = 0;
 	while (r<7&&Roll>chances[r])
 	{
 		r++;
 	}
-//-----------ROLL RESULT PROC-------
-
+//--------------------------------postroll processing---------------------------------------
 	uint32 abs = 0;
 	switch(r)
 	{ 
-	case 0: //miss
+//--------------------------------miss------------------------------------------------------
+	case 0:
 		hit_status |= HITSTATUS_MISS;
 
 		// dirty ai agro fix
@@ -1462,7 +1474,8 @@ else
 		if(pVictim->GetTypeId() == TYPEID_UNIT)
 			pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
 		break;
-	case 1://dodge
+//--------------------------------dodge-----------------------------------------------------
+	case 1:
 		CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
 		CALL_SCRIPT_EVENT(this, OnDodged)(this);
 		targetEvent = 1;
@@ -1476,7 +1489,8 @@ else
 			else sEventMgr.ModifyEventTimeLeft(pVictim,EVENT_DODGE_BLOCK_FLAG_EXPIRE,5000);
 		}
 		break;
-	case 2://parry
+//--------------------------------parry-----------------------------------------------------
+	case 2:
 		CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
 		CALL_SCRIPT_EVENT(this, OnParried)(this);
 		targetEvent = 3;
@@ -1499,18 +1513,19 @@ else
 			}
 		}
 		break;
-	default: //not miss,dodge or parry
+//--------------------------------not miss,dodge or parry-----------------------------------
+	default:
 		hit_status |= HITSTATUS_HITANIMATION;//hit animation on victim
 		if(pVictim->SchoolImmunityList[0])
 			vstate = IMMUNE;		
 		else
 		{
+//--------------------------------state proc initialization---------------------------------
 			vproc |= PROC_ON_ANY_DAMAGE_VICTIM;			
-		
 			if(damage_type != RANGED)
 			{
 				aproc |= PROC_ON_MELEE_ATTACK;
-				   vproc |= PROC_ON_MELEE_ATTACK_VICTIM;
+				vproc |= PROC_ON_MELEE_ATTACK_VICTIM;
 			}
 			else
 			{
@@ -1519,7 +1534,7 @@ else
 				if(ability && ability->Id==3018 && IsPlayer() && getClass()==HUNTER)
 					aproc |= PROC_ON_AUTO_SHOT_HIT;
 			}
-
+//--------------------------------base damage calculation-----------------------------------
 			if(exclusive_damage)
 				dmg.full_damage = exclusive_damage;
 			else
@@ -1555,10 +1570,11 @@ else
 			
 			if(dmg.full_damage < 0)
 				dmg.full_damage = 0;
-//check for special hits.
+//--------------------------------check for special hits------------------------------------
 			switch(r)
 			{
-			case 3: //glancing blow by and012345
+//--------------------------------glancing blow---------------------------------------------
+			case 3:
 				{
 					float low_dmg_mod = 1.5 - (0.05 * diffAcapped);
 					if (this->getClass() == MAGE || this->getClass() == PRIEST || this->getClass() == WARLOCK) //casters = additional penalty.
@@ -1587,7 +1603,8 @@ else
 					hit_status |= HITSTATUS_GLANCING;
 				}
 				break;
-			case 4: //block
+//--------------------------------block-----------------------------------------------------
+			case 4:
 				{
 					Item * shield = ((Player*)pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 					if(shield)
@@ -1614,7 +1631,8 @@ else
 					}
 				}
 				break;
-			case 5: //crit
+//--------------------------------critical hit----------------------------------------------
+			case 5:
 				{
 					hit_status |= HITSTATUS_CRICTICAL;
 					int32 dmgbonus = dmg.full_damage;
@@ -1648,15 +1666,19 @@ else
 					CALL_SCRIPT_EVENT(this, OnCritHit)(pVictim, dmg.full_damage);
 				}
 				break;
-			case 6: //crushing blow
+//--------------------------------crushing blow---------------------------------------------
+			case 6:
 				hit_status |= HITSTATUS_CRUSHINGBLOW;
 				dmg.full_damage = (dmg.full_damage*3)/2;
 				break;
-			default: //hit
+//--------------------------------regular hit-----------------------------------------------
+			default:
 				break;	
 			}
-
-			//absorb apply
+//==========================================================================================
+//==============================Post Roll Damage Processing=================================
+//==========================================================================================
+//--------------------------absorption------------------------------------------------------
 			uint32 dm = dmg.full_damage;
 			abs = pVictim->AbsorbDamage(0,(uint32*)&dm);
 		
@@ -1664,22 +1686,21 @@ else
 			{
 				dmg.full_damage -= blocked_damage;
 				uint32 sh = pVictim->ManaShieldAbsorb(dmg.full_damage);
+//--------------------------armor reducing--------------------------------------------------
 				if(sh)
 				{
 					dmg.full_damage -= sh;
 					if(dmg.full_damage)
-						CalculateResistanceReduction(pVictim,&dmg);//armor
+						CalculateResistanceReduction(pVictim,&dmg);
 					dmg.full_damage += sh;
 					dmg.resisted_damage += sh;
 				}
 				else
-					CalculateResistanceReduction(pVictim,&dmg);//armor
+					CalculateResistanceReduction(pVictim,&dmg);
 
 				dmg.full_damage += blocked_damage;
 			}
-			 
 			dmg.resisted_damage += abs;
-		
 			realdamage = dmg.full_damage-dmg.resisted_damage-blocked_damage;
 			if(realdamage < 0)
 			{
@@ -1690,9 +1711,11 @@ else
 		}
 		break;
 	}
-
-	//vstate=1-wound,2-dodge,3-parry,4-interrupt,5-block,6-evade,7-immune,8-deflect
-	
+//==========================================================================================
+//==============================Post Roll Special Cases Processing==========================
+//==========================================================================================
+//--------------------------dirty fixes-----------------------------------------------------
+	//vstate=1-wound,2-dodge,3-parry,4-interrupt,5-block,6-evade,7-immune,8-deflect	
 	// hack fix for stormstirke loop here.
 	if(damage_type != DUALWIELD && !disable_proc)
     {
@@ -1705,7 +1728,7 @@ else
 		pVictim->HandleProc(vproc,this, ability,realdamage);
 		m_procCounter = 0;
 	}
-	
+//--------------------------special states processing---------------------------------------
 	if(pVictim->GetTypeId() == TYPEID_UNIT)
 	{
 		if(pVictim->GetAIInterface() && pVictim->GetAIInterface()->getAIState()== STATE_EVADE)
@@ -1716,7 +1739,11 @@ else
 			dmg.resisted_damage = 0;
 		}
 	}
-
+	if(pVictim->GetTypeId() == TYPEID_PLAYER && static_cast<Player*>(pVictim)->GodModeCheat == true)
+	{
+		dmg.resisted_damage = dmg.full_damage; //godmode
+	}
+//--------------------------spells triggering-----------------------------------------------
 	if(realdamage > 0 && ability == 0)
 	{
 		if(IsPlayer() && ((Player*)this)->m_onStrikeSpells.size())
@@ -1770,18 +1797,12 @@ else
 		}
 	}
 	
-	// resist damage on godmode
-	if(pVictim->GetTypeId() == TYPEID_PLAYER && static_cast<Player*>(pVictim)->GodModeCheat == true)
-	{
-		dmg.resisted_damage = dmg.full_damage;
-	}
-
+//==========================================================================================
+//==============================Data Sending================================================
+//==========================================================================================
 	WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 70);
 	//0x4--dualwield,0x10 miss,0x20 absorbed,0x80 crit,0x4000 -glancing,0x8000-crushing
 	//only for melee!
-	
-	if(damage_type == DUALWIELD)//dual wield animation
-		hit_status |= HITSTATUS_DUALWIELD;
 
 	if(!ability)
 	{
@@ -1814,7 +1835,6 @@ else
 	else
 	{
 		if(realdamage)//FIXME: add log for miss,block etc for ability and ranged
-	//	if(ability)//FIXME:WTF is this
 		{
 			SendSpellNonMeleeDamageLog(this,pVictim,ability->Id,realdamage,0,dmg.resisted_damage,0,false,blocked_damage,(hit_status & HITSTATUS_CRICTICAL),true);
 		}
@@ -1822,6 +1842,14 @@ else
 		//example how it works
 		//SendSpellLog(this,pVictim,ability->Id,SPELL_LOG_MISS);
 	}
+
+	if(ability && realdamage==0)
+	{	
+		SendSpellLog(this,pVictim,ability->Id,SPELL_LOG_RESIST);
+	}
+//==========================================================================================
+//==============================Damage Dealing==============================================
+//==========================================================================================
 	if(realdamage)
 	{
 		DealDamage(pVictim, realdamage, 0, targetEvent, 0);
@@ -1835,7 +1863,10 @@ else
 		// because dealdamage is not called.
 		setAttackTarget(pVictim);
 	}
-	
+//==========================================================================================
+//==============================Post Damage Dealing Processing==============================
+//==========================================================================================
+//--------------------------durability processing-------------------------------------------
 	if(pVictim->IsPlayer())
 	{
 		static_cast<Player*>(pVictim)->GetItemInterface()->ReduceItemDurability();
@@ -1866,16 +1897,7 @@ else
 			}
 		}
 	}
-
-	/* Brandon
-	   Rage combat Formulas
-	   wowwiki.com
-	   2.0.10
-
-	   Rage Gained from dealing damage = ((Damage Dealt) / (Rage Conversion at Your Level) * 7.5 + (Weapon Speed * Factor))/2
-	   TODO
-	*/
-
+//--------------------------rage processing-------------------------------------------------
 	uint32 val;
 	if(IsPlayer())
 	{
@@ -1893,12 +1915,7 @@ else
 	}
 		
 	RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
-
-	if(ability && realdamage==0)
-	{	
-		SendSpellLog(this,pVictim,ability->Id,SPELL_LOG_RESIST);
-	}
-
+//--------------------------extra strikes processing----------------------------------------
 	while(m_extraattacks > 0)
 	{
 		m_extraattacks--;

@@ -1591,6 +1591,18 @@ void Aura::SpellAuraDummy(bool apply)
 				if(caster && caster->IsPlayer())
 					static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(12494,mod->m_amount);
 			}break;
+		//mage Magic Absorption
+		case 29441:
+		case 29444:
+		case 29445:
+		case 29446:
+		case 29447:
+			{
+				if (m_target->IsPlayer())
+				{
+					static_cast<Player*>(m_target)->m_RegenManaOnSpellResist += ((apply) ? 1:-1)*(float)mod->m_amount/100;
+				}
+			}break;
 		//warlock - seed of corruption
 		case 27243:
 		case 32863:
@@ -1816,7 +1828,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 		}
 	bonus += m_target->HealTakenMod[GetSpellProto()->School];
 
-	if(bonus)
+	if(bonus>0)
 	{
 		int amp = m_spellProto->EffectAmplitude[mod->i];
 		if(!amp) 

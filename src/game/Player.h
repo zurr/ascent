@@ -1049,6 +1049,7 @@ public:
 	uint32 m_modphyscritdmgPCT;
 	uint32 m_RootedCritChanceBonus;
 	uint32 m_ModInterrMRegenPCT;
+	float m_RegenManaOnSpellResist;
 	
 	uint32 FlatStatModPos[5];
 	uint32 FlatStatModNeg[5];
