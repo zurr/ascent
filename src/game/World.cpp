@@ -248,6 +248,28 @@ void BasicTaskExecutor::run()
 	cb->execute();
 }
 
+void CreateDummySpell(uint32 id)
+{
+	const char * name = "Dummy Trigger";
+	SpellEntry * sp = new SpellEntry;
+	memset(sp, 0, sizeof(SpellEntry));
+	sp->Id = id;
+	sp->Attributes = 384;
+	sp->AttributesEx = 268435456;
+	sp->Flags3 = 4;
+	sp->CastingTimeIndex=1;
+	sp->procChance=75;
+	sp->rangeIndex=13;
+	sp->EquippedItemClass=-1;
+	sp->Effect[0]=3;
+	sp->EffectImplicitTargetA[0]=25;
+	sp->buffdescflags=4128828;
+	sp->NameHash=crc32((const unsigned char*)name, strlen(name));
+	sp->dmg_multiplier[0]=1.0f;
+	sp->FH=-1;
+	static_cast<FastIndexedDataStore<SpellEntry>*>(SpellStore::getSingletonPtr())->SetRow(id,sp);
+}
+
 void World::SetInitialWorldSettings()
 {
 	CharacterDatabase.Execute("UPDATE characters SET online = 0 WHERE online = 1");
@@ -518,6 +540,16 @@ void World::SetInitialWorldSettings()
 
 		// get spellentry
 		SpellEntry * sp = sSpellStore.LookupEntry(spellid);
+		for(uint32 b=0;b<3;++b)
+		{
+			if(sp->EffectTriggerSpell[b] != 0 &&
+				static_cast<FastIndexedDataStore<SpellEntry>*>(SpellStore::getSingletonPtr())->LookupEntryForced(
+				sp->EffectTriggerSpell[b]) == NULL)
+			{
+				/* proc spell referencing non-existant spell. create a dummy spell for use w/ it. */
+				CreateDummySpell(sp->EffectTriggerSpell[b]);
+			}
+		}
 
 		sp->proc_interval = 0;//trigger at each event
 

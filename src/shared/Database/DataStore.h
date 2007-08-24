@@ -112,6 +112,12 @@ public:
 	{
 		return (T*)DataStore<T>::d.GetRow(row);
 	}
+
+	void SetRow(uint32 row, T* data)
+	{
+		ASSERT(dataIndex[row]==0 && row<high);
+		dataIndex[row]=data;
+	}
 };
 
 template <class T>

@@ -3529,7 +3529,7 @@ void Spell::SendHealSpellOnPlayer(Object* caster, Object* target, uint32 dmg,boo
 	
 	data << target->GetNewGUID();
 	data << caster->GetNewGUID();
-	data << uint32(m_spellInfo->Id);
+	data << (pSpellId ? pSpellId : m_spellInfo->Id);
 	data << uint32(dmg);	// amt healed
 	data << uint8(critical);	 //this is crical message
 
@@ -3545,7 +3545,7 @@ void Spell::SendHealManaSpellOnPlayer(Object * caster, Object * target, uint32 d
 
 	data << target->GetNewGUID();
 	data << caster->GetNewGUID();
-	data << m_spellInfo->Id;
+	data << (pSpellId ? pSpellId : m_spellInfo->Id);
 	data << powertype;
 	data << dmg;
 
@@ -3557,6 +3557,9 @@ void Spell::Heal(int32 amount)
 	if(!unitTarget || !unitTarget->isAlive())
 		return;
 	
+	if(p_caster)
+		p_caster->last_heal_spell=m_spellInfo;
+
     //self healing shouldnt flag himself
 	if(p_caster && playerTarget && p_caster != playerTarget)
 	{
@@ -3592,7 +3595,9 @@ void Spell::Heal(int32 amount)
 			if(m_spellInfo->SpellGroupType)
 					SM_PIValue(static_cast<Unit*>(u_caster)->SM_PCriticalDamage, &critbonus, m_spellInfo->SpellGroupType);
 			amount += critbonus;
+			u_caster->HandleProc(PROC_ON_SPELL_CRIT_HIT_VICTIM, unitTarget, m_spellInfo, amount);
 		}
+		u_caster->HandleProc(PROC_ON_SPELL_CRIT_HIT, unitTarget, m_spellInfo, amount);
 	}
 	if(amount < 0) amount = 0;
 

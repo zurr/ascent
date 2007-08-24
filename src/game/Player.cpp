@@ -350,6 +350,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_pendingBattleground = 0;
 	m_deathVision = false;
 	m_retainComboPoints = false;
+	last_heal_spell = NULL;
 }
 
 

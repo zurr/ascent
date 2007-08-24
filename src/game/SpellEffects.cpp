@@ -407,6 +407,18 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		return;
 	switch(spellId)
 	{
+	case 18350:		/* paladin talent: illumination - gain mana equal to 60% cost of spell. */
+		{
+			if(!p_caster) return;
+			SpellEntry * sp = p_caster->last_heal_spell ? p_caster->last_heal_spell : m_spellInfo;
+			uint32 cost = float2int32( float( float(sp->manaCost) * 0.6f ) );
+			SendHealManaSpellOnPlayer(p_caster, p_caster, cost, 0);
+			cost+=p_caster->GetUInt32Value(UNIT_FIELD_POWER1);
+			if(cost>p_caster->GetUInt32Value(UNIT_FIELD_MAXPOWER1))
+				p_caster->SetUInt32Value(UNIT_FIELD_POWER1,p_caster->GetUInt32Value(UNIT_FIELD_MAXPOWER1));
+			else
+				p_caster->SetUInt32Value(UNIT_FIELD_POWER1,cost);
+		}break;
 	case 34120:
 		{//steady shot
 		if(unitTarget)
