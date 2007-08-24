@@ -216,8 +216,8 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 void WorldSession::HandleMoveStopOpcode( WorldPacket & recv_data )
 {	
-	GetPlayer()->m_isMoving = false;	   
 	HandleMovementOpcodes( recv_data );
+	_player->m_isMoving = false;
 }
 
 void WorldSession::HandleMoveTimeSkippedOpcode( WorldPacket & recv_data )

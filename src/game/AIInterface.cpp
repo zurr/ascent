@@ -828,7 +828,8 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 #ifdef ENABLE_CREATURE_DAZE
 					//now if the target is facing his back to us then we could just cast dazed on him :P
 					//as dar as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
-					if(CREATURE_SPELL_TO_DAZE && m_nextTarget->IsPlayer() && !m_Unit->IsPet() && Rand(CREATURE_CHANCE_TO_DAZE))
+					if(!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->FriendlyMask==0 && m_Unit->m_faction->HostileMask==0) /* neutral creature */
+						&& m_nextTarget->IsPlayer() && !m_Unit->IsPet() && Rand(CREATURE_CHANCE_TO_DAZE))
 					{
 						float our_facing=m_Unit->calcRadAngle(m_Unit->GetPositionX(),m_Unit->GetPositionY(),m_nextTarget->GetPositionX(),m_nextTarget->GetPositionY());
 						float his_facing=m_nextTarget->GetOrientation();
@@ -876,8 +877,8 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				else // Target out of Range -> Run to it
 				{
 					//calculate next move
-					float dist = 1.0f;
-					dist = combatReach[1]-1.15f;
+					float dist = combatReach[1]-1.15f;
+
 					m_moveRun = true;
 					_CalcDestinationAndMove(m_nextTarget, dist);
 				}
@@ -1545,9 +1546,14 @@ void AIInterface::_CalcDestinationAndMove(Unit *target, float dist)
 	if(target->GetTypeId() == TYPEID_UNIT || target->GetTypeId() == TYPEID_PLAYER)
 	{
 		float angle = m_Unit->calcAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), target->GetPositionX(), target->GetPositionY()) * M_PI / 180.0f;
-
 		float x = dist * cosf(angle);
 		float y = dist * sinf(angle);
+		if(target->GetTypeId() == TYPEID_PLAYER && ((Player*)target)->m_isMoving)
+		{
+			// cater for moving player vector based on orientation
+			x -= cosf(target->GetOrientation());
+			y -= sinf(target->GetOrientation());
+		}
 
 		m_nextPosX = target->GetPositionX() - x;
 		m_nextPosY = target->GetPositionY() - y;
