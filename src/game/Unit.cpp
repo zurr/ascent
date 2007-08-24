@@ -1319,6 +1319,7 @@ if (this->getLevel()*5>self_skill)
 	diffAcapped -=(float)self_skill;
 else
 	diffAcapped -=(float)(this->getLevel()*5);
+//-----SHIT END
 
 //crushing blow chance
 	if(pVictim->IsPlayer()&&!this->IsPlayer()&&!ability)
@@ -1359,8 +1360,6 @@ else
 		crush = 0.0f;
 		crit = 100.0f;
 	}
-	//for debug
-	uint32 dw=0;
 //ranged attacks can't be dodge, parry or glancing blow
 	if (damage_type==RANGED) 
 	{
@@ -1368,25 +1367,18 @@ else
 		parry=0.0f;
 		glanc=0.0f;
 	}
-//dirty fix for gray mobs. I decide to apply this for avoiding high lvl tanks in low lvl dungeons.
 //penalties for dualwield and two-handed weapons
 	else
 		if (this->IsPlayer())
 		{
 			it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 			if(it && it->GetProto()->InventoryType==INVTYPE_WEAPON && !ability)//dualwield to-hit penalty
-			{
 				hitmodifier -= 19.0f;
-				dw=2;
-			}
 			else
 			{
 				it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 				if(it && it->GetProto()->InventoryType==INVTYPE_2HWEAPON)//2 handed weapon to-hit penalty
-				{
   					hitmodifier -= 4.0f;
-					dw=1;
-				}
 			}
 		}
 // Mods by skill diff.
@@ -1698,47 +1690,6 @@ else
 		}
 		break;
 	}
-
-	/* Debug for Linux users. Switch to true to enable or false to disable. Will be deleted after bugfix
-	If u r Linux WoW admin - u can post debug file on ascent forums. */
-	if (true)
-	{
-		if (!ability)
-		{
-			FILE *fin;
-			fin = fopen("strike.txt", "a");
-			long size;
-			fseek(fin, 0, SEEK_END);
-			size = ftell(fin);
-			if (size>10000)
-				fclose(fin);
-			else
-			{
-				uint32 mode;
-				int32 aclass,vclass;
-				if (this->IsPlayer())
-				{
-					mode = (pVictim->IsPlayer()) ? 2 : 1;
-					aclass = this->getClass();
-					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
-				}
-				else
-				{
-					mode = (pVictim->IsPlayer()) ? 0 : 8;
-					aclass = -1;
-					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
-				}
-				if (r>2)
-					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d WI:%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d BD:%d AD:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),dw,chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r,blocked_damage,abs);
-				else
-					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d WI:%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),dw,chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r);
-				fclose(fin);
-			}
-		}
-	}
-	/* Debug end */
-
-
 
 	//vstate=1-wound,2-dodge,3-parry,4-interrupt,5-block,6-evade,7-immune,8-deflect
 	
