@@ -1307,18 +1307,31 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		crit = 5.0f; //will be modified later
 	}
 //------other chances------
+//THE SHIT to avoid Linux bug. 
+float diffVcapped = (float)self_skill;
+if (pVictim->getLevel()*5>victim_skill)
+	diffVcapped -=(float)victim_skill;
+else
+	diffVcapped -=(float)(pVictim->getLevel()*5);
+
+float diffAcapped = (float)victim_skill;
+if (this->getLevel()*5>self_skill)
+	diffAcapped -=(float)self_skill;
+else
+	diffAcapped -=(float)(this->getLevel()*5);
+
 //crushing blow chance
 	if(pVictim->IsPlayer()&&!this->IsPlayer()&&!ability)
 	{
-		if ((float)self_skill-min((float)(pVictim->getLevel()*5),(float)victim_skill)>=15.0f)
-			crush = -15.0f+2.0f*((float)self_skill-min((float)(pVictim->getLevel()*5),(float)victim_skill)); 
+		if (diffVcapped>=15.0f)
+			crush = -15.0f+2.0f*diffVcapped; 
 		else 
 			crush = 0.0f;
 	}
 //glancing blow chance
 	if (this->IsPlayer()&&!pVictim->IsPlayer()&&!ability)
 	{
-		glanc = 10.0f + (float)victim_skill - min((float)(this->getLevel()*5),(float)self_skill);
+		glanc = 10.0f + diffAcapped;
 		if (glanc<0)
 			glanc = 0.0f;
 	}
@@ -1550,13 +1563,12 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			
 			if(dmg.full_damage < 0)
 				dmg.full_damage = 0;
-//check for speacial hits.
+//check for special hits.
 			switch(r)
 			{
 			case 3: //glancing blow by and012345
 				{
-					int32 skill_difference = (victim_skill - min((int32)(this->getLevel()*5),(int32)self_skill));
-					float low_dmg_mod = 1.5 - (0.05 * skill_difference);
+					float low_dmg_mod = 1.5 - (0.05 * diffAcapped);
 					if (this->getClass() == MAGE || this->getClass() == PRIEST || this->getClass() == WARLOCK) //casters = additional penalty.
 					{
 						low_dmg_mod -= 0.7;
@@ -1565,7 +1577,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 						low_dmg_mod = 0.01f;
 					if (low_dmg_mod>0.91)
 						low_dmg_mod = 0.91f;
-					float high_dmg_mod = 1.2 - (0.03 * skill_difference);
+					float high_dmg_mod = 1.2 - (0.03 * diffAcapped);
 					if (this->getClass() == MAGE || this->getClass() == PRIEST || this->getClass() == WARLOCK) //casters = additional penalty.
 					{
 						high_dmg_mod -= 0.3;
