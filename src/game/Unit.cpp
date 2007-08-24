@@ -1908,6 +1908,9 @@ else
 	if(m_extrastriketargets)
 	{
 		int32 m_extra = m_extrastriketargets;
+		int32 m_temp = m_extrastriketargets;
+		m_extrastriketargets = 0;
+
 		for(set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end() && m_extra; ++itr)
 		{
 			if(m_extra == 0)
@@ -1919,6 +1922,7 @@ else
 				--m_extra;
 			}
 		}
+		m_extrastriketargets = m_temp;
 	}
 }	
 #else
