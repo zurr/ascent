@@ -7459,7 +7459,7 @@ void Player::CompleteLoading()
 			setDeathState(CORPSE);
 		}
 	}
-	else if(getDeathState() == JUST_DIED && !HasVisibleAura(8326))
+	else if(getDeathState() == JUST_DIED && !HasActiveAura(8326))
 	{
 		RepopRequestedPlayer();
 	}
