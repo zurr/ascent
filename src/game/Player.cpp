@@ -7459,6 +7459,10 @@ void Player::CompleteLoading()
 			setDeathState(CORPSE);
 		}
 	}
+	else if(getDeathState() == JUST_DIED && !HasVisibleAura(8326))
+	{
+		RepopRequestedPlayer();
+	}
 
 	if(iActivePet)
 		SpawnPet(iActivePet);	   // only spawn if >0
