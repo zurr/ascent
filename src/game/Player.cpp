@@ -3103,6 +3103,9 @@ void Player::OnPushToWorld()
 
 	if(m_mapMgr->m_battleground)
 		m_mapMgr->m_battleground->PortPlayer(this, true);
+
+	SetUInt32Value(UNIT_FIELD_HEALTH, load_health);
+	SetUInt32Value(UNIT_FIELD_POWER1, load_mana);
 }
 
 void Player::ResetHeartbeatCoords()
@@ -3113,6 +3116,9 @@ void Player::ResetHeartbeatCoords()
 
 void Player::RemoveFromWorld()
 {
+	load_health = m_uint32Values[UNIT_FIELD_HEALTH];
+	load_mana = m_uint32Values[UNIT_FIELD_POWER1];
+
 	if(m_bg)
 		m_bg->RemovePlayer(this, true);
 
@@ -7431,10 +7437,6 @@ void Player::CompleteLoading()
 //		if(count_appearence>1)
 //			this->AddAuraVisual((*i).id,count_appearence-1,a->IsPositive());
 	}
-
- // grep: Set health and mana to saved values on login
-	SetUInt32Value(UNIT_FIELD_HEALTH, load_health);
-	SetUInt32Value(UNIT_FIELD_POWER1, load_mana); 
 
 	// this needs to be after the cast of passive spells, because it will cast ghost form, after the remove making it in ghost alive, if no corpse.
 	//death system checkout

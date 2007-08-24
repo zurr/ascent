@@ -683,7 +683,13 @@ void Aura::EventUpdateAA(float r)
 	if(u_caster->GetTypeId() == TYPEID_PLAYER)
 		plr = static_cast<Player*>(u_caster);
 	else if(u_caster->GetTypeId() == TYPEID_UNIT)
-		plr = static_cast<Player*>(static_cast<Creature*>(u_caster)->GetTotemOwner());
+	{
+		if(u_caster->GetGUIDHigh() == HIGHGUID_PET)
+			plr = static_cast<Pet*>(u_caster)->GetPetOwner();
+		else
+			plr = static_cast<Player*>(static_cast<Creature*>(u_caster)->GetTotemOwner());
+	}
+
 
 	if(plr == 0 || plr->GetTypeId() != TYPEID_PLAYER)	// No player involved...
 		return;

@@ -50,6 +50,7 @@ protected:
 	/** Critical section used for system calls
 	 */
 	CRITICAL_SECTION cs;
+	unsigned char valid;
 
 #else
 	/** Static mutex attribute

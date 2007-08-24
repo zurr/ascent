@@ -1626,7 +1626,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 			if(((Creature*)pVictim)->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP))
 			{
 				Player * pAttacker = NULL;
-				if(IsPet())
+				if(IsPet() && GetGUIDHigh() == HIGHGUID_PET)
 					pAttacker = ((Pet*)this)->GetPetOwner();
 				else if(IsPlayer())
 					pAttacker = ((Player*)this);

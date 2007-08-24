@@ -21,7 +21,7 @@
 #include "../game/StdAfx.h"
 #include "../shared/svn_revision.h"
 
-
+createFileSingleton(Console);
 createFileSingleton(CConsole);
 CConsole::~CConsole()
 {
@@ -408,4 +408,100 @@ void CConsole::SaveallPlayers(char *str)
 void CConsole::ReloadGMScripts(char * str)
 {
 	ScriptSystem->Reload();
+}
+
+static char ConsoleBuffer[65536];
+
+const char * Console::GetLine(uint32 Delay)
+{
+	if(PollConsole(Delay))
+	{
+#ifdef WIN32
+		DWORD Bytes_Read;
+		DWORD Result = ReadFile(GetStdHandle(STD_INPUT_HANDLE), ConsoleBuffer, 65536, &Bytes_Read, NULL);
+		if(Bytes_Read != 0 && Result)
+			return ConsoleBuffer;
+		else
+			return NULL;
+#else
+		int br = read(stdin, ConsoleBuffer, 65536);
+		if(br != 0)
+			return ConsoleBuffer;
+#endif
+	}
+	return NULL;
+}
+
+bool Console::PollConsole(uint32 Time)
+{
+	/* This is platform-dependant, unfortunately due to window's gayness of treating file descriptors differently. */
+#ifndef WIN32
+	FD_SET fds;
+	timeval tv;
+	
+	FD_ZERO(&fds);
+	FD_SET(stdin, &fds);
+	
+	tv.tv_sec  = Time / 1000;
+	tv.tv_usec = (Time % 1000) * 1000;
+
+	if(select(1, &fds, NULL, NULL, &tv) > 0)
+		return true;
+	else
+		return false;
+#else
+	uint32 e = getMSTime() + Time;
+	uint32 n = getMSTime();
+	while(n < e)
+	{
+        if(GetAsyncKeyState(VK_RETURN) != 0)
+			return true;
+
+		Sleep(100);
+	}
+	return false;
+#endif
+}
+
+bool Console::PollForD()
+{
+#ifndef WIN32
+	const char * buf = GetLine(1000);
+	if(buf[0] != 'D' && buf[0] != 'd')
+		return false;
+	return true;
+#else
+	uint32 e = getMSTime() + 1000;
+	uint32 n = getMSTime();
+	while(n < e)
+	{
+		if(GetAsyncKeyState(VK_F1) != 0)
+			return true;
+
+		Sleep(100);
+		n = getMSTime();
+	}
+	return false;
+#endif
+}
+
+bool Console::WaitForSpace()
+{
+#ifndef WIN32
+	const char * buf = GetLine(100000);
+	if(buf && buf[0] != ' ')
+		WaitForSpace();
+
+	return true;
+
+#else
+	while(true)
+	{
+		if(GetAsyncKeyState(VK_SPACE) != 0)
+			return true;
+
+		Sleep(100);
+	}
+	return false;
+#endif
 }

@@ -21,13 +21,41 @@
 #ifdef WIN32
 
 /* Windows Critical Section Implementation */
-Mutex::Mutex() { InitializeCriticalSection(&cs); }
-Mutex::~Mutex() { DeleteCriticalSection(&cs); }
+Mutex::Mutex() { valid = 0xDE; InitializeCriticalSection(&cs); }
+Mutex::~Mutex() { DeleteCriticalSection(&cs); valid = 0xEE; }
 
-void Mutex::Acquire() { EnterCriticalSection(&cs); }
-void Mutex::Release() { LeaveCriticalSection(&cs); }
+void Mutex::Acquire()
+{
+	if(valid != 0xDE)
+	{
+		printf("Attempt to access an invalid critical section!\n");
+		return;
+	}
 
-bool Mutex::AttemptAcquire() { return TryEnterCriticalSection(&cs); }
+	EnterCriticalSection(&cs);
+}
+
+void Mutex::Release()
+{
+	if(valid != 0xDE)
+	{
+		printf("Attempt to elave an invalid critical section!\n");
+		return;
+	}
+
+	LeaveCriticalSection(&cs);
+}
+
+bool Mutex::AttemptAcquire()
+{
+	if(valid != 0xDE)
+	{
+		printf("Attempt to elave an invalid critical section!\n");
+		return false;
+	}
+
+	return TryEnterCriticalSection(&cs);
+}
 
 #else
 

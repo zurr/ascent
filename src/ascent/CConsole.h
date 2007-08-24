@@ -75,4 +75,15 @@ protected:					// Protected methods:
 
 #define sCConsole CConsole::getSingleton()
 
+class Console : public Singleton<Console>
+{
+public:
+	const char * GetLine(uint32 Delay);
+	bool PollConsole(uint32 Time);
+	bool PollForD();		// Used at startup :P
+	bool WaitForSpace();
+};
+
+#define sConsole Console::getSingleton()
+
 #endif

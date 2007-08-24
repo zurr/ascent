@@ -35,11 +35,13 @@ Corpse::Corpse(uint32 high, uint32 low)
 	m_state = CORPSE_STATE_BODY;
 	_loadedfromdb = false;
 
+	if(high!=0)
 	objmgr.AddCorpse(this);
 }
 
 Corpse::~Corpse()
 {
+	if(GetGUIDHigh() != 0)
 	objmgr.RemoveCorpse(this);
 	//just in case
 }

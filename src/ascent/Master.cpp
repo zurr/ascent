@@ -241,6 +241,38 @@ bool Master::Run(int argc, char ** argv)
 		return false;
 	}
 
+	Log.Color(TWHITE);
+	int left = 3;
+	bool dodb = false;
+#ifndef WIN32
+	printf("\nHit 'd' within the next 3 seconds to enter database maintenance mode.");
+#else
+	printf("\nHit F1 within the next 3 seconds to enter database maintenance mode.");
+#endif
+	while(left)
+	{
+        dodb = sConsole.PollForD();
+		if(dodb) break;
+		left--;
+		printf(".");
+	}
+
+	if(dodb)
+	{
+		Log.Color(TNORMAL);
+		printf("\nEntering database maintenance mode.\n\n");
+		new DatabaseCleaner;
+		DatabaseCleaner::getSingleton().Run();
+		delete DatabaseCleaner::getSingletonPtr();
+		Log.Color(TYELLOW);
+		printf("\nMaintenence finished. Take a moment to review the output, and hit space to continue startup.");
+		Log.Color(TNORMAL);
+		sConsole.WaitForSpace();
+	}
+	else
+		Log.Color(TNORMAL);
+
+	Log.Line();
 	sLog.outString("");
 
 	ScriptSystem = new ScriptEngine;
