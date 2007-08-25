@@ -63,6 +63,7 @@ public:
 		return (pthread_mutex_trylock(&mutex) == 0);
 #else
 		return TryEnterCriticalSection(&cs);
+#endif
 	}
 
 protected:
