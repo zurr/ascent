@@ -596,7 +596,6 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 	bool result = false;
 	bool result2 = false;
 
-	bool deleted;
     instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr, itr2;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end();)
@@ -606,11 +605,18 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 		 Instance_Map_InstanceId_Holder *p = itr2->second;
          if(!p->GetGroupSignature() && GetMapInfo()->type != INSTANCE_RAID && p->GetDifficulty() != MODE_HEROIC) //only resets solo instances
 		 {
-			 deleted=false;
-			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true,&deleted);
-			 if(deleted)	/* means this call deleted the instance :< */
+			 result = p->RemovePlayer(guid);
+			 if(result)
+			 {
+				 sWorldCreator.DeleteInstance(itr2->first, m_pMapInfo->mapid);
+				 delete p;
+				 sLog.outDebug("Removing instance from the itr\n");
+				 mInstanceIdList.erase(itr2);
+				 result2 = true;
 				 continue;
+			 }
 
+			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true,NULL);
 			 if(mapMgr)
 			 {
 				 // dont reset an instnace with players inside.. dunno how they got in there anyway :P
@@ -620,18 +626,8 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 					 if(pPlayer) 
 						 sChatHandler.SystemMessageToPlr(pPlayer,"You are trying to reset a instance when there are still players inside");
 					 instanceIdListMutex.Release();
-                     return false;
+					 return false;
 				 }
-			 }
-
-			 result = p->RemovePlayer(guid);
-			 if(result)
-			 {
-				 sWorldCreator.DeleteInstance(itr2->first, m_pMapInfo->mapid);
-				 delete p;
-				 sLog.outDebug("Removing instance from the itr\n");
-				 mInstanceIdList.erase(itr2);
-				 result2 = true;
 			 }
 		 }
 	}
@@ -642,9 +638,8 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 {
 	bool result = false;
 	bool result2 = false;
-	bool deleted;
 
-    instanceIdListMutex.Acquire();
+	instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr, itr2;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end();)
 	{
@@ -654,26 +649,6 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 		 if(p->GetGroupSignature() && p->GetGroupSignature() == iGroupSignature) //only resets this group instance ids
 		 {
              if(p->GetDifficulty() == MODE_HEROIC || p->GetMapInfo()->type == INSTANCE_RAID) { continue; }
-			 deleted=false;
-			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true, &deleted);
-			 if(deleted) continue;
-
-			 if(mapMgr)
-			 {
-				 // dont reset an instnace with players inside.. dunno how they got in there anyway :P
-				 if(mapMgr->HasPlayers())
-				 {
-					Group *pGroup =  objmgr.GetGroupById(iGroupSignature);
-					if(pGroup)
-					{
-						Player * pPlayer = pGroup->GetLeader();
-						if(pPlayer) 
-							sChatHandler.SystemMessageToPlr(pPlayer,"You are trying to reset a instance when there are still players inside");
-					}
-                     instanceIdListMutex.Release();
-					 return false;
-				 }
-			 }
 			 result = p->ClearAllPlayers();
 			 if(result)
 			 {
@@ -682,6 +657,25 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 				 sLog.outDebug("Removing group instance from the itr\n");
 				 mInstanceIdList.erase(itr2);
 				 result2 = true;
+				 continue;
+			 }
+
+			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true, NULL);
+			 if(mapMgr)
+			 {
+				 // dont reset an instnace with players inside.. dunno how they got in there anyway :P
+				 if(mapMgr->HasPlayers())
+				 {
+					 Group *pGroup =  objmgr.GetGroupById(iGroupSignature);
+					 if(pGroup)
+					 {
+						 Player * pPlayer = pGroup->GetLeader();
+						 if(pPlayer) 
+							 sChatHandler.SystemMessageToPlr(pPlayer,"You are trying to reset a instance when there are still players inside");
+					 }
+					 instanceIdListMutex.Release();
+					 return false;
+				 }
 			 }
 		 }
 	}

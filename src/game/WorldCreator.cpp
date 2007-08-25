@@ -575,7 +575,6 @@ MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 ma
 					sInstanceSavingManager.RemoveSavedInstance(ia->InstanceId);
 					if(Deleted)
 						*Deleted = true;
-					return NULL;
 				}
 				else
 				{
