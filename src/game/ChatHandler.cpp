@@ -346,7 +346,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 			{
 				GetPlayer()->SetFlag(PLAYER_FLAGS, 0x02);
 				if(sWorld.GetKickAFKPlayerTime())
-					sEventMgr.AddEvent(GetPlayer(),&Player::SoftDisconnect,EVENT_PLAYER_SOFT_DISCONNECT,sWorld.GetKickAFKPlayerTime(),1);
+					sEventMgr.AddEvent(GetPlayer(),&Player::SoftDisconnect,EVENT_PLAYER_SOFT_DISCONNECT,sWorld.GetKickAFKPlayerTime(),1,0);
 			}			
 		} break;
 	case CHAT_MSG_DND:

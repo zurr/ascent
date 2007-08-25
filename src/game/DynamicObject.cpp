@@ -95,7 +95,7 @@ void DynamicObject::Create(Unit * caster, Spell * pSpell, float x, float y, floa
 		PushToWorld(caster->GetMapMgr());
 	
   
-	sEventMgr.AddEvent(this, &DynamicObject::UpdateTargets, EVENT_DYNAMICOBJECT_UPDATE, 100, 0);
+	sEventMgr.AddEvent(this, &DynamicObject::UpdateTargets, EVENT_DYNAMICOBJECT_UPDATE, 100, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void DynamicObject::AddInRangeObject(Object* pObj)

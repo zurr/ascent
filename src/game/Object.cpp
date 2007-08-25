@@ -1389,7 +1389,7 @@ void Object::UpdateOppFactionSet()
 void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32 unitEvent, uint32 spellId, bool no_remove_auras)
 {
 	Player * plr = 0;
-	if(!pVictim || !pVictim->isAlive())
+	if(!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
 		return;
 	if(pVictim->GetTypeId() == TYPEID_PLAYER && static_cast<Player*>(pVictim)->GodModeCheat == true)
 		return;
@@ -2172,14 +2172,25 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		{
 			if (static_cast<Player*>(pVictim)->m_RegenManaOnSpellResist)
 			{
-				SpellEntry buff = sSpellStore.LookupEntry( 29442 );
-				Spell spell = new Spell(pVictim,buff,false,SPELL_AURA_NONE);
-				spell->cast();
+				/* burlex - this is totally wrong. :/ it should be handled through the proc system. */
+
+				//SpellEntry buff = sSpellStore.LookupEntry( 29442 );
+				//Spell spell = new Spell(pVictim,buff,false,SPELL_AURA_NONE);
+				//spell->cast();
+
 				Player* pl = (Player*)pVictim;
 				uint32 curmana = pl->GetUInt32Value(UNIT_FIELD_POWER1);
 				uint32 maxmana = pl->GetUInt32Value(UNIT_FIELD_POWER1);
-				curmana+=(uint32)(maxmana*pl->m_RegenManaOnSpellResist);
+				curmana+=uint32(float( float(maxmana)*pl->m_RegenManaOnSpellResist));
 				SetUInt32Value(UNIT_FIELD_POWER1,(curmana >= maxmana) ? maxmana : curmana);
+
+				WorldPacket datamr(SMSG_HEALMANASPELL_ON_PLAYER, 30);
+				datamr << pVictim->GetNewGUID();
+				datamr << pVictim->GetNewGUID();
+				datamr << uint32(29442);
+				datamr << uint32(0);
+				datamr << uint32(float( float(maxmana)*pl->m_RegenManaOnSpellResist));
+				((Player*)pVictim)->GetSession()->SendPacket(&datamr);
 			}
 		}
 	}

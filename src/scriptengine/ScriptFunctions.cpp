@@ -435,7 +435,7 @@ int Unit_RegisterTimer(gmThread * a_thread)
 	if(pThis->GetTypeId() != TYPEID_UNIT)
 		return GM_EXCEPTION;
 
-	sEventMgr.AddEvent(((Creature*)pThis), &Creature::TriggerScriptEvent, ((void*)func), EVENT_SCRIPT_UPDATE_EVENT, delay, repeats);
+	sEventMgr.AddEvent(((Creature*)pThis), &Creature::TriggerScriptEvent, ((void*)func), EVENT_SCRIPT_UPDATE_EVENT, delay, repeats,0);
 	return GM_OK;
 }
 
@@ -544,7 +544,7 @@ int GM_RegisterEvent(gmThread * a_thread)
 	}
 
 	/* set up the event :) */
-	sEventMgr.AddEvent(pThis, &Object::GMScriptEvent, (void*)a_thread->ParamRef(1), argc, argv, argt, EVENT_GMSCRIPT_EVENT, a_thread->ParamInt(0), 1);
+	sEventMgr.AddEvent(pThis, &Object::GMScriptEvent, (void*)a_thread->ParamRef(1), argc, argv, argt, EVENT_GMSCRIPT_EVENT, a_thread->ParamInt(0), 1, 0);
 	return GM_OK;
 }
 

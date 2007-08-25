@@ -3421,7 +3421,7 @@ void Spell::HandleTeleport(uint32 id, Unit* Target)
 	// caster.
 
 	if(!sEventMgr.HasEvent(pTarget, EVENT_PLAYER_TELEPORT))
-		sEventMgr.AddEvent(pTarget, &Player::EventTeleport, mapid, x, y, z, EVENT_PLAYER_TELEPORT, 1, 1);
+		sEventMgr.AddEvent(pTarget, &Player::EventTeleport, mapid, x, y, z, EVENT_PLAYER_TELEPORT, 1, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Spell::CreateItem(uint32 itemId)

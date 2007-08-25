@@ -51,7 +51,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 						uint32 timer = pCharm->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
 						if(!timer) timer = 2000;
 
-						sEventMgr.AddEvent(_player, &Player::_EventCharmAttack, EVENT_PLAYER_CHARM_ATTACK, timer, 0);
+						sEventMgr.AddEvent(_player, &Player::_EventCharmAttack, EVENT_PLAYER_CHARM_ATTACK, timer, 0,0);
 						_player->_EventCharmAttack();
 					}
 				}break;

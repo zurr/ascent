@@ -505,7 +505,7 @@ int32 Item::AddEnchantment(EnchantEntry * Enchantment, uint32 Duration, bool Per
 	if(Duration)
 	{
 		sEventMgr.AddEvent(this, &Item::RemoveEnchantment, uint32(Slot),
-			EVENT_REMOVE_ENCHANTMENT1 + Slot, Duration * 1000, 1);
+			EVENT_REMOVE_ENCHANTMENT1 + Slot, Duration * 1000, 1,0);
 	}
 
 	// No need to send the log packet, if the owner isn't in world (we're still loading)

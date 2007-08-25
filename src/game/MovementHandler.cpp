@@ -505,7 +505,7 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 				{
 					sChatHandler.SystemMessage(this, "Speedhack detected. This has been logged for later processing by the server admins. If you are caught again, you will be kicked from the server. You will be unrooted in 5 seconds.");
 					_player->SetMovement(MOVE_ROOT, 1);
-					sEventMgr.AddEvent(_player, &Player::SetMovement, uint8(MOVE_UNROOT), uint32(1), EVENT_DELETE_TIMER, 5000, 1);
+					sEventMgr.AddEvent(_player, &Player::SetMovement, uint8(MOVE_UNROOT), uint32(1), EVENT_DELETE_TIMER, 5000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 					_player->ResetHeartbeatCoords();
 					_player->m_speedhackChances--;
 					
@@ -520,7 +520,7 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 					sCheatLog.writefromsession(this, "Kicked for speedhack, time diff of %u", difference);
 
 					_player->m_KickDelay = 0;
-					sEventMgr.AddEvent(_player, &Player::_Kick, EVENT_PLAYER_KICK, 10000, 1);
+					sEventMgr.AddEvent(_player, &Player::_Kick, EVENT_PLAYER_KICK, 10000, 1,0);
 
 					// Root movement :p heheheh evil
 					_player->SetMovement(MOVE_ROOT, 1);

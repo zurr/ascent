@@ -1112,7 +1112,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			{
 				obj->SetUInt32Value(GAMEOBJECT_FLAGS, 33);
 				obj->SetUInt32Value(GAMEOBJECT_STATE, 0);
-				sEventMgr.AddEvent(obj,&GameObject::EventCloseDoor,EVENT_GAMEOBJECT_DOOR_CLOSE,20000,1);
+				sEventMgr.AddEvent(obj,&GameObject::EventCloseDoor,EVENT_GAMEOBJECT_DOOR_CLOSE,20000,1,0);
 			}
 		}break;
 	case GAMEOBJECT_TYPE_FLAGSTAND:
@@ -1286,7 +1286,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			_player->SetUInt32Value(UNIT_CHANNEL_SPELL, pGo->m_ritualspell);
 			
 			/* expire after 2mins*/
-			sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1);
+			sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1,0);
 		}break;
 	}   
 }

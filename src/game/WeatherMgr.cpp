@@ -160,7 +160,7 @@ void WeatherInfo::_GenerateWeather()
 	SendUpdate();
 
 	sEventMgr.AddEvent(this, &WeatherInfo::Update, EVENT_WEATHER_UPDATE, 
-		(uint32)(m_totalTime/ceil(m_maxDensity/WEATHER_DENSITY_UPDATE)*2), 0);
+		(uint32)(m_totalTime/ceil(m_maxDensity/WEATHER_DENSITY_UPDATE)*2), 0,0);
 }
 
 void WeatherInfo::Update()

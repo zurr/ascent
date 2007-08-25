@@ -54,7 +54,7 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 
 	ptr->IncRef();
 	ptr->instanceId = m_event_Instanceid;
-	m_events.insert( EventMap::value_type( ptr->eventFlags, ptr ) );
+	m_events.insert( EventMap::value_type( ptr->eventType, ptr ) );
 	m_lock.Release();
 
 	/* Add to event manager */
@@ -72,7 +72,7 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 void EventableObject::event_RemoveByPointer(TimedEvent * ev)
 {
 	m_lock.Acquire();
-	EventMap::iterator itr = m_events.find(ev->eventFlags);
+	EventMap::iterator itr = m_events.find(ev->eventType);
 	EventMap::iterator it2;
 	if(itr != m_events.end())
 	{
@@ -89,7 +89,7 @@ void EventableObject::event_RemoveByPointer(TimedEvent * ev)
 				return;
 			}
 
-		} while(itr != m_events.upper_bound(ev->eventFlags));
+		} while(itr != m_events.upper_bound(ev->eventType));
 	}
 	m_lock.Release();
 }
@@ -283,7 +283,8 @@ void EventableObjectHolder::Update(uint32 time_difference)
 	{
 		it2 = itr++;
 
-		if((*it2)->instanceId != mInstanceId || (*it2)->deleted)
+		if((*it2)->instanceId != mInstanceId || (*it2)->deleted || 
+			( mInstanceId == WORLD_INSTANCE && (*it2)->eventFlag & EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT))
 		{
 			// remove from this list.
 			(*it2)->DecRef();
@@ -408,6 +409,9 @@ void EventableObjectHolder::AddObject(EventableObject * obj)
 				continue;
 			}
 
+			if(mInstanceId == WORLD_INSTANCE && itr->second->eventFlag & EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT)
+				continue;
+
 			itr->second->IncRef();
 			itr->second->instanceId = mInstanceId;
 			m_insertPool.push_back(itr->second);
@@ -424,6 +428,9 @@ void EventableObjectHolder::AddObject(EventableObject * obj)
 	{
 		// ignore deleted events
 		if(itr->second->deleted)
+			continue;
+
+		if(mInstanceId == WORLD_INSTANCE && itr->second->eventFlag & EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT)
 			continue;
 
 		itr->second->IncRef();

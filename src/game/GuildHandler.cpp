@@ -329,7 +329,7 @@ void WorldSession::HandleGuildPromote(WorldPacket & recv_data)
 		//They Online
 		if(pTarget->GetInstanceID() != _player->GetInstanceID())
 		{
-			sEventMgr.AddEvent(pTarget, &Player::SetGuildRank, (uint32)pTargetRank, 1, 1, 1);
+			sEventMgr.AddEvent(pTarget, &Player::SetGuildRank, (uint32)pTargetRank, 1, 1, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 		}
 		else
 		{

@@ -378,7 +378,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 			/*sEventMgr.AddEvent(m_caster, &Object::SpellNonMeleeDamageLog,
 				unitTarget,m_spellInfo->Id,dmg, EVENT_SPELL_DAMAGE_HIT, uint32(time), 1);*/
 			sEventMgr.AddEvent(m_caster, &Object::EventSpellDamage, unitTarget->GetGUID(), 
-				m_spellInfo->Id, dmg, EVENT_SPELL_DAMAGE_HIT, uint32(time), 1);
+				m_spellInfo->Id, dmg, EVENT_SPELL_DAMAGE_HIT, uint32(time), 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 		}
 	}
 	else
@@ -640,7 +640,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				p_caster->cannibalize = true;
 				p_caster->cannibalizeCount = 0;
 				sEventMgr.AddEvent(p_caster, &Player::EventCannibalize, uint32(7),
-					EVENT_CANNIBALIZE, 2000, 5);
+					EVENT_CANNIBALIZE, 2000, 5,0);
 				p_caster->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_CANNIBALIZE);
 			}
 		}break;
@@ -715,7 +715,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				
 				u_caster->summonPet = NewSummon;
 				u_caster->SetUInt64Value(UNIT_FIELD_PETNUMBER,NewSummon->GetGUID());
-				sEventMgr.AddEvent(u_caster, &Unit::EventSummonPetExpire, EVENT_SUMMON_PET_EXPIRE, 60000, 1);
+				sEventMgr.AddEvent(u_caster, &Unit::EventSummonPetExpire, EVENT_SUMMON_PET_EXPIRE, 60000, 1,0);
 			}
 		}break;
 	case 23645:// Hourglass Sand
@@ -1633,7 +1633,7 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 	}
 	
 	/* not sure on this */
-	sEventMgr.AddEvent(pCreature, &Creature::SafeDelete, EVENT_CREATURE_REMOVE_CORPSE, /*GetDuration()*/45000, 1);
+	sEventMgr.AddEvent(pCreature, &Creature::SafeDelete, EVENT_CREATURE_REMOVE_CORPSE, /*GetDuration()*/45000, 1,0);
 }
 
 void Spell::SpellEffectLeap(uint32 i) // Leap
@@ -1943,7 +1943,7 @@ void Spell::SpellEffectOpenLockItem(uint32 i)
 	
 	gameObjTarget->SetUInt32Value(GAMEOBJECT_STATE,0);
 	if(gameObjTarget->GetMapId() == 0 || gameObjTarget->GetMapId() == 1)//dont close doors for instances
-		sEventMgr.AddEvent(gameObjTarget,&GameObject::EventCloseDoor,EVENT_GAMEOBJECT_DOOR_CLOSE,10000,1);
+		sEventMgr.AddEvent(gameObjTarget,&GameObject::EventCloseDoor,EVENT_GAMEOBJECT_DOOR_CLOSE,10000,1,0);
 }
 
 void Spell::SpellEffectProficiency(uint32 i)
@@ -2014,7 +2014,7 @@ void Spell::SpellEffectApplyAA(uint32 i) // Apply Area Aura
 	
 		float r=GetRadius(i);
 		if(!sEventMgr.HasEvent(pAura, EVENT_AREAAURA_UPDATE))		/* only add it once */
-			sEventMgr.AddEvent(pAura, &Aura::EventUpdateAA,r*r, EVENT_AREAAURA_UPDATE, 1000, 0);	
+			sEventMgr.AddEvent(pAura, &Aura::EventUpdateAA,r*r, EVENT_AREAAURA_UPDATE, 1000, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);	
 
 	}else 
 	{
@@ -2195,7 +2195,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 			p->m_factionDBC = sFactionStore.LookupEntry(p->m_faction->Faction);
 		p->PushToWorld(u_caster->GetMapMgr());
 		//make sure they will be desumonized (roxor)
-		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1);
+		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1,0);
 	}
 }
 
@@ -2459,9 +2459,9 @@ void Spell::SpellEffectSummonObject(uint32 i)
 	   
 		if (lootmgr.IsFishable(zone)) // only add this if there is fish in that zone.
 		{
-			sEventMgr.AddEvent(go, &GameObject::FishHooked, (Player*)m_caster, EVENT_GAMEOBJECT_FISH_HOOKED, 5000+sRand.randInt(22000), 1);
+			sEventMgr.AddEvent(go, &GameObject::FishHooked, (Player*)m_caster, EVENT_GAMEOBJECT_FISH_HOOKED, 5000+sRand.randInt(22000), 1,0);
 		}
-		sEventMgr.AddEvent(go, &GameObject::EndFishing, (Player*)m_caster,false, EVENT_GAMEOBJECT_END_FISHING,30000, 1);
+		sEventMgr.AddEvent(go, &GameObject::EndFishing, (Player*)m_caster,false, EVENT_GAMEOBJECT_END_FISHING,30000, 1,0);
 		p_caster->SetSummonedObject(go);
 	}
 	else
@@ -2484,7 +2484,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
 		go->CreateFromProto(entry,mapid,posx,posy,pz,orient);
 		go->SetUInt64Value(OBJECT_FIELD_CREATED_BY,m_caster->GetGUID());
 		go->PushToWorld(m_caster->GetMapMgr());	  
-		sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
+		sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1,0);
 		if(entry ==17032)//this is a portal
 		{//enable it for party only
 			go-> SetUInt32Value( GAMEOBJECT_STATE,0);
@@ -2963,7 +2963,7 @@ void Spell::SpellEffectSummonObjectWild(uint32 i)
 	GoSummon->PushToWorld(u_caster->GetMapMgr());
 	GoSummon->SetSummoned(u_caster);
 	
-	sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
+	sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1,0);
 }
 
 void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
@@ -3401,7 +3401,7 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 
 
 	// Set up the deletion event. The totem needs to expire after a certain time, or upon its death.
-	sEventMgr.AddEvent(pTotem, &Creature::TotemExpire, EVENT_TOTEM_EXPIRE, GetDuration(), 1);
+	sEventMgr.AddEvent(pTotem, &Creature::TotemExpire, EVENT_TOTEM_EXPIRE, GetDuration(), 1,0);
 }
 
 void Spell::SpellEffectSelfResurrect(uint32 i)
@@ -3625,7 +3625,7 @@ void Spell::SpellEffectInebriate(uint32 i) // lets get drunk!
   
 	m_caster->SetByte(PLAYER_BYTES_3,1,b2>90?90:b2);
 	sEventMgr.RemoveEvents(p_caster, EVENT_PLAYER_REDUCEDRUNK);
-	sEventMgr.AddEvent(p_caster, &Player::EventReduceDrunk, false, EVENT_PLAYER_REDUCEDRUNK, 300000, 0);
+	sEventMgr.AddEvent(p_caster, &Player::EventReduceDrunk, false, EVENT_PLAYER_REDUCEDRUNK, 300000, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
@@ -3722,11 +3722,11 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 		GoSummon->invisibilityFlag = INVISIBILTY_FLAG_TRAP;
 		GoSummon->charges = 1;
 		GoSummon->checkrate = 1;
-		sEventMgr.AddEvent(GoSummon, &GameObject::TrapSearchTarget, EVENT_GAMEOBJECT_TRAP_SEARCH_TARGET, 100, 0);
+		sEventMgr.AddEvent(GoSummon, &GameObject::TrapSearchTarget, EVENT_GAMEOBJECT_TRAP_SEARCH_TARGET, 100, 0,0);
 	}
 	else
 	{
-		sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1);
+		sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1,0);
 	}
 	GoSummon->PushToWorld(m_caster->GetMapMgr());
 	GoSummon->SetSummoned(u_caster);

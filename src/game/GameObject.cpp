@@ -229,7 +229,7 @@ void GameObject::Despawn(uint32 time)
   
 	if(time)
 	{
-		sEventMgr.AddEvent(this, &GameObject::Spawn, EVENT_GAMEOBJECT_ITEM_SPAWN, time, 1);
+		sEventMgr.AddEvent(this, &GameObject::Spawn, EVENT_GAMEOBJECT_ITEM_SPAWN, time, 1,0);
 	}
 	CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
 }
@@ -509,7 +509,7 @@ void GameObject::EndFishing(Player* player, bool abort )
 			delete this;*/
 
 			//ExpireAndDelete();
-			sEventMgr.AddEvent(this, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, 10000, 1);
+			sEventMgr.AddEvent(this, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, 10000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 			return;
 		}
 	}
@@ -617,7 +617,7 @@ void GameObject::ExpireAndDelete()
 	
 	/* remove any events */
 	sEventMgr.RemoveEvents(this);
-	sEventMgr.AddEvent(this, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1);
+	sEventMgr.AddEvent(this, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void GameObject::Deactivate()

@@ -412,7 +412,7 @@ void Pet::InitializeMe(bool first)
 	}
 
 
-	sEventMgr.AddEvent(this, &Pet::Update, (uint32)100, EVENT_PET_UPDATE, 100, 0);
+	sEventMgr.AddEvent(this, &Pet::Update, (uint32)100, EVENT_PET_UPDATE, 100, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
 	// set to active
 	if(!bExpires)
@@ -493,7 +493,7 @@ void Pet::Remove(bool bSafeDelete, bool bUpdate, bool bSetOffline)
 
 	// has to be next loop - reason because of RemoveFromWorld, iterator gets broke.
 	if(IsInWorld() && Active) Deactivate(m_mapMgr);
-	sEventMgr.AddEvent(this, &Pet::PetSafeDelete, EVENT_CREATURE_SAFE_DELETE, 1, 1);
+	sEventMgr.AddEvent(this, &Pet::PetSafeDelete, EVENT_CREATURE_SAFE_DELETE, 1, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Pet::PetSafeDelete()
@@ -519,7 +519,7 @@ void Pet::DelayedRemove(bool bTime, bool bDeath)
 			Remove(true, true, true);
 	}
 	else
-		sEventMgr.AddEvent(this, &Pet::DelayedRemove, true, bDeath, EVENT_PET_DELAYED_REMOVE, PET_DELAYED_REMOVAL_TIME, 1);
+		sEventMgr.AddEvent(this, &Pet::DelayedRemove, true, bDeath, EVENT_PET_DELAYED_REMOVE, PET_DELAYED_REMOVAL_TIME, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Pet::GiveXP(uint32 xp)

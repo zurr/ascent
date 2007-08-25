@@ -153,14 +153,20 @@ enum EventTypes
 	EVENT_BATTLEGROUND_CLOSE,
 };
 
+enum EventFlags
+{
+	EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT = 0x1,
+};
+
 struct SERVER_DECL TimedEvent
 {
-	TimedEvent(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat) : 
-		obj(object), cb(callback), eventFlags(flags), msTime(time), currTime(time), repeats(repeat), deleted(false), ref(0) {}
+	TimedEvent(void* object, CallbackBase* callback, uint32 type, time_t time, uint32 repeat, uint32 flags) : 
+		obj(object), cb(callback), eventType(type), msTime(time), currTime(time), repeats(repeat), deleted(false), eventFlag(flags),ref(0) {}
 		
 	void *obj;
 	CallbackBase *cb;
-	uint32 eventFlags;
+	uint16 eventType;
+	uint16 eventFlag;
 	time_t msTime;
 	time_t currTime;
 	uint32 repeats;
@@ -211,50 +217,50 @@ class SERVER_DECL EventMgr : public Singleton < EventMgr >
 	friend class MiniEventMgr;
 public:
 	template <class Class>
-		void AddEvent(Class *obj, void (Class::*method)(), uint32 flags, uint32 time, uint32 repeats)
+		void AddEvent(Class *obj, void (Class::*method)(), uint32 type, uint32 time, uint32 repeats, uint32 flags)
 	{
 		// create a timed event
-		TimedEvent * event = new TimedEvent(obj, new CallbackP0<Class>(obj, method), flags, time, repeats);
+		TimedEvent * event = new TimedEvent(obj, new CallbackP0<Class>(obj, method), type, time, repeats, flags);
 
 		// add this to the object's list, updating will all be done later on...
 		obj->event_AddEvent(event);
 	}
 
 	template <class Class, typename P1>
-		void AddEvent(Class *obj, void (Class::*method)(P1), P1 p1, uint32 flags, uint32 time, uint32 repeats)
+		void AddEvent(Class *obj, void (Class::*method)(P1), P1 p1, uint32 type, uint32 time, uint32 repeats, uint32 flags)
 	{
 		// create a timed event
-		TimedEvent * event = new TimedEvent(obj, new CallbackP1<Class, P1>(obj, method, p1), flags, time, repeats);
+		TimedEvent * event = new TimedEvent(obj, new CallbackP1<Class, P1>(obj, method, p1), type, time, repeats, flags);
 
 		// add this to the object's list, updating will all be done later on...
 		obj->event_AddEvent(event);
 	}
 
 	template <class Class, typename P1, typename P2>
-		void AddEvent(Class *obj, void (Class::*method)(P1,P2), P1 p1, P2 p2, uint32 flags, uint32 time, uint32 repeats)
+		void AddEvent(Class *obj, void (Class::*method)(P1,P2), P1 p1, P2 p2, uint32 type, uint32 time, uint32 repeats, uint32 flags)
 	{
 		// create a timed event
-		TimedEvent * event = new TimedEvent(obj, new CallbackP2<Class, P1, P2>(obj, method, p1, p2), flags, time, repeats);
+		TimedEvent * event = new TimedEvent(obj, new CallbackP2<Class, P1, P2>(obj, method, p1, p2), type, time, repeats, flags);
 
 		// add this to the object's list, updating will all be done later on...
 		obj->event_AddEvent(event);
 	}
 
 	template <class Class, typename P1, typename P2, typename P3>
-		void AddEvent(Class *obj,void (Class::*method)(P1,P2,P3), P1 p1, P2 p2, P3 p3, uint32 flags, uint32 time, uint32 repeats)
+		void AddEvent(Class *obj,void (Class::*method)(P1,P2,P3), P1 p1, P2 p2, P3 p3, uint32 type, uint32 time, uint32 repeats, uint32 flags)
 	{
 		// create a timed event
-		TimedEvent * event = new TimedEvent(obj, new CallbackP3<Class, P1, P2, P3>(obj, method, p1, p2, p3), flags, time, repeats);
+		TimedEvent * event = new TimedEvent(obj, new CallbackP3<Class, P1, P2, P3>(obj, method, p1, p2, p3), type, time, repeats, flags);
 
 		// add this to the object's list, updating will all be done later on...
 		obj->event_AddEvent(event);
 	}
 
 	template <class Class, typename P1, typename P2, typename P3, typename P4>
-		void AddEvent(Class *obj, void (Class::*method)(P1,P2,P3,P4), P1 p1, P2 p2, P3 p3, P4 p4, uint32 flags, uint32 time, uint32 repeats)
+		void AddEvent(Class *obj, void (Class::*method)(P1,P2,P3,P4), P1 p1, P2 p2, P3 p3, P4 p4, uint32 type, uint32 time, uint32 repeats, uint32 flags)
 	{
 		// create a timed event
-		TimedEvent * event = new TimedEvent(obj, new CallbackP4<Class, P1, P2, P3, P4>(obj, method, p1, p2, p3, p4), flags, time, repeats);
+		TimedEvent * event = new TimedEvent(obj, new CallbackP4<Class, P1, P2, P3, P4>(obj, method, p1, p2, p3, p4), type, time, repeats, flags);
 
 		// add this to the object's list, updating will all be done later on...
 		obj->event_AddEvent(event);

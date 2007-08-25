@@ -1022,7 +1022,7 @@ void Player::EventAttackStart()
 {
 	m_attacking = true;
 	if(!sEventMgr.HasEvent(this,EVENT_ATTACK_TIMEOUT)) //do not add excesive attack events 
-		sEventMgr.AddEvent(this,&Player::EventAttackStop,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL,1); //attack timeout on no attack after 5 seconds
+		sEventMgr.AddEvent(this,&Player::EventAttackStop,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL,1,0); //attack timeout on no attack after 5 seconds
 		
 	if(m_MountSpellId)
         RemoveAura(m_MountSpellId);
@@ -1155,7 +1155,7 @@ void Player::EventDeath()
 		sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
 
 	if(GetInstanceID()==0 && !sEventMgr.HasEvent(this,EVENT_PLAYER_FORECED_RESURECT)) //Should never be true 
-		sEventMgr.AddEvent(this,&Player::RepopRequestedPlayer,EVENT_PLAYER_FORECED_RESURECT,PLAYER_FORCED_RESURECT_INTERVAL,1); //in case he forgets to release spirit (afk or something)
+		sEventMgr.AddEvent(this,&Player::RepopRequestedPlayer,EVENT_PLAYER_FORECED_RESURECT,PLAYER_FORCED_RESURECT_INTERVAL,1,0); //in case he forgets to release spirit (afk or something)
 }
 
 void Player::BuildEnumData( WorldPacket * p_data )
@@ -3166,7 +3166,7 @@ void Player::RemoveFromWorld()
 	{
 		if(m_SummonedObject->GetInstanceID() != GetInstanceID())
 		{
-			sEventMgr.AddEvent(m_SummonedObject, &Object::Delete, EVENT_GAMEOBJECT_EXPIRE, 100, 1);
+			sEventMgr.AddEvent(m_SummonedObject, &Object::Delete, EVENT_GAMEOBJECT_EXPIRE, 100, 1,0);
 		}else
 		{
 			if(m_SummonedObject->GetTypeId() == TYPEID_PLAYER)
@@ -3833,7 +3833,7 @@ void Player::SpawnCorpseBones()
 		{
 			if(pCorpse->GetInstanceID() != GetInstanceID())
 			{
-				sEventMgr.AddEvent(pCorpse, &Corpse::SpawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1);
+				sEventMgr.AddEvent(pCorpse, &Corpse::SpawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1,0);
 			}
 			else
 				pCorpse->SpawnBones();
@@ -4652,7 +4652,7 @@ void Player::ApplyPlayerRestState(bool apply)
 
 		if(GetUInt32Value(UNIT_FIELD_LEVEL) >= GetUInt32Value(PLAYER_FIELD_MAX_LEVEL))		// Save CPU, don't waste time on this if you're >= 70
 			return;
-		sEventMgr.AddEvent(this, &Player::EventPlayerRest, EVENT_PLAYER_REST, (uint32)60000, 0);
+		sEventMgr.AddEvent(this, &Player::EventPlayerRest, EVENT_PLAYER_REST, (uint32)60000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 	}
 	else
 	{
@@ -5839,12 +5839,12 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 	SendMessageToSet(&data, true);
   
 	sEventMgr.AddEvent(this, &Player::EventTaxiInterpolate, 
-		EVENT_PLAYER_TAXI_INTERPOLATE, 900, 0);
+		EVENT_PLAYER_TAXI_INTERPOLATE, 900, 0,0);
 
 	TaxiPathNode *pn = path->GetPathNode(path->GetNodeCount() - 1);
 
 	sEventMgr.AddEvent(this, &Player::EventDismount, path->GetPrice(), 
-		pn->x, pn->y, pn->z, EVENT_PLAYER_TAXI_DISMOUNT, traveltime, 1); 
+		pn->x, pn->y, pn->z, EVENT_PLAYER_TAXI_DISMOUNT, traveltime, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); 
 }
 
 void Player::JumpToEndTaxiNode(TaxiPath * path)
@@ -6163,7 +6163,7 @@ void Player::Kick(uint32 delay /* = 0 */)
 		_Kick();
 	} else {
 		m_KickDelay = delay;
-		sEventMgr.AddEvent(this, &Player::_Kick, EVENT_PLAYER_KICK, 1000, 0);
+		sEventMgr.AddEvent(this, &Player::_Kick, EVENT_PLAYER_KICK, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 	}
 }
 
@@ -6751,8 +6751,8 @@ void Player::DuelCountdown()
 		SetDuelState(DUEL_STATE_STARTED);
 		DuelingWith->SetDuelState(DUEL_STATE_STARTED);
 		
-		sEventMgr.AddEvent(this, &Player::DuelBoundaryTest, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0);
-		sEventMgr.AddEvent(DuelingWith, &Player::DuelBoundaryTest, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0);
+		sEventMgr.AddEvent(this, &Player::DuelBoundaryTest, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0,0);
+		sEventMgr.AddEvent(DuelingWith, &Player::DuelBoundaryTest, EVENT_PLAYER_DUEL_BOUNDARY_CHECK, 500, 0,0);
 	}
 }
 
@@ -6847,7 +6847,7 @@ void Player::EndDuel(uint8 WinCondition)
 	{
 		DuelingWith->Emote(EMOTE_ONESHOT_BEG);
 		DuelingWith->Root();
-		sEventMgr.AddEvent<Player>(DuelingWith, &Unit::Unroot, EVENT_UNIT_UNROOT, 3000, 1); 
+		sEventMgr.AddEvent<Player>(DuelingWith, &Unit::Unroot, EVENT_UNIT_UNROOT, 3000, 1,0); 
 	}
 
 	SendMessageToSet(&data, true);
@@ -7452,7 +7452,7 @@ void Player::CompleteLoading()
 		Corpse * corpse = objmgr.GetCorpseByOwner(GetGUIDLow());
 		if(corpse == 0)
 		{
-			sEventMgr.AddEvent(this, &Player::RepopAtGraveyard, GetPositionX(),GetPositionY(),GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1);
+			sEventMgr.AddEvent(this, &Player::RepopAtGraveyard, GetPositionX(),GetPositionY(),GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 		}
 		else
 		{
@@ -8088,7 +8088,7 @@ void Player::Set_Mute_on_player(uint32 until)
 {
 	chat_disabled_until = until;
 	if(!sEventMgr.HasEvent(this,EVENT_MUTE_PLAYER))
-		sEventMgr.AddEvent(this,&Player::Remove_Mute_on_player,EVENT_MUTE_PLAYER,chat_disabled_until,1);
+		sEventMgr.AddEvent(this,&Player::Remove_Mute_on_player,EVENT_MUTE_PLAYER,chat_disabled_until,1,0);
 }
 
 void Player::Remove_Mute_on_player()

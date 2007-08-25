@@ -1458,15 +1458,15 @@ bool AIInterface::FindFriends(float dist)
 			guard->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_PVP); /* shitty DBs */
 		
 			if(guard->CanAddToWorld())
-				sEventMgr.AddEvent(guard, &Creature::AddToWorld, EVENT_UNK, sRand.randInt(8)*1000, 1); /* staggered, not all at once :) */
+				sEventMgr.AddEvent(guard, &Creature::AddToWorld, EVENT_UNK, sRand.randInt(8)*1000, 1,0); /* staggered, not all at once :) */
 			else
 			{
 				guard->SafeDelete();
 				return result;
 			}
 			
-			sEventMgr.AddEvent(guard, &Creature::SetGuardWaypoints, EVENT_UNK, 10000, 1);
-			sEventMgr.AddEvent(guard, &Creature::SafeDelete, EVENT_CREATURE_SAFE_DELETE, 60*5*1000, 1);
+			sEventMgr.AddEvent(guard, &Creature::SetGuardWaypoints, EVENT_UNK, 10000, 1,0);
+			sEventMgr.AddEvent(guard, &Creature::SafeDelete, EVENT_CREATURE_SAFE_DELETE, 60*5*1000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
 		}
 
@@ -2381,7 +2381,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 					// register linkup event
 					c->haslinkupevent = true;
 					sEventMgr.AddEvent(c, &Creature::FormationLinkUp, m_formationLinkSqlId, 
-						EVENT_CREATURE_FORMATION_LINKUP, 1000, 0);
+						EVENT_CREATURE_FORMATION_LINKUP, 1000, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 				}
 			}
 			else

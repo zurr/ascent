@@ -298,7 +298,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession *m_session)
 			chr->_Relocate(plr->GetMapId(),plr->GetPosition(),false,false);
 		else
 		{
-			sEventMgr.AddEvent(chr,&Player::EventPortToGM,plr,0,1,1);
+			sEventMgr.AddEvent(chr,&Player::EventPortToGM,plr,0,1,1,0);
 		}
 	}
 	else

@@ -256,7 +256,7 @@ CreatureAIScript::CreatureAIScript(Creature* creature) : _unit(creature)
 
 void CreatureAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
-	sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0);
+	sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);
 }
 
 void CreatureAIScript::RemoveAIUpdateEvent()
@@ -273,7 +273,7 @@ GameObjectAIScript::GameObjectAIScript(GameObject* goinstance) : _gameobject(goi
 
 void GameObjectAIScript::RegisterAIUpdateEvent(uint32 frequency)
 {
-	sEventMgr.AddEvent(_gameobject, &GameObject::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0);
+	sEventMgr.AddEvent(_gameobject, &GameObject::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);
 }
 
 
@@ -291,7 +291,7 @@ QuestScript::QuestScript(QuestLogEntry *qle) : _qLogEntry(qle)
 
 void QuestScript::RegisterQuestEvent(uint32 frequency)
 {
-	sEventMgr.AddEvent(_qLogEntry, &QuestLogEntry::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0);
+	sEventMgr.AddEvent(_qLogEntry, &QuestLogEntry::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0,0);
 }
 
 void QuestScript::RemoveQuestEvent()

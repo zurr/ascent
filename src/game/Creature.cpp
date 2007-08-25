@@ -129,7 +129,7 @@ void Creature::SafeDelete()
 {
 	sEventMgr.RemoveEvents(this);
 	//sEventMgr.AddEvent(World::getSingletonPtr(), &World::DeleteObject, ((Object*)this), EVENT_CREATURE_SAFE_DELETE, 1000, 1);
-	sEventMgr.AddEvent(this, &Creature::DeleteMe, EVENT_CREATURE_SAFE_DELETE, 1000, 1);
+	sEventMgr.AddEvent(this, &Creature::DeleteMe, EVENT_CREATURE_SAFE_DELETE, 1000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Creature::DeleteMe()
@@ -409,7 +409,7 @@ void Creature::setDeathState(DeathState s)
 		GetAIInterface()->SetUnitToFollow(NULL);
 		m_deathState = CORPSE;
 		
-		sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1);
+		sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 		if(m_enslaveSpell)
 			RemoveEnslave();
 
@@ -456,7 +456,7 @@ void Creature::RemoveFromWorld(bool addev)
 			//printf("DEBUG: removing creature respawnval: %d",proto->RespawnTime);
 			 // instanced creatures don't respawn
 			if(proto && proto->RespawnTime > 0 && (GetMapId() == 530 || GetMapId() == 0 || GetMapId() == 1 )) // temp fix for instances...
-				sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, proto->RespawnTime, 1);
+				sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, proto->RespawnTime, 1,0);
 			else
 				SafeDelete();
 		}
@@ -885,7 +885,7 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 		m_aiInterface->m_formationFollowAngle = spawn->form->ang;
 		// add event
 		sEventMgr.AddEvent(this, &Creature::FormationLinkUp, m_aiInterface->m_formationLinkSqlId,
-			EVENT_CREATURE_FORMATION_LINKUP, 1000, 0);
+			EVENT_CREATURE_FORMATION_LINKUP, 1000, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 		haslinkupevent = true;
 	}
 	else
@@ -1151,14 +1151,14 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 {
 	if(delay)
 	{
-		sEventMgr.AddEvent(this, &Creature::Despawn, (uint32)0, respawntime, EVENT_CREATURE_RESPAWN, delay, 1);
+		sEventMgr.AddEvent(this, &Creature::Despawn, (uint32)0, respawntime, EVENT_CREATURE_RESPAWN, delay, 1,0);
 		return;
 	}
 
 	RemoveFromWorld(false);
 	m_position = m_spawnLocation;
 	if(respawntime)
-		sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, respawntime, 1);
+		sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, respawntime, 1,0);
 }
 
 void Creature::TriggerScriptEvent(void * func)
