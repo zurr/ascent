@@ -86,7 +86,7 @@ public:
 	MapMgr * GetInstance(uint32 mapid, Object* obj);
 	MapMgr * GetInstance(uint32 mapid, uint32 instanceId);
 	MapMgr * GetInstance(uint32 instanceId);
-	MapMgr * GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 mapid, bool Lock);
+	MapMgr * GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 mapid, bool Lock, bool * Deleted);
 	MapMgr * GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo *pMapInfo);
 	MapMgr * GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo);
 

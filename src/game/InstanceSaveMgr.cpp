@@ -596,6 +596,7 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 	bool result = false;
 	bool result2 = false;
 
+	bool * deleted;
     instanceIdListMutex.Acquire();
 	InstanceIdList::iterator itr, itr2;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end();)
@@ -605,7 +606,11 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 		 Instance_Map_InstanceId_Holder *p = itr2->second;
          if(!p->GetGroupSignature() && GetMapInfo()->type != INSTANCE_RAID && p->GetDifficulty() != MODE_HEROIC) //only resets solo instances
 		 {
-			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true);
+			 deleted=false;
+			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true,&deleted);
+			 if(deleted)	/* means this call deleted the instance :< */
+				 continue;
+
 			 if(mapMgr)
 			 {
 				 // dont reset an instnace with players inside.. dunno how they got in there anyway :P
@@ -618,6 +623,8 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
                      return false;
 				 }
 			 }
+
+			 if(mInstanceIdList.find())
 			 result = p->RemovePlayer(guid);
 			 if(result)
 			 {
