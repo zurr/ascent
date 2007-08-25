@@ -9,6 +9,8 @@ libgame_a_SOURCES = \
     ../scriptengine/ScriptFunctions.cpp \
     ../scriptengine/ScriptFunctions.h \
     ../scriptengine/ScriptFunctionTable.cpp \
+	DatabaseCleaner.cpp \
+	DatabaseCleaner.h \
     ObjectStorage.cpp \
     ObjectStorage.h \
     AddonMgr.cpp \

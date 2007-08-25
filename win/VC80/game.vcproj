@@ -881,6 +881,14 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath="..\..\src\game\DatabaseCleaner.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\game\DatabaseCleaner.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\src\game\ObjectStorage.cpp"
 			>
 		</File>
