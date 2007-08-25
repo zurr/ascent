@@ -3103,7 +3103,7 @@ void Player::OnPushToWorld()
 	/* send weather */
 	sWeatherMgr.SendWeather(this);
 
-	if(m_mapMgr->m_battleground)
+	if(m_mapMgr && m_mapMgr->m_battleground)
 		m_mapMgr->m_battleground->PortPlayer(this, true);
 
 	SetUInt32Value(UNIT_FIELD_HEALTH, load_health);
@@ -7462,7 +7462,8 @@ void Player::CompleteLoading()
 	}
 	else if(getDeathState() == JUST_DIED && !HasActiveAura(8326))
 	{
-		RepopRequestedPlayer();
+		//RepopRequestedPlayer();
+		sEventMgr.AddEvent(this, &Player::RepopRequestedPlayer, EVENT_PLAYER_CHECKFORCHEATS, 1000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 	}
 
 	if(iActivePet)
