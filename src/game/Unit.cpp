@@ -705,6 +705,24 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if( CastingSpell->NameHash!=0x7A7B6753)//shadow bolt								
 									continue;
 							}break;
+						//warlock - Shadow Embrace
+						case 32386:
+						case 32388:
+						case 32389:
+						case 32390:
+						case 32391:
+							{
+								if (!CastingSpell)
+									continue;
+								else
+								{
+									if (CastingSpell->NameHash!=0x2ADC25D7 &&// Corruption
+										CastingSpell->NameHash!=0x34C208A2 &&//CoA
+										CastingSpell->NameHash!=0x2979DFBA &&//Siphon Life
+										CastingSpell->NameHash!=0xFD712ED2)  //SoC
+										continue;
+								}
+							}break;
 						//warlock - Aftermath
 						case 18118:
 							{
@@ -782,6 +800,23 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								//only trigger effect for specified spells
 								if( CastingSpell->NameHash!=1828847009) //Rain of Fire
 									continue;
+							}break;
+						//priest - Misery
+						case 33200:
+						case 33199:
+						case 33198:
+						case 33197:
+						case 33196:
+							{
+								if (!CastingSpell)
+									continue;
+								else
+								{
+									if (CastingSpell->NameHash!=0xC3D9ACEB &&// Mind Flay
+										CastingSpell->NameHash!=0x7335D7AF &&//SW:P
+										CastingSpell->NameHash!=0x34D76539)  //SoC
+										continue;
+								}
 							}break;
 						//priest - Shadow Weaving
 						case 15258:

@@ -905,6 +905,10 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK;		
 					if(strstr(desc,"your Fire damage spell hits"))
 						pr|=PROC_ON_CAST_SPELL;		//this happens only on hit ;)
+					if(strstr(desc,"corruption, curse of agony, siphon life and seed of corruption spells also cause"))
+						pr|=PROC_ON_CAST_SPELL;
+					if(strstr(desc,"pain, mind flay and vampiric touch spells also cause"))
+						pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc,"shadow damage spells have"))
 						pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc,"your spell criticals have"))
