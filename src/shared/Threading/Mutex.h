@@ -33,24 +33,43 @@ public:
 
 	/** Acquires this mutex. If it cannot be acquired immediately, it will block.
 	 */
-	void Acquire();
+	inline void Acquire()
+	{
+#ifndef WIN32
+		pthread_mutex_lock(&mutex);
+#else
+		EnterCriticalSection(&cs);
+#endif
+	}
 
 	/** Releases this mutex. No error checking performed
 	 */
-	void Release();
+	inline void Release()
+	{
+#ifndef WIN32
+		pthread_mutex_unlock(&mutex);
+#else
+		LeaveCriticalSection(&cs);
+#endif
+	}
 
 	/** Attempts to acquire this mutex. If it cannot be acquired (held by another thread)
 	 * it will return false.
 	 * @return false if cannot be acquired, true if it was acquired.
 	 */
-	bool AttemptAcquire();
+	inline bool AttemptAcquire()
+	{
+#ifndef WIN32
+		return (pthread_mutex_trylock(&mutex) == 0);
+#else
+		return TryEnterCriticalSection(&cs);
+	}
 
 protected:
 #ifdef WIN32
 	/** Critical section used for system calls
 	 */
 	CRITICAL_SECTION cs;
-	unsigned char valid;
 
 #else
 	/** Static mutex attribute
