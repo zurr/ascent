@@ -2031,19 +2031,19 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	{
 		Unit* caster = (Unit*)(this);
 		caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
+		int32 plus_damage = 0;
 		
 		if(caster->IsPlayer())
 		{
-			res += static_cast<Player*>(caster)->SpellDmgDoneByInt[school] * caster->GetUInt32Value(UNIT_FIELD_STAT3);
-			res += static_cast<Player*>(caster)->SpellDmgDoneBySpr[school] * caster->GetUInt32Value(UNIT_FIELD_STAT4);
+			plus_damage += static_cast<Player*>(caster)->SpellDmgDoneByInt[school] * caster->GetUInt32Value(UNIT_FIELD_STAT3);
+			plus_damage += static_cast<Player*>(caster)->SpellDmgDoneBySpr[school] * caster->GetUInt32Value(UNIT_FIELD_STAT4);
 		}
 //------------------------------by school---------------------------------------------------
-		int32 plus_damage = caster->GetDamageDoneMod(school);
+		plus_damage += caster->GetDamageDoneMod(school);
+		plus_damage += pVictim->DamageTakenMod[school];
 //------------------------------by victim type----------------------------------------------
 		if(((Creature*)pVictim)->GetCreatureName() && caster->IsPlayer()&& !pVictim->IsPlayer())
 			plus_damage += static_cast<Player*>(caster)->IncreaseDamageByType[((Creature*)pVictim)->GetCreatureName()->Type];
-//------------------------------by victim taken---------------------------------------------
-		plus_damage += float(pVictim->DamageTakenMod[school]);
 //==========================================================================================
 //==============================+Spell Damage Bonus Modifications===========================
 //==========================================================================================
@@ -2059,6 +2059,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 //==============================Bonus Adding To Main Damage=================================
 //==========================================================================================
 		int32 bonus_damage = float2int32(plus_damage * dmgdoneaffectperc);
+		bonus_damage +=pVictim->DamageTakenMod[school];
 		if(spellInfo->SpellGroupType)
 		{
 			SM_FIValue(caster->SM_FPenalty, &bonus_damage, spellInfo->SpellGroupType);
@@ -2081,13 +2082,11 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		else
 		{
 //------------------------------by school----------------------------------------------
-			res *= caster->GetDamageDonePctMod(school) * pVictim->DamageTakenPctMod[school];
-
+			float summaryPCTmod = caster->GetDamageDonePctMod(school);
+			summaryPCTmod += pVictim->DamageTakenPctMod[school]-1;
 			if (caster->DamageDoneModPCT[school])
-				res += res*caster->DamageDoneModPCT[school];
-
-			res += float(pVictim->DamageTakenMod[school]);
-			if(res < 0) res = 0;
+				summaryPCTmod += caster->DamageDoneModPCT[school];
+			res *= summaryPCTmod;
 
 //------------------------------critical strike chance--------------------------------------	
 			float CritChance = caster->spellcritperc + caster->SpellCritChanceSchool[school] + pVictim->AttackerSpellCritChanceMod[school];

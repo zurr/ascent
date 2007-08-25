@@ -1060,8 +1060,8 @@ void Aura::EventPeriodicDamage(uint32 amount)
 				res = 0;
 			else
 			{
-				res *= c->GetDamageDonePctMod(school) * m_target->DamageTakenPctMod[school];
-				res += res*c->DamageDoneModPCT[school];
+				float summaryPCTmod = c->GetDamageDonePctMod(school)+ c->DamageDoneModPCT[school] + m_target->DamageTakenPctMod[school];
+				res *= summaryPCTmod;
 				if(res < 0) res = 0;
 			}
 		}
