@@ -2176,12 +2176,6 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		{
 			if (static_cast<Player*>(pVictim)->m_RegenManaOnSpellResist)
 			{
-				/* burlex - this is totally wrong. :/ it should be handled through the proc system. */
-
-				//SpellEntry buff = sSpellStore.LookupEntry( 29442 );
-				//Spell spell = new Spell(pVictim,buff,false,SPELL_AURA_NONE);
-				//spell->cast();
-
 				Player* pl = (Player*)pVictim;
 				uint32 curmana = pl->GetUInt32Value(UNIT_FIELD_POWER1);
 				uint32 maxmana = pl->GetUInt32Value(UNIT_FIELD_POWER1);

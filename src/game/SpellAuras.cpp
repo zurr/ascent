@@ -1828,19 +1828,18 @@ void Aura::EventPeriodicHeal(uint32 amount)
 		}
 	bonus += m_target->HealTakenMod[GetSpellProto()->School];
 
-	if(bonus>0)
-	{
-		int amp = m_spellProto->EffectAmplitude[mod->i];
-		if(!amp) 
-			amp=((EventableObject*)this)->event_GetEventPeriod(EVENT_AURA_PERIODIC_HEAL);
+	int amp = m_spellProto->EffectAmplitude[mod->i];
+	if(!amp) 
+		amp=((EventableObject*)this)->event_GetEventPeriod(EVENT_AURA_PERIODIC_HEAL);
 
-		if(GetDuration())
-		{
-			int ticks= (amp) ? GetDuration()/amp : 0;
-			bonus= (ticks) ? bonus/ticks : 0;
-		}else bonus = 0;
+	if(GetDuration())
+	{
+		int ticks= (amp) ? GetDuration()/amp : 0;
+		bonus= (ticks) ? bonus/ticks : 0;
 	}
-	int add = bonus+amount;
+	else bonus = 0;
+
+	int add = (bonus+amount>0) ? bonus+amount : 0;
 	if (c)
 		add += float2int32(add*(m_target->HealTakenPctMod[GetSpellProto()->School]+c->HealDonePctMod[GetSpellProto()->School]/100.0f));
 	uint32 newHealth = m_target->GetUInt32Value(UNIT_FIELD_HEALTH) + (uint32)add;
@@ -1849,7 +1848,6 @@ void Aura::EventPeriodicHeal(uint32 amount)
 		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, newHealth);
 	else
 		m_target->SetUInt32Value(UNIT_FIELD_HEALTH, m_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
-///
 
 	SendPeriodicHealAuraLog(add);
 	///
@@ -2172,21 +2170,7 @@ void Aura::SpellAuraModDamageDone(bool apply)
 
 void Aura::SpellAuraModDamageTaken(bool apply)
 {
-	int32 val = 0;
-	if(apply)
-	{
-		 val = mod->m_amount;
-	/*	 if(val>0)
-		 {
-			 Unit*m_caster=GetUnitCaster();
-			 if(m_caster && isAttackable(m_caster,m_target))
-			 SetNegative();
-		 }
-		 else SetPositive();*/
-	}
-	else
-		val = -mod->m_amount;
-
+	int32 val = (apply) ? mod->m_amount : -mod->m_amount;
 	for(uint32 x=0;x<7;x++)
 	{
 		if (mod->m_miscValue & (((uint32)1)<<x) )
