@@ -369,7 +369,7 @@ void WorldSession::HandleAuctionPlaceBid( WorldPacket & recv_data )
 	// Find Item
 	AuctionHouse * ah = pCreature->auctionHouse;
 	Auction * auct = ah->GetAuction(auction_id);
-	if(auct == 0/* || auct->Owner == _player->GetGUID()*/)
+	if(auct == 0 || !auct->Owner || !_player || auct->Owner == _player->GetGUID())
 		return;
 
 	if(auct->HighestBid > price && price != auct->BuyoutPrice)
