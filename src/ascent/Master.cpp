@@ -21,7 +21,11 @@
 #include "../game/StdAfx.h"
 #include "../shared/ascent_getopt.h"
 
+#ifdef HOARD
+#define BANNER "Ascent r%u/%s-%s-%s-Hoard :: World Server"
+#else
 #define BANNER "Ascent r%u/%s-%s-%s :: World Server"
+#endif
 
 #ifndef WIN32
 #include <sched.h>
