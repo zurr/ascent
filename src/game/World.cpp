@@ -1329,6 +1329,15 @@ void World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
 		sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
 	}
+	sp = sSpellStore.LookupEntry(19659); //Ignite Mana. Baron Geddon Spell.
+	if (sp)
+	{
+		sp->Effect[0] = 6;
+		sp->School=SCHOOL_FIRE;
+		sp->EffectApplyAuraName[0] = 162;
+		sp->EffectTriggerSpell[0]=19665;
+		sp->Effect[1]=0;
+	}
 
 	//wrath of air totem targets sorounding creatures instead of us
 	sp = sSpellStore.LookupEntry(2895);

@@ -1178,6 +1178,14 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 				resistchance -= spellHitMod;
 			}
 		}
+
+		if(m_objectTypeId == TYPEID_UNIT) 
+		{ 
+			Creature * c = (Creature*)(this);
+			if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
+				resistchance = 1.0f; //can't resist boss spells even if lvl70 -vs- lvl63 boss.
+		} 
+
 		if (pVictim->IsPlayer())
 			resistchance-=static_cast<Player*>(pVictim)->m_resist_hit[2];
 		if (resistchance<1)
