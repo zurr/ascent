@@ -489,7 +489,7 @@ int GM_RAND(gmThread * a_thread)
 	GM_CHECK_NUM_PARAMS(2);
 	GM_CHECK_INT_PARAM(min, 0);
 	GM_CHECK_INT_PARAM(max, 1);
-	a_thread->PushInt(sRand.RandInt(max-min)+min);
+	a_thread->PushInt(sRand.randInt(max-min)+min);
 	return GM_OK;
 }
 

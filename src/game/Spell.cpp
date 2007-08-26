@@ -2980,7 +2980,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 			if(IsStealthSpell() || IsInvisibilitySpell())
 			{
 				//if we have Faerie Fire, we canot stealth or turn invisible
-				if(u_caster->HasNegativeAuraWithNameHash(2787586002))
+				if(u_caster->HasNegativeAuraWithNameHash(2787586002UL))
 					return SPELL_FAILED_CANT_STEALTH;
 			}
 
