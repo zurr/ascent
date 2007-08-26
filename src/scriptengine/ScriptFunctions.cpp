@@ -486,12 +486,10 @@ int GameObject_Despawn(gmThread * a_thread)
 
 int GM_RAND(gmThread * a_thread)
 {
-	GM_CHECK_NUM_PARAMS(1);
-	GM_CHECK_FLOAT_OR_INT_PARAM(chance, 0);
-	if(Rand(chance))
-		a_thread->PushInt(1);
-	else
-		a_thread->PushInt(0);
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_INT_PARAM(min, 0);
+	GM_CHECK_INT_PARAM(max, 1);
+	a_thread->PushInt(sRand.Rand(max-min)+min);
 	return GM_OK;
 }
 
