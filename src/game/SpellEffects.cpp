@@ -2433,7 +2433,12 @@ void Spell::SpellEffectSummonObject(uint32 i)
 		   
 		//check db if there is some fish/loot
 		//FIX me: this should be loaded/cached
-		uint32 zone=sAreaStore.LookupEntry(map->GetAreaID(posx,posy))->ZoneId;
+		uint32 zone;
+			if(!p_caster)
+				zone=sAreaStore.LookupEntry(map->GetAreaID(posx,posy))->ZoneId;
+			else
+				zone=p_caster->GetZoneId();
+
 		uint32 minskill;
 		FishingZoneEntry *fishentry = FishingZoneStorage.LookupEntry(zone);
 		if (!fishentry)
@@ -2441,16 +2446,17 @@ void Spell::SpellEffectSummonObject(uint32 i)
 		
 		//TODO: add fishskill to the calculations
 		minskill = fishentry->MinSkill;
-		spell->SendChannelStart(30000);//30 seconds
-		spell->SendSpellStart();
+		spell->SendChannelStart(20000);//30 seconds
+		/*spell->SendSpellStart();
 		spell->SendCastResult(-1);
-		spell->SendSpellGo ();
+		spell->SendSpellGo ();*/
 
 		
 		GameObject *go=u_caster->GetMapMgr()->CreateGameObject();
 
 		go->CreateFromProto(GO_FISHING_BOBBER,mapid,posx,posy,posz,orient);
-		go->SetUInt32Value(GAMEOBJECT_FLAGS, 33);
+		go->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
+		go->SetUInt32Value(GAMEOBJECT_STATE,0);
 		go->SetUInt64Value(OBJECT_FIELD_CREATED_BY,m_caster->GetGUID());
 		u_caster->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT,go->GetGUID());
 			 
@@ -2459,9 +2465,10 @@ void Spell::SpellEffectSummonObject(uint32 i)
 	   
 		if (lootmgr.IsFishable(zone)) // only add this if there is fish in that zone.
 		{
-			sEventMgr.AddEvent(go, &GameObject::FishHooked, (Player*)m_caster, EVENT_GAMEOBJECT_FISH_HOOKED, 5000+sRand.randInt(22000), 1,0);
+			uint32 seconds = sRand.randInt(17) + 2;
+			sEventMgr.AddEvent(go, &GameObject::FishHooked, (Player*)m_caster, EVENT_GAMEOBJECT_FISH_HOOKED, seconds*1000, 1,0);
 		}
-		sEventMgr.AddEvent(go, &GameObject::EndFishing, (Player*)m_caster,false, EVENT_GAMEOBJECT_END_FISHING,30000, 1,0);
+		sEventMgr.AddEvent(go, &GameObject::EndFishing, (Player*)m_caster,false, EVENT_GAMEOBJECT_END_FISHING,20000, 1,0);
 		p_caster->SetSummonedObject(go);
 	}
 	else

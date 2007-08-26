@@ -147,6 +147,16 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 		_player->GetGroup()->SendPacketToAll(&idata);
 	else
 		SendPacket(&idata);
+
+	/* any left yet? (for fishing bobbers) */
+	if(pGO && pGO->GetEntry() ==GO_FISHING_BOBBER)
+	{
+		int count=0;
+		for(vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
+			count += (*itr).iItemsCount;
+		if(!count)
+			pGO->ExpireAndDelete();
+	}
 }
 
 void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )

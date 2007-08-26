@@ -447,14 +447,14 @@ void GameObject::EventCloseDoor()
 void GameObject::UseFishingNode(Player *player)
 {
 	sEventMgr.RemoveEvents(this);
-	if(GetUInt32Value(GAMEOBJECT_STATE))//click on bobber before somth is hooked
+	if(GetUInt32Value(GAMEOBJECT_FLAGS) != 32)//click on bobber before somth is hooked
 	{
 		player->GetSession()->OutPacket(SMSG_FISH_NOT_HOOKED);
 		EndFishing(player,true);
 		return;
 	}
 	
-	uint32 zone=sAreaStore.LookupEntry(GetMapMgr()->GetAreaID(GetPositionX(),GetPositionY()))->ZoneId;
+	uint32 zone=/*sAreaStore.LookupEntry(GetMapMgr()->GetAreaID(GetPositionX(),GetPositionY()))->ZoneId*/player->GetZoneId();
 
 	FishingZoneEntry *entry = FishingZoneStorage.LookupEntry(zone);
 	if(entry == NULL)
@@ -480,7 +480,7 @@ void GameObject::UseFishingNode(Player *player)
 	else //failed
 	{
 		player->GetSession()->OutPacket(SMSG_FISH_ESCAPED);
-		EndFishing(player,false);
+		EndFishing(player,true);
 	}
 
 }
@@ -494,31 +494,21 @@ void GameObject::EndFishing(Player* player, bool abort )
 		if(abort)   // abort becouse of a reason
 		{
 			//FIXME: here 'failed' should appear over progress bar
-			spell->cancel();
+			spell->SendChannelUpdate(0);
+			//spell->cancel();
+			spell->finish();
 		}
 		else		// spell ended
 		{
-			if (!(GetUInt32Value(GAMEOBJECT_FLAGS) & 32)) // if there was no loot
-				spell->SendCastResult(SPELL_FAILED_NO_FISH);
-
 			spell->SendChannelUpdate(0);
 			spell->finish();
-
-			/*if(this->IsInWorld())
-				RemoveFromWorld();
-			delete this;*/
-
-			//ExpireAndDelete();
-			sEventMgr.AddEvent(this, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, 10000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-			return;
 		}
 	}
-	else // if this is called, and there is no spell so remove the gameobject
-	{
-		if(this->IsInWorld())
-				RemoveFromWorld();
-		delete this;
-	}
+
+	if(!abort)
+		sEventMgr.AddEvent(this, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, 10000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+	else
+		ExpireAndDelete();
 }
 
 void GameObject::FishHooked(Player * player)
@@ -528,8 +518,9 @@ void GameObject::FishHooked(Player * player)
 	data << GetGUID();
 	data << (uint32)(0);
 	player->GetSession()->SendPacket(&data);
-	SetUInt32Value(GAMEOBJECT_STATE, 0);
-	BuildFieldUpdatePacket(player, GAMEOBJECT_FLAGS, 32);
+	//SetUInt32Value(GAMEOBJECT_STATE, 0);
+	//BuildFieldUpdatePacket(player, GAMEOBJECT_FLAGS, 32);
+	SetUInt32Value(GAMEOBJECT_FLAGS, 32);
  }
 
 /////////////
