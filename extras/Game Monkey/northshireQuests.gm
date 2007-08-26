@@ -1,9 +1,3 @@
-global OntoGoldshireComplete = function(qst_giver, plr)
-{
-   qst_giver.SendChatMessage("You are dismissed, $N.");
-   qst_giver.Emote(2);	// EMOTE_ONESHOT_BOW
-};
-
 global MaybellComplete = function(qst_giver, plr)
 {
    qst_giver.SendChatMessage("Here goes nothing...");
@@ -15,5 +9,4 @@ global MaybellComplete = function(qst_giver, plr)
 
 
 // Register the scripts
-.RegisterQuestEvent(54, 2, OntoGoldshireComplete);		// Report to Goldshire
 .RegisterQuestEvent(114, 1, MaybellComplete);			// The Escape

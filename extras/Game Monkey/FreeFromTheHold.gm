@@ -149,7 +149,7 @@ global OnFreeFromtheHoldReachWaypoint = function(waypoint_id)
    if(waypoint_id == 100)
    {
       // Send the chat message.
-      .SendChatMessage("Finally I Am rescued");
+      .SendChatMessage("Finally, I am rescued");
       
       // Despawn him after 5 seconds, and return back to the spawn.
       .Despawn(5000, 1000);
