@@ -51,7 +51,6 @@ Map::Map(uint32 mapid)
 	me = sMapStore.LookupEntry(_mapId);
 	if(me)
 	{
-		printf("%u\n", me->real_name);
 		name = sMapStore.LookupString(me->real_name);
 	}
 	else

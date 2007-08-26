@@ -68,6 +68,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetPlayer",							Unit_GetPlayer						},
 		{ "GetGuid",							Unit_GetGuid						},
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
+		{ "GetName",							Unit_GetName						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -114,6 +115,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "TextEmote",							Unit_TextEmote						},
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
 		{ "SendYellMessage",					Unit_SendYellMessage				},
+		{ "GetName",							Unit_GetName						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -187,6 +189,7 @@ void ScriptEngine::SetScriptEngineFunctionTable()
 	// Register Normal Functions
 	m_machine->RegisterLibraryFunction("Rand", GM_RAND, 0, 0);
 	m_machine->RegisterLibraryFunction("GetUnitBySqlId", GM_GetUnitBySqlId, 0, 0);
+	m_machine->RegisterLibraryFunction("sprintf", GM_RAND, 0, 0);
 }
 
 

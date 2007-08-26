@@ -1168,3 +1168,108 @@ int Unit_SendYellMessage(gmThread * a_thread)
 */
 
 
+int GM_SPRINTF(gmThread * a_thread)
+{
+	if(a_thread->GetNumParams() < 1)
+		return GM_EXCEPTION;
+
+	char buffer[2048];
+	int param_count = a_thread->GetNumParams()-1;
+	char** params = param_count ? new char*[param_count] : NULL;
+	GM_CHECK_STRING_PARAM(format,0);
+    for(int i = 0; i < param_count; ++i)
+	{
+		if(a_thread->Param(i).m_type == GM_STRING)
+			params[i] = (char*)a_thread->ParamString(i, "INVALID_STRING");
+		else
+			params[i] = (char*)a_thread->Param(i).m_value.m_ref;
+	}
+
+	/* this is the ugly bit. */
+	char ** p = params;
+	switch(param_count)
+	{
+	case 0:
+		snprintf(buffer, 2048, format);
+		break;
+
+	case 1:
+		snprintf(buffer, 2048, format, params[0]);
+		break;
+
+	case 2:
+		snprintf(buffer, 2048, format, params[0], params[1]);
+		break;
+
+	case 3:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2]);
+		break;
+
+	case 4:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2], p[3]);
+		break;
+
+	case 5:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2], p[3], p[4]);
+		break;
+
+	case 6:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2], p[3], p[4], p[5]);
+		break;
+
+	case 7:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2], p[3], p[4], p[5], p[6]);
+		break;
+
+	case 8:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+		break;
+
+	case 9:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+		break;
+
+	case 10:
+		snprintf(buffer, 2048, format, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[10]);
+		break;
+
+	default:
+		delete [] p;
+		GM_EXCEPTION_MSG("Expecting less than 10 arguments to sprintf.");
+		return GM_EXCEPTION;
+		break;
+	}
+
+    a_thread->PushNewString(buffer, strlen(buffer));
+	delete [] params;
+	return GM_OK;
+}
+
+int Unit_GetName(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * obj = GetThisPointer<Object>(a_thread);
+	if(!obj) return GM_EXCEPTION;
+
+	switch(obj->GetTypeId())
+	{
+	case TYPEID_PLAYER:
+		a_thread->PushNewString(((Player*)obj)->GetName());
+		break;
+
+	case TYPEID_UNIT:
+		{
+			/* are we a pet ? */
+			if(obj->GetGUIDHigh() == HIGHGUID_PET)
+				a_thread->PushNewString(((Pet*)obj)->GetName().c_str());
+			else
+				a_thread->PushNewString(((Creature*)obj)->GetCreatureName() ? ((Creature*)obj)->GetCreatureName()->Name : "Unknown Entity");
+		}break;
+
+	default:
+		GM_EXCEPTION_MSG("Unknown typeid.");
+		return GM_EXCEPTION;
+	}
+
+	return GM_OK;
+}

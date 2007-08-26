@@ -90,6 +90,7 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Unit_GetPlayer(gmThread * a_thread);
 	int GM_CDECL Unit_GetGameObject(gmThread * a_thread);
 	int GM_CDECL Unit_GetUnit(gmThread * a_thread);
+	int GM_CDECL Unit_GetName(gmThread * a_thread);
 	
 	// Escort Quest System
 		int GM_CDECL Unit_SpawnWithoutWorld(gmThread * a_thread);
@@ -121,6 +122,7 @@ T * GetThisPointer(gmThread * a_thread)
 
 /* Misc Helper Functions */
 	int GM_CDECL GM_RAND(gmThread * a_thread);
+	int GM_CDECL GM_SPRINTF(gmThread * a_thread);
 	int GM_CDECL GM_RegisterEvent(gmThread * a_thread);
 	int GM_CDECL GM_GetUnitBySqlId(gmThread * a_thread);
 
