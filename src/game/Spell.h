@@ -893,7 +893,7 @@ inline bool CanAgroHash(uint32 spellhashname)
 {
 	switch(spellhashname)
 	{
-		case 4287212498: //hunter's mark
+		case 4287212498UL: //hunter's mark
 			return false;
 	}
 	return true;
