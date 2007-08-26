@@ -2096,7 +2096,8 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			if(spellInfo->SpellGroupType)
 				SM_FFValue(caster->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
 			if (pVictim->IsPlayer())
-				critical -=static_cast<Player*>(pVictim)->CalcRating(14);
+				CritChance -=static_cast<Player*>(pVictim)->CalcRating(14);
+			if (CritChance<0) CritChance = 0;
 
 			critical = Rand(CritChance);
 //==========================================================================================
