@@ -6982,7 +6982,7 @@ const double BaseRating []= {
 	0,//
 	0,
 	0,
-	25,//resilience=14 .... meaning unknown
+	25,//resilience=14
 	25,//resil .... meaning unknown
 	25,//resil .... meaning unknown
 	10,//MELEE_HASTE_RATING=17
@@ -7672,10 +7672,9 @@ void Player::ModifyBonuses(uint32 type,int32 val)
 		case RESILIENCE_RATING:
 			{
 				//uses 3 fields
-				//SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_16, 16);
-				//SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_15, 15);
-				//SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_14, 14);
-			
+				ModUInt32Value(PLAYER_FIELD_COMBAT_RATING_16, val);
+				ModUInt32Value(PLAYER_FIELD_COMBAT_RATING_15, val);
+				ModUInt32Value(PLAYER_FIELD_COMBAT_RATING_14, val);
 
 			}break;
 		case HASTE_RATING:

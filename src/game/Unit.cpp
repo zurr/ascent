@@ -1429,7 +1429,10 @@ else
 		parry = max(0.0,parry-vsk*0.04);
 	if (block)
 		block = max(0.0,block-vsk*0.04);
-	crit = max(0.0,crit+ ( (pVictim->IsPlayer()) ? (vsk*0.04) : (min(vsk*0.2,0.0)) )); 
+
+	crit += pVictim->IsPlayer() ? vsk*0.04 : min(vsk*0.2,0.0) ; 
+	crit -= pVictim->IsPlayer() ? static_cast<Player*>(pVictim)->CalcRating(14) : 0.0f;
+	if (crit<0) crit=0.0f;
 
 	if (vsk>0)
 			hitchance = max(hitchance,95.0f+vsk*0.02+hitmodifier);
@@ -1459,7 +1462,7 @@ else
 	chances[5]=chances[4]+crit;
 	chances[6]=chances[5]+crush;
 //--------------------------------roll------------------------------------------------------
-	float Roll = (float)sRand.randInt(100);
+	float Roll = (float)sRand.rand(100);
 	uint32 r = 0;
 	while (r<7&&Roll>chances[r])
 	{
@@ -1650,6 +1653,10 @@ else
 						}
 						if(!pVictim->IsPlayer())
 							dmg.full_damage += float2int32(dmg.full_damage*static_cast<Player*>(this)->IncreaseCricticalByTypePCT[((Creature*)pVictim)->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Type : 0]);
+					}
+					if (pVictim->IsPlayer())
+					{
+						dmg.full_damage=float2int32(float(dmg.full_damage)*(1.0f-2.0f*static_cast<Player*>(pVictim)->CalcRating(14)));
 					}
 					
 					pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);

@@ -2095,6 +2095,8 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 
 			if(spellInfo->SpellGroupType)
 				SM_FFValue(caster->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
+			if (pVictim->IsPlayer())
+				critical -=static_cast<Player*>(pVictim)->CalcRating(14);
 
 			critical = Rand(CritChance);
 //==========================================================================================
@@ -2106,6 +2108,10 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				if(spellInfo->SpellGroupType)
 					SM_PFValue(caster->SM_PCriticalDamage, &b, spellInfo->SpellGroupType);
 				res += b;
+				if (pVictim->IsPlayer())
+				{
+					res = res*(1.0f-2.0f*static_cast<Player*>(pVictim)->CalcRating(14));
+				}
 
 				pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 				aproc |= PROC_ON_SPELL_CRIT_HIT;
