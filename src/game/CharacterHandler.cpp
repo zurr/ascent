@@ -268,8 +268,8 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	if(!HasGMPermissions() && (realmType==REALMTYPE_PVP||realmType==REALMTYPE_RPPVP))
 	{
 		if(
-			((pNewChar->GetTeam()== 0) && (_side&2))||
-			((pNewChar->GetTeam()== 1) && (_side&1))
+			((pNewChar->GetTeam()== 0) && (_side&1))||
+			((pNewChar->GetTeam()== 1) && (_side&0))
 			)
 		{
 			pNewChar->ok_to_remove = true;
