@@ -1,0 +1,12 @@
+//--------------------------------------------------
+// Hogger
+//--------------------------------------------------
+
+global HoggerOnAgro = new function(plr)
+{
+	.TextEmote("charges!");
+	.CastSpellOnTarget(6268, plr); // "Rushing Charge" Rank 1
+};
+
+.RegisterUnitEvent(448, 1, HoggerOnAgro);
+
