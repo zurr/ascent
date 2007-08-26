@@ -3595,9 +3595,15 @@ void Spell::Heal(int32 amount)
 			if(m_spellInfo->SpellGroupType)
 					SM_PIValue(static_cast<Unit*>(u_caster)->SM_PCriticalDamage, &critbonus, m_spellInfo->SpellGroupType);
 			amount += critbonus;
-			u_caster->HandleProc(PROC_ON_SPELL_CRIT_HIT_VICTIM, unitTarget, m_spellInfo, amount);
+			//Shady: does it correct> caster casts heal and proc ..._VICTIM ? 
+			// Or mb i'm completely wrong? So if true  - just replace with old string. 
+			//u_caster->HandleProc(PROC_ON_SPELL_CRIT_HIT_VICTIM, unitTarget, m_spellInfo, amount);
+			//Replaced with following one:
+			
+			unitTarget->HandleProc(PROC_ON_SPELL_CRIT_HIT_VICTIM, u_caster, m_spellInfo, amount);
+			u_caster->HandleProc(PROC_ON_SPELL_CRIT_HIT, unitTarget, m_spellInfo, amount);
 		}
-		u_caster->HandleProc(PROC_ON_SPELL_CRIT_HIT, unitTarget, m_spellInfo, amount);
+		
 	}
 	if(amount < 0) amount = 0;
 

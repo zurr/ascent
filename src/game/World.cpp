@@ -948,6 +948,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_TAGRGET_SELF | PROC_ON_RANGED_ATTACK;
 					if(strstr(desc,"successful auto shot attacks"))
 						pr|=PROC_ON_AUTO_SHOT_HIT;
+					if(strstr(desc,"after getting a critical effect from your"))
+						pr=PROC_ON_SPELL_CRIT_HIT;
 //					if(strstr(desc,"Your critical strikes from Fire damage"))
 //						pr|=PROC_ON_SPELL_CRIT_HIT;
 				}//end "if procspellaura"
