@@ -1009,6 +1009,10 @@ int Unit_ChangeFaction(gmThread * a_thread)
 
 int Unit_TextEmote(gmThread * a_thread)
 {
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_STRING_PARAM(msg, 0);
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	pUnit->SendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg);
 	return GM_OK;
 }
 
