@@ -110,7 +110,7 @@ Creature::~Creature()
 	if(m_custom_waypoint_map != 0)
 	{
 		for(WayPointMap::iterator itr = m_custom_waypoint_map->begin(); itr != m_custom_waypoint_map->end(); ++itr)
-			delete itr->second;
+			delete (*itr);
 		delete m_custom_waypoint_map;
 	}
 }
@@ -1172,7 +1172,7 @@ void Creature::DestroyCustomWaypointMap()
 	{
 		for(WayPointMap::iterator itr = m_custom_waypoint_map->begin(); itr != m_custom_waypoint_map->end(); ++itr)
 		{
-			delete itr->second;
+			delete (*itr);
 		}
 		delete m_custom_waypoint_map;
 		m_custom_waypoint_map = 0;

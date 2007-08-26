@@ -1912,10 +1912,14 @@ bool AIInterface::addWayPoint(WayPoint* wp)
 	if(wp->id <= 0)
 		return false; //not valid id
 
-	if(m_waypoints->find( wp->id ) == m_waypoints->end( ))
+	if(m_waypoints->size() <= wp->id)
+		m_waypoints->resize(wp->id+1);
+
+	//if(m_waypoints->find( wp->id ) == m_waypoints->end( ))
+	if((*m_waypoints)[wp->id] == NULL)
 	{
-		//m_waypoints[wp->id] = wp;
-		m_waypoints->insert(WayPointMap::value_type(wp->id, wp));
+		(*m_waypoints)[wp->id] = wp;
+		//m_waypoints->insert(WayPointMap::value_type(wp->id, wp));
 		return true;
 	}
 	return false;
@@ -1939,8 +1943,13 @@ void AIInterface::changeWayPointID(uint32 oldwpid, uint32 newwpid)
 	if(!oldwp) 
 		return;
 
+	oldwp->id = newwpid;
+	originalwp->id = oldwpid;
+	(*m_waypoints)[oldwp->id] = oldwp;
+	(*m_waypoints)[originalwp->id] = originalwp;
+
 	//we have valid wps in the positions
-	WayPoint* wpnext = NULL;
+	/*WayPoint* wpnext = NULL;
 	WayPoint* wp = NULL;
 	uint32 i = 0;
 	uint32 endat = 0;
@@ -2005,7 +2014,7 @@ void AIInterface::changeWayPointID(uint32 oldwpid, uint32 newwpid)
 				(*m_waypoints)[newwpid] = oldwp; //position 4
 			}
 		}
-	}
+	}*/
 
 	//SaveAll to db
 	saveWayPoints(0);
@@ -2022,16 +2031,21 @@ void AIInterface::deleteWayPoint(uint32 wpid, bool save)
 	uint32 startsize = m_waypoints->size();
 	
 	//Delete Waypoint
-	WayPointMap::iterator iter = m_waypoints->find( wpid );
+	/*WayPointMap::iterator iter = m_waypoints->find( wpid );
 	if( iter != m_waypoints->end() )
 	{
 		delete iter->second;
 		m_waypoints->erase( iter );
+	}*/
+	if(m_waypoints->size() > wpid)
+	{
+		delete (*m_waypoints)[wpid];
+		(*m_waypoints)[wpid] = NULL;
 	}
 	
 	WayPoint* wp = NULL;
 	//Reorginise the rest
-	if(wpid <= m_waypoints->size()) //non existant wp
+	/*if(wpid <= m_waypoints->size()) //non existant wp
 	{
 		uint32 i = 0;
 		for(i = 0; i < startsize-wpid;i++)
@@ -2043,13 +2057,26 @@ void AIInterface::deleteWayPoint(uint32 wpid, bool save)
 				(*m_waypoints)[wpid+i] = wp;
 			}
 		}
-		m_waypoints->erase( wpid+i );
+		//m_waypoints->erase( wpid+i );
+	}*/
+	vector<WayPoint*> new_wps;
+	for(vector<WayPoint*>::iterator itr = m_waypoints->begin(); itr != m_waypoints->end(); ++itr) {
+		if((*itr) != NULL)
+			new_wps.push_back(*itr);
 	}
-	if(m_waypoints->size()==0)
+
+	if(!new_wps.size())
 	{
 		delete m_waypoints;
 		m_waypoints = NULL;
+		if(save)
+			saveWayPoints(0);
+		return;
 	}
+
+	m_waypoints->resize(new_wps.size());
+	for(uint32 i = 0; i < new_wps.size(); ++i)
+		(*m_waypoints)[i] = new_wps[i];
 
 	//SaveAll to db
 	if(save)
@@ -2073,9 +2100,9 @@ bool AIInterface::showWayPoints(uint32 wpid, Player* pPlayer, bool Backwards)
 	WayPoint* wp = NULL;
 	for (itr = m_waypoints->begin(); itr != m_waypoints->end(); itr++)
 	{
-		if( (itr->second->id == wpid) || (wpid == 0) )
+		if( (*itr) != NULL && (((*itr)->id == wpid) || (wpid == 0)) )
 		{
-			wp = itr->second;
+			wp = *itr;
 
 			//Create
 			Creature* pWayPoint = new Creature(HIGHGUID_WAYPOINT ,wp->id);
@@ -2138,10 +2165,10 @@ bool AIInterface::hideWayPoints(uint32 wpid, Player* pPlayer)
 
 	for (itr = m_waypoints->begin(); itr != m_waypoints->end(); itr++)
 	{
-		if( (itr->second->id == wpid) || (wpid == 0) )
+		if( (*itr) != NULL && (((*itr)->id == wpid) || (wpid == 0)) )
 		{
 			// avoid C4293
-			guid = ((uint64)HIGHGUID_WAYPOINT << 32) | itr->second->id;
+			guid = ((uint64)HIGHGUID_WAYPOINT << 32) | (*itr)->id;
 			WoWGuid wowguid(guid);
 			pPlayer->PushOutOfRange(wowguid);
 			if(wpid != 0) return true;
@@ -2174,12 +2201,12 @@ bool AIInterface::saveWayPoints(uint32 wpid)
 	{
 		if(itr == m_waypoints->end()) 
 			break;
-		if(!itr->second) 
+		if(!(*itr)) 
 			continue;
 
-		if( (itr->second->id == wpid) || (wpid == 0) )
+		if( ((*itr)->id == wpid) || (wpid == 0) )
 		{
-			wp = itr->second;
+			wp = (*itr);
 
 			if(wpid != 0)
 			{
@@ -2218,13 +2245,13 @@ bool AIInterface::saveWayPoints(uint32 wpid)
 WayPoint* AIInterface::getWayPoint(uint32 wpid)
 {
 	if(!m_waypoints)return NULL;
-	if(wpid > m_waypoints->size()) 
+	if(wpid >= m_waypoints->size()) 
 		return NULL; //not valid id
 
-	WayPointMap::const_iterator itr = m_waypoints->find( wpid );
+	/*WayPointMap::const_iterator itr = m_waypoints->find( wpid );
 	if( itr != m_waypoints->end( ) )
-		return itr->second;
-	return NULL;
+		return itr->second;*/
+	return m_waypoints->at(wpid);
 }
 
 void AIInterface::_UpdateMovement(uint32 p_time)

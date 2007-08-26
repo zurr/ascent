@@ -585,6 +585,6 @@ inline void reverse_array(uint8 * pointer, size_t count)
 	free(temp);
 }
 
-typedef HM_NAMESPACE::hash_map<uint32, WayPoint*> WayPointMap;
+typedef std::vector<WayPoint*> WayPointMap;
 
 #endif

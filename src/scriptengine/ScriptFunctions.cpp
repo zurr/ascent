@@ -615,7 +615,7 @@ int Unit_CreateCustomWaypointMap(gmThread * a_thread)
 	if(pCreature->m_custom_waypoint_map)
 	{
 		for(WayPointMap::iterator itr = pCreature->m_custom_waypoint_map->begin(); itr != pCreature->m_custom_waypoint_map->end(); ++itr)
-			delete itr->second;
+			delete (*itr);
 		delete pCreature->m_custom_waypoint_map;
 	}
 
@@ -661,7 +661,7 @@ int Unit_CreateWaypoint(gmThread * a_thread)
 	wp->backwardemoteoneshot = wp->forwardemoteoneshot = false;
 	wp->waittime = waittime;
 
-	pCreature->m_custom_waypoint_map->insert( make_pair( wp->id, wp ) );
+	pCreature->m_custom_waypoint_map->push_back(wp);
 	return GM_OK;
 }
 

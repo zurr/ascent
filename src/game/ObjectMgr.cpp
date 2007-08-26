@@ -150,7 +150,7 @@ ObjectMgr::~ObjectMgr()
 	for(HM_NAMESPACE::hash_map<uint32, WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
 	{
 		for(WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
-			delete i2->second;
+			delete (*i2);
 		delete i->second;
 	}
 
@@ -2418,10 +2418,17 @@ void ObjectMgr::LoadCreatureWaypoints()
 		if(i==m_waypoints.end())
 		{
 			WayPointMap* m=new WayPointMap;
+			if(m->size() <= wp->id)
+				m->resize(wp->id+1);
 			(*m)[wp->id]=wp;
 			m_waypoints[spawnid]=m;		
 		}else
+		{
+			if(i->second->size() <= wp->id)
+				i->second->resize(wp->id+1);
+
 			(*(i->second))[wp->id]=wp;
+		}
 	}while( result->NextRow() );
 
 	delete result;
