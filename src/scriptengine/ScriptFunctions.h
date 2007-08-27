@@ -94,6 +94,7 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Unit_GetHealthPct(gmThread * a_thread);
 	int GM_CDECL Unit_GetClosestPlayer(gmThread * a_thread);
 	int GM_CDECL Unit_GetClosestUnit(gmThread * a_thread);
+	int GM_CDECL Unit_InCombat(gmThread * a_thread);
 	
 	// Escort Quest System
 		int GM_CDECL Unit_SpawnWithoutWorld(gmThread * a_thread);

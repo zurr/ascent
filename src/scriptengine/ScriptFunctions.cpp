@@ -1360,3 +1360,17 @@ int Unit_GetClosestUnit(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Unit_InCombat(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(!pThis->IsInWorld())
+	{
+		return GM_EXCEPTION;
+	}
+	if(pThis->isInCombat())
+		a_thread->PushInt(1);
+	else
+		a_thread->PushInt(0);
+	return GM_OK;
+}

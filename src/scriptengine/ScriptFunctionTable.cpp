@@ -122,6 +122,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "GetName",							Unit_GetName						},
 		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 		{ "GetClosestUnit",						Unit_GetClosestUnit					},
+		{ "IsInCombat",							Unit_InCombat						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
