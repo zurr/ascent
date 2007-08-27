@@ -77,6 +77,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetPositionY",						Unit_GetPositionY					},
 		{ "GetPositionZ",						Unit_GetPositionZ					},
 		{ "GetFacing",							Unit_GetFacing						},
+		{ "AttackReaction",						Unit_AddToHated						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));

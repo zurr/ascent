@@ -123,6 +123,7 @@ T * GetThisPointer(gmThread * a_thread)
 		int GM_CDECL Unit_GetPositionY(gmThread * a_thread);
 		int GM_CDECL Unit_GetPositionZ(gmThread * a_thread);
 		int GM_CDECL Unit_GetFacing(gmThread * a_thread);
+		int GM_CDECL Unit_AddToHated(gmThread * a_thread);
 
 /* GameObject Functions */
 	int GM_CDECL GameObject_Despawn(gmThread * a_thread);

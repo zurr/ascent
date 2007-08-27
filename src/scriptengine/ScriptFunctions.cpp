@@ -1441,3 +1441,19 @@ int Unit_GetFacing(gmThread * a_thread)
 	a_thread->PushFloat(pThis->GetOrientation());
 	return GM_OK;
 }
+
+int Unit_AddToHated(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, victim, 0);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(!pThis->IsInWorld())
+		return GM_OK;
+
+	if(pThis->GetTypeId() == TYPEID_GAMEOBJECT) // WTF YOU NEWB?
+		return GM_OK;
+
+	((Creature*)pThis)->GetAIInterface()->AttackReaction(static_cast<Unit*>(victim), 1, 0);
+	return GM_OK;
+}
