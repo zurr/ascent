@@ -105,12 +105,17 @@ bool TerrainMgr::LoadTerrainHeader()
 	{
 		/* file with no data */
 		fclose(FileDescriptor);
+		FileDescriptor=NULL;
 		return false;
 	}
 
 	// Read in the header.
 	if(fread(CellOffsets, TERRAIN_HEADER_SIZE, 1, FileDescriptor) < 1)
+	{
+		fclose(FileDescriptor);
+		FileDescriptor=NULL;
 		return false;
+	}
 
 	// Allocate both storage arrays.
 	CellInformation = new CellTerrainInformation**[_sizeX];
