@@ -110,7 +110,9 @@ bool TerrainMgr::LoadTerrainHeader()
 	}
 
 	// Read in the header.
-	if(fread(CellOffsets, TERRAIN_HEADER_SIZE, 1, FileDescriptor) < 1)
+	fseek(FileDescriptor,0,SEEK_SET);
+	int dread = fread(CellOffsets, 1, TERRAIN_HEADER_SIZE, FileDescriptor);
+	if(dread != TERRAIN_HEADER_SIZE)
 	{
 		fclose(FileDescriptor);
 		FileDescriptor=NULL;
@@ -126,7 +128,6 @@ bool TerrainMgr::LoadTerrainHeader()
 		{
 			// Clear the pointer.
 			CellInformation[x][y] = 0;
-			CellOffsets[x][y] = 0;
 		}
 	}
 

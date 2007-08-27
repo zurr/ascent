@@ -846,15 +846,15 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
 		Item *item = GetInventoryItem(i);
 		if (item)
 		{
-			if(item->GetProto()->ContainerSlots > 0 && ((Container*)item)->HasItems())
-			{
-				/* sounds weird? no. this will trigger a callstack display due to my other debug code. */
-				item->DeleteFromDB();
-				continue;
-			}
-
 			if(item->GetEntry() == id)
 			{
+				if(item->GetProto()->ContainerSlots > 0 && ((Container*)item)->HasItems())
+				{
+					/* sounds weird? no. this will trigger a callstack display due to my other debug code. */
+					item->DeleteFromDB();
+					continue;
+				}
+
 				if (item->GetUInt32Value(ITEM_FIELD_STACK_COUNT) > amt)
 				{
 					item->SetCount(item->GetUInt32Value(ITEM_FIELD_STACK_COUNT) - amt);

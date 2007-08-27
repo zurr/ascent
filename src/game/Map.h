@@ -118,8 +118,8 @@ public:
 		ASSERT(celly < _sizeY);
 		if(spawns[cellx]==NULL)
 		{
-			for(uint32 x=0;x<_sizeX;++x)
-				spawns[cellx] = new CellSpawns*[_sizeY];
+			spawns[cellx] = new CellSpawns*[_sizeY];
+			memset(spawns[cellx],0,sizeof(CellSpawns*)*_sizeY);
 		}
 
 		if(spawns[cellx][celly] == 0)
@@ -163,7 +163,7 @@ public:
 		}
 		else
 		{ 
-			return 999999.0f;
+			return 0;
 		}
 	}
 
@@ -175,7 +175,7 @@ public:
 		}
 		else
 		{ 
-			return 999999.0f; 
+			return 1; 
 		}
 	}
 
@@ -187,7 +187,7 @@ public:
 		}
 		else
 		{ 
-			return 999999.0f;
+			return 0xFFFF;
 		}
 	}
 
