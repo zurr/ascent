@@ -1374,3 +1374,26 @@ int Unit_InCombat(gmThread * a_thread)
 		a_thread->PushInt(0);
 	return GM_OK;
 }
+
+int Unit_GetClosestUnitByEntry(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(entry, 0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	Creature * closest = NULL;
+	for(set<Object*>::iterator itr = pThis->GetInRangeSetBegin(); itr != pThis->GetInRangeSetEnd(); ++itr)
+	{
+		if(closest == NULL || closest->GetDistance2dSq(pThis) > (*itr)->GetDistance2dSq(pThis) && pThis != (*itr) && (*itr)->GetTypeId() != TYPEID_GAMEOBJECT && (*itr)->GetTypeId() != TYPEID_PLAYER && ((Creature*)(*itr))->GetEntry() == entry)
+			closest = (Creature*)(*itr);
+	}
+	if(closest == NULL)
+	{
+		a_thread->PushNull();
+		return GM_OK;
+	}
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)closest;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_unitType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+	return GM_OK;
+}

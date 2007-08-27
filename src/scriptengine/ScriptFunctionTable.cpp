@@ -72,6 +72,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetName",							Unit_GetName						},
 		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 		{ "GetClosestUnit",						Unit_GetClosestUnit					},
+		{ "GetClosestCreatureByEntry",			Unit_GetClosestUnitByEntry			},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -123,6 +124,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 		{ "GetClosestUnit",						Unit_GetClosestUnit					},
 		{ "IsInCombat",							Unit_InCombat						},
+		{ "GetClosestCreatureByEntry",			Unit_GetClosestUnitByEntry			},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -152,6 +154,7 @@ void ScriptEngine::SetGameObjectFunctionTable()
 		{ "SpawnMonster",						Unit_SpawnMonster					},
 		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 		{ "GetClosestUnit",						Unit_GetClosestUnit					},
+		{ "GetClosestCreatureByEntry",			Unit_GetClosestUnitByEntry			},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));
