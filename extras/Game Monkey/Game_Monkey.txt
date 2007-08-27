@@ -170,3 +170,21 @@ global DormentShadeC = function(unit, plr)
 // unit 'entry'/on spawn/function name
 .RegisterUnitEvent(1946, 6, LillithText);
 
+//--------------------------------------------
+// Example check HP script
+//--------------------------------------------
+
+global HealthCheck = function()
+{
+	if(.GetHealthPct() <= 70)	
+	{
+		.SendYellMessage("Fools!");
+	}
+};
+
+global OnSpawn = function(plr)
+{
+	.RegisterTimer(1000, HealthCheck, 0); // Calls HealthCheck every 1 second.	
+};
+
+.RegisterUnitEvent(yourunit, 6, OnSpawn);
