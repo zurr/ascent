@@ -205,13 +205,14 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 					ScriptSystem->OnCreatureEvent(((Creature*)m_Unit), pUnit, CREATURE_EVENT_ON_LEAVE_COMBAT);
 				}
 
-				if(m_AIType == AITYPE_PET && m_Unit->GetGUIDHigh() == HIGHGUID_PET)
+				if(m_AIType == AITYPE_PET)
 				{
 					m_AIState = STATE_FOLLOWING;
 					UnitToFollow = m_PetOwner;
 					FollowDistance = 3.0f;
 					m_lastFollowX = m_lastFollowY = 0;
-					((Pet*)m_Unit)->SetPetAction(PET_ACTION_FOLLOW);
+					if(m_Unit->GetGUIDHigh() == HIGHGUID_PET)
+						((Pet*)m_Unit)->SetPetAction(PET_ACTION_FOLLOW);
 					HandleEvent(EVENT_FOLLOWOWNER, 0, 0);
 				}
 				else
@@ -405,12 +406,13 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 			// There isn't any need to do any attacker checks here, as
 			// they should all be taken care of in DealDamage
 
-			if(m_AIType == AITYPE_PET)
+			//removed by Zack : why do we need to go to our master if we just died ? On next spawn we will be spawned near him after all
+/*			if(m_AIType == AITYPE_PET)
 			{
 				SetUnitToFollow(m_PetOwner);
 				SetFollowDistance(3.0f);
 				HandleEvent(EVENT_FOLLOWOWNER, m_Unit, 0);
-			}
+			}*/
 
 			if(m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID || m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_MULTIMODE)
             {
@@ -511,7 +513,7 @@ void AIInterface::Update(uint32 p_time)
 	{
 		if(m_creatureState != MOVING)
 		{
-			if(m_AIType == AITYPE_PET && m_PetOwner != NULL)
+			if((m_AIType == AITYPE_PET) && m_PetOwner != NULL)
 			{
 				m_returnX = m_PetOwner->GetPositionX()+(3*(cosf(m_fallowAngle+m_PetOwner->GetOrientation())));
 				m_returnY = m_PetOwner->GetPositionY()+(3*(sinf(m_fallowAngle+m_PetOwner->GetOrientation())));
@@ -687,7 +689,7 @@ void AIInterface::_UpdateTargets()
 				HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
 			}*/
 		}
-		else if(m_aiTargets.size() == 0 && m_AIType == AITYPE_PET && m_Unit->GetGUIDHigh() == HIGHGUID_PET && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)
+		else if(m_aiTargets.size() == 0 && (m_AIType == AITYPE_PET && m_Unit->GetGUIDHigh() == HIGHGUID_PET && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE))
 		{
 			 Unit* target = FindTarget();
 			 if(target)
@@ -723,7 +725,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 	// If creature is very far from spawn point return to spawnpoint
 	// If at instance dont return -- this is wrong ... instance creatures always returns to spawnpoint, dunno how do you got this ideia. 
 
-	if(m_AIType != AITYPE_PET 
+	if(	m_AIType != AITYPE_PET 
 		&& (m_outOfCombatRange && m_Unit->GetDistanceSq(m_returnX,m_returnY,m_returnZ) > m_outOfCombatRange) 
 		&& m_AIState != STATE_EVADE
 		&& m_AIState != STATE_SCRIPTMOVE)
@@ -827,7 +829,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				{
 #ifdef ENABLE_CREATURE_DAZE
 					//now if the target is facing his back to us then we could just cast dazed on him :P
-					//as dar as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
+					//as far as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
 					if(!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->FriendlyMask==0 && m_Unit->m_faction->HostileMask==0) /* neutral creature */
 						&& m_nextTarget->IsPlayer() && !m_Unit->IsPet() && Rand(CREATURE_CHANCE_TO_DAZE))
 					{
