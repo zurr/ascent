@@ -324,6 +324,13 @@ Item *ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int8 
 
 		if (pItem == NULL) { return NULL; }
 
+		if(pItem->GetProto()->ContainerSlots > 0 && ((Container*)pItem)->HasItems())
+		{
+			/* sounds weird? no. this will trigger a callstack display due to my other debug code. */
+			pItem->DeleteFromDB();
+			return false;
+		}
+
 		m_pItems[(int)slot] = NULL;
 		pItem->m_isDirty = true;
 
@@ -473,6 +480,13 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int8 slot)
 		Item *pItem = GetInventoryItem(slot);
 
 		if (pItem == NULL) { return false; }
+
+		if(pItem->GetProto()->ContainerSlots > 0 && ((Container*)pItem)->HasItems())
+		{
+			/* sounds weird? no. this will trigger a callstack display due to my other debug code. */
+			pItem->DeleteFromDB();
+			return false;
+		}
 
 		m_pItems[(int)slot] = NULL;
 		pItem->m_isDirty = true;
@@ -832,6 +846,13 @@ uint32 ItemInterface::RemoveItemAmt(uint32 id, uint32 amt)
 		Item *item = GetInventoryItem(i);
 		if (item)
 		{
+			if(item->GetProto()->ContainerSlots > 0 && ((Container*)item)->HasItems())
+			{
+				/* sounds weird? no. this will trigger a callstack display due to my other debug code. */
+				item->DeleteFromDB();
+				continue;
+			}
+
 			if(item->GetEntry() == id)
 			{
 				if (item->GetUInt32Value(ITEM_FIELD_STACK_COUNT) > amt)

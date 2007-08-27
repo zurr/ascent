@@ -261,6 +261,24 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave)
 
 void Item::DeleteFromDB()
 {
+	if(m_itemProto->ContainerSlots>0)
+	{
+		/* deleting a container */
+		for(uint32 i = 0; i < m_itemProto->ContainerSlots; ++i)
+		{
+			if(((Container*)this)->GetItem(i) != NULL)
+			{
+#ifdef WIN32
+				Crash_Log->AddLine("Delting bag with inventority items still!!!!");
+				CStackWalker ws;
+				ws.ShowCallstack();
+#endif
+				/* abort the delete */
+				return;
+			}
+		}
+	}
+
 	CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid ="I64FMTD, GetGUID());
 }
 

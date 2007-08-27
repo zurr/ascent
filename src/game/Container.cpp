@@ -221,7 +221,7 @@ Item *Container::SafeRemoveAndRetreiveItemFromSlot(int8 slot, bool destroy)
 
 	Item *pItem = m_Slot[slot];
 
-	if (pItem == NULL) return NULL;
+	if (pItem == NULL || pItem==this) return NULL;
 	m_Slot[slot] = NULL;
 
 	SetUInt64Value(CONTAINER_FIELD_SLOT_1  + slot*2, 0 );
@@ -245,7 +245,7 @@ bool Container::SafeFullRemoveItemFromSlot(int8 slot)
 
 	Item *pItem = m_Slot[slot];
 
-	if (pItem == NULL) return false;
+	if (pItem == NULL ||pItem==this) return false;
 	m_Slot[slot] = NULL;
 
 	SetUInt64Value(CONTAINER_FIELD_SLOT_1  + slot*2, 0 );
