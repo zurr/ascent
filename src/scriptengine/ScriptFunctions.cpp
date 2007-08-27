@@ -1457,3 +1457,19 @@ int Unit_AddToHated(gmThread * a_thread)
 	((Creature*)pThis)->GetAIInterface()->AttackReaction(static_cast<Unit*>(victim), 1, 0);
 	return GM_OK;
 }
+
+int Unit_ReturnToSpawn(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(!pThis->IsInWorld())
+		return GM_OK;
+
+	Creature * pCreature = static_cast<Creature*>(pThis);
+	pCreature->GetAIInterface()->SetAIState(STATE_IDLE);
+	pCreature->GetAIInterface()->WipeHateList();
+	pCreature->GetAIInterface()->WipeTargetList();
+	pCreature->GetAIInterface()->MoveTo(pCreature->m_spawn->x, pCreature->m_spawn->y, pCreature->m_spawn->z, pCreature->m_spawn->o);
+
+	return GM_OK;
+}
