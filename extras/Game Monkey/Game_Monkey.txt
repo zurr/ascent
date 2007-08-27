@@ -109,7 +109,7 @@ Unit:
 .ChangeModel(model id)
 .ChangeScale(scale #1-?, not sure if this includes floats)
 .ChangeFaction(faction id)
-.TextEmote
+.TextEmote(text)
 
 QuestFunctions:
 
@@ -179,6 +179,7 @@ global HealthCheck = function()
 	if(.GetHealthPct() <= 70)	
 	{
 		.SendYellMessage("Fools!");
+		.DeregisterTimer();
 	}
 };
 
