@@ -403,6 +403,9 @@ int Unit_CastSpellOnTarget(gmThread * a_thread)
 	Unit * pTarget = (Unit*)a_thread->ParamUser_NoCheckTypeOrParam(1);
 	Unit * pThis = GetThisPointer<Unit>(a_thread);
 	
+	if(!pTarget)
+		return GM_OK;
+
 	SpellEntry * pSpellEntry = sSpellStore.LookupEntry(spellid);
 
 	pThis->CastSpell(pTarget, pSpellEntry, true);
