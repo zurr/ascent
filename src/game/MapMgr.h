@@ -214,11 +214,11 @@ public:
 	void UpdateCellActivity(uint32 x, uint32 y, int radius);
 
 	// Terrain Functions
-	inline float  GetLandHeight(float x, float y) { return GetBaseMap()->GetTerrainMgr()->GetLandHeight(x, y); }
-	inline float  GetWaterHeight(float x, float y) { return GetBaseMap()->GetTerrainMgr()->GetWaterHeight(x, y); }
-	inline uint8  GetWaterType(float x, float y) { return GetBaseMap()->GetTerrainMgr()->GetWaterType(x, y); }
-	inline uint8  GetWalkableState(float x, float y) { return GetBaseMap()->GetTerrainMgr()->GetWalkableState(x, y); }
-	inline uint16 GetAreaID(float x, float y) { return GetBaseMap()->GetTerrainMgr()->GetAreaID(x, y); }
+	inline float  GetLandHeight(float x, float y) { return GetBaseMap()->GetLandHeight(x, y); }
+	inline float  GetWaterHeight(float x, float y) { return GetBaseMap()->GetWaterHeight(x, y); }
+	inline uint8  GetWaterType(float x, float y) { return GetBaseMap()->GetWaterType(x, y); }
+	inline uint8  GetWalkableState(float x, float y) { return GetBaseMap()->GetWalkableState(x, y); }
+	inline uint16 GetAreaID(float x, float y) { return GetBaseMap()->GetAreaID(x, y); }
 
 	inline uint32 GetMapId() { return _mapId; }
 

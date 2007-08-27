@@ -28,6 +28,8 @@ struct MapInfo;
 typedef std::map<uint32, MapMgr*> InstanceMap;
 class TerrainMgr;
 
+#include "TerrainMgr.h"
+
 struct Formation;
 
 typedef struct
@@ -98,7 +100,6 @@ public:
 	MapMgr * GetInstanceByCreator(Player *pCreator);
 	MapMgr * GetInstanceByGroupInstanceId(uint32 InstanceID, bool Lock);
 	MapMgr * InstanceExists(uint32 instanceId);
-	inline TerrainMgr * GetTerrainMgr() { return _terrain; }
 	inline string GetNameString() { return name; }
 	inline const char* GetName() { return name.c_str(); }
 	inline MapEntry* GetDBCEntry() { return me; }
@@ -107,6 +108,7 @@ public:
 	{
 		ASSERT(cellx < _sizeX);
 		ASSERT(celly < _sizeY);
+		if(spawns[cellx]==NULL) return NULL;
 
 		return spawns[cellx][celly];
 	}
@@ -114,6 +116,12 @@ public:
 	{
 		ASSERT(cellx < _sizeX);
 		ASSERT(celly < _sizeY);
+		if(spawns[cellx]==NULL)
+		{
+			for(uint32 x=0;x<_sizeX;++x)
+				spawns[cellx] = new CellSpawns*[_sizeY];
+		}
+
 		if(spawns[cellx][celly] == 0)
 			spawns[cellx][celly] = new CellSpawns;
 		return spawns[cellx][celly];
@@ -122,6 +130,82 @@ public:
 	void LoadSpawns(bool reload);//set to true to make clean up
 	uint32 CreatureSpawnCount;
 	uint32 GameObjectSpawnCount;
+
+	inline float  GetLandHeight(float x, float y)
+	{ 
+		if(_terrain)
+		{
+			return _terrain->GetLandHeight(x, y);
+		}
+		else
+		{
+			return 999999.0f;
+		}
+	}
+
+	inline float  GetWaterHeight(float x, float y) 
+	{ 
+		if(_terrain)
+		{ 
+			return _terrain->GetWaterHeight(x, y); 
+		}
+		else
+		{ 
+			return 999999.0f; 
+		}
+	}
+
+	inline uint8  GetWaterType(float x, float y)
+	{
+		if(_terrain)
+		{ 
+			return _terrain->GetWaterType(x, y);
+		}
+		else
+		{ 
+			return 999999.0f;
+		}
+	}
+
+	inline uint8  GetWalkableState(float x, float y)
+	{
+		if(_terrain)
+		{ 
+			return _terrain->GetWalkableState(x, y);
+		}
+		else
+		{ 
+			return 999999.0f; 
+		}
+	}
+
+	inline uint16 GetAreaID(float x, float y)
+	{
+		if(_terrain)
+		{ 
+			return _terrain->GetAreaID(x, y);
+		}
+		else
+		{ 
+			return 999999.0f;
+		}
+	}
+
+	inline void CellGoneActive(uint32 x, uint32 y)
+	{ 
+		if(_terrain)
+		{ 
+			_terrain->CellGoneActive(x,y);
+		}
+	}
+
+	inline void CellGoneIdle(uint32 x,uint32 y)
+	{ 
+		if(_terrain)
+		{ 
+			_terrain->CellGoneIdle(x,y);
+		}
+	}
 
 private:
 	InstanceMap	 _instances;	
@@ -134,7 +218,7 @@ private:
 	
 
 	//new stuff
-	CellSpawns *spawns[_sizeX][_sizeY];
+	CellSpawns **spawns[_sizeX];
 public:
 	CellSpawns staticSpawns;
 };

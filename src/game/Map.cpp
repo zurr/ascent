@@ -23,7 +23,7 @@
 
 Map::Map(uint32 mapid)
 {
-	memset(spawns,0,sizeof(spawns));
+	memset(spawns,0,sizeof(CellSpawns*) * _sizeX);
 
 	_mapInfo = WorldMapInfoStorage.LookupEntry(mapid);
 	_mapId = mapid;
@@ -43,6 +43,11 @@ Map::Map(uint32 mapid)
 
 	// Setup terrain
 	_terrain = new TerrainMgr(sWorld.MapPath, _mapId, instance);
+	if(!_terrain->LoadTerrainHeader())
+	{
+		delete _terrain;
+		_terrain = NULL;
+	}
 
 	if(!instance)
 		CreateMapMgrInstance();
@@ -297,6 +302,12 @@ void Map::LoadSpawns(bool reload)
 			cspawn->o = fields[6].GetFloat();
 			uint32 cellx=float2int32(((_maxX-cspawn->x)/_cellSize));
 			uint32 celly=float2int32(((_maxY-cspawn->y)/_cellSize));
+			if(spawns[cellx]==NULL)
+			{
+				spawns[cellx]=new CellSpawns*[_sizeY];
+				memset(spawns[cellx],0,sizeof(CellSpawns*)*_sizeY);
+			}
+
 			if(!spawns[cellx][celly])
 				spawns[cellx][celly]=new CellSpawns;
 			cspawn->movetype = fields[7].GetUInt32();
@@ -395,6 +406,12 @@ void Map::LoadSpawns(bool reload)
 
 			uint32 cellx=float2int32(((_maxX-gspawn->x)/_cellSize));
 			uint32 celly=float2int32(((_maxY-gspawn->y)/_cellSize));
+			if(spawns[cellx]==NULL)
+			{
+				spawns[cellx]=new CellSpawns*[_sizeY];
+				memset(spawns[cellx],0,sizeof(CellSpawns*)*_sizeY);
+			}
+
 			if(!spawns[cellx][celly])
 				spawns[cellx][celly]=new CellSpawns;
 

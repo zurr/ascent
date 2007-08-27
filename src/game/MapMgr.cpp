@@ -809,7 +809,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, int radius)
 					sLog.outDetail("Cell [%d,%d] on map %d (instance %d) is now active.", 
 						posX, posY, this->_mapId, m_instanceID);
 					objCell->SetActivity(true);
-					_map->GetTerrainMgr()->CellGoneActive(posX, posY);
+					_map->CellGoneActive(posX, posY);
 
 					ASSERT(!objCell->IsLoaded());
 
@@ -827,7 +827,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, int radius)
 				{
 					sLog.outDetail("Cell [%d,%d] on map %d (instance %d) is now active.", 
 						posX, posY, this->_mapId, m_instanceID);
-					_map->GetTerrainMgr()->CellGoneActive(posX, posY);
+					_map->CellGoneActive(posX, posY);
 					objCell->SetActivity(true);
 
 					if (!objCell->IsLoaded())
@@ -843,7 +843,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, int radius)
 				{
 					sLog.outDetail("Cell [%d,%d] on map %d (instance %d) is now idle.", 
 						posX, posY, this->_mapId, m_instanceID);
-					_map->GetTerrainMgr()->CellGoneIdle(posX, posY);
+					_map->CellGoneIdle(posX, posY);
 					objCell->SetActivity(false);
 				}
 			}

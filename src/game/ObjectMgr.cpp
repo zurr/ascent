@@ -611,7 +611,7 @@ void ObjectMgr::LoadGMTickets()
 		ticket->message = fields[7].GetString();
 		ticket->timestamp = fields[8].GetUInt32();
 
-		AddGMTicket(ticket);
+		AddGMTicket(ticket,true);
 
 	} while( result->NextRow() );
 
@@ -964,13 +964,14 @@ Guild* ObjectMgr::GetGuildByGuildName(std::string guildName)
 }
 
 
-void ObjectMgr::AddGMTicket(GM_Ticket *ticket)
+void ObjectMgr::AddGMTicket(GM_Ticket *ticket,bool startup)
 {
 	ASSERT( ticket );
 	GM_TicketList.push_back(ticket);
 
 	// save
-	SaveGMTicket(ticket->guid);
+	if(!startup)
+		SaveGMTicket(ticket->guid);
 }
 
 //modified for vs2005 compatibility

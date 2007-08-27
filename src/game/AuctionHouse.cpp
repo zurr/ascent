@@ -650,6 +650,7 @@ void AuctionHouse::LoadAuctions()
 		Item * pItem = objmgr.LoadItem(fields++->GetUInt64());
 		if(!pItem)
 		{
+			CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u",auct->Id);
 			delete auct;
 			continue;
 		}

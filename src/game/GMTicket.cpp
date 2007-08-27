@@ -50,7 +50,7 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket & recv_data)
 	ticket->level = GetPlayer()->getLevel();
 
 	objmgr.remGMTicket(GetPlayer()->GetGUID());
-	objmgr.AddGMTicket(ticket);
+	objmgr.AddGMTicket(ticket,false);
 
 	// Response - no errors
 	data.Initialize(SMSG_GMTICKET_CREATE);
@@ -93,7 +93,7 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket & recv_data)
 	ticket->timestamp = (uint32)time(NULL);
 
 	objmgr.remGMTicket(GetPlayer()->GetGUID());
-	objmgr.AddGMTicket(ticket);
+	objmgr.AddGMTicket(ticket,false);
 
 	// Response - no errors
 	data.Initialize(SMSG_GMTICKET_UPDATETEXT);

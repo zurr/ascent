@@ -21,21 +21,7 @@
 
 TerrainMgr::TerrainMgr(string MapPath, uint32 MapId, bool Instanced) : mapPath(MapPath), mapId(MapId), Instance(Instanced)
 {
-	// Allocate both storage arrays.
-	CellInformation = new CellTerrainInformation**[_sizeX];
-	for(uint32 x = 0; x < _sizeX; ++x)
-	{
-		CellInformation[x] = new CellTerrainInformation*[_sizeY];
-		for(uint32 y = 0; y < _sizeY; ++y)
-		{
-			// Clear the pointer.
-			CellInformation[x][y] = 0;
-			CellOffsets[x][y] = 0;
-		}
-	}
-
-	// Load the file.
-	LoadTerrainHeader();
+	CellInformation = NULL;
 }
 
 TerrainMgr::~TerrainMgr()
@@ -50,16 +36,19 @@ TerrainMgr::~TerrainMgr()
 	}
 
 	// Big memory cleanup, whee.
-	for(uint32 x = 0; x < _sizeX; ++x)
+	if(CellInformation)
 	{
-		for(uint32 y = 0; y < _sizeY; ++y)
+		for(uint32 x = 0; x < _sizeX; ++x)
 		{
-			if(CellInformation[x][y] != 0)
-				delete CellInformation[x][y];
+			for(uint32 y = 0; y < _sizeY; ++y)
+			{
+				if(CellInformation[x][y] != 0)
+					delete CellInformation[x][y];
+			}
+			delete [] CellInformation[x];
 		}
-		delete [] CellInformation[x];
+		delete CellInformation;
 	}
-	delete CellInformation;
 #else
 
 	mutex.Acquire();
@@ -110,9 +99,31 @@ bool TerrainMgr::LoadTerrainHeader()
 		return false;
 	}
 
+	/* check file size */
+	fseek(FileDescriptor, 0, SEEK_END);
+	if(ftell(FileDescriptor) == 1048576)
+	{
+		/* file with no data */
+		fclose(FileDescriptor);
+		return false;
+	}
+
 	// Read in the header.
 	if(fread(CellOffsets, TERRAIN_HEADER_SIZE, 1, FileDescriptor) < 1)
 		return false;
+
+	// Allocate both storage arrays.
+	CellInformation = new CellTerrainInformation**[_sizeX];
+	for(uint32 x = 0; x < _sizeX; ++x)
+	{
+		CellInformation[x] = new CellTerrainInformation*[_sizeY];
+		for(uint32 y = 0; y < _sizeY; ++y)
+		{
+			// Clear the pointer.
+			CellInformation[x][y] = 0;
+			CellOffsets[x][y] = 0;
+		}
+	}
 
 #ifdef USING_BIG_ENDIAN
 	uint32 x,y;

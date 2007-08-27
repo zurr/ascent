@@ -130,12 +130,14 @@ private:
 	/// Our storage array. This contains pointers to all allocated CellInfo's.
 	CellTerrainInformation *** CellInformation;
 	
+public:
 	/* Initializes the file descriptor and readys it for data retreival.
 	   No parameters taken.
 	   Returns true if the index was read successfully, false if not.
 	  */
 	bool LoadTerrainHeader();
 
+protected:
 	/* Retrieves the cell data for the specified co-ordinates from the file and sets it in
 	   the CellInformation array.
 	   Parameter 1: x co-ordinate of the cell information to load.

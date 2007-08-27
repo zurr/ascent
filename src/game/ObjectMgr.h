@@ -368,7 +368,7 @@ public:
 	uint32 GetGossipTextForNpc(uint32 ID);
 
 	// Gm Tickets
-	void AddGMTicket(GM_Ticket *ticket);
+	void AddGMTicket(GM_Ticket *ticket,bool startup);
 	void remGMTicket(uint64 guid);
 	GM_Ticket* GetGMTicket(uint64 guid);
 

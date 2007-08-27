@@ -3921,7 +3921,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 	}
 	else
 	{
-		uint32 areaid = sWorldCreator.GetMap(mapid)->GetTerrainMgr()->GetAreaID(ox,oy);
+		uint32 areaid = sWorldCreator.GetMap(mapid)->GetAreaID(ox,oy);
 		AreaTable * at = sAreaStore.LookupEntry(areaid);
 		if(!at) return;
 
