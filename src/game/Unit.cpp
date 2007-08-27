@@ -1728,45 +1728,6 @@ else
 		}
 		break;
 	}
-		/* Debug for Strike system. */
-	if (true)
-	{
-		if (!ability)
-		{
-			FILE *fin;
-			fin = fopen("strike.txt", "a");
-			long size;
-			fseek(fin, 0, SEEK_END);
-			size = ftell(fin);
-			if (size>100000)
-				fclose(fin);
-			else
-			{
-				uint32 mode;
-				int32 aclass,vclass;
-				if (this->IsPlayer())
-				{
-					mode = (pVictim->IsPlayer()) ? 2 : 1;
-					aclass = this->getClass();
-					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
-				}
-				else
-				{
-					mode = (pVictim->IsPlayer()) ? 0 : 8;
-					aclass = -1;
-					vclass = (pVictim->IsPlayer()) ? pVictim->getClass() : -1;
-				}
-				if (r>2)
-					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d BD:%d AD:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r,blocked_damage,abs);
-				else
-					fprintf(fin,"M:%d AS:%d AC:%d AL:%d DS:%d DC:%d DL%d C:%.1f %.1f %.1f %.1f %.1f %.1f %.1f D:%.1f T:%.1d R:%.1f r:%d\n",mode,self_skill,aclass,this->getLevel(),victim_skill,vclass,pVictim->getLevel(),chances[0],chances[1],chances[2],chances[3],chances[4],chances[5],chances[6],vsk,damage_type,Roll,r);
-				fclose(fin);
-			}
-		}
-	}
-	/* Debug end */
-
-
 
 //==========================================================================================
 //==============================Post Roll Special Cases Processing==========================

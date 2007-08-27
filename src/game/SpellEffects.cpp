@@ -144,7 +144,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS]={
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_FILMING - 123 // http://www.thottbot.com/?sp=27998: flightpath 
 		&Spell::SpellEffectNULL,//SPELL_EFFECT_PULL - 124 //http://www.thottbot.com/?sp=28337
 		&Spell::SpellEffectNULL,//unknown - 125 // Reduce Threat by % //http://www.thottbot.com/?sp=32835
-		&Spell::SpellEffectNULL,//SPELL_EFFECT_SPELL_STEAL - 126 // Steal Beneficial Buff (Magic) //http://www.thottbot.com/?sp=30449
+		&Spell::SpellEffectSpellSteal,//SPELL_EFFECT_SPELL_STEAL - 126 // Steal Beneficial Buff (Magic) //http://www.thottbot.com/?sp=30449
 		&Spell::SpellEffectProspecting,//unknown - 127 // Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
 		&Spell::SpellEffectApplyAura128,//unknown - 128 // Adjust a stats by %: Mod Stat // ITS FLAT
 		&Spell::SpellEffectNULL,// unknown - 129 // Mod Dmg % (Spells)
@@ -3993,6 +3993,49 @@ void Spell::SpellEffectDummyMelee(uint32 i) // Normalized Weapon damage +
    
 	u_caster->Strike(unitTarget,GetType() == SPELL_TYPE_RANGED ? SPELL_TYPE_RANGED:0,m_spellInfo,damage,0,0, false);
 
+}
+void Spell::SpellEffectSpellSteal(uint32 i)
+{
+	if (!unitTarget || !u_caster || !unitTarget->isAlive())
+		return;
+
+		Aura *aur;
+	uint32 start,end;
+	if(isAttackable(u_caster,unitTarget))
+	{
+		start=0;
+		end=MAX_POSITIVE_AURAS;
+	}
+	else
+		return;
+	
+	WorldPacket data(SMSG_SPELLDISPELLOG, 16);
+
+	for(uint32 x=start;x<end;x++)
+	if(unitTarget->m_auras[x])
+	{
+		aur = unitTarget->m_auras[x];
+		if(aur->GetSpellId() != 15007 && !aur->IsPassive() && aur->IsPositive()) //Nothing can dispel resurrection sickness
+		{
+			if(aur->GetSpellProto()->DispelType == DISPEL_MAGIC)
+			{
+				data.clear();
+				data << m_caster->GetNewGUID();
+				data << unitTarget->GetNewGUID();
+				data << (uint32)1;
+				data << aur->GetSpellId();
+				m_caster->SendMessageToSet(&data,true);
+				unitTarget->RemoveAura(aur);
+				int32 dur = (aur->GetDuration()>120000) ? 120000 : aur->GetDuration();
+				//mb here should be another worldpacket for aurabuff.
+				aur->SetDuration(dur);
+				u_caster->AddAura(aur);
+				u_caster->AddAuraVisual(aur->GetSpellId(),1,true);
+					return;
+			}			
+		}
+	}   
+	
 }
 
 //1 spell is using it :S = 31252

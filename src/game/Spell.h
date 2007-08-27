@@ -1353,6 +1353,7 @@ public:
 	void SpellEffectSkill(uint32 i);
 	void SpellEffectApplyPetAura(uint32 i);
 	void SpellEffectDummyMelee(uint32 i);
+	void SpellEffectSpellSteal(uint32 i);
 	void SpellEffectProspecting(uint32 i);
 	void SpellEffectOpenLockItem(uint32 i);
 	void SpellEffectSelfResurrect(uint32 i);
