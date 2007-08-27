@@ -840,6 +840,8 @@ public:
 	// skilllines
 	void AddLanguage(uint32 id);
 	void AddLanguages();
+	void RemoveLanguage(uint32 id);
+	void RemoveLanguages();
 	bool HasSkillLine(uint32 id);
 	void AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal);
 	void AdvanceSkillLine(uint32 id);

@@ -2726,6 +2726,7 @@ bool Player::LoadFromDB(uint32 guid)
 	break;
 	}
 
+	RemoveLanguages();
 	if(!m_session->GetPermissionCount())
 	{
 		std::list<CreateInfo_SkillStruct>::iterator itr = info->skills.begin();
@@ -2763,6 +2764,31 @@ void Player::AddLanguage(uint32 id)
 	if(sp) addSpell(sp);
 }
 
+void Player::RemoveLanguage(uint32 id)
+{
+	uint32 sp = ::GetSpellForLanguage(id);
+	//RemoveSkillLine(id);
+	if(sp) removeSpell(sp,false,false,0);
+}
+
+void Player::RemoveLanguages()
+{
+	RemoveLanguage(SKILL_LANG_COMMON);
+	RemoveLanguage(SKILL_LANG_ORCISH);
+	RemoveLanguage(SKILL_LANG_DWARVEN);
+	RemoveLanguage(SKILL_LANG_DARNASSIAN);
+	RemoveLanguage(SKILL_LANG_TAURAHE);
+	RemoveLanguage(SKILL_LANG_THALASSIAN);
+	RemoveLanguage(SKILL_LANG_DRACONIC);
+	RemoveLanguage(SKILL_LANG_DEMON_TONGUE);
+	RemoveLanguage(SKILL_LANG_TITAN);
+	RemoveLanguage(SKILL_LANG_OLD_TONGUE);
+	RemoveLanguage(SKILL_LANG_GNOMISH);
+	RemoveLanguage(SKILL_LANG_TROLL);
+	RemoveLanguage(SKILL_LANG_GUTTERSPEAK);
+	RemoveLanguage(SKILL_LANG_DRAENEI);
+}
+
 void Player::AddLanguages()
 {
 	// GM: Add all languages.
@@ -2772,11 +2798,11 @@ void Player::AddLanguages()
 	AddLanguage(SKILL_LANG_DARNASSIAN);
 	AddLanguage(SKILL_LANG_TAURAHE);
 	AddLanguage(SKILL_LANG_THALASSIAN);
-	AddLanguage(SKILL_LANG_DRACONIC);
-	AddLanguage(SKILL_LANG_DEMON_TONGUE);
-	AddLanguage(SKILL_LANG_TITAN);
-	AddLanguage(SKILL_LANG_OLD_TONGUE);
-	AddLanguage(SKILL_LANG_GNOMISH);
+	//AddLanguage(SKILL_LANG_DRACONIC);
+	//AddLanguage(SKILL_LANG_DEMON_TONGUE);
+	//AddLanguage(SKILL_LANG_TITAN);
+	//AddLanguage(SKILL_LANG_OLD_TONGUE);
+	//AddLanguage(SKILL_LANG_GNOMISH);
 	AddLanguage(SKILL_LANG_TROLL);
 	AddLanguage(SKILL_LANG_GUTTERSPEAK);
 	AddLanguage(SKILL_LANG_DRAENEI);
