@@ -125,6 +125,7 @@ T * GetThisPointer(gmThread * a_thread)
 		int GM_CDECL Unit_GetFacing(gmThread * a_thread);
 		int GM_CDECL Unit_AddToHated(gmThread * a_thread);
 		int GM_CDECL Unit_ReturnToSpawn(gmThread * a_thread);
+		int GM_CDECL Unit_AddThreat(gmThread * a_thread);
 
 /* GameObject Functions */
 	int GM_CDECL GameObject_Despawn(gmThread * a_thread);

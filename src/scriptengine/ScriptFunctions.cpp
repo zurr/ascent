@@ -1476,3 +1476,18 @@ int Unit_ReturnToSpawn(gmThread * a_thread)
 
 	return GM_OK;
 }
+
+int Unit_AddThreat(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, target, 0);
+	GM_CHECK_INT_PARAM(damage, 1);
+
+	if(target->GetTypeId() == TYPEID_GAMEOBJECT) // Come on, wtf are you smoking?
+		return GM_OK;
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	pThis->GetAIInterface()->AttackReaction((Unit*)target, damage, 0);
+
+	return GM_OK;
+}

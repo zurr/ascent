@@ -169,6 +169,7 @@ void ScriptEngine::SetGameObjectFunctionTable()
 		{ "GetPositionY",						Unit_GetPositionY					},
 		{ "GetPositionZ",						Unit_GetPositionZ					},
 		{ "GetFacing",							Unit_GetFacing						},
+		{ "AddThreat",							Unit_AddThreat						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));
