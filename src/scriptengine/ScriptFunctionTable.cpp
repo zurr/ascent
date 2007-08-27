@@ -70,6 +70,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetGuid",							Unit_GetGuid						},
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
 		{ "GetName",							Unit_GetName						},
+		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -118,6 +119,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
 		{ "SendYellMessage",					Unit_SendYellMessage				},
 		{ "GetName",							Unit_GetName						},
+		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -145,6 +147,7 @@ void ScriptEngine::SetGameObjectFunctionTable()
 		{ "RegisterEvent",						GM_RegisterEvent					},
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
 		{ "SpawnMonster",						Unit_SpawnMonster					},
+		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));
