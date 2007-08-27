@@ -183,6 +183,13 @@ void LogonCommHandler::UpdateSockets()
 		{
 			if(!pings) continue;
 
+            if(cs->IsDeleted() || !cs->IsConnected())
+            {
+                cs->_id = 0;
+                itr->second = 0;
+                continue;
+            }
+
 			if(cs->last_pong < t && ((t - cs->last_pong) > 60))
 			{
 				// no pong for 60 seconds -> remove the socket
@@ -192,7 +199,7 @@ void LogonCommHandler::UpdateSockets()
 				itr->second = 0;
 				continue;
 			}
-
+            
 			if( (t - cs->last_ping) > 15 )
 			{
 				// send a ping packet.

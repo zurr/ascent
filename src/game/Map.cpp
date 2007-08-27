@@ -79,7 +79,7 @@ Map::~Map()
 	{
 		for(uint32 y=0;y<_sizeY;y++)
 		{
-			if(spawns[x][y])
+			if(spawns[x] && spawns[x][y])
 			{	
 				CellSpawns * sp=spawns[x][y];
 				for(CreatureSpawnList::iterator i = sp->CreatureSpawns.begin();i!=sp->CreatureSpawns.end();i++)
