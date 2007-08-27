@@ -1329,3 +1329,34 @@ int Unit_GetClosestPlayer(gmThread * a_thread)
 	
 	return GM_OK;
 }
+
+int Unit_GetClosestUnit(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	if(!pThis->IsInWorld())
+	{
+		GM_EXCEPTION_MSG("Unit is not in world!");
+		return GM_EXCEPTION;
+	}
+
+	Unit * closest = NULL;
+	for(set<Object*>::iterator itr = pThis->GetInRangeSetBegin(); itr != pThis->GetInRangeSetEnd(); ++itr)
+	{
+		if(closest == NULL || closest->GetDistance2dSq(pThis) > (*itr)->GetDistance2dSq(pThis) && pThis != (*itr) && (*itr)->GetTypeId() != TYPEID_GAMEOBJECT)
+			closest = (Unit*)(*itr);
+	}
+
+	if(closest == NULL)
+	{
+		return GM_EXCEPTION;
+	}
+
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)closest;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_unitType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+
+	return GM_OK;
+}
+
