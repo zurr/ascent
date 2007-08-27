@@ -190,6 +190,8 @@ void ScriptEngine::SetScriptEngineFunctionTable()
 	m_machine->RegisterLibraryFunction("Rand", GM_RAND, 0, 0);
 	m_machine->RegisterLibraryFunction("GetUnitBySqlId", GM_GetUnitBySqlId, 0, 0);
 	m_machine->RegisterLibraryFunction("sprintf", GM_RAND, 0, 0);
+	m_machine->RegisterLibraryFunction("GetDistance", GM_GetDistance, 0, 0);
+	
 }
 
 

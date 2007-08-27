@@ -125,6 +125,7 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL GM_SPRINTF(gmThread * a_thread);
 	int GM_CDECL GM_RegisterEvent(gmThread * a_thread);
 	int GM_CDECL GM_GetUnitBySqlId(gmThread * a_thread);
+	int GM_CDECL GM_GetDistance(gmThread * a_thread);
 
 /* Quest Functions */
 	int GM_CDECL Quest_GetID(gmThread * a_thread);

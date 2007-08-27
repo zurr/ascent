@@ -1275,3 +1275,19 @@ int Unit_GetName(gmThread * a_thread)
 
 	return GM_OK;
 }
+
+int GM_GetDistance(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, obj1, 0);
+	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, obj2, 1);
+
+	if(!obj1->IsInWorld() || !obj2->IsInWorld())
+	{
+		GM_EXCEPTION_MSG("Objects not in world.");
+		return GM_EXCEPTION;
+	}
+
+	a_thread->PushFloat(obj1->GetDistance2dSq(obj2));
+	return GM_OK;
+}
