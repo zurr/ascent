@@ -148,7 +148,7 @@ void ThreadMgr::ResumeAllThreads()
 	sLog.outString("*** ThreadMgr: Resuming %u threads.", mThreads.size());
 	for(ThreadSet::iterator itr = mThreads.begin(); itr != mThreads.end(); ++itr)
 		if((*itr)->GetThreadState() == THREADSTATE_PAUSED)
-			(*itr)->SetThreadState(THREADSTATE_PAUSED);
+			(*itr)->SetThreadState(THREADSTATE_AWAITING);
 
 	// give them time to kick in
 	Sleep(1000);
