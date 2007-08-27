@@ -1903,6 +1903,59 @@ void ObjectMgr::LoadTrainers()
 		
 	} while(result->NextRow());
 	delete result;
+#ifdef DONTTOUCHMYUNTESTEDSHITTYCODE
+#ifdef ENABLE_USE_TRAINER_SPECIFIC_LIST
+	//get a list of our special trainers.
+	//!!! we do not support merging list with a normal trainer. This is only for custom shit. Old lists are just great as they are (or not ? :D )
+	QueryResult * result1 = WorldDatabase.Query("SELECT distinct(entry) FROM traner_custom_list");
+	if(result != 0)
+	{
+		do 
+		{
+			//check if we already have a triner list for this trianer
+			Field * f1 = result1->Fetch();
+			uint32 entry=f1[0].GetUInt32();
+			if(mTrainers.find(entry) != mTrainers.end())
+				continue
+			//now get the list for this trainer
+			vector<TrainerSpell*> tmp;
+			tmp.reserve(400);
+			QueryResult * result = WorldDatabase.Query("SELECT * FROM traner_custom_list where entry=%u",entry);
+			do
+			{
+				Field * f = result->Fetch();
+				uint32 spell_id=f[1].GetUInt32();
+				spell = sSpellStore.LookupEntry(sp->spell);
+				if(!spell)
+					continue;
+				TrainerSpell * TS = new TrainerSpell;
+				TS->pSpell = spell;
+				TS->TeachingSpellID = spell_id;
+				TS->Cost = f[2].GetUInt32();
+				TS->RequiredSpell = f[3].GetUInt32();
+				TS->RequiredSkillLine = f[4].GetUInt32();
+				TS->RequiredSkillLineValue = f[5].GetUInt32();
+				TS->RequiredLevel = f[6].GetUInt32();
+				TS->RequiredClass = f[7].GetUInt32();
+				const char * temp = fields[8].GetString();
+				TS->TalkMessage = new char[strlen(temp)+1];
+				strcpy(TS->TalkMessage, temp);
+				TS->TalkMessage[strlen(temp)] = 0;
+				if(mTrainers.find(entry) != mTrainers.end())
+				{
+					delete [] tr->TalkMessage;
+					delete [] tr->SpellList;
+					delete tr;
+					continue;
+				}
+				mTrainers.insert( TrainerMap::value_type( entry, tr ) );
+			}while(result->NextRow());
+			delete result;
+		} while(result1->NextRow());
+		delete result1;
+	}
+#endif
+#endif
 }
 
 bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)

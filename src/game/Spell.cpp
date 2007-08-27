@@ -3008,6 +3008,16 @@ uint8 Spell::CanCast(bool rangetolerate)
 					}
 				}
 			}	*/		
+#ifdef DONTTOUCHMYUNTESTEDSHITTYCODE
+			if(m_spellInfo->TargetCreatureType)
+			{
+				if(target->GetTypeId()!= TYPEID_UNIT)
+					return SPELL_FAILED_BAD_TARGETS; //this should never happen s
+				CreatureInfo *inf = ((Creature*)(target))->GetCreatureName();
+				if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
+					return SPELL_FAILED_BAD_TARGETS;
+			}
+#endif
 		}
 	}	
 	if(m_targets.m_targetMask==TARGET_FLAG_DEST_LOCATION)

@@ -904,9 +904,22 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 					continue;
 				}
 				SpellCastTargets targets;
+				Unit *target;
 				if(itr2->procFlags & PROC_TAGRGET_SELF)
-					targets.m_unitTarget = GetGUID();
-				else targets.m_unitTarget = victim->GetGUID();
+					target = this;
+				else target = victim;
+#ifdef DONTTOUCHMYUNTESTEDSHITTYCODE
+			if(m_spellInfo->TargetCreatureType)
+			{
+				if(target->GetTypeId()!= TYPEID_UNIT)
+					continue; //this should never happen s
+				CreatureInfo *inf = ((Creature*)(target))->GetCreatureName();
+				if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
+					continue;
+			}
+#endif
+				targets.m_unitTarget = target->GetGUID();
+	
 				spell->pSpellId=origId;
 				spell->prepare(&targets);
 			}//not always we have a spell to cast
