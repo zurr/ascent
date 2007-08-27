@@ -53,6 +53,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "Kick",								Player_Kick							},
 
 		// Imported Unit Functions
+		{ "GetHealthPct",						Unit_GetHealthPct					},
 		{ "Emote",								Unit_Emote							},
 		{ "SendChatMessage",					Unit_SendChatMessage				},
 		{ "Despawn",							Unit_Despawn						},
@@ -77,6 +78,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 void ScriptEngine::SetUnitFunctionTable()
 {
 	static gmFunctionEntry table[] = {
+		{ "GetHealthPct",						Unit_GetHealthPct					},
 		{ "Emote",								Unit_Emote							},
 		{ "SendChatMessageAltEntry",			Unit_SendChatMessageAltEntry		},
 		{ "SendChatMessage",					Unit_SendChatMessage				},
@@ -142,6 +144,7 @@ void ScriptEngine::SetGameObjectFunctionTable()
 		{ "GetGuid",							Unit_GetGuid						},
 		{ "RegisterEvent",						GM_RegisterEvent					},
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
+		{ "SpawnMonster",						Unit_SpawnMonster					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));
