@@ -245,7 +245,7 @@ bool Master::Run(int argc, char ** argv)
 		return false;
 	}
 
-	Log.Color(TWHITE);
+	/*Log.Color(TWHITE);
 	int left = 3;
 	bool dodb = false;
 	printf("\nHit F1 within the next 3 seconds to enter database maintenance mode.");
@@ -273,7 +273,7 @@ bool Master::Run(int argc, char ** argv)
 		sConsole.WaitForSpace();
 	}
 	else
-		Log.Color(TNORMAL);
+		Log.Color(TNORMAL);*/
 
 	Log.Line();
 	sLog.outString("");
@@ -636,11 +636,24 @@ void OnCrash(bool Terminate)
 				dbThread = (MySQLDatabase*)Database_Character;
 				dbThread->SetThreadState(THREADSTATE_TERMINATE);
 				dbThread2->SetThreadState(THREADSTATE_TERMINATE);
-				CharacterDatabase.Execute("UPDATE characters SET online = 0");
-				WorldDatabase.Execute("UPDATE characters SET online = 0");
+				const char * query = "UPDATE characters SET online = 0 WHERE guid = 0";
+				uint32 next_query_time = getMSTime() + 10000;
 				// wait for it to finish its work
+				CharacterDatabase.Execute(query);
+				WorldDatabase.Execute(query);
+
 				while(dbThread->ThreadRunning || dbThread2->ThreadRunning)
 				{
+					if(getMSTime() >= next_query_time)
+					{
+						next_query_time = getMSTime() + 10000;
+						/* send some bullshit queries */
+                        if(dbThread->ThreadRunning)
+							CharacterDatabase.Execute(query);
+						
+						if(dbThread2->ThreadRunning)
+							WorldDatabase.Execute(query);
+					}
 					Sleep(100);
 				}
 			}
