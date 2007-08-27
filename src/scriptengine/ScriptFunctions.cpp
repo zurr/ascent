@@ -1397,3 +1397,47 @@ int Unit_GetClosestUnitByEntry(gmThread * a_thread)
 	ScriptSystem->m_userObjectCounter++;
 	return GM_OK;
 }
+
+int Unit_GetPositionX(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	if(!pThis->IsInWorld())
+		return GM_EXCEPTION;
+
+	a_thread->PushFloat(pThis->GetPositionX());
+	return GM_OK;
+}
+
+int Unit_GetPositionY(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	if(!pThis->IsInWorld())
+		return GM_EXCEPTION;
+
+	a_thread->PushFloat(pThis->GetPositionY());
+	return GM_OK;
+}
+
+int Unit_GetPositionZ(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	if(!pThis->IsInWorld())
+		return GM_EXCEPTION;
+
+	a_thread->PushFloat(pThis->GetPositionZ());
+	return GM_OK;
+}
+
+int Unit_GetFacing(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	if(!pThis->IsInWorld())
+		return GM_EXCEPTION;
+
+	a_thread->PushFloat(pThis->GetOrientation());
+	return GM_OK;
+}
