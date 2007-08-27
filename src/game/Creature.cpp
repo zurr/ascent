@@ -510,6 +510,8 @@ bool Creature::RemoveEnslave()
 
 void Creature::AddInRangeObject(Object* pObj)
 {
+	if(pObj->GetTypeId() == TYPEID_PLAYER && pObj->IsPlayer())
+		ScriptSystem->OnCreatureEvent(((Creature*)this), (Unit*)pObj, CREATURE_EVENT_PLAYER_ENTERS_RANGE);
 	Unit::AddInRangeObject(pObj);
 }
 
