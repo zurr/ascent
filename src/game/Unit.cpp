@@ -1586,7 +1586,9 @@ else
 				dmg.full_damage+=pVictim->RangedDamageTaken;
 			}
 					
-			float summaryPCTmod = pVictim->DamageTakenPctMod[0]+this->DamageDoneModPCT[0]+(pct_dmg_mod-1)/100.0f;
+			float summaryPCTmod = pVictim->DamageTakenPctMod[0]+this->DamageDoneModPCT[0];
+			if (pct_dmg_mod)
+				summaryPCTmod += pct_dmg_mod/100.0f - 1;
 			if (dmg.damage_type == RANGED)
 			{
 				summaryPCTmod+=pVictim->RangedDamageTakenPct/100;	
