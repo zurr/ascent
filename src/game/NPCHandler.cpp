@@ -108,17 +108,54 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 	if(pTrainer == 0) return;
 
 	WorldPacket data(SMSG_TRAINER_LIST, 5000);
-	
-	data << pCreature->GetGUID();
-	data << pTrainer->TrainerType;
-	data << pTrainer->SpellCount;
-
 	TrainerSpell * pSpell;
 	uint32 Spacer = 0;
-	uint32 * SpellCount = (uint32*)&data.contents()[12];
 	uint8 Status;
-	int32 RequiredLevel;
+	string Text;
 
+	data << pCreature->GetGUID();
+	data << pTrainer->TrainerType;
+
+#ifdef NEW_TRAINER_CODE
+	if(	_player->getLevel()<pTrainer->Req_lvl ||
+		_player->GetStanding(pTrainer->Req_rep) < pTrainer->Req_rep_value ||
+		_player->getClass() != pTrainer->RequiredClass)
+	{
+		Text = pTrainer->NoTrainMsg;
+		data << 0; //no spells for you
+		data << Text;
+	}
+	else 
+	{
+		data << pTrainer->SpellCount;
+		for(uint32 i = 0; i < pTrainer->SpellCount; ++i)
+		{
+			pSpell = pTrainer->SpellList[i];
+
+			Status = TrainerGetSpellStatus(pSpell);
+
+			data << pSpell->TeachingSpellID;
+			data << Status;		
+			data << pSpell->Cost;
+			data << Spacer;
+			data << pSpell->IsProfession; 
+			data << (uint8)pSpell->RequiredLevel;
+
+			data << pSpell->RequiredSkill;
+			data << pSpell->RequiredSkillValue;
+			data << pSpell->RequiredSpell;
+
+			data << Spacer;//this is like a spell owerride or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
+			data << Spacer;
+		}
+
+		Text = pTrainer->TrainMsg;
+		data << Text;
+	}
+#else
+	uint32 RequiredLevel;
+	data << pTrainer->SpellCount;
+	uint32 * SpellCount = (uint32*)&data.contents()[12];
 	for(uint32 i = 0; i < pTrainer->SpellCount; ++i)
 	{
 		// We need the info for the teaching spell ;)
@@ -177,9 +214,9 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 		data << Spacer;
 	}
 
-	string Text = pTrainer->TalkMessage;
+	Text = pTrainer->TalkMessage;
 	data << Text;
-
+#endif
 	SendPacket(&data);
 }
 
@@ -220,9 +257,16 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 	pCreature->CastSpell(_player, pSpell->TeachingSpellID, true);
 }
 
-
 uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 {
+#ifdef NEW_TRAINER_CODE
+	if(	_player->getLevel()<pSpell->RequiredLevel
+		|| !_player->HasSpell(pSpell->RequiredSpell)
+		|| _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost
+		|| _player->GetSkillAmt(pSpell->RequiredSkill) < pSpell->RequiredSkillValue	)
+		return TRAINER_STATUS_NOT_LEARNABLE;
+	return TRAINER_STATUS_LEARNABLE;
+#else
 	// check player's lavel
 	if(pSpell->RequiredLevel && _player->getLevel() < pSpell->RequiredLevel)
 		return TRAINER_STATUS_NOT_LEARNABLE;
@@ -253,6 +297,7 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 		return TRAINER_STATUS_NOT_LEARNABLE;
 
 	return TRAINER_STATUS_LEARNABLE;
+#endif
 }
 
 //////////////////////////////////////////////////////////////

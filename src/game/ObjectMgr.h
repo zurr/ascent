@@ -19,6 +19,8 @@
 #define _OBJECTMGR_H
 #include "../shared/Threading/RWLock.h"
 
+//#define NEW_TRAINER_CODE //will simply use a list of spells
+
 inline bool FindXinYString(std::string& x, std::string& y)
 {
 	return y.find(x) != std::string::npos;
@@ -61,18 +63,6 @@ struct ThreatToSpellId
 	int32 mod;
 };
 
-struct TrainerSpellOverride
-{
-	uint32 SpellID;
-	uint32 Cost;
-	uint32 RequiredSpell;
-	uint32 DeleteSpell;
-	uint32 RequiredSkill;
-	uint32 RequiredSkillValue;
-	uint8 RequiredLevel;
-	int32 RequiredClass;
-};
-
 struct FishingZoneEntry
 {
 	uint32 ZoneID;
@@ -110,6 +100,34 @@ struct GossipMenuItem
 	string Text;
 };
 
+#ifdef NEW_TRAINER_CODE
+struct TrainerSpell
+{
+	uint32	TeachingSpellID; //this is castspell that will teach you something
+	uint32	DeleteSpell;
+	uint32	RequiredSpell;
+	uint32	RequiredSkill;
+	uint32	RequiredSkillValue;
+	uint32	IsProfession;
+	uint32	Cost;
+	uint32	RequiredLevel;
+};
+
+struct Trainer
+{
+	uint32	SpellCount;
+	TrainerSpell** SpellList;
+
+	char*	TrainMsg;
+	char*	NoTrainMsg;
+	uint32	RequiredClass;
+	uint32	Req_rep;
+	int32	Req_rep_value;
+	uint32	Req_lvl;
+	uint32	TrainerType;
+	uint32	is_profession;
+};
+#else
 struct SpellEntry;
 struct TrainerSpell
 {
@@ -146,6 +164,20 @@ struct Trainer
 	uint32 TrainerType;
 	uint32 RequiredClass;
 };
+
+
+struct TrainerSpellOverride
+{
+	uint32 SpellID;
+	uint32 Cost;
+	uint32 RequiredSpell;
+	uint32 DeleteSpell;
+	uint32 RequiredSkill;
+	uint32 RequiredSkillValue;
+	uint8 RequiredLevel;
+	int32 RequiredClass;
+};
+#endif
 
 struct LevelInfo
 {
