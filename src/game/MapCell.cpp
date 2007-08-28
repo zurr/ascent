@@ -118,7 +118,8 @@ void MapCell::RemoveObjects()
 			delete ((DynamicObject*)obj);
 		else if (obj->GetTypeId() == TYPEID_CORPSE)
 		{
-			delete ((Corpse*)obj);
+			if(!_unloadpending)
+				delete ((Corpse*)obj);
 		}
 	}
 
@@ -204,4 +205,5 @@ void MapCell::Unload()
 	//Log.Debug("MapCell", "Unloading cell %u %u", _x, _y);
 	ASSERT(_unloadpending);
 	RemoveObjects();
+	_unloadpending=false;
 }
