@@ -31,6 +31,9 @@ void MapCell::Init(uint32 x, uint32 y, uint32 mapid, MapMgr *mapmgr)
 	_active = false;
 	_loaded = false;
 	_playerCount = 0;
+	_x=x;
+	_y=y;
+	_unloadpending=false;
 }
 
 void MapCell::AddObject(Object *obj)
@@ -59,6 +62,10 @@ void MapCell::SetActivity(bool state)
 			if(!(*itr)->Active && (*itr)->CanActivate())
 				(*itr)->Activate(_mapmgr);
 		}
+
+		if(_unloadpending)
+			CancelPendingUnload();
+
 	} else if(_active && !state)
 	{
 		// Move all objects from active set.
@@ -67,6 +74,9 @@ void MapCell::SetActivity(bool state)
 			if((*itr)->Active)
 				(*itr)->Deactivate(_mapmgr);
 		}
+
+		if(sWorld.map_unload_time && !_unloadpending)
+			QueueUnloadPending();
 	}
 
 	_active = state; 
@@ -171,4 +181,28 @@ void MapCell::LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pIns
 				delete go;//missing proto or smth of that kind
 		}
 	}
+}
+
+
+void MapCell::QueueUnloadPending()
+{
+	if(_unloadpending)
+		return;
+
+	_unloadpending = true;
+	sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell,(uint32)_x,(uint32)_y,MAKE_CELL_EVENT(_x,_y),sWorld.map_unload_time * 1000,1,0);
+}
+
+void MapCell::CancelPendingUnload()
+{
+	if(!_unloadpending)
+		return;
+
+	sEventMgr.RemoveEvents(_mapmgr,MAKE_CELL_EVENT(_x,_y));
+}
+
+void MapCell::Unload()
+{
+	ASSERT(_unloadpending);
+	RemoveObjects();
 }

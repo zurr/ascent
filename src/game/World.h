@@ -479,6 +479,7 @@ public:
 	bool gm_skip_attunement;
 	float m_UpdateDistance;
 	bool show_gm_in_who_list;
+	uint32 map_unload_time;
 
 protected:
 	// update Stuff, FIXME: use diff

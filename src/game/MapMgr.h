@@ -265,6 +265,8 @@ public:
 	bool thread_is_alive;
 	bool delete_pending;
 
+	void UnloadCell(uint32 x,uint32 y);
+
 protected:
 
 	//! Collect and send updates to clients

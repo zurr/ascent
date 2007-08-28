@@ -165,11 +165,11 @@ struct SERVER_DECL TimedEvent
 		
 	void *obj;
 	CallbackBase *cb;
-	uint16 eventType;
+	uint32 eventType;
 	uint16 eventFlag;
 	time_t msTime;
 	time_t currTime;
-	uint32 repeats;
+	uint16 repeats;
 	bool deleted;
 	int instanceId;
 	volatile long ref;

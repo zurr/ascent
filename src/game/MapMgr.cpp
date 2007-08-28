@@ -1399,3 +1399,15 @@ void MapMgr::SetCreator(Player *pPlayer)
 {
 	m_iCreator = pPlayer->GetGUID();
 }
+
+void MapMgr::UnloadCell(uint32 x,uint32 y)
+{
+	MapCell * c = GetCell(x,y);
+	if(c == NULL || c->HasPlayers() || _CellActive(x,y) || !c->IsUnloadPending()) return;
+
+	sLog.outDetail("Unloading Cell [%d][%d] on map %d (instance %d)...", 
+		x,y,_mapId,m_instanceID);
+
+    c->Unload();
+	Remove(x,y);
+}

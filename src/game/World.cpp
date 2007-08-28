@@ -44,6 +44,7 @@ World::World()
 	AlliancePlayers = 0;
 	gm_skip_attunement = false;
 	show_gm_in_who_list = true;
+	map_unload_time=0;
 #ifndef CLUSTERING
 	SocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
 	SocketRecvBufSize = WORLDSOCKET_RECVBUF_SIZE;
@@ -2176,4 +2177,6 @@ void World::Rehash(bool load)
 	show_gm_in_who_list = Config.MainConfig.GetBoolDefault("Server", "ShowGMInWhoList", true);
 	if(!flood_lines || !flood_seconds)
 		flood_lines = flood_seconds = 0;
+
+	map_unload_time=Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", 0);
 }

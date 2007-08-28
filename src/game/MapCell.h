@@ -25,6 +25,9 @@
 class Map;
 struct Instance_Map_InstanceId_Holder;
 
+#define MAKE_CELL_EVENT(x,y) ( ((x) * 1000) + 200 + y )
+#define DECODE_CELL_EVENT(dest_x, dest_y, ev) (dest_x) = ((ev-200)/1000); (dest_y) = ((ev-200)%1000);
+
 class MapCell
 {
 	friend class MapMgr;
@@ -57,9 +60,17 @@ public:
 	void LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pInstance);
 	inline uint32 GetPlayerCount() { return _playerCount; }
 
+	inline bool IsUnloadPending() { return _unloadpending; }
+	inline void SetUnloadPending(bool up) { _unloadpending = up; }
+	void QueueUnloadPending();
+	void CancelPendingUnload();
+	void Unload();
+
 private:
+	uint16 _x,_y;
 	ObjectSet _objects;
 	bool _active, _loaded;
+	bool _unloadpending;
 	uint16 _playerCount;
 	MapMgr* _mapmgr;
 };
