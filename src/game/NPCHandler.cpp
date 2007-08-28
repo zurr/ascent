@@ -117,9 +117,9 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 	data << pTrainer->TrainerType;
 
 #ifdef NEW_TRAINER_CODE
-	if(	_player->getLevel()<pTrainer->Req_lvl ||
-		_player->GetStanding(pTrainer->Req_rep) < pTrainer->Req_rep_value ||
-		_player->getClass() != pTrainer->RequiredClass)
+	if(	(pTrainer->Req_lvl && _player->getLevel()<pTrainer->Req_lvl) ||
+		(pTrainer->Req_rep && _player->GetStanding(pTrainer->Req_rep) < pTrainer->Req_rep_value) ||
+		(pTrainer->RequiredClass && _player->getClass() != pTrainer->RequiredClass))
 	{
 		Text = pTrainer->NoTrainMsg;
 		data << 0; //no spells for you
@@ -260,10 +260,10 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 {
 #ifdef NEW_TRAINER_CODE
-	if(	_player->getLevel()<pSpell->RequiredLevel
-		|| !_player->HasSpell(pSpell->RequiredSpell)
-		|| _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost
-		|| _player->GetSkillAmt(pSpell->RequiredSkill) < pSpell->RequiredSkillValue	)
+	if(	(pSpell->RequiredLevel && _player->getLevel()<pSpell->RequiredLevel)
+		|| (pSpell->RequiredSpell && !_player->HasSpell(pSpell->RequiredSpell))
+		|| (pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)
+		|| (pSpell->RequiredSkill && _player->GetSkillAmt(pSpell->RequiredSkill) < pSpell->RequiredSkillValue)	)
 		return TRAINER_STATUS_NOT_LEARNABLE;
 	return TRAINER_STATUS_LEARNABLE;
 #else

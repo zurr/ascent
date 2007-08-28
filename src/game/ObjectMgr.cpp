@@ -1389,7 +1389,6 @@ void ObjectMgr::LoadTrainers()
 				continue; //omg a bad spell !
 			}
 			tr->SpellList[i] = new TrainerSpell;
-//			tr->SpellList[i]->CastSpellID = CastSpellID;
 			tr->SpellList[i]->TeachingSpellID = CastSpellID;
 			tr->SpellList[i]->Cost = fields2[2].GetUInt32();
 			tr->SpellList[i]->RequiredSpell = fields2[3].GetUInt32();
@@ -1398,13 +1397,7 @@ void ObjectMgr::LoadTrainers()
 			tr->SpellList[i]->RequiredLevel = fields2[6].GetUInt32();
 			tr->SpellList[i]->DeleteSpell = fields2[7].GetUInt32();
 			tr->SpellList[i]->IsProfession = fields2[8].GetUInt32();
-/*			//get the spell we are teaching
-			for(int j=0; j<3 ; j++)
-				if(spellInfo->Effect[j]==SPELL_EFFECT_LEARN_SPELL && spellInfo->EffectTriggerSpell[j])
-				{
-					tr->SpellList[i]->TeachingSpellID=spellInfo->EffectTriggerSpell[j];
-					break;
-				}*/
+			result2->NextRow();
 		}
 		delete result2;
 

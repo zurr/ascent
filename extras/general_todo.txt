@@ -52,8 +52,8 @@ SMT_RESIST_DISPEL - check if it is used
 Zack - test my shit :
 
  - ai_agents fillup
- - new trainer list code
  - demonslaying target type checking
+ - scheck summon guardian code, maybe add some more ai ?
 
 ==========================================================================
 
