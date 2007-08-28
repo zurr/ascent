@@ -97,12 +97,13 @@ void MapCell::RemoveObjects()
 
 		itr++;
 
+		if(UINT32_LOPART(obj->GetGUIDHigh())==HIGHGUID_TRANSPORTER)
+			continue;
+
 		if (obj->IsInWorld())
 			obj->RemoveFromWorld();
-  
-		if (obj->IsPlayer())
-			delete ((Player*)obj);
-		else if (obj->GetTypeId() == TYPEID_UNIT)
+
+		if (obj->GetTypeId() == TYPEID_UNIT)
 		{
 			if(obj->IsPet())
 				delete ((Pet*)(obj));
@@ -111,12 +112,7 @@ void MapCell::RemoveObjects()
 		}
 		else if (obj->GetTypeId() == TYPEID_GAMEOBJECT)
 		{
-			if(UINT32_LOPART(obj->GetGUIDHigh())==HIGHGUID_TRANSPORTER)
-			{}
-			else
-			{
-				delete ((GameObject*)obj);
-			}
+			delete ((GameObject*)obj);
 		}
 		else if (obj->GetTypeId() == TYPEID_DYNAMICOBJECT)
 			delete ((DynamicObject*)obj);
@@ -190,11 +186,13 @@ void MapCell::QueueUnloadPending()
 		return;
 
 	_unloadpending = true;
+	//Log.Debug("MapCell", "Queueing pending unload of cell %u %u", _x, _y);
 	sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell,(uint32)_x,(uint32)_y,MAKE_CELL_EVENT(_x,_y),sWorld.map_unload_time * 1000,1,0);
 }
 
 void MapCell::CancelPendingUnload()
 {
+	//Log.Debug("MapCell", "Cancelling pending unload of cell %u %u", _x, _y);
 	if(!_unloadpending)
 		return;
 
@@ -203,6 +201,7 @@ void MapCell::CancelPendingUnload()
 
 void MapCell::Unload()
 {
+	//Log.Debug("MapCell", "Unloading cell %u %u", _x, _y);
 	ASSERT(_unloadpending);
 	RemoveObjects();
 }

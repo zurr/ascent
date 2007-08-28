@@ -1409,5 +1409,4 @@ void MapMgr::UnloadCell(uint32 x,uint32 y)
 		x,y,_mapId,m_instanceID);
 
     c->Unload();
-	Remove(x,y);
 }
