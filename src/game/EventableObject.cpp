@@ -356,7 +356,7 @@ void EventableObjectHolder::AddObject(EventableObject * obj)
 		m_insertPoolLock.Acquire();
 		EventMap::iterator it2;
 
-		for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end();)
+		for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end();++itr)
 		{
 			// ignore deleted events (shouldn't be any in here, actually)
 			if((*itr)->deleted)
