@@ -1232,7 +1232,7 @@ public:
 	// Checks the caster is ready for cast
 	uint8 CanCast(bool);
 	// Checks the caster has needed items on it 
-	int8 CheckItems();
+	inline int8 CheckItems();
 	// Removes Reagents if cast is successful
 	void RemoveItems();
 	// Calculates the i'th effect value

@@ -2959,7 +2959,6 @@ uint8 Spell::CanCast(bool rangetolerate)
 						return SPELL_FAILED_BAD_TARGETS;
 				}
 
-				// warning C4309 fix
 				if(target->dispels[m_spellInfo->DispelType])
 					return (uint8)SPELL_FAILED_PREVENTED_BY_MECHANIC;
 				
@@ -2972,10 +2971,10 @@ uint8 Spell::CanCast(bool rangetolerate)
 			if(acr.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
 				return (uint8)SPELL_FAILED_AURA_BOUNCED;
 
-			//check if we are trying to stealth or turn invisible but it is not alowed right now
+			//check if we are trying to stealth or turn invisible but it is not allowed right now
 			if(IsStealthSpell() || IsInvisibilitySpell())
 			{
-				//if we have Faerie Fire, we canot stealth or turn invisible
+				//if we have Faerie Fire, we cannot stealth or turn invisible
 				if(u_caster->HasNegativeAuraWithNameHash(2787586002UL))
 					return SPELL_FAILED_CANT_STEALTH;
 			}
@@ -3066,7 +3065,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 			//	GameObjectNameStorage.LookupEntry((*itr)->GetEntry());
 				if(!info)
 				{
-					sLog.outDebug("Warning: could not finfd info about gameobject %u",(*itr)->GetEntry());
+					sLog.outDebug("Warning: could not find info about game object %u",(*itr)->GetEntry());
 					continue;
 				}
 				if(info->SpellFocus == m_spellInfo->RequiresSpellFocus)
@@ -3080,12 +3079,13 @@ uint8 Spell::CanCast(bool rangetolerate)
 		}
 	}
 	
+    // If the caster is a Unit
 	if(u_caster)
 	{
-		if(u_caster->SchoolCastPrevent[m_spellInfo->School])//
+		if(u_caster->SchoolCastPrevent[m_spellInfo->School])
 		{	
-			uint32 now_=getMSTime();
-			if(now_>u_caster->SchoolCastPrevent[m_spellInfo->School])//this limit has expired,remove
+			uint32 now_ = getMSTime();
+			if(now_ > u_caster->SchoolCastPrevent[m_spellInfo->School])//this limit has expired,remove
 				u_caster->SchoolCastPrevent[m_spellInfo->School]=0;
 			else 
 				return SPELL_FAILED_SILENCED;
@@ -3097,6 +3097,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 		if(target)
 		{
 			for(int i=0;i<3;i++) // if is going to cast a spell that breaks stun remove stun auras, looks a bit hacky but is the best way i can find
+            {
 				if(m_spellInfo->EffectApplyAuraName[i] == 77 && (m_spellInfo->EffectMiscValue[i] == 12 || m_spellInfo->EffectMiscValue[i] == 17))
 				{
 					for(uint32 x=MAX_POSITIVE_AURAS;x<MAX_AURAS;x++)
@@ -3104,6 +3105,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 							if(target->m_auras[x]->GetSpellProto()->MechanicsType == m_spellInfo->EffectMiscValue[i])
 								target->m_auras[x]->Remove();
 				}
+            }
 		}
 
 		if(u_caster->IsPacified() && m_spellInfo->School == NORMAL_DAMAGE) // only affects physical damage
@@ -3111,9 +3113,28 @@ uint8 Spell::CanCast(bool rangetolerate)
 
 		if(u_caster->IsStunned())
 			return SPELL_FAILED_STUNNED;
-				
-	}
 
+        if(u_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) > 0)
+        {
+            SpellEntry * t_spellInfo = u_caster->GetCurrentSpell()->m_spellInfo;
+
+            if(!t_spellInfo || !m_triggeredSpell)
+                return SPELL_FAILED_SPELL_IN_PROGRESS;
+            else if (t_spellInfo)
+            {
+                if (
+                    t_spellInfo->EffectTriggerSpell[0] != m_spellInfo->Id &&
+                    t_spellInfo->EffectTriggerSpell[1] != m_spellInfo->Id &&
+                    t_spellInfo->EffectTriggerSpell[2] != m_spellInfo->Id
+                    )
+                {
+                    return SPELL_FAILED_SPELL_IN_PROGRESS;
+                }
+            }
+        }
+    }
+
+    // if the caster is a item
 	if(i_caster)
 	{
 		uint32 ss = p_caster->GetShapeShift();
@@ -3123,62 +3144,43 @@ uint8 Spell::CanCast(bool rangetolerate)
 		}	
 	}
 
-	if(u_caster)
-	{
-		if(u_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) > 0)
-		{
-			if(!u_caster->GetCurrentSpell() || !m_triggeredSpell)
-				return SPELL_FAILED_SPELL_IN_PROGRESS;
-			else
-			{
-				if(u_caster->GetCurrentSpell())
-				{
-					bool pass = false;
-					for(uint32 eff = 0;eff<3;eff++)
-					{
-						if(u_caster->GetCurrentSpell()->m_spellInfo->EffectTriggerSpell[eff] == m_spellInfo->Id)
-						{
-							pass = true;	// Allow it.
-							break;		// No point continuing.
-						}
-					}
-					if(!pass)
-						return SPELL_FAILED_SPELL_IN_PROGRESS;
-				}
-			}
-		}
-	}
-
+    /// if we happen to get here we check if the caster is a player and apply check's for items 
 	if(p_caster)
 		return CheckItems();
 	else 
 		return -1;
 }
 
+/// we check player items
 int8 Spell::CheckItems()
 {
+    /// we check so we are sure we "are" a player
 	if (m_caster->GetTypeId() != TYPEID_PLAYER)
 		return int8(-1);
 
+    /// typecast Master to Player
 	Player* p_caster = (Player*)m_caster;
 
+    ItemInterface * t_PlayerItemInterface = p_caster->GetItemInterface();
 	for(uint32 i=0;i<8;i++)
 	{
 		if((m_spellInfo->Reagent[i] == 0) || (m_spellInfo->ReagentCount[i] == 0))
 			continue;
-		if (p_caster->GetItemInterface()->GetItemCount(m_spellInfo->Reagent[i]) < m_spellInfo->ReagentCount[i])
+		if (t_PlayerItemInterface->GetItemCount(m_spellInfo->Reagent[i]) < m_spellInfo->ReagentCount[i])
 			return int8(SPELL_FAILED_ITEM_GONE);
 	}
 
-	for(uint32 i=0; i < 2; i++)
-	{
-		if(m_spellInfo->Totem[i] != 0)
-		{
-			if(!p_caster->GetItemInterface()->GetItemCount(m_spellInfo->Totem[i]))
-				return int8(SPELL_FAILED_ITEM_NOT_FOUND);
-		}
-	}
-	
+    if(m_spellInfo->Totem[0] != 0)
+    {
+        if(!p_caster->GetItemInterface()->GetItemCount(m_spellInfo->Totem[0]))
+            return int8(SPELL_FAILED_ITEM_NOT_FOUND);
+    }
+    else if(m_spellInfo->Totem[1] != 0)
+    {
+        if(!p_caster->GetItemInterface()->GetItemCount(m_spellInfo->Totem[1]))
+            return int8(SPELL_FAILED_ITEM_NOT_FOUND);
+    }
+
 	if(m_targets.m_itemTarget)
 	{
 		Item *it = 0;
@@ -3209,10 +3211,12 @@ int8 Spell::CheckItems()
 			ItemPrototype *proto=it->GetProto();
 			ASSERT(proto);
 
-			if(m_spellInfo->Id==13262) //check for disenchant, only greeen and better items could be disenchanted
+			if(m_spellInfo->Id==13262) //check for disenchant, only green and better items could be disenchanted
 			{
-				if(proto->Quality < 2 || proto->InventoryType == INVTYPE_NON_EQUIP
-				|| proto->InventoryType >= INVTYPE_HOLDABLE)
+				if(proto->Quality < 2 
+                    || proto->InventoryType == INVTYPE_NON_EQUIP
+				    || proto->InventoryType >= INVTYPE_HOLDABLE
+                  )
 					return SPELL_FAILED_CANT_BE_DISENCHANTED;
 				//disenchant armor,weapon,ring,trinket, and neck				
 			}
@@ -3305,11 +3309,12 @@ int32 Spell::CalculateEffect(uint32 i)
 	else
 		value = basePoints + rand() % randomPoints;
 
+    // druid passive forms
 	if(m_spellInfo->Id ==3025 ||m_spellInfo->Id==9635 || m_spellInfo->Id == 1178 || m_spellInfo->Id == 24905)
 	{
 		value += float2int32(m_spellInfo->EffectRealPointsPerLevel[i]*(u_caster->getLevel()-m_spellInfo->baseLevel));
 	}
-	//sripted shit
+	//scripted shit
 	else
 	if(m_spellInfo->Id == 34120)
 	{			//A steady shot that causes ${$RAP*0.3+$m1} damage. 
