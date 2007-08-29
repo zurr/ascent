@@ -2729,11 +2729,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 		{
 			if(!rangetolerate && !p_caster->CanCastDueToCooldown(m_spellInfo))
 				return SPELL_FAILED_NOT_READY;
-            
-            // players that are mounted can not cast spells, there are some rare situations what the client does not handle this correct
-            if( p_caster->IsMounted() )
-                return (uint8)SPELL_FAILED_NOT_ON_MOUNTED;
-		}
+        }
 
 		target = (m_caster->IsInWorld()) ? m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget) : NULL;
 	 
