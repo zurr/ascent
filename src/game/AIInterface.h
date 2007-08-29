@@ -200,8 +200,9 @@ public:
 	uint32	getThreatByGUID(uint64 guid);
 	uint32	getThreatByPtr(Unit* obj);
 	Unit	*GetMostHated();
-	bool modThreatByGUID(uint64 guid, int32 mod);
-	bool modThreatByPtr(Unit* obj, int32 mod);
+	bool	modThreatByGUID(uint64 guid, int32 mod);
+	bool	modThreatByPtr(Unit* obj, int32 mod);
+	void	RemoveThreatByPtr(Unit* obj);
 	inline AssistTargetSet GetAssistTargets() { return m_assistTargets; }
 	inline TargetMap *GetAITargets() { return &m_aiTargets; }
 	void addAssistTargets(Unit* Friends);

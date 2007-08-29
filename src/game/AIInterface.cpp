@@ -2904,10 +2904,34 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 		// check for a possible decrease in threat.
 		if(mod < 0)
 		{
-			SetNextTarget(FindTargetForSpell(m_nextSpell));
+			m_nextTarget = GetMostHated();
+			//if there is no more new targets then we can walk back home ?
+			if(!m_nextTarget)
+				HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
+			SetNextTarget(m_nextTarget);
 		}
 	}
 	return true;
+}
+
+void AIInterface::RemoveThreatByPtr(Unit* obj)
+{
+	if(!obj)
+		return;
+	TargetMap::iterator it = m_aiTargets.find(obj);
+	if(it != m_aiTargets.end())
+	{
+		m_aiTargets.erase(it);
+		//check if we are in combat and need a new target
+		if(obj==m_nextTarget)
+		{
+			m_nextTarget = GetMostHated();
+			//if there is no more new targets then we can walk back home ?
+			if(!m_nextTarget)
+				HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
+			SetNextTarget(m_nextTarget);
+		}
+	}
 }
 
 void AIInterface::addAssistTargets(Unit* Friend)
