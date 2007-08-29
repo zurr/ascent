@@ -689,7 +689,7 @@ void AIInterface::_UpdateTargets()
 				HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
 			}*/
 		}
-		else if(m_aiTargets.size() == 0 && (m_AIType == AITYPE_PET && m_Unit->GetGUIDHigh() == HIGHGUID_PET && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE))
+		else if(m_aiTargets.size() == 0 && (m_AIType == AITYPE_PET && (m_Unit->GetGUIDHigh() == HIGHGUID_PET && static_cast<Pet*>(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE) || (m_Unit->GetGUIDHigh() != HIGHGUID_PET && disable_melee==false)))
 		{
 			 Unit* target = FindTarget();
 			 if(target)
