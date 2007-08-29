@@ -4010,7 +4010,7 @@ bool Player::HasSkillLine(uint32 id)
 {
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(((uint16)GetUInt32Value(i))==id)
+		if((m_uint32Values[i] & 0x0000FFFF)==id)
 			return true;
 	}
 	return false;
@@ -4042,8 +4042,8 @@ uint32 Player::GetSkillMax(uint32 id)
 {
    for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(((uint16)GetUInt32Value(i))==id)
-			return GetUInt32Value(i+1)>>16;
+		if((m_uint32Values[i] & 0x0000FFFF)==id)
+			return ((m_uint32Values[i+1] >> 16) & 0x0000FFFF);
 	}
 	return 0;
 }
@@ -4052,9 +4052,9 @@ uint32 Player::GetBaseSkillAmt(uint32 id)//return skill amount without bonus
 {
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(((uint16)GetUInt32Value(i))==id)
+		if((m_uint32Values[i] & 0x0000FFFF)==id)
 		{
-			return GetUInt32Value(i+1)%0x10000;
+			return (m_uint32Values[i+1] & 0x0000FFFF);
 		}
 	}
 	return 0;
@@ -4077,12 +4077,17 @@ void Player::AdvanceSkillLine(uint32 id)
   
    for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
    {
-		if(((uint16)GetUInt32Value(i))==id)
-		if(((uint16)GetUInt32Value(i+1)) < (GetUInt32Value(i+1)>>16) ) // check if skill is not at the max
+		if((m_uint32Values[i] & 0x0000FFFF)==id)
 		{
-			ModUInt32Value(i+1,1);
-			return;		
-		}		   
+			uint32 max = (m_uint32Values[i+1] >> 16) & 0x0000FFFF;
+			uint32 cur = (m_uint32Values[i+1] & 0x0000FFFF);
+			if(cur<max)
+			{
+				++cur;
+				SetUInt32Value(i+1, ((max << 16) | cur));
+			}
+			return;
+		}	   
 	}
 }
 
@@ -4090,13 +4095,14 @@ void Player::ModSkillMax(uint32 id, uint32 amt, uint32 setcur /* = 0 */)
 {
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(((uint16)GetUInt32Value(i))==id)
+		if((m_uint32Values[i] & 0x0000FFFF)==id)
 		{
-			uint32 val=GetUInt32Value(i+1)%0x10000+amt*0x10000;
-			if(setcur)
-				val = setcur | (val & 0xFFFF0000);
+			uint32 max = (m_uint32Values[i+1] >> 16) & 0x0000FFFF;
+			uint32 cur = (m_uint32Values[i+1] & 0x0000FFFF);
+			if(setcur != 0)
+				cur=setcur;
 
-			SetUInt32Value(i+1,val);
+			SetUInt32Value(i+1, ((max << 16) | cur));
 			return;
 		}		   
 	}
@@ -4111,6 +4117,9 @@ void Player::AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal)
 	skilllineentry *en=sSkillLineStore.LookupEntry(id);
 	if(en && en->type==SKILL_TYPE_PROFESSION)
 	skillid|=0x10000;
+
+	if(currVal>maxVal)
+		currVal=maxVal;
 
 
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
@@ -4148,7 +4157,7 @@ void Player::RemoveSkillLine(uint32 id)
 {
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(((uint16)GetUInt32Value(i))==id)
+		if((m_uint32Values[i] & 0x0000FFFF)==id)
 		{
 			SetUInt64Value(i,0);
 			SetUInt32Value(i+2,0);
@@ -4172,7 +4181,7 @@ void Player::ModSkillBonus(uint32 id,int32 bonus)
 {
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if(((uint16)GetUInt32Value(i))==id)
+		if((m_uint32Values[i] & 0x0000FFFF)==id)
 		{
 			ModUInt32Value(i+2,bonus);
 			return;
@@ -4182,10 +4191,10 @@ void Player::ModSkillBonus(uint32 id,int32 bonus)
 
 void Player::ModSkillBonusType(uint32 type,int32 bonus)
 {
-	uint16 skillid;
+	uint32 skillid;
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if((skillid=GetUInt32Value(i)))
+		if((skillid = (m_uint32Values[i] & 0x0000FFFF)) != 0)
 		{
 			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
 			if(!sp)
@@ -4203,16 +4212,18 @@ void Player::ModSkillBonusType(uint32 type,int32 bonus)
 
 void Player::UpdateMaxSkills()
 {
-	uint16 skillid;
+	uint32 skillid;
 	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
 	{
-		if((skillid=GetUInt32Value(i)))
+		if((skillid = (m_uint32Values[i] & 0x0000FFFF)) != 0)
 		{
 			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
 			if(!sp) continue;
 			if (sp->type != SKILL_TYPE_WEAPON && sp->id != SKILL_POISONS && sp->id != SKILL_LOCKPICKING)continue; // raise max to weapons, poison and lockpicking
-			uint32 val=GetUInt32Value(i+1)%0x10000+getLevel()*5*0x10000;
-			SetUInt32Value(i+1,val);
+			/*uint32 val=GetUInt32Value(i+1)%0x10000+getLevel()*5*0x10000;
+			SetUInt32Value(i+1,val);*/
+			uint32 val = m_uint32Values[i+1] % 0x10000 + ( (getLevel()*5) << 16 );
+			SetUInt32Value(i+1, val);
 		}		   
 	}
 }
