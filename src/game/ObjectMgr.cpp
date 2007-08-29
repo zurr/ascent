@@ -83,16 +83,15 @@ ObjectMgr::~ObjectMgr()
 
 	for( TrainerMap::iterator i = mTrainers.begin( ); i != mTrainers.end( ); ++ i) {
 		Trainer * t = i->second;
-#ifdef NEW_TRAINER_CODE
-		delete [] t->TrainMsg;
-		delete [] t->NoTrainMsg;
-		delete [] t->SpellList;
+		if(t->TrainMsg)
+			delete [] t->TrainMsg;
+		if(t->NoTrainMsg)
+			delete [] t->NoTrainMsg;
+		if(t->SpellList)
+			delete [] t->SpellList;
+		if(t->TalkMessage)
+			delete [] t->TalkMessage;
 		delete t;
-#else
-		delete [] t->TalkMessage;
-		delete [] t->SpellList;
-		delete t;
-#endif
 	}
 
 	for(TrainerSpellMap::iterator i = mNormalSpells.begin(); i != mNormalSpells.end(); ++i)
@@ -1326,99 +1325,6 @@ uint32 ObjectMgr::GetGossipTextForNpc(uint32 ID)
 	return mNpcToGossipText[ID];
 }
 
-#ifdef NEW_TRAINER_CODE
-void ObjectMgr::LoadTrainers()
-{
-	sLog.outString("  Loading Trainers...");
-	QueryResult * result = WorldDatabase.Query("SELECT * FROM trainer_defs");
-	if(!result) return;
-
-	do 
-	{
-		Field * fields = result->Fetch();
-		uint32 entry = fields[0].GetUInt32();
-		
-		Trainer * tr = new Trainer;
-		tr->Req_rep = fields[1].GetUInt32();
-		tr->Req_rep_value = fields[2].GetUInt32();
-		tr->RequiredClass = fields[3].GetUInt32();
-		tr->Req_lvl = fields[4].GetUInt32();
-		tr->TrainerType = fields[5].GetUInt32(); //0 or 2 ?
-
-		const char * temp = fields[6].GetString();
-		int len=strlen(temp);
-		if(len)
-		{
-			tr->TrainMsg = new char[len+1];
-			strcpy(tr->TrainMsg, temp);
-			tr->TrainMsg[len] = 0;
-		}
-		else tr->TrainMsg=NULL;
-
-		temp = fields[7].GetString();
-		len=strlen(temp);
-		if(len)
-		{
-			tr->NoTrainMsg = new char[len+1];
-			strcpy(tr->NoTrainMsg, temp);
-			tr->NoTrainMsg[len] = 0;
-		}
-		else tr->NoTrainMsg=NULL;
-
-		//get spell list count
-		QueryResult * result2 = WorldDatabase.Query("SELECT count(entry) FROM trainer_spells where entry='%d'",entry);
-		Field *fields2 = result2->Fetch();
-
-		tr->SpellCount = fields2[0].GetUInt32();
-		tr->SpellList = new TrainerSpell*[tr->SpellCount];
-		delete result2;
-
-		//now load the spells
-		result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%d'",entry);
-		uint32 badspellcount=0;
-		for(int i=0;i<tr->SpellCount;i++)
-		{
-			fields2 = result2->Fetch();
-			if(!fields2)
-				break;//wow, this is bad, a few seconds ago we had all entrys
-			uint32 CastSpellID=fields2[1].GetUInt32();
-			SpellEntry *spellInfo = sSpellStore.LookupEntry(CastSpellID );
-			if(!spellInfo)
-			{
-				badspellcount++;
-				continue; //omg a bad spell !
-			}
-			tr->SpellList[i] = new TrainerSpell;
-			tr->SpellList[i]->TeachingSpellID = CastSpellID;
-			tr->SpellList[i]->Cost = fields2[2].GetUInt32();
-			tr->SpellList[i]->RequiredSpell = fields2[3].GetUInt32();
-			tr->SpellList[i]->RequiredSkill = fields2[4].GetUInt32();
-			tr->SpellList[i]->RequiredSkillValue = fields2[5].GetUInt32();
-			tr->SpellList[i]->RequiredLevel = fields2[6].GetUInt32();
-			tr->SpellList[i]->DeleteSpell = fields2[7].GetUInt32();
-			tr->SpellList[i]->IsProfession = fields2[8].GetUInt32();
-			result2->NextRow();
-		}
-		delete result2;
-
-		//in case we encountered another noob who can't assemble a train list
-		tr->SpellCount -= badspellcount;
-
-		//and now we insert it to our lookup table
-		if(mTrainers.find(entry) != mTrainers.end())
-		{
-			delete [] tr->TrainMsg;
-			delete [] tr->NoTrainMsg;
-			delete [] tr->SpellList;
-			delete tr;
-			continue;
-		}
-		mTrainers.insert( TrainerMap::value_type( entry, tr ) );
-		
-	} while(result->NextRow());
-	delete result;
-}
-#else
 void ObjectMgr::GenerateTrainerSpells()
 {
 	std::map<uint32, TrainerSpellOverride> OMap;
@@ -1906,6 +1812,7 @@ void ObjectMgr::LoadTrainers()
 		entry = fields[0].GetUInt32();
 		
 		Trainer * tr = new Trainer;
+		tr->IsSimpleTrainer = false;
 		tr->TrainerType = 0;
 		
 		for(uint32 i = 0; i < 20; ++i)
@@ -2003,6 +1910,97 @@ void ObjectMgr::LoadTrainers()
 		
 	} while(result->NextRow());
 	delete result;
+#ifdef NEW_TRAINER_CODE
+	//simple trainer generation
+	result = WorldDatabase.Query("SELECT * FROM trainer_defs");
+	if(!result) return;
+	do 
+	{
+		Field * fields = result->Fetch();
+		uint32 entry = fields[0].GetUInt32();
+		
+		Trainer * tr = new Trainer;
+		tr->IsSimpleTrainer = 1;
+		tr->Req_rep = fields[1].GetUInt32();
+		tr->Req_rep_value = fields[2].GetUInt32();
+		tr->RequiredClass = fields[3].GetUInt32();
+		tr->Req_lvl = fields[4].GetUInt32();
+		tr->TrainerType = fields[5].GetUInt32(); //0 or 2 ?
+
+		const char * temp = fields[6].GetString();
+		int len=strlen(temp);
+		if(len)
+		{
+			tr->TrainMsg = new char[len+1];
+			strcpy(tr->TrainMsg, temp);
+			tr->TrainMsg[len] = 0;
+		}
+		else tr->TrainMsg=NULL;
+
+		temp = fields[7].GetString();
+		len=strlen(temp);
+		if(len)
+		{
+			tr->NoTrainMsg = new char[len+1];
+			strcpy(tr->NoTrainMsg, temp);
+			tr->NoTrainMsg[len] = 0;
+		}
+		else tr->NoTrainMsg=NULL;
+
+		//get spell list count
+		QueryResult * result2 = WorldDatabase.Query("SELECT count(entry) FROM trainer_spells where entry='%d'",entry);
+		Field *fields2 = result2->Fetch();
+
+		tr->SpellCount = fields2[0].GetUInt32();
+		tr->SpellList = new TrainerSpell*[tr->SpellCount];
+		delete result2;
+
+		//now load the spells
+		result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%d'",entry);
+		uint32 badspellcount=0;
+		for(int i=0;i<tr->SpellCount;i++)
+		{
+			fields2 = result2->Fetch();
+			if(!fields2)
+				break;//wow, this is bad, a few seconds ago we had all entrys
+			uint32 CastSpellID=fields2[1].GetUInt32();
+			SpellEntry *spellInfo = sSpellStore.LookupEntry(CastSpellID );
+			if(!spellInfo)
+			{
+				badspellcount++;
+				continue; //omg a bad spell !
+			}
+			tr->SpellList[i] = new TrainerSpell;
+			tr->SpellList[i]->TeachingSpellID = CastSpellID;
+			tr->SpellList[i]->Cost = fields2[2].GetUInt32();
+			tr->SpellList[i]->RequiredSpell = fields2[3].GetUInt32();
+			tr->SpellList[i]->RequiredSkillLine = fields2[4].GetUInt32();
+			tr->SpellList[i]->RequiredSkillLineValue = fields2[5].GetUInt32();
+			tr->SpellList[i]->RequiredLevel = fields2[6].GetUInt32();
+			tr->SpellList[i]->DeleteSpell = fields2[7].GetUInt32();
+			tr->SpellList[i]->IsProfession = fields2[8].GetUInt32();
+			tr->SpellList[i]->SpellRank = spellInfo->spellLevel;
+			result2->NextRow();
+		}
+		delete result2;
+
+		//in case we encountered another noob who can't assemble a train list
+		tr->SpellCount -= badspellcount;
+
+		//and now we insert it to our lookup table
+		if(mTrainers.find(entry) != mTrainers.end())
+		{
+			delete [] tr->TrainMsg;
+			delete [] tr->NoTrainMsg;
+			delete [] tr->SpellList;
+			delete tr;
+			continue;
+		}
+		mTrainers.insert( TrainerMap::value_type( entry, tr ) );
+		
+	} while(result->NextRow());
+	delete result;
+#endif
 }
 
 bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)
@@ -2056,7 +2054,6 @@ bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)
 	else
 		return false;
 }
-#endif
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 {

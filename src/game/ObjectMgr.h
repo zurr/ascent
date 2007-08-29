@@ -99,25 +99,35 @@ struct GossipMenuItem
 	uint16 Icon;
 	string Text;
 };
-
-#ifdef NEW_TRAINER_CODE
+struct SpellEntry;
 struct TrainerSpell
 {
-	uint32	TeachingSpellID; //this is castspell that will teach you something
-	uint32	DeleteSpell;
-	uint32	RequiredSpell;
-	uint32	RequiredSkill;
-	uint32	RequiredSkillValue;
-	uint32	IsProfession;
-	uint32	Cost;
-	uint32	RequiredLevel;
+
+	uint32 SpellID;
+	SpellEntry* pSpell;
+	uint32 TeachingLine;
+	uint32 SpellType;
+	SpellEntry* pTrainingSpell;
+	int32 RequiredClass;
+	//these values are required only for new trainer system
+	uint32 TeachingSpellID;
+	uint32 DeleteSpell;
+	uint32 RequiredSpell;
+	uint32 RequiredSkillLine;
+	uint32 RequiredSkillLineValue;
+	uint32 IsProfession;
+	uint32 Cost;
+	uint32 RequiredLevel;
+	uint32 SpellRank;
 };
 
 struct Trainer
 {
-	uint32	SpellCount;
+	uint32 SpellCount;
 	TrainerSpell** SpellList;
-
+	char*	TalkMessage;
+	//these values are required only for new trainer system
+	bool	IsSimpleTrainer; //simple trainers are the ones that use traners_defs and trainer_spells lists
 	char*	TrainMsg;
 	char*	NoTrainMsg;
 	uint32	RequiredClass;
@@ -125,46 +135,7 @@ struct Trainer
 	int32	Req_rep_value;
 	uint32	Req_lvl;
 	uint32	TrainerType;
-	uint32	is_profession;
 };
-#else
-struct SpellEntry;
-struct TrainerSpell
-{
-
-	uint32 SpellID;
-	SpellEntry* pSpell;
-
-	uint32 SpellRank;
-	
-	uint32 RequiredSpell;
-	uint32 DeleteSpell;
-
-	uint32 RequiredSkillLine;
-	uint32 RequiredSkillLineValue;
-	uint32 TeachingLine;
-	uint32 IsProfession;
-
-	uint32 Cost;
-	uint32 RequiredLevel;
-
-	uint32 SpellType;
-	uint32 TeachingSpellID;
-	SpellEntry* pTrainingSpell;
-
-	int32 RequiredClass;
-};
-
-struct Trainer
-{
-	uint32 SpellCount;
-	TrainerSpell** SpellList;
-
-	char* TalkMessage;
-	uint32 TrainerType;
-	uint32 RequiredClass;
-};
-
 
 struct TrainerSpellOverride
 {
@@ -177,7 +148,7 @@ struct TrainerSpellOverride
 	uint8 RequiredLevel;
 	int32 RequiredClass;
 };
-#endif
+
 
 struct LevelInfo
 {

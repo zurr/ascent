@@ -116,107 +116,106 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 	data << pCreature->GetGUID();
 	data << pTrainer->TrainerType;
 
-#ifdef NEW_TRAINER_CODE
-	if(	(pTrainer->Req_lvl && _player->getLevel()<pTrainer->Req_lvl) ||
-		(pTrainer->Req_rep && _player->GetStanding(pTrainer->Req_rep) < pTrainer->Req_rep_value) ||
-		(pTrainer->RequiredClass && _player->getClass() != pTrainer->RequiredClass))
+	if(pTrainer->IsSimpleTrainer)
 	{
-		Text = pTrainer->NoTrainMsg;
-		data << 0; //no spells for you
-		data << Text;
+		if(	(pTrainer->Req_lvl && _player->getLevel()<pTrainer->Req_lvl) ||
+			(pTrainer->Req_rep && _player->GetStanding(pTrainer->Req_rep) < pTrainer->Req_rep_value) ||
+			(pTrainer->RequiredClass && _player->getClass() != pTrainer->RequiredClass))
+		{
+			Text = pTrainer->NoTrainMsg;
+			data << 0; //no spells for you
+			data << Text;
+		}
+		else 
+		{
+			data << pTrainer->SpellCount;
+			for(uint32 i = 0; i < pTrainer->SpellCount; ++i)
+			{
+				pSpell = pTrainer->SpellList[i];
+				Status = TrainerGetSpellStatus(pSpell,false);
+				data << pSpell->TeachingSpellID;
+				data << Status;		
+				data << pSpell->Cost;
+				data << Spacer;
+				data << pSpell->IsProfession; 
+				data << (uint8)pSpell->RequiredLevel;
+				data << pSpell->RequiredSkillLine;
+				data << pSpell->RequiredSkillLineValue;
+				data << pSpell->RequiredSpell;
+				data << Spacer;//this is like a spell owerride or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
+				data << Spacer;
+			}
+
+			Text = pTrainer->TrainMsg;
+			data << Text;
+		}
 	}
-	else 
+	else
 	{
+		uint32 RequiredLevel;
 		data << pTrainer->SpellCount;
+		uint32 * SpellCount = (uint32*)&data.contents()[12];
 		for(uint32 i = 0; i < pTrainer->SpellCount; ++i)
 		{
+			// We need the info for the teaching spell ;)
 			pSpell = pTrainer->SpellList[i];
+			RequiredLevel = pSpell->RequiredLevel;
+
+			if(pSpell->RequiredClass != -1)
+			{
+				// Check class
+				if(!(_player->getClassMask() & pSpell->RequiredClass))
+				{
+					// Hide this spell.
+					*SpellCount--;
+					continue;
+				}
+			}
+
+			//Dual Wield
+			if(pSpell->SpellID == 674 || pSpell->SpellID == 29651)
+			{
+				switch(_player->getClass())
+				{
+				case WARRIOR:
+				case HUNTER:
+					RequiredLevel = 20;
+					break;
+				case ROGUE:
+					RequiredLevel = 10;
+					break;
+				default:
+					RequiredLevel = -1;
+				}
+			}
 
 			Status = TrainerGetSpellStatus(pSpell);
+
+			// HACKFIX: dont show already known spells
+			if((Status == TRAINER_STATUS_ALREADY_HAVE && _player->getClass() == PALADIN) || RequiredLevel < 0)
+			{
+				*SpellCount--;
+				continue;
+			}
 
 			data << pSpell->TeachingSpellID;
 			data << Status;		
 			data << pSpell->Cost;
 			data << Spacer;
-			data << pSpell->IsProfession; 
+			data << pSpell->IsProfession;
 			data << (uint8)pSpell->RequiredLevel;
 
-			data << pSpell->RequiredSkill;
-			data << pSpell->RequiredSkillValue;
+			data << pSpell->RequiredSkillLine;
+			data << pSpell->RequiredSkillLineValue;
 			data << pSpell->RequiredSpell;
 
 			data << Spacer;//this is like a spell owerride or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
 			data << Spacer;
 		}
 
-		Text = pTrainer->TrainMsg;
+		Text = pTrainer->TalkMessage;
 		data << Text;
 	}
-#else
-	uint32 RequiredLevel;
-	data << pTrainer->SpellCount;
-	uint32 * SpellCount = (uint32*)&data.contents()[12];
-	for(uint32 i = 0; i < pTrainer->SpellCount; ++i)
-	{
-		// We need the info for the teaching spell ;)
-		pSpell = pTrainer->SpellList[i];
-		RequiredLevel = pSpell->RequiredLevel;
-
-		if(pSpell->RequiredClass != -1)
-		{
-			// Check class
-			if(!(_player->getClassMask() & pSpell->RequiredClass))
-			{
-				// Hide this spell.
-				*SpellCount--;
-				continue;
-			}
-		}
-
-		//Dual Wield
-		if(pSpell->SpellID == 674 || pSpell->SpellID == 29651)
-		{
-			switch(_player->getClass())
-			{
-			case WARRIOR:
-			case HUNTER:
-				RequiredLevel = 20;
-				break;
-			case ROGUE:
-				RequiredLevel = 10;
-				break;
-			default:
-				RequiredLevel = -1;
-			}
-		}
-
-		Status = TrainerGetSpellStatus(pSpell);
-
-		// HACKFIX: dont show already known spells
-		if((Status == TRAINER_STATUS_ALREADY_HAVE && _player->getClass() == PALADIN) || RequiredLevel < 0)
-		{
-			*SpellCount--;
-			continue;
-		}
-
-		data << pSpell->TeachingSpellID;
-		data << Status;		
-		data << pSpell->Cost;
-		data << Spacer;
-		data << pSpell->IsProfession;
-		data << (uint8)pSpell->RequiredLevel;
-
-		data << pSpell->RequiredSkillLine;
-		data << pSpell->RequiredSkillLineValue;
-		data << pSpell->RequiredSpell;
-
-		data << Spacer;//this is like a spell owerride or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
-		data << Spacer;
-	}
-
-	Text = pTrainer->TalkMessage;
-	data << Text;
-#endif
 	SendPacket(&data);
 }
 
@@ -257,47 +256,51 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 	pCreature->CastSpell(_player, pSpell->TeachingSpellID, true);
 }
 
-uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
+uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell,bool oldtrainer)
 {
-#ifdef NEW_TRAINER_CODE
-	if(	(pSpell->RequiredLevel && _player->getLevel()<pSpell->RequiredLevel)
-		|| (pSpell->RequiredSpell && !_player->HasSpell(pSpell->RequiredSpell))
-		|| (pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)
-		|| (pSpell->RequiredSkill && _player->GetSkillAmt(pSpell->RequiredSkill) < pSpell->RequiredSkillValue)	)
-		return TRAINER_STATUS_NOT_LEARNABLE;
-	return TRAINER_STATUS_LEARNABLE;
-#else
-	// check player's lavel
-	if(pSpell->RequiredLevel && _player->getLevel() < pSpell->RequiredLevel)
-		return TRAINER_STATUS_NOT_LEARNABLE;
+	if(oldtrainer==false)
+	{
+		if(	(pSpell->RequiredLevel && _player->getLevel()<pSpell->RequiredLevel)
+			|| (pSpell->RequiredSpell && !_player->HasSpell(pSpell->RequiredSpell))
+			|| (pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)
+			|| (pSpell->RequiredSkillLine && _player->GetSkillAmt(pSpell->RequiredSkillLine) < pSpell->RequiredSkillLineValue)
+			|| (pSpell->SpellRank && _player->GetMaxLearnedSpellLevel(pSpell->TeachingSpellID)>= pSpell->SpellRank) )
+			return TRAINER_STATUS_NOT_LEARNABLE;
+		return TRAINER_STATUS_LEARNABLE;
+	}
+	else
+	{
+		// check player's lavel
+		if(pSpell->RequiredLevel && _player->getLevel() < pSpell->RequiredLevel)
+			return TRAINER_STATUS_NOT_LEARNABLE;
 
-	// check if we need a skill line
-	if(pSpell->RequiredSkillLine && !_player->HasSkillLine( pSpell->RequiredSkillLine ) )
-		return TRAINER_STATUS_NOT_LEARNABLE;
+		// check if we need a skill line
+		if(pSpell->RequiredSkillLine && !_player->HasSkillLine( pSpell->RequiredSkillLine ) )
+			return TRAINER_STATUS_NOT_LEARNABLE;
 
-	// check if we have the required value
-	if(pSpell->RequiredSkillLineValue && pSpell->RequiredSkillLine &&
-		_player->GetBaseSkillAmt( pSpell->RequiredSkillLine ) < pSpell->RequiredSkillLineValue )
-		return TRAINER_STATUS_NOT_LEARNABLE;
+		// check if we have the required value
+		if(pSpell->RequiredSkillLineValue && pSpell->RequiredSkillLine &&
+			_player->GetBaseSkillAmt( pSpell->RequiredSkillLine ) < pSpell->RequiredSkillLineValue )
+			return TRAINER_STATUS_NOT_LEARNABLE;
 
-	// check if we already have this spell
-	if(_player->HasSpell( pSpell->SpellID ) || _player->HasDeletedSpell(pSpell->SpellID) )	// Check deleted here too.)
-		return TRAINER_STATUS_ALREADY_HAVE;
+		// check if we already have this spell
+		if(_player->HasSpell( pSpell->SpellID ) || _player->HasDeletedSpell(pSpell->SpellID) )	// Check deleted here too.)
+			return TRAINER_STATUS_ALREADY_HAVE;
 
-	// check if we have a required spell
-	if(pSpell->RequiredSpell && !_player->HasSpell( pSpell->RequiredSpell))
-		return TRAINER_STATUS_NOT_LEARNABLE;
+		// check if we have a required spell
+		if(pSpell->RequiredSpell && !_player->HasSpell( pSpell->RequiredSpell))
+			return TRAINER_STATUS_NOT_LEARNABLE;
 
-	// check if we have the $$$
-	if(pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)
-		return TRAINER_STATUS_NOT_LEARNABLE;
+		// check if we have the $$$
+		if(pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)
+			return TRAINER_STATUS_NOT_LEARNABLE;
 
-	// see if we passed the profession limit
-	if(pSpell->IsProfession && !_player->HasSkillLine(pSpell->RequiredSkillLine) && pSpell->TeachingLine && _player->GetUInt32Value(PLAYER_CHARACTER_POINTS2) == 0)
-		return TRAINER_STATUS_NOT_LEARNABLE;
+		// see if we passed the profession limit
+		if(pSpell->IsProfession && !_player->HasSkillLine(pSpell->RequiredSkillLine) && pSpell->TeachingLine && _player->GetUInt32Value(PLAYER_CHARACTER_POINTS2) == 0)
+			return TRAINER_STATUS_NOT_LEARNABLE;
 
-	return TRAINER_STATUS_LEARNABLE;
-#endif
+		return TRAINER_STATUS_LEARNABLE;
+	}
 }
 
 //////////////////////////////////////////////////////////////
