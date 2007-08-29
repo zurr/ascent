@@ -52,10 +52,6 @@ Zack - test my shit :
 
  - ai_agents fillup
  - demonslaying target type checking
- - scheck summon guardian code, maybe add some more ai ?
- - added some code so pets will find targets (water elemental and guardians)
- - new trainer code should not reteach spells (mark then as learned ones)
- - merged old and new system for the wankers, burlex is soo gonno spank me :D. Might cause crashes until tested
  - test function RemoveThreatByPtr
 
 ==========================================================================

@@ -2203,7 +2203,7 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 	//these are not pets. Just some creatures that will fight on your side. 
 	//They follow you and attack your target but you cannot command them
 	//number of creatures is actualy dmg (the usual formula), sometimes =3 sometimes =1
-/*	uint32 cr_entry=m_spellInfo->EffectMiscValue[i];
+	uint32 cr_entry=m_spellInfo->EffectMiscValue[i];
 	CreatureProto * proto = CreatureProtoStorage.LookupEntry(cr_entry);
 	CreatureInfo * info = CreatureNameStorage.LookupEntry(cr_entry);
 	if(!proto || !info)
@@ -2211,25 +2211,22 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 		sLog.outDetail("Warning : Missing summon creature template %u used by spell %u!",cr_entry,m_spellInfo->Id);
 		return;
 	}
+	float angle_for_each_spawn=-M_PI*2/damage;
 	for(int i=0;i<damage;i++)
 	{
-		float m_fallowAngle=-(M_PI/2*i);
+		float m_fallowAngle=angle_for_each_spawn*i;
 		float x = u_caster->GetPositionX()+(3*(cosf(m_fallowAngle+u_caster->GetOrientation())));
 		float y = u_caster->GetPositionY()+(3*(sinf(m_fallowAngle+u_caster->GetOrientation())));
 		float z = u_caster->GetPositionZ();
 		Creature * p = u_caster->GetMapMgr()->CreateCreature();
+		p->SetInstanceID(u_caster->GetMapMgr()->GetInstanceID());
 		//ASSERT(p);
 		p->Load(proto, x, y, z);
 		p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_caster->GetGUID());
         p->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_caster->GetGUID());
         p->SetZoneId(m_caster->GetZoneId());
 		p->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE,u_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
-		p->m_faction = sFactionTmpStore.LookupEntry(proto->Faction);
-		if(p->m_faction)
-			p->m_factionDBC = sFactionStore.LookupEntry(p->m_faction->Faction);
 		p->_setFaction();
-		p->SetInstanceID(u_caster->GetMapMgr()->GetInstanceID());
-		p->PushToWorld(u_caster->GetMapMgr());
 
 		p->GetAIInterface()->Init(p,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
 		p->GetAIInterface()->SetUnitToFollow(u_caster);
@@ -2240,7 +2237,6 @@ void Spell::SpellEffectSummonGuardian(uint32 i) // Summon Guardian
 		//make sure they will be desumonized (roxor)
 		sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1,0);
 	}
-	/**/
 }
 
 void Spell::SpellEffectSkillStep(uint32 i) // Skill Step

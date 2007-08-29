@@ -500,6 +500,11 @@ void AIInterface::Update(uint32 p_time)
 					_UpdateCombat(p_time);
 				}
 			}
+			//we just use any creature as a pet guardian
+			else if(m_Unit->GetGUIDHigh() != HIGHGUID_PET)
+			{
+				_UpdateCombat(p_time);
+			}
 		}
 		else
 		{
@@ -693,7 +698,9 @@ void AIInterface::_UpdateTargets()
 		{
 			 Unit* target = FindTarget();
 			 if(target)
+			 {
 				 AttackReaction(target, 1, 0);
+			 }
 
 		}
 	}
@@ -734,7 +741,8 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 	}
 	else if(!m_nextTarget && m_AIState != STATE_FOLLOWING && m_AIState != STATE_SCRIPTMOVE)
 	{
-		SetNextTarget(FindTargetForSpell(m_nextSpell));
+//		SetNextTarget(FindTargetForSpell(m_nextSpell));
+		m_nextTarget=GetMostHated();
 		if(!m_nextTarget)
 		{
 			HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
