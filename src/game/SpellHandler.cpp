@@ -187,6 +187,14 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 			
 			if(!_player->m_onAutoShot)
 			{
+				if(_player->IsMounted())
+				{
+					WorldPacket data(SMSG_CAST_RESULT, 9);
+					data << spellInfo->Id;
+					data << (uint8)SPELL_FAILED_NOT_MOUNTED;
+					_player->GetSession()->SendPacket(&data);
+					return;
+				}
 				_player->m_AutoShotStartX = _player->GetPositionX();
 				_player->m_AutoShotStartY = _player->GetPositionY();
 				_player->m_AutoShotStartZ = _player->GetPositionZ();

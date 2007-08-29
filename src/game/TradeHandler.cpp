@@ -257,7 +257,13 @@ void WorldSession::HandleAcceptTrade(WorldPacket & recv_data)
 			{
 				Guid = _player->mTradeItems[Index] ? _player->mTradeItems[Index]->GetGUID() : 0;
 				if(Guid != 0)
+				{
+					if(GetPermissionCount()>0)
+					{
+						sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->GetProto()->Name1, pTarget->GetName());
+					}
 					pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);
+				}
 
 				Guid = pTarget->mTradeItems[Index] ? pTarget->mTradeItems[Index]->GetGUID() : 0;
 				if(Guid != 0)

@@ -313,6 +313,12 @@ void WorldSession::HandleSendMail(WorldPacket & recv_data )
 		// Cut out the high part of the attached item.
 		msg.attached_item_guid = attached_item->GetGUID();
 
+		if(GetPermissionCount() > 0)
+		{
+			/* log the message */
+			sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", attached_item->GetEntry(), player->name.c_str(), msg.money);
+		}
+
 		// Delete from memory now, its not needed anymore.
 		delete attached_item;
 

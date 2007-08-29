@@ -1078,7 +1078,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	GameObject *obj = _player->GetMapMgr()->GetGameObject(guid);
 	if (!obj) return;
 	GameObjectInfo *goinfo= obj->GetInfo();
-//	if (!goinfo) return;
+	if (!goinfo) return;
 
 	Player *plyr = GetPlayer();
    
@@ -1267,9 +1267,14 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 		}
 	case GAMEOBJECT_TYPE_CAMERA://eye of azora
 		{
-			WorldPacket pkt(SMSG_TRIGGER_CINEMATIC,4);
+			/*WorldPacket pkt(SMSG_TRIGGER_CINEMATIC,4);
 			pkt << (uint32)1;//i ve found only on such item,id =1
-			SendPacket(&pkt);
+			SendPacket(&pkt);*/
+
+			/* these are usually scripted effects. but in the case of some, (e.g. orb of translocation) the spellid is located in unknown1 */
+			SpellEntry * sp = static_cast<FastIndexedDataStore<SpellEntry>*>(SpellStore::getSingletonPtr())->LookupEntryForced(goinfo->Unknown1);
+			if(sp != NULL)
+				_player->CastSpell(_player,sp,true);
 		}break;
 	case GAMEOBJECT_TYPE_MEETINGSTONE:	// Meeting Stone
 		{

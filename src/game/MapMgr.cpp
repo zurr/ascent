@@ -96,12 +96,13 @@ MapMgr::~MapMgr()
 	{
 		for (uint32 i = 0; i < _sizeX; i++)
 		{
-			if(_cells[i] == NULL) continue;
-
-			for (uint32 j = 0; j < _sizeY; j++)
+			if(_cells[i] != 0)
 			{
-				if(_cells[i][j] != 0)
-					_cells[i][j]->RemoveObjects();
+				for (uint32 j = 0; j < _sizeY; j++)
+				{
+					if(_cells[i][j] != 0)
+						_cells[i][j]->RemoveObjects();
+				}
 			}
 		}
 	}

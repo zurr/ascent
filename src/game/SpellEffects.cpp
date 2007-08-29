@@ -2523,6 +2523,9 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if(!Enchantment) return;
 
+	if(p_caster->GetSession()->GetPermissionCount() > 0)
+		sGMLog.writefromsession(p_caster->GetSession(), "enchanted item for %s", itemTarget->GetOwner()->GetName());
+
 	//remove other perm enchantment that was enchanted by profession
 	itemTarget->RemoveProfessionEnchant();
 	int32 Slot = itemTarget->AddEnchantment(Enchantment, 0, true, true, false, 0);
