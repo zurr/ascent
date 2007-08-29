@@ -46,6 +46,10 @@ public:
 		if(!d.IsLoaded() || (uint32)d.GetDBSize() < offset) return NULL;
 		return d.LookupString(offset);
 	}
+	virtual T* LookupEntryForced(const uint32 row)
+	{
+		return DataStore<T>::LookupEntry(row);
+	}
 	uint32 GetNumRows()
 	{
 		return d.GetRows();

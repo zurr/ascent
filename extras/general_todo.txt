@@ -35,7 +35,6 @@ SMT_RESIST_DISPEL - check if it is used
 
 ==========================================================================
 ! BUGS !
-- mounted players can shoot
 - make hunter to be able to use only 1 bag
 - group quest does not share quest loot.
 - if BG is over and you are dead then you are teleported as dead.
