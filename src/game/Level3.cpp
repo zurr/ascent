@@ -318,7 +318,6 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession *m_session)
 	if (!*args)
 		return false;
 
-#ifndef NEW_TRAINER_CODE
 	if(strlen(args) >= 3 && !strnicmp(args, "all", 3))
 	{
 		Player *plr = getSelectedChar(m_session, true);
@@ -411,7 +410,6 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession *m_session)
 		
 		return true;
 	}
-#endif
 	uint32 spell = atol((char*)args);
 	
 	Player *plr = getSelectedChar(m_session, true);

@@ -1910,7 +1910,6 @@ void ObjectMgr::LoadTrainers()
 		
 	} while(result->NextRow());
 	delete result;
-#ifdef NEW_TRAINER_CODE
 	//simple trainer generation
 	result = WorldDatabase.Query("SELECT * FROM trainer_defs");
 	if(!result) return;
@@ -1918,7 +1917,6 @@ void ObjectMgr::LoadTrainers()
 	{
 		Field * fields = result->Fetch();
 		uint32 entry = fields[0].GetUInt32();
-		
 		if(mTrainers.find(entry) != mTrainers.end())
 		{
 			continue;
@@ -1972,6 +1970,7 @@ void ObjectMgr::LoadTrainers()
 			if(!spellInfo)
 			{
 				badspellcount++;
+				result2->NextRow();
 				continue; //omg a bad spell !
 			}
 			tr->SpellList[i] = new TrainerSpell;
@@ -1983,7 +1982,22 @@ void ObjectMgr::LoadTrainers()
 			tr->SpellList[i]->RequiredLevel = fields2[6].GetUInt32();
 			tr->SpellList[i]->DeleteSpell = fields2[7].GetUInt32();
 			tr->SpellList[i]->IsProfession = fields2[8].GetUInt32();
-			tr->SpellList[i]->SpellRank = spellInfo->spellLevel;
+			//some spells might teach us more then 1 spell. Just have no idea how we should handle those. Maybe later it will get clear to us
+			uint32 teachspell=0;
+			for(int k=0;k<3;k++)
+				if(spellInfo->Effect[k]==SPELL_EFFECT_LEARN_SPELL)
+				{
+					teachspell = spellInfo->EffectTriggerSpell[k];
+					break;
+				}
+			if(teachspell)
+			{
+				SpellEntry *spellInfo2 = sSpellStore.LookupEntry(teachspell );
+				if(spellInfo2)
+					tr->SpellList[i]->SpellRank = spellInfo2->spellLevel;
+				else tr->SpellList[i]->SpellRank = 0;
+			}
+			else tr->SpellList[i]->SpellRank = 0;
 			result2->NextRow();
 		}
 		delete result2;
@@ -2004,7 +2018,6 @@ void ObjectMgr::LoadTrainers()
 		
 	} while(result->NextRow());
 	delete result;
-#endif
 }
 
 bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)

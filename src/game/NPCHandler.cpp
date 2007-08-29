@@ -260,12 +260,14 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell,bool oldtrainer)
 {
 	if(oldtrainer==false)
 	{
+printf("!!!!spell %u rank %u and we have %u\n",pSpell->TeachingSpellID,pSpell->SpellRank,_player->GetMaxLearnedSpellLevel(pSpell->TeachingSpellID));
 		if(	(pSpell->RequiredLevel && _player->getLevel()<pSpell->RequiredLevel)
 			|| (pSpell->RequiredSpell && !_player->HasSpell(pSpell->RequiredSpell))
 			|| (pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)
-			|| (pSpell->RequiredSkillLine && _player->GetSkillAmt(pSpell->RequiredSkillLine) < pSpell->RequiredSkillLineValue)
-			|| (pSpell->SpellRank && _player->GetMaxLearnedSpellLevel(pSpell->TeachingSpellID)>= pSpell->SpellRank) )
+			|| (pSpell->RequiredSkillLine && _player->GetSkillAmt(pSpell->RequiredSkillLine) < pSpell->RequiredSkillLineValue))
 			return TRAINER_STATUS_NOT_LEARNABLE;
+		if(pSpell->SpellRank && _player->GetMaxLearnedSpellLevel(pSpell->TeachingSpellID)>= pSpell->SpellRank)
+			return TRAINER_STATUS_ALREADY_HAVE;
 		return TRAINER_STATUS_LEARNABLE;
 	}
 	else

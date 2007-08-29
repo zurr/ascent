@@ -19,8 +19,6 @@
 #define _OBJECTMGR_H
 #include "../shared/Threading/RWLock.h"
 
-//#define NEW_TRAINER_CODE //will simply use a list of spells
-
 inline bool FindXinYString(std::string& x, std::string& y)
 {
 	return y.find(x) != std::string::npos;
