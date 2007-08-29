@@ -1919,6 +1919,10 @@ void ObjectMgr::LoadTrainers()
 		Field * fields = result->Fetch();
 		uint32 entry = fields[0].GetUInt32();
 		
+		if(mTrainers.find(entry) != mTrainers.end())
+		{
+			continue;
+		}
 		Trainer * tr = new Trainer;
 		tr->IsSimpleTrainer = 1;
 		tr->Req_rep = fields[1].GetUInt32();
@@ -1988,7 +1992,7 @@ void ObjectMgr::LoadTrainers()
 		tr->SpellCount -= badspellcount;
 
 		//and now we insert it to our lookup table
-		if(mTrainers.find(entry) != mTrainers.end())
+		if(!tr->SpellCount)
 		{
 			delete [] tr->TrainMsg;
 			delete [] tr->NoTrainMsg;
