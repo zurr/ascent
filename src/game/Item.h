@@ -41,6 +41,12 @@ struct EnchantmentInstance
 	bool RemoveAtLogout;
 };
 
+enum ITEM_FLAGS
+{
+    ITEM_SOULBOUND = 0x01,
+    ITEM_QUESTITEM = 0x800,
+};
+
 typedef map<uint32, EnchantmentInstance> EnchantmentMap;
 
 #define APPLY true

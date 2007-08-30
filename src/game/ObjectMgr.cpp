@@ -1845,6 +1845,9 @@ void ObjectMgr::LoadTrainers()
 		Trainer * tr = new Trainer;
 		tr->IsSimpleTrainer = false;
 		tr->TrainerType = 0;
+        tr->TrainMsg = 0;
+        tr->NoTrainMsg = 0;
+        tr->TalkMessage = 0;
 		
 		for(uint32 i = 0; i < 20; ++i)
 		{

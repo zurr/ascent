@@ -5186,8 +5186,43 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 			continue;
 
 		ItemPrototype* itemProto =ItemPrototypeStorage.LookupEntry(iter->item.itemid);
-		if (!itemProto || (itemProto->Class == ITEM_CLASS_QUEST && !HasQuestForItem(iter->item.itemid)))		   
+		if (!itemProto)		   
 			continue;
+        //quest items that dont start quests.
+        if((itemProto->Flags & ITEM_QUESTITEM) && !(itemProto->QuestId) && !HasQuestForItem(iter->item.itemid))
+            continue;
+
+        //quest items that start quests need special check to avoid drops all the time.
+        if((itemProto->Flags & ITEM_QUESTITEM) && (itemProto->QuestId) && GetQuestLogForEntry(itemProto->QuestId))
+            continue;
+
+        if((itemProto->Flags & ITEM_QUESTITEM) && (itemProto->QuestId) && HasFinishedQuest(itemProto->QuestId))
+            continue;
+
+        //check for starting item quests that need questlines.
+        if((itemProto->Flags & ITEM_QUESTITEM) && (itemProto->QuestId))
+        {
+            bool HasRequiredQuests = true;
+            Quest * pQuest = QuestStorage.LookupEntry(itemProto->QuestId);
+            if(pQuest)
+            {
+                //check if its a questline.
+                for(uint32 i = 0; i < pQuest->required_quests[4]; i++)
+                {
+                    if(pQuest->required_quests[i])
+                    {
+                        if(!HasFinishedQuest(pQuest->required_quests[i]))
+                        {
+                            HasRequiredQuests = false;
+                            break;
+                        }
+                    }
+                }
+                if(!HasRequiredQuests)
+                    continue;
+            }
+        } 
+
 
 		slottype = 0;
 		if(m_Group != NULL)

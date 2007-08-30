@@ -558,7 +558,8 @@ void WorldCreator::InstanceHardReset(MapMgr *mMapMgr)
 	sInstanceSavingManager.RemoveSavedInstance(mapid, instanceid, true);
 }
 
-MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 mapid, bool Lock, bool * Deleted)
+// Only usable by Instance save manager when removing players from the manager.
+MapMgr * WorldCreator::ISMGetInstanceBeforeRemoval(uint32 InstanceID, uint32 mapid, bool Lock)
 {
 	if(InstanceID > 2)
 	{
@@ -571,10 +572,7 @@ MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 ma
 			{
 				if((uint32)time(NULL) > (ia->Creation) + (pMapInfo->cooldown ? pMapInfo->cooldown : 604800))
 				{
-					sInstanceSavingManager.RemoveSavedInstance(ia->MapId,ia->InstanceId,true);
 					sInstanceSavingManager.RemoveSavedInstance(ia->InstanceId);
-					if(Deleted)
-						*Deleted = true;
 				}
 				else
 				{
