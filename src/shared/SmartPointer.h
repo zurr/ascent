@@ -85,7 +85,8 @@ public:
         const T* operator->() const
         {
                 if (Null())
-                        throw NulRefException();
+                    return NULL;
+                        //throw NulRefException();
                 return m_Reference->my_pT;
         }
 
