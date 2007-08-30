@@ -29,8 +29,13 @@ InstanceSavingManagement::InstanceSavingManagement()
 
 InstanceSavingManagement::~InstanceSavingManagement()
 {
+	InstanceInfo::const_iterator itr;
+	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
+	{
+		Instance_Map_Info_Holder *p = itr->second;
+		delete p;
+	}
 	mInstanceInfoList.clear();
-    inactiveInstances.clear();
 }
 
 void InstanceSavingManagement::BuildSavedInstancesForPlayer(Player *pPlayer)
@@ -43,7 +48,7 @@ void InstanceSavingManagement::BuildSavedInstancesForPlayer(Player *pPlayer)
 	InstanceInfo::const_iterator itr;
 	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
+		Instance_Map_Info_Holder *p = itr->second;
 		result = p->FindPlayer(pPlayer->GetGUID(), (uint32)NULL, MODE_NORMAL); //find only non grouped results
 		if(result)
 		{
@@ -68,7 +73,7 @@ void InstanceSavingManagement::BuildSavedInstancesForPlayer(Player *pPlayer)
 	}
 }
 
-SharedPointer<Instance_Map_Info_Holder> InstanceSavingManagement::SaveInstance(MapMgr *pInstance)
+Instance_Map_Info_Holder *InstanceSavingManagement::SaveInstance(MapMgr *pInstance)
 {
 	ASSERT( pInstance->GetInstanceID() );
 
@@ -76,8 +81,9 @@ SharedPointer<Instance_Map_Info_Holder> InstanceSavingManagement::SaveInstance(M
 	InstanceInfo::iterator itr = mInstanceInfoList.find( pInstance->GetMapId() );
 	if(itr == mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> mapholder(new Instance_Map_Info_Holder);
+		Instance_Map_Info_Holder *mapholder;
 
+		mapholder = new Instance_Map_Info_Holder;
 		mapholder->SetMapInfo(pInstance->GetMapInfo());
 		mapholder->AddInstanceId(pInstance);
 
@@ -87,7 +93,7 @@ SharedPointer<Instance_Map_Info_Holder> InstanceSavingManagement::SaveInstance(M
 	}
 	else
 	{
-		SharedPointer<Instance_Map_Info_Holder> mapholder = itr->second;
+		Instance_Map_Info_Holder *mapholder = itr->second;
 		mapholder->SetMapInfo(pInstance->GetMapInfo());
 		mapholder->AddInstanceId(pInstance);
         instanceInfoListMutex.Release();
@@ -147,10 +153,10 @@ void InstanceSavingManagement::ResetSavedInstancesForPlayer(Player *pPlayer)
 	WorldPacket data;
 
     instanceInfoListMutex.Acquire();
-	InstanceInfo::iterator itr;
+	InstanceInfo::const_iterator itr;
 	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
+		Instance_Map_Info_Holder *p = itr->second;
 		MapInfo *pMapInfo = p->GetMapInfo();
         if(pMapInfo->type == INSTANCE_RAID)
 			continue;
@@ -185,7 +191,7 @@ void InstanceSavingManagement::RemoveSavedInstance(uint32 mapid, uint32 instance
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p1 = itr->second;
+		Instance_Map_Info_Holder *p1 = itr->second;
 		MapInfo * pMapInfo = WorldMapInfoStorage.LookupEntry(mapid);
 		if(!pMapInfo)
         {
@@ -213,11 +219,11 @@ void InstanceSavingManagement::RemoveSavedInstance(uint32 mapid, uint32 instance
 bool InstanceSavingManagement::IsPlayerSavedToMap(uint32 mapid, Player *pPlayer)
 {
     instanceInfoListMutex.Acquire();
-	InstanceInfo::const_iterator itr = mInstanceInfoList.find( mapid );
+	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
   
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
+		Instance_Map_Info_Holder *p = itr->second;
 		MapInfo *pMapInfo = p->GetMapInfo();
         if(pMapInfo && pMapInfo->type == INSTANCE_RAID || pMapInfo && pMapInfo->type == INSTANCE_MULTIMODE)
 		{
@@ -235,11 +241,11 @@ bool InstanceSavingManagement::IsPlayerSavedToMap(uint32 mapid, Player *pPlayer)
 bool InstanceSavingManagement::IsPlayerSavedToInstanceId(uint32 mapid, uint32 instanceid, Player *pPlayer)
 {
     instanceInfoListMutex.Acquire();
-	InstanceInfo::const_iterator itr = mInstanceInfoList.find( mapid );
+	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
   
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
+		Instance_Map_Info_Holder *p = itr->second;
 		if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
 			bool result = p->IsPlayerSavedToInstanceId(pPlayer->GetGUID(), instanceid);
@@ -278,7 +284,7 @@ void InstanceSavingManagement::LoadSavedInstances()
 		}
 
 		// Inactive instance data saving system added
-		SharedPointer<InactiveInstance> ia(new InactiveInstance);
+		InactiveInstance * ia = new InactiveInstance;
 		ia->InstanceId = fields[0].GetUInt32();
 		ia->MapId = fields[1].GetUInt32();
 		ia->Creation = fields[4].GetUInt32();
@@ -302,9 +308,9 @@ void InstanceSavingManagement::RepopulateSavedData(uint32 mapid, uint32 instance
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
-		SharedPointer<Instance_Map_InstanceId_Holder> pi = p->GetInstanceId(instanceid);
-		if(pi != NULL)
+		Instance_Map_Info_Holder *p = itr->second;
+		Instance_Map_InstanceId_Holder *pi = p->GetInstanceId(instanceid);
+		if(pi)
 		{
 			pi->ClearAllPlayers();
 			do 
@@ -351,9 +357,9 @@ void InstanceSavingManagement::SaveInstanceIdToDB(uint32 instanceid, uint32 mapi
 	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
-		SharedPointer<Instance_Map_InstanceId_Holder> pi = p->GetInstanceId(instanceid);
-		if(pi != NULL)
+		Instance_Map_Info_Holder *p = itr->second;
+		Instance_Map_InstanceId_Holder *pi = p->GetInstanceId(instanceid);
+		if(pi)
 		{
 			pi->SaveInstanceToDB();
 		}
@@ -366,9 +372,9 @@ void InstanceSavingManagement::SaveObjectStateToInstance(Unit *pUnit)
 	InstanceInfo::iterator itr = mInstanceInfoList.find( pUnit->GetMapId() );
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
-		SharedPointer<Instance_Map_InstanceId_Holder> pi = p->GetInstanceId(pUnit->GetInstanceID());
-		if(pi != NULL)
+		Instance_Map_Info_Holder *p = itr->second;
+		Instance_Map_InstanceId_Holder *pi = p->GetInstanceId(pUnit->GetInstanceID());
+		if(pi)
 		{
 			pi->AddObject(static_cast<Creature*>(pUnit)->GetSQL_id());
 		}
@@ -376,15 +382,15 @@ void InstanceSavingManagement::SaveObjectStateToInstance(Unit *pUnit)
     instanceInfoListMutex.Release();
 }
 
-SharedPointer<Instance_Map_InstanceId_Holder> InstanceSavingManagement::GetInstance(uint32 mapid, uint32 instanceid)
+Instance_Map_InstanceId_Holder *InstanceSavingManagement::GetInstance(uint32 mapid, uint32 instanceid)
 {
     instanceInfoListMutex.Acquire();
-	InstanceInfo::const_iterator itr = mInstanceInfoList.find( mapid );
+	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
-		SharedPointer<Instance_Map_InstanceId_Holder> pi = p->GetInstanceId(instanceid);
-		if(pi != NULL)
+		Instance_Map_Info_Holder *p = itr->second;
+		Instance_Map_InstanceId_Holder *pi = p->GetInstanceId(instanceid);
+		if(pi)
 		{
             instanceInfoListMutex.Release();
 			return pi;
@@ -394,17 +400,17 @@ SharedPointer<Instance_Map_InstanceId_Holder> InstanceSavingManagement::GetInsta
 	return NULL;
 }
 
-SharedPointer<Instance_Map_InstanceId_Holder> InstanceSavingManagement::GetRaidAndMMInstance(uint32 mapid, Player * pPlayer)
+Instance_Map_InstanceId_Holder *InstanceSavingManagement::GetRaidAndMMInstance(uint32 mapid, Player * pPlayer)
 {
     instanceInfoListMutex.Acquire();
-	InstanceInfo::const_iterator itr = mInstanceInfoList.find( mapid );
+	InstanceInfo::iterator itr = mInstanceInfoList.find( mapid );
 	if(itr != mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
+		Instance_Map_Info_Holder *p = itr->second;
 		if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
-            SharedPointer<Instance_Map_InstanceId_Holder> pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType);
-			if(pi != NULL)
+            Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType);
+			if(pi)
 			{
                 instanceInfoListMutex.Release();
 				return pi;
@@ -429,11 +435,11 @@ void InstanceSavingManagement::BuildRaidSavedInstancesForPlayer(Player *pPlayer)
 	InstanceInfo::const_iterator itr;
 	for (itr = mInstanceInfoList.begin();itr != mInstanceInfoList.end(); itr++)
 	{
-		SharedPointer<Instance_Map_Info_Holder> p = itr->second;
+		Instance_Map_Info_Holder *p = itr->second;
         if(p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_RAID || p->GetMapInfo() && p->GetMapInfo()->type == INSTANCE_MULTIMODE)
 		{
-            SharedPointer<Instance_Map_InstanceId_Holder> pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType, true);
-			if(pi != NULL)
+            Instance_Map_InstanceId_Holder *pi = p->getInstanceIdByPlayer(pPlayer->GetGUID(), pPlayer->iInstanceType, true);
+			if(pi)
 			{
 				data << uint32(0x00);
 				data << (p->GetMapInfo() ? p->GetMapInfo()->mapid : 0);
@@ -472,6 +478,12 @@ Instance_Map_Info_Holder::Instance_Map_Info_Holder()
 Instance_Map_Info_Holder::~Instance_Map_Info_Holder()
 {
 	//clear all instanceids inside this mapid
+	InstanceIdList::const_iterator itr;
+	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end(); itr++)
+	{
+		 Instance_Map_InstanceId_Holder *p = itr->second;
+		 delete p;
+	}
 	mInstanceIdList.clear();
 }
 
@@ -481,15 +493,16 @@ void Instance_Map_Info_Holder::RemoveInstanceId(uint32 instanceid)
 	InstanceIdList::iterator itr = mInstanceIdList.find( instanceid );
 	if(itr != mInstanceIdList.end())
 	{
+		delete itr->second;
 		mInstanceIdList.erase(itr);
 	}
     instanceIdListMutex.Release();
 }
 
-SharedPointer<Instance_Map_InstanceId_Holder> Instance_Map_Info_Holder::GetInstanceId(uint32 instanceid)
+Instance_Map_InstanceId_Holder *Instance_Map_Info_Holder::GetInstanceId(uint32 instanceid)
 {
     instanceIdListMutex.Acquire();
-	InstanceIdList::const_iterator itr = mInstanceIdList.find( instanceid );
+	InstanceIdList::iterator itr = mInstanceIdList.find( instanceid );
 	if(itr != mInstanceIdList.end())
 	{
         instanceIdListMutex.Release();
@@ -507,7 +520,8 @@ void Instance_Map_Info_Holder::AddInstanceId(MapMgr *pInstance)
 	InstanceIdList::iterator itr = mInstanceIdList.find( pInstance->GetInstanceID() );
 	if(itr == mInstanceIdList.end())
 	{
-		SharedPointer<Instance_Map_InstanceId_Holder> pIdList(new Instance_Map_InstanceId_Holder);
+		Instance_Map_InstanceId_Holder *pIdList;
+		pIdList = new Instance_Map_InstanceId_Holder;
 		pIdList->SetMapInfo(pInstance->GetMapInfo());
 		pIdList->SetCreationTime(pInstance->CreationTime);
 		pIdList->SetRaidExpireTime(pInstance->RaidExpireTime);
@@ -521,7 +535,7 @@ void Instance_Map_Info_Holder::AddInstanceId(MapMgr *pInstance)
     instanceIdListMutex.Release();
 }
 
-void Instance_Map_Info_Holder::AddInstanceId(SharedPointer<InactiveInstance> ia)
+void Instance_Map_Info_Holder::AddInstanceId(InactiveInstance * ia)
 {
 	ASSERT( ia->InstanceId );
 
@@ -529,7 +543,8 @@ void Instance_Map_Info_Holder::AddInstanceId(SharedPointer<InactiveInstance> ia)
 	InstanceIdList::iterator itr = mInstanceIdList.find( ia->InstanceId );
 	if(itr == mInstanceIdList.end())
 	{
-		SharedPointer<Instance_Map_InstanceId_Holder> pIdList(new Instance_Map_InstanceId_Holder);
+		Instance_Map_InstanceId_Holder *pIdList;
+		pIdList = new Instance_Map_InstanceId_Holder;
 
 		MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 		ASSERT(pMapInfo); //if this asserts then something went rly wrong.
@@ -553,7 +568,7 @@ void Instance_Map_Info_Holder::AddPlayer(uint64 guid, uint32 InstanceID)
 	InstanceIdList::iterator itr = mInstanceIdList.find( InstanceID );
 	if(itr != mInstanceIdList.end())
 	{
-		 SharedPointer<Instance_Map_InstanceId_Holder> p = itr->second;
+		 Instance_Map_InstanceId_Holder *p = itr->second;
 		 p->AddPlayer(guid);
 	}
     instanceIdListMutex.Release();
@@ -567,7 +582,7 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid, uint32 InstanceID)
 	InstanceIdList::iterator itr = mInstanceIdList.find( InstanceID );
 	if(itr != mInstanceIdList.end())
 	{
-		 SharedPointer<Instance_Map_InstanceId_Holder> p = itr->second;
+		Instance_Map_InstanceId_Holder *p = itr->second;
 		 result = p->RemovePlayer(guid);
          instanceIdListMutex.Release();
 		 return result;
@@ -587,10 +602,21 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 	{
 		 itr2 = itr;
 		 ++itr;
-		 SharedPointer<Instance_Map_InstanceId_Holder> p = itr2->second;
+		 Instance_Map_InstanceId_Holder *p = itr2->second;
          if(!p->GetGroupSignature() && GetMapInfo()->type != INSTANCE_RAID && p->GetDifficulty() != MODE_HEROIC) //only resets solo instances
 		 {
-             MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true);
+			 result = p->RemovePlayer(guid);
+			 if(result)
+			 {
+				 sWorldCreator.DeleteInstance(itr2->first, m_pMapInfo->mapid);
+				 delete p;
+				 sLog.outDebug("Removing instance from the itr\n");
+				 mInstanceIdList.erase(itr2);
+				 result2 = true;
+				 continue;
+			 }
+
+			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true,NULL);
 			 if(mapMgr)
 			 {
 				 // dont reset an instnace with players inside.. dunno how they got in there anyway :P
@@ -602,16 +628,6 @@ bool Instance_Map_Info_Holder::RemovePlayer(uint64 guid)
 					 instanceIdListMutex.Release();
 					 return false;
 				 }
-			 }
-
-			 result = p->RemovePlayer(guid);
-			 if(result)
-			 {
-				 sWorldCreator.DeleteInstance(itr2->first, m_pMapInfo->mapid);
-                 Log.Notice("InstanceSaveMgr:", "Removing instance\n");
-				 mInstanceIdList.erase(itr2);
-				 result2 = true;
-				 continue;
 			 }
 		 }
 	}
@@ -629,10 +645,22 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 	{
 		 itr2 = itr;
 		 ++itr;
-		SharedPointer<Instance_Map_InstanceId_Holder> p = itr2->second;
+		Instance_Map_InstanceId_Holder *p = itr2->second;
 		 if(p->GetGroupSignature() && p->GetGroupSignature() == iGroupSignature) //only resets this group instance ids
 		 {
-             MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true);
+             if(p->GetDifficulty() == MODE_HEROIC || p->GetMapInfo()->type == INSTANCE_RAID) { continue; }
+			 result = p->ClearAllPlayers();
+			 if(result)
+			 {
+				 sWorldCreator.DeleteInstance(itr2->first, m_pMapInfo->mapid);
+				 delete p;
+				 sLog.outDebug("Removing group instance from the itr\n");
+				 mInstanceIdList.erase(itr2);
+				 result2 = true;
+				 continue;
+			 }
+
+			 MapMgr * mapMgr = sWorldCreator.GetInstanceByGroupInstanceId(itr2->first, GetMapInfo()->mapid, true, NULL);
 			 if(mapMgr)
 			 {
 				 // dont reset an instnace with players inside.. dunno how they got in there anyway :P
@@ -649,17 +677,6 @@ bool Instance_Map_Info_Holder::RemoveGroup(uint32 iGroupSignature)
 					 return false;
 				 }
 			 }
-
-             if(p->GetDifficulty() == MODE_HEROIC || p->GetMapInfo()->type == INSTANCE_RAID) { continue; }
-			 result = p->ClearAllPlayers();
-			 if(result)
-			 {
-				 sWorldCreator.DeleteInstance(itr2->first, m_pMapInfo->mapid);
-                 Log.Notice("InstanceSaveMgrs:","Removing group instance\n");
-				 mInstanceIdList.erase(itr2);
-				 result2 = true;
-				 continue;
-			 }
 		 }
 	}
     instanceIdListMutex.Release();
@@ -672,7 +689,7 @@ bool Instance_Map_Info_Holder::FindPlayer(uint64 guid, uint32 iGroupSignature, u
 	InstanceIdList::const_iterator itr;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end(); itr++)
 	{
-		SharedPointer<Instance_Map_InstanceId_Holder> p = itr->second;
+		Instance_Map_InstanceId_Holder *p = itr->second;
 		// group matches, returns false and breaks loop if it fails
 		// cant exist 2 groups with same id  so no point in continue loop
 		// raid groups are ignored for this check.
@@ -705,10 +722,10 @@ bool Instance_Map_Info_Holder::FindPlayer(uint64 guid, uint32 iGroupSignature, u
 bool Instance_Map_Info_Holder::IsPlayerSavedToInstanceId(uint64 guid, uint32 instanceid)
 {
     instanceIdListMutex.Acquire();
-	InstanceIdList::const_iterator itr = mInstanceIdList.find( instanceid );
+	InstanceIdList::iterator itr = mInstanceIdList.find( instanceid );
 	if(itr != mInstanceIdList.end())
 	{
-		SharedPointer<Instance_Map_InstanceId_Holder> p = itr->second;
+		Instance_Map_InstanceId_Holder *p = itr->second;
 		if(p->GetInstanceID() == instanceid)
 		{
 			bool result = p->FindPlayer(guid);
@@ -719,13 +736,13 @@ bool Instance_Map_Info_Holder::IsPlayerSavedToInstanceId(uint64 guid, uint32 ins
 	return false;
 }
 
-SharedPointer<Instance_Map_InstanceId_Holder> Instance_Map_Info_Holder::getInstanceIdByPlayer(uint64 guid, uint32 difficulty, bool iIgnoreDifficulty)
+Instance_Map_InstanceId_Holder *Instance_Map_Info_Holder::getInstanceIdByPlayer(uint64 guid, uint32 difficulty, bool iIgnoreDifficulty)
 {
     instanceIdListMutex.Acquire();
 	InstanceIdList::const_iterator itr;
 	for (itr = mInstanceIdList.begin();itr != mInstanceIdList.end(); itr++)
 	{
-		SharedPointer<Instance_Map_InstanceId_Holder> p = itr->second;
+		Instance_Map_InstanceId_Holder *p = itr->second;
         if(iIgnoreDifficulty)
         {
             if(p->FindPlayer(guid))
@@ -769,7 +786,7 @@ Instance_Map_InstanceId_Holder::~Instance_Map_InstanceId_Holder()
 bool Instance_Map_InstanceId_Holder::FindPlayer(uint64 guid)
 {
     playerListMutex.Acquire();
-	PlayerList::const_iterator itr = mPlayerList.find( guid );
+	PlayerList::iterator itr = mPlayerList.find( guid );
 	if(itr == mPlayerList.end())
 	{
         playerListMutex.Release();
@@ -875,7 +892,7 @@ void Instance_Map_InstanceId_Holder::SaveInstanceToDB()
 	CharacterDatabase.Execute( ss.str().c_str() );
 }
 
-void InstanceSavingManagement::AddInactiveInstance(SharedPointer<InactiveInstance> ia)
+void InstanceSavingManagement::AddInactiveInstance(InactiveInstance * ia)
 {
 	inactiveInstancesMutex.Acquire();
 	inactiveInstances[ia->InstanceId] = ia;
@@ -885,13 +902,14 @@ void InstanceSavingManagement::AddInactiveInstance(SharedPointer<InactiveInstanc
 void InstanceSavingManagement::RemoveSavedInstance(uint32 instance_id)
 {
     inactiveInstancesMutex.Acquire();
-	map<uint32, SharedPointer<InactiveInstance> >::iterator itr = inactiveInstances.find(instance_id);
+	map<uint32, InactiveInstance*>::iterator itr = inactiveInstances.find(instance_id);
 	if(itr == inactiveInstances.end()) 
     {
         inactiveInstancesMutex.Release();
         return;
     }
 
+	delete itr->second;
 	inactiveInstances.erase(itr);
     inactiveInstancesMutex.Release();
 }
@@ -900,7 +918,7 @@ void InstanceSavingManagement::CreateInactiveInstance(MapMgr * mgr)
 {
 	// called on mapmgr expire..
 
-	SharedPointer<InactiveInstance> ia(new InactiveInstance);
+	InactiveInstance * ia = new InactiveInstance;
 	ia->Creation = mgr->CreationTime;
 	ia->InstanceId = mgr->GetInstanceID();
 	ia->MapId = mgr->GetMapId();
@@ -911,23 +929,23 @@ void InstanceSavingManagement::CreateInactiveInstance(MapMgr * mgr)
 	AddInactiveInstance(ia);
 }
 
-SharedPointer<InactiveInstance> InstanceSavingManagement::GetInactiveInstance(uint32 instance_id)
+InactiveInstance * InstanceSavingManagement::GetInactiveInstance(uint32 instance_id)
 {
 	inactiveInstancesMutex.Acquire();
-    map<uint32, SharedPointer<InactiveInstance> >::iterator itr = inactiveInstances.find(instance_id);
+	map<uint32, InactiveInstance*>::iterator itr = inactiveInstances.find(instance_id);
 	if(itr == inactiveInstances.end())
 	{
 		inactiveInstancesMutex.Release();
-		return NULL;
+		return 0;
 	}
 
-	SharedPointer<InactiveInstance> ia = itr->second;
-    inactiveInstances.erase(itr);
+	InactiveInstance * ia = itr->second;
+	inactiveInstances.erase(itr);
 	inactiveInstancesMutex.Release();
 	return ia;
 }
 
-void InstanceSavingManagement::SaveInstance(SharedPointer<InactiveInstance> ia)
+void InstanceSavingManagement::SaveInstance(InactiveInstance *ia)
 {
 	ASSERT( ia->InstanceId );
 
@@ -935,7 +953,9 @@ void InstanceSavingManagement::SaveInstance(SharedPointer<InactiveInstance> ia)
 	InstanceInfo::iterator itr = mInstanceInfoList.find( ia->MapId );
 	if(itr == mInstanceInfoList.end())
 	{
-		SharedPointer<Instance_Map_Info_Holder> mapholder(new Instance_Map_Info_Holder);
+		Instance_Map_Info_Holder *mapholder;
+
+		mapholder = new Instance_Map_Info_Holder;
 		MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 		if(!pMapInfo)
         {
@@ -949,7 +969,7 @@ void InstanceSavingManagement::SaveInstance(SharedPointer<InactiveInstance> ia)
 	}
 	else
 	{
-		SharedPointer<Instance_Map_Info_Holder> mapholder = itr->second;
+		Instance_Map_Info_Holder *mapholder = itr->second;
 		MapInfo *pMapInfo = WorldMapInfoStorage.LookupEntry(ia->MapId);
 		if(!pMapInfo)
         {

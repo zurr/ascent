@@ -91,7 +91,7 @@ private:
 struct Instance_Map_Info_Holder
 {
 public:
-	typedef HM_NAMESPACE::hash_map<uint32, SharedPointer<Instance_Map_InstanceId_Holder> > InstanceIdList;
+	typedef HM_NAMESPACE::hash_map<uint32, Instance_Map_InstanceId_Holder*> InstanceIdList;
 
 	Instance_Map_Info_Holder();
 	~Instance_Map_Info_Holder();
@@ -105,10 +105,10 @@ public:
 
 	void AddPlayer(uint64 guid, uint32 InstanceID);
 	void AddInstanceId(MapMgr *pInstance);
-	void AddInstanceId(SharedPointer<InactiveInstance> ia);
+	void AddInstanceId(InactiveInstance * ia);
 
-	SharedPointer<Instance_Map_InstanceId_Holder> GetInstanceId(uint32 instanceid);
-	SharedPointer<Instance_Map_InstanceId_Holder> getInstanceIdByPlayer(uint64 guid, uint32 difficulty, bool iIgnoreDifficulty = false);
+	Instance_Map_InstanceId_Holder *GetInstanceId(uint32 instanceid);
+	Instance_Map_InstanceId_Holder *getInstanceIdByPlayer(uint64 guid, uint32 difficulty, bool iIgnoreDifficulty = false);
 	inline MapInfo *GetMapInfo() { return m_pMapInfo; }
 	inline void SetMapInfo(MapInfo *pMapInfo) { m_pMapInfo = pMapInfo; }
 
@@ -128,9 +128,9 @@ public:
 	InstanceSavingManagement();
 	~InstanceSavingManagement();
 
-	typedef HM_NAMESPACE::hash_map<uint32, SharedPointer<Instance_Map_Info_Holder> > InstanceInfo;
+	typedef HM_NAMESPACE::hash_map<uint32, Instance_Map_Info_Holder*> InstanceInfo;
 
-	SharedPointer<Instance_Map_Info_Holder> SaveInstance(MapMgr *pInstance);
+	Instance_Map_Info_Holder *SaveInstance(MapMgr *pInstance);
 	void SavePlayerToInstance(Player *pPlayer, uint32 mapid); 
 	void ResetSavedInstancesForPlayer(Player *pPlayer); 
 	void RemoveSavedInstance(uint32 mapid, uint32 instanceid, bool bHardReset);
@@ -143,13 +143,13 @@ public:
 	void RepopulateSavedData(uint32 mapid, uint32 instanceid, const char *cNpc, const char *cPlayer);
 	void SaveInstanceIdToDB(uint32 instanceid, uint32 mapid);
 	void SaveObjectStateToInstance(Unit *pUnit);
-	SharedPointer<Instance_Map_InstanceId_Holder> GetInstance(uint32 mapid, uint32 instanceid);
-    SharedPointer<Instance_Map_InstanceId_Holder> GetRaidAndMMInstance(uint32 mapid, Player * pPlayer);
+	Instance_Map_InstanceId_Holder *GetInstance(uint32 mapid, uint32 instanceid);
+    Instance_Map_InstanceId_Holder *GetRaidAndMMInstance(uint32 mapid, Player * pPlayer);
 
 	//INACTIVE INSTANCE FUNCTIONS.
-	void SaveInstance(SharedPointer<InactiveInstance> ia);
-	SharedPointer<InactiveInstance> GetInactiveInstance(uint32 instance_id);
-	void AddInactiveInstance(SharedPointer<InactiveInstance> ia);
+	void SaveInstance(InactiveInstance *ia);
+	InactiveInstance * GetInactiveInstance(uint32 instance_id);
+	void AddInactiveInstance(InactiveInstance * ia);
 	void CreateInactiveInstance(MapMgr * mgr);
 	void RemoveSavedInstance(uint32 instance_id);
 
@@ -158,7 +158,7 @@ private:
 	Mutex _busy;
 	Mutex inactiveInstancesMutex;
 	Mutex instanceInfoListMutex;
-    map<uint32, SharedPointer<InactiveInstance> > inactiveInstances;
+	map<uint32, InactiveInstance*> inactiveInstances;
 
 };
 

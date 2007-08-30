@@ -100,7 +100,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, Object* obj)
 	// check inactive instances.
 	if(obj->GetInstanceID() > 2)
 	{
-		SharedPointer<InactiveInstance> ia = sInstanceSavingManager.GetInactiveInstance(obj->GetInstanceID());
+		InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(obj->GetInstanceID());
 		if(ia != 0)
 		{
 			//create that inactive instance.
@@ -118,7 +118,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, Object* obj)
 					MapMgr * dm = 0;
                     CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 					obj->SetMapId(ia->MapId);
-					//delete ia;
+					delete ia;
 					return dm;
 				}
 			}
@@ -127,7 +127,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, Object* obj)
 				MapMgr * dm = 0;
                 CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
 				obj->SetMapId(ia->MapId);
-				//delete ia;
+				delete ia;
 				return dm;
 			}
 		}
@@ -143,7 +143,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, uint32 instanceId)
 	// check inactive instances.
 	if(instanceId > 2)
 	{
-		SharedPointer<InactiveInstance> ia = sInstanceSavingManager.GetInactiveInstance(instanceId);
+		InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(instanceId);
 		if(ia != 0)
 		{
 			// create that inactive instance.
@@ -159,7 +159,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, uint32 instanceId)
 				{
 					MapMgr * dm = 0;
                     CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-					//delete ia;
+					delete ia;
 					return dm;
 				}
 			}
@@ -167,7 +167,7 @@ MapMgr* WorldCreator::GetInstance(uint32 mapid, uint32 instanceId)
 			{
 				MapMgr * dm = 0;
                 CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-				//delete ia;
+				delete ia;
 				return dm;
 			}
 		}
@@ -183,7 +183,7 @@ MapMgr* WorldCreator::GetInstance(uint32 instanceId)
 	// check inactive instances.
 	if(instanceId > 2)
 	{
-		SharedPointer<InactiveInstance> ia = sInstanceSavingManager.GetInactiveInstance(instanceId);
+		InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(instanceId);
 		if(ia != 0)
 		{
 			// create that inactive instance.
@@ -199,7 +199,7 @@ MapMgr* WorldCreator::GetInstance(uint32 instanceId)
 				{
 					MapMgr * dm = 0;
                     CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-				//	delete ia;
+					delete ia;
 					return dm;
 				}
 			}
@@ -207,7 +207,7 @@ MapMgr* WorldCreator::GetInstance(uint32 instanceId)
 			{
 				MapMgr * dm = 0;
                 CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-				//delete ia;
+				delete ia;
 				return dm;
 			}
 		}
@@ -418,10 +418,10 @@ MapMgr *WorldCreator::GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo
 		bool result = sInstanceSavingManager.IsPlayerSavedToMap(pMapInfo->mapid, pPlayer);
 		if(result)
 		{
-            SharedPointer<Instance_Map_InstanceId_Holder> p = sInstanceSavingManager.GetRaidAndMMInstance(pMapInfo->mapid, pPlayer);
-			if(p != NULL)
+            Instance_Map_InstanceId_Holder *p = sInstanceSavingManager.GetRaidAndMMInstance(pMapInfo->mapid, pPlayer);
+			if(p)
 			{
-				SharedPointer<InactiveInstance> ia = sInstanceSavingManager.GetInactiveInstance(p->GetInstanceID());
+				InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(p->GetInstanceID());
 				if(ia != 0)
 				{
 					//create that inactive instance.
@@ -438,7 +438,7 @@ MapMgr *WorldCreator::GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo
 						{
 							MapMgr * dm = 0;
 							CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-							//delete ia;
+							delete ia;
 							return dm;
 						}
 					}
@@ -446,7 +446,7 @@ MapMgr *WorldCreator::GetInstanceByGroup(Group *pGroup, Player *pPlayer, MapInfo
 					{
 						MapMgr * dm = 0;
                         CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-						//delete ia;
+						delete ia;
 						return dm;
 					}
 				}
@@ -471,10 +471,10 @@ MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
 		bool result = sInstanceSavingManager.IsPlayerSavedToMap(pMapInfo->mapid, pCreator);
 		if(result)
 		{
-            SharedPointer<Instance_Map_InstanceId_Holder> p = sInstanceSavingManager.GetRaidAndMMInstance(pMapInfo->mapid, pCreator);
-			if(p != NULL)
+            Instance_Map_InstanceId_Holder *p = sInstanceSavingManager.GetRaidAndMMInstance(pMapInfo->mapid, pCreator);
+			if(p)
 			{
-				SharedPointer<InactiveInstance> ia = sInstanceSavingManager.GetInactiveInstance(p->GetInstanceID());
+				InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(p->GetInstanceID());
 				if(ia != 0)
 				{
 					//create that inactive instance.
@@ -491,7 +491,7 @@ MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
 						{
 							MapMgr * dm = 0;
                             CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-							//delete ia;
+							delete ia;
 							return dm;
 						}
 					}
@@ -499,7 +499,7 @@ MapMgr *WorldCreator::GetInstanceByCreator(Player *pCreator, MapInfo *pMapInfo)
 					{
 						MapMgr * dm = 0;
 						CreateInstance(NULL,NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-						//delete ia;
+						delete ia;
 						return dm;
 					}
 				}
@@ -558,11 +558,11 @@ void WorldCreator::InstanceHardReset(MapMgr *mMapMgr)
 	sInstanceSavingManager.RemoveSavedInstance(mapid, instanceid, true);
 }
 
-MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 mapid, bool Lock)
+MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 mapid, bool Lock, bool * Deleted)
 {
 	if(InstanceID > 2)
 	{
-		SharedPointer<InactiveInstance> ia = sInstanceSavingManager.GetInactiveInstance(InstanceID);
+		InactiveInstance * ia = sInstanceSavingManager.GetInactiveInstance(InstanceID);
 		if(ia != 0)
 		{
 			// create that inactive instance.
@@ -573,12 +573,14 @@ MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 ma
 				{
 					sInstanceSavingManager.RemoveSavedInstance(ia->MapId,ia->InstanceId,true);
 					sInstanceSavingManager.RemoveSavedInstance(ia->InstanceId);
+					if(Deleted)
+						*Deleted = true;
 				}
 				else
 				{
 					MapMgr * dm = 0;
                     CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-					//delete ia;
+					delete ia;
 					return dm;
 				}
 			}
@@ -586,7 +588,7 @@ MapMgr * WorldCreator::GetInstanceByGroupInstanceId(uint32 InstanceID, uint32 ma
 			{
 				MapMgr * dm = 0;
                 CreateInstance(NULL, NULL, ia->MapId, ia->InstanceId, ia->Creation, &dm, ia->difficulty);
-				//delete ia;
+				delete ia;
 				return dm;
 			}
 		}

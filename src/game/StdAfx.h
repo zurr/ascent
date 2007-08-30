@@ -53,7 +53,6 @@
 #include "../shared/Auth/Sha1.h"
 #include "../shared/Auth/WowCrypt.h"
 #include "../shared/CrashHandler.h"
-#include "../shared/SmartPointer.h"
 
 #include "UpdateFields.h"
 #include "UpdateMask.h"

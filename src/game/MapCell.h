@@ -57,7 +57,7 @@ public:
 	inline bool IsLoaded() { return _loaded; }
 
 	//Object Loading Managing
-	void LoadObjects(CellSpawns * sp, SharedPointer<Instance_Map_InstanceId_Holder> pInstance);
+	void LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pInstance);
 	inline uint32 GetPlayerCount() { return _playerCount; }
 
 	inline bool IsUnloadPending() { return _unloadpending; }
