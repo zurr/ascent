@@ -253,8 +253,8 @@ void WorldSession::HandleLootMoneyOpcode( WorldPacket & recv_data )
 				sgrp = party->GetSubGroup(i);
 				for(itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
 				{
-					if((*itr)->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->GetInstanceID())
-						targets.push_back((*itr));
+					if(itr->player && itr->player->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == itr->player->GetInstanceID())
+						targets.push_back(itr->player);
 				}
 			}
 			party->getLock().Release();
@@ -305,9 +305,9 @@ void WorldSession::HandleLootOpcode( WorldPacket & recv_data )
 					s = party->GetSubGroup(i);
 					for(itr = s->GetGroupMembersBegin(); itr != s->GetGroupMembersEnd(); ++itr)
 					{
-						if(_player->GetZoneId() == (*itr)->GetZoneId())
+						if(itr->player && _player->GetZoneId() == itr->player->GetZoneId())
 						{
-							data << (*itr)->GetGUID();
+							data << itr->player->GetGUID();
 							++real_count;
 						}
 					}
@@ -689,6 +689,10 @@ void WorldSession::HandleLogoutRequestOpcode( WorldPacket & recv_data )
 			pPlayer->GetTaxiState() ||  // or we are on a taxi
 			HasGMPermissions())		   // or we are a gm
 		{
+			/* full remove from group */
+			if(_player->m_Group)
+				_player->m_Group->RemovePlayer(_player->m_playerInfo, _player, true);
+
 			LogoutPlayer(true);
 			return;
 		}

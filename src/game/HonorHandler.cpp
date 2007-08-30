@@ -135,9 +135,9 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
 			{
 				for(gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
 				{
-					gPlayer = (*gitr);
+					gPlayer = gitr->player;
                     
-                    if(gPlayer == pPlayer || gPlayer->isInRange(pPlayer,100.0f)) // visible range
+                    if(gPlayer && gPlayer == pPlayer || gPlayer->isInRange(pPlayer,100.0f)) // visible range
                     {
                         gPlayer->m_killsToday++;
                         gPlayer->m_killsLifetime++;

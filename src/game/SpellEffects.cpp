@@ -2484,8 +2484,8 @@ void Spell::SpellEffectSummonObject(uint32 i)
 				for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
 					itr != pGroup->GetGroupMembersEnd(); ++itr)
 				{
-					if(m_caster != (*itr))
-					(*itr)->GetSession()->SendPacket(pkt);
+					if(itr->player && m_caster != itr->player)
+						itr->player->GetSession()->SendPacket(pkt);
 				}
 				p_caster->GetGroup()->Unlock();
 			}

@@ -45,8 +45,6 @@ Global
 		Hoard = Hoard
 		Release = Release
 	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
-	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{1DC6C4DA-A028-41F3-877D-D5400C594F88}.Debug.ActiveCfg = Debug|Win32
 		{1DC6C4DA-A028-41F3-877D-D5400C594F88}.Debug.Build.0 = Debug|Win32

@@ -457,11 +457,13 @@ CBattleground::~CBattleground()
 	for(uint32 i = 0; i < 2; ++i)
 	{
 		Player * plr;
+		PlayerInfo *inf;
 		for(uint32 j = 0; j < m_groups[i]->GetSubGroupCount(); ++j) {
 			for(GroupMembersSet::iterator itr = m_groups[i]->GetSubGroup(j)->GetGroupMembersBegin(); itr != m_groups[i]->GetSubGroup(j)->GetGroupMembersEnd();) {
-				plr = *itr;
+				plr = itr->player;
+				inf = itr->player_info;
 				++itr;
-				m_groups[i]->RemovePlayer(plr);
+				m_groups[i]->RemovePlayer(inf, plr, true);
 			}
 		}
 		delete m_groups[i];
@@ -626,7 +628,7 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 
 	/* add the player to the group */
 	if(!plr->GetGroup())
-		m_groups[plr->GetTeam()]->AddMember(plr);
+		m_groups[plr->GetTeam()]->AddMember(plr->m_playerInfo, plr);
 
 	if(!m_countdownStage)
 	{
@@ -887,7 +889,7 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 
 	/* are we in the group? */
 	if(plr->GetGroup() == m_groups[plr->GetTeam()])
-		plr->GetGroup()->RemovePlayer(plr);
+		plr->GetGroup()->RemovePlayer(plr->m_playerInfo, plr, true);
 
 	/* revive the player if he is dead */
 	if(!plr->isAlive())

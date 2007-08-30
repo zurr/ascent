@@ -627,7 +627,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim)
 			{
 				for(gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
 				{
-					gplr = (*gitr);
+					gplr = gitr->player;
 					if(gplr && gplr != plr) // dont double kills
 					{
 						for(i = 0; i < 20; ++i)

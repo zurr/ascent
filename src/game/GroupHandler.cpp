@@ -131,7 +131,7 @@ void WorldSession::HandleGroupAcceptOpcode( WorldPacket & recv_data )
 
 	if(grp)
 	{
-		grp->AddMember(_player);
+		grp->AddMember(_player->m_playerInfo, _player);
         _player->iInstanceType = grp->GetLeader()->iInstanceType;
         _player->GetSession()->OutPacket(CMSG_DUNGEON_DIFFICULTY, 4, &grp->GetLeader()->iInstanceType);
         sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
@@ -140,8 +140,8 @@ void WorldSession::HandleGroupAcceptOpcode( WorldPacket & recv_data )
 	
 	// If we're this far, it means we have no existing group, and have to make one.
 	grp = new Group;
-	grp->AddMember(player);		// add the inviter first, therefore he is the leader
-	grp->AddMember(_player);	   // add us.
+	grp->AddMember(_player->m_playerInfo, player);		// add the inviter first, therefore he is the leader
+	grp->AddMember(_player->m_playerInfo, _player);	   // add us.
     _player->iInstanceType = player->iInstanceType;
     _player->GetSession()->OutPacket(CMSG_DUNGEON_DIFFICULTY, 4, &player->iInstanceType);
     sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
@@ -206,7 +206,7 @@ void WorldSession::HandleGroupUninviteOpcode( WorldPacket & recv_data )
 	group = _player->GetGroup();
 
 	if(group)
-		group->RemovePlayer(player);
+		group->RemovePlayer(player->m_playerInfo, player, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -267,7 +267,7 @@ void WorldSession::HandleGroupDisbandOpcode( WorldPacket & recv_data )
 	Group* pGroup = _player->GetGroup();
 	if(!pGroup) return;
 
-	pGroup->RemovePlayer(_player);
+	pGroup->RemovePlayer(_player->m_playerInfo, _player, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

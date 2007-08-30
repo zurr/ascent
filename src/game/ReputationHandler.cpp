@@ -399,7 +399,8 @@ void Player::Reputation_OnKilledUnit(Unit * pUnit, bool InnerLoop)
 		{
 			for(it = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); it != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++it)
 			{
-				(*it)->Reputation_OnKilledUnit(pUnit, true);
+				if(it->player)
+					it->player->Reputation_OnKilledUnit(pUnit, true);
 			}
 		}
 		m_Group->getLock().Release();

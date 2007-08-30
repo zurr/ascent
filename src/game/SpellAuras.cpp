@@ -718,10 +718,10 @@ void Aura::EventUpdateAA(float r)
 		GroupMembersSet::iterator itr = group->GetGroupMembersBegin();
 		for(; itr != group->GetGroupMembersEnd(); ++itr)
 		{
-			if((*itr) != plr && (*itr)->GetDistanceSq(u_caster) <= r)
+			if(itr->player && itr->player != plr && itr->player->GetDistanceSq(u_caster) <= r)
 			{
 				// Add the aura if they don't have it.
-				if(!(*itr)->HasActiveAura(m_spellProto->Id) && (*itr)->GetInstanceID() == plr->GetInstanceID() && (*itr)->isAlive())
+				if(!itr->player->HasActiveAura(m_spellProto->Id) && itr->player->GetInstanceID() == plr->GetInstanceID() && itr->player->isAlive())
 				{
 					Aura * aura = NULL;
 					//aura->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
@@ -732,7 +732,7 @@ void Aura::EventUpdateAA(float r)
 						{
 							if(!aura)
 							{
-								aura = new Aura(m_spellProto, -1, u_caster, (*itr));
+								aura = new Aura(m_spellProto, -1, u_caster, itr->player);
 								aura->m_areaAura = true;
 							}
 							aura->AddMod(m_modList[i].m_type, m_modList[i].m_amount,
@@ -741,8 +741,8 @@ void Aura::EventUpdateAA(float r)
 					}
 					if(aura)
 					{
-						(*itr)->AddAura(aura);
-						NewTargets.push_back((*itr)->GetGUID());
+						itr->player->AddAura(aura);
+						NewTargets.push_back(itr->player->GetGUID());
 					}
 				}
 			}

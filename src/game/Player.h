@@ -306,6 +306,7 @@ struct PlayerInfo
 	time_t lastOnline;
 	uint32 lastZone;
 	uint32 lastLevel;
+	Group * m_Group;
 };
 struct PlayerPet
 {
@@ -452,6 +453,7 @@ public:
 	Player ( uint32 high, uint32 low );
 	~Player ( );
 	bool ok_to_remove;
+	PlayerInfo * m_playerInfo;
 
 	void AddToWorld();
 	void RemoveFromWorld();

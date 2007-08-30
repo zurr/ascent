@@ -405,7 +405,7 @@ void Unit::GiveGroupXP(Unit *pVictim, Player *PlayerInGroup)
 	for(uint32 i = 0; i < pGroup->GetSubGroupCount(); i++) {
 		for(itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
 		{
-			pGroupGuy = (*itr);
+			pGroupGuy = itr->player;
 			if( pGroupGuy && 
 				pGroupGuy->isAlive() && 
 //				PlayerInGroup->GetInstanceID()==pGroupGuy->GetInstanceID() &&
@@ -3104,10 +3104,8 @@ void Unit::VampiricEmbrace(uint32 dmg,Unit* tgt)
 		((Player*)this)->GetGroup()->Lock();
 		for(itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)
 		{
-			if((*itr) == this)
-				continue;
-			Player *p = (*itr);
-			if(!p->isAlive())
+			Player *p = itr->player;
+			if(!p || p==this || !p->isAlive())
 				continue;
 			data.clear();
 			data << p->GetNewGUID();
@@ -3164,9 +3162,9 @@ void Unit::VampiricTouch(uint32 dmg,Unit* tgt)
 				((Player*)this)->GetGroup()->Lock();
                 for(itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)
                 {
-                        if((*itr) == this)
+                        if(!itr->player || itr->player == this)
                                 continue;
-                        Player *p = (*itr);
+                        Player *p = itr->player;
                         if(!p->isAlive() || this->getClass()==WARRIOR || this->getClass() == ROGUE)
                                 continue;
                         

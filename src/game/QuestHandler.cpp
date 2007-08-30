@@ -721,8 +721,8 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 				GroupMembersSet::iterator itr;
 				for(itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
 				{
-					Player *pPlayer = (*itr);
-					if(pPlayer->GetGUID() !=  pguid)
+					Player *pPlayer = itr->player;
+					if(pPlayer && pPlayer->GetGUID() !=  pguid)
 					{
 						WorldPacket data( MSG_QUEST_PUSH_RESULT, 13 );
 						data << pPlayer->GetGUID();

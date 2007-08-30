@@ -49,10 +49,17 @@ enum QuickGroupUpdateFlags
 	PARTY_UPDATE_FLAG_ZONEID			= 2,
 };
 
+struct PlayerInfo;
+typedef struct
+{
+	PlayerInfo * player_info;
+	Player * player;
+}GroupMember;
+
 class Group;
 class Player;
 
-typedef std::set<Player*> GroupMembersSet;
+typedef std::list<GroupMember> GroupMembersSet;
 
 class SubGroup	  // Most stuff will be done through here, not through the "Group" class.
 {
@@ -68,8 +75,8 @@ public:
 	inline GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
 	inline GroupMembersSet::iterator GetGroupMembersEnd(void)   { return m_GroupMembers.end();   }
 
-	void AddPlayer(Player *pPlayer);
-	void RemovePlayer(Player *pPlayer);
+	void AddPlayer(PlayerInfo * info, Player *pPlayer);
+	void RemovePlayer(PlayerInfo * info, Player *pPlayer, bool forced_remove);
 	bool HasMember(uint64 guid);
 	
 
@@ -90,8 +97,6 @@ protected:
 	Group*			  m_Parent;
 	uint32			  m_Id;
 
-	Player*			 m_SubGroupLeader;
-
 };
 
 class SERVER_DECL Group
@@ -105,8 +110,9 @@ public:
 	~Group();
 
 	// Adding/Removal Management
-	bool AddMember(Player* pPlayer);
-	void RemovePlayer(Player* pPlayer);
+	bool AddMember(PlayerInfo * info, Player* pPlayer, int32 subgroupid=-1);
+	void RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove);
+	void UpdateMember(PlayerInfo * info, Player * pPlayer);
 
 	// Leaders and Looting
 	void SetLeader(Player* pPlayer);
@@ -143,10 +149,10 @@ public:
 	inline Player* GetLeader(void) { return m_Leader; }
 	inline Player* GetLooter(void) { return m_Looter; }
 
-	void SetSubGroupLeader(Player *pPlayer, uint8 subgroup);
-	void MovePlayer(Player* pPlayer, uint8 subgroup);
+	void MovePlayer(PlayerInfo* info, uint8 subgroup);
 
 	bool HasMember(Player *pPlayer);
+	bool HasMember(PlayerInfo * info);
 	inline uint32 MemberCount(void) { return m_MemberCount; }
 	inline bool IsFull() { return ((m_GroupType == GROUP_TYPE_PARTY && m_MemberCount >= MAX_GROUP_SIZE_PARTY) || (m_GroupType == GROUP_TYPE_RAID && m_MemberCount >= MAX_GROUP_SIZE_RAID)); }
 

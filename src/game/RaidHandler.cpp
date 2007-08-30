@@ -43,20 +43,16 @@ void WorldSession::HandleGroupChangeSubGroup(WorldPacket & recv_data)
 	recv_data >> name;
 	recv_data >> subGroup;
 
-	Player *plyr = objmgr.GetPlayer(name.c_str());
-	if(!plyr)
+	PlayerInfo * inf = objmgr.GetPlayerInfoByName(name);
+	if(inf == NULL || inf->m_Group == NULL || inf->m_Group != _player->m_Group)
 		return;
 
-	Group *pGroup = _player->GetGroup();
-	if(!pGroup)
-		return;
-
-	pGroup->MovePlayer(plyr, subGroup);
+	_player->GetGroup()->MovePlayer(inf, subGroup);
 }
 
 void WorldSession::HandleGroupAssistantLeader(WorldPacket & recv_data)
 {
-	if(!_player->IsInWorld()) return;
+	/*if(!_player->IsInWorld()) return;
 	//80
 
 	std::string name;
@@ -72,7 +68,7 @@ void WorldSession::HandleGroupAssistantLeader(WorldPacket & recv_data)
 	Group *pGroup = _player->GetGroup();
 	if(!pGroup) return;
 
-	pGroup->SetSubGroupLeader(plyr,subGroup);
+	pGroup->SetSubGroupLeader(plyr,subGroup);*/
 }
 
 void WorldSession::HandleRequestRaidInfoOpcode(WorldPacket & recv_data)

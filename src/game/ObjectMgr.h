@@ -338,6 +338,7 @@ public:
 	}
 	void AddGroup(Group* group) { mGroupSet.insert( group ); }
 	void RemoveGroup(Group* group) { mGroupSet.erase( group ); }
+	void LoadGroups();
 
 	// player names
 	void AddPlayerInfo(PlayerInfo *pn);

@@ -558,11 +558,11 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 							p->GetGroup()->Lock();
 							for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 							{
-								if(m_caster == (*itr)) 
+								if(!itr->player || m_caster == itr->player) 
 									continue;
-								if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
+								if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),itr->player,r))
 								{
-									store_buff->m_unitTarget = (*itr)->GetGUID();
+									store_buff->m_unitTarget = itr->player->GetGUID();
 									break;
 								}
 							}
@@ -637,11 +637,11 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
 									itr != pGroup->GetGroupMembersEnd(); ++itr)
 								{
-									if(p == (*itr)) 
+									if(!itr->player || p == itr->player) 
 										continue;
-									if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
+									if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),itr->player,r))
 									{
-										store_buff->m_unitTarget = (*itr)->GetGUID();
+										store_buff->m_unitTarget = itr->player->GetGUID();
 										break;
 									}
 								}
@@ -834,10 +834,10 @@ void Spell::FillTargetMap(uint32 i)
 				p->GetGroup()->Lock();
 				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 				  {
-					  if(m_caster == (*itr)) 
+					  if(!itr->player || m_caster == itr->player) 
 						  continue;
-					  if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
-						  SafeAddTarget(tmpMap,(*itr)->GetGUID());
+					  if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),itr->player,r))
+						  SafeAddTarget(tmpMap,itr->player->GetGUID());
 				  }
 				  p->GetGroup()->Unlock();
 			 }
@@ -974,10 +974,10 @@ void Spell::FillTargetMap(uint32 i)
 							for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
 								itr != pGroup->GetGroupMembersEnd(); ++itr)
 							{
-								if(p == (*itr)) 
+								if(!itr->player || p == itr->player) 
 									continue;
-								if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
-								SafeAddTarget(tmpMap,(*itr)->GetGUID());
+								if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),itr->player,r))
+								SafeAddTarget(tmpMap,itr->player->GetGUID());
 							}
 							p->GetGroup()->Unlock();
 						}
@@ -1006,7 +1006,10 @@ void Spell::FillTargetMap(uint32 i)
 			{
 				Target->GetGroup()->Lock();
 				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
-					  SafeAddTarget(tmpMap,(*itr)->GetGUID());
+				{
+					if(itr->player)
+                        SafeAddTarget(tmpMap,itr->player->GetGUID());
+				}
 				Target->GetGroup()->Unlock();
 			}
 			else
@@ -1085,11 +1088,11 @@ void Spell::FillTargetMap(uint32 i)
 					for(itr = pGroup->GetGroupMembersBegin();
 						itr != pGroup->GetGroupMembersEnd(); ++itr)
 					{
-						if((*itr)==u_caster)
+						if(!itr->player || itr->player==u_caster)
 							continue;
-						if(IsInrange(u_caster->GetPositionX(),u_caster->GetPositionY(),u_caster->GetPositionZ(),(*itr), range))
+						if(IsInrange(u_caster->GetPositionX(),u_caster->GetPositionY(),u_caster->GetPositionZ(),itr->player, range))
 						{
-							SafeAddTarget(tmpMap,(*itr)->GetGUID());
+							SafeAddTarget(tmpMap,itr->player->GetGUID());
 							if(!--jumps)
 								break;
 						}
@@ -1188,9 +1191,9 @@ void Spell::FillTargetMap(uint32 i)
 						Target->GetGroup()->Lock();
 						for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
 						{
-							if(Target->getClass() != (*itr)->getClass()) 
+							if(!itr->player || Target->getClass() != itr->player->getClass()) 
 								continue;
-							SafeAddTarget(tmpMap,(*itr)->GetGUID());
+							SafeAddTarget(tmpMap,itr->player->GetGUID());
 						}
 						Target->GetGroup()->Unlock();
 					}

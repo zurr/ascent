@@ -1875,8 +1875,8 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 									itr = sGrp->GetGroupMembersBegin();
 									for(; itr != sGrp->GetGroupMembersEnd(); ++itr)
 									{
-										if((*itr)->IsVisible(victim))	   // Save updates for non-existant creatures
-											(*itr)->PushUpdateData(&buf, 1);
+										if(itr->player && itr->player->IsVisible(victim))	   // Save updates for non-existant creatures
+											itr->player->PushUpdateData(&buf, 1);
 									}
 								}
 								pGroup->Unlock();

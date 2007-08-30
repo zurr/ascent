@@ -352,6 +352,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_deathVision = false;
 	m_retainComboPoints = false;
 	last_heal_spell = NULL;
+	m_playerInfo = NULL;
 }
 
 
@@ -416,7 +417,7 @@ Player::~Player ( )
 	
 
 	if(m_Group != NULL)
-		m_Group->RemovePlayer(this);
+		m_Group->RemovePlayer(m_playerInfo, this, true);
 
 	for(SplineMap::iterator itr = _splineMap.begin(); itr != _splineMap.end(); ++itr)
 		delete itr->second;
@@ -5244,9 +5245,9 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 					{
 						for(GroupMembersSet::iterator itr = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); itr != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
 						{
-							if((*itr)->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
+							if(itr->player && itr->player->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
 							{
-								(*itr)->GetSession()->SendPacket(&data2);
+								itr->player->GetSession()->SendPacket(&data2);
 							}
 						}
 					}

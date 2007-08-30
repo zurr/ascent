@@ -165,6 +165,9 @@ int WorldSession::Update(uint32 InstanceID)
 			return 0;
 		}
 
+		if(_player->m_Group)
+			_player->m_Group->RemovePlayer(_player->m_playerInfo, _player, true);
+
 		LogoutPlayer(true);
 	}
 
@@ -284,7 +287,7 @@ void WorldSession::LogoutPlayer(bool Save)
 		{
 			Group *group = _player->GetGroup();
 			if(group)
-				group->RemovePlayer(_player);
+				group->RemovePlayer(_player->m_playerInfo, _player, false);
 		}
 		
 		for(int i=0;i<3;++i)

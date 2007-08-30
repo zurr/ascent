@@ -313,6 +313,7 @@ void ObjectMgr::LoadPlayersInfo()
 			pn->officerNote= fields[9].GetString();
 			pn->Rank=fields[10].GetUInt32();
 			pn->acct = fields[11].GetUInt32();
+			pn->m_Group=0;
 
 			if(pn->race==RACE_HUMAN||pn->race==RACE_DWARF||pn->race==RACE_GNOME||pn->race==RACE_NIGHTELF||pn->race==RACE_DRAENEI)
 				pn->team = 0;
@@ -3060,4 +3061,24 @@ void ObjectMgr::LoadDisabledSpells()
 		} while(result->NextRow());
 		delete result;
 	}
+}
+
+void ObjectMgr::LoadGroups()
+{
+	QueryResult * result = WorldDatabase.Query("SELECT MAX(id) FROM groups");
+	if(!result)
+		m_hiGroupId = 1;
+	else
+	{
+		m_hiGroupId = result->Fetch()[0].GetUInt32();
+		delete result;
+	}
+
+	result = WorldDatabase.Query("SELECT * FROM groups");
+	if(result)
+	{
+		delete result;
+	}
+
+	Log.Notice("ObjectMgr", "%u groups loaded.", this->mGroupSet.size());
 }
