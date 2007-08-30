@@ -412,6 +412,7 @@ public:
 	void LoadPlayerCreateInfo();
 	void LoadGuilds();
 	Corpse* LoadCorpse(uint32 guid);
+	void LoadCorpses(MapMgr * mgr);
 	void LoadGMTickets();
 	void SaveGMTicket(uint64 guid);
 	void LoadAuctions();

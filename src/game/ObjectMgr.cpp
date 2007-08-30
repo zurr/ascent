@@ -1174,6 +1174,36 @@ Item * ObjectMgr::LoadItem(uint64 guid)
 	return pReturn;
 }
 
+void ObjectMgr::LoadCorpses(MapMgr * mgr)
+{
+	Corpse *pCorpse = NULL;
+
+	QueryResult *result = CharacterDatabase.Query("SELECT * FROM corpses WHERE instanceId = %u", mgr->GetInstanceID());
+
+	if(result)
+	{
+		do
+		{
+			Field *fields = result->Fetch();
+			pCorpse = new Corpse(HIGHGUID_CORPSE,fields[0].GetUInt32());
+			pCorpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
+			pCorpse->SetZoneId(fields[5].GetUInt32());
+			pCorpse->SetMapId(fields[6].GetUInt32());
+			pCorpse->SetInstanceID(fields[7].GetUInt32());
+			pCorpse->LoadValues( fields[8].GetString());
+			if(pCorpse->GetUInt32Value(CORPSE_FIELD_DISPLAY_ID) == 0)
+			{
+				delete pCorpse;
+				continue;
+			}
+
+			pCorpse->PushToWorld(mgr);
+		} while( result->NextRow() );
+
+		delete result;
+	}
+}
+
 //------------------------------------------------------------
 // Corpse Collector Loading
 // comments:

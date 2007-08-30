@@ -1053,6 +1053,10 @@ void MapMgr::Do()
 	for(set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
 		PushStaticObject(*itr);
 
+	/* load corpses on instances */
+	if(IS_INSTANCE(GetMapId()))
+		objmgr.LoadCorpses(this);
+
 	// always declare local variables outside of the loop!
 	// otherwise theres a lot of sub esp; going on.
 
