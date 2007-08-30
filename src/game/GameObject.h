@@ -210,8 +210,9 @@ public:
 	void RemoveInRangeObject(Object* pObj);
 	void RemoveFromWorld();
 
-	inline bool CanMine(){return mines_remaining!=0;}
+	inline bool CanMine(){return mines_remaining!=1;}
 	inline void UseMine(){mines_remaining--;}
+    bool HasLoot();
 
 protected:
 

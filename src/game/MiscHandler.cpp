@@ -383,52 +383,105 @@ void WorldSession::HandleLootReleaseOpcode( WorldPacket & recv_data )
 		GameObject* pGO = _player->GetMapMgr()->GetGameObject(guid);
 		if(!pGO)
 			return;
-		pGO->loot.looters.erase(_player->GetGUID());
-		//GO MUST DISAPPEAR AFTER LOOTING,
-		//FIX ME: respawn time of GO must be added,15 minutes by default
-		//if this is not fishing bobber despawn it
-		if(pGO->GetUInt32Value(GAMEOBJECT_TYPE_ID)==GAMEOBJECT_TYPE_FISHINGNODE)
-		{
-			if(pGO->IsInWorld())
-			{
-				pGO->RemoveFromWorld();
-			}
-			delete pGO;
-		}
-		//mining thingies can be mined more then once
-		else
-		{
-			if(pGO->GetUInt32Value(GAMEOBJECT_TYPE_ID)==GAMEOBJECT_TYPE_CHEST && pGO->CanMine())
-			{
-				//we should make sure this is minable.=> last casted spell had open lock and locktype was LOCKTYPE_MINING ? Maybe there is an easier way :(
-				if(	GetPlayer()->pLastSpell)
-				{
-					SpellEntry *se = GetPlayer()->pLastSpell;
-					if( (se->EffectMiscValue[0]==LOCKTYPE_MINING && se->Effect[0]==SPELL_EFFECT_OPEN_LOCK) ||
-						(se->EffectMiscValue[1]==LOCKTYPE_MINING && se->Effect[1]==SPELL_EFFECT_OPEN_LOCK) ||
-						(se->EffectMiscValue[3]==LOCKTYPE_MINING && se->Effect[3]==SPELL_EFFECT_OPEN_LOCK))
-					{
-						//now see the ods to remove or not this GO from map
-						if(Rand(20))
-						{
-							pGO->loot.items.clear(); //make the next mining generate loot
-							pGO->UseMine();//reduce minability count. No more very lucky bastards
-							return;
-						}
-					}
-				}
-			}
-			uint32 DespawnTime = 0;
-			if(sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()))
-				DespawnTime = 120000;	   // 5 min for quest GO,
-			else
-			{
-				DespawnTime = 900000;	   // 15 for else
-			}
+
+        switch(pGO->GetUInt32Value(GAMEOBJECT_TYPE_ID))
+        {
+        case GAMEOBJECT_TYPE_FISHINGNODE:
+            {
+		        pGO->loot.looters.erase(_player->GetGUID());
+                if(pGO->IsInWorld())
+			    {
+				    pGO->RemoveFromWorld();
+			    }
+			    delete pGO;
+            }break;
+        case GAMEOBJECT_TYPE_CHEST:
+            {
+                pGO->loot.looters.erase(_player->GetGUID());
+                //check for locktypes
+                
+                Lock *pLock = sLockStore.LookupEntry(pGO->GetInfo()->SpellFocus);
+                if(pLock)
+                {
+                    for(uint32 i=0; i < 5; i++)
+                    {
+                        if(pLock->locktype[i])
+                        {
+                            if(pLock->locktype[i] == 2) //locktype;
+                            {
+                                //herbalism and mining;
+                                if(pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM)
+                                {
+                                    //we still have loot inside.
+                                    if(pGO->HasLoot())
+                                    {
+                                        pGO->SetUInt32Value(GAMEOBJECT_STATE, 1);
+                                        return;
+                                    }
+                                    if(pGO->CanMine())
+                                    {   pGO->loot.items.clear();
+                                        pGO->UseMine();
+                                       
+                                    }
+                                    else
+                                    {
+                                        uint32 DespawnTime = 0;
+
+			                            if(sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()))
+				                            DespawnTime = 120000;	   // 5 min for quest GO,
+			                            else
+			                            {
+				                            DespawnTime = 900000;	   // 15 for else
+			                            }
 
 
-			pGO->Despawn(DespawnTime);
-		}
+			                            pGO->Despawn(DespawnTime);
+                                    }
+                                }
+                                else //other type of locks that i dont bother to split atm ;P
+                                {
+                                    if(pGO->HasLoot())
+                                    {
+                                        pGO->SetUInt32Value(GAMEOBJECT_STATE, 1);
+                                        return;
+                                    }
+                    			    uint32 DespawnTime = 0;
+			                        if(sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()))
+				                        DespawnTime = 120000;	   // 5 min for quest GO,
+			                        else
+			                        {
+				                        DespawnTime = 900000;	   // 15 for else
+			                        }
+
+
+			                        pGO->Despawn(DespawnTime);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if(pGO->HasLoot())
+                    {
+                        pGO->SetUInt32Value(GAMEOBJECT_STATE, 1);
+                        return;
+                    }
+                    uint32 DespawnTime = 0;
+			        if(sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()))
+				        DespawnTime = 120000;	   // 5 min for quest GO,
+			        else
+			        {
+				        DespawnTime = 900000;	   // 15 for else
+			        }
+
+
+			        pGO->Despawn(DespawnTime);
+
+                }
+            }
+        default: break;
+        }
 	}
 	else if(UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_CORPSE)
 	{
@@ -1071,8 +1124,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	uint64 guid;
 	recv_data >> guid;
 	SpellCastTargets targets;
-	Spell *spell;
-	SpellEntry *spellInfo;
+	Spell *spell = NULL;;
+	SpellEntry *spellInfo = NULL;;
 	sLog.outDebug("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);   
 
 	GameObject *obj = _player->GetMapMgr()->GetGameObject(guid);
@@ -1279,7 +1332,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 	case GAMEOBJECT_TYPE_MEETINGSTONE:	// Meeting Stone
 		{
 			/* Use selection */
-			Player * pPlayer = _player->GetMapMgr()->GetPlayer((uint32)_player->GetSelection());
+            Player * pPlayer = objmgr.GetPlayer(_player->GetSelection());
 			if(!pPlayer || _player->m_Group != pPlayer->m_Group || !_player->m_Group)
 				return;
 

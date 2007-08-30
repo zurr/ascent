@@ -25,7 +25,7 @@ GameObject::GameObject(uint32 high, uint32 low)
 	m_updateMask.SetCount(GAMEOBJECT_END);
 	SetUInt32Value( OBJECT_FIELD_TYPE,TYPE_GAMEOBJECT|TYPE_OBJECT);
 	SetUInt32Value( OBJECT_FIELD_GUID,low);
-	SetUInt32Value( OBJECT_FIELD_GUID+1,high);
+	SetUInt32Value( OBJECT_FIELD_GUID+1,high);                           
 	m_wowGuid.Init(GetGUID());
  
 	SetFloatValue( OBJECT_FIELD_SCALE_X, 1);//info->Size  );
@@ -53,7 +53,7 @@ GameObject::GameObject(uint32 high, uint32 low)
 	m_spawn = 0;
 	loot.gold = 0;
 	m_deleted = false;
-	mines_remaining = 5;
+	mines_remaining = 1;
 }
 
 GameObject::~GameObject()
@@ -358,6 +358,28 @@ void GameObject::InitAI()
 		m_ritualmembers = new uint32[pInfo->SpellFocus];
 		memset(m_ritualmembers,0,sizeof(uint32)*pInfo->SpellFocus);
 	}
+    else if(pInfo->Type == GAMEOBJECT_TYPE_CHEST)
+    {
+        Lock *pLock = sLockStore.LookupEntry(GetInfo()->SpellFocus);
+        if(pLock)
+        {
+            for(uint32 i=0; i < 5; i++)
+            {
+                if(pLock->locktype[i])
+                {
+                    if(pLock->locktype[i] == 2) //locktype;
+                    {
+                        //herbalism and mining;
+                        if(pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM)
+                        {
+                            mines_remaining = rand() % GetInfo()->sound5 + GetInfo()->sound4;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
 	myScript = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
 
@@ -647,4 +669,14 @@ void GameObject::RemoveFromWorld()
 {
 	sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_TRAP_SEARCH_TARGET);
 	Object::RemoveFromWorld();
+}
+
+bool GameObject::HasLoot()
+{
+    int count=0;
+    for(vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+		count += (itr)->iItemsCount;
+
+    return count;
+
 }

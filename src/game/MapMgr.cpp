@@ -786,7 +786,7 @@ void MapMgr::_UpdateObjects()
 
 void MapMgr::UpdateCellActivity(uint32 x, uint32 y, int radius)
 {
-	Instance_Map_InstanceId_Holder * pInstance =  sInstanceSavingManager.GetInstance(GetMapId(), GetInstanceID());
+	SharedPointer<Instance_Map_InstanceId_Holder> pInstance =  sInstanceSavingManager.GetInstance(GetMapId(), GetInstanceID());
 	CellSpawns * sp;
 	uint32 endX = (x + radius) <= _sizeX ? x + radius : (_sizeX-1);
 	uint32 endY = (y + radius) <= _sizeY ? y + radius : (_sizeY-1);
@@ -1237,9 +1237,10 @@ void MapMgr::_PerformObjectDuties()
 			ptr->Update(mstime - lastUnitUpdate);
 		}
 	}
-
-	// Update any events.
+	
+    // Update any events.
 	eventHolder.Update(mstime - lastUnitUpdate);
+
 
 	// Update players.
 	{
@@ -1353,7 +1354,7 @@ void MapMgr::RespawnMapMgr()
 	
 	//Loop through cells to load objects
 	CellSpawns * sp;
-	Instance_Map_InstanceId_Holder * pInstance = sInstanceSavingManager.GetInstance(_mapId, GetInstanceID());
+	SharedPointer<Instance_Map_InstanceId_Holder> pInstance = sInstanceSavingManager.GetInstance(_mapId, GetInstanceID());
 
 	for (uint32 i = 0; i < _sizeX; i++)
 	{

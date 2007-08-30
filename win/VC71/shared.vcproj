@@ -408,6 +408,9 @@
 				RelativePath="..\..\src\shared\Singleton.h">
 			</File>
 			<File
+				RelativePath="..\..\src\shared\SmartPointer.h">
+			</File>
+			<File
 				RelativePath="..\..\src\shared\StackBuffer.h">
 			</File>
 			<File

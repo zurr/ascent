@@ -132,7 +132,7 @@ void MapCell::RemoveObjects()
 }
 
 
-void MapCell::LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pInstance)
+void MapCell::LoadObjects(CellSpawns * sp, SharedPointer<Instance_Map_InstanceId_Holder> pInstance)
 {
 	_loaded = true;
 
@@ -140,7 +140,7 @@ void MapCell::LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pIns
 	{
 		for(CreatureSpawnList::iterator i=sp->CreatureSpawns.begin();i!=sp->CreatureSpawns.end();i++)
 		{
-			if(pInstance && pInstance->FindObject((*i)->id) || pInstance && pInstance->FindObject((*i)->respawnNpcLink))
+			if(pInstance != NULL && pInstance->FindObject((*i)->id) || pInstance != NULL && pInstance->FindObject((*i)->respawnNpcLink))
 			{
 				continue;
 			}
@@ -169,7 +169,7 @@ void MapCell::LoadObjects(CellSpawns * sp, Instance_Map_InstanceId_Holder * pIns
 			if(go->Load(*i))
 			{
 				uint32 state = go->GetUInt32Value(GAMEOBJECT_STATE);
-				if(pInstance && pInstance->FindObject((*i)->stateNpcLink))
+				if(pInstance != NULL && pInstance->FindObject((*i)->stateNpcLink))
 				{
 					go->SetUInt32Value(GAMEOBJECT_STATE, (state ? 0 : 1));
 				}
