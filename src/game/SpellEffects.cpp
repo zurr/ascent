@@ -2287,7 +2287,7 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
 
 	if(target->HasSkillLine(skill))
 	{
-		if(target->GetBaseSkillAmt(skill)<max)
+		if(target->GetBaseSkillAmt(skill)>max)
 			target->ModSkillMax(skill,max,max);
 		else
 			target->ModSkillMax(skill, max);

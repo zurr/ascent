@@ -1805,6 +1805,7 @@ void Player::addSpell(uint32 spell_id)
 		case SKILL_TYPE_SECONDARY:
 		case SKILL_TYPE_LANGUAGE:
 		case SKILL_TYPE_PROFESSION:
+			return;
 			break;
 
 		default:
