@@ -20,11 +20,8 @@ initialiseSingleton(MailSystem);
 
 void MailSystem::StartMailSystem()
 {
-	sLog.outString("Starting Mail System...");
-	sLog.outString("");
+	Log.Notice("MailSystem", "Starting Mail System...");
 	LoadMessages();
-	sLog.outString("");
-	sLog.outString("Mail System Ready!");
 }
 
 void MailSystem::ShutdownMailSystem()
@@ -817,7 +814,7 @@ void MailSystem::PeriodicMailRefresh()
 
 void MailSystem::LoadMessages()
 {
-	sLog.outString("  Creating/Loading Mailboxes...");
+	Log.Notice("MailSystem", "Creating/Loading Mailboxes...");
 
 	uint32 high = 0;
 	QueryResult * result = CharacterDatabase.Query("SELECT * FROM mailbox");
@@ -868,14 +865,14 @@ void MailSystem::LoadMessages()
 	}
 	message_high = high;
 
-	sLog.outString("  Removing expired messages...");
+	Log.Notice("MailSystem", "Deleting expired messages...");
 	MailboxMap::iterator iter;
 	for(iter = Mailboxes.begin(); iter != Mailboxes.end(); ++iter)
 	{
 		iter->second->CleanupExpiredMessages();
 	}
 
-	sLog.outString("  Deleting expired mailboxes...");
+	Log.Notice("MailSystem", "Deleting expired mailboxes...");
 	Mailbox * dbox;
 	for(iter = Mailboxes.begin(); iter != Mailboxes.end();)
 	{

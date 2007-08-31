@@ -381,7 +381,7 @@ void ObjectMgr::LoadTransporters()
 #ifdef CLUSTERING
 	return;
 #endif
-	sLog.outString("  Loading Transports...");
+	Log.Notice("ObjectMgr", "Loading Transports...");
 	QueryResult * QR = WorldDatabase.Query("SELECT * FROM transport_data");
 	if(!QR) return;
 	uint32 guid = 0;

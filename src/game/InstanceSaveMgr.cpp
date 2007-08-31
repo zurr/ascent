@@ -275,7 +275,6 @@ void InstanceSavingManagement::LoadSavedInstances()
 
 	if(result==NULL)
 	{
-		sLog.outString("Saved Instances: None");
 		return;
 	}
 
@@ -302,6 +301,7 @@ void InstanceSavingManagement::LoadSavedInstances()
 		sInstanceSavingManager.RepopulateSavedData(fields[1].GetUInt32(), fields[0].GetUInt32(), fields[2].GetString(), fields[3].GetString());
 
 	} while( result->NextRow() );
+	Log.Notice("InstanceSaveMgr", "%u saved instances loaded.", result->GetRowCount());
 	delete result;
 }
 

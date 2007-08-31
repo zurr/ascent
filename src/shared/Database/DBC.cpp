@@ -16,6 +16,7 @@
  */
 
 #include "DBC.h"
+#include "../NGLog.h"
 #include <math.h>
 
 class DBC;
@@ -31,7 +32,8 @@ void DBC::Load(const char *filename) {
 	FILE *f = fopen(filename, "rb");
 	if(!f)
 	{
-		printf("DBC %s Doesnt exist!\n",filename);
+		//printf("DBC %s Doesnt exist!\n",filename);
+		Log.Error("DBC", "DBC %s doesn't exist!\n", filename);
 		return;
 	}
 
@@ -64,9 +66,7 @@ void DBC::Load(const char *filename) {
 	fclose(f);
 	loaded = true;
 
-#ifdef DBC_PRINT
-		printf("DBC %s loaded.\n",filename);
-#endif
+	Log.Notice("DBC", "Loaded %s (%u rows)", name, rows);
 }
 
 

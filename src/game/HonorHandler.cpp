@@ -51,14 +51,12 @@ time_t HonorHandler::GetNextUpdateTime()
 
 void HonorHandler::PerformStartupTasks()
 {
-	sLog.outString("Initializing Honor System...");
-	sLog.outString("  - Checking for out of date players and moving their kill values...");
+	Log.Notice("HonorHandler", "Starting Honor System...");
+	Log.Notice("HonorHandler", "Checking for out of date players and moving their kill values...");
 	uint32 next_update = GetNextUpdateTime();
 	uint32 now_update = time(NULL);
 
 	CharacterDatabase.WaitExecute("UPDATE characters SET lastDailyReset = %u, killsYesterday = killsToday, honorYesterday = honorToday, killsToday = 0, honorToday = 0 WHERE lastDailyReset < %u", now_update, next_update);
-
-	sLog.outString("Honor System Ready.");
 }
 
 int32 HonorHandler::CalculateHonorPointsForKill(Player *pPlayer, Unit* pVictim)

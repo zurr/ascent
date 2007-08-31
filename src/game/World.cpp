@@ -329,7 +329,7 @@ void World::SetInitialWorldSettings()
 
 	uint32 start_time = getMSTime();
 
-	sLog.outString("  Loading DBC files...");
+	Log.Notice("World", "Loading DBC files...");
 	new GemPropertiesStore("DBC/GemProperties.dbc");
 	new SpellStore("DBC/Spell.dbc");
 	new LockStore("DBC/Lock.dbc");
@@ -1499,14 +1499,13 @@ void World::SetInitialWorldSettings()
 	/* shadowstep - change proc flags */
 	sSpellStore.LookupEntry(36563)->procFlags = 0;
 
-	sLog.outString( "Starting Transport System...");
+	Log.Notice("World","Starting Transport System...");
 	objmgr.LoadTransporters();
 
 	// start mail system
 	MailSystem::getSingleton().StartMailSystem();
 
-	sLog.outString("");
-	sLog.outString("  Starting Auction System...");
+	Log.Notice("World", "Starting Auction System...");
 	new AuctionMgr;
 	sAuctionMgr.LoadAuctionHouses();
 
@@ -1526,7 +1525,7 @@ void World::SetInitialWorldSettings()
 	launch_thread(new WorldRunnable);
 	if(Config.MainConfig.GetBoolDefault("Startup", "BackgroundLootLoading", true))
 	{
-		sLog.outString("Backgrounding loot loading...");
+		Log.Notice("World", "Backgrounding loot loading...");
 
 		// loot background loading in a lower priority thread.
 		launch_thread(new BasicTaskExecutor(new CallbackP0<LootMgr>(LootMgr::getSingletonPtr(), &LootMgr::LoadLoot), 
@@ -1534,7 +1533,7 @@ void World::SetInitialWorldSettings()
 	}
 	else
 	{
-		sLog.outString("Loading loot in foreground...");
+		Log.Notice("World", "Loading loot in foreground...");
 		lootmgr.LoadLoot();
 	}
 
@@ -1993,7 +1992,10 @@ void TaskList::spawn()
 	else
 		threadcount = 1;
 
-	sLog.outString("\n  Beginning %s server startup with %u threads.\n", (threadcount == 1) ? "progressive" : "parallel", threadcount);
+	Log.Line();
+	Log.Notice("World", "Beginning %s server startup with %u threads.", (threadcount == 1) ? "progressive" : "parallel", threadcount);
+	Log.Line();
+
 	for(uint32 x = 0; x < threadcount; ++x)
 		launch_thread(new TaskExecutor(this));
 }
