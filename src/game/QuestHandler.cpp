@@ -21,7 +21,8 @@ initialiseSingleton( QuestMgr );
 void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
 {
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTGIVER_STATUS_QUERY." );
-	if(!_player->IsInWorld()) return;
+	if(!_player) return;
+    if(!_player->IsInWorld()) return;
 
 	uint64 guid;
 	WorldPacket data;
@@ -75,6 +76,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
 void WorldSession::HandleQuestgiverHelloOpcode( WorldPacket & recv_data )
 {
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTGIVER_HELLO." );
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 
 	uint64 guid;
@@ -105,6 +107,7 @@ void WorldSession::HandleQuestgiverHelloOpcode( WorldPacket & recv_data )
 void WorldSession::HandleQuestGiverQueryQuestOpcode( WorldPacket & recv_data )
 {
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTGIVER_QUERY_QUEST." );
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 
 	WorldPacket data;
@@ -200,6 +203,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode( WorldPacket & recv_data )
 void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 {
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTGIVER_ACCEPT_QUEST" );
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 
 	WorldPacket data;
@@ -380,6 +384,7 @@ void WorldSession::HandleQuestgiverCancelOpcode(WorldPacket& recvPacket)
 void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 {
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTLOG_REMOVE_QUEST" );
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 
 	uint8 quest_slot;
@@ -412,6 +417,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 
 void WorldSession::HandleQuestQueryOpcode( WorldPacket & recv_data )
 {
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 	sLog.outDebug( "WORLD: Recieved CMSG_QUEST_QUERY" );
 
@@ -436,6 +442,7 @@ void WorldSession::HandleQuestQueryOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data )
 {
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTGIVER_REQUESTREWARD_QUEST." );
 
@@ -520,6 +527,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 
 void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket )
 {
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTGIVER_COMPLETE_QUEST." );
 
@@ -599,6 +607,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 
 void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 {
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 	sLog.outDebug( "WORLD: Recieved CMSG_QUESTGIVER_CHOOSE_REWARD." );
 
@@ -699,6 +708,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
 void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 {
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 	uint32 questid;
 	recv_data >> questid;
@@ -780,6 +790,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket &recv_data)
 
 void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
 {
+    if(!_player) return;
 	if(!_player->IsInWorld()) return;
 	uint64 guid;
 	uint8 msg;
