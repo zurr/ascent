@@ -20,7 +20,6 @@
 
 #include "Common.h"
 #include "Singleton.h"
-#include "TextLogger.h"
 
 class WorldPacket;
 class WorldSession;
@@ -44,6 +43,7 @@ class WorldSession;
 #define TBLUE 6
 
 #endif
+std::string FormatOutputString(const char * Prefix, const char * Description, bool useTimeStamp);
 
 class SERVER_DECL oLog : public Singleton< oLog > {
 public:
@@ -62,7 +62,6 @@ public:
   void SetScreenLoggingLevel(int32 level);
 
   void outColor(uint32 colorcode, const char * str, ...);
-  TextLogger * fileLogger;
   
 #ifdef WIN32
   HANDLE stdout_handle, stderr_handle;
@@ -71,13 +70,19 @@ public:
   int32 m_screenLogLevel;
 };
 
-class SessionLogWriter : public TextLogger
+class SessionLogWriter
 {
+	FILE * m_file;
+	char * m_filename;
 public:
-	SessionLogWriter(const char * filename, bool open) : TextLogger(filename, open) {}
+	SessionLogWriter(const char * filename, bool open);
+	~SessionLogWriter();
 
 	void write(const char* format, ...);
 	void writefromsession(WorldSession* session, const char* format, ...);
+	inline bool IsOpen() { return (m_file != NULL); }
+	void Open();
+	void Close();
 };
 
 extern SessionLogWriter * Anticheat_Log;
@@ -97,9 +102,9 @@ public:
 	void Enable();
 	void Disable();
 private:
+	FILE * m_file;
 	Mutex mutex;
 	bool bEnabled;
-	TextLogger * log;
 };
 
 #define sWorldLog WorldLog::getSingleton()

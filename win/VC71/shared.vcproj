@@ -417,12 +417,6 @@
 				RelativePath="..\..\src\shared\StackWalker.h">
 			</File>
 			<File
-				RelativePath="..\..\src\shared\TextLogger.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\shared\TextLogger.h">
-			</File>
-			<File
 				RelativePath="..\..\src\shared\Timer.h">
 			</File>
 			<File
@@ -453,6 +447,9 @@
 		</File>
 		<File
 			RelativePath="..\..\src\shared\Common.h">
+		</File>
+		<File
+			RelativePath="..\..\src\shared\FastQueue.h">
 		</File>
 		<File
 			RelativePath="..\..\src\shared\Storage.h">

@@ -44,6 +44,7 @@ public:
 
 void StartCrashHandler();
 void OnCrash(bool Terminate);
+void OutputCrashLogLine(const char* format, ...);
 
 typedef struct _EXCEPTION_POINTERS EXCEPTION_POINTERS, *PEXCEPTION_POINTERS;
 int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs);

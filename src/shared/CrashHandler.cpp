@@ -27,14 +27,13 @@
 #  pragma warning( disable : 4311 )
 
 #include "CrashHandler.h"
-#include "TextLogger.h"
 #include <stdio.h>
 #include <time.h>
 #include <windows.h>
+#include "Log.h"
 #include <tchar.h>
 
 bool ON_CRASH_BREAK_DEBUGGER;
-extern TextLogger * Crash_Log;
 
 void StartCrashHandler()
 {
@@ -151,10 +150,28 @@ static const TCHAR *GetExceptionDescription(DWORD ExceptionCode)
 
 void echo(const char * format, ...)
 {
+	std::string s = FormatOutputString("logs", "CrashLog", true);
+	FILE * m_file = fopen(s.c_str(), "a");
+	if(!m_file) return;
+
 	va_list ap;
 	va_start(ap, format);
-	vprintf(format, ap);
-	Crash_Log->AddSFormat(false, format, ap);
+	vfprintf(m_file, format, ap);
+	fclose(m_file);
+	va_end(ap);
+}
+
+void OutputCrashLogLine(const char * format, ...)
+{
+	std::string s = FormatOutputString("logs", "CrashLog", true);
+	FILE * m_file = fopen(s.c_str(), "a");
+	if(!m_file) return;
+
+	va_list ap;
+	va_start(ap, format);
+	vfprintf(m_file, format, ap);
+	fprintf(m_file, "\n");
+	fclose(m_file);
 	va_end(ap);
 }
 
@@ -267,8 +284,13 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry &en
 
 void CStackWalker::OnOutput(LPCSTR szText)
 {
+	std::string s = FormatOutputString("logs", "CrashLog", true);
+	FILE * m_file = fopen(s.c_str(), "a");
+	if(!m_file) return;
+
 	printf("   %s", szText);
-	Crash_Log->AddFormat("   %s", szText);
+	fprintf(m_file, "   %s\n", szText);
+	fclose(m_file);
 }
 
 

@@ -80,7 +80,7 @@ MapMgr::~MapMgr()
 	if(thread_is_alive && !_shutdown)
 	{
 		sLog.outString("possible crash! instance deletion while thread is alive! oh noes!");
-		Crash_Log->AddLine("possible crash! instance deletion while thread is alive! oh noes!");
+		OutputCrashLogLine("possible crash! instance deletion while thread is alive! oh noes!");
 #ifdef WIN32
 		CStackWalker ws;
 		ws.ShowCallstack();
@@ -128,7 +128,7 @@ void MapMgr::PushObject(Object *obj)
 	if(GetCurrentThreadId()!=threadid && !_shutdown)
 	{
 		printf("Push object of mapmgr is accessed from external thread!!!\n");
-		Crash_Log->AddLine("Push object of mapmgr is accessed from external thread!!!");
+		OutputCrashLogLine("Push object of mapmgr is accessed from external thread!!!");
 		CStackWalker sw;
 		sw.ShowCallstack();
 	}
@@ -315,7 +315,7 @@ void MapMgr::RemoveObject(Object *obj)
 	if(GetCurrentThreadId()!=threadid && !_shutdown)
 	{
 		printf("Remove object of mapmgr is accessed from external thread!!!\n");
-		Crash_Log->AddLine("Remove object of mapmgr is accessed from external thread!!!\n");
+		OutputCrashLogLine("Remove object of mapmgr is accessed from external thread!!!");
 		CStackWalker sw;
 		sw.ShowCallstack();
 		sLog.outString("");

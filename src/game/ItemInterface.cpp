@@ -271,7 +271,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 		if(VisibleBase > PLAYER_VISIBLE_ITEM_19_0)
 		{
 			printf("Slot warning: slot: %d\n", slot);
-			Crash_Log->AddFormat("Slot warning: slot: %d\n", slot);
+			OutputCrashLogLine("Slot warning: slot: %d\n", slot);
 		}
 		else
 		{

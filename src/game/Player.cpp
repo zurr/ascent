@@ -361,7 +361,7 @@ Player::~Player ( )
 	if(!ok_to_remove)
 	{
 		printf("Player deleted from non-logoutplayer!\n");
-		Crash_Log->AddLine("Player deleted from non-logoutplayer!\n");
+		OutputCrashLogLine("Player deleted from non-logoutplayer!");
 #ifdef WIN32
 		CStackWalker sw;
 		sw.ShowCallstack();
@@ -3025,7 +3025,7 @@ void Player::SetQuestLogSlot(QuestLogEntry *entry, uint32 slot)
 	if(entry == (QuestLogEntry*)0x00000001)
 	{
 #ifdef WIN32
-		Crash_Log->AddFormat("bad quest log:\n");
+		OutputCrashLogLine("bad quest log:");
 		CStackWalker ws;
 		ws.ShowCallstack();
 		return;

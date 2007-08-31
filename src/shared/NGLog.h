@@ -20,7 +20,6 @@
 
 #include "Common.h"
 #include "Singleton.h"
-#include "TextLogger.h"
 
 class WorldPacket;
 class WorldSession;
