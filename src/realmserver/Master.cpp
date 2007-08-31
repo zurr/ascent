@@ -19,14 +19,12 @@
 #include "../game/ThreadMgr.h"
 #include "../shared/svn_revision.h"
 
-TextLogger * Crash_Log;
 MySQLDatabase * Database_Character;
 MySQLDatabase * Database_World;
 
 int main(int argc, char *argv[])
 {
 	new ThreadMgr;
-	launch_thread(new TextLoggerThread);
 
 	sLog.Init(-1, -1);
 	sLog.outString("TexT");

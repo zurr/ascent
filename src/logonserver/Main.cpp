@@ -18,7 +18,6 @@
 #include "LogonStdAfx.h"
 #include <signal.h>
 #include "../shared/svn_revision.h"
-#include <TextLogger.h>
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
@@ -36,7 +35,6 @@ initialiseSingleton(LogonServer);
 bool mrunning = true;
 Mutex _authSocketLock;
 set<AuthSocket*> _authSockets;
-TextLogger * Crash_Log;
 
 /*** Signal Handler ***/
 void _OnSignal(int s)
@@ -168,7 +166,6 @@ void LogonServer::Run(int argc, char ** argv)
 	// Startup banner
 	if(!do_version && !do_check_conf)
 	{
-		launch_thread(new TextLoggerThread);
 		sLog.Init(-1, 3);
 	}
 	else
@@ -198,7 +195,6 @@ void LogonServer::Run(int argc, char ** argv)
 		return;
 	}
 	
-	Crash_Log = new TextLogger(FormatOutputString("logs", "logonCrashLog", true).c_str(), false);
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
 	sLog.outString("");
 	sLog.outString("Initializing Random Number Generators...");

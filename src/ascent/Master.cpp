@@ -50,7 +50,6 @@ SERVER_DECL Database* Database_Character;
 SERVER_DECL Database* Database_World;
 
 // mainserv defines
-TextLogger * Crash_Log;
 SessionLogWriter * GMCommand_Log;
 SessionLogWriter * Anticheat_Log;
 
@@ -157,7 +156,6 @@ bool Master::Run(int argc, char ** argv)
 	UNIXTIME = time(NULL);
 	if(!do_version && !do_check_conf)
 	{
-		launch_thread(new TextLoggerThread);
 		sLog.Init(-1, 3);
 	}
 	else
@@ -204,8 +202,6 @@ bool Master::Run(int argc, char ** argv)
 
 	Log.Notice("Hint", "The key combination <Ctrl-C> will safely shut down the server at any time.");
 	Log.Line();
-	Log.Notice("Log", "Initializing File Loggers...");
-	Crash_Log = new TextLogger(FormatOutputString("logs", "CrashLog", true).c_str(), false);
     
 	uint32 seed = time(NULL);
 	new MTRand(seed);
@@ -499,13 +495,13 @@ bool Master::Run(int argc, char ** argv)
 	sLog.outString("Deleting Script Engine...");
 	delete ScriptSystem;
 
+	delete GMCommand_Log;
+	delete Anticheat_Log;
+
 	// remove pid
 	remove("ascent.pid");
 
 	sLog.outString("\nServer shutdown completed successfully.\n");
-
-	// close the logs
-	TextLogger::Thread->Die();
 
 #ifdef WIN32
 	WSACleanup();

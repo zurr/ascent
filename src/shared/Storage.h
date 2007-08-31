@@ -18,6 +18,10 @@
 #ifndef STORAGE_H_
 #define STORAGE_H_
 
+#ifdef WIN32
+#pragma warning(disable:4312)
+#endif
+
 /** Base iterator class, returned by MakeIterator() functions.
  */
 template<class T>

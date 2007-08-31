@@ -877,7 +877,7 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
 	l = strlen(out);
 	vsnprintf(&out[l], 32768 - l, format, ap);
 
-	AddLine(out);
+	fprintf(m_file, "%s\n", out);
 	va_end(ap);
 }
 

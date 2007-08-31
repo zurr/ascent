@@ -40,6 +40,7 @@
 #include "../shared/Database/DatabaseEnv.h"
 #include "../shared/Database/DBCStores.h"
 #include "../shared/Database/dbcfile.h"
+#include "../shared/FastQueue.h"
 
 #include <Network/Network.h>
 

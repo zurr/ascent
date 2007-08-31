@@ -443,7 +443,7 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	if(GetCurrentThreadId()!=threadid)
 	{
 		sLog.outString("Change object location of mapmgr is accessed from external thread!!!");
-		Crash_Log->AddLine("Change object location of mapmgr is accessed from external thread!!!");
+		OutputCrashLogLine("Change object location of mapmgr is accessed from external thread!!!");
 		CStackWalker sw;
 		sw.ShowCallstack();
 		sLog.outString("");
@@ -889,7 +889,7 @@ void MapMgr::ObjectUpdated(Object *obj)
 #ifdef WIN32
 	if(GetCurrentThreadId() != threadid && !_shutdown)
 	{
-		Crash_Log->AddLine("ObjectUpdated accessed from external thread!!!");
+		OutputCrashLogLine("ObjectUpdated accessed from external thread!!!");
 		sLog.outString("ObjectUpdated accessed from external thread!!!");
 		CStackWalker sw;
 		sw.ShowCallstack();
