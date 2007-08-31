@@ -65,10 +65,17 @@ Object::~Object( )
 		ASSERT(!m_inQueue);
 
 	if (this->IsInWorld() && m_objectTypeId != TYPEID_ITEM && m_objectTypeId != TYPEID_CONTAINER)
+	{
+		CStackWalker ws;
+		OutputCrashLogLine("Object deleted while in world.");
+		ws.ShowCallstack();
+
 		this->RemoveFromWorld();
+	}
 
 	// for linux
 	m_instanceId = -1;
+	m_objectTypeId=TYPEID_UNUSED;
 }
 
 

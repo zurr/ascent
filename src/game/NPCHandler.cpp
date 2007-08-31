@@ -527,7 +527,7 @@ void WorldSession::HandleNpcTextQueryOpcode( WorldPacket & recv_data )
 				data << pGossip->Texts[i].Text[1];
 			else
 				data << pGossip->Texts[i].Text[0];
-			if(pGossip->Texts[i].Text[1][1])
+			if(pGossip->Texts[i].Text[1][0])
 				data << pGossip->Texts[i].Text[0];
 			else
 				data << pGossip->Texts[i].Text[1];

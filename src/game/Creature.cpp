@@ -124,6 +124,7 @@ void Creature::Update( uint32 p_time )
 	{
 		RemoveFromWorld(false);
 		delete this;
+		return;
 	}
 
 	if(m_corpseEvent)
