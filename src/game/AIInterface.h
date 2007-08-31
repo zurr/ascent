@@ -157,6 +157,8 @@ struct AI_Spell
 	uint32 entryId;
 	uint16 agent;
 	uint32 procChance;
+	uint32 procCount;
+	uint32 procCountDB;
 	SpellEntry * spell;
 	uint8 spellType;
 	uint8 spelltargetType;
@@ -308,6 +310,16 @@ public:
 		if(nextTarget)
 			m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, m_nextTarget->GetGUID());
 		else m_Unit->SetUInt64Value(UNIT_FIELD_TARGET, 0);
+	}
+
+	inline void ResetProcCounts()
+	{
+		AI_Spell * sp;
+		for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+				{
+					sp = *itr;
+					sp->procCount =sp->procCountDB;
+				}
 	}
 
 	Creature * m_formationLinkTarget;

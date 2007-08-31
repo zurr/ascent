@@ -260,7 +260,6 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell,bool oldtrainer)
 {
 	if(oldtrainer==false)
 	{
-printf("!!!!spell %u rank %u and we have %u\n",pSpell->TeachingSpellID,pSpell->SpellRank,_player->GetMaxLearnedSpellLevel(pSpell->TeachingSpellID));
 		if(	(pSpell->RequiredLevel && _player->getLevel()<pSpell->RequiredLevel)
 			|| (pSpell->RequiredSpell && !_player->HasSpell(pSpell->RequiredSpell))
 			|| (pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)

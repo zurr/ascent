@@ -205,6 +205,9 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 					ScriptSystem->OnCreatureEvent(((Creature*)m_Unit), pUnit, CREATURE_EVENT_ON_LEAVE_COMBAT);
 				}
 
+				//reset ProcCount
+				ResetProcCounts();
+
 				if(m_AIType == AITYPE_PET)
 				{
 					m_AIState = STATE_FOLLOWING;
