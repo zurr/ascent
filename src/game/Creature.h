@@ -422,7 +422,7 @@ public:
 	bool IsInLimboState() { return m_limbostate; }
 	void RemoveLimboState(Unit * healer);
 	void SetGuardWaypoints();
-
+	bool m_corpseEvent;
 protected:
 	CreatureAIScript *_myScriptClass;
 	bool m_limbostate;
