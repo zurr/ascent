@@ -165,7 +165,7 @@ int WorldSession::Update(uint32 InstanceID)
 			return 0;
 		}
 
-		if(_player->m_Group)
+		if(_player && _player->m_Group)
 			_player->m_Group->RemovePlayer(_player->m_playerInfo, _player, true);
 
 		LogoutPlayer(true);
