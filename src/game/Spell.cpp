@@ -473,7 +473,8 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 					// need more research
 				case 4:{ // dono related to "Wandering Plague", "Spirit Steal", "Contagion of Rot", "Retching Plague" and "Copy of Wandering Plague"
 					}break;			
-				case EFF_TARGET_PET:{// Target: Pet
+				case EFF_TARGET_PET:
+					{// Target: Pet
 						if(p_caster && p_caster->GetSummon())
 							store_buff->m_unitTarget = p_caster->GetSummon()->GetGUID();
 					}break;
@@ -605,7 +606,9 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 						if(u_caster && u_caster->IsPet())
 							store_buff->m_unitTarget = ((Pet*)u_caster)->GetPetOwner()->GetGUID();
 					}break;
-				case EFF_TARGET_MINION:{// Minion Target
+				case EFF_TARGET_MINION:
+				case 73:
+					{// Minion Target
 						if(m_caster->GetUInt64Value(UNIT_FIELD_SUMMON) == 0)
 							store_buff->m_unitTarget = m_caster->GetGUID();
 						else store_buff->m_unitTarget = m_caster->GetUInt64Value(UNIT_FIELD_SUMMON);
@@ -942,7 +945,9 @@ void Spell::FillTargetMap(uint32 i)
 		case 31: { // related to scripted effects
 			FillAllTargetsInArea(tmpMap,m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,GetRadius(i));
 				 }break;
-		case 32:{// Minion Target
+		case 32:
+		case 73:
+			{// Minion Target
 			if(m_caster->GetUInt64Value(UNIT_FIELD_SUMMON) == 0)
 				SafeAddTarget(tmpMap,m_caster->GetGUID());
 			else
@@ -4046,7 +4051,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 
 	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);
 }
-
+/*
 bool IsBeneficSpell(SpellEntry *sp)
 {
 	uint32 cur;
@@ -4080,6 +4085,8 @@ bool IsBeneficSpell(SpellEntry *sp)
 				case EFF_TARGET_TOTEM_AIR:
 				case EFF_TARGET_TOTEM_FIRE:// Totem
 				case 61: // targets with the same group/raid and the same class
+				case 32:
+				case 73:
 					return true;
 			}//end switch
 		}//end for
@@ -4109,6 +4116,8 @@ AI_SpellTargetType RecommandAISpellTargetType(SpellEntry *sp)
 
 				case EFF_TARGET_SELF:
 				case 38://Dummy Target
+				case 32:
+				case 73:
 					return TTYPE_CASTER;
 
 				case EFF_TARGET_ALL_ENEMY_IN_AREA: // All Enemies in Area of Effect (TEST)
@@ -4153,4 +4162,4 @@ AI_SpellTargetType RecommandAISpellTargetType(SpellEntry *sp)
 		}//end for
 	return TTYPE_NULL;// this means a new spell :P
 }
-
+*/
