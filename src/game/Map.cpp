@@ -77,19 +77,23 @@ Map::~Map()
 
 	for(uint32 x=0;x<_sizeX;x++)
 	{
-		for(uint32 y=0;y<_sizeY;y++)
+		if(spawns[x])
 		{
-			if(spawns[x] && spawns[x][y])
-			{	
-				CellSpawns * sp=spawns[x][y];
-				for(CreatureSpawnList::iterator i = sp->CreatureSpawns.begin();i!=sp->CreatureSpawns.end();i++)
-					delete (*i);
-				for(GOSpawnList::iterator it = sp->GOSpawns.begin();it!=sp->GOSpawns.end();it++)
-					delete (*it);
+			for(uint32 y=0;y<_sizeY;y++)
+			{
+				if(spawns[x][y])
+				{	
+					CellSpawns * sp=spawns[x][y];
+					for(CreatureSpawnList::iterator i = sp->CreatureSpawns.begin();i!=sp->CreatureSpawns.end();i++)
+						delete (*i);
+					for(GOSpawnList::iterator it = sp->GOSpawns.begin();it!=sp->GOSpawns.end();it++)
+						delete (*it);
 
-				delete sp;
-				spawns[x][y]=NULL;
+					delete sp;
+					spawns[x][y]=NULL;
+				}
 			}
+			delete [] spawns[x];
 		}
 	}
 

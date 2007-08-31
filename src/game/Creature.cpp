@@ -92,6 +92,7 @@ Creature::Creature(uint32 high, uint32 low)
 	m_escorter = 0;
 	m_limbostate = false;
 	m_corpseEvent=false;
+	m_runSpeed=8.0f;
 }
 
 

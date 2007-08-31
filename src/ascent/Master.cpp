@@ -481,6 +481,7 @@ bool Master::Run(int argc, char ** argv)
 
 	delete LogonCommHandler::getSingletonPtr();
 
+	sScriptMgr.UnloadScripts();
 	sWorld.ShutdownClasses();
 	sLog.outString("\nDeleting World...");
 	delete World::getSingletonPtr();

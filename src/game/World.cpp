@@ -149,6 +149,8 @@ World::~World()
 	sLog.outString("  DBC files unloaded.\n");
 
 	Storage_Cleanup();
+	for(list<SpellEntry*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
+		delete *itr;
 }
 
 
@@ -269,6 +271,7 @@ void CreateDummySpell(uint32 id)
 	sp->dmg_multiplier[0]=1.0f;
 	sp->FH=-1;
 	static_cast<FastIndexedDataStore<SpellEntry>*>(SpellStore::getSingletonPtr())->SetRow(id,sp);
+	sWorld.dummyspells.push_back(sp);
 }
 
 void World::SetInitialWorldSettings()

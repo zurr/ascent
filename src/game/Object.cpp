@@ -35,10 +35,7 @@ Object::Object() : m_position(0,0,0,0), m_spawnLocation(0,0,0,0)
 
 	//official Values
 	m_walkSpeed = 2.5f;
-	if(m_objectTypeId == TYPEID_UNIT)		/* blizzlike! mobs have a faster run speed. */
-		m_runSpeed = 8.0f;
-	else
-		m_runSpeed = 7.0f;
+	m_runSpeed = 7.0f;
 
 	m_flySpeed = 7.0f;
 	m_backFlySpeed = 4.5f;

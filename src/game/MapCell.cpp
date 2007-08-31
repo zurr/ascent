@@ -97,11 +97,14 @@ void MapCell::RemoveObjects()
 
 		itr++;
 
-		if(UINT32_LOPART(obj->GetGUIDHigh())==HIGHGUID_TRANSPORTER)
+		if(_unloadpending && UINT32_LOPART(obj->GetGUIDHigh())==HIGHGUID_TRANSPORTER)
 			continue;
 
 		if(_unloadpending && obj->GetTypeId()==TYPEID_CORPSE)
 			continue;
+
+		if(obj->Active)
+			obj->Deactivate(_mapmgr);
 
 		if (obj->IsInWorld())
 			obj->RemoveFromWorld();
@@ -115,7 +118,10 @@ void MapCell::RemoveObjects()
 		}
 		else if (obj->GetTypeId() == TYPEID_GAMEOBJECT)
 		{
-			delete ((GameObject*)obj);
+			if(obj->GetGUIDHigh()==HIGHGUID_TRANSPORTER)
+				delete ((Transporter*)obj);
+			else
+				delete ((GameObject*)obj);
 		}
 		else if (obj->GetTypeId() == TYPEID_DYNAMICOBJECT)
 			delete ((DynamicObject*)obj);
@@ -206,6 +212,9 @@ void MapCell::Unload()
 {
 	//Log.Debug("MapCell", "Unloading cell %u %u", _x, _y);
 	ASSERT(_unloadpending);
+	if(_active)
+		return;
+
 	RemoveObjects();
 	_unloadpending=false;
 }

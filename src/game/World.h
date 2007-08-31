@@ -537,6 +537,8 @@ protected:
 	SessionSet mExtendedSessions;
 
 	uint32	m_KickAFKPlayers;//don't lag the server if you are useless anyway :P
+public:
+	list<SpellEntry*> dummyspells;
 };
 
 #define sWorld World::getSingleton()

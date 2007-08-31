@@ -148,10 +148,10 @@ ObjectMgr::~ObjectMgr()
 		delete p;
 	}*/
 
-    for(HM_NAMESPACE::hash_map<uint64, Transporter*>::iterator i = mTransports.begin(); i != mTransports.end(); ++i)
+    /*for(HM_NAMESPACE::hash_map<uint64, Transporter*>::iterator i = mTransports.begin(); i != mTransports.end(); ++i)
 	{
 		delete i->second;
-	}
+	}*/
 
 	for(HM_NAMESPACE::hash_map<uint32, WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
 	{
@@ -196,6 +196,13 @@ ObjectMgr::~ObjectMgr()
 	for(HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr = this->m_reputation_faction.begin(); itr != m_reputation_faction.end(); ++itr)
 	{
 		ReputationModifier * mod = itr->second;
+		mod->mods.clear();
+		delete mod;
+	}
+
+	for(HM_NAMESPACE::hash_map<uint32,InstanceReputationModifier*>::iterator itr = this->m_reputation_instance.begin(); itr != this->m_reputation_instance.end(); ++itr)
+	{
+		InstanceReputationModifier * mod = itr->second;
 		mod->mods.clear();
 		delete mod;
 	}
