@@ -725,7 +725,7 @@ void Group::SaveToDB()
 		ss << "0,0,0,0,0,";
 
 	ss << UNIXTIME << ")";
-	printf("==%s==\n", ss.str().c_str());
+	/*printf("==%s==\n", ss.str().c_str());*/
 	CharacterDatabase.Execute(ss.str().c_str());
 }
 
