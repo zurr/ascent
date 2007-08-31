@@ -282,6 +282,7 @@ void SessionLogWriter::Close()
 SessionLogWriter::SessionLogWriter(const char * filename, bool open)
 {
 	m_filename = strdup(filename);
+	m_file=NULL;
 	if(open)
 		Open();
 }
