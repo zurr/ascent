@@ -307,6 +307,7 @@ struct PlayerInfo
 	uint32 lastZone;
 	uint32 lastLevel;
 	Group * m_Group;
+	uint8 subGroup;
 };
 struct PlayerPet
 {

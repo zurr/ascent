@@ -67,7 +67,7 @@ Group::Group()
 	m_Id = objmgr.GenerateGroupId();
 	ObjectMgr::getSingleton().AddGroup(this);
 	lastRRlooter = NULL;
-	m_disbandOnNoMembers = false;
+	m_disbandOnNoMembers = true;
 	memset(m_targetIcons, 0, sizeof(uint64) * 8);
 }
 
@@ -109,12 +109,14 @@ void SubGroup::RemovePlayer(PlayerInfo * info, Player *pPlayer, bool forced_remo
 			{
 				/* player temporary remove (set to offline) */
 				itr->player = NULL;
+				info->subGroup=0;
 			}
 			else
 			{
 				/* full remove (player is removed from party) */
 				m_GroupMembers.erase(itr);
 				m_Parent->m_MemberCount--;
+				info->subGroup=0;
 				if(pPlayer)
 					pPlayer->SetSubGroup(0);
 			}
@@ -129,6 +131,18 @@ void SubGroup::AddPlayer(PlayerInfo * info, Player *pPlayer)
 	{
 		sLog.outDebug("GROUP: Adding player %s to subgroup %d", pPlayer->GetName(), m_Id);
 		pPlayer->SetSubGroup(GetID());
+	}
+
+	info->subGroup=GetID();
+	/* check if we already exist */
+	for(GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end(); ++itr)
+	{
+		if(itr->player_info == info)
+		{
+			/* we're simply updating */
+			itr->player = pPlayer;
+			return;
+		}
 	}
 
 	GroupMember mbr;
@@ -193,20 +207,23 @@ bool Group::AddMember(PlayerInfo * info, Player* pPlayer, int32 subgroupid)
 	}
 }
 
-void Group::SetLeader(Player* pPlayer)
+void Group::SetLeader(Player* pPlayer, bool silent)
 {
 	m_Leader = pPlayer;
-	WorldPacket *data = new WorldPacket;
-	data->Initialize(SMSG_GROUP_SET_LEADER);
-	*data << ((pPlayer) ? pPlayer->GetName() : "NONE");
-
-	SendPacketToAll(data);
-	delete data;
+	if(!silent)
+	{
+		WorldPacket *data = new WorldPacket;
+		data->Initialize(SMSG_GROUP_SET_LEADER);
+		*data << ((pPlayer) ? pPlayer->GetName() : "NONE");
+	
+		SendPacketToAll(data);
+		delete data;
+	}
 
 	Update();
 }
 
-void Group::Update()
+void Group::Update(bool delayed)
 {
 	WorldPacket data(50 + (m_MemberCount * 20));
 	GroupMembersSet::iterator itr1, itr2;
@@ -223,6 +240,7 @@ void Group::Update()
 		{
 			/* skip offline players */
 			if(!itr1->player) continue;
+			if(delayed) itr1->player->ProcessPendingUpdates();
 
 			/*          Check for Soulstone Caster            */
 			/*          SoulStone effect removed if           */
@@ -249,7 +267,11 @@ void Group::Update()
 						if(itr2->player_info->guid == SoulStoneGiver) removeSoulStone = false;
 
 						data << itr2->player_info->name << itr2->player_info->guid;
-						data << uint8(itr2->player ? 1 : 0);								  // online/offline flag maybe?
+						if(itr2->player)
+							data << uint8(1);
+						else
+							data << uint8(0);
+						
 						/*if(m_GroupType == GROUP_TYPE_RAID && (*itr2) == sg2->m_SubGroupLeader)
 							data << uint8(80 + sg2->GetID());
 						else*/	  // how do we do this? 80 obviously doesn't work.
@@ -391,7 +413,10 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 
 	sg->RemovePlayer(info, pPlayer,forced_remove);
 	if(pPlayer!=NULL || forced_remove)
+	{
 		info->m_Group=NULL;
+		info->subGroup=0;
+	}
 
 	if(pPlayer)
 	{
@@ -425,13 +450,24 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 	Player *newPlayer = FindFirstPlayer();
 
 	if(m_Looter && m_Looter->GetGUID() == info->guid)
-	{
 		m_Looter = newPlayer;
-		Update();
-	}
 
 	if(m_Leader && m_Leader->GetGUID() == info->guid)
-		SetLeader(newPlayer);
+	{
+		if(pPlayer != NULL)
+		{
+			/* full remove - display message */
+			SetLeader(newPlayer, false);
+		}
+		else
+		{
+			/* partial remove - no message */
+			m_Leader = newPlayer;
+			Update(true);
+		}
+	}
+	else
+		Update(true);
 
 	m_groupLock.Release();
 }

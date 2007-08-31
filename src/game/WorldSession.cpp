@@ -283,15 +283,7 @@ void WorldSession::LogoutPlayer(bool Save)
 		_player->GetItemInterface()->EmptyBuyBack();
 		
 		// Remove ourself from a group
-		if (_player->InGroup())
-		{
-			Group *group = _player->GetGroup();
-			if(group)
-			{
-				group->RemovePlayer(_player->m_playerInfo, NULL, false);
-				_player->m_Group=NULL;
-			}
-		}
+		Group * group = _player->GetGroup();
 		
 		for(int i=0;i<3;++i)
 		{
@@ -317,6 +309,11 @@ void WorldSession::LogoutPlayer(bool Save)
 		  if(_player->IsInWorld())
 			_player->RemoveFromWorld();
 		
+		  if(group)
+		  {
+			  group->RemovePlayer(_player->m_playerInfo, NULL, false);
+			  _player->m_Group =NULL;
+		  }
 	  
 		// Remove the "player locked" flag, to allow movement on next login
 		if ( GetPlayer( )->GetUInt32Value(UNIT_FIELD_FLAGS) & U_FIELD_FLAG_LOCK_PLAYER )

@@ -305,6 +305,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	pn->publicNote="";
 	pn->officerNote="";
 	pn->m_Group=0;
+	pn->subGroup=0;
 	
 	pn->team = pNewChar->GetTeam ();
 	objmgr.AddPlayerInfo(pn);
@@ -592,6 +593,7 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 		info->Rank = plr->GetPVPRank();
 		info->team = plr->GetTeam();
 		info->m_Group=0;
+		info->subGroup=0;
 		objmgr.AddPlayerInfo(info);
 	}
 	plr->m_playerInfo = info;

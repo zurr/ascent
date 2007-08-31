@@ -7569,7 +7569,7 @@ void Player::CompleteLoading()
 	/* are we in a group? */
 	if(!m_Group && m_playerInfo->m_Group)
 	{
-		m_playerInfo->m_Group->AddMember(m_playerInfo, this, -1);
+		m_playerInfo->m_Group->AddMember(m_playerInfo, this, m_playerInfo->subGroup);
 	}
 }
 

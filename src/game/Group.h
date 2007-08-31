@@ -116,12 +116,12 @@ public:
 	void UpdateMember(PlayerInfo * info, Player * pPlayer);
 
 	// Leaders and Looting
-	void SetLeader(Player* pPlayer);
+	void SetLeader(Player* pPlayer,bool silent);
 	void SetLooter(Player *pPlayer, uint8 method, uint16 threshold);
 	Player* GetnextRRlooter();
 
 	// Transferring data to clients
-	void Update();
+	void Update(bool delayed = false);
 
 	void SendPacketToAll(WorldPacket *packet);
 	void SendPacketToAllButOne(WorldPacket *packet, Player *pSkipTarget);
