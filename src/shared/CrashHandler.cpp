@@ -17,6 +17,24 @@
 
 #include <Common.h>
 #include <svn_revision.h>
+
+#include "CrashHandler.h"
+#include "Log.h"
+
+void OutputCrashLogLine(const char * format, ...)
+{
+        std::string s = FormatOutputString("logs", "CrashLog", true);
+        FILE * m_file = fopen(s.c_str(), "a");
+        if(!m_file) return;
+
+        va_list ap;
+        va_start(ap, format);
+        vfprintf(m_file, format, ap);
+        fprintf(m_file, "\n");
+        fclose(m_file);
+        va_end(ap);
+}
+
 #ifdef WIN32
 
 /* *
@@ -26,7 +44,6 @@
 */
 #  pragma warning( disable : 4311 )
 
-#include "CrashHandler.h"
 #include <stdio.h>
 #include <time.h>
 #include <windows.h>
@@ -157,20 +174,6 @@ void echo(const char * format, ...)
 	va_list ap;
 	va_start(ap, format);
 	vfprintf(m_file, format, ap);
-	fclose(m_file);
-	va_end(ap);
-}
-
-void OutputCrashLogLine(const char * format, ...)
-{
-	std::string s = FormatOutputString("logs", "CrashLog", true);
-	FILE * m_file = fopen(s.c_str(), "a");
-	if(!m_file) return;
-
-	va_list ap;
-	va_start(ap, format);
-	vfprintf(m_file, format, ap);
-	fprintf(m_file, "\n");
 	fclose(m_file);
 	va_end(ap);
 }

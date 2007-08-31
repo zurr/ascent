@@ -27,7 +27,9 @@ libshared_a_SOURCES = \
     Threading/Mutex.cpp \
     Storage.h \
     ascent_getopt.h \
-    ascent_getopt.cpp
+    ascent_getopt.cpp \
+    CrashHandler.h \
+    CrashHandler.cpp
 
 libauth_a_SOURCES = \
     Auth/BigNumber.cpp \

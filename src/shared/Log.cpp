@@ -208,6 +208,7 @@ void SessionLogWriter::write(const char* format, ...)
 WorldLog::WorldLog()
 {
 	bEnabled = false;
+	m_file=NULL;
 
 	if (Config.MainConfig.GetBoolDefault("LogLevel", "World", false))
 	{

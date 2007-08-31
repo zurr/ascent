@@ -25,6 +25,7 @@
 #define _CRASH_HANDLER_H
 
 bool HookCrashReporter(bool logon);
+void OutputCrashLogLine(const char* format, ...);
 
 #ifdef WIN32
 
@@ -44,7 +45,6 @@ public:
 
 void StartCrashHandler();
 void OnCrash(bool Terminate);
-void OutputCrashLogLine(const char* format, ...);
 
 typedef struct _EXCEPTION_POINTERS EXCEPTION_POINTERS, *PEXCEPTION_POINTERS;
 int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs);
