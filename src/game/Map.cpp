@@ -426,7 +426,7 @@ void Map::LoadSpawns(bool reload)
 		delete result;
 	}
 
-	sLog.outString("Map %u: %u creatures / %u gameobjects loaded.", _mapId, CreatureSpawnCount, GameObjectSpawnCount);
+	Log.Notice("Map", "%u creatures / %u gameobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
 }
 
 MapMgr * Map::GetInstanceByGroup(Group *pGroup, Player * pCaller)

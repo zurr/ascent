@@ -527,7 +527,6 @@ void SocialMgr::RemovePlayer(Player* plr)
 
 void SocialMgr::LoadFromDB()
 {
-	sLog.outString("  Loading Friends Lists...");
 	std::map<uint64, std::set<uint64>*>::iterator Itr;
 	uint64 plrguid = 0;
 	uint64 friendguid = 0;

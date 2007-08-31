@@ -72,7 +72,6 @@ WeatherMgr::~WeatherMgr()
 
 void WeatherMgr::LoadFromDB()
 {
-	sLog.outString("  Loading Weather...");
 	QueryResult *result = WorldDatabase.Query( "SELECT * FROM weather" );
 
 	if( !result )
@@ -92,6 +91,7 @@ void WeatherMgr::LoadFromDB()
 	} while( result->NextRow() );
 
 	delete result;
+	Log.Notice("ObjectMgr", "Weather loaded on %u zones.", m_zoneWeathers.size());
 }
 
 void WeatherMgr::SendWeather(Player *plr)

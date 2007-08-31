@@ -495,7 +495,7 @@ void World::SetInitialWorldSettings()
 	CommandTableStorage::getSingleton().Load();
 
 	sLog.outString("");
-	sLog.outString("Database loaded in %ums.", getMSTime() - start_time);
+	Log.Notice("World", "Database loaded in %ums.", getMSTime() - start_time);
 	sLog.outString("");
 
 	// calling this puts all maps into our task list.
@@ -516,10 +516,10 @@ void World::SetInitialWorldSettings()
 	
 	//Updating spell.dbc--this is slow like hell due to we cant read string fields
 	//dbc method will be changed in future
-	sLog.outString("Processing Spells...");
 	DBCFile dbc;
 
 	dbc.open("DBC/Spell.dbc");
+	Log.Notice("World", "Processing %u spells...", dbc.getRecordCount());
 	uint32 cnt = dbc.getRecordCount();
 	uint32 effect;
 

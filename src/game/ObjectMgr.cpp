@@ -279,7 +279,6 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo *pn)
 
 void ObjectMgr::LoadSpellSkills()
 {
-	sLog.outString("  Loading Spell Skills...");
 	uint32 i;
 //	int total = sSkillStore.GetNumRows();
 
@@ -291,6 +290,7 @@ void ObjectMgr::LoadSpellSkills()
 			mSpellSkills[sp->spell] = sp;
 		}
 	}
+	Log.Notice("ObjectMgr", "%u spell skills loaded.", mSpellSkills.size());
 }
 
 skilllinespell* ObjectMgr::GetSpellSkill(uint32 id)
@@ -334,6 +334,7 @@ void ObjectMgr::LoadPlayersInfo()
 
 		delete result;
 	}
+	Log.Notice("ObjectMgr", "%u players loaded.", m_playersinfo.size());
 	LoadGuilds();
 }
 
@@ -355,12 +356,11 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(std::string &name)
 
 void ObjectMgr::LoadPlayerCreateInfo()
 {
-	sLog.outString("  Loading Player Create Info...");
 	QueryResult *result = WorldDatabase.Query( "SELECT * FROM playercreateinfo" );
 
 	if( !result )
 	{
-		sLog.outString("  Query failed: SELECT * FROM playercreateinfo");
+		Log.Error("MySQL","Query failed: SELECT * FROM playercreateinfo");
 		return;
 	}
 
@@ -464,6 +464,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
 
 	delete result;
 
+	Log.Notice("ObjectMgr", "%u player create infos loaded.", mPlayerCreateInfo.size());
 	GenerateLevelUpInfo();
 }
 
@@ -532,6 +533,7 @@ void ObjectMgr::LoadGuilds()
 	}while( result->NextRow() );
 
 	delete result;
+	Log.Notice("ObjectMgr", "%u guilds loaded.", mGuild.size());
 }
 
 Corpse* ObjectMgr::LoadCorpse(uint32 guid)
@@ -627,6 +629,7 @@ void ObjectMgr::LoadGMTickets()
 
 	} while( result->NextRow() );
 
+	Log.Notice("ObjectMgr", "%u GM Tickets loaded.", result->GetRowCount());
 	delete result;
 }
 
@@ -701,6 +704,29 @@ void ObjectMgr::SetHighestGuids()
 		m_hiGameObjectSpawnId = result->Fetch()[0].GetUInt32();
 		delete result;
 	}
+
+	result = CharacterDatabase.Query("SELECT MAX(group_id) FROM groups");
+	if(result)
+	{
+		m_hiGroupId = result->Fetch()[0].GetUInt32();
+		delete result;
+	}
+
+	result = CharacterDatabase.Query("SELECT MAX(guid) FROM charters");
+	if(result)
+	{
+		m_hiCharterId = result->Fetch()[0].GetUInt32();
+		delete result;
+	}
+
+	Log.Notice("ObjectMgr", "HighGuid(CORPSE) = %u", m_hiCorpseGuid);
+	Log.Notice("ObjectMgr", "HighGuid(PLAYER) = %u", m_hiPlayerGuid);
+	Log.Notice("ObjectMgr", "HighGuid(GAMEOBJ) = %u", m_hiGameObjectSpawnId);
+	Log.Notice("ObjectMgr", "HighGuid(UNIT) = %u", m_hiCreatureSpawnId);
+	Log.Notice("ObjectMgr", "HighGuid(ITEM) = %u", m_hiItemGuid);
+	Log.Notice("ObjectMgr", "HighGuid(CONTAINER) = %u", m_hiContainerGuid);
+	Log.Notice("ObjectMgr", "HighGuid(GROUP) = %u", m_hiGroupId);
+	Log.Notice("ObjectMgr", "HighGuid(CHARTER) = %u", m_hiCharterId);
 }
 
 
@@ -859,6 +885,7 @@ void ObjectMgr::ProcessGameobjectQuests()
 		} while(result->NextRow());
 		delete result;
 	}
+	Log.Notice("ObjectMgr", "%u NPC Gossip TextIds loaded.", mNpcToGossipText.size());
 }
 
 Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
@@ -1019,7 +1046,6 @@ GM_Ticket* ObjectMgr::GetGMTicket(uint64 guid)
 
 void ObjectMgr::LoadVendors()
 {
-	sLog.outString("  Loading Vendors...");
 	HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
 	std::vector<CreatureItem> *items;
 	CreatureItem itm;
@@ -1050,6 +1076,7 @@ void ObjectMgr::LoadVendors()
 
 		delete result;
 	}
+	Log.Notice("ObjectMgr", "%u vendors loaded.", mVendors.size());
 }
 
 std::vector<CreatureItem>* ObjectMgr::GetVendorList(uint32 entry)
@@ -1059,13 +1086,11 @@ std::vector<CreatureItem>* ObjectMgr::GetVendorList(uint32 entry)
 
 void ObjectMgr::LoadTotemSpells()
 {
-	sLog.outString("  Loading Totem Spells...");
 	std::stringstream query;
 	QueryResult *result = WorldDatabase.Query( "SELECT * FROM totemspells" );
 
 	if(!result)
 	{
-		sLog.outString("Query failed: SELECT * FROM totemspells");
 		return;
 	}
 
@@ -1084,6 +1109,7 @@ void ObjectMgr::LoadTotemSpells()
 	} while( result->NextRow() );
 
 	delete result;
+	Log.Notice("ObjectMgr", "%u totem spells loaded.", m_totemSpells.size());
 }
 
 SpellEntry* ObjectMgr::GetTotemSpell(uint32 spellId)
@@ -1097,7 +1123,6 @@ void ObjectMgr::LoadAIThreatToSpellId()
 
 	if(!result)
 	{
-		sLog.outString("  Query failed: SELECT * FROM ai_threattospellid");
 		return;
 	}
 
@@ -1115,6 +1140,7 @@ void ObjectMgr::LoadAIThreatToSpellId()
 	} while( result->NextRow() );
 
 	delete result;
+	Log.Notice("ObjectMgr", "%u spell threats loaded.", threatToSpells.size());
 }
 
 int32 ObjectMgr::GetAIThreatToSpellId(uint32 spellId)
@@ -1243,6 +1269,7 @@ void ObjectMgr::CorpseCollectorLoad()
 			  delete pCorpse;
 		} while( result->NextRow() );
 		
+		Log.Notice("ObjectMgr", "%u corpses processed.", result->GetRowCount());
 		delete result;
 	}
 }
@@ -1831,7 +1858,6 @@ void ObjectMgr::GenerateTrainerSpells()
 
 void ObjectMgr::LoadTrainers()
 {
-	sLog.outString("  Loading Trainers...");
 	LoadDisabledSpells();
 	GenerateTrainerSpells();
 	QueryResult * result = WorldDatabase.Query("SELECT * FROM trainers");
@@ -2057,6 +2083,7 @@ void ObjectMgr::LoadTrainers()
 		
 	} while(result->NextRow());
 	delete result;
+	Log.Notice("ObjectMgr", "%u trainers loaded.", mTrainers.size());
 }
 
 bool ObjectMgr::AddTrainerSpell(uint32 entry, SpellEntry *pSpell)
@@ -2318,6 +2345,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 			mLevelInfo.insert( LevelInfoMap::value_type( p, lMap ) );
 		}
 	}
+	Log.Notice("ObjectMgr", "%u level up informations generated.", mLevelInfo.size());
 }
 
 LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
@@ -2425,7 +2453,6 @@ uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
 void ObjectMgr::LoadSpellFixes()
 {
 	// Loads data from stored 1.12 dbc to fix spells that have had spell data removed in 2.0.
-	sLog.outString("  Loading Spell Fixes...");
 	QueryResult * result = WorldDatabase.Query("SELECT * FROM spells112");
 	if(result == 0) return;
 
@@ -2466,18 +2493,17 @@ void ObjectMgr::LoadSpellFixes()
 
 	} while(result->NextRow());
 	delete result;
+	Log.Notice("ObjectMgr", "%u spell fixes loaded.", fixed_count);
 }
 
 void ObjectMgr::LoadSpellOverride()
 {
-	sLog.outString("  Loading Spell Override...");
 //	int i = 0;
 	std::stringstream query;
 	QueryResult *result = WorldDatabase.Query( "SELECT DISTINCT overrideId FROM spelloverride" );
 
 	if(!result)
 	{
-		sLog.outString("Query failed: SELECT distinct overrideId FROM spelloverride");
 		return;
 	}
 
@@ -2513,6 +2539,7 @@ void ObjectMgr::LoadSpellOverride()
 			mOverrideIdMap.insert( OverrideIdMap::value_type( fields[0].GetUInt32(), list ));
 	} while( result->NextRow() );
 	delete result;
+	Log.Notice("ObjectMgr", "%u spell overrides loaded.", mOverrideIdMap.size());
 }
 
 void ObjectMgr::SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_)
@@ -2586,6 +2613,7 @@ void ObjectMgr::LoadCreatureWaypoints()
 		}
 	}while( result->NextRow() );
 
+	Log.Notice("ObjectMgr", "%u waypoints cached.", result->GetRowCount());
 	delete result;
 }
 
@@ -2718,6 +2746,7 @@ void ObjectMgr::LoadGuildCharters()
 			m_hiCharterId = c->GetID();
 	} while(result->NextRow());
 	delete result;
+	Log.Notice("ObjectMgr", "%u charters loaded.", m_charters.size());
 }
 
 Charter * ObjectMgr::GetCharter(uint32 CharterId)
@@ -2897,6 +2926,7 @@ void ObjectMgr::LoadReputationModifierTable(const char * tablename, HM_NAMESPACE
 		} while(result->NextRow());
 		delete result;
 	}
+	Log.Notice("ObjectMgr", "%u reputation modifiers on %s.", dmap->size(), tablename);
 }
 
 void ObjectMgr::LoadReputationModifiers()
@@ -2972,6 +3002,7 @@ void ObjectMgr::LoadMonsterSay()
 		mMonsterSays[Event].insert( make_pair( Entry, ms ) );
 
 	} while(result->NextRow());
+	Log.Notice("ObjectMgr", "%u monster say events loaded.", result->GetRowCount());
 	delete result;
 }
 
@@ -3030,6 +3061,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
 
 	} while(result->NextRow());
 	delete result;
+	Log.Notice("ObjectMgr", "%u instance reputation modifiers loaded.", m_reputation_instance.size());
 }
 
 bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVictim)
@@ -3099,20 +3131,14 @@ void ObjectMgr::LoadDisabledSpells()
 		} while(result->NextRow());
 		delete result;
 	}
+
+	Log.Notice("ObjectMgr", "%u disabled spells.", m_disabled_spells.size());
+	Log.Notice("ObjectMgr", "%u disabled trainer spells.", m_disabled_trainer_spells.size());
 }
 
 void ObjectMgr::LoadGroups()
 {
-	QueryResult * result = CharacterDatabase.Query("SELECT MAX(id) FROM groups");
-	if(!result)
-		m_hiGroupId = 1;
-	else
-	{
-		m_hiGroupId = result->Fetch()[0].GetUInt32();
-		delete result;
-	}
-
-	result = CharacterDatabase.Query("SELECT * FROM groups");
+	QueryResult * result = CharacterDatabase.Query("SELECT * FROM groups");
 	if(result)
 	{
 		do 

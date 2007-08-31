@@ -612,9 +612,10 @@ public:
 
 			LoadBlock(fields, Allocated);
 		} while(result->NextRow());
+		Log.Notice("Storage", "%u entries loaded from table %s.", result->GetRowCount(), IndexName);
 		delete result;
 
-		Log.Success("Storage", "Loaded database cache from `%s`.", IndexName);
+		//Log.Success("Storage", "Loaded database cache from `%s`.", IndexName);
 	}
 
 	/** Reloads the storage container
