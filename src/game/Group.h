@@ -76,7 +76,7 @@ public:
 	inline GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
 	inline GroupMembersSet::iterator GetGroupMembersEnd(void)   { return m_GroupMembers.end();   }
 
-	void AddPlayer(PlayerInfo * info, Player *pPlayer);
+	bool AddPlayer(PlayerInfo * info, Player *pPlayer);
 	void RemovePlayer(PlayerInfo * info, Player *pPlayer, bool forced_remove);
 	bool HasMember(uint64 guid);
 	
@@ -192,6 +192,8 @@ protected:
 	uint8 m_SubGroupCount;
 	uint32 m_MemberCount;
 	Mutex m_groupLock;
+	bool m_dirty;
+	bool m_updateblock;
 };
 
 #endif  // _GROUP_H_

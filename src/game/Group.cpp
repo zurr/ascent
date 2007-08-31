@@ -67,6 +67,8 @@ Group::Group()
 	m_Id = objmgr.GenerateGroupId();
 	ObjectMgr::getSingleton().AddGroup(this);
 	lastRRlooter = NULL;
+	m_dirty=false;
+	m_updateblock=false;
 	m_disbandOnNoMembers = true;
 	memset(m_targetIcons, 0, sizeof(uint64) * 8);
 }
@@ -109,7 +111,7 @@ void SubGroup::RemovePlayer(PlayerInfo * info, Player *pPlayer, bool forced_remo
 			{
 				/* player temporary remove (set to offline) */
 				itr->player = NULL;
-				info->subGroup=0;
+				info->subGroup=GetID();
 			}
 			else
 			{
@@ -119,14 +121,18 @@ void SubGroup::RemovePlayer(PlayerInfo * info, Player *pPlayer, bool forced_remo
 				info->subGroup=0;
 				if(pPlayer)
 					pPlayer->SetSubGroup(0);
+				m_Parent->m_dirty=true;
 			}
 			break;
 		}
 	}
 }
 
-void SubGroup::AddPlayer(PlayerInfo * info, Player *pPlayer)
+bool SubGroup::AddPlayer(PlayerInfo * info, Player *pPlayer)
 {
+	if(IsFull())
+		return false;
+
 	if(pPlayer)
 	{
 		sLog.outDebug("GROUP: Adding player %s to subgroup %d", pPlayer->GetName(), m_Id);
@@ -141,7 +147,7 @@ void SubGroup::AddPlayer(PlayerInfo * info, Player *pPlayer)
 		{
 			/* we're simply updating */
 			itr->player = pPlayer;
-			return;
+			return true;
 		}
 	}
 
@@ -150,6 +156,8 @@ void SubGroup::AddPlayer(PlayerInfo * info, Player *pPlayer)
 	mbr.player_info = info;
 	m_GroupMembers.push_back(mbr);
 	m_Parent->m_MemberCount++;
+	m_Parent->m_dirty=true;
+	return true;
 }
 
 SubGroup * Group::FindFreeSubGroup()
@@ -176,28 +184,37 @@ bool Group::AddMember(PlayerInfo * info, Player* pPlayer, int32 subgroupid)
 			return false;
 		}
 
-		subgroup->AddPlayer(info, pPlayer);
-		if(pPlayer)
+		if(subgroup->AddPlayer(info, pPlayer))
 		{
-			pPlayer->SetGroup(this);
-
-			if(m_MemberCount == 1)
+			if(pPlayer)
 			{
-				// We're the only member? Set us to the leader.
-				SetLeader(pPlayer);
+				pPlayer->SetGroup(this);
+
+				if(m_Leader == NULL)
+				{
+					// We're the only member? Set us to the leader.
+					m_Leader=pPlayer;
+				}
+
+				/* process any pending updates beforehand */
+				pPlayer->ProcessPendingUpdates();
+
+				UpdateAllOutOfRangePlayersFor(pPlayer);
 			}
 
-			/* process any pending updates beforehand */
-			pPlayer->ProcessPendingUpdates();
+			Update();	// Send group update
+			info->m_Group=this;
 
-			UpdateAllOutOfRangePlayersFor(pPlayer);
+			m_groupLock.Release();
+			return true;
 		}
-
-		Update();	// Send group update
-		info->m_Group=this;
-
-		m_groupLock.Release();
-		return true;
+		else
+		{
+			m_groupLock.Release();
+			info->m_Group=NULL;
+			pPlayer->SetGroup(NULL);
+			return false;
+		}
 
 	}
 	else
@@ -210,6 +227,7 @@ bool Group::AddMember(PlayerInfo * info, Player* pPlayer, int32 subgroupid)
 void Group::SetLeader(Player* pPlayer, bool silent)
 {
 	m_Leader = pPlayer;
+	m_dirty=true;
 	if(!silent)
 	{
 		WorldPacket *data = new WorldPacket;
@@ -225,6 +243,9 @@ void Group::SetLeader(Player* pPlayer, bool silent)
 
 void Group::Update(bool delayed)
 {
+	if(m_updateblock)
+		return;
+
 	WorldPacket data(50 + (m_MemberCount * 20));
 	GroupMembersSet::iterator itr1, itr2;
 
@@ -303,6 +324,12 @@ void Group::Update(bool delayed)
 		}		
 	}
 
+	if(m_dirty)
+	{
+		m_dirty=false;
+		SaveToDB();
+	}
+
 	m_groupLock.Release();
 }
 
@@ -317,6 +344,7 @@ void Group::Disband()
 	}
 
 	m_groupLock.Release();
+	CharacterDatabase.Execute("DELETE FROM groups WHERE group_id = %u", m_Id);
 	delete this;	// destroy ourselves, the destructor removes from eventmgr and objectmgr.
 }
 
@@ -450,7 +478,10 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 	Player *newPlayer = FindFirstPlayer();
 
 	if(m_Looter && m_Looter->GetGUID() == info->guid)
+	{
 		m_Looter = newPlayer;
+		m_dirty=true;
+	}
 
 	if(m_Leader && m_Leader->GetGUID() == info->guid)
 	{
@@ -463,6 +494,7 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 		{
 			/* partial remove - no message */
 			m_Leader = newPlayer;
+			m_dirty=true;
 			Update(true);
 		}
 	}
@@ -489,6 +521,7 @@ void Group::ExpandToRaid()
 		m_SubGroups[i] = new SubGroup(this, i);
 
 	m_GroupType = GROUP_TYPE_RAID;
+	m_dirty=true;
 	Update();
 	m_groupLock.Release();
 }
@@ -498,6 +531,7 @@ void Group::SetLooter(Player *pPlayer, uint8 method, uint16 threshold)
 	m_LootMethod = method;
 	m_Looter = pPlayer;
 	m_LootThreshold  = threshold;
+	m_dirty=true;
 	Update();
 }
 
@@ -608,6 +642,7 @@ void Group::MovePlayer(PlayerInfo *info, uint8 subgroup)
 	// Grab the new group, and insert
 	sg = m_SubGroups[subgroup];
 	sg->AddPlayer(info,pl);
+	info->subGroup=sg->GetID();
 
 	Update();
 	m_groupLock.Release();
@@ -635,6 +670,7 @@ void Group::SendPartyKillLog(Object * player, Object * Unit)
 
 void Group::LoadFromDB(Field *fields)
 {
+	m_updateblock=true;
 	m_Id = fields[0].GetUInt32();
 	m_GroupType = fields[1].GetUInt8();
 	m_SubGroupCount = fields[2].GetUInt8();
@@ -653,9 +689,11 @@ void Group::LoadFromDB(Field *fields)
 			uint64 guid = fields[5 + (i*5) + j].GetUInt64();
 			PlayerInfo * inf = objmgr.GetPlayerInfo(guid);
 			if(inf == NULL) continue;
-			AddMember(inf, NULL, j);
+			AddMember(inf, NULL, i);
+			m_dirty=false;
 		}
 	}
+	m_updateblock=false;
 }
 
 void Group::SaveToDB()

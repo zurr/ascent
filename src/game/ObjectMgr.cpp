@@ -314,6 +314,7 @@ void ObjectMgr::LoadPlayersInfo()
 			pn->Rank=fields[10].GetUInt32();
 			pn->acct = fields[11].GetUInt32();
 			pn->m_Group=0;
+			pn->subGroup=0;
 
 			if(pn->race==RACE_HUMAN||pn->race==RACE_DWARF||pn->race==RACE_GNOME||pn->race==RACE_NIGHTELF||pn->race==RACE_DRAENEI)
 				pn->team = 0;

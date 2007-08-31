@@ -255,7 +255,7 @@ void WorldSession::HandleGroupSetLeaderOpcode( WorldPacket & recv_data )
 
 	Group *pGroup = _player->GetGroup();
 	if(pGroup)
-		pGroup->SetLeader(player);
+		pGroup->SetLeader(player,false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
