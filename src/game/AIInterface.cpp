@@ -833,7 +833,9 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				combatReach[0] = 0.0f;
 				combatReach[1] = _CalcCombatRange(m_nextTarget, false);
 
-				if(distance >= combatReach[0] && distance <= combatReach[1]) // Target is in Range -> Attack
+				if(	
+//					distance >= combatReach[0] && 
+					distance <= combatReach[1]) // Target is in Range -> Attack
 				{
 #ifdef ENABLE_CREATURE_DAZE
 					//now if the target is facing his back to us then we could just cast dazed on him :P
@@ -887,7 +889,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				else // Target out of Range -> Run to it
 				{
 					//calculate next move
-					float dist = combatReach[1]-1.15f;
+					float dist = combatReach[1]-PLAYER_SIZE;
+
+					if(dist < PLAYER_SIZE)
+						dist = PLAYER_SIZE; //unbeleavable how this could happen
 
 					m_moveRun = true;
 					_CalcDestinationAndMove(m_nextTarget, dist);
@@ -1596,7 +1601,7 @@ float AIInterface::_CalcCombatRange(Unit* target, bool ranged)
 		return 0;
 	}
 	float range = 0.0f;
-	float rang = 1.5f;
+	float rang = PLAYER_SIZE;
 	if(ranged)
 	{
 		rang = 5.0f;
@@ -1610,7 +1615,7 @@ float AIInterface::_CalcCombatRange(Unit* target, bool ranged)
 
 	range = (((powf(targetradius,2)*targetscale) + selfreach) + ((selfradius*selfscale) + rang));
 	if(range > 28.29f) range = 28.29f;
-	if(range < 1.0f) range = 1.0f;
+	if(range < PLAYER_SIZE) range = PLAYER_SIZE; //unbeleavable to get here :)
 	return range;
 }
 

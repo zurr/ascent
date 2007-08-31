@@ -52,6 +52,14 @@ Zack - test my shit :
 
  - ai_agents fillup
  - demonslaying target type checking
+[12:03] <Blizzy> .levelup 70
+[12:03] <Blizzy> .learn 28029 //enchanting master 
+[12:03] <Blizzy> .advanceskill 333 375 375
+[12:03] <Blizzy> .learn 13915
+[12:03] <Blizzy> .additem 11177 10 //
+[12:03] <Blizzy> .additem 11176 20 // ca sa ai regenturi pt 10 enchanturi
+[12:03] <Blizzy> .additem 9224 10  //
+[12:03] <Blizzy> deschizi enchanting aplici enchantu pe o sabie dagger nu conteaza si te duci sa dai in creaturi care nu sant demoni daca inca ya stun inseamna nu lai reparat 
  - test function RemoveThreatByPtr
 
 ==========================================================================
