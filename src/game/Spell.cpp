@@ -3330,11 +3330,11 @@ int32 Spell::CalculateEffect(uint32 i)
 		if(i==0)
 		value = (value*u_caster->GetAP())/100;
 	}
-	else if(m_spellInfo ->Id == 3044 ||( m_spellInfo->Id >= 14282 && m_spellInfo->Id <=14287))
+	else if(m_spellInfo->NameHash==0xF4D5F002)
 	{
 		//causes ${$RAP*0.2+$m1} Arcane damage." 
 		if(i==0)
-			value +=u_caster->GetRAP()/5;
+			value +=u_caster->GetRAP()*0.15f;
 	}else if(m_spellInfo->NameHash == 0x93C04185)//rake
 	{
 		if(i==0)
