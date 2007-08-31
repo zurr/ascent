@@ -23,8 +23,7 @@ libshared_a_SOURCES = \
     WorldPacket.h \
     crc32.cpp \
     crc32.h \
-    TextLogger.h \
-    TextLogger.cpp \
+    FastQueue.h \
     Threading/Mutex.cpp \
     Storage.h \
     ascent_getopt.h \
