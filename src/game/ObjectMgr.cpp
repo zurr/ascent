@@ -3095,7 +3095,7 @@ void ObjectMgr::LoadDisabledSpells()
 
 void ObjectMgr::LoadGroups()
 {
-	QueryResult * result = WorldDatabase.Query("SELECT MAX(id) FROM groups");
+	QueryResult * result = CharacterDatabase.Query("SELECT MAX(id) FROM groups");
 	if(!result)
 		m_hiGroupId = 1;
 	else
@@ -3104,9 +3104,14 @@ void ObjectMgr::LoadGroups()
 		delete result;
 	}
 
-	result = WorldDatabase.Query("SELECT * FROM groups");
+	result = CharacterDatabase.Query("SELECT * FROM groups");
 	if(result)
 	{
+		do 
+		{
+			Group * g = new Group();
+			g->LoadFromDB(result->Fetch());
+		} while(result->NextRow());
 		delete result;
 	}
 

@@ -287,7 +287,10 @@ void WorldSession::LogoutPlayer(bool Save)
 		{
 			Group *group = _player->GetGroup();
 			if(group)
-				group->RemovePlayer(_player->m_playerInfo, _player, false);
+			{
+				group->RemovePlayer(_player->m_playerInfo, NULL, false);
+				_player->m_Group=NULL;
+			}
 		}
 		
 		for(int i=0;i<3;++i)

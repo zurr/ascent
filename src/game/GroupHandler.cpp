@@ -140,7 +140,7 @@ void WorldSession::HandleGroupAcceptOpcode( WorldPacket & recv_data )
 	
 	// If we're this far, it means we have no existing group, and have to make one.
 	grp = new Group;
-	grp->AddMember(_player->m_playerInfo, player);		// add the inviter first, therefore he is the leader
+	grp->AddMember(player->m_playerInfo, player);		// add the inviter first, therefore he is the leader
 	grp->AddMember(_player->m_playerInfo, _player);	   // add us.
     _player->iInstanceType = player->iInstanceType;
     _player->GetSession()->OutPacket(CMSG_DUNGEON_DIFFICULTY, 4, &player->iInstanceType);

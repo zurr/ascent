@@ -7565,6 +7565,12 @@ void Player::CompleteLoading()
 		BroadcastMessage("This character is not allowed to play.");
 		BroadcastMessage("You have been banned for: %s", GetBanReason().c_str());
 	}
+
+	/* are we in a group? */
+	if(!m_Group && m_playerInfo->m_Group)
+	{
+		m_playerInfo->m_Group->AddMember(m_playerInfo, this, -1);
+	}
 }
 
 void Player::OnWorldPortAck()

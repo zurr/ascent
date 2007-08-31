@@ -390,7 +390,7 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 	}
 
 	sg->RemovePlayer(info, pPlayer,forced_remove);
-	if(pPlayer!=NULL || !forced_remove)
+	if(pPlayer!=NULL || forced_remove)
 		info->m_Group=NULL;
 
 	if(pPlayer)
