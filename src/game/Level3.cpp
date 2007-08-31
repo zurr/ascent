@@ -2755,7 +2755,7 @@ bool ChatHandler::HandleNpcPossessCommand(const char * args, WorldSession * m_se
 	if(!pTarget)
 	{
 		pTarget = getSelectedCreature(m_session, false);
-		if(pTarget && pTarget->IsPet() || pTarget->GetUInt32Value(UNIT_FIELD_CREATEDBY) != 0)
+		if(pTarget && (pTarget->IsPet() || pTarget->GetUInt32Value(UNIT_FIELD_CREATEDBY) != 0))
 			return false;
 	}
 		

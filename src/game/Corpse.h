@@ -56,6 +56,7 @@ public:
 	void generateLoot();
 
 	void SpawnBones();
+	void Delink();
 private:
 	uint32 m_state;
 	uint32 _fields[CORPSE_END];

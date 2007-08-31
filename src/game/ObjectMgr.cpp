@@ -588,10 +588,7 @@ void ObjectMgr::DelinkPlayerCorpses(Player *pOwner)
 	Corpse * c;
 	c=this->GetCorpseByOwner(pOwner->GetGUIDLow());
 	if(!c)return;
-	c->SetUInt64Value(CORPSE_FIELD_OWNER, 0);
-	c->SetUInt32Value(CORPSE_FIELD_FLAGS, 5);
-	c->SetCorpseState(CORPSE_STATE_BONES);
-	c->DeleteFromDB();
+	sEventMgr.AddEvent(c, &Corpse::Delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, 0);
 	CorpseAddEventDespawn(c);
 }
 

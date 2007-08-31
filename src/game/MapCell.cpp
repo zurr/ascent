@@ -121,8 +121,7 @@ void MapCell::RemoveObjects()
 			delete ((DynamicObject*)obj);
 		else if (obj->GetTypeId() == TYPEID_CORPSE)
 		{
-			if(!_unloadpending)
-				delete ((Corpse*)obj);
+			delete ((Corpse*)obj);
 		}
 	}
 

@@ -122,3 +122,11 @@ void Corpse::SpawnBones()
 	objmgr.CorpseAddEventDespawn(this);
 	SetCorpseState(CORPSE_STATE_BONES);
 }
+
+void Corpse::Delink()
+{
+	SetUInt32Value(CORPSE_FIELD_FLAGS,5);
+	SetUInt64Value(CORPSE_FIELD_OWNER,0);
+	SetCorpseState(CORPSE_STATE_BONES);
+	DeleteFromDB();
+}

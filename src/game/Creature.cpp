@@ -123,6 +123,13 @@ void Creature::Update( uint32 p_time )
 		RemoveFromWorld(false);
 		delete this;
 	}
+
+	if(m_deathState==JUST_DIED)
+	{
+		m_deathState = CORPSE;
+		sEventMgr.RemoveEvents(this);
+		sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+	}
 }
 
 void Creature::SafeDelete()
@@ -407,9 +414,9 @@ void Creature::setDeathState(DeathState s)
 	{
 
 		GetAIInterface()->SetUnitToFollow(NULL);
-		m_deathState = CORPSE;
+		/*m_deathState = CORPSE;
 		
-		sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+		sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);*/
 		if(m_enslaveSpell)
 			RemoveEnslave();
 
