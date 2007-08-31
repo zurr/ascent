@@ -1214,7 +1214,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket & recv_data)
 			SpellCastTargets targets;
 			targets.m_unitTarget = plyr->GetGUID();
 			spell->prepare(&targets);
-			if(!--obj->charges)
+			if(obj->charges>0 && !--obj->charges)
 				obj->ExpireAndDelete();
 		}break;
 	case GAMEOBJECT_TYPE_RITUAL: 

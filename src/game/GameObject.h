@@ -189,7 +189,7 @@ public:
 	float range;
 	uint32 checkrate;
 	uint32 counter;
-	uint32 charges;//used for type==22,to limit number of usages.
+	int32 charges;//used for type==22,to limit number of usages.
 	bool invisible;//invisible
 	INVISIBILTY_FLAG invisibilityFlag;
 	Unit* m_summoner;

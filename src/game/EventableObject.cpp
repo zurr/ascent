@@ -56,6 +56,18 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 
 	ptr->IncRef();
 	ptr->instanceId = m_event_Instanceid;
+
+	/* let's do some garbage collection */
+	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
+	{
+		if((*itr)->deleted)
+		{
+			(*itr)->DecRef();
+			itr = m_events.erase(itr);
+		}
+		else
+			++itr;
+	}
 	m_events.push_back(ptr);
 	m_lock.Release();
 
@@ -113,6 +125,11 @@ void EventableObject::event_RemoveEvents(uint32 EventType)
 				(*itr)->DecRef();
 				itr = m_events.erase(itr);
 			}
+			else if((*itr)->deleted)
+			{
+				(*itr)->DecRef();
+				itr = m_events.erase(itr);
+			}
 			else
 				++itr;
 		}
@@ -130,8 +147,15 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,boo
 {
 	m_lock.Acquire();
 
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
+	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
 	{
+		if((*itr)->deleted)
+		{
+			(*itr)->DecRef();
+			itr = m_events.erase(itr);
+			continue;
+		}
+		
 		if((*itr)->eventType == EventType)
 		{
 			if(unconditioned)
@@ -139,6 +163,7 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,boo
 			else
 				((int32)TimeLeft > (*itr)->msTime) ? (*itr)->msTime : (int32)TimeLeft;
 		}
+		++itr;
 	}
 
 	m_lock.Release();
@@ -148,10 +173,19 @@ void EventableObject::event_ModifyTime(uint32 EventType, uint32 Time)
 {
 	m_lock.Acquire();
 
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
+	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
 	{
+		if((*itr)->deleted)
+		{
+			(*itr)->DecRef();
+			itr = m_events.erase(itr);
+			continue;
+		}
+		
 		if((*itr)->eventType == EventType)
 			(*itr)->msTime = Time;
+
+		++itr;
 	}
 
 	m_lock.Release();
@@ -163,7 +197,13 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 
 	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
 	{
-		if((*itr)->eventType == EventType) {
+		if((*itr)->deleted)
+		{
+			(*itr)->DecRef();
+			itr = m_events.erase(itr);
+			continue;
+		}
+		else if((*itr)->eventType == EventType) {
 			(*itr)->msTime = (*itr)->currTime = Time;
 		}
 	}
@@ -174,19 +214,25 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 
 bool EventableObject::event_HasEvent(uint32 EventType)
 {
+	bool result=false;
 	m_lock.Acquire();
 
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
+	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
 	{
-		if((*itr)->eventType == EventType)
+		if((*itr)->deleted)
 		{
-			m_lock.Release();
-			return true;
+			(*itr)->DecRef();
+			itr = m_events.erase(itr);
+			continue;
 		}
+		else if((*itr)->eventType == EventType)
+			result=true;
+
+		++itr;
 	}
 
 	m_lock.Release();
-	return false;
+	return result;
 }
 
 EventableObjectHolder::EventableObjectHolder(int32 instance_id) : mInstanceId(instance_id)

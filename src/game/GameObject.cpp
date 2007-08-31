@@ -40,7 +40,7 @@ GameObject::GameObject(uint32 high, uint32 low)
 	invisibilityFlag = INVISIBILTY_FLAG_NONE;
 	spell = 0;
 	m_summoner = NULL;
-	charges = (uint32)-1;
+	charges = -1;
 	m_ritualcaster = 0;
 	m_ritualtarget = 0;
 	m_ritualmembers = NULL;
