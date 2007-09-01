@@ -1281,7 +1281,10 @@ std::list<ItemPrototype*>* ObjectMgr::GetListForItemSet(uint32 setid)
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse *pCorpse)
 {
-	sEventMgr.AddEvent(pCorpse->GetMapMgr(), &MapMgr::EventCorpseDespawn, pCorpse->GetGUID(), EVENT_CORPSE_DESPAWN, 600000, 1,0);
+	if(!pCorpse->IsInWorld())
+		delete pCorpse;
+	else
+		sEventMgr.AddEvent(pCorpse->GetMapMgr(), &MapMgr::EventCorpseDespawn, pCorpse->GetGUID(), EVENT_CORPSE_DESPAWN, 600000, 1,0);
 }
 
 void ObjectMgr::DespawnCorpse(uint64 Guid)
