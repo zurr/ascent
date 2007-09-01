@@ -839,13 +839,14 @@ void Group::UpdateOutOfRangePlayer(Player * pPlayer, uint32 Flags, bool Distribu
 		m_groupLock.Acquire();
 		for(uint32 i = 0; i < m_SubGroupCount; ++i)
 		{
-			for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+			for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
 			{
 				plr = itr->player;
-				if(plr && plr != pPlayer)
+				++itr;
+
+				if(plr && plr != pPlayer && plr->GetMapMgr() == pPlayer->GetMapMgr())
 				{
-					//if(!(plr->GetMapMgr() == pPlayer->GetMapMgr() && plr->IsInRangeSet(pPlayer)))
-					if(!(plr->GetMapMgr() == pPlayer->GetMapMgr() && plr->CalcDistance(pPlayer) <= dist))
+					if(plr->CalcDistance(pPlayer) > dist)
 						plr->GetSession()->SendPacket(data);
 				}
 			}
