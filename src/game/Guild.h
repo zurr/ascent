@@ -320,7 +320,6 @@ protected:
 	uint32 m_createdYear;
 	uint32 m_createdMonth;
 	uint32 m_createdDay;
-	bool m_renamed;
 };
 
 

@@ -570,7 +570,6 @@ void Guild::RenameGuild(std::string guildName)
 {
 	SetGuildName(guildName);
 	CharacterDatabase.Execute("UPDATE guilds SET guildName = '%s' WHERE guildId = %u", CharacterDatabase.EscapeString(guildName), GetGuildId());
-	m_renamed = true;
 	uint32 ttime = time(NULL);
 
 	std::list<PlayerInfo*>::iterator itr = m_guildMembers.begin();
