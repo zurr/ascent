@@ -1050,7 +1050,7 @@ void Pet::ApplySummonLevelAbilities()
 
 	// Calculate health / mana
 	double health = pet_sta * pet_sta_to_hp;
-	double mana = has_mana ? (base_int * 15) : 0.0;
+	double mana = has_mana ? (pet_int * 15) : 0.0;
 	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, FL2UINT(health));
 	SetUInt32Value(UNIT_FIELD_BASE_MANA, FL2UINT(mana));
 }
