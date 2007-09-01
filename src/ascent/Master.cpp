@@ -433,11 +433,8 @@ bool Master::Run(int argc, char ** argv)
 	}
 	_UnhookSignals();
 
-	CConsoleThread *thread = (CConsoleThread*)sThreadMgr.GetThreadByType(THREADTYPE_CONSOLEINTERFACE);
-	ASSERT(thread);
-	thread->SetThreadState(THREADSTATE_TERMINATE);
-	// have to cleanup manually.
-	sThreadMgr.RemoveThread(thread);
+	/* Shut down console system */
+	sCConsole.Kill();
 
 	sLog.outString("Killing all sockets and network subsystem.");
 #ifndef CLUSTERING
@@ -481,6 +478,7 @@ bool Master::Run(int argc, char ** argv)
 	sLog.outString("\nDeleting World...");
 	delete World::getSingletonPtr();
 	sScriptMgr.UnloadScripts();
+	delete ScriptMgr::getSingletonPtr();
 
 	sLog.outString("Deleting Event Manager...");
 	delete EventMgr::getSingletonPtr();

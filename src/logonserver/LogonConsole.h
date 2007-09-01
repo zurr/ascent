@@ -24,6 +24,7 @@
 class LogonConsoleThread : public ThreadBase
 {
 public:
+	bool kill;
 	LogonConsoleThread();
 	~LogonConsoleThread();
 	void run();
@@ -34,7 +35,7 @@ class LogonConsole :  public Singleton < LogonConsole >
 	friend class LogonConsoleThread;
 
 public:						// Public methods:
-	void kill() { running = false; };
+	void Kill();
 
 protected:					// Protected methods:
 	LogonConsoleThread *_thread;
@@ -52,7 +53,6 @@ protected:					// Protected methods:
 	void ProcessHelp(char *command);
 
 	void ReloadAccts(char *str);
-	bool running;
 };
 
 #define sLogonConsole LogonConsole::getSingleton()

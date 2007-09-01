@@ -58,9 +58,9 @@ int main(int argc, char ** argv)
 #endif
 		if(!sMaster.Run(argc, argv))
 		{
-			sLog.outString("\nStartup failed for some reason. Please review the error messages above and hit any key to exit.");
+			sLog.outString("\nStartup failed for some reason. Please review the error messages above.");
 		} else {
-			sLog.outString("Server exited without failure. Hit any key to close this window.");
+			sLog.outString("Server exited without failure.");
 		}
 #ifdef WIN32
 	}

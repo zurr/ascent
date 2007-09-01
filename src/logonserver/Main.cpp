@@ -29,6 +29,9 @@
 #include <sched.h>
 #endif
 
+//#include <vld.h>
+//#include <vldapi.h>
+
 // Database impl
 Database * sLogonSQL;
 initialiseSingleton(LogonServer);
@@ -79,6 +82,7 @@ int main(int argc, char** argv)
 
 	// Run!
 	LogonServer::getSingleton( ).Run(argc, argv);
+	delete LogonServer::getSingletonPtr();
 }
 
 bool startdb()
@@ -123,6 +127,7 @@ bool startdb()
 
 void LogonServer::Run(int argc, char ** argv)
 {
+	UNIXTIME = time(NULL);
 #ifdef WIN32
 	char * config_file = "logonserver.conf";
 #else
@@ -197,48 +202,40 @@ void LogonServer::Run(int argc, char ** argv)
 	
 	sLog.outString("The key combination <Ctrl-C> will safely shut down the server at any time.");
 	sLog.outString("");
-	sLog.outString("Initializing Random Number Generators...");
+	Log.Notice("System","Initializing Random Number Generators...");
 
-	sLog.outColor(TNORMAL, "Loading Config Files...\n");
-	sLog.outColor(TYELLOW, "  >> %s :: ", config_file);
+	Log.Notice("Config", "Loading Config Files...");
+	
 	if(Config.MainConfig.SetSource(config_file))
 	{
-		sLog.outColor(TGREEN, "ok!");
-		sLog.outColor(TNORMAL, "\n\n");
+		Log.Success("Config", ">> logonserver.conf", config_file);
 	}
 	else
 	{
-		sLog.outColor(TRED, "failed.");
-		sLog.outColor(TNORMAL, "\n\n");
+		Log.Error("Config", ">> logonserver.conf", config_file);
 		return;
 	}
-
+	Log.Notice("ThreadMgr", "Starting...");
+	new ThreadMgr;
+	ThreadMgr::getSingleton( ).Initialize();
    
-	sLog.outColor(TNORMAL, "\n >> establishing database connection...");
-	sLog.outColor(TGREEN, " ok!\n");
-
-	sLog.outColor(TNORMAL, " >> starting: thread manager...");
-		new ThreadMgr;
-		ThreadMgr::getSingleton( ).Initialize();
-	
 	if(!startdb())
 		return;
 
-	sLog.outColor(TGREEN, " ok!\n");
 
-	sLog.outColor(TNORMAL, " >> starting: account manager...");
-		new AccountMgr;
-		new IPBanner;
-	sLog.outColor(TGREEN, " ok!\n");
+	
+	Log.Notice("AccountMgr", "Starting...");
+	new AccountMgr;
+	new IPBanner;
 
-	sLog.outColor(TNORMAL, " >> starting: information core...");
-		new InformationCore;
-	sLog.outColor(TGREEN, " ok!\n");
+	Log.Notice("InfoCore", "Starting...");
+	new InformationCore;
 
-	sLog.outColor(TNORMAL, " >> precaching accounts...");
-		sAccountMgr.ReloadAccounts(true);
-	sLog.outColor(TGREEN, " %u accounts.\n", sAccountMgr.GetCount());
-	sLog.outColor(TNORMAL, "\n");
+	Log.Notice("AccountMgr", "Precaching accounts...");
+	sAccountMgr.ReloadAccounts(true);
+	Log.Notice("AccountMgr", "%u accounts are loaded and ready.", sAccountMgr.GetCount());
+	Log.Line();
+
 
 	// Spawn periodic function caller thread for account reload every 10mins
 	int time = Config.MainConfig.GetIntDefault("Rates", "AccountRefresh",600);
@@ -317,13 +314,16 @@ void LogonServer::Run(int argc, char ** argv)
 
 	sLog.outString("Shutting down...");
 	pfc->kill();
+	delete pfc;
 
 	cl->Close();
 	sl->Close();
 	delete sl;
 	delete cl;
 	sSocketMgr.CloseAll();
-	sLogonConsole.kill();
+	sSocketMgr.ShutdownThreads();
+	sLogonConsole.Kill();
+	delete LogonConsole::getSingletonPtr();
 
 	// kill db
 	sThreadMgr.RemoveThread((MySQLDatabase*)sLogonSQL);
@@ -348,11 +348,7 @@ void LogonServer::Run(int argc, char ** argv)
 	delete IPBanner::getSingletonPtr();
 	delete SocketMgr::getSingletonPtr();
 	delete SocketGarbageCollector::getSingletonPtr();
-#ifdef WIN32
-	//TerminateProcess(GetCurrentProcess(), 0);
-#else
-	printf("Hit any key to exit.\n");
-#endif
+	printf("Shutdown complete.\n");
 }
 
 void OnCrash(bool Terminate)

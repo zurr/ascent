@@ -1896,7 +1896,6 @@ void World::ShutdownClasses()
 	sMailSystem.ShutdownMailSystem();
 	delete MailSystem::getSingletonPtr();
 	delete WorldCreator::getSingletonPtr();
-	delete ScriptMgr::getSingletonPtr();
 }
 
 void World::EventDeleteBattleground(Battleground * BG)

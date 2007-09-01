@@ -21,9 +21,10 @@
 #include "Common.h"
 #include "../game/CThreads.h"
 
-class CConsoleThread : public CThread
+class CConsoleThread : public ThreadBase
 {
 public:
+	bool kill;
 	CConsoleThread();
 	~CConsoleThread();
 	void run();
@@ -33,9 +34,6 @@ class CConsole :  public Singleton < CConsole >
 {
 	friend class CConsoleThread;
 
-public:						// Public methods:
-	bool * running_link;
-	~CConsole();
 protected:					// Protected methods:
 	CConsoleThread *_thread;
 
@@ -71,6 +69,8 @@ protected:					// Protected methods:
 	void BanAccount(char *str);
 	void PlayerInfo(char *str);
 	void ReloadGMScripts(char * str);
+public:
+	void Kill();
 };
 
 #define sCConsole CConsole::getSingleton()

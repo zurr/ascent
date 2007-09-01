@@ -21,25 +21,55 @@
 
 initialiseSingleton(LogonConsole);
 
+void LogonConsole::Kill()
+{
+#ifdef WIN32
+	/* write the return keydown/keyup event */
+	DWORD dwTmp;
+	INPUT_RECORD ir[2];
+	ir[0].EventType = KEY_EVENT;
+	ir[0].Event.KeyEvent.bKeyDown = TRUE;
+	ir[0].Event.KeyEvent.dwControlKeyState = 288;
+	ir[0].Event.KeyEvent.uChar.AsciiChar = 13;
+	ir[0].Event.KeyEvent.wRepeatCount = 1;
+	ir[0].Event.KeyEvent.wVirtualKeyCode = 13;
+	ir[0].Event.KeyEvent.wVirtualScanCode = 28;
+	ir[1].EventType = KEY_EVENT;
+	ir[1].Event.KeyEvent.bKeyDown = FALSE;
+	ir[1].Event.KeyEvent.dwControlKeyState = 288;
+	ir[1].Event.KeyEvent.uChar.AsciiChar = 13;
+	ir[1].Event.KeyEvent.wRepeatCount = 1;
+	ir[1].Event.KeyEvent.wVirtualKeyCode = 13;
+	ir[1].Event.KeyEvent.wVirtualScanCode = 28;
+	_thread->kill=true;
+	WriteConsoleInput (GetStdHandle(STD_INPUT_HANDLE), ir, 2, & dwTmp);
+	printf("Waiting for console thread to terminate....\n");
+	while(_thread != NULL)
+	{
+		Sleep(100);
+	}
+	printf("Console shut down.\n");
+#endif
+}
 void LogonConsoleThread::run()
 {
 	new LogonConsole;
 
 	SetThreadName("Console Interpreter");
 	sLogonConsole._thread = this;
-	sLogonConsole.running = true;
 	int i = 0;
 	char cmd[96];
 	
 
-	while (sLogonConsole.running)
+	while (!kill)
 	{
 		
 		// Make sure our buffer is clean to avoid Array bounds overflow
 		memset(cmd,0,sizeof(cmd)); 
 		// Read in single line from "stdin"
 		fgets(cmd, 80, stdin);
-		if(!sLogonConsole.running)
+
+		if(kill)
 			break;
 
 		for( i = 0 ; i < 80 || cmd[i] != '\0' ; i++ )
@@ -54,8 +84,7 @@ void LogonConsoleThread::run()
 		}
 	}
 
-	delete LogonConsole::getSingletonPtr();
-
+	sLogonConsole._thread=NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -135,7 +164,7 @@ void LogonConsole::ProcessHelp(char *command)
 
 LogonConsoleThread::LogonConsoleThread()
 {
-
+	kill=false;
 }
 
 LogonConsoleThread::~LogonConsoleThread()
