@@ -270,6 +270,7 @@ protected:
 	bool HandleListAIAgentCommand(const char* args, WorldSession *m_session);
 
 	// Level 3 commands
+	bool HandleRenameGuildCommand(const char* args, WorldSession *m_session);
 	bool HandleMassSummonCommand(const char* args, WorldSession *m_session);
 	bool HandleSecurityCommand(const char* args, WorldSession *m_session);
 	bool HandleWorldPortCommand(const char* args, WorldSession *m_session);

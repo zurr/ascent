@@ -3013,3 +3013,21 @@ bool ChatHandler::HandleAddGuardCommand(const char * args, WorldSession * m_sess
 	GreenSystemMessage(m_session, "Guard [%s] added to zone %u in %u ms.", ci->Name, zoneId, getMSTime() - startTime);
 	return true;
 }
+
+bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession *m_session)
+{
+	Player * plr = getSelectedChar(m_session);
+	if(!plr || !plr->GetGuildId()) return false;
+
+	Guild * pGuild = objmgr.GetGuild(plr->GetGuildId());
+	if(!pGuild) return true; // how the fuck?
+
+	if(objmgr.GetGuildByGuildName(args))
+	{
+		RedSystemMessage(m_session, "Name already taken!");
+		return true;
+	}
+	pGuild->RenameGuild(args);
+	GreenSystemMessage(m_session, "Guild renamed!");
+	return true;
+}
