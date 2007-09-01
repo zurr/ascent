@@ -146,7 +146,14 @@ enum FAMILY
 	FAMILY_HYENA,
 	FAMILY_OWL,
 	FAMILY_WIND_SERPENT,
-	FAMILY_REMOTE_CONTROL
+	FAMILY_REMOTE_CONTROL,
+	FAMILY_FELGUARD,
+	FAMILY_DRAGONHAWK,
+	FAMILY_RAVAGER,
+	FAMILY_WARP_STALKER,
+	FAMILY_SPOREBAT,
+	FAMILY_NETHER_RAY,
+	FAMILY_SERPENT
 };
 
 enum ELITE
@@ -420,6 +427,7 @@ public:
 	Player * m_escorter;
 	void DestroyCustomWaypointMap();
 	bool IsInLimboState() { return m_limbostate; }
+	uint32 GetLineByFamily(CreatureFamilyEntry * family){return family->skilline ? family->skilline : 0;};
 	void RemoveLimboState(Unit * healer);
 	void SetGuardWaypoints();
 	bool m_corpseEvent;

@@ -21,7 +21,9 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 5);
-	int8 DstInvSlot=0, DstSlot=0, SrcInvSlot=0, SrcSlot=0, count=0;
+	int8 DstInvSlot=0, DstSlot=0, SrcInvSlot=0, SrcSlot=0;
+	uint8 count=0;
+
 	bool result;
 
 	recv_data >> SrcInvSlot >> SrcSlot >> DstInvSlot >> DstSlot >> count;

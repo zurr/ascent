@@ -1565,11 +1565,13 @@ void Player::_SavePet()
 			<< itr->second->xp << "','"
 			<< itr->second->active << "','"
 			<< itr->second->level << "','"
-			<< itr->second->loyalty << "','"
+			<< itr->second->happiness << "','"
 			<< itr->second->actionbar << "','"
-			<< itr->second->loyaltyupdate << "','"
+			<< itr->second->happinessupdate << "','"
 			<< itr->second->summon << "','"
-			<< itr->second->autocastspell << "')";
+			<< itr->second->autocastspell << "','"
+			<< itr->second->loyaltypts << "','"
+			<< itr->second->loyaltyupdate << "')";
 			
 		CharacterDatabase.Execute(ss.str().c_str());
 	}
@@ -1711,11 +1713,13 @@ void Player::_LoadPet()
 		pet->xp	  = fields[5].GetUInt32();
 		pet->active  = fields[6].GetUInt32();
 		pet->level   = fields[7].GetUInt32();
-		pet->loyalty = fields[8].GetUInt32();
+		pet->happiness = fields[8].GetUInt32();
 		pet->actionbar = fields[9].GetString();
-		pet->loyaltyupdate = fields[10].GetUInt32();
+		pet->happinessupdate = fields[10].GetUInt32();
 		pet->summon = fields[11].GetUInt32();
 		pet->autocastspell = fields[12].GetUInt32();
+		pet->loyaltypts = fields[13].GetUInt32();
+		pet->loyaltyupdate = fields[14].GetUInt32();
 
 		m_Pets[pet->number] = pet;
 		if(pet->active)
@@ -1726,7 +1730,8 @@ void Player::_LoadPet()
 				iActivePet = pet->number;
 		}	   
 		
-		m_PetNumberMax++;
+		if(pet->number > m_PetNumberMax)
+			m_PetNumberMax =  pet->number;
 	}while(result->NextRow());
 
 	delete result;
@@ -6040,10 +6045,8 @@ void Player::RegenerateHealth(bool inCombat)
 	uint32 Spirit = GetUInt32Value(UNIT_FIELD_STAT4);
 	if(PctRegenModifier == 0.0f)
 		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl]);
-	else if(PctRegenModifier > 0)
-		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*(1+PctRegenModifier);
 	else
-		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*(-1+PctRegenModifier);
+		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*(1+PctRegenModifier);
 
 	//Apply shit from conf file
 	amt *= sWorld.getRate(RATE_HEALTH);

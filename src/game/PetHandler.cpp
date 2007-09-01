@@ -72,6 +72,10 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 		if(!pTarget) pTarget = pPet;	// target self
 	}
 
+	if(action==PET_ACTION_ACTION && misc==PET_ACTION_STAY)//sit if STAY commanded
+		pPet->SetStandState(STANDSTATE_SIT);
+	else 
+		pPet->SetStandState(STANDSTATE_STAND);
 	switch(action)
 	{
 	case PET_ACTION_ACTION:
@@ -294,7 +298,7 @@ void WorldSession::HandleStabledPetList(WorldPacket & recv_data)
 		data << uint32(itr->second->entry); // entryid
 		data << uint32(itr->second->level); // level
 		data << itr->second->name;		  // name
-		data << uint32(itr->second->loyalty);
+		data << uint32(itr->second->loyaltylvl);
 		if(itr->second->active && _player->GetSummon() != NULL)
 			data << uint8(STABLE_STATE_ACTIVE);
 		else
@@ -340,36 +344,14 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
 	Pet * pet = _player->GetSummon();
 	pet->ActionBar[slot] = spell;
 	pet->SetSpellState(spell, state);
-	/*if(state == 0x8100 &&	   // no autocast
-		spell == pet->GetAIInterface()->GetDefaultSpell()->spell->Id)
-	{
-		// removing autocast
-		pet->GetAIInterface()->SetDefaultSpell(0);
-	}
 
-	if(state == 0xC100)		 // adding autocast
-	{
-		AI_Spell * sp = pet->GetAISpellForSpellId(spell);
-		if(sp)
-			pet->GetAIInterface()->SetDefaultSpell(sp);
-	}*/
 	AI_Spell * sp = pet->GetAISpellForSpellId(spell);
 	if(!sp) return;
 
-	if(state == 0x8100)
-	{
-		if(sp->procChance == 100)
-			sp->procChance = 0;
-
-		pet->GetAIInterface()->disable_melee = false;
-	}
-	else if(state == 0xC100)
-	{
-		if(sp->procChance != 100)
-			sp->procChance = 100;
-		
-		pet->GetAIInterface()->disable_melee = true;
-	}
+	if(state == 0x8100) //autocast OFF
+		sp->procChance = 0;
+	else if(state == 0xC100) //autocast ON
+		sp->procChance = PET_SPELL_AUTOCAST_CHANCE;
 }
 
 void WorldSession::HandlePetRename(WorldPacket & recv_data)

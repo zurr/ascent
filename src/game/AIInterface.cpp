@@ -765,7 +765,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
 	if(cansee && m_nextTarget && m_nextTarget->isAlive() && m_AIState != STATE_EVADE && !m_Unit->isCasting())
 	{
-		if(agent == AGENT_NULL)
+		if(agent == AGENT_NULL || (m_AIType == AITYPE_PET && !m_nextSpell)) // allow pets autocast
 		{
 			if(!m_nextSpell)
 				m_nextSpell = this->getSpell();
@@ -986,6 +986,13 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					SpellCastTargets targets = setSpellTargets(spellInfo, m_nextTarget);
 					CastSpell(m_Unit, spellInfo, targets);
 					AddSpellCooldown(spellInfo, m_nextSpell);
+					//add pet spell after use to pet owner with some chance
+					if(m_Unit->GetGUIDHigh() == HIGHGUID_PET && m_PetOwner->IsPlayer())
+					{	
+						Pet * pPet = static_cast<Pet*>(m_Unit);
+						if(pPet && Rand(25))
+							pPet->AddPetSpellToOwner(spellInfo->Id);
+					}
 					m_nextSpell = NULL;
 				}
 				else // Target out of Range -> Run to it
@@ -2754,14 +2761,17 @@ AI_Spell *AIInterface::getSpell()
 
 			default:
 				{
-					if(def_spell)
+					if(def_spell!=0)
 						continue;
 
 					// cast the spell at requested percent.
 					if(sp->procChance >= 100 || Rand(sp->procChance))
 					{
-						if(m_Unit->GetUInt32Value(UNIT_FIELD_POWER1) < sp->spell->manaCost)
-							continue;
+						//focus/mana requirement
+						if(m_Unit->GetUInt32Value(UNIT_FIELD_POWER3) < sp->spell->manaCost && m_Unit->GetUInt32Value(UNIT_FIELD_POWER1) < sp->spell->manaCost)
+								continue;
+						
+
 #ifdef _AI_DEBUG
 						sLog.outString("AI DEBUG: Returning spell %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
 							sp->entryId);

@@ -1134,6 +1134,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 void Aura::SpellAuraDummy(bool apply)
 {
 	bool dr = sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply);
+	uint32 triggerSpId = 0;
 
 	// for seal -> set judgement crap
 	if(GetSpellProto()->buffType & SPELL_TYPE_SEAL && !dr && mod->i == 2)
@@ -1163,6 +1164,25 @@ void Aura::SpellAuraDummy(bool apply)
 
 	switch(GetSpellId())
 	{
+	//taming rod spells
+		case 19548:	triggerSpId=19597;
+		case 19674:	triggerSpId=19677;
+		case 19687:	triggerSpId=19676;
+		case 19688:	triggerSpId=19678;
+		case 19689:	triggerSpId=19679;
+		case 19692:	triggerSpId=19680;
+		case 19693:	triggerSpId=19684;
+		case 19694:	triggerSpId=19681;
+		case 19696:	triggerSpId=19682;
+		case 19697:	triggerSpId=19683;
+		case 19699:	triggerSpId=19685;
+		case 19700:	triggerSpId=19686;
+		case 30099:	triggerSpId=30100;
+		case 30105:	triggerSpId=30104;
+		{
+			Player*p_caster =(Player*)GetUnitCaster();
+			p_caster->CastSpell(m_target, triggerSpId, true);
+		}break;
 	case 16972://Predatory Strikes
 	case 16974:
 	case 16975:
@@ -1507,67 +1527,8 @@ void Aura::SpellAuraDummy(bool apply)
 
 	case 1515:			// Tame beast
 		{
-			// Only on non-apply (at end of channeling)
-			if(apply)
-				return;
-
-			Creature *tame = ((m_target->GetTypeId() == TYPEID_UNIT) ? ((Creature*)m_target) : 0);
-			Player   *plyr = m_target->GetMapMgr()->GetPlayer(m_casterGuid);
-
-			/* Error Checking */
-			int8 result = -1;
-
-			if(!tame || !plyr || !plyr->isAlive() || !tame->isAlive())
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(!tame->GetCreatureName())
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(tame->GetCreatureName()->Type != BEAST)
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(tame->getLevel() > plyr->getLevel())
-				result = SPELL_FAILED_HIGHLEVEL;
-			else if(plyr->GeneratePetNumber() == 0)
-				result = SPELL_FAILED_BAD_TARGETS;
-			else if(!tame->GetCreatureName()->Family)
-				result = SPELL_FAILED_BAD_TARGETS;
-			else
-			{
-				CreatureFamilyEntry *cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureName()->Family);
-				if(cf)
-				{
-					if(!cf->tameable)
-					{
-						result = SPELL_FAILED_BAD_TARGETS;
-					}
-				}
-			}
-
-			if(result > 0)
-			{
-				// hack!
-				WorldPacket data(SMSG_CAST_RESULT, 6);
-				data << m_spellProto->Id;
-				data << (uint8)result;
-				plyr->GetSession()->SendPacket(&data);
-				return;
-			}
-
-			Pet *old_tame = plyr->GetSummon();
-			if(old_tame != NULL)
-			{
-				old_tame->Dismiss(false);
-			}
-
-			// Remove target
-			tame->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, plyr, 0);
-
-			Pet *pPet = objmgr.CreatePet();
-			pPet->SetInstanceID(plyr->GetInstanceID());
-			pPet->CreateAsSummon(tame->GetEntry(), tame->GetCreatureName(), tame, static_cast<Unit*>(plyr), NULL, 2, 0);
-
-			//tame->RemoveFromWorld(false);
-			//sEventMgr.AddEvent(tame, &Creature::SafeDelete, EVENT_CREATURE_SAFE_DELETE, 1, 1);
-			tame->SafeDelete();
-			//delete tame;/
+			//reduce casters armor by 100%
+			static_cast<Player*>(m_target)->BaseResistanceModPctPos[0]+= apply ? -100 : 100;
 		}break;
 		//Second Wind - triggers only on stun and Immobilize
 		case 29834:

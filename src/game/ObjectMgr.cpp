@@ -1621,34 +1621,36 @@ void ObjectMgr::GenerateTrainerSpells()
 		{
 			destmap = NULL;
 			uint32 TeachingSpellId = TeachingSpellMap[sp->spell];
-			
-			const char* SpellName = sSpellStore.LookupString(spell->Name);
-			const char* RankName = sSpellStore.LookupString(spell->Rank);
 
 			if(!TeachingSpellId)
-			{
 				continue;
-			}
 
 			SpellEntry * TeachingSpell = sSpellStore.LookupEntry(TeachingSpellId);
-			if(TeachingSpell->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
-				destmap = &mNormalSpells;
-			else
-				destmap = &mPetSpells;
+
+			SpellEntry * TeachingSpell2;//2nd level teaching spell used by Pet trainers to teach hunter a teaching spell
+			uint32 TeachingSpellId2 = 0;//init 0, later used to distinguish if 2nd lvl teach.sp. is present
+		
+			if((TeachingSpell->Effect[j] == SPELL_EFFECT_LEARN_SPELL && TeachingSpell->EffectImplicitTargetA[j]==5) || TeachingSpell->Effect[j] == SPELL_EFFECT_LEARN_PET_SPELL )
+            {
+                destmap = &mPetSpells;
+				TeachingSpellId2 = TeachingSpellMap[TeachingSpellId];
+                if(TeachingSpellId2)
+                    TeachingSpell2 = sSpellStore.LookupEntry(TeachingSpellId2);
+			}
+            else if(TeachingSpell->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
+                destmap = &mNormalSpells;
 
 			if(destmap == NULL)
 				continue;
 
-			// Create our trainer spell.
-			uint32 SpellID = TeachingSpell->EffectTriggerSpell[j];
-
 			// TODO: Check for quest reward spells, and shit like that.
+			uint32 SpellID = TeachingSpell->EffectTriggerSpell[j];
 
 			TrainerSpell * TS = new TrainerSpell;
 			TS->pSpell = spell;
-			TS->pTrainingSpell = TeachingSpell;
-			TS->SpellID = SpellID;
-			TS->TeachingSpellID = TeachingSpellId;
+			TS->pTrainingSpell = TeachingSpellId2 ? TeachingSpell2 : TeachingSpell;
+			TS->SpellID = TeachingSpellId2 ? TeachingSpell2->EffectTriggerSpell[0] : SpellID;
+			TS->TeachingSpellID = TeachingSpellId2 ? TeachingSpellId2 : TeachingSpellId;
 			TS->DeleteSpell = 0;
 			TS->RequiredSpell = 0;
 			TS->TeachingLine = 0;
@@ -1656,6 +1658,9 @@ void ObjectMgr::GenerateTrainerSpells()
 			TS->RequiredClass = -1;
 
 			// Find out our spell rank.
+			const char* SpellName = sSpellStore.LookupString(spell->Name);
+			const char* RankName = sSpellStore.LookupString(spell->Rank);
+
 			string Sp_Name = SpellName;
 			it1 = SpellRankMap.find(Sp_Name);
 			if(it1 != SpellRankMap.end())
@@ -1675,13 +1680,17 @@ void ObjectMgr::GenerateTrainerSpells()
 						it2 = it1->second->find(crank);
 						if((it2 != it1->second->end()))
 						{
-							uint32 rspell = it2->second;
-							ASSERT(rspell);
+							uint32 rspell = it2->second;					
+							if(TeachingSpellId2)
+								rspell = 0;
+							else
+								ASSERT(rspell);
+
 							TS->RequiredSpell = rspell;
 
 							uint32 flags = spell->SpellFamilyName;
 							if(flags == 0x4 || flags == 0x10 || flags == 0x8 || flags == 0xA)
-								TS->DeleteSpell = rspell;
+								TS->DeleteSpell = TeachingSpellId2 ? 0 : rspell; //do not delete lower ranks of pet spells
 						}
 					}
 				}
@@ -1911,9 +1920,9 @@ void ObjectMgr::LoadTrainers()
 				TrainerSpellMap::iterator iter = mNormalSpells.find(skilllines[i]);
 				if(iter == mNormalSpells.end())
 				{
-					// Not found.
-					//printf("WARNING: No spells found under skill line %u\n", skilllines[i]);
-					continue;
+					iter = mPetSpells.find(skilllines[i]);
+					if(iter == mPetSpells.end()) // Not found.
+						continue;
 				}
 
 				for(vector<TrainerSpell*>::iterator it = iter->second.begin();

@@ -318,11 +318,14 @@ struct PlayerPet
 	bool active;
 	uint32 number;
 	uint32 level;
-	uint32 loyalty;
-	uint32 loyaltyupdate;
+	uint32 happiness;
+	uint32 happinessupdate;
 	string actionbar;
 	bool summon;
 	uint32 autocastspell;
+	uint32 loyaltypts;
+	uint32 loyaltyupdate;
+	char loyaltylvl;
 };
 enum MeetingStoneQueueStatus
 {
@@ -450,6 +453,7 @@ typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
 class SERVER_DECL Player : public Unit
 {
 	friend class WorldSession;
+	friend class Pet;
 public:
 	Player ( uint32 high, uint32 low );
 	~Player ( );

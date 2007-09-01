@@ -44,6 +44,10 @@ enum PET_FOOD
 */
 static const unsigned char PetDiet[30] = { 0,1,3,1,63,63,3,3,58,48,0,1,52,0,0,0,0,0,0,0,1,178,0,0,48,33,1,14,0};
 
+/*Loyalty and happiness ticks*/
+static const char LoyaltyTicks[3] = {-20, 10, 20};//loyalty_ticks for unhappy, content, happy
+static const unsigned char HappinessTicks[6] = {70, 35, 17, 8, 4, 2};//loose_happiness ticks per loyalty lvl
+
 enum PET_ACTION
 {
 	PET_ACTION_STAY,
@@ -74,6 +78,21 @@ enum StableState
 {
 	STABLE_STATE_ACTIVE = 1,
 	STABLE_STATE_PASSIVE = 3
+};
+enum HappinessState
+{
+	UNHAPPY		=0,
+	CONTENT		=1,
+	HAPPY		=2
+};
+enum LoyaltyLevel
+{
+	REBELIOUS	=1,
+	UNRULY		=2,
+	SUBMISIVE	=3,
+	DEPENDABLE	=4,
+	FAITHFUL	=5,
+	BEST_FRIEND	=6
 };
 
 #define PET_DELAYED_REMOVAL_TIME 60000  // 1 min
@@ -145,7 +164,7 @@ public:
 	void SetDefaultActionbar();
 
 	void LoadSpells();
-	void AddSpell(SpellEntry * sp);
+	void AddSpell(SpellEntry * sp, bool putInBar = false);
 	void RemoveSpell(SpellEntry * sp);
 	void SetSpellState(SpellEntry * sp, uint16 State);
 	uint16 GetSpellState(SpellEntry * sp);
@@ -153,7 +172,11 @@ public:
 	inline void AddSpell(uint32 SpellID)
 	{
 		SpellEntry * sp = sSpellStore.LookupEntry(SpellID);
-		if(sp) AddSpell(sp);
+		if(sp) 
+		{
+			AddSpell(sp);
+			UpdateTP();
+		}
 	}
 	inline void RemoveSpell(uint32 SpellID)
 	{
@@ -183,6 +206,11 @@ public:
 	void __fastcall SetAutoCastSpell(AI_Spell * sp);
 	void Rename(string NewName);
 	inline string& GetName() { return m_name; }
+	void AddPetSpellToOwner(uint32 spellId);
+	uint16 SpellTP(uint32 spellId);
+	uint16 GetUsedTP();
+	void UpdateTP();
+	bool CanLearnSpellTP(uint32 spellId);
 
 protected:
 	bool bHasLoyalty;
@@ -197,6 +225,7 @@ protected:
 	uint32 m_AutoCombatSpell;
 
 	uint32 m_PartySpellsUpdateTimer;
+	uint32 m_HappinessTimer;
 	uint32 m_LoyaltyTimer;
 	uint32 m_PetNumber;
 
@@ -205,13 +234,22 @@ protected:
 	uint32 m_ExpireTime;
 	uint32 m_Diet;
 	uint64 m_OwnerGuid;
+	int16 TP;
+	int32 LoyaltyPts;
 	bool bExpires;
 	bool Summon;
 	string m_name;
+	uint8 GetLoyaltyLevel(){return ((GetUInt32Value(UNIT_FIELD_BYTES_1) >> 8) & 0xff);};
+	HappinessState GetHappinessState();
+	uint32 GetHighestRankSpell(uint32 spellId);
+	void UpdateLoyalty(char pts);
+	void SetLoyaltyLvl(LoyaltyLevel lvl);
 };
 
 #define PET_LOYALTY_UPDATE_TIMER 120000
-#define PET_LOYALTY_UPDATE_VALUE 12000
+#define PET_LOYALTY_LVL_RANGE 300 //range for each layalty lvl, now (300) if pet HAPPY, it will gain higher loyalty lvl in 30 minutes (no idea what is Blizz): 300 / 20 * 120 000 = 1 800 000 ms = 30 min
+#define PET_HAPPINESS_UPDATE_VALUE 333000
+#define PET_HAPPINESS_UPDATE_TIMER 7500
 #define PET_PARTY_SPELLS_UPDATE_TIMER 10000
 
 #define PET_ACTION_ACTION   0x700
@@ -221,4 +259,5 @@ protected:
 #define PET_ACTION_SPELL	0xC100
 #define PET_ACTION_SPELL_1  0x8100
 #define PET_ACTION_SPELL_2  0x0100
+#define PET_SPELL_AUTOCAST_CHANCE 50
 #endif

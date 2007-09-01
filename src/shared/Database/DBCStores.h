@@ -70,7 +70,7 @@ struct emoteentry
 	uint32 unk11;
 };
 
-struct skilllinespell
+struct skilllinespell //SkillLineAbility.dbc
 {
 	uint32 Id;
 	uint32 skilline;
@@ -86,7 +86,7 @@ struct skilllinespell
 	uint32 green;
 	uint32 unk10;
 	uint32 unk11;
-	uint32 unk12;
+	uint32 reqTP;
 };
 
 struct EnchantEntry
@@ -128,7 +128,7 @@ struct GemPropertyEntry{
 	uint32 SocketMask;
 };
 
-struct skilllineentry
+struct skilllineentry //SkillLine.dbc
 {
 	uint32 id;
 	uint32 type;

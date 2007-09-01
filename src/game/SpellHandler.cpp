@@ -295,7 +295,10 @@ void WorldSession::HandleAddDynamicTargetOpcode(WorldPacket & recvPacket)
 	recvPacket >> guid >> spellid >> flags;
 	
 	SpellEntry * sp = sSpellStore.LookupEntry(spellid);
-	if(!_player->m_CurrentCharm || guid != _player->m_CurrentCharm->GetGUID())
+	// Summoned Elemental's Freeze
+	if(spellid == 33395 && !_player->m_Summon) 
+		return;
+	if((spellid != 33395) && (!_player->m_CurrentCharm || guid != _player->m_CurrentCharm->GetGUID()))
 		return;
 
 	/* burlex: this is.. strange */
@@ -311,7 +314,19 @@ void WorldSession::HandleAddDynamicTargetOpcode(WorldPacket & recvPacket)
 		recvPacket >> guid;
 		targets.m_unitTarget = guid.GetOldGuid();
 	}
-
-	Spell * pSpell = new Spell(_player->m_CurrentCharm, sp, false, 0);
-	pSpell->prepare(&targets);
+	else if(flags == 64)
+	{
+		recvPacket >> flags;		// skip one byte
+		recvPacket >> targets.m_destX >> targets.m_destY >> targets.m_destZ;
+	}
+	if(spellid == 33395)	// Summoned Water Elemental's freeze
+	{
+		Spell * pSpell = new Spell(_player->m_Summon, sp, false, 0);
+		pSpell->prepare(&targets);
+	}
+	else			// trinket?
+	{
+		Spell * pSpell = new Spell(_player->m_CurrentCharm, sp, false, 0);
+		pSpell->prepare(&targets);
+	}
 }

@@ -19,6 +19,7 @@
 
 #define GROWL_RANK_1 2649
 #define GROWL_RANK_2 14916
+#define WATER_ELEMENTAL 510
 
 void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_creature, Unit *owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime)
 {
@@ -64,7 +65,10 @@ void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_
 		SetUInt32Value(UNIT_FIELD_BYTES_2, (0x01 | (0x28 << 8) | (0x2 << 24)));
 		SetUInt32Value(UNIT_FIELD_PETNUMBER, GetGUIDLow());
 		SetPowerType(POWER_TYPE_MANA);
-		m_name = sWorld.GenerateName();
+		if(entry == WATER_ELEMENTAL)
+			m_name = "SBAL & DrMadison";
+		else
+			m_name = sWorld.GenerateName();
 
 	} else {
 		SetUInt32Value(UNIT_FIELD_BYTES_0, 2048 | (0 << 24));
@@ -75,11 +79,12 @@ void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_
 
 		// These need to be checked.
 		SetUInt32Value(UNIT_FIELD_FLAGS, 0x00080008);
-		SetUInt32Value(UNIT_FIELD_POWER5, 600000);
+		SetUInt32Value(UNIT_FIELD_POWER5, PET_HAPPINESS_UPDATE_VALUE / 2);//happiness
 		SetUInt32Value(UNIT_FIELD_MAXPOWER5, 1000000);
 		SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
 		SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, GetNextLevelXP(getLevel()));
-		SetUInt32Value(UNIT_FIELD_BYTES_1, 0 | (0x1 << 8));
+		SetUInt32Value(UNIT_FIELD_BYTES_1, 0 | (REBELIOUS << 8));//loyalty level
+		SetUInt32Value(UNIT_TRAINING_POINTS, 0);				//training points
 
 		// Focus
 		SetUInt32Value(UNIT_FIELD_POWER3, 100);
@@ -135,6 +140,7 @@ Pet::Pet(uint32 high, uint32 low) : Creature(high, low)
 	m_AutoCombatSpell = 0;
 
 	m_PartySpellsUpdateTimer = 0;
+	m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;
 	m_LoyaltyTimer = PET_LOYALTY_UPDATE_TIMER;
 	m_PetNumber = 0;
 
@@ -146,6 +152,8 @@ Pet::Pet(uint32 high, uint32 low) : Creature(high, low)
 	m_Diet = 0;
 	m_Action = PET_ACTION_FOLLOW;
 	m_State = PET_STATE_DEFENSIVE;
+	TP = 0;
+	LoyaltyPts=0;
 }
 
 Pet::~Pet()
@@ -164,29 +172,40 @@ void Pet::Update(uint32 time)
 
 	Creature::Update(time); // passthrough
 
-	if(bHasLoyalty)
+	if(bHasLoyalty && !bExpires)
 	{
-		if(m_LoyaltyTimer == 0)
-		{
-			// Update loyalty.....
-			uint32 val = GetUInt32Value(UNIT_FIELD_POWER5);
-			if(PET_LOYALTY_UPDATE_VALUE > val)
+		//Happiness
+		if(m_HappinessTimer == 0)
+		{	
+			int32 val = GetUInt32Value(UNIT_FIELD_POWER5);
+			//amount of burned happiness is loyalty_lvl depended
+			int32 burn = HappinessTicks[GetLoyaltyLevel()-1]*125; //(ticks are 70/35/17/8/4/2 *1000 [per minute] ) /8 [per 7.5 sec]
+			if((val - burn)<0)
+			{	
 				val = 0;
+				bExpires=true; 
+				m_ExpireTime=10000;	//avoid loosing pet right after calling it			
+			}
 			else
-				val -= PET_LOYALTY_UPDATE_VALUE;
-			
-			// Set the value
-			SetUInt32Value(UNIT_FIELD_POWER5, val);
-
-			/*if(val <= 0)
-			{
-				Dismiss();
-				return;
-			}*/
-
-			// reset timer
+				val -= burn;
+			SetUInt32Value(UNIT_FIELD_POWER5, val);// Set the value
+            m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;// reset timer
+		} 
+	else 
+		{
+			if(time > m_HappinessTimer)
+				m_HappinessTimer = 0;
+			else
+				m_HappinessTimer -= time;
+		}
+		//Loyalty
+		if(m_LoyaltyTimer==0 && GetHappinessState()!=NULL)
+		{
+			UpdateLoyalty(LoyaltyTicks[GetHappinessState()]);//loyalty tick is happiness state dependent
 			m_LoyaltyTimer = PET_LOYALTY_UPDATE_TIMER;
-		} else {
+		} 
+		else 
+		{
 			if(time > m_LoyaltyTimer)
 				m_LoyaltyTimer = 0;
 			else
@@ -214,7 +233,8 @@ void Pet::Update(uint32 time)
 
 void Pet::SendSpellsToOwner()
 {
-	WorldPacket * data = new WorldPacket(SMSG_PET_SPELLS, mSpells.size() * 4 + 20);
+	int packetsize = (m_uint32Values[OBJECT_FIELD_ENTRY] != WATER_ELEMENTAL) ? (mSpells.size() * 4 + 20) : 64;
+	WorldPacket * data = new WorldPacket(SMSG_PET_SPELLS, packetsize);
 	*data << GetGUID();
 	*data << uint32(0x00000000);//unk1
 	*data << uint32(0x00000101);//unk2
@@ -233,14 +253,15 @@ void Pet::SendSpellsToOwner()
 		}
 	}
 
-	// Send the rest of the spells.
-	*data << uint8(mSpells.size());
-	for(PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+	// we don't send spells for the water elemental so it doesn't show up in the spellbook
+	if(m_uint32Values[OBJECT_FIELD_ENTRY] != WATER_ELEMENTAL)	
 	{
-		*data << uint16(itr->first->Id) << uint16(itr->second);
+		// Send the rest of the spells.
+		*data << uint8(mSpells.size());
+		for(PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+			*data << uint16(itr->first->Id) << uint16(itr->second);
 	}
 	*data << uint64(0);
-
 	m_Owner->delayedPackets.add(data);
 }
 
@@ -270,9 +291,13 @@ void Pet::InitializeSpells()
 		}
 
 		CreateAISpell(info);
+		if(itr->second == 0xC100)//if autocast ON...
+		{
+			AI_Spell * sp = GetAISpellForSpellId(info->Id);
+			if(sp) 
+				sp->procChance = PET_SPELL_AUTOCAST_CHANCE;//...set chance for it
+		}
 	}
-
-	SendSpellsToOwner();
 }
 
 void Pet::CreateAISpell(SpellEntry * info)
@@ -291,7 +316,7 @@ void Pet::CreateAISpell(SpellEntry * info)
 	sp->spelltargetType = TTYPE_SINGLETARGET;
 	sp->cooldown = objmgr.GetPetSpellCooldown(info->Id);
 	if(info->Effect[0] == SPELL_EFFECT_APPLY_AURA || info->Effect[0] == SPELL_EFFECT_APPLY_AREA_AURA)
-		sp->agent = STYPE_BUFF;
+		sp->spellType = STYPE_BUFF;
 
 	if(info->EffectImplicitTargetA[0] == 24)
 	{
@@ -320,6 +345,10 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 	Summon = mPi->summon;
 	SetIsPet(true);
 
+	m_HappinessTimer = mPi->happinessupdate;
+	m_LoyaltyTimer = mPi->loyaltyupdate;
+	LoyaltyPts = mPi->loyaltypts;
+
 	// Setup actionbar
 	uint32 pos = 0;
 	string::size_type sp = mPi->actionbar.find(",");
@@ -337,13 +366,13 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 	SetIsPet(true);
 	InitializeMe(false);
 	bExpires = false;   
-	if(pi->autocastspell)
+	if(pi->autocastspell && Summon)//hunter pet autocast flag are set in InitializeSpells
 	{
 		AI_Spell * sp = GetAISpellForSpellId(pi->autocastspell);
 		if(sp)
 		{
-			sp->procChance = 100;
-			m_aiInterface->disable_melee = true;
+			sp->procChance = PET_SPELL_AUTOCAST_CHANCE;
+			//m_aiInterface->disable_melee = true;
 		}
 	}
 	
@@ -378,20 +407,22 @@ void Pet::InitializeMe(bool first)
 	SetPetDiet();
 	_setFaction();
 	m_State = 1;		// dont set agro on spawn
-	
-	if(first)
-	{
-		// Set up default actionbar
-		SetDefaultActionbar();
-	}
+
 
 	PushToWorld(m_Owner->GetMapMgr());
-	InitializeSpells(); 
+	//InitializeSpells(); 
 
 	// Load our spells
 	if(Summon)
 	{
 		SetDefaultSpells();
+		// Adds parent +frost spell damage
+		if(m_uint32Values[OBJECT_FIELD_ENTRY] == WATER_ELEMENTAL)
+		{
+			float parentfrost = (float)m_Owner->GetDamageDoneMod(SCHOOL_FROST);
+			parentfrost *= 0.40f;
+			ModDamageDone[SCHOOL_FROST] = (uint32)parentfrost;
+		}
 	}
 	else
 	{
@@ -410,6 +441,13 @@ void Pet::InitializeMe(bool first)
 		}
 		delete query;
 	}
+	InitializeSpells();
+	if(first)
+	{
+		// Set up default actionbar
+		SetDefaultActionbar();
+	}
+	SendSpellsToOwner();
 
 
 	sEventMgr.AddEvent(this, &Pet::Update, (uint32)100, EVENT_PET_UPDATE, 100, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -435,8 +473,11 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 	pi->number = m_PetNumber;
 	pi->xp = m_PetXP;
 	pi->level = GetUInt32Value(UNIT_FIELD_LEVEL);
-	pi->loyalty = GetUInt32Value(UNIT_FIELD_POWER5);
+	pi->happiness = GetUInt32Value(UNIT_FIELD_POWER5);
+	pi->happinessupdate = m_HappinessTimer;
+	pi->loyaltypts = LoyaltyPts;
 	pi->loyaltyupdate = m_LoyaltyTimer;
+	pi->loyaltylvl = GetLoyaltyLevel();
 
 	// save actionbar
 	ss.rdbuf()->str("");
@@ -458,7 +499,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 	//FIXME
 }
 
-void Pet::Dismiss(bool bSafeDelete)
+void Pet::Dismiss(bool bSafeDelete)//Abandon pet
 {
 	// Delete any petspells for us.
 	if(!Summon && m_Owner)
@@ -481,7 +522,13 @@ void Pet::Remove(bool bSafeDelete, bool bUpdate, bool bSetOffline)
 		// remove association with player
 		m_Owner->SetUInt64Value(UNIT_FIELD_SUMMON, 0);
 
-		if(bUpdate && !bExpires) UpdatePetInfo(bSetOffline);
+		if(bUpdate) 
+		{
+			if(!bExpires) 
+				UpdatePetInfo(bSetOffline);
+			if(!IsSummon())
+				m_Owner->_SavePet();//not perfect but working
+		}
 		m_Owner->SetSummon(NULL);
 		SendNullSpellsToOwner();
 	}
@@ -586,58 +633,43 @@ void Pet::SetDefaultSpells()
 	}
 	else
 	{
-		// add growl (rank 1 for <=10, rank 2 for > 10)
-		/*if(getLevel() <= 10)
-			AddSpell(GROWL_RANK_1);
-		else
-			AddSpell(GROWL_RANK_2);
-
-		// pull from objectmgr
-		set<SpellEntry*> * spells = objmgr.GetDefaultPetSpells(GetEntry());
-		if(spells != 0)
-		{
-			for(set<SpellEntry*>::iterator itr = spells->begin(); itr != spells->end(); ++itr)
-			{
-				AddSpell((*itr));
-			}
-		}*/
 
 		uint32 Line = GetCreatureName()->SpellDataID;
 		if(Line)
 		{
 			CreatureSpellDataEntry * SpellData = CreatureSpellDataStore::getSingleton().LookupEntry(Line);
 			if(SpellData)
-			{
 				for(uint32 i = 0; i < 3; ++i)
-				{
 					if(SpellData->Spells[i] != 0)
-					{
-						// add it to the player, so they can teach it to other pets
-						if(!m_Owner->HasSpell(SpellData->Spells[i]))
-						{
-							m_Owner->addSpell(SpellData->Spells[i]);
-						}
-
-						AddSpell(SpellData->Spells[i]);
-					}
-				}
-			}
+						AddSpell(SpellData->Spells[i]); //add spell to pet
 		}
 	}
 }
 
-void Pet::AddSpell(SpellEntry * sp)
+void Pet::AddSpell(SpellEntry * sp, bool putInBar)
 {
 	// Cast on self if we're a passive spell
-	if(sp->Attributes & 64 && IsInWorld())
+	if(sp->Attributes & 64)
 	{
-		Spell * spell = new Spell(this, sp, true, false);
-		SpellCastTargets targets(this->GetGUID());
-		spell->prepare(&targets);
-		mSpells[sp] = 0x0100;
+		if(IsInWorld())
+		{
+			Spell * spell = new Spell(this, sp, true, false);
+			SpellCastTargets targets(this->GetGUID());
+			spell->prepare(&targets);
+			mSpells[sp] = 0x0100;
+		}	
 	}
 	else
 	{
+       // Active spell add to the actionbar.
+		for(int i = 0; i < 10; ++i)
+		{
+			if(ActionBar[i] == 0)
+			{
+				ActionBar[i] = sp->Id;
+				break;
+			}
+		}
 		mSpells[sp] = DEFAULT_SPELL_STATE;
 		// Create the AI_Spell
 		CreateAISpell(sp);
@@ -647,14 +679,20 @@ void Pet::AddSpell(SpellEntry * sp)
 	{
 		// Autocast by default
 		SetSpellState(sp, PET_ACTION_SPELL);
-
-		// Add to the actionbar.
-        for(int i = 0; i < 10; ++i)
-			if(ActionBar[i] == 0)
-				ActionBar[i] = sp->Id;
-
 		// Cast it.
 		CastSpell(this, sp, true);
+	}
+	else if(putInBar)
+	{
+		// Add to the actionbar.
+		for(int i = 0; i < 10; ++i)
+		{
+			if(ActionBar[i] == 0)
+			{
+				ActionBar[i] = sp->Id;
+				break;
+			}
+		}
 	}
 	if(IsInWorld())
 		SendSpellsToOwner();
@@ -769,6 +807,9 @@ void Pet::ApplySummonLevelAbilities()
 	case 17252: // Felguard
 		stat_index = 6;
 		break;*/
+	case 510:	// Mage's water elemental
+		stat_index = 5;
+		break;
 	}
 	if(m_uint32Values[OBJECT_FIELD_ENTRY] == 89)
 		has_mana = false;
@@ -974,25 +1015,25 @@ void Pet::ApplySummonLevelAbilities()
 	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, FL2UINT(health));
 	SetUInt32Value(UNIT_FIELD_BASE_MANA, FL2UINT(mana));*/
 
-	static double R_base_str[5] = {18.1884058, -15, -15, -15, -15};
-	static double R_mod_str[5] = {1.811594203, 2.4, 2.4, 2.4, 2.4};
-	static double R_base_agi[5] = {19.72463768, -1.25, -1.25, -1.25, -1.25};
-	static double R_mod_agi[5] = {0.275362319, 1.575, 1.575, 1.575, 1.575};
-	static double R_base_sta[5] = {17.23188406, -17.75, -17.75, -17.75, -17.75};
-	static double R_mod_sta[5] = {2.768115942, 4.525, 4.525, 4.525, 4.525};
-	static double R_base_int[5] = {19.44927536, 12.75, 12.75, 12.75, 12.75};
-	static double R_mod_int[5] = {4.550724638, 1.875, 1.875, 1.875, 1.875};
-	static double R_base_spr[5] = {19.52173913, -2.25, -2.25, -2.25, -2.25};
-	static double R_mod_spr[5] = {3.47826087, 1.775, 1.775, 1.775, 1.775};
-	static double R_base_pwr[5] = {7.202898551, -101, -101, -101, -101};
-	static double R_mod_pwr[5] = {2.797101449, 6.5, 6.5, 6.5, 6.5};
-	static double R_base_armor[5] = {-11.69565217, -702, -929.4, -1841.25, -1157.55};
-	static double R_mod_armor[5] = {31.69565217, 139.6, 74.62, 89.175, 101.1316667};
-	static double R_pet_sta_to_hp[5] = {6.405982906, 15.91304348, 7.956521739, 10.79813665, 11.55590062};
-	static double R_base_min_dmg[5] = {0.550724638, 4.566666667, 26.82, 29.15, 20.17888889};
-	static double R_mod_min_dmg[5] = {1.449275362, 1.433333333, 2.18, 1.85, 1.821111111};
-	static double R_base_max_dmg[5] = {1.028985507, 7.133333333, 36.16, 39.6, 27.63111111};
-	static double R_mod_max_dmg[5] = {1.971014493, 1.866666667, 2.84, 2.4, 2.368888889};
+	static double R_base_str[6] = {18.1884058, -15, -15, -15, -15};
+	static double R_mod_str[6] = {1.811594203, 2.4, 2.4, 2.4, 2.4};
+	static double R_base_agi[6] = {19.72463768, -1.25, -1.25, -1.25, -1.25};
+	static double R_mod_agi[6] = {0.275362319, 1.575, 1.575, 1.575, 1.575};
+	static double R_base_sta[6] = {17.23188406, -17.75, -17.75, -17.75, -17.75};
+	static double R_mod_sta[6] = {2.768115942, 4.525, 4.525, 4.525, 4.525};
+	static double R_base_int[6] = {19.44927536, 12.75, 12.75, 12.75, 12.75};
+	static double R_mod_int[6] = {4.550724638, 1.875, 1.875, 1.875, 1.875};
+	static double R_base_spr[6] = {19.52173913, -2.25, -2.25, -2.25, -2.25};
+	static double R_mod_spr[6] = {3.47826087, 1.775, 1.775, 1.775, 1.775};
+	static double R_base_pwr[6] = {7.202898551, -101, -101, -101, -101};
+	static double R_mod_pwr[6] = {2.797101449, 6.5, 6.5, 6.5, 6.5};
+	static double R_base_armor[6] = {-11.69565217, -702, -929.4, -1841.25, -1157.55};
+	static double R_mod_armor[6] = {31.69565217, 139.6, 74.62, 89.175, 101.1316667};
+	static double R_pet_sta_to_hp[6] = {6.405982906, 15.91304348, 7.956521739, 10.79813665, 11.55590062};
+	static double R_base_min_dmg[6] = {0.550724638, 4.566666667, 26.82, 29.15, 20.17888889};
+	static double R_mod_min_dmg[6] = {1.449275362, 1.433333333, 2.18, 1.85, 1.821111111};
+	static double R_base_max_dmg[6] = {1.028985507, 7.133333333, 36.16, 39.6, 27.63111111};
+	static double R_mod_max_dmg[6] = {1.971014493, 1.866666667, 2.84, 2.4, 2.368888889};
 
 	double base_str = R_base_str[stat_index];
 	double mod_str = R_mod_str[stat_index];
@@ -1147,6 +1188,7 @@ void Pet::ApplyPetLevelAbilities()
 
 	for(uint32 x = 0; x < 5; ++x)
 		CalcStat(x);
+	UpdateTP();
 }
 
 void Pet::ApplyStatsForLevel()
@@ -1171,4 +1213,111 @@ void Pet::ApplyStatsForLevel()
 	SetUInt32Value(UNIT_FIELD_MAXHEALTH, m_uint32Values[UNIT_FIELD_BASE_HEALTH]);
 	SetUInt32Value(UNIT_FIELD_POWER1, m_uint32Values[UNIT_FIELD_BASE_MANA]);
 	SetUInt32Value(UNIT_FIELD_MAXPOWER1, m_uint32Values[UNIT_FIELD_BASE_MANA]);
+}
+uint16 Pet::SpellTP(uint32 spellId)
+{
+	//returns required training points for spell
+	skilllinespell *sk = objmgr.GetSpellSkill(spellId);
+	if(sk)
+		return sk->reqTP;
+	return 0;
+}
+uint16 Pet::GetUsedTP()
+{
+	//goes through all pet spells and sums training points
+	int16 sumTP = 0;
+	if(mSpells.size() > 0)
+	{
+		PetSpellMap::iterator itr = mSpells.begin();
+		for(; itr != mSpells.end(); ++itr)
+		{
+			//higher spell ranks takes TP incrementally from lower rank, so lets sum the highest rank spells
+			if(itr->first->Id == GetHighestRankSpell(itr->first->Id))
+				sumTP += SpellTP(itr->first->Id);
+		}
+	}
+	return sumTP;
+}
+bool Pet::CanLearnSpellTP(uint32 spellId)
+{
+	//checks if pet has enough TPs to learn new spell
+	//higher spell ranks take TPs incrementallly, so we need this calculation
+	return SpellTP(spellId) - SpellTP(GetHighestRankSpell(spellId)) >  TP ? false : true;
+}
+void Pet::UpdateTP()
+{
+	//update pets TP
+	//formula: TP = level*(loyaltyLvl - 1) - usedTP
+	//http://petopia.brashendeavors.net/html/articles/skills_main.shtml
+	if(!m_Owner) return;
+	int16 pts = getLevel()*(GetLoyaltyLevel()-1)-GetUsedTP();
+	TP = pts;
+	SetUInt32Value(UNIT_TRAINING_POINTS, pts < 0?(-pts & 0xffff):(pts<<16));//uff, works, but has anybody better idea?
+}
+HappinessState Pet::GetHappinessState() 
+{
+	//gets happiness state from happiness points
+	if(GetUInt32Value(UNIT_FIELD_POWER5)<PET_HAPPINESS_UPDATE_VALUE)
+		return UNHAPPY;
+	else if(GetUInt32Value(UNIT_FIELD_POWER5)>=2*PET_HAPPINESS_UPDATE_VALUE)
+		return HAPPY;
+	else
+		return CONTENT;
+}
+void Pet::AddPetSpellToOwner(uint32 spellId)
+{
+	uint32 line = objmgr.GetSpellSkill(spellId)->skilline;
+	//exit if owner hasn't Beast training ability (id 5149)
+	if(!m_Owner->HasSpell(5149) || !line)
+		return;
+	//find appropriate teaching spell...
+	vector<TrainerSpell*>* lst = objmgr.GetTrainerPetSpellsForLine(line);
+	TrainerSpell * sp;
+	if(lst)
+		for(vector<TrainerSpell*>::iterator itr = lst->begin(); itr != lst->end(); ++itr)
+		{
+			sp = *itr;
+			if(spellId==sp->SpellID)
+				if(m_Owner->HasSpell(sp->TeachingSpellID))
+					return;
+				else
+				{
+					//...and add it to pet owner to be able teach other pets
+					m_Owner->addSpell(sp->TeachingSpellID);
+					return;
+				}
+		}
+}
+uint32 Pet::GetHighestRankSpell(uint32 spellId)
+{	
+	//get the highest rank of spell from known spells
+	SpellEntry *sp = sSpellStore.LookupEntry(spellId);
+	SpellEntry *tmp = 0;
+	if(sp && mSpells.size() > 0)
+	{
+		PetSpellMap::iterator itr = mSpells.begin();
+		for(; itr != mSpells.end(); ++itr)
+			if(sp->NameHash == itr->first->NameHash)
+				if((!tmp || tmp->RankNumber < itr->first->RankNumber))
+					 tmp = itr->first;
+	}
+	return tmp ? tmp->Id : 0;
+}
+void Pet::UpdateLoyalty(char pts)
+{	
+	//updates loyalty_pts and loyalty lvl if needed
+	if((LoyaltyPts + pts) < 0)
+		LoyaltyPts = 0;
+	else if ((LoyaltyPts + pts) > BEST_FRIEND * PET_LOYALTY_LVL_RANGE)
+		LoyaltyPts = BEST_FRIEND * PET_LOYALTY_LVL_RANGE;
+	else 
+		LoyaltyPts += pts;
+	char curLvl = GetLoyaltyLevel();
+	char newLvl = LoyaltyPts / PET_LOYALTY_LVL_RANGE; //result can be 0~7 ...
+	newLvl < BEST_FRIEND ? newLvl += 1 : newLvl = BEST_FRIEND;//...so make it 1~6
+	if (newLvl != curLvl)
+	{
+		SetUInt32Value(UNIT_FIELD_BYTES_1, 0 | (newLvl << 8));
+		UpdateTP();
+	}
 }

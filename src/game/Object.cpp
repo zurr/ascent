@@ -2059,6 +2059,9 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		else
 			if(castaff > 7000) castaff = 7000;
 
+		if (spellInfo->NameHash == 0xddaf1ac7) //Mage: Ice Lance should take only 1/7 +spell damage bonus
+			castaff = 500;
+
 		float dmgdoneaffectperc = castaff / 3500;
 //==========================================================================================
 //==============================Bonus Adding To Main Damage=================================
@@ -2137,6 +2140,11 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 //==========================================================================================
 //==============================Post Roll Calculations======================================
 //==========================================================================================
+	//dirty fix for Ice Lance
+	if ((pVictim->m_rooted -pVictim->m_stunned)>0 && spellInfo->NameHash == 0xddaf1ac7) //Ice Lance deals 3x damage if target is frozen
+	{
+		res *=3;
+	}
 //------------------------------absorption--------------------------------------------------	
 	uint32 ress=(uint32)res;
 	uint32 abs_dmg = pVictim->AbsorbDamage(school, &ress);
@@ -2166,7 +2174,6 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		res = dmg.full_damage;
 		dmg.resisted_damage = dmg.full_damage;
 	}
-
 	//DK:FIXME->SplitDamage
 	
 //==========================================================================================

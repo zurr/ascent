@@ -502,6 +502,11 @@ public:
 		TrainerSpellMap::iterator itr = mNormalSpells.find(line);
 		return (itr == mNormalSpells.end()) ? 0 : &itr->second;
 	}
+	vector<TrainerSpell*> * GetTrainerPetSpellsForLine(uint32 line)
+	{
+			TrainerSpellMap::iterator itr = mPetSpells.find(line);
+			return (itr == mPetSpells.end()) ? 0 : &itr->second;
+	}
 
 	inline GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
 	inline GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }

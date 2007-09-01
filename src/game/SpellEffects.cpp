@@ -318,13 +318,9 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 		dmg = damage;
 		switch(m_spellInfo->NameHash)
 		{
-		case 0xddaf1ac7:	// Ice Lance -> Deal 3x damage against frozen targets
-			{
-				if(unitTarget->m_rooted)
-				{
-					dmg *= 3;
-				}
-			}break;
+		case 0xddaf1ac7: // Ice Lance
+			if (dmg>300)   //dirty bugfix.
+				dmg = (int32)(damage/2);
 		case 0x2bc0ae00:	// Incinerate -> Deals x-x extra damage if the target is affected by immolate
 			{
 				if(unitTarget->HasAurasWithNameHash(0x3dd5c872))
@@ -1133,6 +1129,9 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 		case 25:
 		case 26:
 		case 27:
+		case 31:
+		case 33:
+			SendCastResult(SPELL_FAILED_IMMUNE);
 			return;
 		}
 	}
@@ -1625,29 +1624,46 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 	if( !ci || !cp )
 		return;
 
-	Creature * pCreature = p_caster->GetMapMgr()->CreateCreature();
-	pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
-	pCreature->_setFaction();
-	pCreature->GetAIInterface()->Init(pCreature,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
-	pCreature->GetAIInterface()->SetUnitToFollow(u_caster);
-	pCreature->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2));
-	pCreature->GetAIInterface()->SetFollowDistance(3.0f);
-	pCreature->SetUInt32Value(UNIT_FIELD_LEVEL, p_caster->getLevel());
-	pCreature->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, p_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
-	pCreature->_setFaction();
-	p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, pCreature->GetGUID());
-	p_caster->m_tempSummon = pCreature;
-	pCreature->PushToWorld(p_caster->GetMapMgr());
 
-	if(p_caster->isInCombat())
+	if(m_spellInfo->EffectMiscValue[i] == 510)	// Water Elemental
 	{
-		Unit * target = p_caster->GetMapMgr()->GetUnit(p_caster->getAttackTarget());
-		if(target)
-			pCreature->GetAIInterface()->AttackReaction(target, 1, 0);
+		Pet *summon = objmgr.CreatePet();
+		summon->SetInstanceID(m_caster->GetInstanceID());
+		summon->CreateAsSummon(m_spellInfo->EffectMiscValue[i], ci, NULL, p_caster, m_spellInfo, 1, 45000);
+		summon->SetUInt32Value(UNIT_FIELD_LEVEL, p_caster->getLevel());
+		if (sSpellStore.LookupEntry(31707))
+			summon->AddSpell(sSpellStore.LookupEntry(31707), true);
+		if (sSpellStore.LookupEntry(33395))
+			summon->AddSpell(sSpellStore.LookupEntry(33395), true);
 	}
-	
-	/* not sure on this */
-	sEventMgr.AddEvent(pCreature, &Creature::SafeDelete, EVENT_CREATURE_REMOVE_CORPSE, /*GetDuration()*/45000, 1,0);
+	else
+	{
+	       Creature * pCreature = p_caster->GetMapMgr()->CreateCreature();
+	       pCreature->Load(cp, p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ());
+	       pCreature->_setFaction();
+	       pCreature->GetAIInterface()->Init(pCreature,AITYPE_PET,MOVEMENTTYPE_NONE,u_caster);
+	       pCreature->GetAIInterface()->SetUnitToFollow(u_caster);
+	       pCreature->GetAIInterface()->SetUnitToFollowAngle(-(M_PI/2));
+	       pCreature->GetAIInterface()->SetFollowDistance(3.0f);
+	       pCreature->SetUInt32Value(UNIT_FIELD_LEVEL, p_caster->getLevel());
+	       pCreature->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, p_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+	       pCreature->_setFaction();
+	       p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, pCreature->GetGUID());
+	       p_caster->m_tempSummon = pCreature;
+	       pCreature->PushToWorld(p_caster->GetMapMgr());
+
+	       if(p_caster->isInCombat())
+	       {
+		       Unit * target = p_caster->GetMapMgr()->GetUnit(p_caster->getAttackTarget());
+		       if(target)
+			       pCreature->GetAIInterface()->AttackReaction(target, 1, 0);
+	       }
+	       
+	       /* not sure on this */
+	       sEventMgr.AddEvent(pCreature, &Creature::SafeDelete, EVENT_CREATURE_REMOVE_CORPSE, /*GetDuration()*/45000, 1, 0);
+		
+	}
+
 }
 
 void Spell::SpellEffectLeap(uint32 i) // Leap
@@ -2098,7 +2114,13 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
 		}
 		else
 		{
-			pPet->AddSpell(m_spellInfo->EffectTriggerSpell[i]);
+			if(pPet->CanLearnSpellTP(m_spellInfo->EffectTriggerSpell[i]))
+				pPet->AddSpell(m_spellInfo->EffectTriggerSpell[i]);
+			else
+			{
+				SendCastResult(SPELL_FAILED_TRAINING_POINTS);
+				return;
+			}
 		}		
 
 		// Send Packet
@@ -2562,7 +2584,48 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
 
 void Spell::SpellEffectTameCreature(uint32 i)
 {
-	// This will be used for taming rods and shit like that
+	Creature *tame = ((unitTarget->GetTypeId() == TYPEID_UNIT) ? ((Creature*)unitTarget) : 0);
+	if(!tame)
+		return;
+
+	int8 result = -1;
+
+	if(!tame || !p_caster || !p_caster->isAlive() || !tame->isAlive())
+		result = SPELL_FAILED_BAD_TARGETS;
+	else if(!tame->GetCreatureName())
+		result = SPELL_FAILED_BAD_TARGETS;
+	else if(tame->GetCreatureName()->Type != BEAST)
+		result = SPELL_FAILED_BAD_TARGETS;
+	else if(tame->getLevel() > p_caster->getLevel())
+		result = SPELL_FAILED_HIGHLEVEL;
+	else if(p_caster->GeneratePetNumber() == 0)
+		result = SPELL_FAILED_BAD_TARGETS;
+	else if(!tame->GetCreatureName()->Family)
+		result = SPELL_FAILED_BAD_TARGETS;
+	else if(p_caster->GetSummon())
+		result = SPELL_FAILED_ALREADY_HAVE_SUMMON;
+	{
+		CreatureFamilyEntry *cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureName()->Family);
+		if(cf && !cf->tameable)
+				result = SPELL_FAILED_BAD_TARGETS;
+	}
+	if(result > 0)
+	{
+		SendCastResult(result);
+		return;
+	}
+	Pet *old_tame = p_caster->GetSummon();
+	if(old_tame != NULL)
+	{
+		old_tame->Dismiss(false);
+	}
+	// Remove target
+	tame->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
+	Pet *pPet = objmgr.CreatePet();
+	pPet->SetInstanceID(p_caster->GetInstanceID());
+	pPet->CreateAsSummon(tame->GetEntry(), tame->GetCreatureName(), tame, static_cast<Unit*>(p_caster), NULL, 2, 0);
+	tame->SafeDelete();
+	//delete tame;
 }
 
 void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
@@ -3669,7 +3732,9 @@ void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
 	else
 		pPet->SetUInt32Value(UNIT_FIELD_POWER5, pPet->GetUInt32Value(UNIT_FIELD_MAXPOWER5));
 
-//	TriggerSpellId = m_spellInfo->EffectTriggerSpell[i];
+	//	TriggerSpellId = m_spellInfo->EffectTriggerSpell[i];
+
+	u_caster->CastSpell(u_caster,m_spellInfo->EffectTriggerSpell[i],true);//cast Feed effect
 }
 
 void Spell::SpellEffectReputation(uint32 i)
@@ -4180,7 +4245,7 @@ void Spell::SpellEffectDismissPet(uint32 i)
 	Pet *pPet = p_caster->GetSummon();
 	if(!pPet)
 		return;
-
+	pPet->RemoveAllAuras(); // Prevent pet overbuffing
 	pPet->Remove(true, true, true);
 }
 
