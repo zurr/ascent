@@ -182,7 +182,9 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 					uint8 type = DAMAGE_FALL;
 					//10% dmg per sec after first 3 seconds
 					//it rL a*t*t
-					double coeff = 0.0000001*_player->m_fallTime*_player->m_fallTime;
+					double coeff = 0.000000075*(_player->m_fallTime*_player->m_fallTime - _player->m_fallTime);
+					if (coeff<0)
+						coeff=0;
 					uint32 damage = (uint32)(_player->GetUInt32Value(UNIT_FIELD_MAXHEALTH)*coeff);
 					if(damage > GetPlayer()->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) // Can only deal 100% damage.
 						damage = GetPlayer()->GetUInt32Value(UNIT_FIELD_MAXHEALTH);

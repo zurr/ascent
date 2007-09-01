@@ -2332,6 +2332,7 @@ bool Spell::HasPower()
 		return false;
 			}break;
 	}
+	
 
 	//FIXME: add handler for UNIT_FIELD_POWER_COST_MODIFIER
 	//UNIT_FIELD_POWER_COST_MULTIPLIER
@@ -2367,6 +2368,7 @@ bool Spell::HasPower()
 			cost += u_caster->PowerCostMod[m_spellInfo->School];//this is not percent!
 		else
 			cost += u_caster->PowerCostMod[0];
+		cost +=float2int32(cost*u_caster->GetFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER+m_spellInfo->School));
 	}
 
 	//apply modifiers
@@ -2464,6 +2466,7 @@ bool Spell::TakePower()
 			cost += u_caster->PowerCostMod[m_spellInfo->School];//this is not percent!
 		else
 			cost += u_caster->PowerCostMod[0];
+		cost +=float2int32(cost*u_caster->GetFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER+m_spellInfo->School));
 	}
 
 	//apply modifiers
@@ -3303,9 +3306,11 @@ int32 Spell::CalculateEffect(uint32 i)
 */
 	int32 value = 0;
 
-//	float basePointsPerLevel = m_spellInfo->EffectRealPointsPerLevel[i];
+	float basePointsPerLevel = m_spellInfo->EffectRealPointsPerLevel[i];
 	float randomPointsPerLevel = m_spellInfo->EffectDicePerLevel[i];
-	int32 basePoints = m_spellInfo->EffectBasePoints[i] + 1;//+(m_caster->getLevel()*basePointsPerLevel);
+	int32 basePoints = m_spellInfo->EffectBasePoints[i] + 1;
+	if (m_caster->IsPlayer())
+		basePoints += static_cast<Player*>(m_caster)->getLevel()*basePointsPerLevel;
 	
 
 	int32 randomPoints = m_spellInfo->EffectDieSides[i];

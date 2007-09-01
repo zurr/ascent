@@ -1121,8 +1121,22 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 {
 	if(!unitTarget)
 		return;
+	// can't apply stuns/fear/polymorph/root etc on boss
+	Creature * c = (Creature*)(unitTarget);
+	if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
+	{
+		switch(m_spellInfo->EffectApplyAuraName[i])
+		{
+		case 6:
+		case 7:
+		case 12:
+		case 25:
+		case 26:
+		case 27:
+			return;
+		}
+	}
 	//check if we already have stronger aura
-	
 	Aura *pAura;
 	std::map<uint32,Aura*>::iterator itr=unitTarget->tmpAura.find(m_spellInfo->Id);
 	if(itr==unitTarget->tmpAura.end())

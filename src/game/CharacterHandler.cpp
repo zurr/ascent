@@ -263,13 +263,23 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 		return;
 	}
 
+	QueryResult * resulta = CharacterDatabase.Query("SELECT race FROM characters WHERE acct = %u AND race in (1,3,4,7,11)", _accountId);
+	QueryResult * resulth = CharacterDatabase.Query("SELECT race FROM characters WHERE acct = %u AND race in (2,5,8,9,10)", _accountId);
+	SetSide(0);
+	if (resulta)
+		SetSide(1);
+	if (resulth)
+		SetSide(2);
+
+
+
 	//Same Faction limitation only applies to PVP and RPPVP realms :)
 	uint32 realmType = sLogonCommHandler.GetRealmType();
 	if(!HasGMPermissions() && (realmType==REALMTYPE_PVP||realmType==REALMTYPE_RPPVP))
 	{
 		if(
-			((pNewChar->GetTeam()== 0) && (_side&1))||
-			((pNewChar->GetTeam()== 1) && (_side&0))
+			((pNewChar->GetTeam()== 0) && (_side == 2))||
+			((pNewChar->GetTeam()== 1) && (_side == 1))
 			)
 		{
 			pNewChar->ok_to_remove = true;

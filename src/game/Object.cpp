@@ -2200,7 +2200,8 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				uint32 curmana = pl->GetUInt32Value(UNIT_FIELD_POWER1);
 				uint32 maxmana = pl->GetUInt32Value(UNIT_FIELD_MAXPOWER1);
 				curmana+=uint32(float( float(maxmana)*pl->m_RegenManaOnSpellResist));
-				SetUInt32Value(UNIT_FIELD_POWER1,(curmana >= maxmana) ? maxmana : curmana);
+				
+				static_cast<Player*>(pVictim)->SetUInt32Value(UNIT_FIELD_POWER1,(curmana >= maxmana) ? maxmana : curmana);
 
 				WorldPacket datamr(SMSG_HEALMANASPELL_ON_PLAYER, 30);
 				datamr << pVictim->GetNewGUID();

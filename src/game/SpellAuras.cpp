@@ -1798,16 +1798,8 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
 	if(apply)
 	{
 		SetPositive();
-        	if (GetSpellProto()->Id == 28880)
-	        {
-	            sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal,(uint32)(mod->m_amount+3*(GetUnitCaster()->getLevel()-1)),
-		            EVENT_AURA_PERIODIC_HEAL,    GetSpellProto()->EffectAmplitude[mod->i],0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-	        }
-		else
-		{
 			sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal,(uint32)mod->m_amount,
 				EVENT_AURA_PERIODIC_HEAL,	GetSpellProto()->EffectAmplitude[mod->i],0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-		}
 	}
 }
 
@@ -2864,7 +2856,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
 	}
 	else 
 		amt =- mod->m_amount;
-   
+
 	if(m_target->IsPlayer())
 	{
 		//maybe we should not adjust hitpoints too but only maximum health
@@ -2880,7 +2872,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
 		}
 	}
 	else
-		 m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, amt);
+		m_target->ModUInt32Value(UNIT_FIELD_MAXHEALTH, amt);
 }
 
 void Aura::SpellAuraModIncreaseEnergy(bool apply)
@@ -4009,26 +4001,17 @@ void Aura::SpellAuraModSpellCritChanceSchool(bool apply)
 
 void Aura::SpellAuraModPowerCost(bool apply)
 {
-	if(apply)
+	int32 val = (apply) ? mod->m_amount : -mod->m_amount;
+	if (apply)
 	{
-		for(uint32 x=0;x<7;x++)
-		{
-			if (mod->m_miscValue & (((uint32)1)<<x) )
-			m_target->PowerCostPctMod[x] += mod->m_amount/100.0f;
-		}
-			if(mod->m_amount > 0)
-				SetNegative();
-			else
-				SetPositive();
+		if(val > 0)
+			SetNegative();
+		else
+			SetPositive();
 	}
-	else
-	{
-		for(uint32 x=0;x<7;x++)
-		{
-			if (mod->m_miscValue & (((uint32)1)<<x) )
-			m_target->PowerCostPctMod[x] -= mod->m_amount/100.0f;
-		}
-	}
+	for(uint32 x=0;x<7;x++)
+		if (mod->m_miscValue & (((uint32)1)<<x) )
+			m_target->ModFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER+x,val/100.0f);
 }
 
 void Aura::SpellAuraModPowerCostSchool(bool apply)
@@ -6558,6 +6541,7 @@ void Aura::SpellAuraIncreaseAttackerSpellCrit(bool apply)
 	int32 val = (apply) ? mod->m_amount : -mod->m_amount;
 	if (m_target->IsUnit())
 	{
+		SetNegative();
 		for(uint32 x=0;x<7;x++)
 			if (mod->m_miscValue & (((uint32)1)<<x))
 				static_cast<Unit*>(m_target)->AttackerSpellCritChanceMod[x] += val;
