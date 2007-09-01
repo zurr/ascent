@@ -3610,7 +3610,7 @@ void Spell::SpellEffectDisenchant(uint32 i)
 	uint32 skill=caster->GetBaseSkillAmt(SKILL_ENCHANTING);
 	if(skill < 75)//can up skill
 	if(Rand(float(100-skill*100.0/75.0)))
-		caster->AdvanceSkillLine(SKILL_ENCHANTING);
+		caster->AdvanceSkillLine(SKILL_ENCHANTING, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 	AddItemFromDisenchant(it->GetProto(),caster);
 
 	delete it;

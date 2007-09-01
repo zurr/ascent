@@ -4076,10 +4076,9 @@ uint32 Player::GetSkillAmt(uint32 id)
 	return 0;
 }
 
-void Player::AdvanceSkillLine(uint32 id)
+void Player::AdvanceSkillLine(uint32 id, uint32 count)
 {
-  
-   for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
+     for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
    {
 		if((m_uint32Values[i] & 0x0000FFFF)==id)
 		{
@@ -4087,7 +4086,9 @@ void Player::AdvanceSkillLine(uint32 id)
 			uint32 cur = (m_uint32Values[i+1] & 0x0000FFFF);
 			if(cur<max)
 			{
-				++cur;
+				cur += count;
+				if(cur>max)
+					cur=max;
 				SetUInt32Value(i+1, ((max << 16) | cur));
 			}
 			return;

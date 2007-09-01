@@ -1916,9 +1916,9 @@ else
 		if (!this->IsPlayer())
 		{
 			Player *pr = ((Player*)pVictim);
-			if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE)))
+			if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE)*sWorld.getRate(RATE_SKILLCHANCE)))
 			{
-				pr->AdvanceSkillLine(SKILL_DEFENSE);
+				pr->AdvanceSkillLine(SKILL_DEFENSE, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 				pr->UpdateChances();
 			}
 		}
@@ -1933,9 +1933,9 @@ else
 		{
 			static_cast<Player*>(this)->GetItemInterface()->ReduceItemDurability();
 			Player *pr = ((Player*)this);
-			if (Rand(pr->GetSkillUpChance(SubClassSkill)))
+			if (Rand(pr->GetSkillUpChance(SubClassSkill)*sWorld.getRate(RATE_SKILLCHANCE)))
 			{
-				pr->AdvanceSkillLine(SubClassSkill);
+				pr->AdvanceSkillLine(SubClassSkill, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 				//pr->UpdateChances();
 			}
 		}

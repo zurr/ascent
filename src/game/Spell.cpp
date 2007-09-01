@@ -3736,8 +3736,8 @@ void Spell::DetermineSkillUp(uint32 skillid,uint32 targetlevel)
 	else if(diff<=10)chance=66;
 	else if(diff <=15)chance=33;
 	else return;
-	if(Rand(chance))
-		p_caster->AdvanceSkillLine(skillid);
+	if(Rand(chance*sWorld.getRate(RATE_SKILLCHANCE)))
+		p_caster->AdvanceSkillLine(skillid, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 }
 
 void Spell::DetermineSkillUp(uint32 skillid)
@@ -3761,8 +3761,8 @@ void Spell::DetermineSkillUp(uint32 skillid)
 		else //brown
 			chance=100;
 	}
-	if(Rand(chance))
-		p_caster->AdvanceSkillLine(skillid);
+	if(Rand(chance*sWorld.getRate(RATE_SKILLCHANCE)))
+		p_caster->AdvanceSkillLine(skillid, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 }
 
 void Spell::SafeAddTarget(TargetsList* tgt,uint64 guid)

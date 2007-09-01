@@ -847,7 +847,7 @@ public:
 	void RemoveLanguages();
 	bool HasSkillLine(uint32 id);
 	void AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal);
-	void AdvanceSkillLine(uint32 id);
+	void AdvanceSkillLine(uint32 id, uint32 count=1);
 	void ModSkillMax(uint32 id, uint32 amt, uint32 setcur = 0);
 	//Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --wierd
 	float GetSkillUpChance(uint32 id);
