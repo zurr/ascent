@@ -565,3 +565,19 @@ void Guild::LoadGuildCreationDate()
 
 	delete result3;
 }
+
+void Guild::RenameGuild(std::string guildName)
+{
+	SetGuildName(guildName);
+	m_renamed = true;
+	uint32 ttime = time(NULL);
+
+	std::list<PlayerInfo*>::iterator itr = m_guildMembers.begin();
+	for (; itr != m_guildMembers.end(); itr++)
+	{
+		Player * pMember = objmgr.GetPlayer((*itr)->guid);
+		if(!pMember) continue;
+
+		pMember->SetUInt32Value(PLAYER_GUILD_TIMESTAMP, ttime);
+	}
+}

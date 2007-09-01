@@ -1918,7 +1918,7 @@ void Player::_SetVisibleBits(UpdateMask *updateMask, Player *target) const
 	updateMask->SetBit(PLAYER_BYTES);
 	updateMask->SetBit(PLAYER_BYTES_2);
 	updateMask->SetBit(PLAYER_BYTES_3);
-	//updateMask->SetBit(PLAYER_GUILD_TIMESTAMP);
+	updateMask->SetBit(PLAYER_GUILD_TIMESTAMP);
 	updateMask->SetBit(PLAYER_DUEL_TEAM);
 	updateMask->SetBit(PLAYER_DUEL_ARBITER);
 	updateMask->SetBit(PLAYER_DUEL_ARBITER+1);
@@ -2754,6 +2754,8 @@ bool Player::LoadFromDB(uint32 guid)
 	}
 
 	OnlineTime	= time(NULL);
+	if(GetGuildId())
+		SetUInt32Value(PLAYER_GUILD_TIMESTAMP, time(NULL));
 	return true;
 #undef get_next_field
    

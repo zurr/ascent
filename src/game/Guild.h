@@ -300,6 +300,7 @@ public:
 	void RemoveAllGuildMembersFromDb();
 	uint32 GetFreeGuildIdFromDb();
 	void LoadGuildCreationDate();
+	void RenameGuild(std::string guildName);
 
 protected:
 	std::list<PlayerInfo*> m_guildMembers;
@@ -319,6 +320,7 @@ protected:
 	uint32 m_createdYear;
 	uint32 m_createdMonth;
 	uint32 m_createdDay;
+	bool m_renamed;
 };
 
 
