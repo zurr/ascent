@@ -4102,7 +4102,7 @@ void Player::ModSkillMax(uint32 id, uint32 amt, uint32 setcur /* = 0 */)
 	{
 		if((m_uint32Values[i] & 0x0000FFFF)==id)
 		{
-			uint32 max = (m_uint32Values[i+1] >> 16) & 0x0000FFFF;
+			uint32 max = amt;
 			uint32 cur = (m_uint32Values[i+1] & 0x0000FFFF);
 			if(setcur != 0)
 				cur=setcur;
