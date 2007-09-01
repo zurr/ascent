@@ -53,10 +53,6 @@
 #define DEFAULT_QUEST_XP_RATE 1
 #define DEFAULT_SAVE_RATE 300000	// 5mins
 
-//#define DONTTOUCHMYUNTESTEDSHITTYCODE //Yeah. Life sucks for some. Just hate when patches do not match till i can test them :P
-#define ENABLE_USE_TRAINER_SPECIFIC_LIST //Only use this if you wish tomake custom servers (like trainers teaching spells for 1 buck)
-
-
 class Master : public Singleton<Master>
 {
 public:
