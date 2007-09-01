@@ -321,7 +321,9 @@ void LogonServer::Run(int argc, char ** argv)
 	delete sl;
 	delete cl;
 	sSocketMgr.CloseAll();
+#ifdef WIN32
 	sSocketMgr.ShutdownThreads();
+#endif
 	sLogonConsole.Kill();
 	delete LogonConsole::getSingletonPtr();
 
