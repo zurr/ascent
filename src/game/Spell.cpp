@@ -3127,7 +3127,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 
         if(u_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) > 0)
         {
-            SpellEntry * t_spellInfo = u_caster->GetCurrentSpell()->m_spellInfo;
+			SpellEntry * t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->m_spellInfo : NULL);
 
             if(!t_spellInfo || !m_triggeredSpell)
                 return SPELL_FAILED_SPELL_IN_PROGRESS;
