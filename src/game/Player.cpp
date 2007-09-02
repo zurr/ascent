@@ -4817,7 +4817,7 @@ bool Player::CanSee(Object* obj)
 
 	if (!isAlive())
 	{
-		if(myCorpse && IsInRangeSet(myCorpse))  // We're close enough to our corpse
+		if(myCorpse && myCorpse->GetDistance2dSq(this) < sWorld.m_UpdateDistance)  // We're close enough to our corpse
 		{
 			if(myCorpse->GetDistanceSq(obj) <= CORPSE_VIEW_DISTANCE)
 			{
