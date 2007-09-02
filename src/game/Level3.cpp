@@ -3017,7 +3017,7 @@ bool ChatHandler::HandleAddGuardCommand(const char * args, WorldSession * m_sess
 bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession *m_session)
 {
 	Player * plr = getSelectedChar(m_session);
-	if(!plr || !plr->GetGuildId()) return false;
+	if(!plr || !plr->GetGuildId() || !args || !strlen(args)) return false;
 
 	Guild * pGuild = objmgr.GetGuild(plr->GetGuildId());
 	if(!pGuild) return true; // how the fuck?
