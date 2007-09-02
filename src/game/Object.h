@@ -355,11 +355,24 @@ public:
 	inline bool RemoveIfInRange(Object * obj)
 	{
 		InRangeSet::iterator itr = m_objectsInRange.find(obj);
+		if(obj->GetTypeId() == TYPEID_PLAYER)
+			m_inRangePlayers.erase(((Player*)obj));
+
 		if(itr == m_objectsInRange.end())
 			return false;
 		
 		m_objectsInRange.erase(itr);
 		return true;
+	}
+
+	inline void AddInRangePlayer(Object * obj)
+	{
+		m_inRangePlayers.insert(((Player*)obj));
+	}
+
+	inline void RemoveInRangePlayer(Object * obj)
+	{
+		m_inRangePlayers.erase(((Player*)obj));
 	}
 
 	bool IsInRangeOppFactSet(Object* pObj) { return (m_oppFactsInRange.count(pObj) > 0); }
