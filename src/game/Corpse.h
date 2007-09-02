@@ -38,6 +38,7 @@ struct CorpseData
 class SERVER_DECL Corpse : public Object
 {
 public:
+	bool NeedsInRangeSet() { return false; }
 	Corpse( uint32 high, uint32 low );
 	~Corpse();
 

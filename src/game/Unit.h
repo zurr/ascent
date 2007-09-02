@@ -568,6 +568,7 @@ typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 class SERVER_DECL Unit : public Object
 {
 public:
+	virtual bool NeedsInRangeSet() { return true; }
 	virtual ~Unit ( );
 
 	friend class AIInterface;

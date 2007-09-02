@@ -99,6 +99,7 @@ class MapMgr;
 class SERVER_DECL Object : public EventableObject
 {
 public:
+	virtual bool NeedsInRangeSet() { return true; }
 	typedef std::set<Object*> InRangeSet;
 
 	virtual ~Object ( );
@@ -349,6 +350,17 @@ public:
 	inline uint32 GetInRangeCount() { return m_objectsInRange.size(); }
 	inline InRangeSet::iterator GetInRangeSetBegin() { return m_objectsInRange.begin(); }
 	inline InRangeSet::iterator GetInRangeSetEnd() { return m_objectsInRange.end(); }
+	inline InRangeSet::iterator FindInRangeSet(Object * obj) { return m_objectsInRange.find(obj); }
+	inline void RemoveInRangeObject(InRangeSet::iterator itr) { m_objectsInRange.erase(itr); }
+	inline bool RemoveIfInRange(Object * obj)
+	{
+		InRangeSet::iterator itr = m_objectsInRange.find(obj);
+		if(itr == m_objectsInRange.end())
+			return false;
+		
+		m_objectsInRange.erase(itr);
+		return true;
+	}
 
 	bool IsInRangeOppFactSet(Object* pObj) { return (m_oppFactsInRange.count(pObj) > 0); }
 	void UpdateOppFactionSet();

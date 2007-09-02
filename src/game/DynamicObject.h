@@ -26,6 +26,7 @@ typedef set<Unit*>  FactionRangeList;
 class SERVER_DECL DynamicObject : public Object
 {
 public:
+	bool NeedsInRangeSet() { return true; }
 	DynamicObject( uint32 high, uint32 low );
 	~DynamicObject( );
 

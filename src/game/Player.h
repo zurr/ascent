@@ -981,8 +981,25 @@ public:
 	void AddInRangeObject(Object* pObj);
 	void RemoveInRangeObject(Object* pObj);
 	void ClearInRangeSet();
-	void AddVisibleObject(Object* pObj) { m_visibleObjects.insert(pObj); }
-	void RemoveVisibleObject(Object* pObj) { m_visibleObjects.erase(pObj); }
+	inline void AddVisibleObject(Object* pObj) { m_visibleObjects.insert(pObj); }
+	inline void RemoveVisibleObject(Object* pObj) { m_visibleObjects.erase(pObj); }
+	inline void RemoveVisibleObject(InRangeSet::iterator itr) { m_visibleObjects.erase(itr); }
+	inline InRangeSet::iterator FindVisible(Object * obj) { return m_visibleObjects.find(obj); }
+	inline void RemoveIfVisible(Object * obj)
+	{
+		InRangeSet::iterator itr = m_visibleObjects.find(obj);
+		if(itr == m_visibleObjects.end())
+			return;
+
+		m_visibleObjects.erase(obj);
+		PushOutOfRange(obj->GetNewGUID());
+	}
+
+	inline bool GetVisibility(Object * obj, InRangeSet::iterator *itr)
+	{
+		*itr = m_visibleObjects.find(obj);
+		return ((*itr) != m_visibleObjects.end());
+	}
 
 	inline InRangeSet::iterator GetVisibleSetBegin() { return m_visibleObjects.begin(); }
 	inline InRangeSet::iterator GetVisibleSetEnd() { return m_visibleObjects.end(); }
