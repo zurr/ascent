@@ -583,7 +583,7 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 			if(curObj->IsPlayer())
 				((Player*)curObj)->RemoveIfVisible(obj);
 
-			obj->RemoveInRangeObject(obj);
+			obj->RemoveInRangeObject(curObj);
 		}
 		END_IN_RANGE_LOOP
 	}
@@ -1041,7 +1041,7 @@ void MapMgr::ChangeFarsightLocation(Player *plr, Creature *farsight)
 		for(ObjectSet::iterator itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end();
 			++itr)
 		{
-			if(!plr->IsVisible((*itr)) && plr->CanSee((*itr)))
+			if(plr->IsVisible((*itr)) && !plr->CanSee((*itr)))
 			{
 				// Send destroy
 				plr->PushOutOfRange((*itr)->GetNewGUID());
