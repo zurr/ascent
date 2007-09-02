@@ -457,7 +457,8 @@ void MapMgr::RemoveObject(Object *obj)
 				if (((Player*)(*iter))->IsVisible(obj) && static_cast<Player*>(*iter)->m_TransporterGUID != obj->GetGUID())
 					((Player*)*iter)->PushOutOfRange(obj->GetNewGUID());
 
-			(*iter)->RemoveInRangeObject(obj);
+			if((*iter)->NeedsInRangeSet())
+				(*iter)->RemoveInRangeObject(obj);
 		}
 #ifdef OPTIONAL_IN_RANGE_SETS
 	}
@@ -554,7 +555,9 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 			if(curObj->IsPlayer())
 				((Player*)curObj)->RemoveIfVisible(obj);
 
-			obj->RemoveInRangeObject(curObj);
+			if(obj->NeedsInRangeSet())
+				obj->RemoveInRangeObject(curObj);
+
 			curObj->RemoveInRangeObject(obj);
 		}
 	}
