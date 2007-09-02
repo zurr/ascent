@@ -1724,7 +1724,6 @@ else
 		
 			if(dmg.full_damage > (int32)blocked_damage)
 			{
-				dmg.full_damage -= blocked_damage;
 				uint32 sh = pVictim->ManaShieldAbsorb(dmg.full_damage);
 //--------------------------armor reducing--------------------------------------------------
 				if(sh)
@@ -1737,8 +1736,6 @@ else
 				}
 				else
 					CalculateResistanceReduction(pVictim,&dmg);
-
-				dmg.full_damage += blocked_damage;
 			}
 			dmg.resisted_damage += abs;
 			realdamage = dmg.full_damage-dmg.resisted_damage-blocked_damage;

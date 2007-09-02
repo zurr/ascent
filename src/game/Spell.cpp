@@ -3307,8 +3307,22 @@ int32 Spell::CalculateEffect(uint32 i)
 	float basePointsPerLevel = m_spellInfo->EffectRealPointsPerLevel[i];
 	float randomPointsPerLevel = m_spellInfo->EffectDicePerLevel[i];
 	int32 basePoints = m_spellInfo->EffectBasePoints[i] + 1;
-	if (m_caster->IsPlayer())
-		basePoints += static_cast<Player*>(m_caster)->getLevel()*basePointsPerLevel;
+
+	/* Shady: it's so strange cause almost all spells has BPPL!=0 so at lvl70 Fireball takes +280 damage.
+	I think it's imbalanced so commited and replaced with dirty fix.
+	if (m_caster->IsUnit())
+		basePoints += static_cast<Unit*>(m_caster)->getLevel()*basePointsPerLevel; */
+	if (m_caster->IsUnit())
+	{
+		switch (m_spellInfo->NameHash)
+		{
+		case 0x7424D6B3: //Gift of the Naaru
+		case 0xDE1C36C8: //Blood Fury
+			basePoints += static_cast<Unit*>(m_caster)->getLevel()*basePointsPerLevel;
+			break;
+		}
+	}
+
 	
 
 	int32 randomPoints = m_spellInfo->EffectDieSides[i];
