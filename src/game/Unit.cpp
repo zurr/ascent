@@ -4044,7 +4044,7 @@ void Unit::UpdateVisibility()
 			{
 				pl = ((Player*)pObj);
 				can_see = pl->CanSee(plr);
-				is_visible = pl->GetVisibility(plr, &itr);
+				is_visible = pl->GetVisibility(plr, &it3);
 				if(can_see)
 				{
 					if(!is_visible)
@@ -4060,7 +4060,7 @@ void Unit::UpdateVisibility()
 					if(is_visible)
 					{
 						plr->DestroyForPlayer(pl);
-						pl->RemoveVisibleObject(itr);
+						pl->RemoveVisibleObject(it3);
 					}
 				}
 			}
