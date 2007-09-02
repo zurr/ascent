@@ -873,7 +873,7 @@ public:
 
 	//In-Range
 	virtual void AddInRangeObject(Object* pObj);
-	virtual void RemoveInRangeObject(Object* pObj);
+	virtual void OnRemoveInRangeObject(Object* pObj);
 	void ClearInRangeSet();
 
 	inline Spell * GetCurrentSpell(){return m_currentSpell;}

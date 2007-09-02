@@ -313,15 +313,21 @@ public:
 	// In-range object management, not sure if we need it
 	inline bool IsInRangeSet(Object* pObj) { return !(m_objectsInRange.find(pObj) == m_objectsInRange.end()); }
 	
-	inline virtual void AddInRangeObject(Object* pObj)
+	virtual void AddInRangeObject(Object* pObj)
 	{
 		m_objectsInRange.insert(pObj);
 		if(pObj->GetTypeId() == TYPEID_PLAYER)
 			m_inRangePlayers.insert( ((Player*)pObj) );
 	}
-	inline virtual void RemoveInRangeObject(Object* pObj)
+
+	inline void RemoveInRangeObject(Object* pObj)
 	{
+		OnRemoveInRangeObject(pObj);
 		m_objectsInRange.erase(pObj);
+	}
+
+	virtual void OnRemoveInRangeObject(Object * pObj)
+	{
 		if(pObj->GetTypeId() == TYPEID_PLAYER)
 			ASSERT(m_inRangePlayers.erase( ((Player*)pObj) ) == 1);
 	}
@@ -337,7 +343,11 @@ public:
 	inline InRangeSet::iterator GetInRangeSetBegin() { return m_objectsInRange.begin(); }
 	inline InRangeSet::iterator GetInRangeSetEnd() { return m_objectsInRange.end(); }
 	inline InRangeSet::iterator FindInRangeSet(Object * obj) { return m_objectsInRange.find(obj); }
-	inline void RemoveInRangeObject(InRangeSet::iterator itr) { m_objectsInRange.erase(itr); }
+	void RemoveInRangeObject(InRangeSet::iterator itr)
+	{ 
+		OnRemoveInRangeObject(*itr);
+		m_objectsInRange.erase(itr);
+	}
 	inline bool RemoveIfInRange(Object * obj)
 	{
 		InRangeSet::iterator itr = m_objectsInRange.find(obj);

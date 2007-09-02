@@ -34,7 +34,7 @@ public:
 	void UpdateTargets();
 
 	void AddInRangeObject(Object* pObj);
-	void RemoveInRangeObject(Object* pObj);
+	void OnRemoveInRangeObject(Object* pObj);
 	void Remove();
 
 protected:

@@ -362,7 +362,7 @@ public:
 
 	// In Range
 	void AddInRangeObject(Object* pObj);
-	void RemoveInRangeObject(Object* pObj);
+	void OnRemoveInRangeObject(Object* pObj);
 	void ClearInRangeSet();
 
 	// Demon

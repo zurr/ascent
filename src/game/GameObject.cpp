@@ -651,9 +651,9 @@ void GameObject::OnPushToWorld()
 	ScriptSystem->OnGameObjectEvent(this, 0, GAMEOBJECT_EVENT_ON_SPAWN);
 }
 
-void GameObject::RemoveInRangeObject(Object* pObj)
+void GameObject::OnRemoveInRangeObject(Object* pObj)
 {
-	Object::RemoveInRangeObject(pObj);
+	Object::OnRemoveInRangeObject(pObj);
 	if(m_summonedGo && m_summoner == pObj)
 	{
 		for(int i = 0; i < 4; i++)

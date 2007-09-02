@@ -114,14 +114,14 @@ void DynamicObject::AddInRangeObject(Object* pObj)
 	Object::AddInRangeObject(pObj);
 }
 
-void DynamicObject::RemoveInRangeObject(Object* pObj)
+void DynamicObject::OnRemoveInRangeObject(Object* pObj)
 {
 	if(pObj->IsUnit())
 	{
 		m_inRangeOppFactions.erase(((Unit*)pObj));
 		targets.erase(((Unit*)pObj));
 	}
-	Object::RemoveInRangeObject(pObj);
+	Object::OnRemoveInRangeObject(pObj);
 }
 
 void DynamicObject::UpdateTargets()

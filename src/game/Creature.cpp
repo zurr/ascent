@@ -526,7 +526,7 @@ void Creature::AddInRangeObject(Object* pObj)
 	Unit::AddInRangeObject(pObj);
 }
 
-void Creature::RemoveInRangeObject(Object* pObj)
+void Creature::OnRemoveInRangeObject(Object* pObj)
 {
 	if(totemOwner == pObj)		// player gone out of range of the totem
 	{
@@ -542,7 +542,7 @@ void Creature::RemoveInRangeObject(Object* pObj)
 		Despawn(1000, 1000);
 	}
 
-	Unit::RemoveInRangeObject(pObj);
+	Unit::OnRemoveInRangeObject(pObj);
 }
 
 void Creature::ClearInRangeSet()

@@ -4982,16 +4982,9 @@ void Player::AddInRangeObject(Object* pObj)
 		//sEventMgr.AddEvent(((Creature*)pObj)->GetAIInterface(), &AIInterface::SendCurrentMove, this->GetGUID(), EVENT_UNIT_SENDMOVE, 200, 1);
 		((Creature*)pObj)->GetAIInterface()->SendCurrentMove(this);
 	}
-
-	if(InGroup() && pObj->GetTypeId() == TYPEID_PLAYER)
-	{
-		if(static_cast<Player*>(pObj)->GetGroup() == GetGroup())				// we're in the same group
-			if(!KnowsGroupMember(static_cast<Player*>(pObj)))				   // if we don't know him, add him.
-				m_KnownGroupMembers.insert(((Player*)pObj));
-	}
 }
 
-void Player::RemoveInRangeObject(Object* pObj)
+void Player::OnRemoveInRangeObject(Object* pObj)
 {
 	//if (/*!CanSee(pObj) && */IsVisible(pObj))
 	//{
@@ -5008,18 +5001,7 @@ void Player::RemoveInRangeObject(Object* pObj)
 	}
 
 	m_visibleObjects.erase(pObj);
-	Unit::RemoveInRangeObject(pObj);
-
-	if(InGroup() && pObj->GetTypeId() == TYPEID_PLAYER)
-	{
-		if(static_cast<Player*>(pObj)->GetGroup() == GetGroup())	// we're in the same group
-			if(KnowsGroupMember(static_cast<Player*>(pObj)))				   // if we don't know him, add him.
-			{
-				std::set<Player*>::iterator itr = m_KnownGroupMembers.find(((Player*)pObj));
-				if(itr != m_KnownGroupMembers.end())
-					m_KnownGroupMembers.erase(itr);
-			}
-	}
+	Unit::OnRemoveInRangeObject(pObj);
 
 	if( pObj == m_CurrentCharm )
 	{

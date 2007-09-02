@@ -979,7 +979,7 @@ public:
 	bool CanSee(Object* obj);
 	inline bool IsVisible(Object* pObj) { return !(m_visibleObjects.find(pObj) == m_visibleObjects.end()); }
 	void AddInRangeObject(Object* pObj);
-	void RemoveInRangeObject(Object* pObj);
+	void OnRemoveInRangeObject(Object* pObj);
 	void ClearInRangeSet();
 	inline void AddVisibleObject(Object* pObj) { m_visibleObjects.insert(pObj); }
 	inline void RemoveVisibleObject(Object* pObj) { m_visibleObjects.erase(pObj); }
@@ -1003,8 +1003,6 @@ public:
 
 	inline InRangeSet::iterator GetVisibleSetBegin() { return m_visibleObjects.begin(); }
 	inline InRangeSet::iterator GetVisibleSetEnd() { return m_visibleObjects.end(); }
-	std::set<Player*> m_KnownGroupMembers;
-	inline bool KnowsGroupMember(Player *plr) { return m_KnownGroupMembers.count(plr) > 0 ? true : false; }
 	
 	//Transporters
 	bool m_lockTransportVariables;
