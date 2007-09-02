@@ -712,6 +712,9 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 				if(curObj->NeedsInRangeSet()) \
 				{ \
 					curObj->AddInRangeObject(obj); \
+				} else if(obj->IsPlayer()) \
+				{ \
+					curObj->AddInRangePlayer(obj); \
 				} \
 				if(curObj->IsPlayer()) \
 				{ \
