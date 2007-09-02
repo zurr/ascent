@@ -160,7 +160,10 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 			data << fields[7].GetUInt32();		// GuildID
 
 			if(fields[14].GetBool())
-				data << (uint32)7;	// Banned (cannot login)
+			{
+				//data << (uint32)7;	// Banned (cannot login)
+				data << uint32(0x01A04040);
+			}
 			else if(fields[17].GetBool())
 				data << uint32(0x00A04342);  // wtf blizz? :P (rename pending)
 			else if(fields[16].GetUInt32() != 0)
