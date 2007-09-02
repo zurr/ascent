@@ -165,7 +165,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 	{
 		stringstream ss;
 		ss << "SELECT `entry`, `count`, `charges`, `durability` FROM playeritems WHERE guid='"
-			<< attached_item_guid << "'";
+			<< GUID_LOPART(attached_item_guid) << "'";
 		
 		QueryResult * result = CharacterDatabase.Query(ss.str().c_str());
 		if(result)

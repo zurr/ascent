@@ -2289,13 +2289,13 @@ void ItemInterface::mLoadItemsFromDatabase()
 			{
 				if(proto->InventoryType == INVTYPE_BAG)
 				{
-					item=new Container(HIGHGUID_CONTAINER,fields[1].GetUInt64());
+					item=new Container(HIGHGUID_CONTAINER,fields[1].GetUInt32());
 					((Container*)item)->LoadFromDB(fields);
 
 				}
 				else
 				{
-					item = new Item(HIGHGUID_ITEM,fields[1].GetUInt64());
+					item = new Item(HIGHGUID_ITEM,fields[1].GetUInt32());
 					item->LoadFromDB(fields, m_pOwner, false);
 
 				}

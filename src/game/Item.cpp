@@ -206,7 +206,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave)
 
 
 	ss << m_uint32Values[ITEM_FIELD_OWNER] << ",";
-	ss << GetGUID() << ",";
+    ss << GetGUIDLow() << ",";
 	ss << m_uint32Values[OBJECT_FIELD_ENTRY] << ",";
 	ss << GetUInt32Value(ITEM_FIELD_CREATOR) << ",";
 	ss << GetUInt32Value(ITEM_FIELD_STACK_COUNT) << ",";
@@ -279,7 +279,7 @@ void Item::DeleteFromDB()
 		}
 	}
 
-	CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid ="I64FMTD, GetGUID());
+	CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid = %u", GetGUIDLow());
 }
 
 uint32 GetSkillByProto(uint32 Class, uint32 SubClass)

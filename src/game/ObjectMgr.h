@@ -516,8 +516,11 @@ protected:
 	uint32 m_mailid;
 	// highest GUIDs, used for creating new objects
 	Mutex m_guidGenMutex;
-	uint32 m_hiItemGuid;
-	uint32 m_hiContainerGuid;
+    union
+    {
+	    uint32 m_hiItemGuid;
+	    uint32 m_hiContainerGuid;
+    };
 	uint32 m_hiGroupId;
 	uint32 m_hiCharterId;
 	RWLock m_charterLock;

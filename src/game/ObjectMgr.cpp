@@ -670,17 +670,10 @@ void ObjectMgr::SetHighestGuids()
 		delete result;
 	}
 
-	result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems WHERE guid <25769803776");
+	result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems");
 	if( result )
 	{
-		m_hiItemGuid = (uint32)result->Fetch()[0].GetUInt64();
-		delete result;
-	}
-
-	result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems WHERE guid >25769803776");
-	if( result )
-	{
-		m_hiContainerGuid  = (uint32)result->Fetch()[0].GetUInt64();
+		m_hiItemGuid = (uint32)result->Fetch()[0].GetUInt32();
 		delete result;
 	}
 
@@ -1178,7 +1171,7 @@ Item * ObjectMgr::CreateItem(uint32 entry,Player * owner)
 
 Item * ObjectMgr::LoadItem(uint64 guid)
 {
-	QueryResult * result = CharacterDatabase.Query("SELECT * FROM playeritems WHERE guid ="I64FMTD, guid);
+	QueryResult * result = CharacterDatabase.Query("SELECT * FROM playeritems WHERE guid = %u", GUID_LOPART(guid));
 	Item * pReturn = 0;
 
 	if(result)

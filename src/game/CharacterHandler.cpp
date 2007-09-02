@@ -189,7 +189,7 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 			else
 				data << uint32(0) << uint32(0) << uint32(0);
 
-			res = CharacterDatabase.Query("SELECT slot, entry FROM playeritems WHERE ownerguid=%u and containerslot=-1 and slot < 19 and slot >= 0", guid);
+			res = CharacterDatabase.Query("SELECT slot, entry FROM playeritems WHERE ownerguid=%u and containerslot=-1 and slot < 19 and slot >= 0", GUID_LOPART(guid));
 
 			memset(items, 0, sizeof(player_item) * 20);
 			if(res)

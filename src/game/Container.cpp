@@ -278,7 +278,6 @@ bool Container::AddItemToFreeSlot(Item *pItem)
 
 			if(m_owner->IsInWorld() && !pItem->IsInWorld())
 			{
-				//pItem->AddToWorld();
 				pItem->PushToWorld(m_owner->GetMapMgr());
 				ByteBuffer buf(2500);
 				uint32 count = pItem->BuildCreateUpdateBlockForPlayer( &buf, m_owner );
