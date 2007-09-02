@@ -1266,7 +1266,9 @@ HappinessState Pet::GetHappinessState()
 }
 void Pet::AddPetSpellToOwner(uint32 spellId)
 {
-	uint32 line = objmgr.GetSpellSkill(spellId)->skilline;
+	uint32 line = 0;
+	if (objmgr.GetSpellSkill(spellId))
+		line = objmgr.GetSpellSkill(spellId)->skilline;
 	//exit if owner hasn't Beast training ability (id 5149)
 	if(!m_Owner->HasSpell(5149) || !line)
 		return;

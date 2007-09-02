@@ -321,6 +321,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 		case 0xddaf1ac7: // Ice Lance
 			if (dmg>300)   //dirty bugfix.
 				dmg = (int32)(damage/2);
+			break;
 		case 0x2bc0ae00:	// Incinerate -> Deals x-x extra damage if the target is affected by immolate
 			{
 				if(unitTarget->HasAurasWithNameHash(0x3dd5c872))
