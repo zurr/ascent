@@ -3996,6 +3996,7 @@ bool Unit::IsDazed()
 void Unit::UpdateVisibility()
 {
 	ByteBuffer buf(2500);
+	InRangeSet::iterator itr;
 	uint32 count;
 	bool can_see;
 	bool is_visible;
@@ -4012,7 +4013,7 @@ void Unit::UpdateVisibility()
 			++itr;
 
 			can_see = plr->CanSee(pObj);
-			is_visible = plr->IsVisible(pObj);
+			is_visible = plr->GetVisibility(pObj, &itr);
 			if(can_see)
 			{
 				if(!is_visible)
@@ -4028,7 +4029,7 @@ void Unit::UpdateVisibility()
 				if(is_visible)
 				{
 					pObj->DestroyForPlayer(plr);
-					plr->RemoveVisibleObject(pObj);
+					plr->RemoveVisibleObject(itr);
 				}
 			}
 
@@ -4036,7 +4037,7 @@ void Unit::UpdateVisibility()
 			{
 				pl = ((Player*)pObj);
 				can_see = pl->CanSee(plr);
-				is_visible = pl->IsVisible(plr);
+				is_visible = pl->GetVisibility(plr, &itr);
 				if(can_see)
 				{
 					if(!is_visible)
@@ -4052,7 +4053,7 @@ void Unit::UpdateVisibility()
 					if(is_visible)
 					{
 						plr->DestroyForPlayer(pl);
-						pl->RemoveVisibleObject(plr);
+						pl->RemoveVisibleObject(itr);
 					}
 				}
 			}
@@ -4060,16 +4061,16 @@ void Unit::UpdateVisibility()
 	}
 	else			// For units we can save a lot of work
 	{
-		for(set<Player*>::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+		for(set<Player*>::iterator it2 = GetInRangePlayerSetBegin(); it2 != GetInRangePlayerSetEnd(); ++it2)
 		{
-			can_see = (*itr)->CanSee(this);
-			is_visible = (*itr)->IsVisible(this);
+			can_see = (*it2)->CanSee(this);
+			is_visible = (*it2)->GetVisibility(this, &itr);
 			if(!can_see)
 			{
 				if(is_visible)
 				{
-					DestroyForPlayer(*itr);
-					(*itr)->RemoveVisibleObject(this);
+					DestroyForPlayer(*it2);
+					(*it2)->RemoveVisibleObject(itr);
 				}
 			}
 			else
@@ -4077,9 +4078,9 @@ void Unit::UpdateVisibility()
 				if(!is_visible)
 				{
 					buf.clear();
-					count = BuildCreateUpdateBlockForPlayer(&buf, *itr);
-					(*itr)->PushCreationData(&buf, count);
-					(*itr)->AddVisibleObject(this);
+					count = BuildCreateUpdateBlockForPlayer(&buf, *it2);
+					(*it2)->PushCreationData(&buf, count);
+					(*it2)->AddVisibleObject(this);
 				}
 			}
 		}
