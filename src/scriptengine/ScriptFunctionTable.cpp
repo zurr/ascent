@@ -69,6 +69,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetPlayer",							Unit_GetPlayer						},
 		{ "GetGuid",							Unit_GetGuid						},
 		{ "PlaySoundToSet",						Unit_PlaySoundToSet					},
+
 		{ "GetName",							Unit_GetName						},
 		{ "GetClosestPlayer",					Unit_GetClosestPlayer				},
 		{ "GetClosestUnit",						Unit_GetClosestUnit					},
@@ -78,6 +79,7 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetPositionZ",						Unit_GetPositionZ					},
 		{ "GetFacing",							Unit_GetFacing						},
 		{ "AttackReaction",						Unit_AddToHated						},
+		{ "Spawngameobject",                    Unit_Spawngameobject                },
 	};
 
 	m_machine->RegisterTypeLibrary(m_playerType, table, sizeof(table) / sizeof(table[0]));
@@ -97,6 +99,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "RegisterTimer",						Unit_RegisterTimer					},
 		{ "DeregisterTimer",					Unit_DeregisterTimer				},
 		{ "SpawnMonster",						Unit_SpawnMonster					},
+		{ "Spawngameobject",                    Unit_Spawngameobject                },
 		{ "SetStandState",						Unit_SetStandState					},
 		{ "RegisterEvent",						GM_RegisterEvent					},
 		{ "SpawnWithoutWorld",					Unit_SpawnWithoutWorld				},

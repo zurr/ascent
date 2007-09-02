@@ -1491,3 +1491,30 @@ int Unit_AddThreat(gmThread * a_thread)
 
 	return GM_OK;
 }
+int Unit_Spawngameobject(gmThread * a_thread)
+{
+    GM_CHECK_NUM_PARAMS(6);
+    GM_CHECK_INT_PARAM(entry, 0);
+    GM_CHECK_INT_PARAM(mapID, 1);
+    GM_CHECK_FLOAT_PARAM(posX, 2);
+    GM_CHECK_FLOAT_PARAM(posY, 3);
+    GM_CHECK_FLOAT_PARAM(posZ, 4);
+    GM_CHECK_FLOAT_PARAM(facing, 5);
+    Unit * pThis = GetThisPointer<Unit>(a_thread);
+    GameObjectInfo * p = GameObjectNameStorage.LookupEntry(entry);
+    if(!p)
+        return GM_EXCEPTION;
+    GameObject * pGameObject = pThis->GetMapMgr()->CreateGameObject();
+    pGameObject->spawnid = 0;
+    pGameObject->m_spawn = 0;
+    if(!pGameObject->CreateFromProto(entry,mapID,posX,posY,posZ,facing))
+           {
+                delete pGameObject;
+                return 0;
+            }
+    pGameObject->SetUInt32Value(GAMEOBJECT_DYN_FLAGS,1);
+    pGameObject->SetMapId(pThis->GetMapId());
+    pGameObject->SetInstanceID(pThis->GetInstanceID());    
+    pGameObject->PushToWorld(pThis->GetMapMgr());
+    return GM_OK;
+}

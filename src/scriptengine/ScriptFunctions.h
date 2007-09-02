@@ -85,7 +85,7 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Unit_DeregisterTimer(gmThread * a_thread);
 	int GM_CDECL Unit_SpawnMonster(gmThread * a_thread);
 	int GM_CDECL Unit_SendYellMessage(gmThread * a_thread);
-	
+	int GM_CDECL Unit_Spawngameobject(gmThread * a_thread);
 	int GM_CDECL Unit_GetGuid(gmThread * a_thread);
 	int GM_CDECL Unit_GetPlayer(gmThread * a_thread);
 	int GM_CDECL Unit_GetGameObject(gmThread * a_thread);
