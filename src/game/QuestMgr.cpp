@@ -779,13 +779,12 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 	    if(!qle)
 		    return;
     }
-
-	BuildQuestComplete(plr, qst);
-	if(!qst->is_repeatable) CALL_QUESTSCRIPT_EVENT(qle, OnQuestComplete)(plr);
+    BuildQuestComplete(plr, qst);
+    if(!qst->is_repeatable) CALL_QUESTSCRIPT_EVENT(qle, OnQuestComplete)(plr);
 
 	ScriptSystem->OnQuestEvent(qst, ((Creature*)qst_giver), plr, QUEST_EVENT_ON_COMPLETE);
 	if(!qst->is_repeatable) qle->Finish();
-
+	
 	if(qst_giver->GetTypeId() == TYPEID_UNIT)
 	{
 		if(!((Creature*)qst_giver)->HasQuest(qst->id, 2))
@@ -796,13 +795,12 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 		}
 	}
 
-
     //details: hmm as i can remember, repeatable quests give faction rep still after first completation
     if(IsQuestRepeatable(qst))
     {
-			// Reputation reward
-			GiveQuestRewardReputation(plr, qst, qst_giver);
-      // Static Item reward
+		// Reputation reward
+		GiveQuestRewardReputation(plr, qst, qst_giver);
+        // Static Item reward
 	    for(uint32 i = 0; i < 4; ++i)
 	    {
 		    if(qst->reward_item[i])
@@ -903,7 +901,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 	    plr->ModUInt32Value(PLAYER_FIELD_COINAGE, qst->reward_money);
   	
 	    // Reputation reward
-			GiveQuestRewardReputation(plr, qst, qst_giver);
+		GiveQuestRewardReputation(plr, qst, qst_giver);
 	    // Static Item reward
 	    for(uint32 i = 0; i < 4; ++i)
 	    {
@@ -1192,12 +1190,16 @@ void QuestMgr::SendQuestInvalid(INVALID_REASON reason, Player *plyr)
 	sLog.outDebug("WORLD:Sent SMSG_QUESTGIVER_QUEST_INVALID");
 }
 
-void QuestMgr::SendQuestFailed(FAILED_REASON failed, Player *plyr)
+void QuestMgr::SendQuestFailed(FAILED_REASON failed, Quest * qst, Player *plyr)
 {
 	if(!plyr)
 		return;
 
-	plyr->GetSession()->OutPacket(SMSG_QUESTGIVER_QUEST_FAILED, 4, &failed);
+    WorldPacket data;
+    data.Initialize(SMSG_QUESTGIVER_QUEST_FAILED);
+    data << uint32(qst->id);
+    data << failed;
+    plyr->GetSession()->SendPacket(&data);
 	sLog.outDebug("WORLD:Sent SMSG_QUESTGIVER_QUEST_FAILED");
 }
 
@@ -1414,11 +1416,15 @@ QuestMgr::~QuestMgr()
 
 bool QuestMgr::CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot)
 {
+    uint32 available_slots = 0;
+    uint32 slotsrequired = 0;
+    available_slots = plyr->GetItemInterface()->CalculateFreeSlots(NULL);
     // Static Item reward
     for(uint32 i = 0; i < 4; ++i)
     {
         if(qst->reward_item[i])
         {
+            slotsrequired++;
             ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
             if(!proto)
                 sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -1430,12 +1436,18 @@ bool QuestMgr::CanStoreReward(Player *plyr, Quest *qst, uint32 reward_slot)
     // Choice Rewards
     if(qst->reward_choiceitem[reward_slot])
     {
+        slotsrequired++;
         ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[reward_slot]);
         if(!proto)
             sLog.outError("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
         else if(plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))
 			return false;
     }
+    if(available_slots < slotsrequired)
+	{
+        return false;
+	}
+
 	return true;
 }
 

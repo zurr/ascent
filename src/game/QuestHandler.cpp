@@ -309,13 +309,11 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 	if(qst->count_receiveitems || qst->srcitem)
 	{
 		uint32 slots_required = qst->count_receiveitems;
-		if(qst->srcitem)
-			slots_required += qst->srcitemcount ? qst->srcitemcount : 1;
 
 		if(GetPlayer()->GetItemInterface()->CalculateFreeSlots(NULL) < slots_required)
 		{
 			GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_BAG_FULL);
-			sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, GetPlayer());
+			sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, qst, GetPlayer());
 			return;
 		}
 	}	
@@ -685,7 +683,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     //check for room in inventory for all items
 	if(!sQuestMgr.CanStoreReward(GetPlayer(),qst,reward_slot))
     {
-        GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+        sQuestMgr.SendQuestFailed(FAILED_REASON_INV_FULL, qst, GetPlayer());
         return;
     }
 
