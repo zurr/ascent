@@ -456,12 +456,14 @@ void MapMgr::RemoveObject(Object *obj)
 		for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin();
 			iter != obj->GetInRangeSetEnd(); ++iter)
 		{
-			if((*iter)->GetTypeId() == TYPEID_PLAYER)
-				if (((Player*)(*iter))->IsVisible(obj) && static_cast<Player*>(*iter)->m_TransporterGUID != obj->GetGUID())
-					((Player*)*iter)->PushOutOfRange(obj->GetNewGUID());
-
 			if((*iter)->NeedsInRangeSet())
+			{
+				if((*iter)->GetTypeId() == TYPEID_PLAYER)
+					if (((Player*)(*iter))->IsVisible(obj) && static_cast<Player*>(*iter)->m_TransporterGUID != obj->GetGUID())
+						((Player*)*iter)->PushOutOfRange(obj->GetNewGUID());
+
 				(*iter)->RemoveInRangeObject(obj);
+			}
 		}
 #ifdef OPTIONAL_IN_RANGE_SETS
 	}
@@ -540,11 +542,11 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	 * - Burlex
 	 */
 #define IN_RANGE_LOOP \
-	for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(); \
+	for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(), iter2; \
 		iter != obj->GetInRangeSetEnd();) \
 	{ \
 		curObj = *iter; \
-		iter++; \
+		iter2 = iter++; \
 		if(curObj->IsPlayer() && obj->IsPlayer() && plObj->m_TransporterGUID && plObj->m_TransporterGUID == ((Player*)curObj)->m_TransporterGUID) \
 			fRange = 0.0f;		\
 		else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER)) \
@@ -562,7 +564,7 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 		IN_RANGE_LOOP
 		{
 			plObj->RemoveIfVisible(curObj);
-			plObj->RemoveInRangeObject(curObj);
+			plObj->RemoveInRangeObject(iter2);
 
 			if(curObj->NeedsInRangeSet())
 				curObj->RemoveInRangeObject(obj);
@@ -583,7 +585,7 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 			if(curObj->IsPlayer())
 				((Player*)curObj)->RemoveIfVisible(obj);
 
-			obj->RemoveInRangeObject(curObj);
+			obj->RemoveInRangeObject(iter2);
 		}
 		END_IN_RANGE_LOOP
 	}

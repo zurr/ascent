@@ -315,26 +315,12 @@ public:
 	
 	inline virtual void AddInRangeObject(Object* pObj)
 	{
-#ifdef _DEBUG
-		if(!pObj)
-		{
-			sLog.outError("ERROR : trying to add a null object from inrange set");
-			return;//wellt his should not happen, but theory is far from practice
-		}
-#endif
 		m_objectsInRange.insert(pObj);
 		if(pObj->GetTypeId() == TYPEID_PLAYER)
 			m_inRangePlayers.insert( ((Player*)pObj) );
 	}
 	inline virtual void RemoveInRangeObject(Object* pObj)
 	{
-#ifdef _DEBUG
-		if(!pObj)
-		{
-			sLog.outError("ERROR : trying to remove a null object from inrange set");
-			return;//wellt his should not happen, but theory is far from practice
-		}
-#endif
 		m_objectsInRange.erase(pObj);
 		if(pObj->GetTypeId() == TYPEID_PLAYER)
 			ASSERT(m_inRangePlayers.erase( ((Player*)pObj) ) == 1);
