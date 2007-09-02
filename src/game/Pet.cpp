@@ -497,6 +497,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 			pi->autocastspell = 0;
 	}*/
 	//FIXME
+	pi->autocastspell=0;
 }
 
 void Pet::Dismiss(bool bSafeDelete)//Abandon pet

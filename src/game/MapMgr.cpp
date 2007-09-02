@@ -199,17 +199,14 @@ void MapMgr::PushObject(Object *obj)
 	// Build in-range data
 	//////////////////////
 
-	if(obj->NeedsInRangeSet())
+	for (posX = startX; posX <= endX; posX++ )
 	{
-		for (posX = startX; posX <= endX; posX++ )
+		for (posY = startY; posY <= endY; posY++ )
 		{
-			for (posY = startY; posY <= endY; posY++ )
+			cell = GetCell(posX, posY);
+			if (cell)
 			{
-				cell = GetCell(posX, posY);
-				if (cell)
-				{
-					UpdateInRangeSet(obj, plObj, cell, &buf);
-				}
+				UpdateInRangeSet(obj, plObj, cell, &buf);
 			}
 		}
 	}
@@ -395,79 +392,15 @@ void MapMgr::RemoveObject(Object *obj)
 	}
 	
 	// Remove object from all objects 'seeing' him
-#ifdef OPTIONAL_IN_RANGE_SETS
-
-	if(!obj->NeedsInRangeSet())
+	for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin();
+		iter != obj->GetInRangeSetEnd(); ++iter)
 	{
-		Object * curObj;
-		float fRange;
-		uint32 x = GetPosX(obj->GetPositionX());
-		uint32 y = GetPosY(obj->GetPositionY());
-		uint32 endX = (x + 1) <= _sizeX ? x + 1 : (_sizeX-1);
-		uint32 endY = (y + 1) <= _sizeY ? y + 1 : (_sizeY-1);
-		uint32 startX = x - 1 > 0 ? x - 1 : 0;
-		uint32 startY = y - 1 > 0 ? y - 1 : 0;
-		MapCell * cell;
-		Object::InRangeSet::iterator it2;
-		
-		for(uint32 pX = startX; pX < endX; ++pX)
-		{
-			for(uint32 pY = startY; pY < endY; ++pY)
-			{
-				cell = GetCell(pX, pY);
-				if(cell)
-				{
-					for(MapCell::ObjectSet::iterator itr = cell->Begin(); itr != cell->End();)
-					{
-						curObj = *itr;
-						++itr;
+		if((*iter)->GetTypeId() == TYPEID_PLAYER)
+			if (((Player*)(*iter))->IsVisible(obj) && static_cast<Player*>(*iter)->m_TransporterGUID != obj->GetGUID())
+				((Player*)*iter)->PushOutOfRange(obj->GetNewGUID());
 
-						if(curObj->IsPlayer() && obj->IsPlayer() && plObj->m_TransporterGUID && plObj->m_TransporterGUID == ((Player*)curObj)->m_TransporterGUID)
-							fRange = 0.0f;			 // unlimited distance for people on same boat
-						else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER))
-							fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-						else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && curObj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && obj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT))
-							fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-						else
-							fRange = m_UpdateDistance;	  // normal distance
-
-						if(curObj->GetDistance2dSq(obj) <= fRange && fRange > 0)
-						{
-							if(curObj->NeedsInRangeSet() && curObj->RemoveIfInRange(obj))
-							{
-								if(curObj->GetTypeId()==TYPEID_PLAYER)
-								{
-									if( ( ( it2 = ((Player*)curObj)->FindVisible(obj) ) != ((Player*)curObj)->GetVisibleSetEnd() ) )
-									{
-										((Player*)curObj)->PushOutOfRange(obj->GetNewGUID());
-										((Player*)curObj)->RemoveVisibleObject(it2);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		(*iter)->RemoveInRangeObject(obj);
 	}
-	else
-	{
-#endif
-		for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin();
-			iter != obj->GetInRangeSetEnd(); ++iter)
-		{
-			if((*iter)->NeedsInRangeSet())
-			{
-				if((*iter)->GetTypeId() == TYPEID_PLAYER)
-					if (((Player*)(*iter))->IsVisible(obj) && static_cast<Player*>(*iter)->m_TransporterGUID != obj->GetGUID())
-						((Player*)*iter)->PushOutOfRange(obj->GetNewGUID());
-
-				(*iter)->RemoveInRangeObject(obj);
-			}
-		}
-#ifdef OPTIONAL_IN_RANGE_SETS
-	}
-#endif
 	
 	// Clear object's in-range set
 	obj->ClearInRangeSet();
@@ -541,12 +474,13 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	/** let's duplicate some code here :P Less branching is always good.
 	 * - Burlex
 	 */
-#define IN_RANGE_LOOP \
+/*#define IN_RANGE_LOOP \
 	for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(), iter2; \
 		iter != obj->GetInRangeSetEnd();) \
 	{ \
 		curObj = *iter; \
-		iter2 = iter++; \
+		iter2 = iter; \
+		++iter; \
 		if(curObj->IsPlayer() && obj->IsPlayer() && plObj->m_TransporterGUID && plObj->m_TransporterGUID == ((Player*)curObj)->m_TransporterGUID) \
 			fRange = 0.0f;		\
 		else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER)) \
@@ -559,7 +493,7 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 
 #define END_IN_RANGE_LOOP } \
 
-	if(plObj)		/* NeedsInRange is a given */
+	if(plObj)
 	{
 		IN_RANGE_LOOP
 		{
@@ -576,7 +510,6 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	}
 	else if(obj->NeedsInRangeSet())
 	{
-		/* needsinrangeset - units, etc */
 		IN_RANGE_LOOP
 		{
 			if(curObj->NeedsInRangeSet())
@@ -591,7 +524,6 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	}
 	else
 	{
-		/* corpses, non-ai gameobjects */
 		IN_RANGE_LOOP
 		{
 			if(curObj->NeedsInRangeSet())
@@ -607,7 +539,34 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	}
 
 #undef IN_RANGE_LOOP
-#undef END_IN_RANGE_LOOP
+#undef END_IN_RANGE_LOOP*/
+
+	for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(), iter2;
+		iter != obj->GetInRangeSetEnd();)
+	{
+		curObj = *iter;
+		iter2 = iter++;
+		if(curObj->IsPlayer() && obj->IsPlayer() && plObj->m_TransporterGUID && plObj->m_TransporterGUID == ((Player*)curObj)->m_TransporterGUID)
+			fRange = 0.0f;			 // unlimited distance for people on same boat
+		else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER))
+			fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
+        else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && curObj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && obj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT))
+			fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
+        else
+			fRange = m_UpdateDistance;	  // normal distance
+
+		if (curObj->GetDistance2dSq(obj) > fRange && fRange > 0)
+		{
+			if( plObj )
+				plObj->RemoveIfVisible(curObj);
+
+			if( curObj->IsPlayer() )
+				((Player*)curObj)->RemoveIfVisible(obj);
+
+			curObj->RemoveInRangeObject(obj);
+			obj->RemoveInRangeObject(iter2);
+		}
+	}
 	
 	///////////////////////////
 	// Get new cell coordinates
@@ -694,6 +653,99 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 	float fRange;
 	bool cansee, isvisible;
 
+	while(iter != cell->End())
+	{
+		curObj = *iter;
+		++iter;
+		if(curObj->IsPlayer() && obj->IsPlayer() && plObj && plObj->m_TransporterGUID && plObj->m_TransporterGUID == ((Player*)curObj)->m_TransporterGUID)
+			fRange = 0.0f;			 // unlimited distance for people on same boat
+		else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER))
+			fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
+        else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && curObj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && obj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT))
+			fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
+        else
+			fRange = m_UpdateDistance;	  // normal distance
+
+		if ( curObj != obj &&
+			((curObj)->GetDistance2dSq(obj) <= fRange || fRange == 0.0f) )
+		{
+			if(!obj->IsInRangeSet(curObj))
+			{
+				// Object in range, add to set
+				obj->AddInRangeObject(curObj);
+				curObj->AddInRangeObject(obj);
+
+				if(curObj->IsPlayer())
+				{
+					plObj2 = ((Player*)curObj);
+
+					if (plObj2->CanSee(obj) && !plObj2->IsVisible(obj))
+					{
+						CHECK_BUF;
+						count = obj->BuildCreateUpdateBlockForPlayer(*buf, plObj2);
+						plObj2->PushCreationData(*buf, count);
+						plObj2->AddVisibleObject(obj);
+						(*buf)->clear();
+					}
+				}
+
+				if(plObj)
+				{
+					if (plObj->CanSee(curObj) && !plObj->IsVisible(curObj))
+					{
+						CHECK_BUF;
+						count = curObj->BuildCreateUpdateBlockForPlayer(*buf, plObj);
+						plObj->PushCreationData(*buf, count);
+						plObj->AddVisibleObject(curObj);
+						(*buf)->clear();
+					}
+				}
+			}
+			else
+			{
+				// Check visiblility
+				if(curObj->IsPlayer())
+				{
+					plObj2 = ((Player*)curObj);
+					cansee = plObj2->CanSee(obj);
+					isvisible = plObj2->GetVisibility(obj, &itr);
+					if(!cansee && isvisible)
+					{
+						plObj2->PushOutOfRange(obj->GetNewGUID());
+						plObj2->RemoveVisibleObject(itr);
+					}
+					else if(cansee && !isvisible)
+					{
+						CHECK_BUF;
+						count = obj->BuildCreateUpdateBlockForPlayer(*buf, plObj2);
+						plObj2->PushCreationData(*buf, count);
+						plObj2->AddVisibleObject(obj);
+						(*buf)->clear();
+					}
+				}
+
+				if(plObj)
+				{
+					cansee = plObj->CanSee(curObj);
+					isvisible = plObj->GetVisibility(obj, &itr);
+					if(!cansee && isvisible)
+					{
+						plObj->PushOutOfRange(curObj->GetNewGUID());
+						plObj->RemoveVisibleObject(itr);
+					}
+					else if(cansee && !isvisible)
+					{
+						CHECK_BUF;
+						count = curObj->BuildCreateUpdateBlockForPlayer(*buf, plObj);
+						plObj->PushCreationData(*buf, count);
+						plObj->AddVisibleObject(curObj);
+						(*buf)->clear();
+					}
+				}
+			}
+		}
+	}
+/*
 #define IN_RANGE_LOOP_P1 \
 	while(iter != cell->End()) \
 	{ \
@@ -707,7 +759,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 			fRange = 0.0f; \
         else \
 			fRange = m_UpdateDistance; \
-		if ( curObj != obj && (fRange == 0.0f || curObj->GetDistance2dSq(obj) <= fRange ) ) \
+		if ( curObj != obj && (fRange == 0.0f || curObj->GetDistance2dSq(obj) < fRange ) ) \
 		{ \
 			if(!obj->IsInRangeSet(curObj)) \
 			{ \
@@ -761,7 +813,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 	} \
 
 
-	if(plObj)		/* dealing with a player, inrangeset is assumed */
+	if(plObj)
 	{
 		IN_RANGE_LOOP_P1
 
@@ -816,7 +868,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 
 #undef IN_RANGE_LOOP_P1
 #undef IN_RANGE_LOOP_P2
-#undef IN_RANGE_LOOP_P3
+#undef IN_RANGE_LOOP_P3*/
 }
 
 void MapMgr::_UpdateObjects()

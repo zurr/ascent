@@ -4003,7 +4003,7 @@ bool Unit::IsDazed()
 void Unit::UpdateVisibility()
 {
 	ByteBuffer buf(2500);
-	InRangeSet::iterator itr;
+	InRangeSet::iterator itr, it3;
 	uint32 count;
 	bool can_see;
 	bool is_visible;
@@ -4020,7 +4020,7 @@ void Unit::UpdateVisibility()
 			++itr;
 
 			can_see = plr->CanSee(pObj);
-			is_visible = plr->GetVisibility(pObj, &itr);
+			is_visible = plr->GetVisibility(pObj, &it3);
 			if(can_see)
 			{
 				if(!is_visible)
@@ -4036,7 +4036,7 @@ void Unit::UpdateVisibility()
 				if(is_visible)
 				{
 					pObj->DestroyForPlayer(plr);
-					plr->RemoveVisibleObject(itr);
+					plr->RemoveVisibleObject(it3);
 				}
 			}
 

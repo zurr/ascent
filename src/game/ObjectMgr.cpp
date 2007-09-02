@@ -712,7 +712,7 @@ void ObjectMgr::SetHighestGuids()
 		delete result;
 	}
 
-	result = CharacterDatabase.Query("SELECT MAX(guid) FROM charters");
+	result = CharacterDatabase.Query("SELECT MAX(charterId) FROM charters");
 	if(result)
 	{
 		m_hiCharterId = result->Fetch()[0].GetUInt32();
@@ -1865,6 +1865,25 @@ void ObjectMgr::GenerateTrainerSpells()
 		it1->second->clear();
 		delete it1->second;
 	}
+
+	TrainerSpell * tsp = new TrainerSpell;
+	tsp->TeachingSpellID = 1579;
+	tsp->SpellID = 1515;
+	tsp->Cost = 300;
+	tsp->DeleteSpell=0;
+	tsp->pSpell = sSpellStore.LookupEntry(1515);
+	tsp->IsProfession=0;
+	tsp->pTrainingSpell = sSpellStore.LookupEntry(1579);
+	tsp->RequiredLevel=10;
+	tsp->RequiredSkillLine=0;
+	tsp->RequiredSpell=0;
+	tsp->SpellRank=0;
+	tsp->TeachingLine=0;
+	tsp->SpellType=0;
+	tsp->RequiredClass=-1;
+
+	//1579 - tame beast
+	mNormalSpells.find(50)->second.push_back(tsp);
 	SpellRankMap.clear();
 }
 
