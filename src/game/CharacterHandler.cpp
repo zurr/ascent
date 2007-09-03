@@ -255,6 +255,18 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 		return;
 	}
 
+	QueryResult * result = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", WorldDatabase.EscapeString(name));
+	if(result)
+	{
+		if(result->Fetch()[0].GetUInt32() > 0)
+		{
+			// That name is banned!
+			OutPacket(SMSG_CHAR_CREATE, 1, "\x50"); // You cannot use that name
+			delete result;
+			return;
+		}
+	}
+	delete result;
 	// loading characters
 	
 	//checking number of chars is useless since client will not allow to create more than 10 chars
