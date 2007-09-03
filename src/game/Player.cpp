@@ -3010,6 +3010,9 @@ QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
 {
 	for(int i = 0; i < 25; ++i)
 	{
+		if(m_questlog[i] == 0x00000001)
+			m_questlog[i] = NULL;
+
 		if(m_questlog[i] != NULL)
 		{
 			if(m_questlog[i]->GetQuest() && m_questlog[i]->GetQuest()->id == quest)

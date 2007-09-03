@@ -386,10 +386,17 @@ uint32 EventableObject::event_GetEventPeriod(uint32 EventType)
 void EventableObjectHolder::AddEvent(TimedEvent * ev)
 {
 	// m_lock NEEDS TO BE A RECURSIVE MUTEX
-	m_lock.Acquire();
 	ev->IncRef();
-	m_events.push_back( ev );
-	m_lock.Release();
+	if(m_lock.AttemptAcquire())
+	{
+		m_events.push_back( ev );
+		m_lock.Release();
+	}
+	else
+	{
+		m_insertPoolLock.Acquire();
+		m_insertPool.push_back( ev );
+	}
 }
 
 void EventableObjectHolder::AddObject(EventableObject * obj)
