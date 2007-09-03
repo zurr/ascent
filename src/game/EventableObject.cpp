@@ -396,6 +396,7 @@ void EventableObjectHolder::AddEvent(TimedEvent * ev)
 	{
 		m_insertPoolLock.Acquire();
 		m_insertPool.push_back( ev );
+		m_insertPoolLock.Release();
 	}
 }
 
