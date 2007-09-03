@@ -783,6 +783,7 @@ void Pet::ApplySummonLevelAbilities()
 	{
 	case 416: //Imp
 		stat_index = 0;
+		m_aiInterface->disable_melee = true;
 		break;
 	case 1860: //VoidWalker
 		stat_index = 1;

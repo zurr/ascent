@@ -351,7 +351,12 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
 	if(state == 0x8100) //autocast OFF
 		sp->procChance = 0;
 	else if(state == 0xC100) //autocast ON
-		sp->procChance = PET_SPELL_AUTOCAST_CHANCE;
+	{
+		if(sp->spell->NameHash == 2858464432UL)		/* Firebolt */
+			sp->procChance=100;
+		else
+			sp->procChance = PET_SPELL_AUTOCAST_CHANCE;
+	}
 }
 
 void WorldSession::HandlePetRename(WorldPacket & recv_data)

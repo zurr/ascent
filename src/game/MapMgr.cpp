@@ -391,7 +391,7 @@ void MapMgr::RemoveObject(Object *obj)
 
 	if(obj->GetTypeId() == TYPEID_CORPSE)
 	{
-		m_corpses.insert(((Corpse*)obj));
+		m_corpses.erase(((Corpse*)obj));
 	}
 
 	if(!obj->GetMapCell())
