@@ -2034,20 +2034,38 @@ void ObjectMgr::LoadTrainers()
 			tr->SpellList[i]->IsProfession = fields2[8].GetUInt32();
 			//some spells might teach us more then 1 spell. Just have no idea how we should handle those. Maybe later it will get clear to us
 			uint32 teachspell=0;
+			uint32 Profession_ranking=0;
 			for(int k=0;k<3;k++)
+			{
 				if(spellInfo->Effect[k]==SPELL_EFFECT_LEARN_SPELL)
 				{
 					teachspell = spellInfo->EffectTriggerSpell[k];
+					tr->SpellList[i]->RealTeachingSpellID = spellInfo->EffectTriggerSpell[k];
 					break;
 				}
+				else if(spellInfo->Effect[k]==SPELL_EFFECT_SKILL_STEP)
+				{
+					Profession_ranking = spellInfo->EffectBasePoints[k];
+					break;
+				}
+			}
 			if(teachspell)
 			{
 				SpellEntry *spellInfo2 = sSpellStore.LookupEntry(teachspell );
 				if(spellInfo2)
 					tr->SpellList[i]->SpellRank = spellInfo2->spellLevel;
-				else tr->SpellList[i]->SpellRank = 0;
 			}
-			else tr->SpellList[i]->SpellRank = 0;
+			else
+			{
+				sLog.outDebug("OMG trainer is casting a spell that does not teah anything : %u \n",CastSpellID);
+				if(Profession_ranking)
+					tr->SpellList[i]->SpellRank = Profession_ranking;
+				else 
+				{
+					sLog.outDebug("This is a faulty trainer spell, please report it to devs : %u \n",CastSpellID);
+					tr->SpellList[i]->SpellRank = 0;
+				}
+			}
 			result2->NextRow();
 		}
 		delete result2;

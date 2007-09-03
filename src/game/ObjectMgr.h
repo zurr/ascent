@@ -108,15 +108,17 @@ struct TrainerSpell
 	SpellEntry* pTrainingSpell;
 	int32 RequiredClass;
 	//these values are required only for new trainer system
-	uint32 TeachingSpellID;
-	uint32 DeleteSpell;
-	uint32 RequiredSpell;
-	uint32 RequiredSkillLine;
-	uint32 RequiredSkillLineValue;
-	uint32 IsProfession;
-	uint32 Cost;
-	uint32 RequiredLevel;
-	uint32 SpellRank;
+	uint32	TeachingSpellID; //this is actually castspell
+	uint32	DeleteSpell;
+	uint32	RequiredSpell;
+	uint32	RequiredSkillLine;
+	uint32	RequiredSkillLineValue;
+	uint32	IsProfession;
+	uint32	Cost;
+	uint32	RequiredLevel;
+	uint32	SpellRank;
+	bool	CheckProfCount;
+	uint32	RealTeachingSpellID; //well yes, just too keep the compatibility with old system we capt the misleading name...
 };
 
 struct Trainer
