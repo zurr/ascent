@@ -255,7 +255,8 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 		return;
 	}
 
-	QueryResult * result = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", WorldDatabase.EscapeString(name).c_str());
+	name = WorldDatabase.EscapeString(name);
+	QueryResult * result = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", name.c_str());
 	if(result)
 	{
 		if(result->Fetch()[0].GetUInt32() > 0)
@@ -532,7 +533,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket & recv_data)
 		}
 	}
 
-	QueryResult * result2 = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", WorldDatabase.EscapeString(name));
+	name = WorldDatabase.EscapeString(name);
+	QueryResult * result2 = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", name.c_str());
 	if(result2)
 	{
 		if(result2->Fetch()[0].GetUInt32() > 0)
