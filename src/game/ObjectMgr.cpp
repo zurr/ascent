@@ -2035,17 +2035,18 @@ void ObjectMgr::LoadTrainers()
 			//some spells might teach us more then 1 spell. Just have no idea how we should handle those. Maybe later it will get clear to us
 			uint32 teachspell=0;
 			uint32 Profession_ranking=0;
+			uint32 is_profeciency=0;//don't report spells like these as faulty spells
 			for(int k=0;k<3;k++)
 			{
 				if(spellInfo->Effect[k]==SPELL_EFFECT_LEARN_SPELL)
 				{
 					teachspell = spellInfo->EffectTriggerSpell[k];
-					tr->SpellList[i]->RealTeachingSpellID = spellInfo->EffectTriggerSpell[k];
+					tr->SpellList[i]->TeachSpellID = spellInfo->EffectTriggerSpell[k];
 					break;
 				}
 				else if(spellInfo->Effect[k]==SPELL_EFFECT_SKILL_STEP)
 				{
-					Profession_ranking = spellInfo->EffectBasePoints[k];
+					Profession_ranking = spellInfo->EffectBasePoints[k]+1;
 					break;
 				}
 			}
@@ -2054,16 +2055,22 @@ void ObjectMgr::LoadTrainers()
 				SpellEntry *spellInfo2 = sSpellStore.LookupEntry(teachspell );
 				if(spellInfo2)
 					tr->SpellList[i]->SpellRank = spellInfo2->spellLevel;
-				if(Profession_ranking)
-					tr->SpellList[i]->SpellRank = Profession_ranking;
-				if((!spellInfo2 && !Profession_ranking) || tr->SpellList[i]->SpellRank==0)
+				if(Profession_ranking && spellInfo2->spellLevel==0)
 				{
-					sLog.outDebug("This is a faulty trainer spell, please report it to devs : %u \n",CastSpellID);
+					tr->SpellList[i]->SpellRank = Profession_ranking;
+					spellInfo2->spellLevel = Profession_ranking; //stupid profession spells have no ranking :S
 				}
+//				if((!spellInfo2 && !Profession_ranking) || tr->SpellList[i]->SpellRank==0)
+//				{
+					//do not report proficiency spells, these do not have a level
+//					if( (spellInfo2 && !( spellInfo2->Effect[0]==SPELL_EFFECT_PROFICIENCY || spellInfo2->Effect[1]==SPELL_EFFECT_PROFICIENCY || spellInfo2->Effect[2]==SPELL_EFFECT_PROFICIENCY))
+//						|| !spellInfo2)
+//						sLog.outDebug("This is a faulty trainer spell, please report it to devs : %u \n",CastSpellID);
+//				}
 			}
 			else
 			{
-				sLog.outDebug("OMG trainer is casting a spell that does not teah anything : %u \n",CastSpellID);
+				sLog.outDebug("OMG trainer is casting a spell that does not teach anything : %u \n",CastSpellID);
 			}
 			result2->NextRow();
 		}

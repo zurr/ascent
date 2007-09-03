@@ -118,7 +118,7 @@ struct TrainerSpell
 	uint32	RequiredLevel;
 	uint32	SpellRank;
 	bool	CheckProfCount;
-	uint32	RealTeachingSpellID; //well yes, just too keep the compatibility with old system we capt the misleading name...
+	uint32	TeachSpellID; //well yes, just too keep the compatibility with old system we capt the misleading name...
 };
 
 struct Trainer
