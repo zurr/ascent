@@ -175,14 +175,18 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 
 			if(Class==9 || Class==3)
 			{
-				res = CharacterDatabase.Query("SELECT entryid FROM playerpets WHERE ownerguid=%u AND active=1", guid);
+				res = CharacterDatabase.Query("SELECT entryid FROM playerpets WHERE ownerguid="I64FMTD" AND active=1", guid);
 
 				if(res)
 				{
 					info = CreatureNameStorage.LookupEntry(res->Fetch()[0].GetUInt32());
 					delete res;
 				}
+				else
+					info=NULL;
 			}
+			else
+				info=NULL;
 
 			if(info)  //PET INFO uint32 displayid,	uint32 level,		 uint32 familyid
 				data << uint32(info->DisplayID) << uint32(10) << uint32(info->Family);
