@@ -265,8 +265,8 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 			delete result;
 			return;
 		}
+		delete result;
 	}
-	delete result;
 	// loading characters
 	
 	//checking number of chars is useless since client will not allow to create more than 10 chars
