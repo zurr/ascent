@@ -4574,11 +4574,17 @@ void Player::UpdateStats()
 	int32 hp=GetUInt32Value(UNIT_FIELD_BASE_HEALTH);
 	int32 bonus=(GetUInt32Value(UNIT_FIELD_POSSTAT2)-GetUInt32Value(UNIT_FIELD_NEGSTAT2))*10+m_healthfromspell+m_healthfromitems;
 	int32 res=hp+bonus;
+    int32 oldmaxhp=GetUInt32Value(UNIT_FIELD_MAXHEALTH);
 	if(res<hp)res=hp;
 	SetUInt32Value(UNIT_FIELD_MAXHEALTH, res  );
 	
 	if((int32)GetUInt32Value(UNIT_FIELD_HEALTH)>res)
 		SetUInt32Value(UNIT_FIELD_HEALTH,res);
+    else if ( (cl==DRUID) && (GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR) )
+    {
+        res=(int32) (float)GetUInt32Value(UNIT_FIELD_MAXHEALTH)*(float)GetUInt32Value(UNIT_FIELD_HEALTH)/oldmaxhp;
+        SetUInt32Value(UNIT_FIELD_HEALTH,res);
+    }
 	
 		
 	if(cl!=WARRIOR&&cl!=ROGUE)
