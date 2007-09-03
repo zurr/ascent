@@ -547,13 +547,6 @@ void AuctionHouse::SendAuctionList(Player * plr, WorldPacket * packet)
 		if(itr->second->Deleted) continue;
 		proto = itr->second->pItem->GetProto();
 
-		// Page system.
-		current_index++;
-		if(start_index && current_index < start_index) continue;
-		++counted_items;
-		if(counted_items > 50)
-			continue;
-
 		// Check the auction for parameters
 
 		// inventory type
@@ -603,6 +596,13 @@ void AuctionHouse::SendAuctionList(Player * plr, WorldPacket * packet)
 			if(proto->Class == 2 && proto->SubClass && !(plr->GetWeaponProficiency()&(((uint32)(1))<<proto->SubClass)))
 				continue;
 		}
+		
+        // Page system.
+        ++counted_items;
+        if(counted_items >= start_index + 50)
+            continue;
+        current_index++;
+        if(start_index && current_index < start_index) continue;
 
 		// all checks passed -> add to packet.
 		itr->second->AddToPacket(data);
@@ -610,7 +610,7 @@ void AuctionHouse::SendAuctionList(Player * plr, WorldPacket * packet)
 	}
 	
 	// total count
-	data << uint32(start_index + counted_items);
+	data << uint32(1 + counted_items);
 #ifdef USING_BIG_ENDIAN
 	swap32((uint32*)&data.contents()[0]);
 #endif
