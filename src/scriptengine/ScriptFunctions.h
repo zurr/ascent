@@ -52,6 +52,9 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Player_GetClass(gmThread * a_thread);
 	int GM_CDECL Player_GetRace(gmThread * a_thread);
 	int GM_CDECL Player_Teleport(gmThread * a_thread);
+	int GM_CDECL Unit_RemoveAura(gmThread * a_thread);
+    int GM_CDECL Player_HasQuest(gmThread * a_thread);
+    int GM_CDECL Player_HasItem(gmThread * a_thread);
 	int GM_CDECL Player_HasFinishedQuest(gmThread * a_thread);
 	int GM_CDECL Player_GetReputationRank(gmThread * a_thread);
 	int GM_CDECL Player_GetReputationValue(gmThread * a_thread);

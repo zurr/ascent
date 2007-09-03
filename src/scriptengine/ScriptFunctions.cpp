@@ -477,6 +477,49 @@ int Unit_SpawnMonster(gmThread * a_thread)
 
 	return GM_OK;
 }
+
+/* Base function */
+int Unit_RemoveAura(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(spid, 0);
+	GetThisPointer<Unit>(a_thread)->RemoveAura(spid);
+	return GM_OK;
+}
+
+int Player_HasQuest(gmThread * a_thread)
+{
+        GM_CHECK_NUM_PARAMS(1);
+        GM_CHECK_INT_PARAM(questid, 0);
+        if(GetThisPointer<Player>(a_thread)->GetTypeId() != TYPEID_PLAYER)
+                return GM_EXCEPTION;
+
+        Player *p = GetThisPointer<Player>(a_thread);
+        if(p->GetQuestLogForEntry(questid))
+                a_thread->PushInt(1);
+        else
+                a_thread->PushInt(0);
+
+        return GM_OK;
+}
+
+int Player_HasItem(gmThread * a_thread)
+{
+        GM_CHECK_NUM_PARAMS(1);
+        GM_CHECK_INT_PARAM(itemid, 0);
+
+        Player * pPlayer = GetThisPointer<Player>(a_thread);
+        if(pPlayer->GetTypeId() != TYPEID_PLAYER)
+                return GM_EXCEPTION;
+
+        if(pPlayer->GetItemInterface()->GetItemCount(itemid, 0))
+                a_thread->PushInt(1);
+        else
+                a_thread->PushInt(0);
+
+        return GM_OK;
+}
+
 int GameObject_Despawn(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
