@@ -3010,7 +3010,7 @@ QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
 {
 	for(int i = 0; i < 25; ++i)
 	{
-		if(m_questlog[i] == 0x00000001)
+		if(m_questlog[i] == ((QuestLogEntry*)0x00000001))
 			m_questlog[i] = NULL;
 
 		if(m_questlog[i] != NULL)
