@@ -36,6 +36,12 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 		return;
 	Item *i2=_player->GetItemInterface()->GetInventoryItem(DstInvSlot,DstSlot);
 
+	if(c>=126)
+	{
+		_player->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_COULDNT_SPLIT_ITEMS);        
+		return;
+	}
+
 	if(i2)//smth already in this slot
 	{
 		if(i1->GetEntry()==i2->GetEntry() )
