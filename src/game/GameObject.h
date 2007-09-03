@@ -114,14 +114,6 @@ enum GAMEOBJECT_TYPES
 class SERVER_DECL GameObject : public Object
 {
 public:
-	bool NeedsInRangeSet()
-	{
-		if(spell || m_summonedGo)
-			return true;
-		else
-			return false;
-	}
-
 	GameObject(uint32 high, uint32 low);
 	~GameObject( );
 

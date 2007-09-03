@@ -99,7 +99,6 @@ class MapMgr;
 class SERVER_DECL Object : public EventableObject
 {
 public:
-	virtual bool NeedsInRangeSet() { return true; }
 	typedef std::set<Object*> InRangeSet;
 
 	virtual ~Object ( );

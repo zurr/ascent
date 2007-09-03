@@ -101,7 +101,10 @@ MapMgr::~MapMgr()
 				for (uint32 j = 0; j < _sizeY; j++)
 				{
 					if(_cells[i][j] != 0)
+					{
+						_cells[i][j]->_unloadpending=false;
 						_cells[i][j]->RemoveObjects();
+					}
 				}
 			}
 		}
@@ -712,7 +715,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 					if(!cansee && isvisible)
 					{
 						plObj2->PushOutOfRange(obj->GetNewGUID());
-						plObj2->RemoveVisibleObject(obj);
+						plObj2->RemoveVisibleObject(itr);
 					}
 					else if(cansee && !isvisible)
 					{
@@ -731,7 +734,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 					if(!cansee && isvisible)
 					{
 						plObj->PushOutOfRange(curObj->GetNewGUID());
-						plObj->RemoveVisibleObject(curObj);
+						plObj->RemoveVisibleObject(itr);
 					}
 					else if(cansee && !isvisible)
 					{
