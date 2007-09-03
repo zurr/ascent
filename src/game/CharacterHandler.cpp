@@ -255,7 +255,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 		return;
 	}
 
-	QueryResult * result = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", WorldDatabase.EscapeString(name));
+	QueryResult * result = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", WorldDatabase.EscapeString(name).c_str());
 	if(result)
 	{
 		if(result->Fetch()[0].GetUInt32() > 0)
