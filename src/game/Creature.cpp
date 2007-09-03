@@ -181,62 +181,42 @@ void Creature::OnRemoveCorpse()
 	}
 }
 
-void Creature::OnRespawn()
+void Creature::OnRespawn(MapMgr * m)
 {
-	if (!IsInWorld())
+	sLog.outDetail("Respawning "I64FMT"...", GetGUID());
+	SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+	SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shiat
+	if(proto && m_spawn)
 	{
-		sLog.outDetail("Respawning "I64FMT"...", GetGUID());
-		SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH));
-		SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0); // not tagging shiat
-		if(proto && m_spawn)
-		{
-			SetUInt32Value(UNIT_NPC_FLAGS, proto->NPCFLags);
-			SetUInt32Value(UNIT_NPC_EMOTESTATE, m_spawn->emote_state);
-		}
-
-		RemoveFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
-		Skinned = false;
-		Tagged = false;
-		TaggerGuid = 0;
-
-		/* creature death state */
-		if(proto && proto->death_state == 1)
-		{
-			uint32 newhealth = m_uint32Values[UNIT_FIELD_HEALTH] / 100;
-			if(!newhealth)
-				newhealth = 1;
-			SetUInt32Value(UNIT_FIELD_HEALTH, 1);
-			m_limbostate = true;
-			bInvincible = true;
-			SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DEAD);
-		}
-
-		//empty loot
-		loot.items.clear();
-
-		AddToWorld();
-		setDeathState(ALIVE);
-		GetAIInterface()->StopMovement(0); // after respawn monster can move
-		m_PickPocketed = false;
+		SetUInt32Value(UNIT_NPC_FLAGS, proto->NPCFLags);
+		SetUInt32Value(UNIT_NPC_EMOTESTATE, m_spawn->emote_state);
 	}
-	else
+
+	RemoveFlag(UNIT_FIELD_FLAGS,U_FIELD_FLAG_SKINNABLE);
+	Skinned = false;
+	Tagged = false;
+	TaggerGuid = 0;
+
+	/* creature death state */
+	if(proto && proto->death_state == 1)
 	{
-		// if we got here it's pretty bad
+		uint32 newhealth = m_uint32Values[UNIT_FIELD_HEALTH] / 100;
+		if(!newhealth)
+			newhealth = 1;
+		SetUInt32Value(UNIT_FIELD_HEALTH, 1);
+		m_limbostate = true;
+		bInvincible = true;
+		SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DEAD);
 	}
+
+	//empty loot
+	loot.items.clear();
+
+	setDeathState(ALIVE);
+	GetAIInterface()->StopMovement(0); // after respawn monster can move
+	m_PickPocketed = false;
+	PushToWorld(m);
 }
-/*
-void Creature::Despawn()
-{
-	GetAIInterface()->SetUnitToFollow(NULL);
-	if(IsInWorld())
-	{
-		RemoveFromWorld(true);
-	}
-   
-	setDeathState(DEAD);
-
-	m_position = m_spawnLocation;
-}*/
 
 void Creature::Create (const char* name, uint32 mapid, float x, float y, float z, float ang)
 {
@@ -457,23 +437,31 @@ bool Creature::CanAddToWorld()
 
 void Creature::RemoveFromWorld(bool addev)
 {
+	if(m_objectTypeId != TYPEID_UNIT)		/* is a pet */
+	{
+		if(IsInWorld())
+			Unit::RemoveFromWorld();
+
+		SafeDelete();
+		return;
+	}
+
+	if(!IS_INSTANCE(m_mapId))
+		objmgr.SetCreatureBySqlId(GetSQL_id(), 0);
+
 	if(IsInWorld())
 	{
 		RemoveAllAuras();
-
 		sEventMgr.RemoveEvents(this);
+
 		if(addev)
 		{
-			//printf("DEBUG: removing creature respawnval: %d",proto->RespawnTime);
-			 // instanced creatures don't respawn
-			if(proto && proto->RespawnTime > 0 && (GetMapId() == 530 || GetMapId() == 0 || GetMapId() == 1 )) // temp fix for instances...
-				sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, proto->RespawnTime, 1,0);
+			if(proto && proto->RespawnTime > 0)
+				Despawn(0, proto->RespawnTime);
 			else
-				SafeDelete();
+				Despawn(0,0);
 		}
-		Unit::RemoveFromWorld();
 	}
-	objmgr.SetCreatureBySqlId(GetSQL_id(), 0);
 }
 
 void Creature::EnslaveExpire()
@@ -669,6 +657,9 @@ void Creature::TotemExpire()
 
 void Creature::FormationLinkUp(uint32 SqlId)
 {
+	if(IS_INSTANCE(m_mapId))
+		return;
+
 	Creature * creature = objmgr.GetCreatureBySqlId(SqlId);
 	if(creature != 0)
 	{
@@ -1147,10 +1138,10 @@ void Creature::OnPushToWorld()
 	if(_myScriptClass)
 		_myScriptClass->OnLoad();
 
-	objmgr.SetCreatureBySqlId(GetSQL_id(), this);
-
 	if(IS_INSTANCE(m_mapMgr->GetMapId()))
 		m_aiInterface->setOutOfCombatRange(0);		
+	else
+		objmgr.SetCreatureBySqlId(GetSQL_id(), this);
 }
 
 // this is used for guardians. They are non respawnable creatures linked to a player
@@ -1168,10 +1159,24 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 		return;
 	}
 
-	RemoveFromWorld(false);
-	m_position = m_spawnLocation;
 	if(respawntime)
-		sEventMgr.AddEvent(this, &Creature::OnRespawn, EVENT_CREATURE_RESPAWN, respawntime, 1,0);
+	{
+		/* get the cell with our SPAWN location. if we've moved cell this might break :P */
+		MapCell * pCell = m_mapMgr->GetCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
+		if(!pCell)
+			pCell = m_mapCell;
+	
+		ASSERT(pCell);
+		pCell->_respawnObjects.insert(((Object*)this));
+		sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell, EVENT_CREATURE_RESPAWN, respawntime, 1, 0);
+		Unit::RemoveFromWorld();
+		m_position = m_spawnLocation;
+	}
+	else
+	{
+		Unit::RemoveFromWorld();
+		SafeDelete();
+	}
 }
 
 void Creature::TriggerScriptEvent(void * func)

@@ -268,6 +268,8 @@ public:
 	bool delete_pending;
 
 	void UnloadCell(uint32 x,uint32 y);
+	void EventRespawnCreature(Creature * c, MapCell * p);
+	void EventRespawnGameObject(GameObject * o, MapCell * c);
 
 protected:
 

@@ -88,6 +88,22 @@ void MapCell::RemoveObjects()
 	uint32 count = 0;
 	//uint32 ltime = getMSTime();
 
+	/* delete objects in pending respawn state */
+	for(itr = _respawnObjects.begin(); itr != _respawnObjects.end(); ++itr)
+	{
+		switch((*itr)->GetTypeId())
+		{
+		case TYPEID_UNIT:
+			delete ((Creature*)*itr);
+			break;
+
+		case TYPEID_GAMEOBJECT:
+			delete ((GameObject*)*itr);
+			break;
+		}
+	}
+	_respawnObjects.clear();
+
 	//This time it's simpler! We just remove everything :)
 	for(itr = _objects.begin(); itr != _objects.end(); )
 	{

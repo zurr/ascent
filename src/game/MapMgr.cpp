@@ -1623,3 +1623,15 @@ void MapMgr::UnloadCell(uint32 x,uint32 y)
 
     c->Unload();
 }
+
+void MapMgr::EventRespawnCreature(Creature * c, MapCell * p)
+{
+	p->_respawnObjects.erase(((Object*)c));
+	c->OnRespawn(this);
+}
+
+void MapMgr::EventRespawnGameObject(GameObject * o, MapCell * c)
+{
+	c->_respawnObjects.erase( ((Object*)o) );
+	o->Spawn(this);
+}

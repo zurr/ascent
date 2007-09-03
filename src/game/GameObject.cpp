@@ -201,11 +201,9 @@ void GameObject::Update(uint32 p_time)
 	}
 }
 
-void GameObject::Spawn()
+void GameObject::Spawn(MapMgr * m)
 {
-	if(!this->IsInWorld())
-		AddToWorld();
-	
+	PushToWorld(m);	
 	CALL_GO_SCRIPT_EVENT(this, OnSpawn)();
 }
 
@@ -224,14 +222,23 @@ void GameObject::Despawn(uint32 time)
 	data << GetGUID();
 	SendMessageToSet(&data,true);
 
-	if(this->IsInWorld())
-		RemoveFromWorld();
-  
+	CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
+
 	if(time)
 	{
-		sEventMgr.AddEvent(this, &GameObject::Spawn, EVENT_GAMEOBJECT_ITEM_SPAWN, time, 1,0);
+		/* Get our originiating mapcell */
+		MapCell * pCell = m_mapCell;
+		ASSERT(pCell);
+		pCell->_respawnObjects.insert( ((Object*)this) );
+		sEventMgr.RemoveEvents(this);
+		sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnGameObject, this, pCell, EVENT_GAMEOBJECT_ITEM_SPAWN, time, 1, 0);
+		Object::RemoveFromWorld();
 	}
-	CALL_GO_SCRIPT_EVENT(this, OnDespawn)();
+	else
+	{
+		Object::RemoveFromWorld();
+		ExpireAndDelete();
+	}
 }
 
 void GameObject::SaveToDB()

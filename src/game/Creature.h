@@ -354,7 +354,7 @@ public:
 
 	void OnJustDied();
 	void OnRemoveCorpse();
-	void OnRespawn();
+	void OnRespawn(MapMgr * m);
 	void SafeDelete();
 	//void Despawn();
 	void SummonExpire(); // this is used for guardians. They are non respawnable creatures linked to a player

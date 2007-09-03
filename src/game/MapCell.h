@@ -66,6 +66,8 @@ public:
 	void CancelPendingUnload();
 	void Unload();
 
+	ObjectSet _respawnObjects;
+
 private:
 	uint16 _x,_y;
 	ObjectSet _objects;
