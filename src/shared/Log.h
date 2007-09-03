@@ -87,10 +87,12 @@ public:
 
 extern SessionLogWriter * Anticheat_Log;
 extern SessionLogWriter * GMCommand_Log;
+extern SessionLogWriter * Player_Log;
 
 #define sLog oLog::getSingleton()
 #define sCheatLog (*Anticheat_Log)
 #define sGMLog (*GMCommand_Log)
+#define sPlrLog (*Player_Log)
 
 class WorldLog : public Singleton<WorldLog>
 {

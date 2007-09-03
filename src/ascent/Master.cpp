@@ -52,6 +52,7 @@ SERVER_DECL Database* Database_World;
 // mainserv defines
 SessionLogWriter * GMCommand_Log;
 SessionLogWriter * Anticheat_Log;
+SessionLogWriter * Player_Log;
 
 void Master::_OnSignal(int s)
 {
@@ -283,6 +284,7 @@ bool Master::Run(int argc, char ** argv)
 	// open cheat log file
 	Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", false).c_str(), false);
 	GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", false).c_str(), false);
+	Player_Log = new SessionLogWriter(FormatOutputString("logs", "players", false).c_str(), false);
 
 	/* load the config file */
 	sWorld.Rehash(false);
@@ -495,6 +497,7 @@ bool Master::Run(int argc, char ** argv)
 
 	delete GMCommand_Log;
 	delete Anticheat_Log;
+	delete Player_Log;
 
 	// remove pid
 	remove("ascent.pid");

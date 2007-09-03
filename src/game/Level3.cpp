@@ -2539,6 +2539,8 @@ bool ChatHandler::HandleForceRenameCommand(const char * args, WorldSession * m_s
 		BlueSystemMessageToPlr(plr, "%s forced your character to be renamed next logon.", m_session->GetPlayer()->GetName());
 	}
 
+	WorldDatabase.Execute("INSERT INTO banned_names ('%s')", plr->GetName());
+
 	GreenSystemMessage(m_session, "Forcing %s to rename his character next logon.", args);
 	return true;
 }

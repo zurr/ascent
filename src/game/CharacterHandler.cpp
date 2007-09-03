@@ -463,6 +463,8 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 			pGuild->DeleteGuildMember(plr->GetGUID());
 		}
 
+		sPlrLog.write("Account: %s | IP: %s >> Deleted player %s", GetAccountName().c_str(), GetSocket()->GetRemoteIP().c_str(), plr->GetName());
+
 		plr->ok_to_remove = true;
 		delete plr;
 
@@ -486,7 +488,12 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket & recv_data)
 
 	QueryResult * result = CharacterDatabase.Query("SELECT forced_rename_pending FROM characters WHERE guid = %u AND acct = %u", 
 		(uint32)guid, _accountId);
-	if(result == 0) return;
+	if(result == 0)
+	{
+		delete result;
+		return;
+	}
+	delete result;
 
 	// Check name for rule violation.
 	const char * szName=name.c_str();
@@ -499,6 +506,19 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket & recv_data)
 			SendPacket(&data);
 			return;
 		}
+	}
+
+	QueryResult * result2 = WorldDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", WorldDatabase.EscapeString(name));
+	if(result2)
+	{
+		if(result2->Fetch()[0].GetUInt32() > 0)
+		{
+			// That name is banned!
+			data << uint8(0x31);
+			data << guid << name;
+			SendPacket(&data);
+		}
+		delete result2;
 	}
 
 	// Check if name is in use.
