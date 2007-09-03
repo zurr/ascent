@@ -712,7 +712,7 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 					if(!cansee && isvisible)
 					{
 						plObj2->PushOutOfRange(obj->GetNewGUID());
-						plObj2->RemoveVisibleObject(itr);
+						plObj2->RemoveVisibleObject(obj);
 					}
 					else if(cansee && !isvisible)
 					{
@@ -727,11 +727,11 @@ void MapMgr::UpdateInRangeSet(Object *obj, Player *plObj, MapCell* cell, ByteBuf
 				if(plObj)
 				{
 					cansee = plObj->CanSee(curObj);
-					isvisible = plObj->GetVisibility(obj, &itr);
+					isvisible = plObj->GetVisibility(curObj, &itr);
 					if(!cansee && isvisible)
 					{
 						plObj->PushOutOfRange(curObj->GetNewGUID());
-						plObj->RemoveVisibleObject(itr);
+						plObj->RemoveVisibleObject(curObj);
 					}
 					else if(cansee && !isvisible)
 					{
