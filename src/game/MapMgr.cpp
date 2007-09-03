@@ -122,6 +122,18 @@ MapMgr::~MapMgr()
 
 	free(m_GOStorage);
 	free(m_CreatureStorage);
+
+	Corpse * pCorpse;
+	for(set<Corpse*>::iterator itr = m_corpses.begin(); itr != m_corpses.end();)
+	{
+		pCorpse = *itr;
+		++itr;
+
+		if(pCorpse->IsInWorld())
+			pCorpse->RemoveFromWorld();
+
+		delete pCorpse;
+	}
 }
 
 
@@ -147,7 +159,11 @@ void MapMgr::PushObject(Object *obj)
 		// mark object as updatable and exit
 		return;
 	}
-	
+
+	if(obj->GetTypeId() == TYPEID_CORPSE)
+	{
+		m_corpses.insert(((Corpse*)obj));
+	}	
 	
 	obj->ClearInRangeSet();
 	ASSERT(obj->GetMapId() == _mapId);
@@ -373,6 +389,10 @@ void MapMgr::RemoveObject(Object *obj)
 		return;
 	}
 
+	if(obj->GetTypeId() == TYPEID_CORPSE)
+	{
+		m_corpses.insert(((Corpse*)obj));
+	}
 
 	if(!obj->GetMapCell())
 	{

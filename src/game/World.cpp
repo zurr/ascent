@@ -511,8 +511,6 @@ void World::SetInitialWorldSettings()
 
 	new InstanceSavingManagement;
 	sInstanceSavingManager.LoadSavedInstances();
-	//Load Corpses
-	objmgr.CorpseCollectorLoad();
 	
 	//Updating spell.dbc--this is slow like hell due to we cant read string fields
 	//dbc method will be changed in future

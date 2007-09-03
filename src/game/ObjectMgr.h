@@ -357,7 +357,6 @@ public:
 
 	//Corpse Stuff
 	Corpse *GetCorpseByOwner(uint32 ownerguid);
-	void CorpseCollectorLoad();
 	void CorpseCollectorUnload();
 	void DespawnCorpse(uint64 Guid);
 	void CorpseAddEventDespawn(Corpse *pCorpse);

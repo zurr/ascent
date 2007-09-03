@@ -1228,45 +1228,6 @@ void ObjectMgr::LoadCorpses(MapMgr * mgr)
 	}
 }
 
-//------------------------------------------------------------
-// Corpse Collector Loading
-// comments:
-//------------------------------------------------------------
-void ObjectMgr::CorpseCollectorLoad()
-{
-	Corpse *pCorpse = NULL;
- 
-	QueryResult *result = CharacterDatabase.Query("SELECT * FROM corpses");
-
-	if(result)
-	{
-		do
-		{
-		  Field *fields = result->Fetch();
-		  pCorpse = new Corpse(HIGHGUID_CORPSE,fields[0].GetUInt32());
-		  pCorpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
-		  pCorpse->SetZoneId(fields[5].GetUInt32());
-		  pCorpse->SetMapId(fields[6].GetUInt32());
-		  pCorpse->SetInstanceID(fields[7].GetUInt32());
-		  pCorpse->LoadValues( fields[8].GetString());
-		  if(pCorpse->GetUInt32Value(CORPSE_FIELD_DISPLAY_ID) == 0)
-		  {
-			  delete pCorpse;
-			  continue;
-		  }
-
-		  if(sWorldCreator.GetMap(pCorpse->GetMapId()) && sWorldCreator.GetMap(pCorpse->GetMapId())->InstanceExists(pCorpse->GetInstanceID()))
-		  {
-			  pCorpse->AddToWorld();
-		  }else
-			  delete pCorpse;
-		} while( result->NextRow() );
-		
-		Log.Notice("ObjectMgr", "%u corpses processed.", result->GetRowCount());
-		delete result;
-	}
-}
-
 std::list<ItemPrototype*>* ObjectMgr::GetListForItemSet(uint32 setid)
 {
 	return mItemSets[setid];

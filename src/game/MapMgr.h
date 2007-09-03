@@ -310,6 +310,7 @@ public:
 	CreatureSet activeCreatures;
 	EventableObjectHolder eventHolder;
 	CBattleground * m_battleground;
+	set<Corpse*> m_corpses;
 };
 
 #endif

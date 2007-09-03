@@ -57,6 +57,9 @@ WorldSocket::~WorldSocket()
 	WorldPacket * pck;
 	while((pck = _queue.Pop()))
 		delete pck;
+
+	if(pAuthenticationPacket)
+		delete pAuthenticationPacket;
 }
 
 void WorldSocket::OnDisconnect()
