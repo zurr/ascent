@@ -2054,17 +2054,16 @@ void ObjectMgr::LoadTrainers()
 				SpellEntry *spellInfo2 = sSpellStore.LookupEntry(teachspell );
 				if(spellInfo2)
 					tr->SpellList[i]->SpellRank = spellInfo2->spellLevel;
+				if(Profession_ranking)
+					tr->SpellList[i]->SpellRank = Profession_ranking;
+				if((!spellInfo2 && !Profession_ranking) || tr->SpellList[i]->SpellRank==0)
+				{
+					sLog.outDebug("This is a faulty trainer spell, please report it to devs : %u \n",CastSpellID);
+				}
 			}
 			else
 			{
 				sLog.outDebug("OMG trainer is casting a spell that does not teah anything : %u \n",CastSpellID);
-				if(Profession_ranking)
-					tr->SpellList[i]->SpellRank = Profession_ranking;
-				else 
-				{
-					sLog.outDebug("This is a faulty trainer spell, please report it to devs : %u \n",CastSpellID);
-					tr->SpellList[i]->SpellRank = 0;
-				}
 			}
 			result2->NextRow();
 		}
