@@ -467,12 +467,24 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 		plr->DeleteFromDB();
 		//if charter leader
 		if(plr->m_charter)
+		{
 			plr->m_charter->RemoveSignature(plr->GetGUID());
+			if(plr->m_charter->GetLeader() == plr->GetGUIDLow())
+			{
+				plr->m_charter->Destroy();
+			}
+		}
 		
 		Guild *pGuild = objmgr.GetGuild(plr->GetGuildId());
 		if(pGuild)
 		{
-			pGuild->DeleteGuildMember(plr->GetGUID());
+			if(pGuild->GetGuildLeaderGuid() == plr->GetGUID())
+			{
+				pGuild->DeleteGuildMembers();
+				pGuild->RemoveFromDb();
+			}
+			else
+				pGuild->DeleteGuildMember(plr->GetGUID());
 		}
 
 		sPlrLog.write("Account: %s | IP: %s >> Deleted player %s", GetAccountName().c_str(), GetSocket()->GetRemoteIP().c_str(), plr->GetName());
