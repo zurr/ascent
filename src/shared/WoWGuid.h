@@ -201,8 +201,6 @@ private:
 			}
 		compiled = true;
 	}
-
-
 };
 
 #endif

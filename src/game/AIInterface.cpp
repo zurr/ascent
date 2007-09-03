@@ -2053,7 +2053,7 @@ void AIInterface::deleteWayPoint(uint32 wpid, bool save)
 	if(wpid > m_waypoints->size()) 
 		return; //not valid id
 
-	uint32 startsize = m_waypoints->size();
+//	uint32 startsize = m_waypoints->size();
 	
 	//Delete Waypoint
 	/*WayPointMap::iterator iter = m_waypoints->find( wpid );
@@ -2068,7 +2068,7 @@ void AIInterface::deleteWayPoint(uint32 wpid, bool save)
 		(*m_waypoints)[wpid] = NULL;
 	}
 	
-	WayPoint* wp = NULL;
+//	WayPoint* wp = NULL;
 	//Reorginise the rest
 	/*if(wpid <= m_waypoints->size()) //non existant wp
 	{
@@ -2732,53 +2732,49 @@ AI_Spell *AIInterface::getSpell()
 	next_spell_time = World::UNIXTIME + 1;
 
 	// look at our spells
-	AI_Spell * sp;
-	uint32 cast_time;
-	AI_Spell * def_spell = 0;
+	AI_Spell *  sp = NULL;
+	AI_Spell *  def_spell = NULL;
+    uint32      cast_time;
 	for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end();)
 	{
         sp = *itr;
 		++itr;
 		if(sp->agent == AGENT_SPELL)
 		{
-			switch(sp->spellType)
+			if (sp->spellType == STYPE_BUFF)
 			{
-			case STYPE_BUFF:
+				// cast the buff at requested percent only if we don't have it already
+				if(sp->procChance >= 100 || Rand(sp->procChance))
 				{
-					// cast the buff at requested percent only if we don't have it already
-					if(sp->procChance >= 100 || Rand(sp->procChance))
+					if(!m_Unit->HasActiveAura(sp->spell->Id))
 					{
-						if(!m_Unit->HasActiveAura(sp->spell->Id))
-						{
 #ifdef _AI_DEBUG
-							sLog.outString("AI DEBUG: Returning aura %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
-								sp->entryId);
-#endif
-							return sp;
-						}
-					}
-				}break;
-
-			default:
-				{
-					if(def_spell!=0)
-						continue;
-
-					// cast the spell at requested percent.
-					if(sp->procChance >= 100 || Rand(sp->procChance))
-					{
-						//focus/mana requirement
-						if(m_Unit->GetUInt32Value(UNIT_FIELD_POWER3) < sp->spell->manaCost && m_Unit->GetUInt32Value(UNIT_FIELD_POWER1) < sp->spell->manaCost)
-								continue;
-						
-
-#ifdef _AI_DEBUG
-						sLog.outString("AI DEBUG: Returning spell %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
+						sLog.outString("AI DEBUG: Returning aura %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
 							sp->entryId);
 #endif
-						def_spell = sp;
+						return sp;
 					}
-				}break;
+				}
+			}
+            else
+			{
+				if(def_spell!=0)
+					continue;
+
+				// cast the spell at requested percent.
+				if(sp->procChance >= 100 || Rand(sp->procChance))
+				{
+					//focus/mana requirement
+					if(m_Unit->GetUInt32Value(UNIT_FIELD_POWER3) < sp->spell->manaCost && m_Unit->GetUInt32Value(UNIT_FIELD_POWER1) < sp->spell->manaCost)
+							continue;
+					
+
+#ifdef _AI_DEBUG
+					sLog.outString("AI DEBUG: Returning spell %s for unit %u", sSpellStore.LookupString( sp->spell->Name ),
+						sp->entryId);
+#endif
+					def_spell = sp;
+				}
 			}
 		}
 	}

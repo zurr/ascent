@@ -22,7 +22,7 @@
 #include "../shared/svn_revision.h"
 
 #ifndef WIN32
-#include <termios.h>
+    #include <termios.h>
 #endif
 
 createFileSingleton(Console);
@@ -103,7 +103,6 @@ void CConsole::ProcessCmd(char *cmd)
 
 	SCmd cmds[] =
 	{
-
 		{ "?", &CConsole::TranslateHelp}, { "help", &CConsole::TranslateHelp},
 		{ "ver", &CConsole::TranslateVersion}, { "version", &CConsole::TranslateVersion},
 		{ "uptime", &CConsole::GetUptime},
@@ -395,7 +394,7 @@ void CConsole::WideAnnounce(char *str)
 
 void CConsole::SaveallPlayers(char *str)
 {
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	uint32 stime = now();
 	uint32 count = 0;
 	objmgr._playerslock.AcquireReadLock();

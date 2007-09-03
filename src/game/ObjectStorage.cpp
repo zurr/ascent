@@ -133,7 +133,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 		sp->cooldown = fields[8].GetFloat();
 		sp->floatMisc1 = fields[9].GetFloat();
 		if (!sp->procCountDB) 
-			sp->procCount = -1;
+			sp->procCount = uint32(-1);
 		else sp->procCount = sp->procCountDB;
 		sp->Misc2 = fields[10].GetUInt32();
 		if(sp->agent == AGENT_SPELL)

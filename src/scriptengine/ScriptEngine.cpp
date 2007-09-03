@@ -58,7 +58,7 @@ void ScriptEngine::Reload()
 		for(int i = 0; i < 10; ++i)
 			m_userObjects[i] = 0;
 
-		m_playerMap.clear();
+		m_PlayerStorageMap.clear();
 		m_unitMap.clear();
 		m_gameObjectMap.clear();
 		m_questMap.clear();

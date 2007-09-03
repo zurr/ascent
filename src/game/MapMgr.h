@@ -168,7 +168,9 @@ public:
 //////////////////////////////////////////////////////////
 // Local (mapmgr) storage of players for faster lookup
 ////////////////////////////////
-	typedef HM_NAMESPACE::hash_map<uint32, Player*> PlayerStorageMap;
+    
+    // double typedef lolz// a compile breaker..
+	typedef HM_NAMESPACE::hash_map<uint32, Player*>                     PlayerStorageMap;
 	PlayerStorageMap m_PlayerStorage;
 	__inline Player * GetPlayer(uint32 guid)
 	{

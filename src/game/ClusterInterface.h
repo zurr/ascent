@@ -27,8 +27,7 @@ typedef void(ClusterInterface::*ClusterInterfaceHandler)(WorldPacket&);
 
 class ClusterInterface : public Singleton<ClusterInterface>
 {
-	typedef HM_NAMESPACE::hash_map<uint32, RPlayerInfo*> OnlinePlayerMap;
-	OnlinePlayerMap _onlinePlayers;
+	OnlinePlayerStorageMap _onlinePlayers;
 	WSClient * _clientSocket;
 	FastQueue<WorldPacket*, Mutex> _pckQueue;
 	time_t _lastConnectTime;
@@ -53,7 +52,7 @@ public:
 	RPlayerInfo * GetPlayer(uint32 guid)
 	{
 		// this should use a mutex - burlex
-		OnlinePlayerMap::iterator itr = _onlinePlayers.find(guid);
+		OnlinePlayerStorageMap::iterator itr = _onlinePlayers.find(guid);
 		return (itr == _onlinePlayers.end()) ? 0 : itr->second;
 	}
 

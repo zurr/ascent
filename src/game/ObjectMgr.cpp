@@ -68,7 +68,7 @@ ObjectMgr::~ObjectMgr()
 	}
 
 	sLog.outString("	Deleting AI Threat Spells...");
-	for( std::list<ThreatToSpellId*>::iterator i = threatToSpells.begin( ); i != threatToSpells.end( ); ++ i ) 
+	for( ThreadToSpellList::iterator i = threatToSpells.begin( ); i != threatToSpells.end( ); ++ i ) 
 	{
 		ThreatToSpellId *gc=(*i);
 		delete gc;
@@ -187,13 +187,13 @@ ObjectMgr::~ObjectMgr()
 	}
 
 	sLog.outString("Deleting reputation tables...");
-	for(HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr = this->m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
+	for(ReputationModMap::iterator itr = this->m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
 	{
 		ReputationModifier * mod = itr->second;
 		mod->mods.clear();
 		delete mod;
 	}
-	for(HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr = this->m_reputation_faction.begin(); itr != m_reputation_faction.end(); ++itr)
+	for(ReputationModMap::iterator itr = this->m_reputation_faction.begin(); itr != m_reputation_faction.end(); ++itr)
 	{
 		ReputationModifier * mod = itr->second;
 		mod->mods.clear();
@@ -575,7 +575,7 @@ Corpse* ObjectMgr::LoadCorpse(uint32 guid)
 //------------------------------------------------------
 Corpse *ObjectMgr::GetCorpseByOwner(uint32 ownerguid)
 {
-	HM_NAMESPACE::hash_map<uint32, Corpse*>::const_iterator itr;
+	CorpseMap::const_iterator itr;
 	Corpse *rv = NULL;
 	_corpseslock.Acquire();
 	for (itr = m_corpses.begin();itr != m_corpses.end(); ++itr)
@@ -884,7 +884,7 @@ void ObjectMgr::ProcessGameobjectQuests()
 Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
 {
 	Player * rv = NULL;
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	_playerslock.AcquireReadLock();	
 
 	if(!caseSensitive)
@@ -922,7 +922,7 @@ Player* ObjectMgr::GetPlayer(uint32 guid)
 	Player * rv;
 	
 	_playerslock.AcquireReadLock();	
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr = _players.find(guid);
+	PlayerStorageMap::const_iterator itr = _players.find(guid);
 	rv = (itr != _players.end()) ? itr->second : 0;
 	_playerslock.ReleaseReadLock();
 
@@ -1009,7 +1009,7 @@ void ObjectMgr::AddGMTicket(GM_Ticket *ticket,bool startup)
 //modified for vs2005 compatibility
 void ObjectMgr::remGMTicket(uint64 guid)
 {
-	for(std::list<GM_Ticket*>::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
+	for(GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
 	{
 		if((*i)->guid == guid)
 		{
@@ -1027,7 +1027,7 @@ void ObjectMgr::remGMTicket(uint64 guid)
 
 GM_Ticket* ObjectMgr::GetGMTicket(uint64 guid)
 {
-	for(std::list<GM_Ticket*>::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); i++)
+	for(GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); i++)
 	{
 		if((*i)->guid == guid)
 		{
@@ -1138,7 +1138,7 @@ void ObjectMgr::LoadAIThreatToSpellId()
 
 int32 ObjectMgr::GetAIThreatToSpellId(uint32 spellId)
 {
-	for(std::list<ThreatToSpellId*>::iterator i = threatToSpells.begin(); i != threatToSpells.end(); i++)
+	for(ThreadToSpellList::iterator i = threatToSpells.begin(); i != threatToSpells.end(); i++)
 	{
 		if((*i)->spellId == spellId)
 		{
@@ -1253,7 +1253,7 @@ void ObjectMgr::DespawnCorpse(uint64 Guid)
 
 void ObjectMgr::CorpseCollectorUnload()
 {
-	HM_NAMESPACE::hash_map<uint32, Corpse*>::const_iterator itr;
+	CorpseMap::const_iterator itr;
 	_corpseslock.Acquire();
 	for (itr = m_corpses.begin(); itr != m_corpses.end();)
 	{
@@ -1581,7 +1581,7 @@ void ObjectMgr::GenerateTrainerSpells()
 
 			SpellEntry * TeachingSpell = sSpellStore.LookupEntry(TeachingSpellId);
 
-			SpellEntry * TeachingSpell2;//2nd level teaching spell used by Pet trainers to teach hunter a teaching spell
+			SpellEntry * TeachingSpell2 = NULL;//2nd level teaching spell used by Pet trainers to teach hunter a teaching spell
 			uint32 TeachingSpellId2 = 0;//init 0, later used to distinguish if 2nd lvl teach.sp. is present
 		
 			if((TeachingSpell->Effect[j] == SPELL_EFFECT_LEARN_SPELL && TeachingSpell->EffectImplicitTargetA[j]==5) || TeachingSpell->Effect[j] == SPELL_EFFECT_LEARN_PET_SPELL )
@@ -2695,7 +2695,7 @@ Corpse * ObjectMgr::GetCorpse(uint32 corpseguid)
 {
 	Corpse * rv;
 	_corpseslock.Acquire();
-	HM_NAMESPACE::hash_map<uint32, Corpse*>::const_iterator itr = m_corpses.find(corpseguid);
+	CorpseMap::const_iterator itr = m_corpses.find(corpseguid);
 	rv = (itr != m_corpses.end()) ? itr->second : 0;
 	_corpseslock.Release();
 	return rv;
@@ -2767,7 +2767,6 @@ Charter * ObjectMgr::CreateCharter(uint32 LeaderGuid)
 	m_charterLock.AcquireWriteLock();
 	Charter * c = new Charter(++m_hiCharterId, LeaderGuid);
 	m_charters[c->GetID()] = c;
-	c->LeaderGuid = LeaderGuid;
 	m_charterLock.ReleaseWriteLock();
 	return c;
 }
@@ -2897,10 +2896,10 @@ void ObjectMgr::RemoveCharter(Charter * c)
 	m_charterLock.ReleaseWriteLock();
 }
 
-void ObjectMgr::LoadReputationModifierTable(const char * tablename, HM_NAMESPACE::hash_map<uint32, ReputationModifier*> * dmap)
+void ObjectMgr::LoadReputationModifierTable(const char * tablename, ReputationModMap * dmap)
 {
 	QueryResult * result = WorldDatabase.Query("SELECT * FROM %s", tablename);
-	HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr;
+	ReputationModMap::iterator itr;
 	ReputationModifier * modifier;
 	ReputationMod mod;
 
@@ -2919,7 +2918,7 @@ void ObjectMgr::LoadReputationModifierTable(const char * tablename, HM_NAMESPACE
 				modifier = new ReputationModifier;
 				modifier->entry = result->Fetch()[0].GetUInt32();
 				modifier->mods.push_back(mod);
-				dmap->insert( HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::value_type( result->Fetch()[0].GetUInt32(), modifier ) );
+				dmap->insert( ReputationModMap::value_type( result->Fetch()[0].GetUInt32(), modifier ) );
 			}
 			else
 			{
@@ -2941,7 +2940,7 @@ void ObjectMgr::LoadReputationModifiers()
 ReputationModifier * ObjectMgr::GetReputationModifier(uint32 entry_id, uint32 faction_id)
 {
 	// first, try fetching from the creature table (by faction is a fallback)
-	HM_NAMESPACE::hash_map<uint32, ReputationModifier*>::iterator itr = m_reputation_creature.find(entry_id);
+	ReputationModMap::iterator itr = m_reputation_creature.find(entry_id);
 	if(itr != m_reputation_creature.end())
 		return itr->second;
 
@@ -3105,7 +3104,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVict
 			continue;
 
 		//value *= sWorld.getRate(RATE_KILLREPUTATION);
-		value = int32(float(value) * sWorld.getRate(RATE_KILLREPUTATION));
+		value = float2int32(float(value) * sWorld.getRate(RATE_KILLREPUTATION));
 		pPlayer->ModStanding(i->faction[team], value);
 	}
 

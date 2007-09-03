@@ -21,7 +21,6 @@
 
 #include "StdAfx.h"
 
-
 bool ChatHandler::ShowHelpForCommand(WorldSession *m_session, ChatCommand *table, const char* cmd)
 {
 	for(uint32 i = 0; table[i].Name != NULL; i++)
@@ -268,7 +267,7 @@ bool ChatHandler::HandleInfoCommand(const char* args, WorldSession *m_session)
 	int gm = 0;
 	int count = 0;
 	int avg = 0;
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	objmgr._playerslock.AcquireReadLock();
 	for (itr = objmgr._players.begin(); itr != objmgr._players.end(); itr++)
 	{
@@ -353,7 +352,7 @@ bool ChatHandler::HandleGMListCommand(const char* args, WorldSession *m_session)
 	WorldPacket data;
 	bool first = true;
 
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	objmgr._playerslock.AcquireReadLock();
 	for (itr = objmgr._players.begin(); itr != objmgr._players.end(); itr++)
 	{

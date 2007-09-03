@@ -254,7 +254,7 @@ void WorldSession::HandleCancelAuraOpcode( WorldPacket& recvPacket)
 	uint32 spellId;
 	//uint64 guid;
 	recvPacket >> spellId;
-	Player *plyr = GetPlayer();
+//	Player *plyr = GetPlayer();
 	
 	for(uint32 x = 0; x < MAX_AURAS+MAX_POSITIVE_AURAS; ++x)
 	{
@@ -296,25 +296,30 @@ void WorldSession::HandleAddDynamicTargetOpcode(WorldPacket & recvPacket)
 	
 	SpellEntry * sp = sSpellStore.LookupEntry(spellid);
 	// Summoned Elemental's Freeze
-	if(spellid == 33395 && !_player->m_Summon) 
-		return;
-	if((spellid != 33395) && (!_player->m_CurrentCharm || guid != _player->m_CurrentCharm->GetGUID()))
-		return;
-
+    if (spellid == 33395)
+    {
+        if (!_player->m_Summon)
+            return;
+    }
+    else if (!_player->m_CurrentCharm || guid != _player->m_CurrentCharm->GetGUID())
+    {
+        return;
+    }
+	
 	/* burlex: this is.. strange */
 	SpellCastTargets targets;
 	targets.m_targetMask = flags;
 
 	if(flags == 0)
 		targets.m_unitTarget = guid;
-	else if(flags == 2)
+	else if(flags == 0x02)
 	{
 		WoWGuid guid;
 		recvPacket >> flags;		// skip one byte
 		recvPacket >> guid;
 		targets.m_unitTarget = guid.GetOldGuid();
 	}
-	else if(flags == 64)
+	else if(flags == 0x40)
 	{
 		recvPacket >> flags;		// skip one byte
 		recvPacket >> targets.m_destX >> targets.m_destY >> targets.m_destZ;

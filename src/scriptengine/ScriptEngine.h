@@ -108,7 +108,7 @@ protected:
 	 */
 	typedef HM_NAMESPACE::hash_map<uint32, map<uint32, gmFunctionObject*> > ScriptMap;
 	typedef HM_NAMESPACE::hash_map<uint32, gmFunctionObject*> SingleScriptMap;
-	ScriptMap m_playerMap;
+	ScriptMap m_PlayerStorageMap;
 	ScriptMap m_unitMap;
 	ScriptMap m_gameObjectMap;
 	ScriptMap m_questMap;

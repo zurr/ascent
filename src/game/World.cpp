@@ -263,7 +263,7 @@ void CreateDummySpell(uint32 id)
 	sp->CastingTimeIndex=1;
 	sp->procChance=75;
 	sp->rangeIndex=13;
-	sp->EquippedItemClass=-1;
+	sp->EquippedItemClass=uint32(-1);
 	sp->Effect[0]=3;
 	sp->EffectImplicitTargetA[0]=25;
 	sp->buffdescflags=4128828;
@@ -1077,7 +1077,7 @@ void World::SetInitialWorldSettings()
 				startofid += strlen("cause $");
 				sp->EffectTriggerSpell[0]=atoi(startofid);
 				sp->EffectTriggerSpell[1]=sp->EffectTriggerSpell[0]; //later versions of this spell changed to eff[1] the aura
-				sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_TAGRGET_SELF;
+				sp->procFlags = uint32(PROC_ON_MELEE_ATTACK_VICTIM | PROC_TAGRGET_SELF);
 			}
 		}
 		//some procs trigger at intervals
@@ -1213,7 +1213,7 @@ void World::SetInitialWorldSettings()
 		sp->Effect[0] = 6; //aura
 		sp->EffectApplyAuraName[0] = 42;
 		sp->EffectTriggerSpell[0] = 30294;
-		sp->procFlags=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
+		sp->procFlags=uint32(PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF);
 	}
 	sp = sSpellStore.LookupEntry(30295);
 	if(sp)
@@ -1221,7 +1221,7 @@ void World::SetInitialWorldSettings()
 		sp->Effect[0] = 6; //aura
 		sp->EffectApplyAuraName[0] = 42;
 		sp->EffectTriggerSpell[0] = 30294;
-		sp->procFlags=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
+		sp->procFlags=uint32(PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF);
 	}
 	sp = sSpellStore.LookupEntry(30296);
 	if(sp)
@@ -1229,7 +1229,7 @@ void World::SetInitialWorldSettings()
 		sp->Effect[0] = 6; //aura
 		sp->EffectApplyAuraName[0] = 42;
 		sp->EffectTriggerSpell[0] = 30294;
-		sp->procFlags=PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF;
+		sp->procFlags=uint32(PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF);
 	}
 
 	//warlock - Pyroclasm
@@ -1363,10 +1363,10 @@ void World::SetInitialWorldSettings()
 	//priest - surge of light
 	sp = sSpellStore.LookupEntry(33150);
 	if(sp)
-		sp->procFlags = PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_TAGRGET_SELF;
+		sp->procFlags = uint32(PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_TAGRGET_SELF);
 	sp = sSpellStore.LookupEntry(33154);
 	if(sp)
-		sp->procFlags = PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_TAGRGET_SELF;
+		sp->procFlags = uint32(PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_TAGRGET_SELF);
 	sp = sSpellStore.LookupEntry(33151);
 	if(sp)
 	{
@@ -1829,7 +1829,7 @@ void World::SaveAllPlayers()
 
 	sLog.outString("Saving all players to database...");
 	uint32 count = 0;
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 		// Servers started and obviously runing. lets save all players.
 	uint32 mt;
 	objmgr._playerslock.AcquireReadLock();   
@@ -1915,7 +1915,7 @@ void World::GetStats(uint32 * GMCount, float * AverageLatency)
 	int gm = 0;
 	int count = 0;
 	int avg = 0;
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	objmgr._playerslock.AcquireReadLock();
 	for (itr = objmgr._players.begin(); itr != objmgr._players.end(); itr++)
 	{

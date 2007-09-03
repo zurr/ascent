@@ -884,19 +884,17 @@ enum SpellTypes
 };
 
 
-inline bool CanAgro(uint32 spell_id)
+/*inline bool CanAgro(uint32 spell_id)
 {
 	return true;
-}
+}*/
 
 inline bool CanAgroHash(uint32 spellhashname)
 {
-	switch(spellhashname)
-	{
-		case 4287212498UL: //hunter's mark
-			return false;
-	}
-	return true;
+    if (spellhashname == 4287212498UL) //hunter's mark
+        return false;
+    else
+	    return true;
 }
 
 inline bool IsDamagingSpell(SpellEntry *sp)
@@ -1519,8 +1517,8 @@ public:
 
 	bool m_triggeredSpell;
 	bool m_AreaAura;
-	uint32 TriggerSpellId;  // used to set next spell to use
-	uint64 TriggerSpellTarget; // used to set next spell target
+	//uint32 TriggerSpellId;  // used to set next spell to use
+	//uint64 TriggerSpellTarget; // used to set next spell target
 	bool m_requiresCP;
 	float m_castPositionX;
 	float m_castPositionY;

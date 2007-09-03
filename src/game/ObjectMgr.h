@@ -26,12 +26,12 @@ inline bool FindXinYString(std::string& x, std::string& y)
 
 enum SpellSpecialType
 {
-	NOTHING=0,
-	SEAL=1,
+	NOTHING =0,
+	SEAL    =1,
 	BLESSING=2,
-	CURSE=3,
-	ASPECT=4,
-	STING=5,
+	CURSE   =3,
+	ASPECT  =4,
+	STING   =5,
 };
 
 struct SpellExtraInfo
@@ -263,11 +263,11 @@ public:
 	string GuildName;
 
 	Charter(Field * fields);
-	Charter(uint32 id, uint32 leader) : CharterId(id)
+	Charter(uint32 id, uint32 leader) : CharterId(id), LeaderGuid(leader)
 	{
 		SignatureCount = 0;
 		memset(Signatures, 0, sizeof(Signatures));
-		LeaderGuid = ItemGuid = 0;
+		ItemGuid = 0;
 	}
 	
 	void SaveToDB();
@@ -282,7 +282,9 @@ public:
 	inline bool IsFull() { return (SignatureCount == 9); }
 };
 
-typedef std::map<uint32, std::list<SpellEntry*>* > OverrideIdMap;
+typedef std::map<uint32, std::list<SpellEntry*>* >                  OverrideIdMap;
+typedef HM_NAMESPACE::hash_map<uint32, Player*>                     PlayerStorageMap;
+typedef std::list<GM_Ticket*>                                       GmTicketList;
 
 class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableObject
 {
@@ -292,37 +294,47 @@ public:
 	void LoadCreatureWaypoints();
 
 	// other objects
-	typedef std::set< Group * > GroupSet;
-	typedef HM_NAMESPACE::hash_map<uint64, Item*> ItemMap;
-	typedef HM_NAMESPACE::hash_map<uint32, CorpseData*> CorpseCollectorMap;
-	typedef HM_NAMESPACE::hash_map<uint32, PlayerInfo*> PlayerNameMap;
-	typedef HM_NAMESPACE::hash_map<uint32, PlayerCreateInfo*> PlayerCreateInfoMap;
-	typedef HM_NAMESPACE::hash_map<uint32, Guild*> GuildMap;
-	typedef HM_NAMESPACE::hash_map<uint32, skilllinespell*> SLMap;
-	typedef HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*> VendorMap;
-	typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
-    typedef HM_NAMESPACE::hash_map<uint64, Transporter*> TransportMap;
+    
+    // Set typedef's
+	typedef std::set< Group * >                                         GroupSet;
 	
-	typedef HM_NAMESPACE::hash_map<uint32, Trainer*> TrainerMap;
+    // HashMap typedef's
+    typedef HM_NAMESPACE::hash_map<uint64, Item*>                       ItemMap;
+	typedef HM_NAMESPACE::hash_map<uint32, CorpseData*>                 CorpseCollectorMap;
+	typedef HM_NAMESPACE::hash_map<uint32, PlayerInfo*>                 PlayerNameMap;
+	typedef HM_NAMESPACE::hash_map<uint32, PlayerCreateInfo*>           PlayerCreateInfoMap;
+	typedef HM_NAMESPACE::hash_map<uint32, Guild*>                      GuildMap;
+	typedef HM_NAMESPACE::hash_map<uint32, skilllinespell*>             SLMap;
+	typedef HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*>  VendorMap;
+	typedef HM_NAMESPACE::hash_map<uint32, Creature*>                   CreatureSqlIdMap;
+    typedef HM_NAMESPACE::hash_map<uint64, Transporter*>                TransportMap;
+	typedef HM_NAMESPACE::hash_map<uint32, Trainer*>                    TrainerMap;
 	typedef HM_NAMESPACE::hash_map<uint32, std::vector<TrainerSpell*> > TrainerSpellMap;
-	typedef std::map<uint32, LevelInfo*> LevelMap;
-	typedef std::map<pair<uint32, uint32>, LevelMap* > LevelInfoMap;
+    typedef HM_NAMESPACE::hash_map<uint32, ReputationModifier*>         ReputationModMap;
+    typedef HM_NAMESPACE::hash_map<uint32, Corpse*>                     CorpseMap;
+    
+    // Map typedef's
+    typedef std::map<uint32, LevelInfo*>                                LevelMap;
+	typedef std::map<pair<uint32, uint32>, LevelMap* >                  LevelInfoMap;
+    typedef std::map<uint32, std::list<ItemPrototype*>* >               ItemSetContentMap;
+	typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
+	typedef std::map<uint32, set<SpellEntry*> >                         PetDefaultSpellMap;
+	typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
+	typedef std::map<uint32, SpellEntry*>                               TotemSpellMap;
 
-	typedef std::map<uint32, std::list<ItemPrototype*>* > ItemSetContentMap;
-	typedef std::map<uint32, uint32> NpcToGossipTextMap;
-	typedef std::map<uint32, set<SpellEntry*> > PetDefaultSpellMap;
-	typedef std::map<uint32, uint32> PetSpellCooldownMap;
-	typedef std::map<uint32, SpellEntry*> TotemSpellMap;
-	
-	std::list<GM_Ticket*> GM_TicketList;
-	TotemSpellMap m_totemSpells;
-	std::list<ThreatToSpellId*> threatToSpells;
-	OverrideIdMap mOverrideIdMap;
+    // List typedef's
+    typedef std::list<ThreatToSpellId*>                                 ThreadToSpellList;
+    
+    // object holders
+	GmTicketList        GM_TicketList;
+	TotemSpellMap       m_totemSpells;
+	ThreadToSpellList   threatToSpells;
+	OverrideIdMap       mOverrideIdMap;
 
 	Player* GetPlayer(const char* name, bool caseSensitive = true);
 	Player* GetPlayer(uint32 guid);
 	
-	HM_NAMESPACE::hash_map<uint32, Corpse*>m_corpses;
+	CorpseMap m_corpses;
 	Mutex _corpseslock;
 	Mutex m_corpseguidlock;
     Mutex _TransportLock;
@@ -349,7 +361,7 @@ public:
 	void DeletePlayerInfo(uint32 guid);
 	PlayerCreateInfo* GetPlayerCreateInfo(uint8 race, uint8 class_) const;
 
-	// DK:Guild
+	// Guild
 	void AddGuild(Guild *pGuild);
 	uint32 GetTotalGuildCount();
 	bool RemoveGuild(uint32 guildId);
@@ -398,7 +410,7 @@ public:
 
 	Player * CreatePlayer();
 	 Mutex m_playerguidlock;
-	HM_NAMESPACE::hash_map<uint32, Player*> _players;
+	PlayerStorageMap _players;
 	RWLock _playerslock;
 	uint32 m_hiPlayerGuid;
 	
@@ -422,7 +434,7 @@ public:
 	void LoadVendors();
 	void LoadTotemSpells();
 	void LoadAIThreatToSpellId();
-	void LoadReputationModifierTable(const char * tablename, HM_NAMESPACE::hash_map<uint32, ReputationModifier*> * dmap);
+	void LoadReputationModifierTable(const char * tablename, ReputationModMap * dmap);
 	void LoadReputationModifiers();
 	ReputationModifier * GetReputationModifier(uint32 entry_id, uint32 faction_id);
 
@@ -525,8 +537,9 @@ protected:
 	uint32 m_hiGroupId;
 	uint32 m_hiCharterId;
 	RWLock m_charterLock;
-	HM_NAMESPACE::hash_map<uint32, ReputationModifier*> m_reputation_faction;
-	HM_NAMESPACE::hash_map<uint32, ReputationModifier*> m_reputation_creature;
+
+	ReputationModMap m_reputation_faction;
+	ReputationModMap m_reputation_creature;
 	HM_NAMESPACE::hash_map<uint32, InstanceReputationModifier*> m_reputation_instance;
 
 	HM_NAMESPACE::hash_map<uint32, Charter*> m_charters;

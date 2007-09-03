@@ -1152,7 +1152,7 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 	float resistchance = 1.0f;
 	float miscchance = 0.0f;
 	float AverageResistance = 0.0f;
-	bool pvp = false;
+//	bool pvp = false;
 	
 	if(GetTypeId() == TYPEID_PLAYER && pVictim->GetTypeId() == TYPEID_PLAYER) //PvP
 		miscchance = 7.0f;
@@ -1303,7 +1303,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 	else
 	{
 		if(damage_type != RANGED && !backAttack)
-			dodge = pVictim->GetUInt32Value(UNIT_FIELD_STAT1) / 14.5;
+			dodge = pVictim->GetUInt32Value(UNIT_FIELD_STAT1) / 14.5f; // what is this value?
 		victim_skill = pVictim->getLevel() * 5;
 		if(pVictim->m_objectTypeId == TYPEID_UNIT) 
 		{ 

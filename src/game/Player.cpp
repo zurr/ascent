@@ -6399,7 +6399,7 @@ void Player::ProcessPendingUpdates()
 
 
     uint32 bBuffer_size =  bCreationBuffer.size() + 10 + (mOutOfRangeIds.size() * 9);
-    uint8 * update_buffer;
+    uint8 * update_buffer = NULL;
     //we got creation packets. Join them with out of range packets and skip update ones.
     if(bCreationBuffer.size())
     {

@@ -185,7 +185,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 					RequiredLevel = 10;
 					break;
 				default:
-					RequiredLevel = -1;
+					RequiredLevel = uint32(-1);
 				}
 			}
 

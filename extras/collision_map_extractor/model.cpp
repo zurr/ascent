@@ -13,7 +13,7 @@
 #include "adt.h"
 #include "mpq_libmpq.h"
 
-//#define MODEL_VISUALIZATION
+#define MODEL_VISUALIZATION
 #ifdef MODEL_VISUALIZATION
 #include <gl/GL.h>
 #include <gl/GLU.h>
@@ -328,9 +328,31 @@ bool model::Load(const char * filename)
 		size_t v = boundTris[i];
 		if (v < header.nBoundingVertices)
 		{
-			//if(bounds[v].y < 5.0f)
-				glVertex3f(bounds[v].x, 5.0f, bounds[v].z);
-			//else
+            Vector * StoreVector = &bounds[v];
+            if (StoreVector->y > 10.0f)
+            {
+                // if we are here we need to split up the vector into 2 vectors
+                // and offcourse draw them
+                Vector vectorsplit[2]; // we split it into 2 vectors
+                vectorsplit[1].x = StoreVector->x;
+                vectorsplit[1].y = 10.0f;
+                vectorsplit[1].z = 10.0f;
+
+                vectorsplit[2].x = StoreVector->x;
+                vectorsplit[2].y = 10.0f;
+                vectorsplit[2].z = StoreVector->z;
+
+                glVertex3f(vectorsplit[1].x, vectorsplit[1].y, vectorsplit[1].z);
+                glVertex3f(vectorsplit[2].x, vectorsplit[2].y, vectorsplit[2].z);
+
+            }
+            else
+            {
+                glVertex3f(StoreVector->x, StoreVector->y, StoreVector->z);
+            }
+                //if(bounds[v].y < 5.0f)
+                //glVertex3f(bounds[v].x, 5.0f, bounds[v].z);
+                //else
 				//glVertex3f(0,0,0);
 		}
 		else 

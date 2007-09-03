@@ -1718,7 +1718,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
 
 	uint32 curEnergy = (uint32)unitTarget->GetUInt32Value(POWER_TYPE);
 	uint32 maxEnergy = (uint32)unitTarget->GetUInt32Value(POWER_TYPE+6);
-	uint32 totalEnergy;
+	uint32 totalEnergy = 0;
 	//yess there is always someone special : shamanistic rage - talent
 	if(m_spellInfo->Id==30824)
 		totalEnergy = curEnergy+damage*GetUnitTarget()->GetAP()/100;
@@ -1742,7 +1742,8 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
 			}
 		}
 	}
-	else  totalEnergy = curEnergy+damage;
+	else  
+        totalEnergy = curEnergy+damage;
 	if(totalEnergy > maxEnergy)
 		unitTarget->SetUInt32Value(POWER_TYPE,maxEnergy);
 	else

@@ -349,7 +349,7 @@ inline bool isAlliance(Object* objA)// A is alliance?
 	if(m_sw_faction == objA->m_faction || m_sw_factionDBC == objA->m_factionDBC)
 		return true;
 
-	bool hostile = false;
+	//bool hostile = false;
 	uint32 faction = m_sw_faction->Faction;
 	uint32 host = objA->m_faction->HostileMask;
 

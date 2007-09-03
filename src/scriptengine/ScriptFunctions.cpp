@@ -564,7 +564,7 @@ int GM_RegisterEvent(gmThread * a_thread)
 	for(uint32 i = 0; i < argc; ++i)
 	{
 		void * pointer = 0;
-		uint32 t;
+		uint32 t = 0;
 		for(list<gmType>::iterator itr = ScriptSystem->m_allowedTypes.begin(); itr != ScriptSystem->m_allowedTypes.end(); ++itr)
 		{
 			pointer = a_thread->Param(2+i).GetUserSafe((*itr));

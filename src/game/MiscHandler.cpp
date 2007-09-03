@@ -564,7 +564,7 @@ void WorldSession::HandleWhoOpcode( WorldPacket & recv_data )
 	uint32 sent_count = 0;
 	uint32 total_count = 0;
 
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr,iend;
+	PlayerStorageMap::const_iterator itr,iend;
 	Player * plr;
 	uint32 lvl;
 	bool add;

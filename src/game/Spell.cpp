@@ -28,7 +28,6 @@ void SpellCastTargets::read ( WorldPacket & data,uint64 caster )
 	data >> m_targetMask;
 	WoWGuid guid;
 
-	//if(m_targetMask & TARGET_FLAG_SELF)
 	if(m_targetMask == TARGET_FLAG_SELF)
 	{
 		m_unitTarget = caster;
@@ -77,23 +76,16 @@ void SpellCastTargets::read ( WorldPacket & data,uint64 caster )
 void SpellCastTargets::write ( WorldPacket& data)
 {
 	data << m_targetMask;
-	WoWGuid newunit(m_unitTarget);
-	WoWGuid newitem(m_itemTarget);
 
-	if(m_targetMask == TARGET_FLAG_SELF)
-		data << newunit;
+	if(m_targetMask == TARGET_FLAG_SELF || m_targetMask & (TARGET_FLAG_UNIT | TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2 | TARGET_FLAG_OBJECT))
+    {
+        FastGUIDPack(data,m_unitTarget);
+    }
 
-	if(m_targetMask & TARGET_FLAG_UNIT)
-		data << newunit;
-
-	if(m_targetMask & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2))
-		data << newunit;
-
-	if(m_targetMask & TARGET_FLAG_OBJECT)
-		data << newunit;
-
-	if(m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
-		data << newitem;
+    if(m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
+    {
+        FastGUIDPack(data,m_itemTarget);
+    }
 
 	if(m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
 		data << m_srcX << m_srcY << m_srcZ;
@@ -111,42 +103,48 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
   
 	m_spellInfo = info;
 	m_caster = Caster;
-	//m_CastItem = NULL;
 	duelSpell = false;
 	switch(Caster->GetTypeId())
 	{
 		case TYPEID_PLAYER:
-		g_caster=NULL;
-		i_caster=NULL;
-		u_caster=(Unit*)Caster;
-		p_caster=(Player*)Caster;
-		if(p_caster->DuelingWith)
-			duelSpell = true;
-		break;
+        {
+		    g_caster=NULL;
+		    i_caster=NULL;
+		    u_caster=(Unit*)Caster;
+		    p_caster=(Player*)Caster;
+		    if(p_caster->DuelingWith)
+			    duelSpell = true;
+        }break;
 
 		case TYPEID_UNIT:
-		g_caster=NULL;
-		i_caster=NULL;
-		p_caster=NULL;
-		u_caster=(Unit*)Caster;
-		if(u_caster->IsPet() && ((Pet*)u_caster)->GetPetOwner()->DuelingWith)
-			duelSpell = true;
-		break;
+        {
+		    g_caster=NULL;
+		    i_caster=NULL;
+		    p_caster=NULL;
+		    u_caster=(Unit*)Caster;
+		    if(u_caster->IsPet() && ((Pet*)u_caster)->GetPetOwner()->DuelingWith)
+			    duelSpell = true;
+        }break;
 
 		case TYPEID_ITEM:
 		case TYPEID_CONTAINER:
-		g_caster=NULL;
-		u_caster=NULL;
-		p_caster=NULL;
-		i_caster=(Item*)Caster;
-		break;
+        {
+		    g_caster=NULL;
+		    u_caster=NULL;
+		    p_caster=NULL;
+		    i_caster=(Item*)Caster;
+        }break;
 		
 		case TYPEID_GAMEOBJECT:
-		u_caster=NULL;
-		p_caster=NULL;
-		i_caster=NULL;
-		g_caster=(GameObject*)Caster;
-		break;
+        {
+		    u_caster=NULL;
+		    p_caster=NULL;
+		    i_caster=NULL;
+		    g_caster=(GameObject*)Caster;
+        }break;
+        default:
+            sLog.outDebug("[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
+        break;
 	}
 
 	m_spellState = SPELL_STATE_NULL;
@@ -3157,7 +3155,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 	if(p_caster)
 		return CheckItems();
 	else 
-		return -1;
+		return uint8(-1);
 }
 
 /// we check player items

@@ -397,7 +397,7 @@ bool ChatHandler::HandleNPCFlagCommand(const char* args, WorldSession *m_session
 
 bool ChatHandler::HandleSaveAllCommand(const char *args, WorldSession *m_session)
 {
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	uint32 stime = now();
 	uint32 count = 0;
 	objmgr._playerslock.AcquireReadLock();

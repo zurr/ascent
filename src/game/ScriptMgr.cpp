@@ -17,13 +17,13 @@
 
 #include "StdAfx.h"
 #ifndef WIN32
-#include <dlfcn.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <cstdlib>
-#include <cstring>
+    #include <dlfcn.h>
+    #include <unistd.h>
+    #include <dirent.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <cstdlib>
+    #include <cstring>
 #endif
 
 initialiseSingleton(ScriptMgr);

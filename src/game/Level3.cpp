@@ -20,6 +20,7 @@
 //
 
 #include "StdAfx.h"
+#include "ObjectMgr.h"
 #include "../ascent/Master.h"
 
 bool ChatHandler::HandleWeatherCommand(const char* args, WorldSession *m_session)
@@ -707,7 +708,7 @@ bool ChatHandler::HandleGMTicketGetAllCommand(const char* args, WorldSession *m_
 		return false;
 
 	chn->Say(m_session->GetPlayer(), "GmTicket 2", m_session->GetPlayer());
-	for(std::list<GM_Ticket*>::iterator itr = objmgr.GM_TicketList.begin(); itr != objmgr.GM_TicketList.end(); itr++)
+	for(GmTicketList::iterator itr = objmgr.GM_TicketList.begin(); itr != objmgr.GM_TicketList.end(); itr++)
 	{
 		uint32 cont = 0;
 		uint32 zone = 0;
@@ -736,7 +737,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession *m
 		return false;
 
 
-	std::list<GM_Ticket*>::iterator i;
+	GmTicketList::iterator i;
 	for(i = objmgr.GM_TicketList.begin(); i != objmgr.GM_TicketList.end(); i++)
 	{
 		if(strcmp((*i)->name.c_str(), args) == 0)
@@ -759,7 +760,7 @@ bool ChatHandler::HandleGMTicketDelByIdCommand(const char* args, WorldSession *m
 	if(!*args)
 		return false;
 
-	std::list<GM_Ticket*>::iterator i;
+	GmTicketList::iterator i;
 	int32 guid = -1;
 	for(i = objmgr.GM_TicketList.begin(); i != objmgr.GM_TicketList.end(); i++)
 	{
@@ -1963,7 +1964,7 @@ bool ChatHandler::HandleUnlockMovementCommand(const char* args, WorldSession* m_
 
 bool ChatHandler::HandleMassSummonCommand(const char* args, WorldSession* m_session)
 {
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	objmgr._playerslock.AcquireReadLock();
 	Player * summoner = m_session->GetPlayer();
 	Player * plr;
@@ -2010,7 +2011,7 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
 
 	sGMLog.writefromsession(m_session, "used castall command, spellid %u", spellid);
 
-	HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+	PlayerStorageMap::const_iterator itr;
 	objmgr._playerslock.AcquireReadLock();
 	for (itr = objmgr._players.begin(); itr != objmgr._players.end(); itr++)
 	{

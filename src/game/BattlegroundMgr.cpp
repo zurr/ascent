@@ -674,6 +674,9 @@ CBattleground * CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGr
 		case BATTLEGROUND_ARENA_5V5:
 			players_per_side = 5;
 			break;
+        default:
+            players_per_side = 0;
+            break;
 		}
 
 		iid = ++m_maxBattlegroundId;

@@ -114,7 +114,7 @@ void WorldSession::HandleCharEnumOpcode( WorldPacket & recv_data )
 	uint32 i;
 	ItemPrototype * proto;
 
-	uint32 start_time = getMSTime();
+	//uint32 start_time = getMSTime();
 
 	// loading characters
 	QueryResult* result = CharacterDatabase.Query("SELECT guid, level, race, class, gender, bytes, bytes2, guildid, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, forced_rename_pending FROM characters WHERE acct=%u ORDER BY guid", GetAccountId());

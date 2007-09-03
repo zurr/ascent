@@ -699,7 +699,7 @@ void Group::LoadFromDB(Field *fields)
 void Group::SaveToDB()
 {
 	std::stringstream ss;
-	uint32 i = 0;
+	//uint32 i = 0;
 	uint32 fillers = 8 - m_SubGroupCount;
 
 	ss << "REPLACE INTO groups VALUES("
