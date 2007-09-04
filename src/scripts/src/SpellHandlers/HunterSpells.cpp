@@ -38,7 +38,18 @@ bool Refocus(uint32 i, Spell * pSpell)
     return true;
 }
 
+bool Readiness(uint32 i, Spell * pSpell)
+{
+    if(!pSpell->p_caster)
+		return true;
+    pSpell->p_caster->ClearCooldownsOnLine(50 , pSpell->m_spellInfo->Id);//Beast Mastery
+    pSpell->p_caster->ClearCooldownsOnLine(163, pSpell->m_spellInfo->Id);//Marksmanship
+    pSpell->p_caster->ClearCooldownsOnLine(51 , pSpell->m_spellInfo->Id);//Survival
+    return true;
+}
+
 void SetupHunterSpells(ScriptMgr * mgr)
 {
     mgr->register_dummy_spell(24531, &Refocus);
+    mgr->register_dummy_spell(23989, &Readiness);
 }
