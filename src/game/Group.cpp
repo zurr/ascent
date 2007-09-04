@@ -431,7 +431,22 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 		}
 	}
 	else
+	{
 		sg = GetSubGroup(pPlayer->GetSubGroup());
+		if(!sg->HasMember(pPlayer->GetGUID()))
+		{
+			sg=NULL;
+			for(int i = 0; i < m_SubGroupCount; ++i) {
+				for(GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr) {
+					if(itr->player_info == info)
+					{
+						sg = m_SubGroups[i];
+						break;
+					}
+				}
+			}
+		}
+	}
 	
 	if(!sg)
 	{

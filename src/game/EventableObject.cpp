@@ -85,6 +85,9 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 
 void EventableObject::event_RemoveByPointer(TimedEvent * ev)
 {
+	if(!m_events.size())
+		return;
+
 	m_lock.Acquire();
 	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
 	{
@@ -102,6 +105,9 @@ void EventableObject::event_RemoveByPointer(TimedEvent * ev)
 
 void EventableObject::event_RemoveEvents(uint32 EventType)
 {
+	if(!m_events.size())
+		return;
+
 	m_lock.Acquire();
 
 	if(EventType == EVENT_REMOVAL_FLAG_ALL)
@@ -145,6 +151,9 @@ void EventableObject::event_RemoveEvents()
 
 void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,bool unconditioned)
 {
+	if(!m_events.size())
+		return;
+
 	m_lock.Acquire();
 
 	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
@@ -171,6 +180,9 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,boo
 
 void EventableObject::event_ModifyTime(uint32 EventType, uint32 Time)
 {
+	if(!m_events.size())
+		return;
+
 	m_lock.Acquire();
 
 	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
@@ -193,6 +205,9 @@ void EventableObject::event_ModifyTime(uint32 EventType, uint32 Time)
 
 void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 {
+	if(!m_events.size())
+		return;
+
 	m_lock.Acquire();
 
 	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
@@ -215,6 +230,9 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 bool EventableObject::event_HasEvent(uint32 EventType)
 {
 	bool result=false;
+	if(!m_events.size())
+		return false;
+
 	m_lock.Acquire();
 
 	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
@@ -337,6 +355,17 @@ void EventableObjectHolder::Update(uint32 time_difference)
 
 void EventableObject::event_Relocate()
 {
+	if(!m_events.size())
+	{
+		EventableObjectHolder * nh = sEventMgr.GetEventHolder(event_GetInstanceID());
+		if(nh != m_holder)
+		{
+			m_holder=nh;
+			m_event_Instanceid=nh->GetInstanceID();
+		}
+		return;
+	}
+
 	/* prevent any new stuff from getting added */
 	m_lock.Acquire();
 
@@ -367,6 +396,9 @@ void EventableObject::event_Relocate()
 
 uint32 EventableObject::event_GetEventPeriod(uint32 EventType)
 {
+	if(!m_events.size())
+		return 0;
+
 	uint32 ret;
 	m_lock.Acquire();
 	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
