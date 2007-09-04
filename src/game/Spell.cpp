@@ -33,19 +33,7 @@ void SpellCastTargets::read ( WorldPacket & data,uint64 caster )
 		m_unitTarget = caster;
 	}
 
-	if(m_targetMask & TARGET_FLAG_UNIT)
-	{
-		data >> guid;
-		m_unitTarget = guid.GetOldGuid();
-	}
-
-	if(m_targetMask & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2))
-	{
-		data >> guid;
-		m_unitTarget = guid.GetOldGuid();
-	}
-
-	if(m_targetMask & TARGET_FLAG_OBJECT)
+	if(m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_UNIT | TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2))
 	{
 		data >> guid;
 		m_unitTarget = guid.GetOldGuid();
@@ -3275,7 +3263,7 @@ void Spell::RemoveItems()
 
 	Player* p_caster = (Player*)m_caster;
 
-	if(m_spellInfo->Flags3 == 131072 || m_spellInfo->Flags4 & 0x8000) //0x8000 //0x20000
+	if(m_spellInfo->Flags3 == FLAGS3_REQ_RANGED_WEAPON || m_spellInfo->Flags4 & 0x8000) //0x8000 //0x20000
 	{
 		p_caster->GetItemInterface()->RemoveItemAmt(p_caster->GetUInt32Value(PLAYER_AMMO_ID),1);
 	}
@@ -3302,9 +3290,9 @@ int32 Spell::CalculateEffect(uint32 i)
 */
 	int32 value = 0;
 
-	float basePointsPerLevel = m_spellInfo->EffectRealPointsPerLevel[i];
-	float randomPointsPerLevel = m_spellInfo->EffectDicePerLevel[i];
-	int32 basePoints = m_spellInfo->EffectBasePoints[i] + 1;
+	float basePointsPerLevel    = m_spellInfo->EffectRealPointsPerLevel[i];
+	float randomPointsPerLevel  = m_spellInfo->EffectDicePerLevel[i];
+	int32 basePoints            = m_spellInfo->EffectBasePoints[i] + 1;
 
 	/* Shady: it's so strange cause almost all spells has BPPL!=0 so at lvl70 Fireball takes +280 damage.
 	I think it's imbalanced so commited and replaced with dirty fix.
@@ -3320,8 +3308,6 @@ int32 Spell::CalculateEffect(uint32 i)
 			break;
 		}
 	}
-
-	
 
 	int32 randomPoints = m_spellInfo->EffectDieSides[i];
 	if(u_caster)
@@ -3373,7 +3359,7 @@ int32 Spell::CalculateEffect(uint32 i)
 		if(m_spellInfo->NameHash==0xCD88AA0D && i == 0 )//Envenom
 		{
 			value *= p_caster->m_comboPoints;
-			value += (uint32)(p_caster->GetAP()*(0.03*p_caster->m_comboPoints));
+			value += (uint32)(p_caster->GetAP()*(0.03f*p_caster->m_comboPoints));
 			m_requiresCP=true;
 		}
 		int32 comboDamage = (int32)m_spellInfo->EffectPointsPerComboPoint[i];
@@ -3399,7 +3385,6 @@ int32 Spell::CalculateEffect(uint32 i)
 			}
 		}
 	 }
-
 	return value;
 }
 
@@ -3412,7 +3397,6 @@ void Spell::HandleTeleport(uint32 id, Unit* Target)
    
 	float x,y,z;
 	uint32 mapid;
-	WorldPacket data;
 	
 	if (m_spellInfo->Id == 8690 ||m_spellInfo->Id == 556)//556- Astral Recall
 	{
@@ -3451,7 +3435,7 @@ void Spell::HandleTeleport(uint32 id, Unit* Target)
 	//pTarget->Relocate(mapid, x, y, z, pTarget->GetOrientation(), true, false);
 
 	// We have to use a teleport event on this one. Reason being because of UpdateCellActivity,
-	// the gameobject set of the updater thread WILL Get messed up if we teleport from a gameobject
+	// the game object set of the updater thread WILL Get messed up if we teleport from a gameobject
 	// caster.
 
 	if(!sEventMgr.HasEvent(pTarget, EVENT_PLAYER_TELEPORT))
@@ -3460,19 +3444,18 @@ void Spell::HandleTeleport(uint32 id, Unit* Target)
 
 void Spell::CreateItem(uint32 itemId)
 {
-	Player* pUnit = (Player*)m_caster;
-	Item* newItem;
-	Item *add;
-//	int8 slot = 0;
-	SlotResult slotresult;
+    if(!itemId)
+        return;
 
-	if(!itemId)
-		return;
+	Player *    pUnit = (Player*)m_caster;
+	Item *      newItem;
+	Item *      add;
+	SlotResult  slotresult;
+	ItemPrototype *m_itemProto;
 
-	 ItemPrototype *m_itemProto;
-	 m_itemProto = ItemPrototypeStorage.LookupEntry(itemId);
-	 if (!m_itemProto)
-		 return;
+	m_itemProto = ItemPrototypeStorage.LookupEntry(itemId);
+	if (!m_itemProto)
+	    return;
 
 	if (pUnit->GetItemInterface()->CanReceiveItem(m_itemProto, 1))
 	{
@@ -3517,8 +3500,8 @@ void Spell::CreateItem(uint32 itemId)
 	}
 }
 
-void Spell::_DamageRangeUpdate()
-{/*
+/*void Spell::_DamageRangeUpdate()
+{
 	if(unitTarget)
 	{
 		if(unitTarget->isAlive())
@@ -3551,8 +3534,8 @@ void Spell::_DamageRangeUpdate()
 	{
 		sEventMgr.RemoveEvents(this, EVENT_SPELL_DAMAGE_HIT);
 		delete this;
-	}*/
-}
+	}
+}*/
 
 void Spell::SendHealSpellOnPlayer(Object* caster, Object* target, uint32 dmg,bool critical)
 {
@@ -3565,7 +3548,7 @@ void Spell::SendHealSpellOnPlayer(Object* caster, Object* target, uint32 dmg,boo
 	data << caster->GetNewGUID();
 	data << (pSpellId ? pSpellId : m_spellInfo->Id);
 	data << uint32(dmg);	// amt healed
-	data << uint8(critical);	 //this is crical message
+	data << uint8(critical);	 //this is critical message
 
 	caster->SendMessageToSet(&data, true);
 }
@@ -3754,7 +3737,7 @@ void Spell::DetermineSkillUp(uint32 skillid)
 {
 	//This code is wrong for creating items and disenchanting. 
 	if(!p_caster)return;
-	float chance = 0;
+	float chance = 0.0f;
 	skilllinespell* skill = objmgr.GetSpellSkill(m_spellInfo->Id);
 	if ((skill) && ((Player*)m_caster)->HasSkillLine(skill->skilline))
 	{
@@ -3763,13 +3746,13 @@ void Spell::DetermineSkillUp(uint32 skillid)
 		if(amt >= max)
 			return;
 		if (amt >= skill->grey) //grey
-			chance = 0;
+			chance = 0.0f;
 		else if ((amt >= (((skill->grey - skill->green) / 2) + skill->green))) //green
-			chance = 33;
+			chance = 33.0f;
 		else if (amt >= skill->green) //yellow
-			chance = 66;
+			chance = 66.0f;
 		else //brown
-			chance=100;
+			chance=100.0f;
 	}
 	if(Rand(chance*sWorld.getRate(RATE_SKILLCHANCE)))
 		p_caster->AdvanceSkillLine(skillid, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));

@@ -212,7 +212,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 			Unit *caster = m_caster->GetMapMgr()->GetPlayer(m_caster->GetUInt64Value(UNIT_FIELD_SUMMONEDBY));
 			caster->summonPet->RemoveFromWorld(false);
 			delete caster->summonPet;
-			caster->summonPet = NULL;			
+			caster->summonPet = NULL;
 		}break;
 	case 7814:
 	case 7815:
