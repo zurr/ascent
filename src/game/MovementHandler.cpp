@@ -17,6 +17,7 @@
 
 #include "StdAfx.h"
 #define SWIMMING_TOLERANCE_LEVEL -0.08f
+#define MOVEMENT_PACKET_TIME_DELAY 100
 
 void WorldSession::HandleMoveWorldportAckOpcode( WorldPacket & recv_data )
 {
@@ -89,13 +90,19 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
+	uint32 mstime = getMSTime();
+	int32 new_move_time = (MOVEMENT_PACKET_TIME_DELAY + (movement_info.time - mstime)) + mstime;
 	memcpy(&movement_packet[pos], recv_data.contents(), recv_data.size());
+
+	for(set<Player*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
+	{
 #ifdef USING_BIG_ENDIAN
-	*(uint32*)&movement_packet[pos + 4] = swap32(getMSTime());
+		*(uint32*)&movement_packet[pos+4] = swap32(new_move_time+(*itr)->GetSession()->m_moveDelayTime);
 #else
-	*(uint32*)&movement_packet[pos + 4] = getMSTime();
+		*(uint32*)&movement_packet[pos+4] = new_move_time+(*itr)->GetSession()->m_moveDelayTime;
 #endif
-	_player->OutPacketToSet(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet, false);
+		(*itr)->GetSession()->OutPacket(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet);
+	}
 
 	//Setup Transporter Positioning
 	if(movement_info.transGuid != 0 && !_player->m_lockTransportVariables)
@@ -224,9 +231,9 @@ void WorldSession::HandleMoveStopOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleMoveTimeSkippedOpcode( WorldPacket & recv_data )
 {
-	//uint64 guid;
-	//uint32 time_in_ms;
-	//recv_data >> guid >> time_in_ms;
+	uint64 guid;
+	recv_data >> guid >> m_moveDelayTime;
+	//Log.Debug("MoveTimeSkipped", "Client %s is out of sync by %u ms", GetSocket()->GetRemoteIP().c_str(), m_moveDelayTime);
 }
 
 void WorldSession::HandleMoveNotActiveMoverOpcode( WorldPacket & recv_data )
@@ -295,13 +302,19 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
+	uint32 mstime = getMSTime();
+	int32 new_move_time = (MOVEMENT_PACKET_TIME_DELAY + (movement_info.time - mstime)) + mstime;
 	memcpy(&movement_packet[pos], recv_data.contents(), recv_data.size());
-    #ifdef USING_BIG_ENDIAN
-	    *(uint32*)&movement_packet[pos + 4] = swap32(getMSTime());
-    #else
-	    *(uint32*)&movement_packet[pos + 4] = getMSTime();
-    #endif
-	_player->OutPacketToSet(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet, false);
+
+	for(set<Player*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
+	{
+#ifdef USING_BIG_ENDIAN
+		*(uint32*)&movement_packet[pos+4] = swap32(new_move_time+(*itr)->GetSession()->m_moveDelayTime);
+#else
+		*(uint32*)&movement_packet[pos+4] = new_move_time+(*itr)->GetSession()->m_moveDelayTime;
+#endif
+		(*itr)->GetSession()->OutPacket(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet);
+	}
 
 	//Setup Transporter Positioning
 	if(movement_info.transGuid != 0 && !_player->m_lockTransportVariables)

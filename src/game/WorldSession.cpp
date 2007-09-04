@@ -35,6 +35,7 @@ _logoutTime(0), permissions(NULL), permissioncount(0), _loggingOut(false), insta
 	floodLines = 0;
 	floodTime = World::UNIXTIME;
 	_updatecount = 0;
+	m_moveDelayTime=0;
 
 	for(uint32 x=0;x<8;x++)
 		sAccountData[x].data=NULL;	
@@ -547,6 +548,7 @@ void WorldSession::InitPacketHandlerTable()
 	WorldPacketHandlers[CMSG_FORCE_MOVE_UNROOT_ACK].handler					 = &WorldSession::HandleAcknowledgementOpcodes;
 	WorldPacketHandlers[CMSG_MOVE_KNOCK_BACK_ACK].handler					   = &WorldSession::HandleAcknowledgementOpcodes;
 	WorldPacketHandlers[CMSG_MOVE_HOVER_ACK].handler							= &WorldSession::HandleAcknowledgementOpcodes;
+	WorldPacketHandlers[MSG_MOVE_FLY_DOWN_UNK].handler							= &WorldSession::HandleMovementOpcodes;
 	
 	// Action Buttons
 	WorldPacketHandlers[CMSG_SET_ACTION_BUTTON].handler						 = &WorldSession::HandleSetActionButtonOpcode;
