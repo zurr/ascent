@@ -209,6 +209,9 @@ void GameObject::Spawn(MapMgr * m)
 
 void GameObject::Despawn(uint32 time)
 {
+	if(!IsInWorld())
+		return;
+
 	loot.items.clear();
 
 	//This is for go get deleted while looting

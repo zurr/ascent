@@ -436,6 +436,7 @@ void WorldSession::HandleLootReleaseOpcode( WorldPacket & recv_data )
 
 
 			                            pGO->Despawn(DespawnTime);
+										return;
                                     }
                                 }
                                 else //other type of locks that i dont bother to split atm ;P
@@ -455,6 +456,7 @@ void WorldSession::HandleLootReleaseOpcode( WorldPacket & recv_data )
 
 
 			                        pGO->Despawn(DespawnTime);
+									return;
                                 }
                             }
                         }
