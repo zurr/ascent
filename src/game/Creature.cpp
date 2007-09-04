@@ -158,7 +158,7 @@ void Creature::OnRemoveCorpse()
 
 		sLog.outDetail("Removing corpse of "I64FMT"...", GetGUID());
 	   
-			if(GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID && this->GetCreatureName() && this->GetCreatureName()->Rank == 3)
+			if(GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID && this->proto && this->proto->boss)
 			{
 				RemoveFromWorld(false);
 			}
@@ -437,7 +437,7 @@ bool Creature::CanAddToWorld()
 
 void Creature::RemoveFromWorld(bool addev)
 {
-	if(m_objectTypeId != TYPEID_UNIT)		/* is a pet */
+	if(GetGUIDHigh() != HIGHGUID_UNIT)		/* is a pet */
 	{
 		if(IsInWorld())
 			Unit::RemoveFromWorld();
@@ -461,6 +461,8 @@ void Creature::RemoveFromWorld(bool addev)
 			else
 				Despawn(0,0);
 		}
+		else
+			Despawn(0,0);
 	}
 }
 
