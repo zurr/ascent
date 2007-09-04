@@ -375,12 +375,10 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 
 void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 {
-
-	//17 lava,9 water
-
-	if(movement_info.flags & 0x200000)
-	{
-		if(!_player->m_lastMoveType)
+    //player swiming.
+    if(movement_info.flags & 0x200000)
+    {
+        if(!_player->m_lastMoveType)
 		{
             if(_player->FlyCheat)
 			{
@@ -399,8 +397,7 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 				}
 			}
 		}
-
-		// get water level only if it was not set before
+        // get water level only if it was not set before
 		if (!m_bIsWLevelSet)
 		{
 			// water level is somewhere below the nose of the character when entering water
@@ -409,11 +406,38 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 		}
 		if(!(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
 			_player->m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
-	}
-	// make sure the swimming flag was disabled because of getting out of water
-	else if (m_bIsWLevelSet && movement_info.z > m_wLevel)
-	{
-		if(_player->m_lastMoveType)
+    }
+    if(movement_info.flags & 0x2000 && _player->m_UnderwaterState)
+    {
+        //player jumped inside water but still underwater.
+        if(m_bIsWLevelSet && (movement_info.z + _player->m_noseLevel) < m_wLevel)
+        {
+            return;
+        }
+        else
+        {
+            if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->GodModeCheat)
+            {
+            }
+            else
+            {
+                //only swiming and can breath, stop bar
+                if(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+		        {
+			        WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
+			        data << uint32(1) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << uint32(10) << uint32(0);
+			        SendPacket(&data);
+
+			        _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+		        }
+            }
+        }
+        return;
+    }
+    //player not swiming
+    if(!(movement_info.flags & 0x200000) && _player->m_UnderwaterState)
+    {
+        if(_player->m_lastMoveType)
 		{
 			_player->m_lastMoveType = 0;
 			_player->ResetHeartbeatCoords();
@@ -430,41 +454,47 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 
 		return;
-	}
 
-	//moved from the start of the function. Test if this changes something regarding "inwater" state
-	if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->GodModeCheat)
-		return;
-
-	if(m_bIsWLevelSet && (movement_info.z + _player->m_noseLevel) < m_wLevel)
+    }
+    if(m_bIsWLevelSet && (movement_info.z + _player->m_noseLevel) < m_wLevel)
 	{
 		// underwater, w000t!
 		if(_player->m_MountSpellId)
 			_player->RemoveAura(_player->m_MountSpellId);
-		
+    	
 		if(!(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
 		{
 			// we only just entered the water
 			_player->m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
 
-			// send packet
-			WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-			data << uint32(1) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << int32(-1) << uint32(0);
-			SendPacket(&data);
+            if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->GodModeCheat)
+            {
+            }
+            else
+            {
+			    // send packet
+			    WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
+			    data << uint32(1) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << int32(-1) << uint32(0);
+			    SendPacket(&data);
+            }
 		}
 	}
-	else
-	{
-		// we're not underwater
-		if(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+    else
+    {
+        if(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
 		{
-			WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-			data << uint32(1) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << uint32(10) << uint32(0);
-			SendPacket(&data);
-
+            if(!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->GodModeCheat)
+            {
+            }
+            else
+            {
+			    WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
+			    data << uint32(1) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << uint32(10) << uint32(0);
+			    SendPacket(&data);
+            }
 			_player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
 		}
-	}
+    }
 }
 
 void WorldSession::_SpeedCheck(MovementInfo &mi)
