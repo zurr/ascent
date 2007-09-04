@@ -402,6 +402,8 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 			m_nextSpell = NULL;
 
 			SetNextTarget(NULL);
+            //reset ProcCount
+            ResetProcCounts();
 		
 			//reset waypoint to 0
 			m_currentWaypoint = 0;
@@ -985,6 +987,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					SpellEntry* spellInfo = m_nextSpell->spell;
 					SpellCastTargets targets = setSpellTargets(spellInfo, m_nextTarget);
 					CastSpell(m_Unit, spellInfo, targets);
+                    m_nextSpell->procCount--;
 					AddSpellCooldown(spellInfo, m_nextSpell);
 					//add pet spell after use to pet owner with some chance
 					if(m_Unit->GetGUIDHigh() == HIGHGUID_PET && m_PetOwner->IsPlayer())
@@ -2739,7 +2742,7 @@ AI_Spell *AIInterface::getSpell()
 	{
         sp = *itr;
 		++itr;
-		if(sp->agent == AGENT_SPELL)
+		if(sp->procCount && sp->agent == AGENT_SPELL)
 		{
 			if (sp->spellType == STYPE_BUFF)
 			{
@@ -3134,9 +3137,16 @@ uint32 AIInterface::GetSpellCooldown(uint32 SpellId)
 
 void AIInterface::AddSpellCooldown(SpellEntry * pSpell, AI_Spell * sp)
 {
-	uint32 Cooldown = pSpell->CategoryRecoveryTime > pSpell->RecoveryTime ? pSpell->CategoryRecoveryTime : pSpell->RecoveryTime;
-	m_spellCooldown[pSpell->Id] = getMSTime() + Cooldown;
-}
+    uint32 Cooldown;
+    if (sp->cooldown)
+    {
+		Cooldown = sp->cooldown;
+	}
+    else
+    {
+		Cooldown = pSpell->CategoryRecoveryTime > pSpell->RecoveryTime ? pSpell->CategoryRecoveryTime : pSpell->RecoveryTime;
+	}
+    m_spellCooldown[pSpell->Id] = getMSTime() + Cooldown;}
 
 bool isGuard(uint32 id)
 {
