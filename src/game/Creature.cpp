@@ -1159,6 +1159,9 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 		return;
 	}
 
+	if(!IsInWorld())
+		return;
+
 	if(respawntime)
 	{
 		/* get the cell with our SPAWN location. if we've moved cell this might break :P */
