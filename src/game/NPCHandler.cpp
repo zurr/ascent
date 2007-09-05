@@ -266,7 +266,8 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell,bool oldtrainer)
 			|| (pSpell->RequiredSkillLine && _player->GetSkillAmt(pSpell->RequiredSkillLine) < pSpell->RequiredSkillLineValue)
 			|| (pSpell->IsProfession && !_player->HasSkillLine(pSpell->RequiredSkillLine) && _player->GetUInt32Value(PLAYER_CHARACTER_POINTS2) == 0) )
 			return TRAINER_STATUS_NOT_LEARNABLE;
-		if(pSpell->SpellRank && _player->GetMaxLearnedSpellLevel(pSpell->TeachSpellID)>= pSpell->SpellRank)
+		if(	_player->HasSpell(pSpell->TeachSpellID)
+			|| pSpell->SpellRank && _player->GetMaxLearnedSpellLevel(pSpell->TeachSpellID)>= pSpell->SpellRank)
 			return TRAINER_STATUS_ALREADY_HAVE;
 		return TRAINER_STATUS_LEARNABLE;
 	}
