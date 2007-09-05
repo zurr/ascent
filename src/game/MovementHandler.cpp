@@ -309,9 +309,9 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	for(set<Player*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
 	{
 #ifdef USING_BIG_ENDIAN
-		*(uint32*)&movement_packet[pos+4] = swap32(new_move_time+(*itr)->GetSession()->m_moveDelayTime);
+		*(uint32*)&movement_packet[pos+4] = swap32(new_move_time+(*itr)->GetSession()->m_moveDelayTime)+(*itr)->GetSession()->GetLatency();
 #else
-		*(uint32*)&movement_packet[pos+4] = new_move_time+(*itr)->GetSession()->m_moveDelayTime;
+		*(uint32*)&movement_packet[pos+4] = new_move_time+(*itr)->GetSession()->m_moveDelayTime+(*itr)->GetSession()->GetLatency();
 #endif
 		(*itr)->GetSession()->OutPacket(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet);
 	}
