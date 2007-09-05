@@ -206,7 +206,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 				}
 
 				//reset ProcCount
-				ResetProcCounts();
+				//ResetProcCounts();
 
 				if(m_AIType == AITYPE_PET)
 				{
@@ -403,7 +403,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 
 			SetNextTarget(NULL);
             //reset ProcCount
-            ResetProcCounts();
+            //ResetProcCounts();
 		
 			//reset waypoint to 0
 			m_currentWaypoint = 0;
@@ -985,10 +985,12 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				if((distance <= powf(m_nextSpell->maxrange,2)  && distance >= powf(m_nextSpell->minrange,2)) || m_nextSpell->maxrange == 0) // Target is in Range -> Attack
 				{
 					SpellEntry* spellInfo = m_nextSpell->spell;
+/*					if(m_nextSpell->procCount)
+						m_nextSpell->procCount--;*/
+
 					SpellCastTargets targets = setSpellTargets(spellInfo, m_nextTarget);
 					CastSpell(m_Unit, spellInfo, targets);
-                    m_nextSpell->procCount--;
-					AddSpellCooldown(spellInfo, m_nextSpell);
+                    AddSpellCooldown(spellInfo, m_nextSpell);
 					//add pet spell after use to pet owner with some chance
 					if(m_Unit->GetGUIDHigh() == HIGHGUID_PET && m_PetOwner->IsPlayer())
 					{	
@@ -2742,7 +2744,7 @@ AI_Spell *AIInterface::getSpell()
 	{
         sp = *itr;
 		++itr;
-		if(sp->procCount && sp->agent == AGENT_SPELL)
+		if(/*sp->procCount && */sp->agent == AGENT_SPELL)
 		{
 			if (sp->spellType == STYPE_BUFF)
 			{
@@ -3138,7 +3140,7 @@ uint32 AIInterface::GetSpellCooldown(uint32 SpellId)
 void AIInterface::AddSpellCooldown(SpellEntry * pSpell, AI_Spell * sp)
 {
     uint32 Cooldown;
-    if (sp->cooldown)
+    if (sp && sp->cooldown)
     {
 		Cooldown = sp->cooldown;
 	}

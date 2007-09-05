@@ -126,15 +126,15 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 		sp->entryId = fields[0].GetUInt32();
 		sp->agent = fields[1].GetUInt16();
 		sp->procChance = fields[3].GetUInt32();
-		sp->procCountDB = fields[4].GetUInt32();
+		//sp->procCountDB = fields[4].GetUInt32();
 		sp->spell = ((FastIndexedDataStore<SpellEntry>*)SpellStore::getSingletonPtr())->LookupEntryForced(fields[5].GetUInt32());
 		sp->spellType = fields[6].GetUInt32();
 		sp->spelltargetType = fields[7].GetUInt32();
 		sp->cooldown = fields[8].GetFloat();
 		sp->floatMisc1 = fields[9].GetFloat();
-		if (!sp->procCountDB) 
+/*		if (!sp->procCountDB) 
 			sp->procCount = uint32(-1);
-		else sp->procCount = sp->procCountDB;
+		else sp->procCount = sp->procCountDB;*/
 		sp->Misc2 = fields[10].GetUInt32();
 		if(sp->agent == AGENT_SPELL)
 		{

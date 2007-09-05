@@ -1056,7 +1056,7 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession *m_sess
 	AI_Spell * sp = new AI_Spell;
 	sp->agent = atoi(agent);
 	sp->procChance = atoi(procChance);
-	sp->procCount = atoi(procCount);
+/*	sp->procCount = atoi(procCount);*/
 	sp->spell = sSpellStore.LookupEntry(atoi(spellId));
 	sp->spellType = atoi(spellType);
 	sp->spelltargetType = atoi(spelltargetType);
