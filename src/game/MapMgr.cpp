@@ -1626,12 +1626,20 @@ void MapMgr::UnloadCell(uint32 x,uint32 y)
 
 void MapMgr::EventRespawnCreature(Creature * c, MapCell * p)
 {
-	p->_respawnObjects.erase(((Object*)c));
-	c->OnRespawn(this);
+	ObjectSet::iterator itr = p->_respawnObjects.find( ((Object*)c) );
+	if(itr != p->_respawnObjects.end())
+	{
+		p->_respawnObjects.erase(itr);
+		c->OnRespawn(this);
+	}
 }
 
 void MapMgr::EventRespawnGameObject(GameObject * o, MapCell * c)
 {
-	c->_respawnObjects.erase( ((Object*)o) );
-	o->Spawn(this);
+	ObjectSet::iterator itr = c->_respawnObjects.find( ((Object*)o) );
+	if(itr != c->_respawnObjects.end())
+	{
+		c->_respawnObjects.erase(itr);
+		o->Spawn(this);
+	}
 }

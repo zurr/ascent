@@ -22,16 +22,14 @@ EventableObject::~EventableObject()
 {
 	/* decrement event count on all events */
 
-	m_lock.Acquire();
 	EventMap::iterator itr = m_events.begin();
-	for(; itr != m_events.end();)
+	for(; itr != m_events.end(); ++itr)
 	{
-		(*itr)->deleted = true;
-		(*itr)->DecRef();
-		itr = m_events.erase(itr);
+		itr->second->deleted = true;
+		itr->second->DecRef();
 	}
 
-	m_lock.Release();
+	m_events.clear();
 }
 
 EventableObject::EventableObject()
@@ -56,19 +54,8 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 
 	ptr->IncRef();
 	ptr->instanceId = m_event_Instanceid;
-
-	/* let's do some garbage collection */
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
-	{
-		if((*itr)->deleted)
-		{
-			(*itr)->DecRef();
-			itr = m_events.erase(itr);
-		}
-		else
-			++itr;
-	}
-	m_events.push_back(ptr);
+	pair<uint32,TimedEvent*> p(ptr->eventType, ptr);
+	m_events.insert( p );
 	m_lock.Release();
 
 	/* Add to event manager */
@@ -85,59 +72,63 @@ void EventableObject::event_AddEvent(TimedEvent * ptr)
 
 void EventableObject::event_RemoveByPointer(TimedEvent * ev)
 {
-	if(!m_events.size())
-		return;
-
 	m_lock.Acquire();
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
+	EventMap::iterator itr = m_events.find(ev->eventType);
+	EventMap::iterator it2;
+	if(itr != m_events.end())
 	{
-		if(*itr == ev)
+		do 
 		{
-			ev->deleted = true;
-			ev->DecRef();
-			m_events.erase(itr);
-			m_lock.Release();
-			return;
-		}
+			it2 = itr++;
+
+			if(it2->second == ev)
+			{
+				it2->second->deleted = true;
+				it2->second->DecRef();
+				m_events.erase(it2);
+				m_lock.Release();
+				return;
+			}
+
+		} while(itr != m_events.upper_bound(ev->eventType));
 	}
 	m_lock.Release();
 }
 
 void EventableObject::event_RemoveEvents(uint32 EventType)
 {
-	if(!m_events.size())
-		return;
-
 	m_lock.Acquire();
+	if(!m_events.size())
+	{
+		m_lock.Release();
+		return;
+	}
 
 	if(EventType == EVENT_REMOVAL_FLAG_ALL)
 	{
 		EventMap::iterator itr = m_events.begin();
-		for(; itr != m_events.end();)
+		for(; itr != m_events.end(); ++itr)
 		{
-			(*itr)->deleted = true;
-			(*itr)->DecRef();
-			itr = m_events.erase(itr);
+			itr->second->deleted = true;
+			itr->second->DecRef();
 		}
+		m_events.clear();
 	}
 	else
 	{
-		EventMap::iterator itr = m_events.begin();
-		for(; itr != m_events.end();)
+		EventMap::iterator itr = m_events.find(EventType);
+		EventMap::iterator it2;
+		if(itr != m_events.end())
 		{
-			if((*itr)->eventType == EventType)
+			do 
 			{
-				(*itr)->deleted = true;
-				(*itr)->DecRef();
-				itr = m_events.erase(itr);
-			}
-			else if((*itr)->deleted)
-			{
-				(*itr)->DecRef();
-				itr = m_events.erase(itr);
-			}
-			else
-				++itr;
+				it2 = itr++;
+
+				it2->second->deleted = true;
+				it2->second->DecRef();
+				m_events.erase(it2);
+
+			} while(itr != m_events.upper_bound(EventType));
 		}
 	}
 
@@ -151,28 +142,23 @@ void EventableObject::event_RemoveEvents()
 
 void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,bool unconditioned)
 {
-	if(!m_events.size())
-		return;
-
 	m_lock.Acquire();
-
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
+	if(!m_events.size())
 	{
-		if((*itr)->deleted)
-		{
-			(*itr)->DecRef();
-			itr = m_events.erase(itr);
-			continue;
-		}
-		
-		if((*itr)->eventType == EventType)
+		m_lock.Release();
+		return;
+	}
+
+	EventMap::iterator itr = m_events.find(EventType);
+	if(itr != m_events.end())
+	{
+		do 
 		{
 			if(unconditioned)
-				(*itr)->currTime = TimeLeft;
-			else
-				((int32)TimeLeft > (*itr)->msTime) ? (*itr)->msTime : (int32)TimeLeft;
-		}
-		++itr;
+				itr->second->currTime = TimeLeft;
+			else itr->second->currTime = ((int32)TimeLeft > itr->second->msTime) ? itr->second->msTime : (int32)TimeLeft;
+			++itr;
+		} while(itr != m_events.upper_bound(EventType));
 	}
 
 	m_lock.Release();
@@ -180,24 +166,21 @@ void EventableObject::event_ModifyTimeLeft(uint32 EventType, uint32 TimeLeft,boo
 
 void EventableObject::event_ModifyTime(uint32 EventType, uint32 Time)
 {
-	if(!m_events.size())
-		return;
-
 	m_lock.Acquire();
-
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
+	if(!m_events.size())
 	{
-		if((*itr)->deleted)
-		{
-			(*itr)->DecRef();
-			itr = m_events.erase(itr);
-			continue;
-		}
-		
-		if((*itr)->eventType == EventType)
-			(*itr)->msTime = Time;
+		m_lock.Release();
+		return;
+	}
 
-		++itr;
+	EventMap::iterator itr = m_events.find(EventType);
+	if(itr != m_events.end())
+	{
+		do 
+		{
+			itr->second->msTime = Time;
+			++itr;
+		} while(itr != m_events.upper_bound(EventType));
 	}
 
 	m_lock.Release();
@@ -205,22 +188,21 @@ void EventableObject::event_ModifyTime(uint32 EventType, uint32 Time)
 
 void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 {
-	if(!m_events.size())
-		return;
-
 	m_lock.Acquire();
-
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
+	if(!m_events.size())
 	{
-		if((*itr)->deleted)
+		m_lock.Release();
+		return;
+	}
+
+	EventMap::iterator itr = m_events.find(EventType);
+	if(itr != m_events.end())
+	{
+		do 
 		{
-			(*itr)->DecRef();
-			itr = m_events.erase(itr);
-			continue;
-		}
-		else if((*itr)->eventType == EventType) {
-			(*itr)->msTime = (*itr)->currTime = Time;
-		}
+			itr->second->currTime = itr->second->msTime = Time;
+			++itr;
+		} while(itr != m_events.upper_bound(EventType));
 	}
 
 	m_lock.Release();
@@ -229,28 +211,31 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32 EventType, uint32 Time)
 
 bool EventableObject::event_HasEvent(uint32 EventType)
 {
-	bool result=false;
-	if(!m_events.size())
-		return false;
-
+	bool ret = false;
 	m_lock.Acquire();
-
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end();)
+	if(!m_events.size())
 	{
-		if((*itr)->deleted)
-		{
-			(*itr)->DecRef();
-			itr = m_events.erase(itr);
-			continue;
-		}
-		else if((*itr)->eventType == EventType)
-			result=true;
+		m_lock.Release();
+		return false;
+	}
 
-		++itr;
+	//ret = m_events.find(EventType) == m_events.end() ? false : true;
+	EventMap::iterator itr = m_events.find(EventType);
+	if(itr != m_events.end())
+	{
+		do 
+		{
+			if(!itr->second->deleted)
+			{
+				ret = true;
+				break;
+			}
+			++itr;
+		} while(itr != m_events.upper_bound(EventType));
 	}
 
 	m_lock.Release();
-	return result;
+	return ret;
 }
 
 EventableObjectHolder::EventableObjectHolder(int32 instance_id) : mInstanceId(instance_id)
@@ -355,17 +340,6 @@ void EventableObjectHolder::Update(uint32 time_difference)
 
 void EventableObject::event_Relocate()
 {
-	if(!m_events.size())
-	{
-		EventableObjectHolder * nh = sEventMgr.GetEventHolder(event_GetInstanceID());
-		if(nh != m_holder)
-		{
-			m_holder=nh;
-			m_event_Instanceid=nh->GetInstanceID();
-		}
-		return;
-	}
-
 	/* prevent any new stuff from getting added */
 	m_lock.Acquire();
 
@@ -396,39 +370,30 @@ void EventableObject::event_Relocate()
 
 uint32 EventableObject::event_GetEventPeriod(uint32 EventType)
 {
-	if(!m_events.size())
-		return 0;
-
-	uint32 ret;
+	uint32 ret = 0;
 	m_lock.Acquire();
-	for(EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
-	{
-		if((*itr)->eventType == EventType)
-		{
-			ret = (*itr)->msTime;
-			m_lock.Release();
-			return ret;
-		}
-	}
-
+	EventMap::iterator itr = m_events.find(EventType);
+	if(itr != m_events.end())
+		ret = itr->second->msTime;
+	
 	m_lock.Release();
-	return 0;
+	return ret;
 }
 
 void EventableObjectHolder::AddEvent(TimedEvent * ev)
 {
 	// m_lock NEEDS TO BE A RECURSIVE MUTEX
 	ev->IncRef();
-	if(m_lock.AttemptAcquire())
-	{
-		m_events.push_back( ev );
-		m_lock.Release();
-	}
-	else
+	if(!m_lock.AttemptAcquire())
 	{
 		m_insertPoolLock.Acquire();
 		m_insertPool.push_back( ev );
 		m_insertPoolLock.Release();
+	}
+	else
+	{
+		m_events.push_back( ev );
+		m_lock.Release();
 	}
 }
 
@@ -442,18 +407,23 @@ void EventableObjectHolder::AddObject(EventableObject * obj)
 		m_insertPoolLock.Acquire();
 		EventMap::iterator it2;
 
-		for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end();++itr)
+		for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
 		{
 			// ignore deleted events (shouldn't be any in here, actually)
-			if((*itr)->deleted)
+			if(itr->second->deleted)
+			{
+				/*it2 = itr++;
+				itr->second->DecRef();
+				obj->m_events.erase(it2);*/
+				continue;
+			}
+
+			if(mInstanceId == WORLD_INSTANCE && itr->second->eventFlag & EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT)
 				continue;
 
-			if(mInstanceId == WORLD_INSTANCE && (*itr)->eventFlag & EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT)
-				continue;
-
-			(*itr)->IncRef();
-			(*itr)->instanceId = mInstanceId;
-			m_insertPool.push_back((*itr));
+			itr->second->IncRef();
+			itr->second->instanceId = mInstanceId;
+			m_insertPool.push_back(itr->second);
 		}
 
 		// Release the insert pool.
@@ -466,15 +436,15 @@ void EventableObjectHolder::AddObject(EventableObject * obj)
 	for(EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
 	{
 		// ignore deleted events
-		if((*itr)->deleted)
+		if(itr->second->deleted)
 			continue;
 
-		if(mInstanceId == WORLD_INSTANCE && (*itr)->eventFlag & EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT)
+		if(mInstanceId == WORLD_INSTANCE && itr->second->eventFlag & EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT)
 			continue;
 
-		(*itr)->IncRef();
-		(*itr)->instanceId = mInstanceId;
-		m_events.push_back( (*itr) );
+		itr->second->IncRef();
+		itr->second->instanceId = mInstanceId;
+		m_events.push_back( itr->second );
 	}
 
 	m_lock.Release();
