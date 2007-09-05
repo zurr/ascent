@@ -50,10 +50,11 @@ SMT_RESIST_DISPEL - check if it is used
 ==========================================================================
 Zack - test my shit :
 
- - ai_agents fillup
- - test function RemoveThreatByPtr
- - add old combat (again)
+- ai_agents fillup
+- test function RemoveThreatByPtr
+- add old combat (again)
 - don't let rogues stealth with dots
+- targetype checking (especially the player type checking)
 
 ==========================================================================
 

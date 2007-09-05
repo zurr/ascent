@@ -908,14 +908,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				if(itr2->procFlags & PROC_TAGRGET_SELF)
 					target = this;
 				else target = victim;
-				if(spellInfo->TargetCreatureType)
-				{
-					if(target->GetTypeId()!= TYPEID_UNIT)
-						continue; //in case we are casting it on a player
-					CreatureInfo *inf = ((Creature*)(target))->GetCreatureName();
-					if(!inf || !(1<<(inf->Type-1) & spellInfo->TargetCreatureType))
-						continue;
-				}
+				if(!TargetTypeCheck(target,spellInfo->TargetCreatureType))
+					continue;
 				targets.m_unitTarget = target->GetGUID();
 	
 				spell->pSpellId=origId;

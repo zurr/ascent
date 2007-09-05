@@ -31,6 +31,8 @@ bool SERVER_DECL Rand(float);
 #define UF_ATTACKING	2 // this unit is attacking it's selection
 #define SPELL_GROUPS 32//maximum possible is 32, may be less
 
+#define UNIT_TYPE_HUMANOID_BIT (1 << (HUMANOID-1)) //should get computed by precompiler ;)
+
 class Aura;
 class Spell;
 class AIInterface;

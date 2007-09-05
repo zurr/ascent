@@ -1004,6 +1004,22 @@ inline bool IsInrange(Object * o1,Object * o2,float square_r)
         o2->GetPositionX(),o2->GetPositionY(),o2->GetPositionZ(),square_r);
 }
 
+inline bool TargetTypeCheck(Object *obj,uint32 ReqCreatureTypeMask)
+{
+	if(!ReqCreatureTypeMask)
+		return true;
+	if(obj->GetTypeId()== TYPEID_UNIT)
+	{
+		CreatureInfo *inf = ((Creature*)(obj))->GetCreatureName();
+		if(!inf || !(1<<(inf->Type-1) & ReqCreatureTypeMask))
+			return false;
+	}
+	else if(obj->GetTypeId() == TYPEID_PLAYER && !(UNIT_TYPE_HUMANOID_BIT & ReqCreatureTypeMask))
+		return false;
+	else return false;//omg, how in the hack did we cast it on a GO ? But who cares ?
+	return true;
+}
+
 class SpellCastTargets
 {
 public:

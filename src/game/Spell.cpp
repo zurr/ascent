@@ -213,14 +213,8 @@ void Spell::FillAllTargetsInArea(std::vector<uint64> *tmpMap,float srcx,float sr
 	{
 		if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
 			continue;
-		if(m_spellInfo->TargetCreatureType)
-		{
-			if((*itr)->GetTypeId()!= TYPEID_UNIT)
-				continue;
-			CreatureInfo *inf = ((Creature*)(*itr))->GetCreatureName();
-			if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
-				continue;
-		}
+		if(!TargetTypeCheck((*itr),m_spellInfo->TargetCreatureType))
+			continue;
 		if(IsInrange(srcx,srcy,srcz,(*itr),r))
 		{
 			if(u_caster)
@@ -264,14 +258,8 @@ uint64 Spell::GetSinglePossibleEnemy(float prange)
 	{
 		if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
 			continue;
-		if(m_spellInfo->TargetCreatureType)
-		{
-			if((*itr)->GetTypeId()!= TYPEID_UNIT)
-				continue;
-			CreatureInfo *inf = ((Creature*)(*itr))->GetCreatureName();
-			if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
-				continue;
-		}
+		if(!TargetTypeCheck((*itr),m_spellInfo->TargetCreatureType))
+			continue;
 		if(IsInrange(srcx,srcy,srcz,(*itr),r))
 		{
 			if(u_caster)
@@ -305,14 +293,8 @@ uint64 Spell::GetSinglePossibleFriend(float prange)
 	{
 		if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
 			continue;
-		if(m_spellInfo->TargetCreatureType)
-		{
-			if((*itr)->GetTypeId()!= TYPEID_UNIT)
-				continue;
-			CreatureInfo *inf = ((Creature*)(*itr))->GetCreatureName();
-			if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
-				continue;
-		}
+		if(!TargetTypeCheck((*itr),m_spellInfo->TargetCreatureType))
+			continue;
 		if(IsInrange(srcx,srcy,srcz,(*itr),r))
 		{
 			if(u_caster)
@@ -3000,14 +2982,8 @@ uint8 Spell::CanCast(bool rangetolerate)
 					}
 				}
 			}	*/		
-			if(m_spellInfo->TargetCreatureType)
-			{
-				if(target->GetTypeId()!= TYPEID_UNIT)
-					return SPELL_FAILED_BAD_TARGETS; //this should never happen s
-				CreatureInfo *inf = ((Creature*)(target))->GetCreatureName();
-				if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
-					return SPELL_FAILED_BAD_TARGETS;
-			}
+			if(!TargetTypeCheck(target,m_spellInfo->TargetCreatureType))
+				return SPELL_FAILED_BAD_TARGETS;
 		}
 	}	
 	if(m_targets.m_targetMask==TARGET_FLAG_DEST_LOCATION)
