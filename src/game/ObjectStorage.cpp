@@ -155,6 +155,25 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 			sp->minrange = GetMinRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
 			sp->maxrange = GetMaxRange(sSpellRange.LookupEntry(sp->spell->rangeIndex));
+
+			//omg the poor darling has no clue about making ai_agents
+			if(sp->cooldown==-1)
+			{
+				//now this will not be exact cooldown but maybe a bigger one to not make him spam spells to often
+				int cooldown;
+				SpellDuration *sd=sSpellDuration.LookupEntry(sp->spell->DurationIndex);
+				int Dur=0;
+				int Casttime=0;//most of the time 0
+				int RecoveryTime=sp->spell->RecoveryTime;
+	            if(sp->spell->DurationIndex)
+		            Dur =::GetDuration(sd);
+				Casttime=GetCastTime(sCastTime.LookupEntry(sp->spell->CastingTimeIndex));
+				cooldown=Dur+Casttime+RecoveryTime;
+				if(cooldown<0)
+					sp->cooldown=0x00FFFFFF;//huge value that should not loop while adding some timestamp to it
+				else sp->cooldown=cooldown;
+			}
+
 			/*
 			//now apply the morron filter
 			if(sp->procChance==0)
@@ -172,8 +191,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 			}
 			if(sp->spelltargetType==0)
 				sp->spelltargetType = RecommandAISpellTargetType(sp->spell);
-			if(sp->cooldown)
-				sp->cooldown=sp->spell->RecoveryTime;
 				*/
 		}
 
