@@ -1187,21 +1187,30 @@ void World::SetInitialWorldSettings()
 		sp->Effect[1] = 6; //aura
 		sp->EffectTriggerSpell[1] = 30339; //evil , but this is good for us :D
 	}
-
+	//mage talent "Spell Power"
+	sp = sSpellStore.LookupEntry(35581);
+	if(sp)	
+	{
+		sp->EffectSpellGroupRelation[0]=5775504;
+	}
+	sp = sSpellStore.LookupEntry(35578);
+	if(sp)	
+	{
+		sp->EffectSpellGroupRelation[0]=5775504;
+	}
 	//mage talent "Blazing Speed"
-	sp = sSpellStore.LookupEntry(31641);
+	sp = sSpellStore.LookupEntry(31641); 
 	if(sp)	sp->EffectTriggerSpell[0]=31643;
 	sp = sSpellStore.LookupEntry(31642);
 	if(sp)	sp->EffectTriggerSpell[0]=31643;
 
-	//mage talent frostbyte. we make it to be dummy
+	//mage talent "frostbyte". we make it to be dummy
 	sp = sSpellStore.LookupEntry(11071);
 	if(sp)	sp->EffectApplyAuraName[0]=4;
 	sp = sSpellStore.LookupEntry(12496);
 	if(sp)	sp->EffectApplyAuraName[0]=4;
 	sp = sSpellStore.LookupEntry(12497);
 	if(sp)	sp->EffectApplyAuraName[0]=4;
-
 	//rogue-shiv -> add 1 combo point
 	sp = sSpellStore.LookupEntry(5938);
 	if(sp)	sp->Effect[1]=80;

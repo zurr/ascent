@@ -4801,7 +4801,23 @@ void Aura::SpellAuraAddPctMod(bool apply)
 		break;
 
 	case SMT_DAMAGE_DONE:
-		SendModifierLog(&m_target->SM_PDamageBonus,val,AffectedGroups,mod->m_miscValue,true);
+		{
+			SpellEntry *se = GetSpellProto();
+			switch (se->NameHash) //Dirty but works. If you get better idea - feel free to rewrite
+			{
+			case 0x70E5E298: //Priest:Darkness
+			case 0xD7AF0FAA: //Warlock:Shadow Mastery
+				m_target->DamageDoneModPCT[SCHOOL_SHADOW] +=val/100.0f;break;
+			case 0xCB6A377D: //Mage:Arcane Power
+				for (uint32 x=0;x<7;x++)
+					m_target->DamageDoneModPCT[x] +=val/100.0f;break;
+			case 0xFF5A6938: //Mage:Fire Power
+				m_target->DamageDoneModPCT[SCHOOL_FIRE] +=val/100.0f;break;
+			default:
+				SendModifierLog(&m_target->SM_PDamageBonus,val,AffectedGroups,mod->m_miscValue,true);
+				break;
+			}
+		}
 		break;
 
 	case SMT_DUMMY:
