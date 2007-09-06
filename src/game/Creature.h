@@ -431,6 +431,7 @@ public:
 	void RemoveLimboState(Unit * healer);
 	void SetGuardWaypoints();
 	bool m_corpseEvent;
+	MapCell * m_respawnCell;
 protected:
 	CreatureAIScript *_myScriptClass;
 	bool m_limbostate;

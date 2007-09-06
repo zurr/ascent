@@ -213,6 +213,7 @@ public:
 	inline bool CanMine(){return mines_remaining!=1;}
 	inline void UseMine(){mines_remaining--;}
     bool HasLoot();
+	MapCell * m_respawnCell;
 
 protected:
 

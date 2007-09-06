@@ -93,13 +93,15 @@ void MapCell::RemoveObjects()
 	{
 		switch((*itr)->GetTypeId())
 		{
-		case TYPEID_UNIT:
+		case TYPEID_UNIT: {
+			((Creature*)*itr)->m_respawnCell=NULL;
 			delete ((Creature*)*itr);
-			break;
+			}break;
 
-		case TYPEID_GAMEOBJECT:
+		case TYPEID_GAMEOBJECT: {
+			((GameObject*)*itr)->m_respawnCell=NULL;
 			delete ((GameObject*)*itr);
-			break;
+			}break;
 		}
 	}
 	_respawnObjects.clear();

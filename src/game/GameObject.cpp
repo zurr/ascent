@@ -54,6 +54,7 @@ GameObject::GameObject(uint32 high, uint32 low)
 	loot.gold = 0;
 	m_deleted = false;
 	mines_remaining = 1;
+	m_respawnCell=NULL;
 }
 
 GameObject::~GameObject()
@@ -72,6 +73,9 @@ GameObject::~GameObject()
 		if(plr == m_summoner)
 			m_summoner = 0;
 	}
+
+	if(m_respawnCell!=NULL)
+		m_respawnCell->_respawnObjects.erase(this);
 
 	if (m_summonedGo && m_summoner)
 		for(int i = 0; i < 4; i++)
@@ -236,6 +240,7 @@ void GameObject::Despawn(uint32 time)
 		sEventMgr.RemoveEvents(this);
 		sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnGameObject, this, pCell, EVENT_GAMEOBJECT_ITEM_SPAWN, time, 1, 0);
 		Object::RemoveFromWorld();
+		m_respawnCell=pCell;
 	}
 	else
 	{

@@ -93,6 +93,7 @@ Creature::Creature(uint32 high, uint32 low)
 	m_limbostate = false;
 	m_corpseEvent=false;
 	m_runSpeed=8.0f;
+	m_respawnCell=NULL;
 }
 
 
@@ -115,6 +116,8 @@ Creature::~Creature()
 			delete (*itr);
 		delete m_custom_waypoint_map;
 	}
+	if(m_respawnCell!=NULL)
+		m_respawnCell->_respawnObjects.erase(this);
 }
 
 void Creature::Update( uint32 p_time )
@@ -1177,6 +1180,7 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 		sEventMgr.AddEvent(m_mapMgr, &MapMgr::EventRespawnCreature, this, pCell, EVENT_CREATURE_RESPAWN, respawntime, 1, 0);
 		Unit::RemoveFromWorld();
 		m_position = m_spawnLocation;
+		m_respawnCell=pCell;
 	}
 	else
 	{
