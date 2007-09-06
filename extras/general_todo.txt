@@ -50,13 +50,12 @@ SMT_RESIST_DISPEL - check if it is used
 ==========================================================================
 Zack - test my shit :
 
-- ai_agents fillup
 - test function RemoveThreatByPtr
-- add old combat (again)
 - don't let rogues stealth with dots
+- add old combat (again)
+- ai_agents fillup
 - targetype checking (especially the player type checking)
 - ai spell cooldown when not known
-- rogue initiative
 - rogue setup
 - uncomment spel.cpp : PROC_ON_RESIST_VICTIM
 

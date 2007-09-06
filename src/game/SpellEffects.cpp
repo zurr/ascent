@@ -3270,12 +3270,15 @@ void Spell::SpellEffectAddComboPoints(uint32 i) // Add Combo Points
 	if(!p_caster)
 		return;
   
-	//if this is a procspell
-	if(pSpellId)
+	//if this is a procspell Ruthlessness (maybe others later)
+	if(pSpellId && m_spellInfo->Id==14157)
 	{
 		//it seems this combo adding procspell is going to change combopoint count before they will get reseted. We add it after the reset
 		/* burlex - this is wrong, and exploitable.. :/ if someone uses this they will have unlimited combo points */
-		//p_caster->m_spellcomboPoints+=damage;
+		//re-enabled this by Zack. Explained why it is used + recheked to make sure initialization is good ...
+		// while casting a spell talent will trigger uppon the spell prepare faze
+		// the effect of the talent is to add 1 combo point but when triggering spell finishes it will clear the extra combo point
+		p_caster->m_spellcomboPoints += damage;
 		return;
 	}
 	p_caster->AddComboPoints(p_caster->GetSelection(), damage);

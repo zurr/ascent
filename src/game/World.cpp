@@ -919,7 +919,11 @@ void World::SetInitialWorldSettings()
 					if(strstr(desc,"your spell criticals have"))
 						pr|=PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_CRIT_HIT_VICTIM;
 					if(strstr(desc,"after dodging their attack"))
+					{
 						pr|=PROC_ON_DODGE_VICTIM;
+						if(strstr(desc,"add a combo point"))
+							pr|=PROC_TAGRGET_SELF;
+					}
 					if(strstr(desc,"fully resisting"))
 						pr|=PROC_ON_RESIST_VICTIM;
 //					if(strstr(desc,"chill effect to your Blizzard"))
@@ -1122,6 +1126,9 @@ void World::SetInitialWorldSettings()
 		/* Decapitate */
 		if(sp->NameHash == 0xB6C3243C)
 			sp->procChance = 30;
+//junk code to get me has :P 
+//if(sp->Id==11267 || sp->Id==11289 || sp->Id==6409)
+//	printf("!!!!!!! name %s , id %u , hash %u \n",nametext,sp->Id, namehash);
 	}
 	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
 	SpellEntry * parentsp = sSpellStore.LookupEntry(30823);

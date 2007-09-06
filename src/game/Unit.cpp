@@ -850,7 +850,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						case 14157:
 							{
 								//we need a finishing move for this 
-								if(CastingSpell->buffType!=SPELL_TYPE_FINISHING_MOVE)
+								if(CastingSpell->buffType!=SPELL_TYPE_FINISHING_MOVE || victim==this)
 									continue;
 							}break;
 						//rogue - Relentless Strikes
@@ -867,11 +867,10 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 						//rogue - Initiative
 						case 13977:
 							{
-								continue; //disabled until tested
 								//we need a Ambush, Garrote, or Cheap Shot
-								if (CastingSpell->NameHash!=0x0 &&
-									CastingSpell->NameHash!=0x0 &&
-									CastingSpell->NameHash!=0x0)  
+								if (CastingSpell->NameHash!=3345919181 && //Cheap Shot
+									CastingSpell->NameHash!=566770777 && //Ambush
+									CastingSpell->NameHash!=891349384)  //Garrote
 									continue;
 							}break;
 						//Blackout

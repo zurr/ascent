@@ -2075,7 +2075,7 @@ void ObjectMgr::LoadTrainers()
 			}
 			else
 			{
-				sLog.outDebug("OMG trainer is casting a spell that does not teach anything : %u \n",CastSpellID);
+//				sLog.outDebug("OMG trainer is casting a spell that does not teach anything : %u \n",CastSpellID);
 			}
 			result2->NextRow();
 		}

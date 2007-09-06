@@ -1893,11 +1893,8 @@ void Spell::finish()
 		{
 			if(p_caster->m_spellcomboPoints)
 			{
-				//p_caster->SetComboPoint(p_caster->GetSelection(),p_caster->m_spellcomboPoints);
-				//p_caster->m_spellcomboPoints=0;
-				p_caster->m_comboTarget = p_caster->GetSelection();
 				p_caster->m_comboPoints = p_caster->m_spellcomboPoints;
-				p_caster->m_spellcomboPoints=0;
+				p_caster->UpdateComboPoints(); //this will make sure we do not use any wrong values here
 			}
 			else
 				p_caster->NullComboPoints();
@@ -2147,19 +2144,19 @@ void Spell::writeSpellMissedTargets( WorldPacket * data )
 	 * 7 = Immune
 	 */
 	TargetsList::iterator i;
-/*	if(u_caster && u_caster->isAlive())
+	if(u_caster && u_caster->isAlive())
 	{
 		for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ )
 		{
 			*data << (*i);
 			*data << (uint8)2;
 			///handle proc on resist spell
-			Unit* target = objmgr.GetCreature(((Player*)m_caster)->GetSelection());	
+			Unit* target = u_caster->GetMapMgr()->GetUnit(*i);
 			if(target && target->isAlive())
 				u_caster->HandleProc(PROC_ON_RESIST_VICTIM,target,m_spellInfo,damage);
 		}
 	}
-	else*/
+	else
 	{
 		for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ )
 		{
@@ -3364,6 +3361,11 @@ int32 Spell::CalculateEffect(uint32 i)
 
 			value += (comboDamage * p_caster->m_comboPoints);
 			m_requiresCP=true;
+			//this is ugly so i willexplain the case maybe someone ha a better idea :
+			// while casting a spell talent will trigger uppon the spell prepare faze
+			// the effect of the talent is to add 1 combo point but when triggering spell finishes it will clear the extra combo point
+			if(p_caster)
+				p_caster->m_spellcomboPoints = 0;
 		}
 
 		SpellOverrideMap::iterator itr = p_caster->mSpellOverrideMap.find(m_spellInfo->Id);
