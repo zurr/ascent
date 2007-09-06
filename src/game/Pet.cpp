@@ -1272,7 +1272,7 @@ void Pet::AddPetSpellToOwner(uint32 spellId)
 	if (objmgr.GetSpellSkill(spellId))
 		line = objmgr.GetSpellSkill(spellId)->skilline;
 	//exit if owner hasn't Beast training ability (id 5149)
-	if(!m_Owner->HasSpell(5149) || !line)
+	if(!m_Owner || !m_Owner->HasSpell(5149) || !line)
 		return;
 	//find appropriate teaching spell...
 	vector<TrainerSpell*>* lst = objmgr.GetTrainerPetSpellsForLine(line);

@@ -2772,11 +2772,6 @@ void Unit::WipeTargetList()
 
 void Unit::AddInRangeObject(Object* pObj)
 {
-	if(pObj->GetEntry() == 14495)
-		printf("Adding farsight to "I64FMT"\n", GetGUID());
-	else if(GetEntry() == 14495)
-		printf("Adding "I64FMT" to farsight.\n", pObj->GetGUID());
-
 	if ((pObj->GetTypeId() == TYPEID_UNIT) || (pObj->GetTypeId() == TYPEID_PLAYER))
 	{
 		if (isHostile(this, (Unit*)pObj))
@@ -2809,14 +2804,6 @@ void Unit::AddInRangeObject(Object* pObj)
 
 void Unit::OnRemoveInRangeObject(Object* pObj)
 {
-	if(pObj->GetEntry() == 14495)
-		printf("Removing farsight from "I64FMT"\n", GetGUID());
-	else if(GetEntry() == 14495)
-		printf("Removing "I64FMT" from farsight.\n", pObj->GetGUID());
-
-	/*set<Object*>::iterator itr = m_oppFactsInRange.find(pObj);
-	if(itr != m_oppFactsInRange.end())
-		m_oppFactsInRange.erase(itr);*/
 	m_oppFactsInRange.erase(pObj);
 
 	if(pObj->GetTypeId() == TYPEID_UNIT || pObj->GetTypeId() == TYPEID_PLAYER)

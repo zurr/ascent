@@ -2900,6 +2900,7 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
 		//Setting faction
 		InvisibleSummon->_setFaction();
 		InvisibleSummon->PushToWorld(p_caster->GetMapMgr());
+		InvisibleSummon->bInvincible=true;
 
 		// bind farsight
 		p_caster->SetUInt64Value(PLAYER_FARSIGHT, InvisibleSummon->GetGUID());

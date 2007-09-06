@@ -995,7 +995,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					if(m_Unit->GetGUIDHigh() == HIGHGUID_PET && m_PetOwner->IsPlayer())
 					{	
 						Pet * pPet = static_cast<Pet*>(m_Unit);
-						if(pPet && Rand(25))
+						if(pPet && Rand(10))
 							pPet->AddPetSpellToOwner(spellInfo->Id);
 					}
 					m_nextSpell = NULL;

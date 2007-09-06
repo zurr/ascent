@@ -84,5 +84,71 @@ protected:
 #endif
 };
 
+#ifdef WIN32
+
+class SERVER_DECL FastMutex
+{
+#pragma pack(push,8)
+	volatile long m_lock;
+#pragma pack(pop)
+	DWORD m_recursiveCount;
+
+public:
+	inline FastMutex() : m_lock(0),m_recursiveCount(0) {}
+	inline ~FastMutex() {}
+
+	inline void Acquire()
+	{
+		DWORD thread_id = GetCurrentThreadId(), owner;
+		if(thread_id == m_lock)
+		{
+			++m_recursiveCount;
+			return;
+		}
+
+		for(;;)
+		{
+			owner = InterlockedCompareExchange(&m_lock, thread_id, 0);
+			if(owner == 0)
+				break;
+
+			Sleep(0);
+		}
+
+		++m_recursiveCount;
+	}
+
+	inline bool AttemptAcquire()
+	{
+		DWORD thread_id = GetCurrentThreadId();
+		if(thread_id == m_lock)
+		{
+			++m_recursiveCount;
+			return true;
+		}
+
+		DWORD owner = InterlockedCompareExchange(&m_lock, thread_id, 0);
+		if(owner == 0)
+		{
+			++m_recursiveCount;
+			return true;
+		}
+
+		return false;
+	}
+
+	inline void Release()
+	{
+		if((--m_recursiveCount) == 0)
+			InterlockedExchange(&m_lock, 0);
+	}
+};
+
+#else
+
+#define FastMutex Mutex
+
+#endif
+
 #endif
 

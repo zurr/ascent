@@ -245,11 +245,16 @@ Group * ObjectMgr::GetGroupById(uint32 id)
 //
 void ObjectMgr::DeletePlayerInfo( uint32 guid )
 {
+	PlayerInfo * pl;
 	HM_NAMESPACE::hash_map<uint32,PlayerInfo*>::iterator i;
 	playernamelock.AcquireWriteLock();
 	i=m_playersinfo.find(guid);
 	if(i!=m_playersinfo.end())
 	{
+		pl=i->second;
+		if(pl->m_Group)
+			pl->m_Group->RemovePlayer(pl,NULL,true);
+
 		delete i->second;
 		m_playersinfo.erase(i);
 	}
