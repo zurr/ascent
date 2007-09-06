@@ -201,6 +201,12 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
 	*/
 
+	if(m_spellInfo->NameHash==0x154BC7DB)
+	{
+		/* sacrifice */
+		return;
+	}
+
 	uint32 spellId = m_spellInfo->Id;
 
 	switch(spellId)

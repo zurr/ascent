@@ -409,6 +409,9 @@ void Pet::InitializeMe(bool first)
 	m_State = 1;		// dont set agro on spawn
 
 
+	if(GetEntry() == 416)
+		m_aiInterface->disable_melee = true;
+
 	PushToWorld(m_Owner->GetMapMgr());
 	//InitializeSpells(); 
 
