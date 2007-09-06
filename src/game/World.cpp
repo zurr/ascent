@@ -868,6 +868,8 @@ void World::SetInitialWorldSettings()
 						//we should find that specific spell (or group) on what we will trigger
 						else pr|=PROC_ON_CAST_SPECIFIC_SPELL;
 					}
+					if(strstr(desc, "chance to add an additional combo"))
+							pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc, "victim of a melee or ranged critical strike"))
 						pr|=PROC_ON_CRIT_HIT_VICTIM;
 					if(strstr(desc, "getting a critical effect from"))
@@ -916,6 +918,10 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_CAST_SPELL;
 					if(strstr(desc,"your spell criticals have"))
 						pr|=PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_CRIT_HIT_VICTIM;
+					if(strstr(desc,"after dodging their attack"))
+						pr|=PROC_ON_DODGE_VICTIM;
+					if(strstr(desc,"fully resisting"))
+						pr|=PROC_ON_RESIST_VICTIM;
 //					if(strstr(desc,"chill effect to your Blizzard"))
 //						pr|=PROC_ON_CAST_SPELL;	
 					//////////////////////////////////////////////////
@@ -1409,6 +1415,25 @@ void World::SetInitialWorldSettings()
 	{
 		sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
 		sp->EffectTriggerSpell[0] = 26635;
+	}
+	//rogue - intiative
+	sp = sSpellStore.LookupEntry(13976);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42;
+		sp->procFlags=uint32(PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF);
+	}
+	sp = sSpellStore.LookupEntry(13979);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42;
+		sp->procFlags=uint32(PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF);
+	}
+	sp = sSpellStore.LookupEntry(13980);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42;
+		sp->procFlags=uint32(PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF);
 	}
 	//winfury weapon changes. Start to hate these day by day
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(283);

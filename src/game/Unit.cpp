@@ -864,6 +864,16 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								if(!Rand(proc_Chance))
 									continue;
 							}break;
+						//rogue - Initiative
+						case 13977:
+							{
+								continue; //disabled until tested
+								//we need a Ambush, Garrote, or Cheap Shot
+								if (CastingSpell->NameHash!=0x0 &&
+									CastingSpell->NameHash!=0x0 &&
+									CastingSpell->NameHash!=0x0)  
+									continue;
+							}break;
 						//Blackout
 						case 15269:
 							{
@@ -1501,6 +1511,7 @@ else
 		CALL_SCRIPT_EVENT(this, OnDodged)(this);
 		targetEvent = 1;
 		vstate = DODGE;
+		vproc |= PROC_ON_DODGE_VICTIM;
 		pVictim->Emote(EMOTE_ONESHOT_PARRYUNARMED);			// Animation
 		if(pVictim->IsPlayer())
 		{

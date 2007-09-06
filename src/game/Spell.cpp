@@ -2147,9 +2147,25 @@ void Spell::writeSpellMissedTargets( WorldPacket * data )
 	 * 7 = Immune
 	 */
 	TargetsList::iterator i;
-	for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ ) {
-		*data << (*i);
-		*data << (uint8)2;
+/*	if(u_caster && u_caster->isAlive())
+	{
+		for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ )
+		{
+			*data << (*i);
+			*data << (uint8)2;
+			///handle proc on resist spell
+			Unit* target = objmgr.GetCreature(((Player*)m_caster)->GetSelection());	
+			if(target && target->isAlive())
+				u_caster->HandleProc(PROC_ON_RESIST_VICTIM,target,m_spellInfo,damage);
+		}
+	}
+	else*/
+	{
+		for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ )
+		{
+			*data << (*i);
+			*data << (uint8)2;
+		}
 	}
 }
 
