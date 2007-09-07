@@ -3476,6 +3476,11 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 		pTotem->GetAIInterface()->m_totemspelltime = timer;
 	}
 
+	//in case these are our elemental totems then we should set them up
+	if(m_spellInfo->Id==2062)
+		pTotem->GetAIInterface()->Event_Summon_EE_totem(GetDuration());
+	else if(m_spellInfo->Id==2894)
+		pTotem->GetAIInterface()->Event_Summon_FE_totem(GetDuration());
 
 	// Set up the deletion event. The totem needs to expire after a certain time, or upon its death.
 	sEventMgr.AddEvent(pTotem, &Creature::TotemExpire, EVENT_TOTEM_EXPIRE, GetDuration(), 1,0);

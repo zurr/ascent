@@ -230,6 +230,8 @@ public:
 	void OnDeath(Object* pKiller);
 	void AttackReaction(Unit *pUnit, uint32 damage_dealt, uint32 spellId = 0);
 	bool HealReaction(Unit* caster, Unit* victim, uint32 amount);
+	void Event_Summon_EE_totem(uint32 summon_duration);
+	void Event_Summon_FE_totem(uint32 summon_duration);
 
 	// Update
 	void Update(uint32 p_time);

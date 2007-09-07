@@ -56,8 +56,6 @@ Zack - test my shit :
 - ai_agents fillup
 - targetype checking (especially the player type checking)
 - ai spell cooldown when not known
-- rogue setup
-- uncomment spel.cpp : PROC_ON_RESIST_VICTIM
 
 ==========================================================================
 
