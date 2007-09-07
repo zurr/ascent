@@ -828,7 +828,7 @@ bool ChatHandler::HandleAddSkillCommand(const char* args, WorldSession *m_sessio
 	cur = (uint16)atol(pCurrent);
 	max = (uint16)atol(pMax);
 
-	target->AddSkillLine(skillline,cur,max);
+	target->_AddSkillLine(skillline,cur,max);
 
 	snprintf(buf,256,"SkillLine: %u CurrentValue %u Max Value %u Added.",(unsigned int)skillline,(unsigned int)cur,(unsigned int)max);
 	SystemMessage(m_session, buf);
@@ -972,21 +972,14 @@ bool ChatHandler::HandleIncreaseWeaponSkill(const char *args, WorldSession *m_se
 
 	BlueSystemMessage(m_session, "Modifying skill line %d. Advancing %d times.", skill, cnt);
 
-	if(!pr->HasSkillLine(skill))
+	if(!pr->_HasSkillLine(skill))
 	{
 		SystemMessage(m_session, "Does not have skill line, adding.");
-		pr->AddSkillLine(skill, 1, 300);   
+		pr->_AddSkillLine(skill, 1, 300);   
 	} 
 	else 
 	{
-		if(cnt + pr->GetSkillAmt(skill) > pr->GetSkillMax(skill))
-		{
-			cnt = pr->GetSkillMax(skill) - pr->GetSkillAmt(skill);
-		}
-		for(uint32 l=0;l<cnt;l++)
-		{
-			pr->AdvanceSkillLine(skill);
-		}
+		pr->_AdvanceSkillLine(skill,cnt);
 	}	   
 	return true;	
 }
@@ -1876,33 +1869,8 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
 	if(!plr)
 		return true;
 
-	uint32 id;
-	uint32 val;
-	uint32 max;
-	// loop the skills
-	for(uint32 i = PLAYER_SKILL_INFO_1_1; i < PLAYER_SKILL_INFO_1_1+3*127; i += 3)
-	{
-		id = (uint16)plr->GetUInt32Value(i);
-		if(id != 0)
-		{
-			val = plr->GetBaseSkillAmt(id);
-			max = plr->GetSkillMax(id);
-			if(val >= max)
-				continue;
 
-			// figure out the amount we have to add
-			uint32 add = amt;
-			if((val + add) > max)
-				add = max - val;
-
-			if(add > 0)
-			{
-				for(uint32 j = 0; j < add; ++j)
-					plr->AdvanceSkillLine(id);
-			}
-		}
-	}
-
+	plr->_AdvanceAllSkills(amt);
 	GreenSystemMessageToPlr(plr, "Advanced all your skill lines by %u points.", amt);
 	return true;
 }
@@ -2203,11 +2171,11 @@ bool ChatHandler::HandleStackCheatCommand(const char* args, WorldSession * m_ses
 
 bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession * m_session)
 {
+	skilllineentry * se;
 	Player * plr = getSelectedChar(m_session, true);
 	if(!plr) return true;
 
-	for(uint32 i = PLAYER_SKILL_INFO_1_1; i < PLAYER_CHARACTER_POINTS1; ++i)
-		plr->SetUInt32Value(i, 0);
+	plr->_RemoveAllSkills();
 
 	// Load skills from create info.
 	PlayerCreateInfo * info = objmgr.GetPlayerCreateInfo(plr->getRace(), plr->getClass());
@@ -2215,12 +2183,15 @@ bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession * m_se
 
 	for(std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss!=info->skills.end(); ss++)
 	{
-		if(ss->skillid && ss->currentval && ss->maxval)
-			plr->AddSkillLine(ss->skillid, ss->currentval, ss->maxval);		
+		se = sSkillLineStore.LookupEntry(ss->skillid);
+		if(se->type != SKILL_TYPE_LANGUAGE && ss->skillid && ss->currentval && ss->maxval)
+			plr->_AddSkillLine(ss->skillid, ss->currentval, ss->maxval);		
 	}
 	//Chances depend on stats must be in this order!
 	plr->UpdateStats();
 	plr->UpdateChances();
+	plr->_UpdateMaxSkillCounts();
+	plr->_AddLanguages(false);
 	BlueSystemMessage(m_session, "Reset skills to default.");
 	return true;
 }
@@ -2540,7 +2511,7 @@ bool ChatHandler::HandleForceRenameCommand(const char * args, WorldSession * m_s
 		BlueSystemMessageToPlr(plr, "%s forced your character to be renamed next logon.", m_session->GetPlayer()->GetName());
 	}
 
-	WorldDatabase.Execute("INSERT INTO banned_names ('%s')", plr->GetName());
+	WorldDatabase.Execute("INSERT INTO banned_names ('%s')", pi->name.c_str());
 
 	GreenSystemMessage(m_session, "Forcing %s to rename his character next logon.", args);
 	return true;

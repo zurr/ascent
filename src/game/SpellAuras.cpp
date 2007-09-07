@@ -2691,10 +2691,10 @@ void Aura::SpellAuraModSkill(bool apply)
 		if(apply)
 		{
 			SetPositive();
-			static_cast<Player*>(m_target)->ModSkillBonus(mod->m_miscValue, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(mod->m_miscValue, mod->m_amount); 
 		}
 		else
-			static_cast<Player*>(m_target)->ModSkillBonus(mod->m_miscValue, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(mod->m_miscValue, -mod->m_amount); 
 
 		static_cast<Player*>(m_target)->UpdateChances();
 	}
@@ -4573,10 +4573,10 @@ void Aura::SpellAuraSkillTalent(bool apply)
 		if(apply)
 		{   
 			SetPositive();
-			static_cast<Player*>(m_target)->ModSkillBonus (mod->m_miscValue,mod->m_amount);
+			static_cast<Player*>(m_target)->_ModifySkillBonus(mod->m_miscValue,mod->m_amount);
 		}
 		else  
-			static_cast<Player*>(m_target)->ModSkillBonus (mod->m_miscValue,-mod->m_amount);
+			static_cast<Player*>(m_target)->_ModifySkillBonus(mod->m_miscValue,-mod->m_amount);
 	   
 		static_cast<Player*>(m_target)->UpdateChances();
 	}
@@ -6286,38 +6286,38 @@ void Aura::SpellAuraIncreaseAllWeaponSkill(bool apply)
 			SetPositive();
 //			static_cast<Player*>(m_target)->ModSkillBonusType(SKILL_TYPE_WEAPON, mod->m_amount);
 			//since the frikkin above line does not work we have to do it manually
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_SWORDS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_AXES, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_BOWS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_GUNS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_MACES, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_2H_SWORDS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_STAVES, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_2H_MACES, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_2H_AXES, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_DAGGERS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_CROSSBOWS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_SPEARS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_WANDS, mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_POLEARMS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_SWORDS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_AXES, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_BOWS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_GUNS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_MACES, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_2H_SWORDS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_STAVES, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_2H_MACES, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_2H_AXES, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_DAGGERS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_CROSSBOWS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_SPEARS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_WANDS, mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_POLEARMS, mod->m_amount); 
 		}
 		else
 		{
 //			static_cast<Player*>(m_target)->ModSkillBonusType(SKILL_TYPE_WEAPON, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_SWORDS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_AXES, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_BOWS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_GUNS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_MACES, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_2H_SWORDS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_STAVES, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_2H_MACES, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_2H_AXES, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_DAGGERS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_CROSSBOWS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_SPEARS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_WANDS, -mod->m_amount); 
-			static_cast<Player*>(m_target)->ModSkillBonus(SKILL_POLEARMS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_SWORDS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_AXES, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_BOWS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_GUNS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_MACES, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_2H_SWORDS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_STAVES, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_2H_MACES, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_2H_AXES, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_DAGGERS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_CROSSBOWS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_SPEARS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_WANDS, -mod->m_amount); 
+			static_cast<Player*>(m_target)->_ModifySkillBonus(SKILL_POLEARMS, -mod->m_amount); 
 		}
 
 		static_cast<Player*>(m_target)->UpdateChances();

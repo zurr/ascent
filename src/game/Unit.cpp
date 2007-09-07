@@ -1278,7 +1278,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 //==========================================================================================
 	if(pVictim->IsPlayer())
 	{
-		vskill = ((Player*)pVictim)->GetSkillAmt(SKILL_DEFENSE);
+		vskill = ((Player*)pVictim)->_GetSkillLineCurrent(SKILL_DEFENSE);
 		if((damage_type != RANGED) && !backAttack)
 		{
 //--------------------------------block chance----------------------------------------------
@@ -1349,7 +1349,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		if (SubClassSkill==SKILL_FIST_WEAPONS) 
 			SubClassSkill = SKILL_UNARMED;
 
-		self_skill += pr->GetSkillAmt(SubClassSkill);	
+		self_skill += pr->_GetSkillLineCurrent(SubClassSkill);	
 		crit = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
 	}
 	else
@@ -1915,7 +1915,7 @@ else
 			Player *pr = ((Player*)pVictim);
 			if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE)*sWorld.getRate(RATE_SKILLCHANCE)))
 			{
-				pr->AdvanceSkillLine(SKILL_DEFENSE, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
+				pr->_AdvanceSkillLine(SKILL_DEFENSE, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 				pr->UpdateChances();
 			}
 		}
@@ -1932,7 +1932,7 @@ else
 			Player *pr = ((Player*)this);
 			if (Rand(pr->GetSkillUpChance(SubClassSkill)*sWorld.getRate(RATE_SKILLCHANCE)))
 			{
-				pr->AdvanceSkillLine(SubClassSkill, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
+				pr->_AdvanceSkillLine(SubClassSkill, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 				//pr->UpdateChances();
 			}
 		}

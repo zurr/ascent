@@ -3730,7 +3730,7 @@ void Spell::DetermineSkillUp(uint32 skillid,uint32 targetlevel)
 {
 	if(!p_caster)return;
 	if(p_caster->GetSkillUpChance(skillid)<0.01)return;//to preven getting higher skill than max
-	int32 diff=p_caster->GetBaseSkillAmt(skillid)/5-targetlevel;
+	int32 diff=p_caster->_GetSkillLineCurrent(skillid,false)/5-targetlevel;
 	if(diff<0)diff=-diff;
 	float chance;
 	if(diff<=5)chance=95.0;
@@ -3738,7 +3738,7 @@ void Spell::DetermineSkillUp(uint32 skillid,uint32 targetlevel)
 	else if(diff <=15)chance=33;
 	else return;
 	if(Rand(chance*sWorld.getRate(RATE_SKILLCHANCE)))
-		p_caster->AdvanceSkillLine(skillid, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
+		p_caster->_AdvanceSkillLine(skillid, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 }
 
 void Spell::DetermineSkillUp(uint32 skillid)
@@ -3747,10 +3747,10 @@ void Spell::DetermineSkillUp(uint32 skillid)
 	if(!p_caster)return;
 	float chance = 0.0f;
 	skilllinespell* skill = objmgr.GetSpellSkill(m_spellInfo->Id);
-	if ((skill) && ((Player*)m_caster)->HasSkillLine(skill->skilline))
+	if ((skill) && ((Player*)m_caster)->_HasSkillLine(skill->skilline))
 	{
-		uint32 amt = ((Player*)m_caster)->GetBaseSkillAmt(skill->skilline);
-		uint32 max = ((Player*)m_caster)->GetSkillMax(skill->skilline);
+		uint32 amt = ((Player*)m_caster)->_GetSkillLineCurrent(skill->skilline);
+		uint32 max = ((Player*)m_caster)->_GetSkillLineMax(skill->skilline);
 		if(amt >= max)
 			return;
 		if (amt >= skill->grey) //grey
@@ -3763,7 +3763,7 @@ void Spell::DetermineSkillUp(uint32 skillid)
 			chance=100.0f;
 	}
 	if(Rand(chance*sWorld.getRate(RATE_SKILLCHANCE)))
-		p_caster->AdvanceSkillLine(skillid, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
+		p_caster->_AdvanceSkillLine(skillid, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 }
 
 void Spell::SafeAddTarget(TargetsList* tgt,uint64 guid)

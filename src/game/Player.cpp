@@ -653,13 +653,12 @@ bool Player::Create(WorldPacket& data )
 
 	m_FirstLogin = true;
 
+	skilllineentry * se;
 	for(std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss!=info->skills.end(); ss++)
 	{
-		if(ss->skillid && ss->currentval && ss->maxval)
-			AddSkillLine(ss->skillid, ss->currentval, ss->maxval);		
-		uint32 spell = ::GetSpellForLanguage(ss->skillid);
-		if(spell)
-			addSpell(spell);
+		se = sSkillLineStore.LookupEntry(ss->skillid);
+		if(se->type != SKILL_TYPE_LANGUAGE)
+			_AddSkillLine(se->id, ss->currentval, ss->maxval);
 	}
 	//Chances depend on stats must be in this order!
 //	UpdateStats();
@@ -1364,7 +1363,7 @@ void Player::GiveXP(uint32 xp, const uint64 &guid, bool allowbonus)
 		// Send to client
 		GetSession()->SendPacket(&data);
 	
-		UpdateMaxSkills();
+		_UpdateMaxSkillCounts();
 		UpdateStats();
 		//UpdateChances();
 		
@@ -1794,12 +1793,12 @@ void Player::addSpell(uint32 spell_id)
 
 	// Add the skill line for this spell if we don't already have it.
 	skilllinespell * sk = objmgr.GetSpellSkill(spell_id);
-	if(sk && !HasSkillLine(sk->skilline))
+	if(sk && !_HasSkillLine(sk->skilline))
 	{
 		skilllineentry * skill = sSkillLineStore.LookupEntry(sk->skilline);
 		if(!skill)
 		{
-			AddSkillLine(sk->skilline, 1, 1);
+			_AddSkillLine(sk->skilline, 1, 1);
 			return;
 		}
 		uint32 max = 5 * getLevel();
@@ -1823,7 +1822,7 @@ void Player::addSpell(uint32 spell_id)
 		if(skill->type==SKILL_TYPE_PROFESSION)
 			ModUInt32Value(PLAYER_CHARACTER_POINTS2,-1);
 		
-		AddSkillLine(sk->skilline, 1, max);
+		_AddSkillLine(sk->skilline, 1, max);
 	}
 }
 
@@ -1994,9 +1993,20 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 		}
 	}*/
 
-	for(uint32 i = PLAYER_SKILL_INFO_1_1; i < PLAYER_CHARACTER_POINTS1; ++i)
+	/*for(uint32 i = PLAYER_SKILL_INFO_1_1; i < PLAYER_CHARACTER_POINTS1; ++i)
 		ss << m_uint32Values[i] << " ";
-	
+	*/
+
+	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+	{
+		if(itr->second.Skill->type != SKILL_TYPE_LANGUAGE)
+		{
+			ss << itr->first << ";"
+				<< itr->second.CurrentValue << ";"
+				<< itr->second.MaximumValue << ";";
+		}
+	}
+
 	uint32 player_flags = m_uint32Values[PLAYER_FLAGS];
 	{
 		// Remove un-needed and problematic player flags from being saved :p
@@ -2352,57 +2362,96 @@ bool Player::LoadFromDB(uint32 guid)
 	
 	// new format
 	uint32 field = PLAYER_SKILL_INFO_1_1;
-	uint32 val;
 	const ItemProf * prof;
-	if(!strchr(start, ' '))
+	if(!strchr(start, ' ') && !strchr(start,';'))
 	{
 		/* no skills - reset to defaults */
 		for(std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss!=info->skills.end(); ss++)
 		{
 			if(ss->skillid && ss->currentval && ss->maxval && !::GetSpellForLanguage(ss->skillid))
-				AddSkillLine(ss->skillid, ss->currentval, ss->maxval);		
+				_AddSkillLine(ss->skillid, ss->currentval, ss->maxval);		
 		}
 	}
-
-	char * f = strdup(start);
-	start = f;
-	for(;;)
+	else
 	{
-        end = strchr(start, ' ');
-		if(!end)
-			break;
-        
-		*end = '\0';
-		val = atol(start);
-		start = end + 1;
-		m_uint32Values[field++] = val;
-	}
-	free(f);
-
-	/* process skills */
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if(!m_uint32Values[i])
-			continue;
-
-		/* check for languages */
-		if(::GetSpellForLanguage(uint16(m_uint32Values[i])) != 0)
+		char * f = strdup(start);
+		start = f;
+		if(!strchr(start,';'))
 		{
-			m_uint32Values[i] = 0;
-			m_uint32Values[i+1] = 0;
-			m_uint32Values[i+2] = 0;
-			continue;
+			/* old skill format.. :< */
+			uint32 v1,v2,v3;
+			PlayerSkill sk;
+			for(;;)
+			{
+				end = strchr(start, ' ');
+				if(!end)
+					break;
+
+				*end = 0;
+				v1 = atol(start);
+				start = end + 1;
+
+				end = strchr(start, ' ');
+				if(!end)
+					break;
+
+				*end = 0;
+				v2 = atol(start);
+				start = end + 1;
+
+				end = strchr(start, ' ');
+				if(!end)
+					break;
+
+				v3 = atol(start);
+				sk.Reset(v1 & 0xffff);
+				sk.CurrentValue = v2 & 0xffff;
+				sk.MaximumValue = (v2 >> 16) & 0xffff;
+				m_skills.insert( make_pair(sk.Skill->id, sk) );
+			}
 		}
-
-		/*en = sSkillLineStore.LookupEntry((uint16)m_uint32Values[i]);
-		if(en->type == SKILL_TYPE_LANGUAGE)
+		else
 		{
-			m_uint32Values[i] = 0;
-			continue;
-		}*/
+			uint32 v1,v2,v3;
+			PlayerSkill sk;
+			for(;;)
+			{
+				end = strchr(start, ';');
+				if(!end)
+					break;
 
-		m_uint32Values[i+2] = 0;		// Nuke the bonus
-		prof = GetProficiencyBySkill((uint16)m_uint32Values[i]);
+				*end = 0;
+				v1 = atol(start);
+				start = end + 1;
+
+				end = strchr(start, ';');
+				if(!end)
+					break;
+
+				*end = 0;
+				v2 = atol(start);
+				start = end + 1;
+
+				end = strchr(start, ';');
+				if(!end)
+					break;
+
+				v3 = atol(start);
+				start = end + 1;
+
+				/* add the skill */
+                sk.Reset(v1);
+				sk.CurrentValue = v2;
+				sk.MaximumValue = v3;
+				m_skills.insert(make_pair(v1, sk));
+			}
+		}
+		free(f);
+	}
+
+	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+	{
+		prof = GetProficiencyBySkill(itr->first);
 		if(prof)
 		{
 			if(prof->itemclass==4)
@@ -2733,30 +2782,10 @@ bool Player::LoadFromDB(uint32 guid)
 	break;
 	}
 
-	RemoveLanguages();
-	if(!m_session->GetPermissionCount())
-	{
-		std::list<CreateInfo_SkillStruct>::iterator itr = info->skills.begin();
-		skilllineentry * sk;
-		uint32 spell;
-		for(; itr != info->skills.end(); ++itr)
-		{
-			if((sk = sSkillLineStore.LookupEntry(itr->skillid)))
-			{
-				if(sk->type == SKILL_TYPE_LANGUAGE)
-				{
-					AddSkillLine(sk->id, 300, 300);
-					sLog.outDebug("Adding skill %u",sk->id);
-					spell = ::GetSpellForLanguage(sk->id);
-					if(spell) addSpell(spell);
-				}
-			}			
-		}
-	}
+	if(m_session->CanUseCommand('c'))
+		_AddLanguages(true);
 	else
-	{
-		AddLanguages();
-	}
+		_AddLanguages(false);
 
 	OnlineTime	= time(NULL);
 	if(GetGuildId())
@@ -2770,57 +2799,6 @@ bool Player::LoadFromDB(uint32 guid)
 	return true;
 #undef get_next_field
    
-}
-
-void Player::AddLanguage(uint32 id)
-{
-	uint32 sp = ::GetSpellForLanguage(id);
-	AddSkillLine(id, 300, 300);
-	if(sp) addSpell(sp);
-}
-
-void Player::RemoveLanguage(uint32 id)
-{
-	uint32 sp = ::GetSpellForLanguage(id);
-	//RemoveSkillLine(id);
-	if(sp) removeSpell(sp,false,false,0);
-}
-
-void Player::RemoveLanguages()
-{
-	RemoveLanguage(SKILL_LANG_COMMON);
-	RemoveLanguage(SKILL_LANG_ORCISH);
-	RemoveLanguage(SKILL_LANG_DWARVEN);
-	RemoveLanguage(SKILL_LANG_DARNASSIAN);
-	RemoveLanguage(SKILL_LANG_TAURAHE);
-	RemoveLanguage(SKILL_LANG_THALASSIAN);
-	RemoveLanguage(SKILL_LANG_DRACONIC);
-	RemoveLanguage(SKILL_LANG_DEMON_TONGUE);
-	RemoveLanguage(SKILL_LANG_TITAN);
-	RemoveLanguage(SKILL_LANG_OLD_TONGUE);
-	RemoveLanguage(SKILL_LANG_GNOMISH);
-	RemoveLanguage(SKILL_LANG_TROLL);
-	RemoveLanguage(SKILL_LANG_GUTTERSPEAK);
-	RemoveLanguage(SKILL_LANG_DRAENEI);
-}
-
-void Player::AddLanguages()
-{
-	// GM: Add all languages.
-	AddLanguage(SKILL_LANG_COMMON);
-	AddLanguage(SKILL_LANG_ORCISH);
-	AddLanguage(SKILL_LANG_DWARVEN);
-	AddLanguage(SKILL_LANG_DARNASSIAN);
-	AddLanguage(SKILL_LANG_TAURAHE);
-	AddLanguage(SKILL_LANG_THALASSIAN);
-	//AddLanguage(SKILL_LANG_DRACONIC);
-	//AddLanguage(SKILL_LANG_DEMON_TONGUE);
-	//AddLanguage(SKILL_LANG_TITAN);
-	//AddLanguage(SKILL_LANG_OLD_TONGUE);
-	//AddLanguage(SKILL_LANG_GNOMISH);
-	AddLanguage(SKILL_LANG_TROLL);
-	AddLanguage(SKILL_LANG_GUTTERSPEAK);
-	AddLanguage(SKILL_LANG_DRAENEI);
 }
 
 void Player::LoadFromDB_Light(Field *fields, uint32 guid)
@@ -3323,7 +3301,7 @@ void Player::_ApplyItemMods(Item *item, int8 slot,bool apply,bool justdrokedown)
 			else
 				Set->itemscount++;
 
-			if(!set->RequiredSkillID || (GetSkillAmt(set->RequiredSkillID) >= set->RequiredSkillAmt))
+			if(!set->RequiredSkillID || (_GetSkillLineCurrent(set->RequiredSkillID,true) >= set->RequiredSkillAmt))
 			{
 				for(uint32 x=0;x<8;x++)
 				{
@@ -4021,230 +3999,6 @@ void Player::CleanupChannels()
 	list<Channel *>::iterator i;
 	for(i = m_channels.begin(); i != m_channels.end(); i++)
 		(*i)->Leave(this,false);
-}
-
-// skilllines
-bool Player::HasSkillLine(uint32 id)
-{
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((m_uint32Values[i] & 0x0000FFFF)==id)
-			return true;
-	}
-	return false;
-}
-
-float Player::GetSkillUpChance(uint32 id)
-{
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if(((uint16)GetUInt32Value(i))==id)
-		{
-			uint32 val=GetUInt32Value(i+1);
-			uint32 max=val>>16;
-			float diff=max-val%0x10000;//Max-cur
-		 
-			return (diff*100/max) / 3;
-		
-			//TODO: add difficulty level
-			//we should not get increase for too high and 
-			//too low level mobs etc
-		}
-	}
-	
-	return 0.0;
-}
-
-
-uint32 Player::GetSkillMax(uint32 id)
-{
-   for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((m_uint32Values[i] & 0x0000FFFF)==id)
-			return ((m_uint32Values[i+1] >> 16) & 0x0000FFFF);
-	}
-	return 0;
-}
-
-uint32 Player::GetBaseSkillAmt(uint32 id)//return skill amount without bonus
-{
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((m_uint32Values[i] & 0x0000FFFF)==id)
-		{
-			return (m_uint32Values[i+1] & 0x0000FFFF);
-		}
-	}
-	return 0;
-}
-
-uint32 Player::GetSkillAmt(uint32 id)
-{
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if(((uint16)GetUInt32Value(i))==id)
-		{
-			return GetUInt32Value(i+1)%0x10000+GetUInt32Value(i+2) ;
-		}
-	}
-	return 0;
-}
-
-void Player::AdvanceSkillLine(uint32 id, uint32 count)
-{
-     for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-   {
-		if((m_uint32Values[i] & 0x0000FFFF)==id)
-		{
-			uint32 max = (m_uint32Values[i+1] >> 16) & 0x0000FFFF;
-			uint32 cur = (m_uint32Values[i+1] & 0x0000FFFF);
-			if(cur<max)
-			{
-				cur += count;
-				if(cur>max)
-					cur=max;
-				SetUInt32Value(i+1, ((max << 16) | cur));
-			}
-			return;
-		}	   
-	}
-}
-
-void Player::ModSkillMax(uint32 id, uint32 amt, uint32 setcur /* = 0 */)
-{
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((m_uint32Values[i] & 0x0000FFFF)==id)
-		{
-			uint32 max = amt;
-			uint32 cur = (m_uint32Values[i+1] & 0x0000FFFF);
-			if(setcur != 0)
-				cur=setcur;
-
-			SetUInt32Value(i+1, ((max << 16) | cur));
-			return;
-		}		   
-	}
-}
-
-
-
-void Player::AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal)
-{
-	ItemProf * prof;
-	uint32 skillid=id;
-	skilllineentry *en=sSkillLineStore.LookupEntry(id);
-	if(en && en->type==SKILL_TYPE_PROFESSION)
-	skillid|=0x10000;
-
-	if(currVal>maxVal)
-		currVal=maxVal;
-
-
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if(!GetUInt32Value(i))
-		{
-			uint32 val=currVal|(maxVal<<16);
-			SetUInt32Value(i,skillid);
-			SetUInt32Value(i+1,val);
-	   
-			if(IsInWorld())
-			{
-				//Add to proficeincy
-				if((prof=(ItemProf *)GetProficiencyBySkill(id)))
-				{
-					WorldPacket data(SMSG_SET_PROFICIENCY, 8);
-					data << prof->itemclass;
-					if(prof->itemclass==4)
-					{
-						armor_proficiency|=prof->subclass;
-						data << armor_proficiency;
-					}else
-					{
-						weapon_proficiency|=prof->subclass;
-						data << weapon_proficiency;
-					}
-					GetSession()->SendPacket(&data);
-				}
-			}
-			return;
-		}
-	}
-}
-void Player::RemoveSkillLine(uint32 id)
-{
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((m_uint32Values[i] & 0x0000FFFF)==id)
-		{
-			SetUInt64Value(i,0);
-			SetUInt32Value(i+2,0);
-
-			skilllineentry *en=sSkillLineStore.LookupEntry(id);
-			if(en && en->type==SKILL_TYPE_PROFESSION)
-			{
-				uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS2);
-				if(points >= 2)
-					SetUInt32Value(PLAYER_CHARACTER_POINTS2, 2);
-				else
-					SetUInt32Value(PLAYER_CHARACTER_POINTS2, points + 1);
-			}
-
-			return;
-		}
-	}
-}
-
-void Player::ModSkillBonus(uint32 id,int32 bonus)
-{
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((m_uint32Values[i] & 0x0000FFFF)==id)
-		{
-			ModUInt32Value(i+2,bonus);
-			return;
-		}
-	}
-}
-
-void Player::ModSkillBonusType(uint32 type,int32 bonus)
-{
-	uint32 skillid;
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((skillid = (m_uint32Values[i] & 0x0000FFFF)) != 0)
-		{
-			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
-			if(!sp)
-				continue;
-			if (sp->type != type)
-				 continue;
-			//we should check if adding this value will be larger then max skill
-			//BUT if we do this then when we remove the mod we would get a smaller skill then before
-			//you might get skills bigger then max skill :)
-			ModUInt32Value(i+2,bonus);
-			return;
-		}
-	}
-}
-
-void Player::UpdateMaxSkills()
-{
-	uint32 skillid;
-	for(uint32 i=PLAYER_SKILL_INFO_1_1;i<PLAYER_CHARACTER_POINTS1;i+=3)
-	{
-		if((skillid = (m_uint32Values[i] & 0x0000FFFF)) != 0)
-		{
-			skilllineentry * sp= sSkillLineStore.LookupEntry(skillid);
-			if(!sp) continue;
-			if (sp->type != SKILL_TYPE_WEAPON && sp->id != SKILL_POISONS && sp->id != SKILL_LOCKPICKING)continue; // raise max to weapons, poison and lockpicking
-			/*uint32 val=GetUInt32Value(i+1)%0x10000+getLevel()*5*0x10000;
-			SetUInt32Value(i+1,val);*/
-			uint32 val = m_uint32Values[i+1] % 0x10000 + ( (getLevel()*5) << 16 );
-			SetUInt32Value(i+1, val);
-		}		   
-	}
 }
 
 void Player::SendInitialActions()
@@ -7033,7 +6787,7 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
 	SetUInt32Value(UNIT_FIELD_BASE_HEALTH, Info->HP);
 	SetUInt32Value(UNIT_FIELD_BASE_MANA, Info->Mana);
 
-	UpdateMaxSkills();
+	_UpdateMaxSkillCounts();
 	UpdateStats();
 	//UpdateChances();	
 
@@ -8440,3 +8194,293 @@ void Player::EventRemoveAndDelete()
 
 }
 #endif
+
+void Player::_AddSkillLine(uint32 SkillLine, uint32 Current, uint32 Max)
+{
+	ItemProf * prof;
+	SkillMap::iterator itr = m_skills.find(SkillLine);
+	if(itr != m_skills.end())
+	{
+		if( (Current > itr->second.CurrentValue && Max >= itr->second.MaximumValue) ||
+			(Current == itr->second.CurrentValue && Max > itr->second.MaximumValue) )
+		{
+			itr->second.CurrentValue = Current;
+			itr->second.MaximumValue = Max;
+			_UpdateSkillFields();
+		}
+	}
+	else
+	{
+		PlayerSkill inf;
+		inf.Skill = sSkillLineStore.LookupEntry(SkillLine);
+		inf.CurrentValue = Current;
+		inf.MaximumValue = Max;
+		inf.BonusValue = 0;
+		m_skills.insert( make_pair( SkillLine, inf ) );
+		_UpdateSkillFields();
+
+		//Add to proficeincy
+		if((prof=(ItemProf *)GetProficiencyBySkill(SkillLine)))
+		{
+			WorldPacket data(SMSG_SET_PROFICIENCY, 8);
+			data << prof->itemclass;
+			if(prof->itemclass==4)
+			{
+				armor_proficiency|=prof->subclass;
+				data << armor_proficiency;
+			}else
+			{
+				weapon_proficiency|=prof->subclass;
+				data << weapon_proficiency;
+			}
+			GetSession()->SendPacket(&data);
+		}
+	}
+}
+
+void Player::_UpdateSkillFields()
+{
+	uint32 f = PLAYER_SKILL_INFO_1_1;
+	/* Set the valid skills */
+	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+	{
+		ASSERT(f <= PLAYER_CHARACTER_POINTS1);
+		if(itr->second.Skill->type == SKILL_TYPE_PROFESSION)
+			SetUInt32Value(f++, itr->first | 0x10000);
+		else
+			SetUInt32Value(f++, itr->first);
+
+		SetUInt32Value(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
+		SetUInt32Value(f++, itr->second.BonusValue);
+	}
+
+	/* Null out the rest of the fields */
+	for(; f < PLAYER_CHARACTER_POINTS1; ++f)
+	{
+		if(m_uint32Values[f] != 0)
+			SetUInt32Value(f, 0);
+	}
+}
+
+bool Player::_HasSkillLine(uint32 SkillLine)
+{
+	return (m_skills.find(SkillLine) != m_skills.end());
+}
+
+void Player::_AdvanceSkillLine(uint32 SkillLine, uint32 Count /* = 1 */)
+{
+	SkillMap::iterator itr = m_skills.find(SkillLine);
+	if(itr == m_skills.end())
+	{
+		/* Add it */
+		_AddSkillLine(SkillLine, Count, getLevel() * 5);
+	}
+	else
+	{
+		/* Update it. */
+		if(itr->second.CurrentValue >= itr->second.MaximumValue)
+			return;
+
+		itr->second.CurrentValue += Count;
+		if(itr->second.CurrentValue >= itr->second.MaximumValue)
+			itr->second.CurrentValue = itr->second.MaximumValue;
+	}
+
+	_UpdateSkillFields();
+}
+
+uint32 Player::_GetSkillLineMax(uint32 SkillLine)
+{
+	SkillMap::iterator itr = m_skills.find(SkillLine);
+	return (itr == m_skills.end()) ? 0 : itr->second.MaximumValue;
+}
+
+uint32 Player::_GetSkillLineCurrent(uint32 SkillLine, bool IncludeBonus /* = true */)
+{
+	SkillMap::iterator itr = m_skills.find(SkillLine);
+	if(itr == m_skills.end())
+		return 0;
+
+	return (IncludeBonus ? itr->second.CurrentValue + itr->second.BonusValue : itr->second.CurrentValue);
+}
+
+void Player::_RemoveSkillLine(uint32 SkillLine)
+{
+	SkillMap::iterator itr = m_skills.find(SkillLine);
+	if(itr == m_skills.end())
+		return;
+
+	m_skills.erase(itr);
+	_UpdateSkillFields();
+}
+
+void Player::_UpdateMaxSkillCounts()
+{
+	bool dirty = false;
+	uint32 new_max = getLevel() * 5;
+	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+	{
+		if(itr->second.Skill->type != SKILL_TYPE_WEAPON &&
+			itr->second.Skill->id != SKILL_POISONS &&
+			itr->second.Skill->id != SKILL_LOCKPICKING)
+		{
+			continue;
+		}
+
+        if(itr->second.MaximumValue != new_max)
+		{
+			dirty = true;
+			itr->second.MaximumValue = new_max;
+		}
+	}
+
+	if(dirty)
+		_UpdateSkillFields();
+}
+
+void Player::_ModifySkillBonus(uint32 SkillLine, int32 Delta)
+{
+	SkillMap::iterator itr = m_skills.find(SkillLine);
+	if(itr == m_skills.end())
+		return;
+
+	itr->second.BonusValue += Delta;
+	_UpdateSkillFields();
+}
+
+void Player::_ModifySkillBonusByType(uint32 SkillType, int32 Delta)
+{
+	bool dirty = false;
+	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+	{
+		if(itr->second.Skill->type == SkillType)
+		{
+			itr->second.BonusValue += Delta;
+			dirty=true;
+		}
+	}
+
+	if(dirty)
+		_UpdateSkillFields();
+}
+
+/** Maybe this formula needs to be checked?
+ * - Burlex
+ */
+
+float PlayerSkill::GetSkillUpChance()
+{
+	float diff = MaximumValue - CurrentValue;
+	return (diff * 100.0f / float(MaximumValue)) / 3.0f;
+}
+
+void Player::_RemoveLanguages()
+{
+	for(SkillMap::iterator itr = m_skills.begin(), it2; itr != m_skills.end();)
+	{
+		if(itr->second.Skill->type == SKILL_TYPE_LANGUAGE)
+		{
+			it2 = itr++;
+			m_skills.erase(it2);
+		}
+		else
+			++itr;
+	}
+}
+
+void PlayerSkill::Reset(uint32 Id)
+{
+	MaximumValue = 0;
+	CurrentValue = 0;
+	BonusValue = 0;
+	Skill = (Id == 0) ? NULL : sSkillLineStore.LookupEntry(Id);
+}
+
+void Player::_AddLanguages(bool All)
+{
+	/** This function should only be used at login, and after _RemoveLanguages is called.
+	 * Otherwise weird stuff could happen :P
+	 * - Burlex
+	 */
+
+	PlayerSkill sk;
+	skilllineentry * en;
+	uint32 spell_id;
+	static uint32 skills[] = { SKILL_LANG_COMMON, SKILL_LANG_ORCISH, SKILL_LANG_DWARVEN, SKILL_LANG_DARNASSIAN, SKILL_LANG_TAURAHE, SKILL_LANG_THALASSIAN,
+		SKILL_LANG_TROLL, SKILL_LANG_GUTTERSPEAK, SKILL_LANG_DRAENEI, 0 };
+	
+	if(All)
+	{
+		for(uint32 i = 0; skills[i] != 0; ++i)
+		{
+            sk.Reset(skills[i]);
+			sk.MaximumValue = sk.CurrentValue = 300;
+			m_skills.insert( make_pair(skills[i], sk) );
+			if((spell_id = ::GetSpellForLanguage(skills[i])))
+				addSpell(spell_id);
+		}
+	}
+	else
+	{
+		for(list<CreateInfo_SkillStruct>::iterator itr = info->skills.begin(); itr != info->skills.end(); ++itr)
+		{
+			en = sSkillLineStore.LookupEntry(itr->skillid);
+			if(en->type == SKILL_TYPE_LANGUAGE)
+			{
+				sk.Reset(itr->skillid);
+				sk.MaximumValue = sk.CurrentValue = 300;
+				m_skills.insert( make_pair(itr->skillid, sk) );
+				if((spell_id = ::GetSpellForLanguage(itr->skillid)))
+					addSpell(spell_id);
+			}
+		}
+	}
+
+	_UpdateSkillFields();
+}
+
+float Player::GetSkillUpChance(uint32 id)
+{
+	SkillMap::iterator itr = m_skills.find(id);
+	if(itr == m_skills.end())
+		return 0.0f;
+
+	return itr->second.GetSkillUpChance();
+}
+
+void Player::_RemoveAllSkills()
+{
+	m_skills.clear();
+	_UpdateSkillFields();
+}
+
+void Player::_AdvanceAllSkills(uint32 count)
+{
+	bool dirty=false;
+	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+	{
+		if(itr->second.CurrentValue != itr->second.MaximumValue)
+		{
+			itr->second.CurrentValue += count;
+			if(itr->second.CurrentValue >= itr->second.MaximumValue)
+				itr->second.CurrentValue = itr->second.MaximumValue;
+			dirty=true;
+		}
+	}
+
+	if(dirty)
+		_UpdateSkillFields();
+}
+
+void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
+{
+	SkillMap::iterator itr = m_skills.find(SkillLine);
+	if(itr == m_skills.end())
+		return;
+
+	if(NewMax > itr->second.MaximumValue)
+	{
+		itr->second.MaximumValue = NewMax;
+		_UpdateSkillFields();
+	}
+}

@@ -504,11 +504,11 @@ void GameObject::UseFishingNode(Player *player)
 //	uint32 minskill=entry->MaxSkill;
 	uint32 minskill=entry->MinSkill;
 
-	if(player->GetBaseSkillAmt(SKILL_FISHING)<maxskill)	
-		player->AdvanceSkillLine(SKILL_FISHING,float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
+	if(player->_GetSkillLineCurrent(SKILL_FISHING,false)<maxskill)	
+		player->_AdvanceSkillLine(SKILL_FISHING,float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 
 	//Open loot on success, otherwise FISH_ESCAPED.
-	if(Rand(((player->GetSkillAmt(SKILL_FISHING)-minskill)*100)/maxskill))
+	if(Rand(((player->_GetSkillLineCurrent(SKILL_FISHING,true)-minskill)*100)/maxskill))
 	{			  
 		lootmgr.FillProfessionLoot(&lootmgr.FishingLoot,&loot,zone);
 		player->SendLoot(GetGUID(),3);

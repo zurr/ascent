@@ -263,8 +263,8 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell,bool oldtrainer)
 		if(	(pSpell->RequiredLevel && _player->getLevel()<pSpell->RequiredLevel)
 			|| (pSpell->RequiredSpell && !_player->HasSpell(pSpell->RequiredSpell))
 			|| (pSpell->Cost && _player->GetUInt32Value(PLAYER_FIELD_COINAGE) < pSpell->Cost)
-			|| (pSpell->RequiredSkillLine && _player->GetSkillAmt(pSpell->RequiredSkillLine) < pSpell->RequiredSkillLineValue)
-			|| (pSpell->IsProfession && !_player->HasSkillLine(pSpell->RequiredSkillLine) && _player->GetUInt32Value(PLAYER_CHARACTER_POINTS2) == 0) )
+			|| (pSpell->RequiredSkillLine && _player->_GetSkillLineCurrent(pSpell->RequiredSkillLine,false) < pSpell->RequiredSkillLineValue)
+			|| (pSpell->IsProfession && !_player->_HasSkillLine(pSpell->RequiredSkillLine) && _player->GetUInt32Value(PLAYER_CHARACTER_POINTS2) == 0) )
 			return TRAINER_STATUS_NOT_LEARNABLE;
 		if(	_player->GetMaxLearnedSpellLevel(pSpell->TeachSpellID)>= pSpell->SpellRank)
 			return TRAINER_STATUS_ALREADY_HAVE;
@@ -277,12 +277,12 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell,bool oldtrainer)
 			return TRAINER_STATUS_NOT_LEARNABLE;
 
 		// check if we need a skill line
-		if(pSpell->RequiredSkillLine && !_player->HasSkillLine( pSpell->RequiredSkillLine ) )
+		if(pSpell->RequiredSkillLine && !_player->_HasSkillLine( pSpell->RequiredSkillLine ) )
 			return TRAINER_STATUS_NOT_LEARNABLE;
 
 		// check if we have the required value
 		if(pSpell->RequiredSkillLineValue && pSpell->RequiredSkillLine &&
-			_player->GetBaseSkillAmt( pSpell->RequiredSkillLine ) < pSpell->RequiredSkillLineValue )
+			_player->_GetSkillLineCurrent( pSpell->RequiredSkillLine,false ) < pSpell->RequiredSkillLineValue )
 			return TRAINER_STATUS_NOT_LEARNABLE;
 
 		// check if we already have this spell
@@ -298,7 +298,7 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell,bool oldtrainer)
 			return TRAINER_STATUS_NOT_LEARNABLE;
 
 		// see if we passed the profession limit
-		if(pSpell->IsProfession && !_player->HasSkillLine(pSpell->RequiredSkillLine) && pSpell->TeachingLine && _player->GetUInt32Value(PLAYER_CHARACTER_POINTS2) == 0)
+		if(pSpell->IsProfession && !_player->_HasSkillLine(pSpell->RequiredSkillLine) && pSpell->TeachingLine && _player->GetUInt32Value(PLAYER_CHARACTER_POINTS2) == 0)
 			return TRAINER_STATUS_NOT_LEARNABLE;
 
 		return TRAINER_STATUS_LEARNABLE;

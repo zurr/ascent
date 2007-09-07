@@ -474,7 +474,7 @@ bool ChatHandler::HandleLearnSkillCommand(const char *args, WorldSession *m_sess
 	if(plr->GetTypeId() != TYPEID_PLAYER) return false;
 	sGMLog.writefromsession(m_session, "used add skill of %u %u %u on %s", skill, min, max, plr->GetName());
 
-	plr->AddSkillLine(skill, min, max);   
+	plr->_AddSkillLine(skill, min, max);   
 
 	return true;
 }
@@ -505,17 +505,12 @@ bool ChatHandler::HandleModifySkillCommand(const char *args, WorldSession *m_ses
 	if(!plr) return false;
 	sGMLog.writefromsession(m_session, "used modify skill of %u %u on %s", skill, cnt,plr->GetName());
 
-	if(!plr->HasSkillLine(skill))
+	if(!plr->_HasSkillLine(skill))
 	{
 		SystemMessage(m_session, "Does not have skill line, adding.");
-		plr->AddSkillLine(skill, 1, 300);   
+		plr->_AddSkillLine(skill, 1, 300);   
 	} else {
-		if(cnt + plr->GetSkillAmt(skill) > plr->GetSkillMax(skill))
-			cnt = plr->GetSkillMax(skill) - plr->GetSkillAmt(skill);
-		for(uint32 l=0;l<cnt;l++)
-		{
-			plr->AdvanceSkillLine(skill);
-		}
+		plr->_AdvanceSkillLine(skill,cnt);
 	}	   
 
 	return true;
@@ -534,7 +529,7 @@ bool ChatHandler::HandleRemoveSkillCommand(const char *args, WorldSession *m_ses
 	Player *plr = getSelectedChar(m_session, true);
 	if(!plr) return true;
 	sGMLog.writefromsession(m_session, "used remove skill of %u on %s", skill, plr->GetName());
-	plr->RemoveSkillLine(skill);
+	plr->_RemoveSkillLine(skill);
 	SystemMessageToPlr(plr, "%s removed skill line %d from you. ", m_session->GetPlayer()->GetName(), skill);
 	return true;
 }

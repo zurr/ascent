@@ -1273,7 +1273,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 	}*/
 
 		if(proto->RequiredSkill)
-			if (proto->RequiredSkillRank > m_pOwner->GetSkillAmt(proto->RequiredSkill))
+			if (proto->RequiredSkillRank > m_pOwner->_GetSkillLineCurrent(proto->RequiredSkill,true))
 				return INV_ERR_SKILL_ISNT_HIGH_ENOUGH;
 
 		// You are dead !
@@ -1395,7 +1395,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 					{
 						if(mainweapon->GetProto()->InventoryType != INVTYPE_2HWEAPON)
 						{
-							if(m_pOwner->HasSkillLine(SKILL_DUAL_WIELD))
+							if(m_pOwner->_HasSkillLine(SKILL_DUAL_WIELD))
 								return 0;
 							else
 								return INV_ERR_CANT_DUAL_WIELD;
@@ -1406,7 +1406,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 				}
 				else
 				{
-					if(m_pOwner->HasSkillLine(SKILL_DUAL_WIELD))
+					if(m_pOwner->_HasSkillLine(SKILL_DUAL_WIELD))
 						return 0;
 					else
 						return INV_ERR_CANT_DUAL_WIELD;

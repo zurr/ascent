@@ -343,5 +343,5 @@ void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 	_player->RemoveSpellsFromLine(skill_line);
 	
 	// Finally, remove the skill line.
-	_player->RemoveSkillLine(skill_line);
+	_player->_RemoveSkillLine(skill_line);
 }

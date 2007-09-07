@@ -1514,9 +1514,9 @@ void Spell::SpellEffectWeapon(uint32 i)
 			playerTarget->addSpell(spell);
 		
 		// if we do not have the skill line
-		if(!playerTarget->HasSkillLine(skill))
+		if(!playerTarget->_HasSkillLine(skill))
 		{
-			playerTarget->AddSkillLine(skill, 1, playerTarget->getLevel()*5);
+			playerTarget->_AddSkillLine(skill, 1, playerTarget->getLevel()*5);
 		}
 		else // unhandled.... if we have the skill line
 		{
@@ -1820,7 +1820,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 		case LOCKTYPE_PICKLOCK:
 		{
 			uint32 v = 0;
-			uint32 lockskill = p_caster->GetBaseSkillAmt(SKILL_LOCKPICKING);
+			uint32 lockskill = p_caster->_GetSkillLineCurrent(SKILL_LOCKPICKING);
 
 			if(itemTarget)
 			{	
@@ -1864,7 +1864,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 		 
 			if(Rand(100.0f)) // 3% chance to fail//why?
 			{
-				if(((Player*)m_caster)->GetSkillAmt(SKILL_HERBALISM) < v)
+				if(((Player*)m_caster)->_GetSkillLineCurrent(SKILL_HERBALISM) < v)
 				{
 			//		SendCastResult(SPELL_FAILED_LEVEL_REQUIREMENT);
 				//	return;
@@ -1906,7 +1906,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 			uint32 v = GetGOReqSkill(gameObjTarget);
 			if(Rand(100.0f)) // 3% chance to fail//why?
 			{
-				if(((Player*)m_caster)->GetSkillAmt(SKILL_MINING) < v)
+				if(((Player*)m_caster)->_GetSkillLineCurrent(SKILL_MINING) < v)
 				{
 				//	SendCastResult(SPELL_FAILED_LEVEL_REQUIREMENT);
 				  //  return;
@@ -1995,7 +1995,7 @@ void Spell::SpellEffectProficiency(uint32 i)
 	{
 		if(playerTarget)
 		{
-			if(playerTarget->HasSkillLine(skill))
+			if(playerTarget->_HasSkillLine(skill))
 			{
 				// Increase it by one
 			   // playerTarget->AdvanceSkillLine(skill);
@@ -2007,9 +2007,9 @@ void Spell::SpellEffectProficiency(uint32 i)
 					return;*/
 
 				if(sk && sk->type == SKILL_TYPE_WEAPON)
-					playerTarget->AddSkillLine(skill, 1, 5*playerTarget->getLevel());
+					playerTarget->_AddSkillLine(skill, 1, 5*playerTarget->getLevel());
 				else
-					playerTarget->AddSkillLine(skill, 1, 1);				
+					playerTarget->_AddSkillLine(skill, 1, 1);				
 			}
 		}
 	}
@@ -2199,8 +2199,8 @@ void Spell::SpellEffectDualWield(uint32 i)
 
 	Player *pPlayer = ((Player*)m_caster);
 
-	if(!pPlayer->HasSkillLine(SKILL_DUAL_WIELD))
-		 pPlayer->AddSkillLine(SKILL_DUAL_WIELD, 1, 1);
+	if(!pPlayer->_HasSkillLine(SKILL_DUAL_WIELD))
+		 pPlayer->_AddSkillLine(SKILL_DUAL_WIELD, 1, 1);
 	
 		// Increase it by one
 		//dual wield is 1/1 , it never increases it's not even displayed in skills tab
@@ -2329,12 +2329,9 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
 			return;
 	};
 
-	if(target->HasSkillLine(skill))
+	if(target->_HasSkillLine(skill))
 	{
-		if(target->GetBaseSkillAmt(skill)>max)
-			target->ModSkillMax(skill,max,max);
-		else
-			target->ModSkillMax(skill, max);
+		target->_ModifySkillMaximum(skill, max);
 	}		
 	else
 	{
@@ -2346,9 +2343,9 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
 			target->ModUInt32Value(PLAYER_CHARACTER_POINTS2,-1);
 	  
 		if(skill == SKILL_RIDING)
-			target->AddSkillLine(skill, max, max);
+			target->_AddSkillLine(skill, max, max);
 		else
-			target->AddSkillLine(skill, 1, max);
+			target->_AddSkillLine(skill, 1, max);
 	}
 	switch (skill)//professions fix, for unknow reason when u learn profession it 
 			//does not teach find herbs for herbalism etc. moreover there is no spell
@@ -3541,7 +3538,7 @@ void Spell::SpellEffectSkinning(uint32 i)
 {
 	if(!unitTarget)
 		return;
-	uint32 sk=((Player*)m_caster)->GetSkillAmt(SKILL_SKINNING);
+	uint32 sk=((Player*)m_caster)->_GetSkillLineCurrent(SKILL_SKINNING);
 	uint32 lvl=unitTarget->getLevel();
 	if( (sk >= lvl*5)||((sk+100) >= lvl*10) )
 	{
@@ -3687,10 +3684,10 @@ void Spell::SpellEffectDisenchant(uint32 i)
 		return;
    
 	//Check for skill first, we can increase it upto 75 
-	uint32 skill=caster->GetBaseSkillAmt(SKILL_ENCHANTING);
+	uint32 skill=caster->_GetSkillLineCurrent(SKILL_ENCHANTING);
 	if(skill < 75)//can up skill
 	if(Rand(float(100-skill*100.0/75.0)))
-		caster->AdvanceSkillLine(SKILL_ENCHANTING, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
+		caster->_AdvanceSkillLine(SKILL_ENCHANTING, float2int32( 1.0f * sWorld.getRate(RATE_SKILLRATE)));
 	AddItemFromDisenchant(it->GetProto(),caster);
 
 	delete it;
@@ -4142,7 +4139,7 @@ void Spell::SpellEffectProspecting(uint32 i)
 
         //Check for required skill
 		uint32 req_skill = src_item->GetProto()->RequiredSkillRank; 
-		if(req_skill >p_caster->GetSkillAmt(SKILL_JEWELCRAFTING)) 
+		if(req_skill >p_caster->_GetSkillLineCurrent(SKILL_JEWELCRAFTING)) 
 		{
 			SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
 			return;

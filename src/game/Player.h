@@ -431,6 +431,17 @@ enum DUEL_WINNER
 };
 #define PLAYER_ATTACK_TIMEOUT_INTERVAL	5000
 #define PLAYER_FORCED_RESURECT_INTERVAL	360000 // 1000*60*6= 6 minutes 
+
+struct PlayerSkill
+{
+	skilllineentry * Skill;
+	uint32 CurrentValue;
+	uint32 MaximumValue;
+	uint32 BonusValue;
+	float GetSkillUpChance();
+	void Reset(uint32 Id);
+};
+
 //====================================================================
 //  Player
 //  Class that holds every created character on the server.
@@ -449,11 +460,40 @@ typedef std::map<uint32, FactionReputation*>        ReputationMap;
 typedef std::map<uint32, uint64>                    SoloSpells;
 typedef std::map<SpellEntry*, pair<uint32, uint32> >StrikeSpellMap;
 typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
+typedef std::map<uint32, PlayerSkill>				SkillMap;
 
 class SERVER_DECL Player : public Unit
 {
 	friend class WorldSession;
 	friend class Pet;
+
+protected:
+	SkillMap m_skills;
+
+public:
+	/************************************************************************/
+	/* Skill System															*/
+	/************************************************************************/
+
+	void _AdvanceSkillLine(uint32 SkillLine, uint32 Count = 1);
+	void _AddSkillLine(uint32 SkillLine, uint32 Current, uint32 Max);
+	uint32 _GetSkillLineMax(uint32 SkillLine);
+	uint32 _GetSkillLineCurrent(uint32 SkillLine, bool IncludeBonus = true);
+	void _RemoveSkillLine(uint32 SkillLine);
+	void _UpdateMaxSkillCounts();
+	void _ModifySkillBonus(uint32 SkillLine, int32 Delta);
+	void _ModifySkillBonusByType(uint32 SkillType, int32 Delta);
+	bool _HasSkillLine(uint32 SkillLine);
+	void RemoveSpellsFromLine(uint32 skill_line);
+	void _RemoveAllSkills();
+	void _RemoveLanguages();
+	void _AddLanguages(bool All);
+	void _AdvanceAllSkills(uint32 count);
+	void _ModifySkillMaximum(uint32 SkillLine, uint32 NewMax);
+
+protected:
+	void _UpdateSkillFields();
+    
 public:
 	Player ( uint32 high, uint32 low );
 	~Player ( );
@@ -844,25 +884,8 @@ public:
 	void EventAttackStop();
 	void EventAttackUpdateSpeed() { }
 	void EventDeath();
-	// skilllines
-	void AddLanguage(uint32 id);
-	void AddLanguages();
-	void RemoveLanguage(uint32 id);
-	void RemoveLanguages();
-	bool HasSkillLine(uint32 id);
-	void AddSkillLine(uint32 id, uint32 currVal, uint32 maxVal);
-	void AdvanceSkillLine(uint32 id, uint32 count=1);
-	void ModSkillMax(uint32 id, uint32 amt, uint32 setcur = 0);
 	//Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --wierd
 	float GetSkillUpChance(uint32 id);
-	uint32 GetSkillAmt(uint32 id);
-	uint32 GetSkillPlace(uint32 id);
-	uint32 GetSkillMax(uint32 id);
-	void RemoveSkillLine(uint32 id);
-	uint32 GetBaseSkillAmt(uint32 id);
-	void ModSkillBonus(uint32 id,int32 bonus);
-	void ModSkillBonusType(uint32 type,int32 bonus);
-	void UpdateMaxSkills();
 	//inline std::list<struct skilllines>getSkillLines() { return m_skilllines; }
 	float SpellCrtiticalStrikeRatingBonus;
 	float SpellHasteRatingBonus;
@@ -1127,7 +1150,6 @@ public:
     inline bool IsMounted() {return m_MountSpellId; }
 	
     bool bHasBindDialogOpen;
-	void RemoveSpellsFromLine(uint32 skill_line);
 	bool bGMTagOn;
 	uint32 TrackingSpell;
 	void _EventCharmAttack();
