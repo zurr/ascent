@@ -3212,6 +3212,7 @@ int8 Spell::CheckItems()
 			if(m_spellInfo->Id==13262) //check for disenchant, only green and better items could be disenchanted
 			{
 				if(proto->Quality < 2 
+					|| proto->InventoryType == INVTYPE_NON_EQUIP
                     || proto->InventoryType == INVTYPE_AMMO
                   )
 					return SPELL_FAILED_CANT_BE_DISENCHANTED;
