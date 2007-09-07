@@ -2404,10 +2404,14 @@ bool Player::LoadFromDB(uint32 guid)
 					break;
 
 				v3 = atol(start);
-				sk.Reset(v1 & 0xffff);
-				sk.CurrentValue = v2 & 0xffff;
-				sk.MaximumValue = (v2 >> 16) & 0xffff;
-				m_skills.insert( make_pair(sk.Skill->id, sk) );
+				start = end + 1;
+				if(v1 & 0xffff)
+				{
+					sk.Reset(v1 & 0xffff);
+					sk.CurrentValue = v2 & 0xffff;
+					sk.MaximumValue = (v2 >> 16) & 0xffff;
+					m_skills.insert( make_pair(sk.Skill->id, sk) );
+				}
 			}
 		}
 		else
