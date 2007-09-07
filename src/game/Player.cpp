@@ -2455,6 +2455,11 @@ bool Player::LoadFromDB(uint32 guid)
 
 	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
 	{
+		if(itr->first == SKILL_RIDING)
+		{
+			itr->second.CurrentValue = itr->second.MaximumValue;
+		}
+
 		prof = GetProficiencyBySkill(itr->first);
 		if(prof)
 		{
@@ -8484,6 +8489,9 @@ void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 
 	if(NewMax > itr->second.MaximumValue)
 	{
+		if(SkillLine == SKILL_RIDING)
+			itr->second.CurrentValue = NewMax;
+
 		itr->second.MaximumValue = NewMax;
 		_UpdateSkillFields();
 	}
