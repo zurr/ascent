@@ -1243,7 +1243,7 @@ void World::SetInitialWorldSettings()
 		sp->procFlags=PROC_ON_CAST_SPELL;
 	}
 	//warlock: Shadow Mastery
-	for (uint i=0;i<5;i++)
+	for (uint32 i=0;i<5;i++)
 	{
 		sp  = sSpellStore.LookupEntry(18271+i);
 		if (sp)
