@@ -3,6 +3,7 @@ Shield block - This thing should block one attack which could be increased by us
 Shiled slam - This is the ultimate prot war thing,by using the amout of shield block from items + it's own ability damage it slams you opponent right into his balls %) But the truth is that it just does the damage of the ability and not + shield block value.It should be like for example: you have somth like 100 shield block value,and this value is the amount of damage added to your shield slam,so if you hit for let's say 500 and +100 you have 600,simple.
 Slam - the damage is fine,but the skill doesnt reset the normal attack,so it goes along whith the slam,making you have infinitive rage all the time.
 Stance switch - correct me if i'm wrong,but switching removes all buffs debuffs from you.
+- endless rage
 
 - this got depracated, maybe update with new one ?
 [23:52:39] Spell::cast 5301, Unit: 283

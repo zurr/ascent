@@ -740,7 +740,7 @@ int Unit_GetHealthPct(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
 	Unit * pThis = GetThisPointer<Unit>(a_thread);
-	a_thread->PushFloat(pThis->GetUInt32Value(UNIT_FIELD_HEALTH) / pThis->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 100);
+    a_thread->PushFloat((float) pThis->GetUInt32Value(UNIT_FIELD_HEALTH) * 100.0f / pThis->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 	return GM_OK;
 }
 
