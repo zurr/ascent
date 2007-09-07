@@ -666,7 +666,7 @@ void LootRoll::PlayerRolled(Player *player, uint8 choice)
 		rmap = &GreedRolls;
 	}
 
-	int roll = sRand.randInt(100);
+	int roll = sRand.randInt(99)+1;
 	// create packet
 	WorldPacket data(34);
 	data.SetOpcode(SMSG_LOOT_ROLL);

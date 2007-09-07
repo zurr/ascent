@@ -213,8 +213,14 @@ void Spell::FillAllTargetsInArea(std::vector<uint64> *tmpMap,float srcx,float sr
 	{
 		if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
 			continue;
-		if(!TargetTypeCheck((*itr),m_spellInfo->TargetCreatureType))
-			continue;
+		if(m_spellInfo->TargetCreatureType)
+		{
+			if((*itr)->GetTypeId()!= TYPEID_UNIT)
+					continue;
+			CreatureInfo *inf = ((Creature*)(*itr))->GetCreatureName();
+			if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
+				continue;
+		}
 		if(IsInrange(srcx,srcy,srcz,(*itr),r))
 		{
 			if(u_caster)
@@ -258,8 +264,14 @@ uint64 Spell::GetSinglePossibleEnemy(float prange)
 	{
 		if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
 			continue;
-		if(!TargetTypeCheck((*itr),m_spellInfo->TargetCreatureType))
-			continue;
+		if(m_spellInfo->TargetCreatureType)
+		{
+			if((*itr)->GetTypeId()!= TYPEID_UNIT)
+				continue;
+			CreatureInfo *inf = ((Creature*)(*itr))->GetCreatureName();
+			if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
+				continue;
+		}	
 		if(IsInrange(srcx,srcy,srcz,(*itr),r))
 		{
 			if(u_caster)
@@ -293,8 +305,14 @@ uint64 Spell::GetSinglePossibleFriend(float prange)
 	{
 		if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
 			continue;
-		if(!TargetTypeCheck((*itr),m_spellInfo->TargetCreatureType))
-			continue;
+		if(m_spellInfo->TargetCreatureType)
+		{
+			if((*itr)->GetTypeId()!= TYPEID_UNIT)
+				continue;
+			CreatureInfo *inf = ((Creature*)(*itr))->GetCreatureName();
+				if(!inf || !(1<<(inf->Type-1) & m_spellInfo->TargetCreatureType))
+					continue;
+		}	
 		if(IsInrange(srcx,srcy,srcz,(*itr),r))
 		{
 			if(u_caster)
@@ -2157,13 +2175,11 @@ void Spell::writeSpellMissedTargets( WorldPacket * data )
 		}
 	}
 	else
-	{
 		for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ )
 		{
 			*data << (*i);
 			*data << (uint8)2;
 		}
-	}
 }
 
 void Spell::SendLogExecute(uint32 damage, uint64 & targetGuid)
@@ -2995,8 +3011,6 @@ uint8 Spell::CanCast(bool rangetolerate)
 					}
 				}
 			}	*/		
-			if(!TargetTypeCheck(target,m_spellInfo->TargetCreatureType))
-				return SPELL_FAILED_BAD_TARGETS;
 		}
 	}	
 	if(m_targets.m_targetMask==TARGET_FLAG_DEST_LOCATION)
@@ -3198,8 +3212,7 @@ int8 Spell::CheckItems()
 			if(m_spellInfo->Id==13262) //check for disenchant, only green and better items could be disenchanted
 			{
 				if(proto->Quality < 2 
-                    || proto->InventoryType == INVTYPE_NON_EQUIP
-				    || proto->InventoryType >= INVTYPE_HOLDABLE
+                    || proto->InventoryType == INVTYPE_AMMO
                   )
 					return SPELL_FAILED_CANT_BE_DISENCHANTED;
 				//disenchant armor,weapon,ring,trinket, and neck				

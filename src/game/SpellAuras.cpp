@@ -4753,6 +4753,22 @@ void Aura::SpellAuraAddPctMod(bool apply)
 	int32 val = apply?mod->m_amount:-mod->m_amount;
 	uint32 AffectedGroups = GetSpellProto()->EffectSpellGroupRelation[mod->i];
 
+	//if (apply)
+	//{
+	//	SpellEntry *s = GetSpellProto();
+	//	FILE *f = fopen("log.txt","a");
+	//	fprintf(f,"PCT ID %d DM %.2f %.2f %.2f M %d ESGR %d %d %d\n",s->Id,
+	//		s->dmg_multiplier[0],
+	//		s->dmg_multiplier[1],
+	//		s->dmg_multiplier[2],
+	//		mod->m_miscValue,
+	//		s->EffectSpellGroupRelation[0],
+	//		s->EffectSpellGroupRelation[1],
+	//		s->EffectSpellGroupRelation[2]
+	//	);
+	//	fclose(f);
+	//}
+
 	switch (mod->m_miscValue)//let's generate warnings for unknown types of modifiers
 	{
 	case SMT_CRITICAL:
@@ -4801,23 +4817,7 @@ void Aura::SpellAuraAddPctMod(bool apply)
 		break;
 
 	case SMT_DAMAGE_DONE:
-		{
-			SpellEntry *se = GetSpellProto();
-			switch (se->NameHash) //Dirty but works. If you get better idea - feel free to rewrite
-			{
-			case 0x70E5E298: //Priest:Darkness
-			case 0xD7AF0FAA: //Warlock:Shadow Mastery
-				m_target->DamageDoneModPCT[SCHOOL_SHADOW] +=val/100.0f;break;
-			case 0xCB6A377D: //Mage:Arcane Power
-				for (uint32 x=0;x<7;x++)
-					m_target->DamageDoneModPCT[x] +=val/100.0f;break;
-			case 0xFF5A6938: //Mage:Fire Power
-				m_target->DamageDoneModPCT[SCHOOL_FIRE] +=val/100.0f;break;
-			default:
-				SendModifierLog(&m_target->SM_PDamageBonus,val,AffectedGroups,mod->m_miscValue,true);
-				break;
-			}
-		}
+		SendModifierLog(&m_target->SM_PDamageBonus,val,AffectedGroups,mod->m_miscValue,true);
 		break;
 
 	case SMT_DUMMY:
@@ -5907,6 +5907,24 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 {
 	int32 val = apply?mod->m_amount:-mod->m_amount;
 	uint32 AffectedGroups = GetSpellProto()->EffectSpellGroupRelation[mod->i];
+
+	//if (apply)
+	//{
+	//	SpellEntry *s = GetSpellProto();
+	//	FILE *f = fopen("log.txt","a");
+	//	fprintf(f,"FLAT ID %d DM %.2f %.2f %.2f E %d %d %d ESGR %d %d %d\n",s->Id,
+	//		s->dmg_multiplier[0],
+	//		s->dmg_multiplier[1],
+	//		s->dmg_multiplier[2],
+	//		s->Effect[0],
+	//		s->Effect[1],
+	//		s->Effect[2],
+	//		s->EffectSpellGroupRelation[0],
+	//		s->EffectSpellGroupRelation[1],
+	//		s->EffectSpellGroupRelation[2]
+	//	);
+	//	fclose(f);
+	//}
 
 	switch (mod->m_miscValue)//let's generate warnings for unknown types of modifiers
 	{

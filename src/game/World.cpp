@@ -945,6 +945,8 @@ void World::SetInitialWorldSettings()
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
 					if(strstr(desc,"damage on hit"))
 						pr|=PROC_ON_ANY_DAMAGE_VICTIM;
+					if(strstr(desc,"after being hit by any damaging attack"))
+						pr|=PROC_ON_ANY_DAMAGE_VICTIM;
 					if(strstr(desc,"striking melee or ranged attackers"))
 						pr|=PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
 					if(strstr(desc,"damage to attackers when hit"))
@@ -1197,10 +1199,98 @@ void World::SetInitialWorldSettings()
 	sp = sSpellStore.LookupEntry(30335);
 	if(sp)
 	{
-		sp->Effect[1] = 6; //aura
+		sp->Effect[1] = 64; //aura
 		sp->EffectTriggerSpell[1] = 30339; //evil , but this is good for us :D
 	}
-	//mage talent "Spell Power"
+	//Warrior:Improved Berserker
+	sp = sSpellStore.LookupEntry(20500);
+	if(sp)
+	   sp->procFlags=PROC_ON_CAST_SPELL;
+	sp = sSpellStore.LookupEntry(20501);
+	if(sp)
+	   sp->procFlags=PROC_ON_CAST_SPELL;
+	//Druid:Intensity
+	sp = sSpellStore.LookupEntry(17106);
+	if(sp)
+	{
+	   sp->EffectApplyAuraName[1] = 42;
+	   sp->procFlags=PROC_ON_CAST_SPELL;
+	}
+	sp = sSpellStore.LookupEntry(17107);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[1] = 42;
+		 sp->procFlags=PROC_ON_CAST_SPELL;
+	}
+	sp = sSpellStore.LookupEntry(17108);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[1] = 42;
+		sp->procFlags=PROC_ON_CAST_SPELL;
+	}
+    //Improved Sprint
+	sp = sSpellStore.LookupEntry(13743);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42;
+		sp->procFlags=PROC_ON_CAST_SPELL;
+		sp->procChance = 50;
+	}
+	sp = sSpellStore.LookupEntry(13875);
+	if(sp)
+	{
+		sp->EffectApplyAuraName[0] = 42;
+		sp->procFlags=PROC_ON_CAST_SPELL;
+	}
+	//warlock: Shadow Mastery
+	for (uint i=0;i<5;i++)
+	{
+		sp  = sSpellStore.LookupEntry(18271+i);
+		if (sp)
+		{
+			sp->EffectSpellGroupRelation[0]=33562624;
+			sp->EffectSpellGroupRelation[1]=8421376;
+		}
+	}
+	//mage: Arcane Power
+	sp  = sSpellStore.LookupEntry(12042);
+	if (sp)
+	{
+		sp->EffectSpellGroupRelation[0]=5775504;
+		sp->EffectSpellGroupRelation[1]=10518528;
+	}
+	//mage: Fire Power
+	sp  = sSpellStore.LookupEntry(11124);
+	if (sp)
+	{
+		sp->EffectSpellGroupRelation[0]=868;
+		sp->EffectSpellGroupRelation[1]=868;
+	}
+	sp  = sSpellStore.LookupEntry(12398);
+	if (sp)
+	{
+		sp->EffectSpellGroupRelation[0]=868;
+		sp->EffectSpellGroupRelation[1]=868;
+	}
+	sp  = sSpellStore.LookupEntry(12399);
+	if (sp)
+	{
+		sp->EffectSpellGroupRelation[0]=868;
+		sp->EffectSpellGroupRelation[1]=868;
+	}
+	sp  = sSpellStore.LookupEntry(12400);
+	if (sp)
+	{
+		sp->EffectSpellGroupRelation[0]=868;
+		sp->EffectSpellGroupRelation[1]=868;
+	}
+	sp  = sSpellStore.LookupEntry(12378);
+	if (sp)
+	{
+		sp->EffectSpellGroupRelation[0]=868;
+		sp->EffectSpellGroupRelation[1]=868;
+	}
+	//mage: Spell Power
 	sp = sSpellStore.LookupEntry(35581);
 	if(sp)	
 	{
@@ -1211,7 +1301,7 @@ void World::SetInitialWorldSettings()
 	{
 		sp->EffectSpellGroupRelation[0]=5775504;
 	}
-	//mage talent "Blazing Speed"
+	//mage: Blazing Speed
 	sp = sSpellStore.LookupEntry(31641); 
 	if(sp)	sp->EffectTriggerSpell[0]=31643;
 	sp = sSpellStore.LookupEntry(31642);

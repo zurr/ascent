@@ -915,11 +915,9 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				SpellCastTargets targets;
 				Unit *target;
 				if(itr2->procFlags & PROC_TAGRGET_SELF)
-					target = this;
-				else target = victim;
-				if(!TargetTypeCheck(target,spellInfo->TargetCreatureType))
-					continue;
-				targets.m_unitTarget = target->GetGUID();
+					targets.m_unitTarget = GetGUID();
+				else 
+					targets.m_unitTarget = victim->GetGUID();
 	
 				spell->pSpellId=origId;
 				spell->prepare(&targets);
