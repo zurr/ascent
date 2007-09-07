@@ -656,7 +656,7 @@ void OnCrash(bool Terminate)
 				}
 			}
 			sLog.outString("All pending database operations cleared.\n");
-			sWorld.SaveAllPlayers();
+			//sWorld.SaveAllPlayers();
 			sLog.outString("Data saved.");
 		}
 	}
