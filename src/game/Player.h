@@ -463,6 +463,7 @@ typedef std::map<uint32, uint64>                    SoloSpells;
 typedef std::map<SpellEntry*, pair<uint32, uint32> >StrikeSpellMap;
 typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint32, PlayerSkill>				SkillMap;
+typedef std::set<Player**>							ReferenceSet;
 
 class SERVER_DECL Player : public Unit
 {
@@ -471,8 +472,17 @@ class SERVER_DECL Player : public Unit
 
 protected:
 	SkillMap m_skills;
+	ReferenceSet m_references;
 
 public:
+
+	/************************************************************************/
+	/* Reference System	                                                    */
+	/************************************************************************/
+
+	inline void AddReference(Player ** ptr) { m_references.insert(ptr); *ptr = this; }
+	inline void RemoveReference(Player ** ptr) { m_references.erase(ptr); *ptr = NULL; }
+
 	/************************************************************************/
 	/* Skill System															*/
 	/************************************************************************/

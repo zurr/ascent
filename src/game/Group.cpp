@@ -112,12 +112,17 @@ void SubGroup::RemovePlayer(PlayerInfo * info, Player *pPlayer, bool forced_remo
 			if(pPlayer == NULL && !forced_remove)
 			{
 				/* player temporary remove (set to offline) */
-				itr->player = NULL;
+				if(itr->player != NULL)
+					itr->player->RemoveReference(&itr->player);
+
 				info->subGroup=GetID();
 			}
 			else
 			{
 				/* full remove (player is removed from party) */
+				if(itr->player != NULL)
+					itr->player->RemoveReference(&itr->player);
+
 				m_GroupMembers.erase(itr);
 				m_Parent->m_MemberCount--;
 				info->subGroup=0;
@@ -148,17 +153,25 @@ bool SubGroup::AddPlayer(PlayerInfo * info, Player *pPlayer)
 		if(itr->player_info == info)
 		{
 			/* we're simply updating */
-			itr->player = pPlayer;
+			if(itr->player != NULL)
+				itr->player->RemoveReference(&itr->player);
+
+			pPlayer->AddReference(&itr->player);
 			return true;
 		}
 	}
 
 	GroupMember mbr;
-	mbr.player = pPlayer;
+	mbr.player = NULL;
 	mbr.player_info = info;
 	m_GroupMembers.push_back(mbr);
 	m_Parent->m_MemberCount++;
 	m_Parent->m_dirty=true;
+	GroupMembersSet::iterator itr = --m_GroupMembers.end();
+	ASSERT(itr->player_info == info);
+	if(pPlayer)
+		pPlayer->AddReference(&itr->player);
+
 	return true;
 }
 
@@ -195,7 +208,7 @@ bool Group::AddMember(PlayerInfo * info, Player* pPlayer, int32 subgroupid)
 				if(m_Leader == NULL)
 				{
 					// We're the only member? Set us to the leader.
-					m_Leader=pPlayer;
+					pPlayer->AddReference(&m_Leader);
 				}
 
 				/* process any pending updates beforehand */
@@ -228,6 +241,9 @@ bool Group::AddMember(PlayerInfo * info, Player* pPlayer, int32 subgroupid)
 
 void Group::SetLeader(Player* pPlayer, bool silent)
 {
+	if(m_Leader != NULL)
+		m_Leader->RemoveReference(&m_Leader);
+
 	m_Leader = pPlayer;
 	m_dirty=true;
 	if(!silent)
@@ -377,6 +393,8 @@ void SubGroup::Disband(bool bRemoveGroup)
 			/* remove SoulStones if caster and reciever are not the same player */
 			if(itr->player->SoulStoneReciever && itr->player->SoulStoneReciever!=itr->player->GetGUID())
 				itr->player->removeSoulStone();
+
+			itr->player->RemoveReference(&itr->player);
 		}
 
 		if(bRemoveGroup)
@@ -496,6 +514,7 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 
 	if(m_Looter && m_Looter->GetGUID() == info->guid)
 	{
+		m_Looter->RemoveReference(&m_Looter);
 		m_Looter = newPlayer;
 		m_dirty=true;
 	}
@@ -510,6 +529,7 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 		else
 		{
 			/* partial remove - no message */
+			m_Leader->RemoveReference(&m_Leader);
 			m_Leader = newPlayer;
 			m_dirty=true;
 			Update(true);
@@ -545,6 +565,9 @@ void Group::ExpandToRaid()
 
 void Group::SetLooter(Player *pPlayer, uint8 method, uint16 threshold)
 { 
+	if(m_Looter)
+		m_Looter->RemoveReference(&m_Looter);
+
 	m_LootMethod = method;
 	m_Looter = pPlayer;
 	m_LootThreshold  = threshold;

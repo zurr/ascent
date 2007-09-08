@@ -360,6 +360,15 @@ Player::Player ( uint32 high, uint32 low )
 
 Player::~Player ( )
 {
+	Player ** ref;
+	for(ReferenceSet::iterator itr = m_references.begin(); itr != m_references.end(); ++itr)
+	{
+		ref = *itr;
+		if(*ref == this)
+			*ref = NULL;
+	}
+	m_references.clear();
+
 	if(!ok_to_remove)
 	{
 		printf("Player deleted from non-logoutplayer!\n");

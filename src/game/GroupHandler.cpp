@@ -175,21 +175,22 @@ void WorldSession::HandleGroupUninviteOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 1);
-	WorldPacket data;
 	std::string membername;
 	Group *group;
 	Player * player;
+	PlayerInfo * info;
 
 	recv_data >> membername;
 
 	player = objmgr.GetPlayer(membername.c_str(), false);
-	if ( player == NULL )
+	info = objmgr.GetPlayerInfoByName(membername);
+	if ( player == NULL && info == NULL )
 	{
 		SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
 		return;
 	}
 
-	if ( !_player->InGroup() || _player->GetGroup() != player->GetGroup() )
+	if ( !_player->InGroup() || info->m_Group != _player->GetGroup() )
 	{
 		SendPartyCommandResult(_player, 0, membername, ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
 		return;
@@ -207,7 +208,7 @@ void WorldSession::HandleGroupUninviteOpcode( WorldPacket & recv_data )
 	group = _player->GetGroup();
 
 	if(group)
-		group->RemovePlayer(player->m_playerInfo, player, true);
+		group->RemovePlayer(info, player, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
