@@ -144,6 +144,7 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "GetPositionZ",						Unit_GetPositionZ					},
 		{ "GetFacing",							Unit_GetFacing						},
 		{ "ReturnToSpawn",						Unit_ReturnToSpawn					},
+		{ "GetRandomPlayer",					Unit_GetRandomPlayer				},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));

@@ -1378,6 +1378,42 @@ int Unit_GetClosestPlayer(gmThread * a_thread)
 	return GM_OK;
 }
 
+int Unit_GetRandomPlayer(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Object * pThis = GetThisPointer<Object>(a_thread);
+	if(!pThis->IsInWorld())
+	{
+		GM_EXCEPTION_MSG("Unit is not in world!");
+		return GM_EXCEPTION;
+	}
+	uint32 count= 0;
+	for(set<Player*>::iterator itr = pThis->GetInRangePlayerSetBegin(); itr != pThis->GetInRangePlayerSetEnd(); ++itr)
+		count++;
+	if (count==0)
+		return GM_EXCEPTION;
+	uint32 r = rand() %count;
+	count=0;
+	Player* result = NULL;
+	for(set<Player*>::iterator itr = pThis->GetInRangePlayerSetBegin(); itr != pThis->GetInRangePlayerSetEnd(); ++itr)
+	{
+		if (count!=r)
+			count++;
+		else
+		{
+			result = (*itr);
+			break;
+		}
+	}
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)result;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_unitType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+	return GM_OK;
+}
+
+
+
 int Unit_GetClosestUnit(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(0);
