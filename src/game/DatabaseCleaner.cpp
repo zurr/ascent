@@ -64,39 +64,21 @@ void DatabaseCleaner::CleanCharacters()
 	Log.Line();
 	Log.Notice("DatabaseCleaner", "Cleaning playeritems...");
 	result = CharacterDatabase.Query("SELECT ownerguid, guid FROM playeritems");
-	vector<uint32> tokill_items;
+	vector<uint64> tokill_items;
 	if(result)
 	{
 		do {
 			if(result->Fetch()[0].GetUInt32()!=0 && chr_guids.find(result->Fetch()[0].GetUInt32()) == chr_guids.end())
 			{
-				tokill_items.push_back(result->Fetch()[1].GetUInt32());
+				tokill_items.push_back(result->Fetch()[1].GetUInt64());
 			}
 		}while(result->NextRow());
 		delete result;
 	}
 
-	for(vector<uint32>::iterator itr = tokill_items.begin(); itr != tokill_items.end(); ++itr)
+	for(vector<uint64>::iterator itr = tokill_items.begin(); itr != tokill_items.end(); ++itr)
 	{
-		CharacterDatabase.WaitExecute("DELETE FROM playeritems WHERE guid = %u", *itr);
-	}
-    //Item guid re-order
-    uint32 maxguid = 0;
-    result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems");
-	if( result )
-	{
-		maxguid = (uint32)result->Fetch()[0].GetUInt32();
-		delete result;
-	}
-    result = CharacterDatabase.Query("SELECT ownerguid, guid FROM playeritems");
-    if(result)
-	{
-		do {
-            
-            CharacterDatabase.WaitExecute("UPDATE playeritems set guid = %u WHERE guid = %u AND ownerguid= %u", maxguid++, result->Fetch()[1].GetUInt32(), result->Fetch()[0].GetUInt32());
-
-		}while(result->NextRow());
-		delete result;
+		CharacterDatabase.WaitExecute("DELETE FROM playeritems WHERE guid = "I64FMTD, *itr);
 	}
 
 	Log.Notice("DatabaseCleaner", "Deleted %u item instances.", tokill_items.size());

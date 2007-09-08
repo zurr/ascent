@@ -740,54 +740,47 @@ void Player::Update( uint32 p_time )
 	}
 	
 	// Breathing
-	if(!sWorld.BreathingEnabled || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
-    {
-    }
-    else
-    {
-        if(m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
-	    {
-		    // keep subtracting timer
-		    if(m_UnderwaterTime)
-		    {
-			    // not taking dmg yet
-			    if(p_time >= m_UnderwaterTime)
-				    m_UnderwaterTime = 0;
-			    else
-                                    m_UnderwaterTime -= p_time;
-		    }
+	if(m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+	{
+		// keep subtracting timer
+		if(m_UnderwaterTime)
+		{
+			// not taking dmg yet
+			if(p_time >= m_UnderwaterTime)
+				m_UnderwaterTime = 0;
+			else
+                                m_UnderwaterTime -= p_time;
+		}
 
-		    if(!m_UnderwaterTime)
-		    {
-			    // check last damage dealt timestamp, and if enough time has elapsed deal damage
-			    if(mstime >= m_UnderwaterLastDmg)
-			    {
-				    uint32 damage = m_uint32Values[UNIT_FIELD_MAXHEALTH] / 10;
-				    WorldPacket data(SMSG_ENVIRONMENTALDAMAGELOG, 21);
-				    data << GetGUID() << uint8(DAMAGE_DROWNING) << damage << uint64(0);
-				    SendMessageToSet(&data, true);
+		if(!m_UnderwaterTime)
+		{
+			// check last damage dealt timestamp, and if enough time has elapsed deal damage
+			if(mstime >= m_UnderwaterLastDmg)
+			{
+				uint32 damage = m_uint32Values[UNIT_FIELD_MAXHEALTH] / 10;
+				WorldPacket data(SMSG_ENVIRONMENTALDAMAGELOG, 21);
+				data << GetGUID() << uint8(DAMAGE_DROWNING) << damage << uint64(0);
+				SendMessageToSet(&data, true);
 
-				    DealDamage(this, damage, 0, 0, 0);
-				    m_UnderwaterLastDmg = mstime + 1000;
-			    }
-		    }
-	    }
-	    else
-	    {
-		    // check if we're not on a full breath timer
-		    if(m_UnderwaterTime < m_UnderwaterMaxTime)
-		    {
-			    // regenning
-			    m_UnderwaterTime += (p_time * 10);
-			    if(m_UnderwaterTime >= m_UnderwaterMaxTime)
-			    {
-				    m_UnderwaterTime = m_UnderwaterMaxTime;
-				    StopMirrorTimer(1);
-			    }
-		    }
-	    }
-    }
-
+				DealDamage(this, damage, 0, 0, 0);
+				m_UnderwaterLastDmg = mstime + 1000;
+			}
+		}
+	}
+	else
+	{
+		// check if we're not on a full breath timer
+		if(m_UnderwaterTime < m_UnderwaterMaxTime)
+		{
+			// regenning
+			m_UnderwaterTime += (p_time * 10);
+			if(m_UnderwaterTime >= m_UnderwaterMaxTime)
+			{
+				m_UnderwaterTime = m_UnderwaterMaxTime;
+				StopMirrorTimer(1);
+			}
+		}
+	}
 
 	// Lava Damage
 	if(m_UnderwaterState & UNDERWATERSTATE_LAVA)
@@ -3729,7 +3722,6 @@ void Player::ResurrectPlayer()
 		RemoveAura(8326);
 
 	RemoveFlag(PLAYER_FLAGS, 0x10);
-    m_UnderwaterState = 0;
 	setDeathState(ALIVE);
 	UpdateVisibility();
 	if(resurrector && IsInWorld())
@@ -3763,7 +3755,6 @@ void Player::KillPlayer()
 	StopMirrorTimer(1);
 	StopMirrorTimer(2);
 
-    m_UnderwaterState = 0;
 	SetFlag( UNIT_FIELD_FLAGS, 0x08 ); //player death animation, also can be used with DYNAMIC_FLAGS
 	SetUInt32Value( UNIT_DYNAMIC_FLAGS, 0x00 );
 	if(this->getClass() == WARRIOR) //rage resets on death
