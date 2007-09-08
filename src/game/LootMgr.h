@@ -130,6 +130,19 @@ public:
 	LootMgr();
 	~LootMgr();
 
+
+    //NEW LOOTMGR FUNCTIONS.
+
+
+
+
+
+
+
+
+
+
+
 	typedef HM_NAMESPACE::hash_map<uint32, StoreLootList > LootStore;  
 	typedef HM_NAMESPACE::hash_map<uint32,  LootPropTable*> PropStore; 
 	

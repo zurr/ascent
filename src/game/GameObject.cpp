@@ -389,7 +389,7 @@ void GameObject::InitAI()
                         //herbalism and mining;
                         if(pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM)
                         {
-							mines_remaining = sRand.randInt(GetInfo()->sound5 + GetInfo()->sound4);
+                            mines_remaining = GetInfo()->sound4 + sRand.randInt(GetInfo()->sound5 - GetInfo()->sound4);
                         }
                     }
                 }

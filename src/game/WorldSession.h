@@ -116,7 +116,7 @@ typedef struct Cords {
 class MovementInfo
 {
 public:
-	uint32 time;
+	int32 time;
 	float unk6;//pitch
 	//on slip 8 is zero, on jump some other number
 	//9,10 changes if you are not on foot
@@ -165,7 +165,7 @@ public:
 
 	void write(WorldPacket & data)
 	{
-		data << flags << getMSTime();
+		data << flags << time;
 
 		data << x << y << z << orientation;
 

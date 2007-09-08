@@ -718,12 +718,54 @@ bool ChatHandler::HandleGOSpawn(const char *args, WorldSession *m_session)
 {
 	std::stringstream sstext;
 
+ //   GameObject *go = m_session->GetPlayer()->GetMapMgr()->CreateGameObject();
+ //   go->SetUInt32Value(OBJECT_FIELD_ENTRY, 176084);
+ //   go->SetUInt32Value(GAMEOBJECT_DISPLAYID, 3831);
+ //   go->SetUInt32Value(GAMEOBJECT_FLAGS, 40);
+ //   go->SetFloatValue(GAMEOBJECT_ROTATION_02,  0.707107f);
+ //   go->SetFloatValue(GAMEOBJECT_ROTATION_03,  0.707107f);
+ //   go->SetUInt32Value(GAMEOBJECT_STATE, 1);
+ //   go->SetFloatValue(GAMEOBJECT_POS_X, -45.393375f);
+ //   go->SetFloatValue(GAMEOBJECT_POS_Y, 2472.930908f);
+ //   go->SetFloatValue(GAMEOBJECT_POS_Z, 6.988598f);
+ //   go->SetFloatValue(GAMEOBJECT_FACING, 1.570796f);
+ //   go->SetUInt32Value(GAMEOBJECT_TYPE_ID, 11);
+ //   go->SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, 100);
+
+
+
+ //   // Create sapwn instance
+	//GOSpawn * gs = new GOSpawn;
+	//gs->entry = go->GetEntry();
+	//gs->facing = go->GetOrientation();
+	//gs->faction = go->GetUInt32Value(GAMEOBJECT_FACTION);
+	//gs->flags = go->GetUInt32Value(GAMEOBJECT_FLAGS);
+	//gs->id = objmgr.GenerateGameObjectSpawnID();
+	//gs->o = go->GetFloatValue(GAMEOBJECT_ROTATION);
+	//gs->o1 = go->GetFloatValue(GAMEOBJECT_ROTATION_01);
+	//gs->o2 = go->GetFloatValue(GAMEOBJECT_ROTATION_02);
+	//gs->o3 = go->GetFloatValue(GAMEOBJECT_ROTATION_03);
+	//gs->scale = go->GetFloatValue(OBJECT_FIELD_SCALE_X);
+	//gs->x = go->GetPositionX();
+	//gs->y = go->GetPositionY();
+	//gs->z = go->GetPositionZ();
+	//gs->state = go->GetUInt32Value(GAMEOBJECT_STATE);
+	//gs->stateNpcLink = 0;
+	//uint32 cx = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
+	//uint32 cy = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
+
+	//m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx,cy)->GOSpawns.insert(gs);
+	//go->m_spawn = gs;
+	//go->spawnid = gs->id;
+
+ //   go->AddToWorld();
+ //   go->SaveToDB();
 	char* pEntryID = strtok((char*)args, " ");
 	if (!pEntryID)
 		return false;
 
 	uint32 EntryID  = atoi(pEntryID);
-	
+
 	bool Save = false;
 	char* pSave = strtok(NULL, " ");
 	if (pSave)
@@ -783,7 +825,7 @@ bool ChatHandler::HandleGOSpawn(const char *args, WorldSession *m_session)
 	go->m_spawn = gs;
 	go->spawnid = gs->id;
 
-	//go->AddToWorld();
+	go->AddToWorld();
 
 	if(Save == true)
 	{

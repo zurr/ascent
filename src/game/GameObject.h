@@ -212,8 +212,8 @@ public:
 	void OnRemoveInRangeObject(Object* pObj);
 	void RemoveFromWorld();
 
-	inline bool CanMine(){return mines_remaining!=1;}
-	inline void UseMine(){mines_remaining--;}
+	inline bool CanMine(){return mines_remaining != 1 && mines_remaining > 0;}
+	inline void UseMine(){ if(mines_remaining) mines_remaining--;}
     bool HasLoot();
 	MapCell * m_respawnCell;
 
