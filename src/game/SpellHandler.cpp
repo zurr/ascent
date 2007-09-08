@@ -165,16 +165,12 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 			switch(weapon->GetProto()->SubClass)
 			{
 			case 2:			 // bows
-				spellid = SPELL_RANGED_BOW;
-				break;
 			case 3:			 // guns
-				spellid = SPELL_RANGED_GUN;
+            case 18:		 // crossbow
+				spellid = SPELL_RANGED_GENERAL;
 				break;
 			case 16:			// thrown
 				spellid = SPELL_RANGED_THROW;
-				break;
-			case 18:			// crossbow
-				spellid = SPELL_RANGED_CROSSBOW;
 				break;
 			case 19:			// wands
 				spellid = SPELL_RANGED_WAND;
@@ -191,10 +187,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 			{
 				if(_player->IsMounted())
 				{
-					WorldPacket data(SMSG_CAST_RESULT, 9);
-					data << spellInfo->Id;
-					data << (uint8)SPELL_FAILED_NOT_MOUNTED;
-					_player->GetSession()->SendPacket(&data);
+                    _player->SendCastResult(spellInfo->Id, SPELL_FAILED_NOT_MOUNTED, 0);
 					return;
 				}
 				_player->m_AutoShotStartX = _player->GetPositionX();
@@ -224,16 +217,8 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
         if(GetPlayer()->m_currentSpell && GetCastTime(sCastTime.LookupEntry(spellInfo->CastingTimeIndex)))
         {
-#ifndef USING_BIG_ENDIAN
-            StackWorldPacket<9> data(SMSG_CAST_RESULT);
-#else
-			WorldPacket data(SMSG_CAST_RESULT, 9);
-#endif
-            data << spellInfo->Id;
-		    data << (uint8)SPELL_FAILED_SPELL_IN_PROGRESS;
-            _player->GetSession()->SendPacket(&data);
+            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, 0);
             return;
-
         }
 		Spell *spell = new Spell(GetPlayer(), spellInfo, false, NULL);
 	
@@ -254,9 +239,7 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 void WorldSession::HandleCancelAuraOpcode( WorldPacket& recvPacket)
 {
 	uint32 spellId;
-	//uint64 guid;
 	recvPacket >> spellId;
-//	Player *plyr = GetPlayer();
 	
 	for(uint32 x = 0; x < MAX_AURAS+MAX_POSITIVE_AURAS; ++x)
 	{
@@ -269,7 +252,6 @@ void WorldSession::HandleCancelAuraOpcode( WorldPacket& recvPacket)
 void WorldSession::HandleCancelChannellingOpcode( WorldPacket& recvPacket)
 {
 	uint32 spellId;
-	//uint32 guid ;
 	recvPacket >> spellId;
 
 	Player *plyr = GetPlayer();

@@ -1469,7 +1469,7 @@ void Spell::SpellEffectWeapon(uint32 i)
 	case 5011: // crossbows
 		{
 			skill = SKILL_CROSSBOWS;
-			spell = SPELL_RANGED_CROSSBOW;
+			spell = SPELL_RANGED_GENERAL;
 		}break;
 	case 227:   // staves
 		skill = SKILL_STAVES;
@@ -1489,12 +1489,12 @@ void Spell::SpellEffectWeapon(uint32 i)
 	case 264:   // bows
 		{
 			skill = SKILL_BOWS;
-			spell = SPELL_RANGED_BOW;
+			spell = SPELL_RANGED_GENERAL;
 		}break;
 	case 266: // guns
 		{
 			skill = SKILL_GUNS;
-			spell = SPELL_RANGED_GUN;
+			spell = SPELL_RANGED_GENERAL;
 		}break;
 	case 2567:  // thrown
 		skill = SKILL_THROWN;

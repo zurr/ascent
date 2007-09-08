@@ -1408,6 +1408,14 @@ public:
 
 	void RemoveFromBattlegroundQueue();
 
+    /************************************************************************/
+    /* Spell Packet wharper Please keep this separated                      */
+    /************************************************************************/
+    void SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint32 Extra);
+    /************************************************************************/
+    /* End of SpellPacket Wharper                                           */
+    /************************************************************************/
+
 protected:
 	LocationVector m_summonPos;
 	uint32 m_summonInstanceId;

@@ -678,14 +678,14 @@ int ChatHandler::ParseCommands(const char* text, WorldSession *session)
 
 WorldPacket * ChatHandler::FillMessageData( uint32 type, uint32 language, const char *message,uint64 guid , uint8 flag) const
 {
-	//Packet structure
-	//uint8	  type;
-	//uint32	 language;
-	//uint64	 guid;
-	//uint64	 guid;
-	//uint32	  len_of_text;
-	//char	   text[];		 // not sure ? i think is null terminated .. not null terminated
-	//uint8	  afk_state;
+	//Packet    structure
+	//uint8	    type;
+	//uint32	language;
+	//uint64	guid;
+	//uint64	guid;
+	//uint32	len_of_text;
+	//char	    text[];		 // not sure ? i think is null terminated .. not null terminated
+	//uint8	    afk_state;
 	ASSERT(type != CHAT_MSG_CHANNEL);
 	   //channels are handled in channel handler and so on
 	uint32 messageLength = strlen((char*)message) + 1;
@@ -703,7 +703,6 @@ WorldPacket * ChatHandler::FillMessageData( uint32 type, uint32 language, const 
 	*data << messageLength;
 	*data << message;
 
-	//*data << uint8(0);	// afk
 	*data << uint8(flag);
 	return data;
 }

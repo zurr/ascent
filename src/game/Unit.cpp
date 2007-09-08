@@ -534,7 +534,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				if(!CastingSpell)
 					continue;
 				
-				//this is wrong, dumy is too common to be based on this, we should use spellgroup or something
+				//this is wrong, dummy is too common to be based on this, we should use spellgroup or something
 				SpellEntry *sp=sSpellStore.LookupEntry(spellId);
 				if(sp->dummy != CastingSpell->dummy)
 				{
@@ -558,7 +558,7 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 				/* hmm whats a reasonable value here */
 				if(m_procCounter > 40)
 				{
-					/* something has proced over 10 times in a loop :/ dump the spellids to the crashlog, as the crashdump will most likely be useless. */
+					/* something has proceed over 10 times in a loop :/ dump the spellids to the crashlog, as the crashdump will most likely be useless. */
 					OutputCrashLogLine("HandleProc %u SpellId %u (%s) %u", flag, spellId, sSpellStore.LookupString(sSpellStore.LookupEntry(spellId)->Name), m_procCounter);
 					return;
 				}

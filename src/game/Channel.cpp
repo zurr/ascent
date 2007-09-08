@@ -41,7 +41,7 @@ bool Channel::Join(Player *p, const char *pass)
 	}
 	else
 	{
-		PlayerInfo pinfo; 
+		PlayerInfo pinfo;
 		pinfo.player = p;
 		pinfo.muted = false;
 		if(GetNumPlayers() == 0)
@@ -60,7 +60,6 @@ bool Channel::Join(Player *p, const char *pass)
 
 		/*MakeYouJoined(&data,p);
 		SendToOne(&data,p);*/
-
 
 		if(owner == NULL)
 		{
@@ -390,39 +389,42 @@ void Channel::Moderate(Player *p)
 
 void Channel::Say(Player *p, const char *what, Player *t)
 {
-	WorldPacket data(100);
 	if(!IsOn(p))
 	{
+        WorldPacket data(15);
 		MakeNotOn(&data);
 		SendToOne(&data,p);
 	}
 	else if(players[p].muted || (GetName() == "WorldDefense" && p->GetPVPRank() < 11))
 	{
+        WorldPacket data(15);
 		MakeYouCantSpeak(&data);
 		SendToOne(&data,p);
 	}
 	else if(moderate && !players[p].moderator && !p->GetSession()->CanUseCommand('c'))
 	{
+        WorldPacket data(15);
 		MakeNotModerator(&data);
 		SendToOne(&data,p);
 	}
 	else
 	{
-		//Packet structure
-		//uint8	  type;
-		//uint32	 language;
-		//uint32	 PVP rank
-		//uint64	 guid;
-		//uint32	  len_of_text;
-		//char	   text[];
-		//uint8	  afk_state;
+		//Packet    structure
+		//uint8	    type;
+		//uint32	language;
+		//uint32	PVP rank
+		//uint64	guid;
+		//uint32	len_of_text;
+		//char	    text[];
+		//uint8	    afk_state;
 
 		uint32 messageLength = strlen((char*)what) + 1;
-//		uint8 afk = 0;
+
+        WorldPacket data(40 + messageLength);
 
 		data.Initialize(SMSG_MESSAGECHAT);
-		data << (uint8)14; // CHAT_MESSAGE_CHANNEL
-		data << (uint32)0; // Universal lang
+		data << (uint8)CHAT_MSG_CHANNEL;      // CHAT_MESSAGE_CHANNEL
+		data << (uint32)0;      // Universal lang
 		data << p->GetGUID();
 		data << uint32(0);		// pvp rank??
 		data << name;
@@ -441,21 +443,23 @@ void Channel::Say(Player *p, const char *what, Player *t)
 
 void Channel::SayFromIRC(const char* msg)
 {
-	WorldPacket data;
-	//Packet structure
-	//uint8	  type;
-	//uint32	 language;
-	//uint32	 PVP rank
-	//uint64	 guid;
-	//uint32	  len_of_text;
-	//char	   text[];
-	//uint8	  afk_state;
+	
+	//Packet    structure
+	//uint8	    type;
+	//uint32	language;
+	//uint32	PVP rank
+	//uint64	guid;
+	//uint32	len_of_text;
+	//char	    text[];
+	//uint8	    afk_state;
 
+    
 	uint32 messageLength = strlen((char*)msg) + 1;
+    WorldPacket data(messageLength + 40);
 //	uint8 afk = 0;
 
 	data.Initialize(SMSG_MESSAGECHAT);
-	data << (uint8)14; // CHAT_MESSAGE_CHANNEL
+	data << (uint8)CHAT_MSG_CHANNEL; // CHAT_MESSAGE_CHANNEL
 	data << (uint32)0; // Universal lang
 	data << name.c_str();
 	data << (uint32)0; // pvp ranks

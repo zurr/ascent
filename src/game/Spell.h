@@ -364,7 +364,7 @@ enum AttributesEx
     ATTRIBUTESEX_UNK4                         = 0x4,
     ATTRIBUTESEX_UNK5                         = 0x8,
     ATTRIBUTESEX_UNK6                         = 0x10,
-    ATTRIBUTESEX_REMAIN_STEALTHED              = 0x20,
+    ATTRIBUTESEX_REMAIN_STEALTHED             = 0x20,
     ATTRIBUTESEX_UNK8                         = 0x40,
     ATTRIBUTESEX_UNK9                         = 0x80,
     ATTRIBUTESEX_UNK10                        = 0x100,
@@ -396,11 +396,11 @@ enum Flags3
 {
     FLAGS3_NULL               = 0x0,
     FLAGS3_UNK2               = 0x1,
-    FLAGS3_UNK3               = 0x2, // Can be used while stealthed
-    FLAGS3_UNK4               = 0x4, // request pet maybe
-    FLAGS3_UNK5               = 0x8, // something todo with temp enchanted items
+    FLAGS3_UNK3               = 0x2,    // Can be used while stealthed
+    FLAGS3_UNK4               = 0x4,    // request pet maybe
+    FLAGS3_UNK5               = 0x8,    // something todo with temp enchanted items
     FLAGS3_PARTY_EFFECTING_AURA = 0x10, // Party affecting aura's
-    FLAGS3_ACTIVATE_AUTO_SHOT = 0x20,
+    FLAGS3_ACTIVATE_AUTO_SHOT = 0x20,   // spell that enable's auto shoot
     FLAGS3_UNK8               = 0x40,   //Polymorph spells
     FLAGS3_UNK9               = 0x80,
     FLAGS3_UNUSED1            = 0x100,
@@ -430,7 +430,9 @@ enum Flags3
 
 enum Flags4
 {
-    CAN_PERSIST_AND_CASTED_WHILE_DEAD = 0x100000,
+    FLAGS4_PLAYER_RANGED_SPELLS         = 0x8000,
+    CAN_PERSIST_AND_CASTED_WHILE_DEAD   = 0x100000,
+    FLAGS4_PLAYER_RANGED_WAND           = 0x400000,
 };
 
 enum SpellCastFlags
@@ -489,9 +491,7 @@ enum SpellTargetType
 /***************Ranged spellid*******************/
 /* Note: These spell id's are checked for 2.0.6 */
 /************************************************/
-#define SPELL_RANGED_BOW        3018
-#define SPELL_RANGED_GUN        3018
-#define SPELL_RANGED_CROSSBOW   3018
+#define SPELL_RANGED_GENERAL    3018
 #define SPELL_RANGED_THROW      2764
 #define SPELL_RANGED_WAND       5019
 
@@ -511,24 +511,24 @@ struct TotemSpells
 };
 
 enum LOCKTYPES{
-        LOCKTYPE_PICKLOCK               =1,
-        LOCKTYPE_HERBALISM              =2,
-        LOCKTYPE_MINING                 =3,
-        LOCKTYPE_DISARM_TRAP            =4,
-        LOCKTYPE_OPEN                   =5,
-        LOCKTYPE_TREASURE               =6,
-        LOCKTYPE_CALCIFIED_ELVEN_GEMS   =7,
-        LOCKTYPE_CLOSE                  =8,
-        LOCKTYPE_ARM_TRAP               =9,
-        LOCKTYPE_QUICK_OPEN             =10,
-        LOCKTYPE_QUICK_CLOSE            =11,
-        LOCKTYPE_OPEN_TINKERING         =12,
-        LOCKTYPE_OPEN_KNEELING          =13,
-        LOCKTYPE_OPEN_ATTACKING         =14,
-        LOCKTYPE_GAHZRIDIAN             =15,
-        LOCKTYPE_BLASTING               =16,
-        LOCKTYPE_SLOW_OPEN              =17,
-        LOCKTYPE_SLOW_CLOSE             =18
+    LOCKTYPE_PICKLOCK               =1,
+    LOCKTYPE_HERBALISM              =2,
+    LOCKTYPE_MINING                 =3,
+    LOCKTYPE_DISARM_TRAP            =4,
+    LOCKTYPE_OPEN                   =5,
+    LOCKTYPE_TREASURE               =6,
+    LOCKTYPE_CALCIFIED_ELVEN_GEMS   =7,
+    LOCKTYPE_CLOSE                  =8,
+    LOCKTYPE_ARM_TRAP               =9,
+    LOCKTYPE_QUICK_OPEN             =10,
+    LOCKTYPE_QUICK_CLOSE            =11,
+    LOCKTYPE_OPEN_TINKERING         =12,
+    LOCKTYPE_OPEN_KNEELING          =13,
+    LOCKTYPE_OPEN_ATTACKING         =14,
+    LOCKTYPE_GAHZRIDIAN             =15,
+    LOCKTYPE_BLASTING               =16,
+    LOCKTYPE_SLOW_OPEN              =17,
+    LOCKTYPE_SLOW_CLOSE             =18
 };
 
 enum SpellEffects
@@ -576,8 +576,8 @@ enum SpellEffects
     SPELL_EFFECT_DUAL_WIELD,                //    40    
     SPELL_EFFECT_SUMMON_WILD,               //    41    
     SPELL_EFFECT_SUMMON_GUARDIAN,           //    42    
-    SPELL_EFFECT_TELEPORT_UNITS_FACE_CASTER,    //43
-    SPELL_EFFECT_SKILL_STEP,                    //44    
+    SPELL_EFFECT_TELEPORT_UNITS_FACE_CASTER,//    43
+    SPELL_EFFECT_SKILL_STEP,                //    44    
     SPELL_EFFECT_UNDEFINED_45,              //    45    
     SPELL_EFFECT_SPAWN,                     //    46
     SPELL_EFFECT_TRADE_SKILL,               //    47
@@ -641,45 +641,45 @@ enum SpellEffects
     SPELL_EFFECT_SUMMON_OBJECT_SLOT1,       //    104
     SPELL_EFFECT_SUMMON_OBJECT_SLOT2,       //    105
     SPELL_EFFECT_SUMMON_OBJECT_SLOT3,       //    106
-    SPELL_EFFECT_SUMMON_OBJECT_SLOT4,      //    107
-    SPELL_EFFECT_DISPEL_MECHANIC,          //    108    
-    SPELL_EFFECT_SUMMON_DEAD_PET,          //    109
-    SPELL_EFFECT_DESTROY_ALL_TOTEMS,      //110
-    SPELL_EFFECT_DURABILITY_DAMAGE,          //111
-    SPELL_EFFECT_SUMMON_DEMON,              //112    
-    SPELL_EFFECT_RESURRECT_FLAT,          //113    
-    SPELL_EFFECT_ATTACK_ME,                  //114
-    SPELL_EFFECT_DURABILITY_DAMAGE_PCT,      //115
-    SPELL_EFFECT_SKIN_PLAYER_CORPSE,      //116
-    SPELL_EFFECT_SPIRIT_HEAL,              //117
-    SPELL_EFFECT_SKILL,                      //118
-    SPELL_EFFECT_APPLY_PET_AURA,          //119    
-    SPELL_EFFECT_TELEPORT_GRAVEYARD,      //120
-    SPELL_EFFECT_DUMMYMELEE,              //121
-    SPELL_EFFECT_UNKNOWN1,                  //122
-    SPELL_EFFECT_UNKNOWN2,                  //123
-    SPELL_EFFECT_UNKNOWN3,                  //124
-    SPELL_EFFECT_UNKNOWN4,                  //125
-    SPELL_EFFECT_UNKNOWN5,                  //126
-    SPELL_EFFECT_PROSPECTING,              //127
-    SPELL_EFFECT_UNKNOWN7,                  //128
-    SPELL_EFFECT_UNKNOWN8,                  //129
-    SPELL_EFFECT_UNKNOWN9,                  //129
-    SPELL_EFFECT_UNKNOWN10,                  //130
-    SPELL_EFFECT_UNKNOWN11,                  //131
-    SPELL_EFFECT_UNKNOWN12,                  //132
-    SPELL_EFFECT_FORGET_SPECIALIZATION,   //133
-    SPELL_EFFECT_UNKNOWN14,                  //134
-    SPELL_EFFECT_UNKNOWN15,                  //135
-    SPELL_EFFECT_UNKNOWN16,                  //136
-    SPELL_EFFECT_UNKNOWN17,                  //137
-    SPELL_EFFECT_UNKNOWN18,                  //138
-    SPELL_EFFECT_UNKNOWN19,                  //139
-    SPELL_EFFECT_UNKNOWN20,                  //140
-    SPELL_EFFECT_UNKNOWN21,                  //141
-    SPELL_EFFECT_UNKNOWN22,                  //142
-    SPELL_EFFECT_UNKNOWN23,                  //143
-    TOTAL_SPELL_EFFECTS,                  //144
+    SPELL_EFFECT_SUMMON_OBJECT_SLOT4,       //    107
+    SPELL_EFFECT_DISPEL_MECHANIC,           //    108    
+    SPELL_EFFECT_SUMMON_DEAD_PET,           //    109
+    SPELL_EFFECT_DESTROY_ALL_TOTEMS,        //    110
+    SPELL_EFFECT_DURABILITY_DAMAGE,         //    111
+    SPELL_EFFECT_SUMMON_DEMON,              //    112    
+    SPELL_EFFECT_RESURRECT_FLAT,            //    113    
+    SPELL_EFFECT_ATTACK_ME,                 //    114
+    SPELL_EFFECT_DURABILITY_DAMAGE_PCT,     //    115
+    SPELL_EFFECT_SKIN_PLAYER_CORPSE,        //    116
+    SPELL_EFFECT_SPIRIT_HEAL,               //    117
+    SPELL_EFFECT_SKILL,                     //    118
+    SPELL_EFFECT_APPLY_PET_AURA,            //    119    
+    SPELL_EFFECT_TELEPORT_GRAVEYARD,        //    120
+    SPELL_EFFECT_DUMMYMELEE,                //    121
+    SPELL_EFFECT_UNKNOWN1,                  //    122
+    SPELL_EFFECT_UNKNOWN2,                  //    123
+    SPELL_EFFECT_UNKNOWN3,                  //    124
+    SPELL_EFFECT_UNKNOWN4,                  //    125
+    SPELL_EFFECT_UNKNOWN5,                  //    126
+    SPELL_EFFECT_PROSPECTING,               //    127
+    SPELL_EFFECT_UNKNOWN7,                  //    128
+    SPELL_EFFECT_UNKNOWN8,                  //    129
+    SPELL_EFFECT_UNKNOWN9,                  //    129
+    SPELL_EFFECT_UNKNOWN10,                 //    130
+    SPELL_EFFECT_UNKNOWN11,                 //    131
+    SPELL_EFFECT_UNKNOWN12,                 //    132
+    SPELL_EFFECT_FORGET_SPECIALIZATION,     //    133
+    SPELL_EFFECT_UNKNOWN14,                 //    134
+    SPELL_EFFECT_UNKNOWN15,                 //    135
+    SPELL_EFFECT_UNKNOWN16,                 //    136
+    SPELL_EFFECT_UNKNOWN17,                 //    137
+    SPELL_EFFECT_UNKNOWN18,                 //    138
+    SPELL_EFFECT_UNKNOWN19,                 //    139
+    SPELL_EFFECT_UNKNOWN20,                 //    140
+    SPELL_EFFECT_UNKNOWN21,                 //    141
+    SPELL_EFFECT_UNKNOWN22,                 //    142
+    SPELL_EFFECT_UNKNOWN23,                 //    143
+    TOTAL_SPELL_EFFECTS,                    //    144
 };
 
 enum SPELL_ENTRY
@@ -868,35 +868,29 @@ enum SPELL_ENTRY
 // lets make this bitwise for more fun
 enum SpellTypes
 {
-    SPELL_TYPE_NONE         = 0,
-    SPELL_TYPE_SEAL         = 1,
-    SPELL_TYPE_ASPECT       = 2,
-    SPELL_TYPE_BLESSING     = 4,
-    SPELL_TYPE_CURSE        = 8,
-    SPELL_TYPE_STING        = 16,
-    SPELL_TYPE_ARMOR        = 32,
-    SPELL_TYPE_AURA         = 64,
+    SPELL_TYPE_NONE                 = 0x00000,
+    SPELL_TYPE_SEAL                 = 0x00001,
+    SPELL_TYPE_ASPECT               = 0x00002,
+    SPELL_TYPE_BLESSING             = 0x00004,
+    SPELL_TYPE_CURSE                = 0x00008,
+    SPELL_TYPE_STING                = 0x00010,
+    SPELL_TYPE_ARMOR                = 0x00020,
+    SPELL_TYPE_AURA                 = 0x00040,
     //hmm these could be named simply incompatible spells. One active at a time
-    SPELL_TYPE_MARK_GIFT            = 128,
-    SPELL_TYPE_TRACK                = 256,
-    SPELL_TYPE_HUNTER_TRAP            = 512,
-    SPELL_TYPE_MAGE_INTEL            = 1024,
-    SPELL_TYPE_MAGE_MAGI            = 2048,
-    SPELL_TYPE_MAGE_WARDS            = 4096,
-    SPELL_TYPE_PRIEST_SH_PPROT        = 8192,
-    SPELL_TYPE_SHIELD                = 16384,
-    SPELL_TYPE_FORTITUDE            = 32768,
-    SPELL_TYPE_SPIRIT                = 65536,
-    SPELL_TYPE_MAGE_AMPL_DUMP        = 131072,
-    SPELL_TYPE_WARLOCK_IMMOLATE        = 262144, //maybe there is a better way to trigger the aurastate for imolate spell
-    SPELL_TYPE_FINISHING_MOVE        = 524288, 
+    SPELL_TYPE_MARK_GIFT            = 0x00080,
+    SPELL_TYPE_TRACK                = 0x00100,
+    SPELL_TYPE_HUNTER_TRAP          = 0x00200,
+    SPELL_TYPE_MAGE_INTEL           = 0x00400,
+    SPELL_TYPE_MAGE_MAGI            = 0x00800,
+    SPELL_TYPE_MAGE_WARDS           = 0x01000,
+    SPELL_TYPE_PRIEST_SH_PPROT      = 0x02000,
+    SPELL_TYPE_SHIELD               = 0x04000,
+    SPELL_TYPE_FORTITUDE            = 0x08000,
+    SPELL_TYPE_SPIRIT               = 0x10000,
+    SPELL_TYPE_MAGE_AMPL_DUMP       = 0x20000,
+    SPELL_TYPE_WARLOCK_IMMOLATE     = 0x40000, //maybe there is a better way to trigger the aura state for immolate spell
+    SPELL_TYPE_FINISHING_MOVE       = 0x80000, 
 };
-
-
-/*inline bool CanAgro(uint32 spell_id)
-{
-    return true;
-}*/
 
 inline bool CanAgroHash(uint32 spellhashname)
 {
@@ -906,6 +900,9 @@ inline bool CanAgroHash(uint32 spellhashname)
         return true;
 }
 
+/************************************************************************/
+/* IsDamagingSpell, this function seems slow, its only used rarely      */
+/************************************************************************/
 inline bool IsDamagingSpell(SpellEntry *sp)
 {
     switch (sp->Effect[0])
@@ -944,8 +941,8 @@ inline bool IsDamagingSpell(SpellEntry *sp)
         case SPELL_EFFECT_ATTACK:
             return true;
     }
-    if(    sp->Effect[0]==SPELL_EFFECT_APPLY_AURA ||
-        sp->Effect[0]==SPELL_EFFECT_APPLY_AREA_AURA)
+    if( sp->Effect[0]==SPELL_EFFECT_APPLY_AURA ||
+       sp->Effect[0]==SPELL_EFFECT_APPLY_AREA_AURA)
     {
         switch (sp->EffectApplyAuraName[0])
         {
@@ -956,7 +953,7 @@ inline bool IsDamagingSpell(SpellEntry *sp)
                 return true;
         }
     }
-    if(    sp->Effect[1]==SPELL_EFFECT_APPLY_AURA ||
+    if( sp->Effect[1]==SPELL_EFFECT_APPLY_AURA ||
         sp->Effect[1]==SPELL_EFFECT_APPLY_AREA_AURA)
     {
         switch (sp->EffectApplyAuraName[1])
@@ -968,7 +965,7 @@ inline bool IsDamagingSpell(SpellEntry *sp)
                 return true;
         }
     }
-    if(    sp->Effect[2]==SPELL_EFFECT_APPLY_AURA ||
+    if( sp->Effect[2]==SPELL_EFFECT_APPLY_AURA ||
         sp->Effect[2]==SPELL_EFFECT_APPLY_AREA_AURA)
     {
         switch (sp->EffectApplyAuraName[2])
@@ -982,11 +979,15 @@ inline bool IsDamagingSpell(SpellEntry *sp)
     }
     return false;
 }
+inline bool IsInrange(LocationVector & location)
+{
+
+}
 
 inline bool IsInrange(float x1,float y1, float z1, Object * o,float square_r)
 {
     float r = o->GetDistanceSq(x1, y1, z1);
-    return ( r<=square_r);    
+    return ( r<=square_r);
 }
 
 inline bool IsInrange(float x1,float y1, float z1,float x2,float y2, float z2,float square_r)
@@ -1396,14 +1397,12 @@ public:
 
     void Heal(int32 amount);
 
-    GameObject *g_caster;
-    Unit * u_caster;
-    Item * i_caster;
-    Player *p_caster;
-    Object* m_caster;
+    GameObject *    g_caster;
+    Unit *          u_caster;
+    Item *          i_caster;
+    Player *        p_caster;
+    Object *        m_caster;
 
-    
-    
     // get the diet flags for pet food
     inline uint32 GetPetFoodFlags(const char* m_string)
     {
@@ -1422,27 +1421,20 @@ public:
         return 0;
     }
     
+    // 15007 = resurecting sickness
     inline uint32 GetType()//0 melee,1 magic ,2 ranged
     {      
           //this is dirty fix, we must use weapon class to define dmg type
 
-        if(m_spellInfo->Id == SPELL_RANGED_BOW)
-            return SPELL_TYPE_RANGED;
-
-        if(m_spellInfo->Id == SPELL_RANGED_GUN)
-            return SPELL_TYPE_RANGED;
-
-        if(m_spellInfo->Id == SPELL_RANGED_CROSSBOW)
+        if(m_spellInfo->Id == SPELL_RANGED_GENERAL)
             return SPELL_TYPE_RANGED;
 
         if(m_spellInfo->Id == SPELL_RANGED_THROW)
             return SPELL_TYPE_RANGED;
-        
 
         if(m_spellInfo->Id == SPELL_RANGED_WAND)
             return SPELL_TYPE_RANGED;
 
- 
         if(m_spellInfo->Spell_Dmg_Type ==1)//1=Magic, 2=Melee, 3=Ranged
             return 1;
         if(m_spellInfo->Spell_Dmg_Type ==2)

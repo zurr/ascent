@@ -31,13 +31,13 @@ class Channel
 		bool owner, moderator, muted;
 	};
 	typedef map<Player*,PlayerInfo> PlayerList;
-	PlayerList players;
-	list<uint64> banned;
-	string name;
-	bool announce, constant, moderate;
-	Player *owner;
-	string password;
-	uint32 team;
+	PlayerList      players;
+	list<uint64>    banned;
+	string          name;
+	bool            announce, constant, moderate;
+	Player *        owner;
+	string          password;
+	uint32          team;
 
 private:
 	/*Packets! Woohoo!*/
@@ -64,11 +64,12 @@ private:
 		MakeNotifyPacket(data,0x0C);
 		*data << who->GetGUID();
 		uint8 byte1 = 0x00, byte2 = 0x00;
-		if(moderator == 1) byte1 |= 0x02;
-		if(voice == 1) byte1 |= 0x04;
 
-		if(moderator == 2) byte2 |= 0x02;
-		if(voice == 2) byte2 |= 0x04;
+		if(moderator == 1)  byte1 |= 0x02;
+		if(voice == 1)      byte1 |= 0x04;
+
+		if(moderator == 2)  byte2 |= 0x02;
+		if(voice == 2)      byte2 |= 0x04;
 		*data << byte1 << byte2;
 	}
 	inline void MakeEnabledAnnounce(WorldPacket *data, Player *who) { *MakeNotifyPacket(data,0x0D) << who->GetGUID(); }
@@ -151,7 +152,7 @@ private:
 		owner = p;
 		if(owner != NULL)
 		{
-		   WorldPacket data(100);
+		   WorldPacket data(10);
 		   MakeChangeOwner(&data,p);
 		   SendToAll(&data);
 		}
@@ -162,7 +163,7 @@ private:
 		if(players[p].moderator != set)
 		{
 			players[p].moderator = set;
-			WorldPacket data(100);
+			WorldPacket data(10);
 			MakeModeChange(&data,p,set ? 2 : 1,0);
 			SendToAll(&data);
 		}
@@ -174,7 +175,7 @@ private:
 		{
 			players[p].muted = set;
 			set = !set;
-			WorldPacket data(100);
+			WorldPacket data(10);
 			MakeModeChange(&data,p,0,set ? 2 : 1);
 			SendToAll(&data);
 		}

@@ -3656,7 +3656,7 @@ void Player::RepopRequestedPlayer()
 
 	MapInfo * pMapinfo;
 
-	sEventMgr.RemoveEvents(this,EVENT_PLAYER_FORECED_RESURECT); //in case somebody resurected us before this event happened
+	sEventMgr.RemoveEvents(this,EVENT_PLAYER_FORECED_RESURECT); //in case somebody resurrected us before this event happened
 
 	// Set death state to corpse, that way players will lose visibility
 	setDeathState(CORPSE);
@@ -5135,7 +5135,7 @@ bool Player::CanShootRangedWeapon(uint32 spellid, Unit *target, bool autoshot)
 		this->m_AutoShotStartZ != GetPositionZ())
 	{
 		// We've moved
-		//printf("Autoshot: Detected player movement. Cancelling.\n");
+		//printf("Autoshot: Detected player movement. canceling.\n");
 		fail = SPELL_FAILED_INTERRUPTED;
 	}
 
@@ -5181,13 +5181,7 @@ bool Player::CanShootRangedWeapon(uint32 spellid, Unit *target, bool autoshot)
 
 	if(fail)// && fail != SPELL_FAILED_OUT_OF_RANGE)
 	{
-		WorldPacket data(SMSG_CAST_RESULT, 12);
-		if(autoshot)
-			data << uint32(75);
-		else 
-			data << uint32(spellid);
-		data << fail ;		// we want to send a cast result for AUTOSHOT, as thats what the client sees as being cast.
-		GetSession()->SendPacket(&data);
+        SendCastResult(autoshot ? 75 : spellid, fail, 0);
 		return false;
 	}
 	return true;
@@ -8507,3 +8501,24 @@ void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 		_UpdateSkillFields();
 	}
 }
+
+/************************************************************************/
+/* Spell Packet wharper Please keep this separated                      */
+/************************************************************************/
+void Player::SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint32 Extra)
+{
+#ifndef USING_BIG_ENDIAN
+    StackWorldPacket<9> data(SMSG_CAST_RESULT);
+#else
+    WorldPacket data(SMSG_CAST_RESULT, 9);
+#endif
+    data << SpellId;
+    data << ErrorMessage;
+    if (Extra)
+        data << Extra;
+    GetSession()->SendPacket(&data);
+}
+/************************************************************************/
+/* End of SpellPacket Wharper                                           */
+/************************************************************************/
+

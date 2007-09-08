@@ -943,7 +943,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 						if(infront)
 						{
 							m_Unit->setAttackTimer(0, false);
-							SpellEntry *info = sSpellStore.LookupEntry(SPELL_RANGED_BOW);
+							SpellEntry *info = sSpellStore.LookupEntry(SPELL_RANGED_GENERAL);
 							if(info)
 							{
 								Spell *sp = new Spell(m_Unit, info, false, NULL);

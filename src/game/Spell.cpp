@@ -181,10 +181,10 @@ Spell::~Spell()
 		RemoveItems();
 }
 
-//i might forget condicions here. Feel free to add them
+//i might forget conditions here. Feel free to add them
 bool Spell::IsStealthSpell()
 {
-	//check if auraname is some stealth aura
+	//check if aura name is some stealth aura
 	if( m_spellInfo->EffectApplyAuraName[0]==16 ||
 		m_spellInfo->EffectApplyAuraName[1]==16 ||
 		m_spellInfo->EffectApplyAuraName[2]==16 )
@@ -192,10 +192,10 @@ bool Spell::IsStealthSpell()
 	return false;
 }
 
-//i might forget condicions here. Feel free to add them
+//i might forget conditions here. Feel free to add them
 bool Spell::IsInvisibilitySpell()
 {
-	//check if auraname is some invisibility aura
+	//check if aura name is some invisibility aura
 	if( m_spellInfo->EffectApplyAuraName[0]==18 ||
 		m_spellInfo->EffectApplyAuraName[1]==18 ||
 		m_spellInfo->EffectApplyAuraName[2]==18 )
@@ -1043,7 +1043,7 @@ void Spell::FillTargetMap(uint32 i)
 
 			bool PartyOnly=false;
 			float range=GetMaxRange(sSpellRange.LookupEntry(m_spellInfo->rangeIndex));//this is probably wrong,
-			//this is cast distance, not searhing distance
+			//this is cast distance, not searching distance
 			range *= range;
 
 			firstTarget = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
@@ -1953,11 +1953,6 @@ void Spell::finish()
 
 void Spell::SendCastResult(int16 result)
 {
-#ifndef USING_BIG_ENDIAN
-	StackWorldPacket<9> data(SMSG_CAST_RESULT);
-#else
-	WorldPacket data(SMSG_CAST_RESULT, 9);
-#endif
 	if(result != -1)
 		failed = true;
 
@@ -1966,23 +1961,18 @@ void Spell::SendCastResult(int16 result)
 
 	if(result != -1)
 	{
-		data << m_spellInfo->Id;
-		data << (uint8)result;
-		if(result == SPELL_FAILED_REQUIRES_SPELL_FOCUS)
-			data << (uint32)m_spellInfo->RequiresSpellFocus;
-
-		Player * plr = p_caster;
-		if(!plr)
-			if(u_caster)
-				plr = u_caster->m_redirectSpellPackets;
-
-		if(plr)
-			plr->GetSession()->SendPacket(&data);
+        Player * plr = p_caster;
+        if(!plr && u_caster)
+            plr = u_caster->m_redirectSpellPackets;
+        if (plr)
+        {
+            plr->SendCastResult(m_spellInfo->Id, result,(result == SPELL_FAILED_REQUIRES_SPELL_FOCUS) ? m_spellInfo->RequiresSpellFocus : 0);
+        }
 	}
-	else
-	{
+	//else
+	//{
 		// result packet sent in handleeffects()
-	}
+	//}
 }
 
 void Spell::SendSpellStart()
@@ -2009,32 +1999,31 @@ void Spell::SendSpellStart()
 	data << (uint32)m_castTime;
 		
 	m_targets.write( data );
-	if(GetType() == SPELL_TYPE_RANGED && p_caster)
+
+	if(GetType() == SPELL_TYPE_RANGED)
 	{
 		ItemPrototype* ip = NULL;
-		switch(m_spellInfo->Id)
-		{
-		case SPELL_RANGED_THROW:  // throw
-			{
-				if(Item *itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
-				{
-					ip=itm->GetProto();
-						/* Throwing Weapon Patch by Supalosa
-							p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
-							(Supalosa: Instead of removing one from the stack, remove one from durability)
-							We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
-						*/
+        if (m_spellInfo->Id == SPELL_RANGED_THROW) // throw
+        {
+            Item *itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+            if(itm)
+            {
+                ip = itm->GetProto();
+                /* Throwing Weapon Patch by Supalosa
+                p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
+                (Supalosa: Instead of removing one from the stack, remove one from durability)
+                We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
+                */
 
-					// burlex - added a check here anyway (wpe suckers :P)
-					if(itm->GetDurability() > 0)
-						itm->SetDurability( itm->GetDurability() - 1 );
-				}
-			}break;
-		default:
-			{
-				ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
-			}break;
-		}
+                // burlex - added a check here anyway (wpe suckers :P)
+                if(itm->GetDurability() > 0)
+                    itm->SetDurability( itm->GetDurability() - 1 );
+            }
+        }
+        else
+        {
+            ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+        }
 		
 		if(ip)
 			data << ip->DisplayInfoID << ip->InventoryType;
@@ -2079,13 +2068,13 @@ void Spell::SendSpellGo()
 	uint16 flags = 0;
 
 	if (GetType() == SPELL_TYPE_RANGED) //ranged
-		flags |= 0x20;				  // 0x20 RANGED
+		flags |= 0x20;				    // 0x20 RANGED
 
 	if(i_caster)
-		flags |= 0x100;				 // 0x100 UNIT TARGET
+		flags |= 0x100;				    // 0x100 UNIT TARGET
 
 	if(MissedTargets.size() > 0)
-		flags |= 0x400;				 //0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
+		flags |= 0x400;				    //0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
 
 	if(i_caster && u_caster)			// this is needed for correct cooldown on items
 	{

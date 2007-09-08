@@ -19,7 +19,7 @@
 
 #include "StdAfx.h"
 
-trainertype trainer_types[TRAINER_TYPE_MAX] = 
+static trainertype trainer_types[TRAINER_TYPE_MAX] = 
 {
 {	"Warrior",			   0 },
 {	"Paladin",			   0 },
@@ -144,7 +144,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 				data << pSpell->RequiredSkillLine;
 				data << pSpell->RequiredSkillLineValue;
 				data << pSpell->RequiredSpell;
-				data << Spacer;//this is like a spell owerride or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
+				data << Spacer;//this is like a spell override or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
 				data << Spacer;
 			}
 
@@ -490,7 +490,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode( WorldPacket & recv_data )
 	}
 	else // else add him one, that fucker, he think he will get away!?
 	{
-		SpellEntry *spellInfo = sSpellStore.LookupEntry( 15007 );//resurrectin sickness
+		SpellEntry *spellInfo = sSpellStore.LookupEntry( 15007 );//resurrection sickness
 		SpellCastTargets targets;
 		targets.m_unitTarget = GetPlayer()->GetGUID();
 		Spell*sp=new Spell(_player,spellInfo,true,NULL);
@@ -539,7 +539,7 @@ void WorldSession::HandleNpcTextQueryOpcode( WorldPacket & recv_data )
 			for(uint32 e=0;e<6;e++)
 				data << uint32(pGossip->Texts[i].Emote[e]);
 
-			if(i!=7) data << uint32(0x00);	// dont append to last
+			if(i!=7) data << uint32(0x00);	// don't append to last
 		}
 	} 
 	else 
@@ -579,6 +579,9 @@ void WorldSession::HandleBinderActivateOpcode( WorldPacket & recv_data )
 	SendInnkeeperBind(pC);
 }
 
+#define ITEM_ID_HEARTH_STONE 6948
+#define BIND_SPELL_ID 3286
+
 void WorldSession::SendInnkeeperBind(Creature* pCreature)
 {
 	if(!_player->IsInWorld()) return;
@@ -598,21 +601,15 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
 	}
 
 	// Add a hearthstone if they don't have one
-	if(!_player->GetItemInterface()->GetItemCount(6948, true))
+	if(!_player->GetItemInterface()->GetItemCount(ITEM_ID_HEARTH_STONE, true))
 	{
 		// We don't have a hearthstone. Add one.
 		if(_player->GetItemInterface()->CalculateFreeSlots(NULL) > 0)
 		{
-			/*data.Initialize(SMSG_ITEM_PUSH_RESULT);
-			data.Initialize( SMSG_ITEM_PUSH_RESULT );
-			data << GetPlayer()->GetGUID();
-			data << uint32(0x01) << uint32(0x00) << uint32(0x01) << uint8(0xFF);
-			data << uint32(6948) << uint64(0);
-			SendPacket(&data);*/
-			BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, 1, 6948, 0);
+			BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, 1, ITEM_ID_HEARTH_STONE, 0);
 			SendPacket(&data);
 
-			Item *item = objmgr.CreateItem( 6948, _player);
+			Item *item = objmgr.CreateItem( ITEM_ID_HEARTH_STONE, _player);
 
 			_player->GetItemInterface()->AddItemToFreeSlot(item);					
 		}
@@ -633,7 +630,6 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
 	data.Initialize(SMSG_GOSSIP_COMPLETE);
 	SendPacket(&data);
 
-#define BIND_SPELL_ID 3286
 	data.Initialize( SMSG_SPELL_START );
 	data << pCreature->GetNewGUID();
 	data << pCreature->GetNewGUID();
@@ -657,10 +653,12 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
 	_player->SendMessageToSet( &data, true );
 }
 
+#undef ITEM_ID_HEARTH_STONE
+#undef BIND_SPELL_ID
+
 void WorldSession::SendSpiritHealerRequest(Creature* pCreature)
 {
 	WorldPacket data(SMSG_SPIRIT_HEALER_CONFIRM, 8);
 	data << pCreature->GetGUID();
 	SendPacket(&data);
 }
-
