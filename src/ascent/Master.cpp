@@ -1,17 +1,19 @@
-/****************************************************************************
+/*
+ * Ascent MMORPG Server/Simulator
+ * Copyright (C) 2005-2007 Ascent Team <http://www.ascentemu.com/>
  *
- * General Object Type File
- * Copyright (c) 2007 Team Ascent
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
  *
- * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0
- * License. To view a copy of this license, visit
- * http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons,
- * 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * EXCEPT TO THE EXTENT REQUIRED BY APPLICABLE LAW, IN NO EVENT WILL LICENSOR BE LIABLE TO YOU
- * ON ANY LEGAL THEORY FOR ANY SPECIAL, INCIDENTAL, CONSEQUENTIAL, PUNITIVE OR EXEMPLARY DAMAGES
- * ARISING OUT OF THIS LICENSE OR THE USE OF THE WORK, EVEN IF LICENSOR HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -107,6 +109,38 @@ struct Addr
         static const char * default_realm_config_file = CONFDIR "/realms.conf";
 #endif
 
+const char banner[] = ""
+"                                   I33ctueuJ7     \n"
+"                                   ICLL5seOue37   \n"
+"                                    7zLeYuvYee27  \n"
+"                                     7uOCaYaaYs7  \n"
+"                               71v22C5s0nC5JJJSJ  \n"
+"                               7z2zvvCtolljjljC57 \n"
+"                                lzesCIoooonCoaCe7 \n"
+"                                 7Oz3JlooI8xtgu57 \n"
+"                                 tOj3sloootvlolu3 \n"
+"                                 55jjuejlollojI357\n"
+"                             7ves5tlojeYejjllsa4Yr\n"
+"  12n2n5eOLnnnnnnCuunuunnn5enCC5Clloooj3LuCoI304sr\n"
+"  i2uCotzueolljljjljjllllloojjljjooooltzoJfhaa09Yr\n"
+"    7esjljjlllllllllllllllllooooooooovCn3JunYhTal7\n"
+"    Jevlooooooooooooooooooooooooooolo3oljz5ir777  \n"
+"   cuvloooooooooooooooooooooooooooot2JlolC3       \n"
+"  7nCjooooooooooooooooooooooooooool3JlojCn7       \n"
+"  7LJlooooooooooooooooooooooooooooollljzu7        \n"
+"  7LvloooooooololoooooooooooooooooojoJee1         \n"
+"  7OCjoooooool3o2tooooooooolloooolozT0C7           \"We love our goats\"\n"
+"   JLlooooolvnlJ5jlllljjjjjtvoooltes0r            \n"
+"   7eejoooolv3OatllotvJ222CY8loojuCzL7            \n"
+"    7L3loolt2sULunnCuCCzJtIeLjoolzOInv            \n"
+"   7JYolol3Otun7          7unIlllJOrzC            \n"
+"   7JLzlll3OoIuu7          rsuJtv3a6h3            \n"
+"     7n5ool3OC1CC7         7spXk9pFhei            \n"
+"      7LOicilSxxO7          7oneoeJ7              \n"
+"       1OUU9fPfYj7                                \n"
+"       7vVGf277 \n"
+"\n";
+
 bool Master::Run(int argc, char ** argv)
 {
 	char * config_file = (char*)default_config_file;
@@ -164,16 +198,14 @@ bool Master::Run(int argc, char ** argv)
 		sLog.m_fileLogLevel = -1;
 		sLog.m_screenLogLevel = 3;
 	}
-	
-	Log.Notice("Startup", "==========================================================");
-	Log.Notice("Startup", BANNER, g_getRevision(), CONFIG, PLATFORM_TEXT, ARCH);
-	Log.Notice("Startup", "http://www.ascentemu.com/");
-	Log.Notice("Startup", "");
-	Log.Notice("Startup", "Copyright (c) 2007 Ascent Team. All Rights Reserved.");
-	Log.Notice("Startup", "This software is provided under the Creative Commons");
-	Log.Notice("Startup", "Attribution-NonCommercial-ShareAlike 3.0 license.");
-	Log.Notice("Startup", "It should have been provided along with this distribution.");
-	Log.Notice("Startup", "==========================================================");
+
+	puts(banner);
+	printf(BANNER, g_getRevision(), CONFIG, PLATFORM_TEXT, ARCH);
+	printf("\nCopyright (C) 2005-2007 Ascent Team. http://www.ascentemu.com/\n");
+	printf("This program comes with ABSOLUTELY NO WARRANTY, and is FREE SOFTWARE.\n");
+	printf("You are welcome to redistribute it under the terms of the GNU General\n");
+	printf("Public License, either version 3 or any later version. For a copy of\n");
+	printf("this license, see the COPYING file provided with this distribution.\n");
 	Log.Line();
 
 	if(do_version)
@@ -201,7 +233,7 @@ bool Master::Run(int argc, char ** argv)
 		return true;
 	}
 
-	Log.Notice("Hint", "The key combination <Ctrl-C> will safely shut down the server at any time.");
+	printf("The key combination <Ctrl-C> will safely shut down the server at any time.\n");
 	Log.Line();
     
 	uint32 seed = time(NULL);
