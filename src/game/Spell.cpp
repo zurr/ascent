@@ -2020,7 +2020,7 @@ void Spell::SendSpellStart()
                     itm->SetDurability( itm->GetDurability() - 1 );
             }
         }
-        else
+        else if(m_spellInfo->Flags4 & FLAGS4_PLAYER_RANGED_SPELLS)
         {
             ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
         }

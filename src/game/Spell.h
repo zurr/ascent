@@ -1425,21 +1425,16 @@ public:
     inline uint32 GetType()//0 melee,1 magic ,2 ranged
     {      
           //this is dirty fix, we must use weapon class to define dmg type
-
-        if(m_spellInfo->Id == SPELL_RANGED_GENERAL)
-            return SPELL_TYPE_RANGED;
-
-        if(m_spellInfo->Id == SPELL_RANGED_THROW)
-            return SPELL_TYPE_RANGED;
-
-        if(m_spellInfo->Id == SPELL_RANGED_WAND)
+        if(m_spellInfo->Id == SPELL_RANGED_WAND) //wands are magic type. why do we need them as ranged ;P
             return SPELL_TYPE_RANGED;
 
         if(m_spellInfo->Spell_Dmg_Type ==1)//1=Magic, 2=Melee, 3=Ranged
             return 1;
         if(m_spellInfo->Spell_Dmg_Type ==2)
             return 0;
-        else return 2;
+        if(m_spellInfo->Spell_Dmg_Type ==3)
+            return 2;
+        else return 1; //magic is better than ranged for sure ;P
     }
 
     std::vector<uint64> UniqueTargets;
