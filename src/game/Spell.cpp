@@ -735,8 +735,9 @@ void Spell::FillTargetMap(uint32 i)
 					Creature *cr=m_caster->GetMapMgr()->GetCreature( m_targets.m_unitTarget);
 					if(!cr)break;
 				
-					if(!(1<<(cr->GetCreatureName()->Type-1) & m_spellInfo->TargetCreatureType))
-					break;
+					if(cr->GetCreatureName())
+						if(!(1<<(cr->GetCreatureName()->Type-1) & m_spellInfo->TargetCreatureType))
+                            break;
 				}
 				if(DidHit(m_targets.m_unitTarget))
 					SafeAddTarget(tmpMap,m_targets.m_unitTarget);

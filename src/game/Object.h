@@ -316,6 +316,9 @@ public:
 	
 	virtual void AddInRangeObject(Object* pObj)
 	{
+		if(!pObj)
+			return;
+
 		m_objectsInRange.insert(pObj);
 		if(pObj->GetTypeId() == TYPEID_PLAYER)
 			m_inRangePlayers.insert( ((Player*)pObj) );
@@ -323,8 +326,16 @@ public:
 
 	inline void RemoveInRangeObject(Object* pObj)
 	{
+		if(!pObj)
+			return;
+
 		OnRemoveInRangeObject(pObj);
 		m_objectsInRange.erase(pObj);
+	}
+
+	inline bool HasInRangeObjects()
+	{
+		return (m_objectsInRange.size() > 0);
 	}
 
 	virtual void OnRemoveInRangeObject(Object * pObj)

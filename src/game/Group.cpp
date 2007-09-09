@@ -156,7 +156,9 @@ bool SubGroup::AddPlayer(PlayerInfo * info, Player *pPlayer)
 			if(itr->player != NULL)
 				itr->player->RemoveReference(&itr->player);
 
-			pPlayer->AddReference(&itr->player);
+			if(pPlayer)
+				pPlayer->AddReference(&itr->player);
+
 			return true;
 		}
 	}

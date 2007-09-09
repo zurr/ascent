@@ -475,7 +475,7 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 	}
 #endif
 	// Items and containers are of no interest for us
-	if(obj->GetTypeId() == TYPEID_ITEM || obj->GetTypeId() == TYPEID_CONTAINER)
+	if(obj->GetTypeId() == TYPEID_ITEM || obj->GetTypeId() == TYPEID_CONTAINER || obj->GetMapMgr() != this)
 	{
 		return;
 	}
@@ -566,36 +566,49 @@ void MapMgr::ChangeObjectLocation(Object *obj)
 #undef IN_RANGE_LOOP
 #undef END_IN_RANGE_LOOP*/
 
-	for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(), iter2;
-		iter != obj->GetInRangeSetEnd();)
-	{
-		curObj = *iter;
-		iter2 = iter++;
-		if(curObj->IsPlayer() && obj->IsPlayer() && plObj->m_TransporterGUID && plObj->m_TransporterGUID == ((Player*)curObj)->m_TransporterGUID)
-			fRange = 0.0f;			 // unlimited distance for people on same boat
-		else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER))
-			fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-        else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && curObj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && obj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT))
-			fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-        else
-			fRange = m_UpdateDistance;	  // normal distance
-
-		if (curObj->GetDistance2dSq(obj) > fRange && fRange > 0)
+	if(obj->HasInRangeObjects()) {
+		for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(), iter2;
+			iter != obj->GetInRangeSetEnd();)
 		{
-			if( plObj )
-				plObj->RemoveIfVisible(curObj);
+			curObj = *iter;
+			iter2 = iter++;
+			if(curObj->IsPlayer() && obj->IsPlayer() && plObj->m_TransporterGUID && plObj->m_TransporterGUID == ((Player*)curObj)->m_TransporterGUID)
+				fRange = 0.0f;			 // unlimited distance for people on same boat
+			else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_TRANSPORTER))
+				fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
+			else if((UINT32_LOPART(curObj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && curObj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT || UINT32_LOPART(obj->GetGUIDHigh()) == HIGHGUID_GAMEOBJECT && obj->GetUInt32Value(GAMEOBJECT_TYPE_ID) == GAMEOBJECT_TYPE_TRANSPORT))
+				fRange = 0.0f;			  // unlimited distance for transporters (only up to 2 cells +/- anyway.)
+			else
+				fRange = m_UpdateDistance;	  // normal distance
 
-			if( curObj->IsPlayer() )
-				((Player*)curObj)->RemoveIfVisible(obj);
+			if (curObj->GetDistance2dSq(obj) > fRange && fRange > 0)
+			{
+				if( plObj )
+					plObj->RemoveIfVisible(curObj);
 
-			curObj->RemoveInRangeObject(obj);
-			obj->RemoveInRangeObject(iter2);
+				if( curObj->IsPlayer() )
+					((Player*)curObj)->RemoveIfVisible(obj);
+
+				curObj->RemoveInRangeObject(obj);
+
+				if(obj->GetMapMgr() != this)
+				{
+					/* Something removed us. */
+					return;
+				}
+				obj->RemoveInRangeObject(iter2);
+			}
 		}
 	}
-	
+
 	///////////////////////////
 	// Get new cell coordinates
 	///////////////////////////
+	if(obj->GetMapMgr() != this)
+	{
+		/* Something removed us. */
+		return;
+	}
 
 	uint32 cellX = GetPosX(obj->GetPositionX());
 	uint32 cellY = GetPosY(obj->GetPositionY());
