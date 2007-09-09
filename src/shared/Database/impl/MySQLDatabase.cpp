@@ -75,12 +75,8 @@ bool MySQLDatabase::Connect(MysqlCon * con)
    // MYSQL* Descriptor2 = Descriptor;
 	// Set reconnect
 	my_bool my_true = true;
-	#ifdef WIN32
 	if (mysql_options(Descriptor, MYSQL_OPT_RECONNECT, &my_true))
 		sLog.outString("sql: MYSQL_OPT_RECONNECT could not be set, connection drops may occur but will be counteracted.");
-	#else
-		Descriptor->reconnect = my_true;
-	#endif
 
 	con->con = mysql_real_connect(Descriptor, mHostname.c_str(),
 		mUsername.c_str(), mPassword.c_str(), "", mPort, NULL, 0);
