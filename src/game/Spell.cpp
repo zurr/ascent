@@ -3489,7 +3489,7 @@ void Spell::CreateItem(uint32 itemId)
 		newItem->SetUInt64Value(ITEM_FIELD_CREATOR,m_caster->GetGUID());
 		newItem->SetUInt32Value(ITEM_FIELD_STACK_COUNT, damage);
 
-		WorldPacket data;
+		WorldPacket data(45);
 		p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, 1, itemId ,0,0xFF,1,0xFFFFFFFF);
 		p_caster->SendMessageToSet(&data, true);
 		newItem->m_isDirty = true;
@@ -3498,7 +3498,7 @@ void Spell::CreateItem(uint32 itemId)
 	else 
 	{
 		add->SetUInt32Value(ITEM_FIELD_STACK_COUNT,add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + damage);
-		WorldPacket data;
+		WorldPacket data(45);
 		p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, 1, itemId ,0,0xFF,1,0xFFFFFFFF);
 		p_caster->SendMessageToSet(&data, true);
 		add->m_isDirty = true;

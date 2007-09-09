@@ -46,7 +46,7 @@ void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket &recv_data)
 void WorldSession::HandleBattlefieldListOpcode(WorldPacket &recv_data)
 {
 	// TODO implement this
-	sLog.outString("Recieved CMSG_BATTLEFIELD_LIST");
+	sLog.outString("Received CMSG_BATTLEFIELD_LIST");
 }
 
 void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
@@ -69,7 +69,7 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)
 {
-	sLog.outString("Recieved CMSG_BATTLEMASTER_HELLO");
+	sLog.outString("Received CMSG_BATTLEMASTER_HELLO");
 }
 
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket &recv_data)
@@ -150,7 +150,7 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket &recv_data)
 	 * - Burlex
 	 */
 
-	sLog.outString("Recieved MSG_INSPECT_HONOR_STATS");
+	sLog.outString("Received MSG_INSPECT_HONOR_STATS");
 }
 
 void WorldSession::HandlePVPLogDataOpcode(WorldPacket &recv_data)

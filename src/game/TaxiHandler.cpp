@@ -22,7 +22,7 @@
 void WorldSession::HandleTaxiNodeStatusQueryOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
-	sLog.outDebug( "WORLD: Recieved CMSG_TAXINODE_STATUS_QUERY" );
+	sLog.outDebug( "WORLD: Received CMSG_TAXINODE_STATUS_QUERY" );
 
 	uint64 guid;
 	uint32 curloc;
@@ -36,7 +36,7 @@ void WorldSession::HandleTaxiNodeStatusQueryOpcode( WorldPacket & recv_data )
 	field = (uint8)((curloc - 1) / 32);
 	submask = 1<<((curloc-1)%32);
 
-	WorldPacket data;
+	WorldPacket data(9);
 	data.Initialize( SMSG_TAXINODE_STATUS );
 	data << guid;
 
@@ -58,7 +58,7 @@ void WorldSession::HandleTaxiNodeStatusQueryOpcode( WorldPacket & recv_data )
 void WorldSession::HandleTaxiQueryAvaibleNodesOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
-	sLog.outDebug( "WORLD: Recieved CMSG_TAXIQUERYAVAILABLENODES" );
+	sLog.outDebug( "WORLD: Received CMSG_TAXIQUERYAVAILABLENODES" );
 	uint64 guid;
 	recv_data >> guid;
 	Creature *pCreature = _player->GetMapMgr()->GetCreature(guid);
@@ -106,7 +106,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
 		TaxiMask[i] &= GetPlayer( )->GetTaximask(i);
 	}
 
-	WorldPacket data;
+	WorldPacket data(48);
 	data.Initialize( SMSG_SHOWTAXINODES );
 	data << uint32( 1 ) << guid;
 	data << uint32( curloc );
@@ -122,7 +122,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
 void WorldSession::HandleActivateTaxiOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
-	sLog.outDebug( "WORLD: Recieved CMSG_ACTIVATETAXI" );
+	sLog.outDebug( "WORLD: Received CMSG_ACTIVATETAXI" );
 
 	uint64 guid;
 	uint32 sourcenode, destinationnode;
@@ -231,7 +231,7 @@ void WorldSession::HandleActivateTaxiOpcode( WorldPacket & recv_data )
 void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket & recvPacket)
 {
 	if(!_player->IsInWorld()) return;
-	sLog.outDebug( "WORLD: Recieved CMSG_ACTIVATETAXI" );
+	sLog.outDebug( "WORLD: Received CMSG_ACTIVATETAXI" );
 
 	uint64 guid;
 	uint32 moocost;

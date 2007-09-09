@@ -88,7 +88,7 @@ void WorldSession::HandleSetLookingForGroup(WorldPacket& recvPacket)
 	uint16 LfgDungeonId;
 	uint8 LfgType,unk1;
 	
-	WorldPacket data;
+	//WorldPacket data;
 	
 	recvPacket >> LfgQueueId >> LfgDungeonId >> unk1 >> LfgType;
 	

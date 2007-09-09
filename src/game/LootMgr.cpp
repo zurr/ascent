@@ -645,7 +645,7 @@ void LootRoll::Finalize()
 			plr->GetSession()->SendPacket(&data);
 	}
 
-	WorldPacket idata(100);
+	WorldPacket idata(45);
 	_player->GetSession()->BuildItemPushResult(&idata, _player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(_slotid).iRandomProperty);
 
 	if(_player->InGroup())

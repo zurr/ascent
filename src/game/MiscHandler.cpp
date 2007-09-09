@@ -137,7 +137,7 @@ void WorldSession::HandleAutostoreLootItemOpcode( WorldPacket & recv_data )
 			plr->GetSession()->SendPacket(&data);
 	}
 
-    WorldPacket idata;
+    WorldPacket idata(45);
     if(it->Class == ITEM_CLASS_QUEST)
     {
         uint32 pcount = _player->GetItemInterface()->GetItemCount(it->ItemId, true);
@@ -878,9 +878,9 @@ void WorldSession::HandleBugOpcode( WorldPacket & recv_data )
 	recv_data >> suggestion >> contentlen >> content >> typelen >> type;
 
 	if( suggestion == 0 )
-		sLog.outDebug( "WORLD: Recieved CMSG_BUG [Bug Report]" );
+		sLog.outDebug( "WORLD: Received CMSG_BUG [Bug Report]" );
 	else
-		sLog.outDebug( "WORLD: Recieved CMSG_BUG [Suggestion]" );
+		sLog.outDebug( "WORLD: Received CMSG_BUG [Suggestion]" );
 
 	sLog.outDebug( type.c_str( ) );
 	sLog.outDebug( content.c_str( ) );
@@ -970,14 +970,14 @@ void WorldSession::HandleUpdateAccountData(WorldPacket &recv_data)
 		return;
 	}
 
-	uint32 RecievedPackedSize = recv_data.size() - 8;
+	uint32 ReceivedPackedSize = recv_data.size() - 8;
 	char* data = new char[uiDecompressedSize+1];
 
-	if(uiDecompressedSize > RecievedPackedSize) // if packed is compressed
+	if(uiDecompressedSize > ReceivedPackedSize) // if packed is compressed
 	{
 		int32 ZlibResult;
 
-		ZlibResult = uncompress((uint8*)data, &uid, recv_data.contents() + 8, RecievedPackedSize);
+		ZlibResult = uncompress((uint8*)data, &uid, recv_data.contents() + 8, ReceivedPackedSize);
 		
 		switch (ZlibResult)
 		{
@@ -1059,7 +1059,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
 
 void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 {
-	sLog.outDebug( "WORLD: Recieved CMSG_SET_ACTION_BUTTON" ); 
+	sLog.outDebug( "WORLD: Received CMSG_SET_ACTION_BUTTON" ); 
 	uint8 button, misc, type; 
 	uint16 action; 
 	recv_data >> button >> action >> misc >> type; 
@@ -1421,7 +1421,7 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket &recvPacket)
 {
 	uint8 cActionBarId;
 	recvPacket >> cActionBarId;
-	sLog.outDebug("Recieved CMSG_SET_ACTIONBAR_TOGGLES for actionbar id %d.", cActionBarId);
+	sLog.outDebug("Received CMSG_SET_ACTIONBAR_TOGGLES for actionbar id %d.", cActionBarId);
    
 	GetPlayer()->SetByte(PLAYER_FIELD_BYTES,2, cActionBarId);
 }
@@ -1633,13 +1633,16 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 			plr->GetSession()->SendPacket(&data);
 	}
 
-    WorldPacket idata;
+    WorldPacket idata(45);
     if(it->Class == ITEM_CLASS_QUEST)
     {
         uint32 pcount = player->GetItemInterface()->GetItemCount(it->ItemId, true);
 		BuildItemPushResult(&idata, GetPlayer()->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(slotid).iRandomProperty,0xFF,0,0xFFFFFFFF,pcount);
     }
-    else BuildItemPushResult(&idata, player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(slotid).iRandomProperty);
+    else
+    {
+        BuildItemPushResult(&idata, player->GetGUID(), ITEM_PUSH_TYPE_LOOT, amt, itemid, pLoot->items.at(slotid).iRandomProperty);
+    }
 
 	if(_player->InGroup())
 		_player->GetGroup()->SendPacketToAll(&idata);

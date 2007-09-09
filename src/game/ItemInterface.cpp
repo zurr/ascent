@@ -1940,7 +1940,7 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 //-------------------------------------------------------------------//
 void ItemInterface::BuildInventoryChangeError(Item *SrcItem, Item *DstItem, uint8 Error)
 {
-	WorldPacket data;
+	WorldPacket data(22);
 
 	data.Initialize( SMSG_INVENTORY_CHANGE_FAILURE );
 	data << Error;
@@ -1952,7 +1952,6 @@ void ItemInterface::BuildInventoryChangeError(Item *SrcItem, Item *DstItem, uint
 			data << SrcItem->GetProto()->RequiredLevel;
 		}
 	}
-
 
 	data << (SrcItem ? SrcItem->GetGUID() : uint64(0));
 	data << (DstItem ? DstItem->GetGUID() : uint64(0));

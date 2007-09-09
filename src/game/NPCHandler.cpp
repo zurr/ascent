@@ -56,7 +56,7 @@ void WorldSession::HandleTabardVendorActivateOpcode( WorldPacket & recv_data )
 void WorldSession::SendTabardHelp(Creature* pCreature)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	WorldPacket data(8);
 	data.Initialize( MSG_TABARDVENDOR_ACTIVATE );
 	data << pCreature->GetGUID();
 	SendPacket( &data );
@@ -81,7 +81,7 @@ void WorldSession::HandleBankerActivateOpcode( WorldPacket & recv_data )
 void WorldSession::SendBankerList(Creature* pCreature)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	WorldPacket data(8);
 	data.Initialize( SMSG_SHOW_BANK );
 	data << pCreature->GetGUID();
 	SendPacket( &data );
@@ -325,7 +325,7 @@ void WorldSession::HandleCharterShowListOpcode( WorldPacket & recv_data )
 void WorldSession::SendCharterRequest(Creature* pCreature)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	WorldPacket data(29);
 	data.Initialize( SMSG_PETITION_SHOWLIST );
 	data << pCreature->GetGUID();
 	data << uint8(1);		   // BOOL SHOW_COST = 1
@@ -394,7 +394,7 @@ void WorldSession::HandleGossipHelloOpcode( WorldPacket & recv_data )
 	// reputation
 	_player->Reputation_OnTalk(qst_giver->m_factionDBC);
 
-	sLog.outDebug( "WORLD: Recieved CMSG_GOSSIP_HELLO from %u",GUID_LOPART(guid) );
+	sLog.outDebug( "WORLD: Received CMSG_GOSSIP_HELLO from %u",GUID_LOPART(guid) );
 
 	/* script */
 	ScriptSystem->OnCreatureEvent(qst_giver, _player, CREATURE_EVENT_ON_GOSSIP_TALK);
@@ -448,7 +448,7 @@ void WorldSession::HandleGossipHelloOpcode( WorldPacket & recv_data )
 void WorldSession::HandleGossipSelectOptionOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	//WorldPacket data;
 	uint32 option;
 	uint64 guid;
 
@@ -585,12 +585,11 @@ void WorldSession::HandleBinderActivateOpcode( WorldPacket & recv_data )
 void WorldSession::SendInnkeeperBind(Creature* pCreature)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	WorldPacket data(45);
 
 	if(!_player->bHasBindDialogOpen)
 	{
-		data.Initialize(SMSG_GOSSIP_COMPLETE);
-		SendPacket(&data);
+        OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
 
 		data.Initialize(SMSG_BINDER_CONFIRM);
 		data << pCreature->GetGUID() << _player->GetZoneId();
@@ -627,8 +626,7 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
 	data << pCreature->GetGUID() << _player->GetBindZoneId();
 	SendPacket(&data);
 
-	data.Initialize(SMSG_GOSSIP_COMPLETE);
-	SendPacket(&data);
+    OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
 
 	data.Initialize( SMSG_SPELL_START );
 	data << pCreature->GetNewGUID();

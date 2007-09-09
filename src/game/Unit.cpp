@@ -1005,7 +1005,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 	if(this==victim || !victim)
 		return;
 	//charges are already removed in handleproc
-	WorldPacket data;
+	WorldPacket data(24);
 	std::list<DamageProc>::iterator i;
 	std::list<DamageProc>::iterator i2;
 	for(i = victim->m_damageShields.begin();i != victim->m_damageShields.end();)     // Deal Damage to Attacker
@@ -2010,7 +2010,7 @@ void Unit::smsg_AttackStop(Unit* pVictim)
 
 void Unit::smsg_AttackStop(uint64 victimGuid)
 {
-	WorldPacket data;
+	WorldPacket data(20);
 	data.Initialize( SMSG_ATTACKSTOP );
 	data << GetNewGUID();
 	FastGUIDPack(data, victimGuid);
@@ -2484,7 +2484,7 @@ bool Unit::SetAurDuration(uint32 spellId,Unit* caster,uint32 duration)
 			
 	if(this->IsPlayer())
 	{
-		WorldPacket data;
+		WorldPacket data(5);
 		data.SetOpcode(SMSG_UPDATE_AURA_DURATION);
 		data << (uint8)(aur)->GetAuraSlot() << duration;
 		((Player*)this)->GetSession()->SendPacket(&data);
@@ -2506,7 +2506,7 @@ bool Unit::SetAurDuration(uint32 spellId,uint32 duration)
 		
 	if(this->IsPlayer())
 	{
-		WorldPacket data;
+		WorldPacket data(5);
 		data.SetOpcode(SMSG_UPDATE_AURA_DURATION);
 		data << (uint8)(aur)->GetAuraSlot() << duration;
 		((Player*)this)->GetSession()->SendPacket(&data);
@@ -3069,7 +3069,7 @@ void Unit::VampiricEmbrace(uint32 dmg,Unit* tgt)
 	SM_FIValue(SM_FDummy,&perc,4);
 	uint32 heal = (dmg*perc) / 100;
 
-	WorldPacket data;
+	WorldPacket data(25);
 	data.SetOpcode(SMSG_HEALSPELL_ON_PLAYER);
 	
 	data << this->GetNewGUID();

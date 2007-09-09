@@ -569,7 +569,7 @@ public:
 
     inline void SendPeriodicHealAuraLog(uint32 amt)
     {
-        WorldPacket data;
+        WorldPacket data(32);
         data.SetOpcode(SMSG_PERIODICAURALOG);
         data << m_target->GetNewGUID();
         FastGUIDPack(data, m_casterGuid);

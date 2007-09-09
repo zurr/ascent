@@ -962,7 +962,7 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
     else
     {
         // Meh...
-        WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 100);
+        WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 12);
         data << uint32(0x000019C2);
         data << creature_guid;
         SendPacket(&data);
@@ -982,6 +982,7 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
         c->SaveToDB();
 
 		data.clear();
+        data.resize(45);
 		BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, 1, ITEM_ENTRY_GUILD_CHARTER, 0);
 		SendPacket(&data);
 

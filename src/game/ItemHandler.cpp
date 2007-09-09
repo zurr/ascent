@@ -685,14 +685,14 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 8);
-	WorldPacket data;
+	WorldPacket data(16);
 	uint64 guid;
 	int32 stuff;
 	Item* add ;
 	bool result;
 	uint8 error;
 
-	sLog.outDetail( "WORLD: Recieved CMSG_BUYBACK_ITEM" );
+	sLog.outDetail( "WORLD: Received CMSG_BUYBACK_ITEM" );
 
 	recv_data >> guid >> stuff;
 	stuff -= 74;
@@ -762,7 +762,7 @@ void WorldSession::HandleSellItemOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 17);
-	sLog.outDetail( "WORLD: Recieved CMSG_SELL_ITEM" );
+	sLog.outDetail( "WORLD: Received CMSG_SELL_ITEM" );
 	if(!GetPlayer())
 		return;
 
@@ -859,7 +859,7 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 22);
-	sLog.outDetail( "WORLD: Recieved CMSG_BUY_ITEM_IN_SLOT" );
+	sLog.outDetail( "WORLD: Received CMSG_BUY_ITEM_IN_SLOT" );
 
 	if(!GetPlayer())
 		return;
@@ -1037,7 +1037,7 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 				}
 			}
 		}
-		WorldPacket data(50);
+		WorldPacket data(45);
 		BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, itemd.amount, itemid, 0);
 		SendPacket(&data);
 	}
@@ -1061,7 +1061,7 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 	if(!GetPlayer())
 		return;
 
-	WorldPacket data;
+	WorldPacket data(45);
 	uint64 srcguid=0;
 	uint32 itemid=0;
 	int8 slot=0;
@@ -1239,7 +1239,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode( WorldPacket & recv_data )
 	if(!GetPlayer())
 		return;
 
-	WorldPacket data;
+	//WorldPacket data;
 	WorldPacket packet;
 	int8 SrcInv=0, Slot=0, DstInv=0;
 //	Item *item= NULL;
@@ -1349,7 +1349,7 @@ void WorldSession::HandleReadItemOpcode(WorldPacket &recvPacket)
 		return;
 
 	Item *item = _player->GetItemInterface()->GetInventoryItem(slot);
-	sLog.outDebug("Recieved CMSG_READ_ITEM %d", slot);
+	sLog.outDebug("Received CMSG_READ_ITEM %d", slot);
 
 	if(item)
 	{
@@ -1435,7 +1435,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 			}
 		}
 	}
-	sLog.outDebug("Recieved CMSG_REPAIR_ITEM %d", itemguid);
+	sLog.outDebug("Received CMSG_REPAIR_ITEM %d", itemguid);
 }
 
 void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket) 
@@ -1492,7 +1492,7 @@ void WorldSession::HandleAutoBankItemOpcode(WorldPacket &recvPacket)
 	CHECK_PACKET_SIZE(recvPacket, 2);
 	sLog.outDebug("WORLD: CMSG_AUTO_BANK_ITEM");
 
-	WorldPacket data;
+	//WorldPacket data;
 
 	bool result;
 	SlotResult slotresult;
@@ -1545,7 +1545,7 @@ void WorldSession::HandleAutoStoreBankItemOpcode(WorldPacket &recvPacket)
 	CHECK_PACKET_SIZE(recvPacket, 2);
 	sLog.outDebug("WORLD: CMSG_AUTOSTORE_BANK_ITEM");
 
-	WorldPacket data;
+	//WorldPacket data;
 
 	bool result;
 	int8 SrcInvSlot, SrcSlot;//, error=0, slot=-1, specialbagslot=-1;

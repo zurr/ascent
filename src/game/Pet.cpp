@@ -269,7 +269,7 @@ void Pet::SendSpellsToOwner()
 
 void Pet::SendNullSpellsToOwner()
 {
-	WorldPacket data;
+	WorldPacket data(8);
 	data.SetOpcode(SMSG_PET_SPELLS);
 	data << uint64(0);
 	m_Owner->GetSession()->SendPacket(&data);

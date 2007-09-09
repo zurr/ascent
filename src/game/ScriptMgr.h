@@ -27,6 +27,7 @@
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature * c) { return new cl(c); }
 #define ADD_GOSSIP_FACTORY_FUNCTION(cl) static GossipScript * Create() { return new cl; }
 
+class Channel;
 class Guild;
 struct Quest;
 enum ServerHookEvents

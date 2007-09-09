@@ -351,7 +351,7 @@ int Player_AddItem(gmThread * a_thread)
 
 		if(push)
 		{
-			WorldPacket data(50);
+			WorldPacket data(45);
 			pPlayer->GetSession()->BuildItemPushResult(&data, pPlayer->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, count, itemid, 0);
 			pPlayer->GetSession()->SendPacket(&data);
 		}

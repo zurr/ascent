@@ -283,7 +283,7 @@ void SocialMgr::DelFriend(Player* plr, uint64 friendguid)
 	if(!plr)
 		return;
 
-	WorldPacket data;
+	WorldPacket data(9);
 	uint64 plrguid = plr->GetGUID();
 
 	sLog.outDebug("SocialMgr: %s is deleting friendguid %d from his friendlist", plr->GetName(), friendguid);
@@ -309,7 +309,7 @@ void SocialMgr::DelIgnore(Player* plr, uint64 ignoreguid)
 	if(!plr)
 		return;
 
-	WorldPacket data;
+	WorldPacket data(9);
 	uint64 plrguid = plr->GetGUID();
 
 	sLog.outDebug("SocialMgr: %s is deleting guid %d from his ignorelist", plr->GetName(), ignoreguid);

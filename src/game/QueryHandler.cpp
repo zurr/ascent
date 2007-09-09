@@ -35,7 +35,7 @@ void WorldSession::HandleNameQueryOpcode( WorldPacket & recv_data )
 	if(!pn)
 		return;
 
-	sLog.outDebug( "Recieved CMSG_NAME_QUERY for: %s", pn->name.c_str() );
+	sLog.outDebug( "Received CMSG_NAME_QUERY for: %s", pn->name.c_str() );
 
 	data.Initialize( SMSG_NAME_QUERY_RESPONSE );
 

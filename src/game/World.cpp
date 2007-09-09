@@ -1737,9 +1737,9 @@ void World::SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *se
 
 void World::SendWorldText(const char* text, WorldSession *self)
 {
-	WorldPacket data;
+    uint32 textLen = strlen((char*)text) + 1;
 
-	uint32 textLen = strlen((char*)text) + 1;
+    WorldPacket data(textLen + 40);
 
 	data.Initialize(SMSG_MESSAGECHAT);
 	data << uint8(CHAT_MSG_SYSTEM);
@@ -1760,7 +1760,7 @@ void World::SendWorldText(const char* text, WorldSession *self)
 
 void World::SendWorldWideScreenText(const char *text, WorldSession *self)
 {
-	WorldPacket data;
+	WorldPacket data(256);
 	data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
 	data << (uint32)0 << text << (uint8)0x00;
 	SendGlobalMessage(&data, self);

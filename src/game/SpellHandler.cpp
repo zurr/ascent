@@ -23,7 +23,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {
 	if(!_player->IsInWorld()) return;
 	typedef std::list<Aura*> AuraList;
-	WorldPacket data;
+	
 	Player* p_User = GetPlayer();
 	sLog.outDetail("WORLD: got use Item packet, data length = %i",recvPacket.size());
 	int8 tmp1,slot,tmp3;
@@ -49,7 +49,9 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 		Quest *qst = QuestStorage.LookupEntry(itemProto->QuestId);
 		if(!qst) 
 			return;
-		sQuestMgr.BuildQuestDetails(&data, qst, tmpItem, 0);
+
+        WorldPacket data;
+        sQuestMgr.BuildQuestDetails(&data, qst, tmpItem, 0);
 		SendPacket(&data);
 	}
 	
@@ -265,7 +267,7 @@ void WorldSession::HandleCancelChannellingOpcode( WorldPacket& recvPacket)
 
 void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
 {
-	//sLog.outString("Recieved CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
+	//sLog.outString("Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
 	//on original we automatically enter combat when creature got close to us
 //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
 	GetPlayer()->m_onAutoShot = false;

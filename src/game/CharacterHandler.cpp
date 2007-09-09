@@ -306,7 +306,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 		{
 			pNewChar->ok_to_remove = true;
 			delete pNewChar;
-			WorldPacket data;
+			WorldPacket data(1);
 			data.SetOpcode(SMSG_CHAR_CREATE);
 			data << (uint8)ALL_CHARS_ON_PVP_REALM_MUST_AT_SAME_SIDE;
 			SendPacket( &data );

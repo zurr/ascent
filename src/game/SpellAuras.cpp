@@ -2178,7 +2178,7 @@ void Aura::SpellAuraModStealth(bool apply)
 		m_target->RemoveFlag(UNIT_FIELD_BYTES_1,0x02000000);
 		if( m_target->GetTypeId() == TYPEID_PLAYER )
 		{
-			WorldPacket data;
+			WorldPacket data(12);
 			data.SetOpcode(SMSG_COOLDOWN_EVENT);
 			data << (uint32)GetSpellProto()->Id << m_target->GetGUID();
 			static_cast<Player*>(m_target)->GetSession()->SendPacket (&data);
@@ -2987,7 +2987,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 		{
 			if(apply)
 			{
-				WorldPacket data;
+				WorldPacket data(12);
 				data.SetOpcode(SMSG_COOLDOWN_EVENT);
 				data << (uint32)GetSpellProto()->Id << m_target->GetGUID();
 				static_cast<Player*>(m_target)->GetSession()->SendPacket(&data);
@@ -3868,7 +3868,7 @@ void Aura::SpellAuraFeighDeath(bool apply)
                         m_target->RemoveFlag(UNIT_FIELD_FLAGS_2, 0x00000001);
                         m_target->clearStateFlag(UF_TARGET_DIED);
                     
-                        WorldPacket data;
+                        WorldPacket data(12);
                         data.SetOpcode(SMSG_COOLDOWN_EVENT);
                         data << (uint32)GetSpellProto()->Id << m_target->GetGUID();
                         static_cast<Player*>(m_target)->GetSession()->SendPacket(&data);
@@ -4373,7 +4373,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
 							delete item;
 							return;
 						}
-						WorldPacket data;
+						WorldPacket data(45);
 						pCaster->GetSession()->BuildItemPushResult(&data, pCaster->GetGUID(), 1, 1, itemid ,0,0xFF,1,0xFFFFFFFF);
 						pCaster->SendMessageToSet(&data, true);					
 					}
@@ -4694,7 +4694,7 @@ void Aura::SpellAuraWaterWalk(bool apply)
 {	 
 	if (m_target->IsPlayer())
 	{
-		WorldPacket data; 
+		WorldPacket data(12); 
 		if(apply)
 		{
 			SetPositive();
@@ -4718,7 +4718,7 @@ void Aura::SpellAuraFeatherFall(bool apply)
 	if(!m_target->IsPlayer())
 		return;
 
-	WorldPacket data;
+	WorldPacket data(12);
 	if(apply)
 	{
 		SetPositive();
@@ -5615,7 +5615,7 @@ void Aura::SpellAuraSafeFall(bool apply)
 	//FIXME:Find true flag
 	if(m_target->GetTypeId() == TYPEID_PLAYER)
 	{
-		WorldPacket data;
+		WorldPacket data(12);
 		if(apply)
 		{
 			SetPositive();

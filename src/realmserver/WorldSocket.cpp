@@ -107,7 +107,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 	}
 	catch(ByteBuffer::error &)
 	{
-		sLog.outDetail("Incomplete copy of AUTH_SESSION recieved.");
+		sLog.outDetail("Incomplete copy of AUTH_SESSION Received.");
 		return;
 	}
 

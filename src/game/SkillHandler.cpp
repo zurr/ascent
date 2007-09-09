@@ -23,7 +23,6 @@ void WorldSession::HandleLearnTalentOpcode( WorldPacket & recv_data )
 {
 	if(!_player->IsInWorld()) return;
  	 
-	WorldPacket data;
 	uint32 talent_id, requested_rank;
 	recv_data >> talent_id >> requested_rank;
 
@@ -190,7 +189,7 @@ void WorldSession::HandleUnlearnTalents( WorldPacket & recv_data )
 		//SendPacket( &data );
 	}
 	talentproto->clear();
-*/	
+*/
 }
 
 void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)

@@ -403,7 +403,7 @@ void QuestMgr::BuildRequestItems(WorldPacket *data, Quest* qst, Object* qst_give
     }
     else
     {
-         *data << uint32(2);
+        *data << uint32(2);
     }
 
 	*data << uint32(8);
@@ -1197,7 +1197,7 @@ void QuestMgr::SendQuestFailed(FAILED_REASON failed, Quest * qst, Player *plyr)
 	if(!plyr)
 		return;
 
-    WorldPacket data;
+    WorldPacket data(8);
     data.Initialize(SMSG_QUESTGIVER_QUEST_FAILED);
     data << uint32(qst->id);
     data << failed;

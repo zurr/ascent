@@ -23,7 +23,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 {
 	if(!_player->IsInWorld()) return;
 
-	WorldPacket data;
+	//WorldPacket data;
 	uint64 petGuid = 0;
 	uint16 misc = 0;
 	uint16 action = 0;
@@ -235,7 +235,7 @@ void WorldSession::HandlePetNameQuery(WorldPacket & recv_data)
 	Pet *pPet = _player->GetMapMgr()->GetPet(petGuid);
 	if(!pPet) return;
 
-	WorldPacket data;
+	WorldPacket data(8 + pPet->GetName().size());
 	data.SetOpcode(SMSG_PET_NAME_QUERY_RESPONSE);
 	data << (uint32)pPet->GetGUIDLow();
 	data << pPet->GetName();
@@ -246,7 +246,7 @@ void WorldSession::HandlePetNameQuery(WorldPacket & recv_data)
 void WorldSession::HandleStablePet(WorldPacket & recv_data)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	WorldPacket data(1);
 	data.SetOpcode(SMSG_STABLE_RESULT);
 	data << uint8(0x8);  // success
 	SendPacket(&data);
@@ -261,7 +261,7 @@ void WorldSession::HandleStablePet(WorldPacket & recv_data)
 void WorldSession::HandleUnstablePet(WorldPacket & recv_data)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	
 	uint64 npcguid = 0;
 	uint32 petnumber = 0;
 
@@ -276,6 +276,7 @@ void WorldSession::HandleUnstablePet(WorldPacket & recv_data)
 	// much easier? :P
 	_player->SpawnPet(petnumber);
 
+    WorldPacket data(1);
 	data.SetOpcode(SMSG_STABLE_RESULT);
 	data << uint8(0x9); // success?
 	SendPacket(&data);
@@ -284,7 +285,7 @@ void WorldSession::HandleUnstablePet(WorldPacket & recv_data)
 void WorldSession::HandleStabledPetList(WorldPacket & recv_data)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data;
+	WorldPacket data(10 + (_player->m_Pets.size() * 25));
 	data.SetOpcode(MSG_LIST_STABLED_PETS);
 
 	uint64 npcguid = 0;
@@ -320,7 +321,7 @@ void WorldSession::HandleBuyStableSlot(WorldPacket &recv_data)
 
 	_player->ModUInt32Value(PLAYER_FIELD_COINAGE, cost);
 	
-	WorldPacket data;
+	WorldPacket data(1);
 	data.SetOpcode(SMSG_STABLE_RESULT);
 	data << uint8(0x0A);
 	SendPacket(&data);

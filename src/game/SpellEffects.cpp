@@ -793,7 +793,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		/* Quest Related */
 	case 11536:
 		{
-			WorldPacket data;
+			WorldPacket data(12);
 			data.SetOpcode(SMSG_PLAY_OBJECT_SOUND);
 			data << uint32(6197) << unitTarget->GetGUID();
 			p_caster->SendMessageToSet(&data, true);
@@ -804,7 +804,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		{
             if(((Creature*)unitTarget)->GetEntry() == 10556)
             {
-			    WorldPacket data;
+			    WorldPacket data(12);
 			    data.SetOpcode(SMSG_PLAY_OBJECT_SOUND);
 			    data << uint32(6197) << unitTarget->GetGUID();
 			    p_caster->SendMessageToSet(&data, true);
@@ -1385,7 +1385,7 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 
 			if(p_caster->GetItemInterface()->SafeAddItem(newItem,slotresult.ContainerSlot, slotresult.Slot))
 			{
-				WorldPacket data(88);
+				WorldPacket data(45);
 				p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, item_count, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);
 				p_caster->SendMessageToSet(&data, true);
 			} else {
@@ -1426,7 +1426,7 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 				add->m_isDirty = true;
 			}
 
-			WorldPacket data(88);
+			WorldPacket data(45);
 			p_caster->GetSession()->BuildItemPushResult(&data, p_caster->GetGUID(), 1, item_count, m_spellInfo->EffectSpellGroupRelation[i] ,0,0xFF,1,0xFFFFFFFF);
 			p_caster->SendMessageToSet(&data, true);
 			if(skill)
