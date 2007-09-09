@@ -127,6 +127,13 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
+	if(movement_info.flags & MOVEFLAG_FALLING_FAR && !movement_info.FallTime && sWorld.antihack_falldmg && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->bSafeFall && !_player->GodModeCheat)
+	{
+		sCheatLog.writefromsession(this, "Used fall damage hack, falltime is 0 and flags are %u", movement_info.flags);
+		Disconnect();
+		return;
+	}
+
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
 	uint32 mstime = getMSTime();
 	int32 new_move_time = (MOVEMENT_PACKET_TIME_DELAY + (movement_info.time - mstime))+mstime;
@@ -353,6 +360,12 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
+	if(movement_info.flags & MOVEFLAG_FALLING_FAR && !movement_info.FallTime && sWorld.antihack_falldmg && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->bSafeFall && !_player->GodModeCheat)
+	{
+		sCheatLog.writefromsession(this, "Used fall damage hack, falltime is 0 and flags are %u", movement_info.flags);
+		Disconnect();
+		return;
+	}
 
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
 	uint32 mstime = getMSTime();
