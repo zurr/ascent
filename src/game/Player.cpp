@@ -355,6 +355,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_retainComboPoints = false;
 	last_heal_spell = NULL;
 	m_playerInfo = NULL;
+	_player->m_sentTeleportPosition.ChangeCoords(999999.0f,999999.0f,999999.0f);
 }
 
 

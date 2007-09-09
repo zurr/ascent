@@ -1405,6 +1405,7 @@ public:
 	Creature * m_tempSummon;
 	bool m_deathVision;
 	SpellEntry * last_heal_spell;
+	LocationVector m_sentTeleportPosition;
 
 	void RemoveFromBattlegroundQueue();
 

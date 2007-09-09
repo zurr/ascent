@@ -39,14 +39,36 @@ void WorldSession::HandleMoveWorldportAckOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleMoveTeleportAckOpcode( WorldPacket & recv_data )
 {
-	sLog.outDebug( "WORLD: got MSG_MOVE_TELEPORT_ACK." );
-	GetPlayer()->SetPlayerStatus(NONE);
-	GetPlayer()->clearAttackers(true);
-	GetPlayer()->SetMovement(MOVE_UNROOT,5);
-	_player->ResetHeartbeatCoords();
+	uint64 guid;
+	recv_data >> guid;
+	if(guid == _player->GetGUID())
+	{
+		if(_player->GetPlayerStatus() != STATUS_PENDING)
+		{
+			/* we're obviously cheating */
+			sCheatLog.writefromsession(this, "Used teleport hack, disconnecting.");
+			Disconnect();
+			return;
+		}
 
-	if(GetPlayer()->GetSummon() != NULL)		// move pet too
-		GetPlayer()->GetSummon()->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI);
+		if(_player->GetPosition().Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)	/* 25.0f*25.0f */
+		{
+			/* cheating.... :( */
+			sCheatLog.writefromsession(this, "Used teleport hack {2}, disconnecting.");
+			Disconnect();
+			return;
+		}
+
+		sLog.outDebug( "WORLD: got MSG_MOVE_TELEPORT_ACK." );
+		GetPlayer()->SetPlayerStatus(NONE);
+		GetPlayer()->clearAttackers(true);
+		GetPlayer()->SetMovement(MOVE_UNROOT,5);
+		_player->ResetHeartbeatCoords();
+
+		if(GetPlayer()->GetSummon() != NULL)		// move pet too
+			GetPlayer()->GetSummon()->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI);
+		_player->m_sentTeleportPosition.ChangeCoords(999999.0f,999999.0f,999999.0f);
+	}
 
 }
 
@@ -87,6 +109,13 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	//Send packet to other players
 	if(recv_data.size() > 80)
 	{
+		Disconnect();
+		return;
+	}
+
+	if(_player->GetPosition().Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
+	{
+		sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 		Disconnect();
 		return;
 	}
@@ -299,6 +328,13 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	//Send packet to other players
 	if(recv_data.size() > 80)
 	{
+		Disconnect();
+		return;
+	}
+
+	if(_player->GetPosition().Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
+	{
+		sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 		Disconnect();
 		return;
 	}
