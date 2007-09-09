@@ -170,6 +170,7 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 	add_damage = 0;
 	m_delayed = false;
 	pSpellId = 0;
+	item_to_delete = NULL;
 }
 
 Spell::~Spell()
@@ -180,10 +181,8 @@ Spell::~Spell()
 	if(cancastresult == -1 && !failed)
 		RemoveItems();
 
-	if(i_caster && i_caster->GetProto()->ItemId != 5507)
-	{
-		i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
-	}
+	if(item_to_delete)
+		item_to_delete->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(item_to_delete->GetGUID());
 }
 
 //i might forget conditions here. Feel free to add them
@@ -1557,6 +1556,7 @@ void Spell::cast(bool check)
 								this->cancel();
 								return;
 							}*/
+							item_to_delete = i_caster;
 						}
 					}
 					else
