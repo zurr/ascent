@@ -32,6 +32,12 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 	if(!GetPlayer())
 		return;
 
+	if(count >= 127)
+	{
+		/* exploit fix */
+		return;
+	}
+
 	int32 c=count;
 	Item *i1 =_player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
 	if(!i1)

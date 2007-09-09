@@ -356,6 +356,8 @@ Player::Player ( uint32 high, uint32 low )
 	last_heal_spell = NULL;
 	m_playerInfo = NULL;
 	m_sentTeleportPosition.ChangeCoords(999999.0f,999999.0f,999999.0f);
+	m_speedChangeCounter=1;
+	memset(&m_bgScore,0,sizeof(BGScore));
 }
 
 

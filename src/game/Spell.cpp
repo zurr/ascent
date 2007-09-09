@@ -2168,7 +2168,7 @@ void Spell::writeSpellMissedTargets( WorldPacket * data )
 			///handle proc on resist spell
 			Unit* target = u_caster->GetMapMgr()->GetUnit(*i);
 			if(target && target->isAlive())
-				u_caster->HandleProc(PROC_ON_RESIST_VICTIM,target,m_spellInfo,damage);
+				u_caster->HandleProc(PROC_ON_RESIST_VICTIM,target,m_spellInfo/*,damage*/);		/** Damage is uninitialized at this point - burlex */
 		}
 	}
 	else

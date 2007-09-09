@@ -378,6 +378,7 @@ Aura::Aura(SpellEntry *proto, int32 duration,Object* caster, Unit *target)
 
 	m_castedItemId = 0;
 	m_visualSlot = 0xFF;
+	pSpellId=0;
 
 //	fixed_amount = 0;//used only por percent values to be able to recover value correctly.No need to init this if we are not using it
 }
