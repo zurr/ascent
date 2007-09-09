@@ -505,6 +505,13 @@ void Group::RemovePlayer(PlayerInfo * info, Player* pPlayer, bool forced_remove)
 	{
 		if(m_disbandOnNoMembers)
 		{
+			/* remove some left-over references */
+			if(m_Looter)
+				m_Looter->RemoveReference(&m_Looter);
+
+			if(m_Leader)
+				m_Leader->RemoveReference(&m_Leader);
+
 			m_groupLock.Release();
 			Disband();
 			return;

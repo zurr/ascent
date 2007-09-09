@@ -56,7 +56,8 @@
 				AdditionalLibraryDirectories="..\..\dep\lib\release"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\..\..\bin\Release/ascent.pdb"
-				SubSystem="1"/>
+				SubSystem="1"
+				FixedBaseAddress="1"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\..\..\bin\Release/ascent.tlb"/>
