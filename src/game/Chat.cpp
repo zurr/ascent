@@ -164,7 +164,7 @@ void CommandTableStorage::Dealloc()
 	free( _petCommandTable );
 	free( _recallCommandTable );
 	free( _honorCommandTable );
-	free(_commandTable);
+	free( _commandTable );
 }
 
 void CommandTableStorage::Init()
@@ -644,7 +644,6 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand *table, const char* text, Wo
 
 		return true;
 	}
-
 	return false;
 }
 
@@ -711,7 +710,7 @@ WorldPacket* ChatHandler::FillSystemMessageData(const char *message) const
 {
 	uint32 messageLength = strlen((char*)message) + 1;
 
-	WorldPacket * data = new WorldPacket(SMSG_MESSAGECHAT, 20 + messageLength);
+	WorldPacket * data = new WorldPacket(SMSG_MESSAGECHAT, 30 + messageLength);
 	*data << (uint8)CHAT_MSG_SYSTEM;
 	*data << (uint32)LANG_UNIVERSAL;
 	

@@ -187,7 +187,8 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 						pGuild->BroadCastToGuild(this, msg);
 					else
 					{
-						WorldPacket data2(SMSG_GUILD_COMMAND_RESULT, 100);
+                        
+						WorldPacket data2(SMSG_GUILD_COMMAND_RESULT, 8 + pGuild->GetGuildName().size() + 1);
 						data2 << uint32(GUILD_MEMBER_S);
 						data2 << pGuild->GetGuildName();
 						data2 << uint32(C_R_DONT_HAVE_PERMISSION);
@@ -215,7 +216,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 						pGuild->OfficerChannelChat(this, msg);
 					else
 					{
-						WorldPacket data2(SMSG_GUILD_COMMAND_RESULT, 100);
+						WorldPacket data2(SMSG_GUILD_COMMAND_RESULT, 8 + pGuild->GetGuildName().size() + 1);
 						data2 << uint32(GUILD_MEMBER_S);
 						data2 << pGuild->GetGuildName();
 						data2 << uint32(C_R_DONT_HAVE_PERMISSION);
@@ -448,9 +449,8 @@ void WorldSession::HandleReportSpamOpcode(WorldPacket & recvPacket)
 {
 	CHECK_PACKET_SIZE(recvPacket, 29);
 
-	WorldPacket data(SMSG_REPORT_SPAM_RESPONSE, 1);
-	data << (uint8)0; // unk?
-	GetPlayer()->GetSession()->SendPacket(&data);
+    // the 0 in the out packet is unknown
+    GetPlayer()->GetSession()->OutPacket(SMSG_REPORT_SPAM_RESPONSE, 1, 0 );
 
 	/* This whole thing is guess-work */
 	uint8 unk1;
@@ -468,5 +468,3 @@ void WorldSession::HandleReportSpamOpcode(WorldPacket & recvPacket)
 
 	sSocialMgr.AddIgnore(GetPlayer(), rPlayer->GetName());
 }
-
-

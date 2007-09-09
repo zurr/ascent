@@ -33,7 +33,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
 	recvPacket >> pass;
 	if(channelmgr.GetJoinChannel(channelname.c_str(),GetPlayer())->Join(GetPlayer(),pass.c_str()))
 	{
-		WorldPacket data(SMSG_CHANNEL_NOTIFY, 100);
+		WorldPacket data(SMSG_CHANNEL_NOTIFY, 1 + 8 + channelname.size());
 		data << uint8(2) << channelname;
 		data << uint64(code);
 		SendPacket(&data);
@@ -58,7 +58,7 @@ void WorldSession::HandleChannelLeave(WorldPacket& recvPacket)
 
 	if(channelmgr.LeftChannel(channelname.c_str(),_player))
 	{
-		WorldPacket data(SMSG_CHANNEL_NOTIFY, 100);
+		WorldPacket data(SMSG_CHANNEL_NOTIFY, 1 + 8 + channelname.size());
 		data << uint8(0x03) << channelname;
 		if(client_build >= 6337)
 			data << uint64(code);

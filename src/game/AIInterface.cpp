@@ -899,7 +899,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					float dist = combatReach[1]-PLAYER_SIZE;
 
 					if(dist < PLAYER_SIZE)
-						dist = PLAYER_SIZE; //unbeleavable how this could happen
+						dist = PLAYER_SIZE; //unbelievable how this could happen
 
 					m_moveRun = true;
 					_CalcDestinationAndMove(m_nextTarget, dist);

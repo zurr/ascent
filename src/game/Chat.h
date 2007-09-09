@@ -106,7 +106,7 @@ public:
 	char			   CommandGroup;
 	bool (ChatHandler::*Handler)(const char* args, WorldSession *m_session) ;
 	std::string		Help;
-	ChatCommand *	  ChildCommands;
+	ChatCommand *    ChildCommands;
 	uint32			 NormalValueField;
 	uint32			 MaxValueField;
 	uint16			 ValueType;	// 0 = nothing, 1 = uint, 2 = float
@@ -158,7 +158,6 @@ public:
 	void BlueSystemMessageToPlr(Player* plr, const char *message, ...);
 	void SystemMessageToPlr(Player *plr, const char *message, ...);
 	   
-
 protected:
 
 	bool hasStringAbbr(const char* s1, const char* s2);

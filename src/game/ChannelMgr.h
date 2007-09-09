@@ -56,9 +56,10 @@ public:
 			return i->second;
 		else 
 		{
-			WorldPacket data(100);
+            string n_name = name;
+			WorldPacket data(1 + 1 + n_name.size());
 			data.SetOpcode (SMSG_CHANNEL_NOTIFY);
-			data << (uint8)0x05 << string(name);
+			data << (uint8)0x05 << n_name;
 			p->GetSession()->SendPacket(&data);
 			return NULL;
 		}
