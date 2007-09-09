@@ -19,7 +19,7 @@
 
 #include "StdAfx.h"
 
-static trainertype trainer_types[TRAINER_TYPE_MAX] = 
+trainertype trainer_types[TRAINER_TYPE_MAX] = 
 {
 {	"Warrior",			   0 },
 {	"Paladin",			   0 },
