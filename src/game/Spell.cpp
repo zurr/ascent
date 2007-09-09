@@ -179,6 +179,11 @@ Spell::~Spell()
 	
 	if(cancastresult == -1 && !failed)
 		RemoveItems();
+
+	if(i_caster && i_caster->GetProto()->ItemId != 5507)
+	{
+		i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
+	}
 }
 
 //i might forget conditions here. Feel free to add them
@@ -1544,14 +1549,14 @@ void Spell::cast(bool check)
 					{
 						if(i_caster->GetProto()->ItemId != 5507) //Ornate SpyGlass
 						{
-							bool result = i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
+							/*bool result = i_caster->GetOwner()->GetItemInterface()->SafeFullRemoveItemByGuid(i_caster->GetGUID());
 							if(!result)
 							{
 								//should never get here
 								printf("Spell: Prepare, Item destruction failed");
 								this->cancel();
 								return;
-							}
+							}*/
 						}
 					}
 					else
