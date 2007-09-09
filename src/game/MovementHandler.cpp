@@ -120,6 +120,13 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
+	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat && movement_info.flags & MOVEFLAG_FLYING)
+	{
+		sCheatLog.writefromsession(this, "Used flying hack {1}, movement flags: %u", movement_info.flags);
+		Disconnect();
+		return;
+	}
+
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
 	uint32 mstime = getMSTime();
 	int32 new_move_time = (MOVEMENT_PACKET_TIME_DELAY + (movement_info.time - mstime))+mstime;
@@ -338,6 +345,14 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 		Disconnect();
 		return;
 	}
+
+	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat && movement_info.flags & MOVEFLAG_FLYING)
+	{
+		sCheatLog.writefromsession(this, "Used flying hack {1}, movement flags: %u", movement_info.flags);
+		Disconnect();
+		return;
+	}
+
 
 	uint32 pos = m_MoverWoWGuid.GetNewGuidLen() + 1;
 	uint32 mstime = getMSTime();
