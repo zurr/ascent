@@ -355,7 +355,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_retainComboPoints = false;
 	last_heal_spell = NULL;
 	m_playerInfo = NULL;
-	_player->m_sentTeleportPosition.ChangeCoords(999999.0f,999999.0f,999999.0f);
+	m_sentTeleportPosition.ChangeCoords(999999.0f,999999.0f,999999.0f);
 }
 
 
@@ -5932,6 +5932,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
 		delete data;
 	}
 	
+	m_sentTeleportPosition = v;
 	SetPosition(v);
 	ResetHeartbeatCoords();
 }

@@ -43,7 +43,7 @@ void WorldSession::HandleMoveTeleportAckOpcode( WorldPacket & recv_data )
 	recv_data >> guid;
 	if(guid == _player->GetGUID())
 	{
-		if(_player->GetPlayerStatus() != STATUS_PENDING)
+		if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
 		{
 			/* we're obviously cheating */
 			sCheatLog.writefromsession(this, "Used teleport hack, disconnecting.");
@@ -51,7 +51,7 @@ void WorldSession::HandleMoveTeleportAckOpcode( WorldPacket & recv_data )
 			return;
 		}
 
-		if(_player->GetPosition().Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)	/* 25.0f*25.0f */
+		if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)	/* 25.0f*25.0f */
 		{
 			/* cheating.... :( */
 			sCheatLog.writefromsession(this, "Used teleport hack {2}, disconnecting.");
@@ -113,7 +113,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
-	if(_player->GetPosition().Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
+	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
 	{
 		sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 		Disconnect();
@@ -332,7 +332,7 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
-	if(_player->GetPosition().Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
+	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
 	{
 		sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 		Disconnect();

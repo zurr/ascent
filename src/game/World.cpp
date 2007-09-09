@@ -2314,4 +2314,9 @@ void World::Rehash(bool load)
 		flood_lines = flood_seconds = 0;
 
 	map_unload_time=Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", 0);
+
+	antihack_teleport = Config.MainConfig.GetBoolDefault("AntiHack", "Teleport", true);
+	antihack_speed = Config.MainConfig.GetBoolDefault("AntiHack", "Speed", true);
+	antihack_falldmg = Config.MainConfig.GetBoolDefault("AntiHack", "FallDamage", true);
+	no_antihack_on_gm = Config.MainConfig.GetBoolDefault("AntiHack", "DisableOnGM", false);
 }

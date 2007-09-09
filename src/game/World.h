@@ -485,6 +485,11 @@ public:
 	bool show_gm_in_who_list;
 	uint32 map_unload_time;
 
+	bool antihack_teleport;
+	bool antihack_speed;
+	bool antihack_falldmg;
+	bool no_antihack_on_gm;
+
 protected:
 	// update Stuff, FIXME: use diff
 	time_t _UpdateGameTime()
