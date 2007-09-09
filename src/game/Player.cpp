@@ -6308,6 +6308,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
 	}
 
 	uint8 *buffer = new uint8[destsize];
+	memset(buffer,0,destsize);	/* fix umr - burlex */
 	
 	// set up stream pointers
 	stream.next_out  = (Bytef*)buffer+4;

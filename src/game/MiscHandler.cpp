@@ -972,6 +972,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket &recv_data)
 
 	uint32 ReceivedPackedSize = recv_data.size() - 8;
 	char* data = new char[uiDecompressedSize+1];
+	memset(data,0,uiDecompressedSize+1);	/* fix umr here */
 
 	if(uiDecompressedSize > ReceivedPackedSize) // if packed is compressed
 	{
