@@ -33,6 +33,9 @@ SMT_RESIST_DISPEL - check if it is used
 - make a general way of adidng threat to targets. Right now unit.cpp->addaura:AttackReaction makes this move but it is not right
 - paladin - illumination - nasty spell. Started workin on it but just delayed it for a while
 - make Fishing chair item spell work. Should spawn a chair and auto sits you in it. While your fishing.
+- not every creature have same speed, implement creature base speed at least for movement maybe for run too
+- elemental creatures do not have fizical attack but magic type, add dmg type to db load
+- some creatures need to fly (is this made already ? )
 
 ==========================================================================
 ! BUGS !
@@ -55,8 +58,10 @@ Zack - test my shit :
 - don't let rogues stealth with dots
 - add old combat (again)
 - ai_agents fillup
-- targetype checking (especially the player type checking)
 - ai spell cooldown when not known
+
+INSERT INTO totemspells (spellId, spellToCast1, spellToCast2, spellToCast3) VALUES (2894, 32982, 0, 0)
+update creature_proto set scale=2 where entry=15439
 
 ==========================================================================
 Capt - test my shit :

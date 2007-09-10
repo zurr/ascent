@@ -843,8 +843,8 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 								uint32 AP_owerride=GetAP() + spellInfo->EffectBasePoints[0]+1;
 								float dmg = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
 								SpellEntry *sp_for_the_logs = sSpellStore.LookupEntry(spellId);
-								Strike(victim,NORMAL_DAMAGE,sp_for_the_logs,dmg,0,0,true);
-								Strike(victim,NORMAL_DAMAGE,sp_for_the_logs,dmg,0,0,true);
+								Strike(victim,MELEE,sp_for_the_logs,dmg,0,0,true);
+								Strike(victim,MELEE,sp_for_the_logs,dmg,0,0,true);
 								//nothing else to be done for this trigger
 								continue;
 							}break;
@@ -1026,7 +1026,8 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* victim)
 			else
 			{
 				SpellEntry	*ability=sSpellStore.LookupEntry((*i2).m_spellId);
-				victim->Strike(this,(*i2).m_school,ability,0,0,(*i2).m_damage, true);
+//				victim->Strike(this,(*i2).m_school,ability,0,0,(*i2).m_damage, true);
+				victim->Strike(this,RANGED,ability,0,0,(*i2).m_damage, true);
 			}
 		}
 	}
@@ -4191,3 +4192,40 @@ void Unit::SetFacing(float newo)
 	data << (uint32)0; //unk
 	SendMessageToSet( &data, false );
 }
+
+//guardians are temporary spawn that will inherit master faction and will folow them. Apart from that they have their own mind
+Unit* Unit::create_guardian(uint32 guardian_entry,uint32 duration,float angle)
+{
+	CreatureProto * proto = CreatureProtoStorage.LookupEntry(guardian_entry);
+	CreatureInfo * info = CreatureNameStorage.LookupEntry(guardian_entry);
+	if(!proto || !info)
+	{
+		sLog.outDetail("Warning : Missing summon creature template %u !",guardian_entry);
+		return NULL;
+	}
+	float m_fallowAngle=angle;
+	float x = GetPositionX()+(3*(cosf(m_fallowAngle+GetOrientation())));
+	float y = GetPositionY()+(3*(sinf(m_fallowAngle+GetOrientation())));
+	float z = GetPositionZ();
+	Creature * p = GetMapMgr()->CreateCreature();
+	p->SetInstanceID(GetMapMgr()->GetInstanceID());
+	p->Load(proto, x, y, z);
+	p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, GetGUID());
+    p->SetUInt64Value(UNIT_FIELD_CREATEDBY, GetGUID());
+    p->SetZoneId(GetZoneId());
+	p->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE,GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+	p->_setFaction();
+
+	p->GetAIInterface()->Init(p,AITYPE_PET,MOVEMENTTYPE_NONE,this);
+	p->GetAIInterface()->SetUnitToFollow(this);
+	p->GetAIInterface()->SetUnitToFollowAngle(m_fallowAngle);
+	p->GetAIInterface()->SetFollowDistance(3.0f);
+
+	p->PushToWorld(GetMapMgr());
+
+	sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, duration, 1,0);
+
+	return p;//lol, will compiler make the pointer conversion ?
+
+}
+

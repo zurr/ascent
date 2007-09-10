@@ -3156,91 +3156,32 @@ void AIInterface::AddSpellCooldown(SpellEntry * pSpell, AI_Spell * sp)
 //we only cast once a spell and we will set his health and resistances. Note that this can be made with db too !
 void AIInterface::Event_Summon_EE_totem(uint32 summon_duration)
 {
-	return; //disabled until tested
-	uint32 cr_entry=329;
-	CreatureProto * proto = CreatureProtoStorage.LookupEntry(cr_entry);
-	CreatureInfo * info = CreatureNameStorage.LookupEntry(cr_entry);
-	if(!proto || !info)
+	Unit *ourslave=m_Unit->create_guardian(329,summon_duration,-M_PI*2);
+	if(ourslave)
 	{
-		sLog.outDetail("Warning : Missing summon creature template %u !",cr_entry);
-		return;
+		static_cast<Creature*>(ourslave)->ResistanceModPct[NATURE_DAMAGE]=100;//we should be imune to nature dmg. This can be also set in db
+		/*
+		- Earth Stun (37982)
+		- taunt
+		*/
 	}
-	float m_fallowAngle=-M_PI*2;
-	float x = m_Unit->GetPositionX()+(3*(cosf(m_fallowAngle+m_Unit->GetOrientation())));
-	float y = m_Unit->GetPositionY()+(3*(sinf(m_fallowAngle+m_Unit->GetOrientation())));
-	float z = m_Unit->GetPositionZ();
-	Creature * p = m_Unit->GetMapMgr()->CreateCreature();
-	p->SetInstanceID(m_Unit->GetMapMgr()->GetInstanceID());
-	p->Load(proto, x, y, z);
-	p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_Unit->GetGUID());
-    p->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_Unit->GetGUID());
-    p->SetZoneId(m_Unit->GetZoneId());
-	p->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE,m_Unit->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
-	p->_setFaction();
-
-	p->GetAIInterface()->Init(p,AITYPE_PET,MOVEMENTTYPE_NONE,m_Unit);
-	p->GetAIInterface()->SetUnitToFollow(m_Unit);
-	p->GetAIInterface()->SetUnitToFollowAngle(m_fallowAngle);
-	p->GetAIInterface()->SetFollowDistance(3.0f);
-
-	p->PushToWorld(m_Unit->GetMapMgr());
-
-	sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, summon_duration, 1,0);
-
-	/*
-	- also : select * from dbc_spell where name like "%Earth Shock%"
-	- also : select * from dbc_spell where name like "%Earth Rumble"
-	- maybe : Earth Shield (32734), Earth Stun (37982)
-	- taunt
-	- imune to nature magic
-	*/
 }
 
 //we only cast once a spell and we will set his health and resistances. Note that this can be made with db too !
 void AIInterface::Event_Summon_FE_totem(uint32 summon_duration)
 {
-	return; //disabled until tested
 	//timer should not reach this value thus not cast this spell again
 	m_totemspelltimer = 0xEFFFFFFF;
 	//creatures do not support PETs and the spell uses that effect so we force a summon guardian thing
-	uint32 cr_entry=575;
-	CreatureProto * proto = CreatureProtoStorage.LookupEntry(cr_entry);
-	CreatureInfo * info = CreatureNameStorage.LookupEntry(cr_entry);
-	if(!proto || !info)
+	Unit *ourslave=m_Unit->create_guardian(575,summon_duration,-M_PI*2);
+	if(ourslave)
 	{
-		sLog.outDetail("Warning : Missing summon creature template %u !",cr_entry);
-		return;
+		static_cast<Creature*>(ourslave)->ResistanceModPct[FIRE_DAMAGE]=100;//we should be imune to fire dmg. This can be also set in db
+		/*
+		- also : select * from dbc_spell where name like "%fire blast%"
+		- also : select * from dbc_spell where name like "%fire nova"
+		*/
 	}
-	float m_fallowAngle=-M_PI*2;
-	float x = m_Unit->GetPositionX()+(3*(cosf(m_fallowAngle+m_Unit->GetOrientation())));
-	float y = m_Unit->GetPositionY()+(3*(sinf(m_fallowAngle+m_Unit->GetOrientation())));
-	float z = m_Unit->GetPositionZ();
-	Creature * p = m_Unit->GetMapMgr()->CreateCreature();
-	p->SetInstanceID(m_Unit->GetMapMgr()->GetInstanceID());
-	p->Load(proto, x, y, z);
-	p->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_Unit->GetGUID());
-    p->SetUInt64Value(UNIT_FIELD_CREATEDBY, m_Unit->GetGUID());
-    p->SetZoneId(m_Unit->GetZoneId());
-	p->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE,m_Unit->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
-	p->_setFaction();
-
-	p->GetAIInterface()->Init(p,AITYPE_PET,MOVEMENTTYPE_NONE,m_Unit);
-	p->GetAIInterface()->SetUnitToFollow(m_Unit);
-	p->GetAIInterface()->SetUnitToFollowAngle(m_fallowAngle);
-	p->GetAIInterface()->SetFollowDistance(3.0f);
-
-	p->PushToWorld(m_Unit->GetMapMgr());
-
-	sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, summon_duration, 1,0);
-
-	/*
-	- Should cast fireshield on self based on level of creature : select * from dbc_spell where name like "%fire sh%". Cast once only. Myabe use auras field here ?
-	- also : select * from dbc_spell where name like "%fire blast%"
-	- also : select * from dbc_spell where name like "%fire nova"
-	- maybe : fire ward (543), hellfire (2951), Fire Breath (37985)
-	- deal fire dmg
-	- imune to fire
-	*/
 }
 
 bool isGuard(uint32 id)

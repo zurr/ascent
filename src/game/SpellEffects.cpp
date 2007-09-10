@@ -3397,11 +3397,19 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 	uint32 entry = m_spellInfo->EffectMiscValue[i];
 
 	CreatureInfo* ci = CreatureNameStorage.LookupEntry(entry);
-	if(!ci) return;
+	if(!ci)
+	{
+		sLog.outDebug("Missing totem creature entry : %u \n",entry);
+		return;
+	}
 
 	// Obtain the spell we will be casting.
 	SpellEntry * TotemSpell = ObjectMgr::getSingleton().GetTotemSpell(m_spellInfo->Id);
-	if(TotemSpell == 0) return;
+	if(TotemSpell == 0) 
+	{
+		sLog.outDebug("Totem %u does not have any spells to cast, exiting\n",entry);
+		return;
+	}
 
 	Creature * pTotem = p_caster->GetMapMgr()->CreateCreature();
 	

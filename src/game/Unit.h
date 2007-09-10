@@ -724,6 +724,8 @@ public:
 	void castSpell(Spell * pSpell);
 	void InterruptSpell();
    
+	Unit* create_guardian(uint32 guardian_entry,uint32 duration,float angle);//guardians are temporary spawn that will inherit master faction and will folow them. Apart from that they have their own mind
+
 	uint32 m_addDmgOnce;
 	Creature *m_TotemSlots[4];
 	uint32 m_ObjectSlots[4];
