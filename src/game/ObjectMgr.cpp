@@ -2049,12 +2049,12 @@ void ObjectMgr::LoadTrainers()
 				{
 					teachspell = spellInfo->EffectTriggerSpell[k];
 					tr->SpellList[i]->TeachSpellID = spellInfo->EffectTriggerSpell[k];
-					break;
+//					break;
 				}
 				else if(spellInfo->Effect[k]==SPELL_EFFECT_SKILL_STEP)
 				{
 					Profession_ranking = spellInfo->EffectBasePoints[k]+1;
-					break;
+//					break;
 				}
 			}
 			if(teachspell)

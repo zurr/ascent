@@ -2814,11 +2814,6 @@ bool Player::LoadFromDB(uint32 guid)
 	if(GetGuildId())
 		SetUInt32Value(PLAYER_GUILD_TIMESTAMP, time(NULL));
 
-// "I'm so poor i can't afforg GMs to fix my player problems"
-// DEV, PLEASE PIMP MY RIDE
-//	if(HasSkillLine(SKILL_RIDING))
-//		ModSkillMax(SKILL_RIDING,GetSkillMax(SKILL_RIDING),GetSkillMax(SKILL_RIDING));
-
 	return true;
 #undef get_next_field
    

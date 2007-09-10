@@ -486,9 +486,11 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 							store_buff->m_unitTarget = p_caster->GetSelection();
 						else if(u_caster)
 						{
-							if(u_caster->getAttackTarget())
-								store_buff->m_unitTarget = u_caster->getAttackTarget();
-							else if(u_caster->GetAIInterface()->getAITargetsCount())
+							if(isAttackable(u_caster,u_caster->GetAIInterface()->GetNextTarget()))
+							{
+								store_buff->m_unitTarget = u_caster->GetAIInterface()->GetNextTarget()->GetGUID();
+							}
+							if(u_caster->GetAIInterface()->getAITargetsCount())
 							{
 								//try to get most hated creature
 								TargetMap *m_aiTargets = u_caster->GetAIInterface()->GetAITargets();
@@ -498,7 +500,9 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								{
 									if( /*m_caster->GetMapMgr()->GetUnit(itr->first->GetGUID()) &&*/ itr->first->GetMapMgr() == m_caster->GetMapMgr() && 
 										itr->first->isAlive() &&
-										m_caster->GetDistanceSq(itr->first) <= rsq )
+										m_caster->GetDistanceSq(itr->first) <= rsq &&
+										isAttackable(u_caster,itr->first)
+										)
 									{
 										store_buff->m_unitTarget=itr->first->GetGUID();
 										break;

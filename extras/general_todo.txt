@@ -50,6 +50,9 @@ SMT_RESIST_DISPEL - check if it is used
 - a lot of players report that 1 dmg thing(glnacing blow). Recheck it.
 - sometimes mount is removed only visually and not the aura itself. (sitting chairs...)
 - you can use instant canst/nomana spells from mounts= baaaad.
+- creatures keep yelling no content messgs
+- horde does not have PVP flag and A does
+- rogues can exit combat instantly, this is bad i think.
 
 ==========================================================================
 Zack - test my shit :
@@ -59,9 +62,6 @@ Zack - test my shit :
 - add old combat (again)
 - ai_agents fillup
 - ai spell cooldown when not known
-
-INSERT INTO totemspells (spellId, spellToCast1, spellToCast2, spellToCast3) VALUES (2894, 32982, 0, 0)
-update creature_proto set scale=2 where entry=15439
 
 ==========================================================================
 Capt - test my shit :

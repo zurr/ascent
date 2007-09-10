@@ -196,6 +196,7 @@ void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 {
 	if(!_player->IsInWorld()) return;
 	uint32 skill_line;
+	uint32 points_remaining=_player->GetUInt32Value(PLAYER_CHARACTER_POINTS2);
 	recv_data >> skill_line;
 
 	// Cheater detection
@@ -206,4 +207,16 @@ void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 	
 	// Finally, remove the skill line.
 	_player->_RemoveSkillLine(skill_line);
+
+	//added by Zack : This is probably wrong or already made elsewhere : restore skill learnability
+	if(points_remaining==_player->GetUInt32Value(PLAYER_CHARACTER_POINTS2))
+	{
+		//we unlearned a kill so we enable a new one to be learned
+		skilllineentry *sk=sSkillLineStore.LookupEntry(skill_line);
+		if(!sk)
+			return;
+		if(sk->type==SKILL_TYPE_PROFESSION && points_remaining<2)
+			_player->SetUInt32Value(PLAYER_CHARACTER_POINTS2,points_remaining+1);
+	}
+
 }

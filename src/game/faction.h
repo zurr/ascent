@@ -150,6 +150,10 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 			return false;
 		if(objB->HasFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_MAKE_CHAR_UNTOUCHABLE))
 			return false;
+		//added by Zack : we cannot attack steathed units. Maybe checked in other palces too ?
+		//!! warning, this presumes that objA is attacking ObjB
+		if(static_cast<Unit *>(objB)->IsStealth())
+			return false;
 	}
 
 	if(objA->IsPlayer() && objB->IsPlayer())

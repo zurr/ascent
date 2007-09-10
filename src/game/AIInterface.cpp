@@ -82,7 +82,6 @@ AIInterface::AIInterface()
 	m_formationLinkSqlId = 0;
 	m_currentHighestThreat = 0;
 
-	b_isAttackableOld = false;
 	disable_melee = false;
 	next_spell_time = 0;
 	m_hasWaypointEvents = false;
@@ -455,17 +454,13 @@ void AIInterface::Update(uint32 p_time)
 				(m_nextTarget && 
 					(!m_Unit->GetMapMgr()->GetUnit(m_nextTarget->GetGUID()) || 
 					!m_nextTarget->isAlive() ||
-					!IsInrange(m_Unit,m_nextTarget,pSpell->GetRadius(0)) || isAttackable(m_Unit, m_nextTarget) != b_isAttackableOld)))
+					!IsInrange(m_Unit,m_nextTarget,pSpell->GetRadius(0)) ||
+					!isAttackable(m_Unit, m_nextTarget))))
 			{
 				//something happend to our target, pick another one
 				pSpell->GenerateTargets(&targets);
 				if(targets.m_targetMask & TARGET_FLAG_UNIT)
-				{
 					m_nextTarget = m_Unit->GetMapMgr()->GetUnit(targets.m_unitTarget);
-					// used to determine when the totem should stop affecting the target
-					if(m_nextTarget)
-						b_isAttackableOld = true;
-				}
 				else m_nextTarget=NULL;//sorry but could not find a target
 			}
 			if(m_nextTarget)
