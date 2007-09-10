@@ -4231,7 +4231,8 @@ The crit constant is class and level dependent and for a level 70 character as f
 	float rcr=tmp+CalcRating(9);
 	SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE,min(rcr,95.0));
 
-	spellcritperc = (GetUInt32Value(UNIT_FIELD_STAT3) / 28.0f) + this->GetSpellCritFromSpell();
+	//TODO: Correct spell crit chance calc.
+	spellcritperc = (GetUInt32Value(UNIT_FIELD_STAT3) / 60.0f) + this->GetSpellCritFromSpell();
 	spellcritperc+=CalcRating(10);
 	UpdateChanceFields();
 }

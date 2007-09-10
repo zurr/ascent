@@ -1292,17 +1292,17 @@ void World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation[0]=868;
 		sp->EffectSpellGroupRelation[1]=868;
 	}
-	//mage: Spell Power
-	sp = sSpellStore.LookupEntry(35581);
-	if(sp)	
-	{
-		sp->EffectSpellGroupRelation[0]=5775504;
-	}
-	sp = sSpellStore.LookupEntry(35578);
-	if(sp)	
-	{
-		sp->EffectSpellGroupRelation[0]=5775504;
-	}
+	////mage: Spell Power
+	//sp = sSpellStore.LookupEntry(35581);
+	//if(sp)	
+	//{
+	//	sp->EffectSpellGroupRelation[0]=5775504;
+	//}
+	//sp = sSpellStore.LookupEntry(35578);
+	//if(sp)	
+	//{
+	//	sp->EffectSpellGroupRelation[0]=5775504;
+	//}
 	//mage: Blazing Speed
 	sp = sSpellStore.LookupEntry(31641); 
 	if(sp)	sp->EffectTriggerSpell[0]=31643;
