@@ -8446,7 +8446,7 @@ void Player::_AddLanguages(bool All)
 	{
 		for(uint32 i = 0; skills[i] != 0; ++i)
 		{
-			if(!m_skills[i])
+			if(!skills[i])
 				break;
 
             sk.Reset(skills[i]);
