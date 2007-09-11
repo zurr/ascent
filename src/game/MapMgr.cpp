@@ -953,8 +953,11 @@ void MapMgr::_UpdateObjects()
 			{
 				count = static_cast<Item*>(pObj)->BuildValuesUpdateBlockForPlayer(&update, pOwner);
 				// send update to owner
-				pOwner->PushUpdateData(&update, count);
-				update.clear();
+				if(count)
+				{
+					pOwner->PushUpdateData(&update, count);
+					update.clear();
+				}
 			}
 		} else {
 			if(pObj->IsInWorld())
@@ -964,8 +967,11 @@ void MapMgr::_UpdateObjects()
 				{
 					// need to be different! ;)
 					count = pObj->BuildValuesUpdateBlockForPlayer(&update, static_cast<Player*>(pObj));
-					((Player*)pObj)->PushUpdateData(&update, count);
-					update.clear();
+					if(count)
+					{
+						((Player*)pObj)->PushUpdateData(&update, count);
+						update.clear();
+					}
 				}
 
 				if(pObj->IsUnit() && pObj->HasUpdateField(UNIT_FIELD_HEALTH))
