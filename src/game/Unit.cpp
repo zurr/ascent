@@ -3355,12 +3355,12 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 		if(IsPlayer())
 		{
 			m_runSpeed = PLAYER_NORMAL_RUN_SPEED*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
-			m_runSpeed += (m_speedModifier<0) ? (PLAYER_NORMAL_RUN_SPEED*((float)m_speedModifier)) : 0;
+			m_runSpeed += (m_speedModifier<0) ? (PLAYER_NORMAL_RUN_SPEED*((float)m_speedModifier)/100.0f) : 0;
 		}
 		else
 		{
 			m_runSpeed = MONSTER_NORMAL_RUN_SPEED*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
-			m_runSpeed += (m_speedModifier<0) ? (PLAYER_NORMAL_RUN_SPEED*((float)m_speedModifier)) : 0;
+			m_runSpeed += (m_speedModifier<0) ? (PLAYER_NORMAL_RUN_SPEED*((float)m_speedModifier)/100.0f) : 0;
 		}
 	}
 
