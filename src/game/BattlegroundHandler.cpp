@@ -64,7 +64,7 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
 			t = BATTLEGROUND_WARSUNG_GULCH;
 	}
 
-    //BattlegroundManager.HandleBattlegroundListPacket(this, t);
+    BattlegroundManager.HandleBattlegroundListPacket(this, t);
 }
 
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket &recv_data)

@@ -113,7 +113,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
-	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
+	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f && _player->m_runSpeed < 50.0f)	/*50*50*/
 	{
 		sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 		Disconnect();

@@ -108,6 +108,10 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 
 	if(((id == 3646 && plr->GetTeam() == 0) || (id == 3647 && plr->GetTeam() == 1)) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetGUIDLow()))
 	{
+		/* remove the bool from the player so the flag doesn't drop */
+		m_flagHolders[plr->GetTeam()] = 0;
+		plr->m_bgHasFlag = 0;
+
 		/* remove flag aura from player */
 		plr->RemoveAura(23333+(plr->GetTeam() * 2));
 
@@ -127,8 +131,6 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 			plr->m_bgScore.BonusHonor += 82;
 			HonorHandler::AddHonorPointsToPlayer(plr, 82);
 		}
-		m_flagHolders[plr->GetTeam()] = 0;
-		plr->m_bgHasFlag = 0;
 
 		m_scores[plr->GetTeam()]++;
 		if(m_scores[plr->GetTeam()] == 3)
@@ -184,8 +186,8 @@ void WarsongGulch::HookFlagDrop(Player * plr, GameObject * obj)
 	if(m_dropFlags[plr->GetTeam()] != obj)
 	{
 		/* are we returning it? */
-		if( (obj->GetEntry() == 179830 && plr->GetTeam() == 0) ||
-			(obj->GetEntry() == 179831 && plr->GetTeam() == 1) )
+		if( (obj->GetEntry() == 179785 && plr->GetTeam() == 0) ||
+			(obj->GetEntry() == 179786 && plr->GetTeam() == 1) )
 		{
 			uint32 x = plr->GetTeam() ? 0 : 1;
 			m_dropFlags[x]->RemoveFromWorld();

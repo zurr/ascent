@@ -888,9 +888,9 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 	m_players[plr->GetTeam()].erase(plr);
 	DistributePacketToAll(&data);
 
-	plr->m_bg = 0;
 	memset(&plr->m_bgScore, 0, sizeof(BGScore));
 	OnRemovePlayer(plr);
+	plr->m_bg = 0;
 
 	/* are we in the group? */
 	if(plr->GetGroup() == m_groups[plr->GetTeam()])

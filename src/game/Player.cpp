@@ -7583,6 +7583,8 @@ void Player::SaveAuras(stringstream &ss)
 			case 17116: // Natures Swiftness
 			case 34936: // Backlash
 			case 35076: // Blessing of A'dal
+			case 23333:	// WSG
+			case 23335:	// WSG
 				skip = true;
 				break;
 			}
