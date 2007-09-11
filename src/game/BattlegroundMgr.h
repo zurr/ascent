@@ -308,7 +308,7 @@ public:
 	inline bool HasFreeSlots(uint32 Team) { m_mainLock.Acquire(); bool res = ((m_players[Team].size() + m_pendPlayers[Team].size()) < m_playerCountPerTeam); m_mainLock.Release(); return res; }
 
 	/* Add Player */
-	void AddPlayer(Player * plr);
+	void AddPlayer(Player * plr, uint32 team);
 	virtual void OnAddPlayer(Player * plr) = 0;
 
 	/* Remove Player */

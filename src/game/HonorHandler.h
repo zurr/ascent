@@ -31,6 +31,7 @@ public:
 	static void PerformStartupTasks();
 
 	static void AddHonorPointsToPlayer(Player *pPlayer, uint32 uAmount);
+	static void AddArenaPointsToPlayer(Player *pPlayer, uint32 uAmount);
 	static void OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim);
 	static time_t GetNextUpdateTime();
 	

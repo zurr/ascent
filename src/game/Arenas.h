@@ -51,4 +51,44 @@ public:
 	void HookFlagDrop(Player * plr, GameObject * obj) {}
 	void HookFlagStand(Player * plr, GameObject * obj) {}
 	void HookOnAreaTrigger(Player * plr, uint32 id);
+
+	int32 GetFreeTeam()
+	{
+		uint32 c0 = m_players[0].size() + m_pendPlayers[0].size();
+		uint32 c1 = m_players[1].size() + m_pendPlayers[1].size();
+		if(m_started) return -1;
+
+		/* Grab the team with the least players. */
+		if(c0 >= m_playerCountPerTeam)
+		{
+			/* Team 0 is full, try team 1 */
+			if(c1 >= m_playerCountPerTeam)
+				return -1;
+			else
+				return 1;
+		}
+		else if(c1 >= m_playerCountPerTeam)
+		{
+			/* Team 1 is full, try team 0 */
+			if(c0 >= m_playerCountPerTeam)
+				return -1;
+			else
+				return 0;
+		}
+		else
+		{
+			/* Neither team is full. Pick the one with the least slots */
+			if(c0 > c1)
+			{
+				/* 0 has more players than 1 */
+				return 1;
+			}
+			else
+			{
+				/* 1 has more players than 0 */
+				return 0;
+			}
+		}
+		/* We shouldn't reach here. */
+	}
 };

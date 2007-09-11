@@ -358,6 +358,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_sentTeleportPosition.ChangeCoords(999999.0f,999999.0f,999999.0f);
 	m_speedChangeCounter=1;
 	memset(&m_bgScore,0,sizeof(BGScore));
+	m_arenaPoints = 0;
 }
 
 
@@ -2324,9 +2325,13 @@ bool Player::LoadFromDB(uint32 guid)
 	}
 
 	if(myRace->team_id == 7)
-		m_team = 0;
+	{
+		m_bgTeam = m_team = 0;
+	}
 	else
-		m_team = 1;
+	{
+		m_bgTeam = m_team = 1;
+	}
 
 	SetNoseLevel();
 

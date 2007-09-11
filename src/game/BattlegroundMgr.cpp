@@ -199,17 +199,43 @@ void CBattlegroundManager::EventQueueUpdate()
 							}
 
 							Log.Debug("BattlegroundMgr", "Trying player %u", plr->GetGUIDLow());
-							if(bg->HasFreeSlots(plr->GetTeam()) && bg->CanPlayerJoin(plr))
+							/* Arenas are FFA battlegrounds, you can kill people of your same faction. */
+							if(i >= BATTLEGROUND_ARENA_2V2 && i <= BATTLEGROUND_ARENA_5V5)
 							{
-								plr->m_bgIsQueued = false;
-								if(GetLevelGrouping(plr->getLevel()) == j)
-									bg->AddPlayer(plr);
+								/* Add a player if we have free slots. */
+								Arena * arena = ((Arena*)bg);
+								int32 team;
+								if( (team = arena->GetFreeTeam()) != -1 )
+								{
+									/* Free slots, w00t */
+									plr->m_bgIsQueued = false;
+									if(GetLevelGrouping(plr->getLevel()) == j)
+									{
+										plr->m_bgTeam=team;
+										bg->AddPlayer(plr, (uint32)team);
+									}
 
-								it2->second.erase(it3);
-								Log.Debug("BattlegroundMgr", "Added!");
+									it2->second.erase(it3);
+									Log.Debug("BattlegroundMgr", "Added!");
+								}
+								else
+                                    Log.Debug("BattlegroundMgr", "Fail.");
 							}
 							else
-								Log.Debug("BattlegroundMgr", "Fail.");
+							{
+								/* PvP Battlegrounds are Faction (Team) Based. */
+								if(bg->HasFreeSlots(plr->GetTeam()) && bg->CanPlayerJoin(plr))
+								{
+									plr->m_bgIsQueued = false;
+									if(GetLevelGrouping(plr->getLevel()) == j)
+										bg->AddPlayer(plr, plr->GetTeam());
+
+									it2->second.erase(it3);
+									Log.Debug("BattlegroundMgr", "Added!");
+								}
+								else
+									Log.Debug("BattlegroundMgr", "Fail.");
+							}
 						}
 
 						/* No players left? */
@@ -229,59 +255,97 @@ void CBattlegroundManager::EventQueueUpdate()
 				{
 					if(CanCreateInstance(i, j))
 					{
-						// No free instances.
-						// Do we have enough players to create a new instance?
-						for(it4 = it2->second.begin(); it4 != it2->second.end();)
+						/* Arenas are FFA battlegrounds, you can kill people of your same faction. */
+						if(i >= BATTLEGROUND_ARENA_2V2 && i <= BATTLEGROUND_ARENA_5V5)
 						{
-							it3 = it4;
-							++it4;
-
-							plr = objmgr.GetPlayer(*it3);
-							if(!plr || GetLevelGrouping(plr->getLevel()) != j)
+							if(it2->second.size() >= 2)
 							{
-								it2->second.erase(it3);
-								continue;
-							}
+								int32 team;
+								/* 2 players to start bg */
+								Log.Debug("BattlegroundManager", "Enough players to start battleground type %u for level group %u. Creating.", i, j);
+								/* Woot! Let's create a new instance! */
+								Arena * arena;
+								bg = CreateInstance(i, j);
+								arena = ((Arena*)bg);
 
-							tempPlayerVec[plr->GetTeam()].push_back(plr);
-						}
-
-						if(tempPlayerVec[0].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG &&
-							tempPlayerVec[1].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG)
-						{
-							Log.Debug("BattlegroundManager", "Enough players to start battleground type %u for level group %u. Creating.", i, j);
-							/* Woot! Let's create a new instance! */
-							bg = CreateInstance(i, j);
-
-							/* Dump all the players into the bg */
-							for(k=0;k<2;++k)
-							{
-								for(it6=tempPlayerVec[k].begin(); it6 != tempPlayerVec[k].end(); ++it6)
+								for(it4 = it2->second.begin(); it4 != it2->second.end();)
 								{
-									Log.Debug("BattlegroundManager", "Trying to add player %u to bg", (*it6)->GetGUIDLow());
-									if(!bg->HasFreeSlots(k) || !bg->CanPlayerJoin(*it6))
+									it3 = it4;
+									++it4;
+
+									plr = objmgr.GetPlayer(*it3);
+									if(!plr || GetLevelGrouping(plr->getLevel()) != j)
 									{
-										Log.Debug("BattlegroundManager", "FAIL!", (*it6)->GetGUIDLow());
-										break;
+										it2->second.erase(it3);
+										continue;
 									}
 
-									bg->AddPlayer(*it6);
-
-									/* This is gonna be costly. :P */
-									for(it4 = it2->second.begin(); it4 != it2->second.end(); ++it4)
+									if( (team = arena->GetFreeTeam()) != -1 )
 									{
-										if((*it4) == (*it6)->GetGUIDLow())
-										{
-											it2->second.erase(it4);
-											break;
-										}
+										plr->m_bgTeam=team;
+										bg->AddPlayer(plr,team);
+										it2->second.erase(it3);
 									}
 								}
 							}
 						}
+						else
+						{
+							/* PvP Battlegrounds are Faction (Team) Based. */
+							// No free instances.
+							// Do we have enough players to create a new instance?
+							for(it4 = it2->second.begin(); it4 != it2->second.end();)
+							{
+								it3 = it4;
+								++it4;
 
-						tempPlayerVec[0].clear();
-						tempPlayerVec[1].clear();
+								plr = objmgr.GetPlayer(*it3);
+								if(!plr || GetLevelGrouping(plr->getLevel()) != j)
+								{
+									it2->second.erase(it3);
+									continue;
+								}
+
+								tempPlayerVec[plr->GetTeam()].push_back(plr);
+							}
+
+							if(tempPlayerVec[0].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG &&
+								tempPlayerVec[1].size() >= MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG)
+							{
+								Log.Debug("BattlegroundManager", "Enough players to start battleground type %u for level group %u. Creating.", i, j);
+								/* Woot! Let's create a new instance! */
+								bg = CreateInstance(i, j);
+
+								/* Dump all the players into the bg */
+								for(k=0;k<2;++k)
+								{
+									for(it6=tempPlayerVec[k].begin(); it6 != tempPlayerVec[k].end(); ++it6)
+									{
+										Log.Debug("BattlegroundManager", "Trying to add player %u to bg", (*it6)->GetGUIDLow());
+										if(!bg->HasFreeSlots(k) || !bg->CanPlayerJoin(*it6))
+										{
+											Log.Debug("BattlegroundManager", "FAIL!", (*it6)->GetGUIDLow());
+											break;
+										}
+
+										bg->AddPlayer(*it6, (*it6)->GetTeam());
+
+										/* This is gonna be costly. :P */
+										for(it4 = it2->second.begin(); it4 != it2->second.end(); ++it4)
+										{
+											if((*it4) == (*it6)->GetGUIDLow())
+											{
+												it2->second.erase(it4);
+												break;
+											}
+										}
+									}
+								}
+							}
+
+							tempPlayerVec[0].clear();
+							tempPlayerVec[1].clear();
+						}						
 					}
 				}
 
@@ -349,7 +413,7 @@ void CBattlegroundManager::EventQueueUpdate()
 									plr->m_bgIsQueued = false;
 									if(GetLevelGrouping(plr->getLevel()) == j)
 									{
-										itr->second->AddPlayer(plr);
+										itr->second->AddPlayer(plr, plr->GetTeam());
 									}
 								}
 							}
@@ -550,12 +614,12 @@ void CBattleground::UpdatePvPData()
 	}
 }
 
-void CBattleground::AddPlayer(Player * plr)
+void CBattleground::AddPlayer(Player * plr, uint32 team)
 {
 	m_mainLock.Acquire();
 
 	/* This is called when the player is added, not when they port. So, they're essentially still queued, but not inside the bg yet */
-	m_pendPlayers[plr->GetTeam()].insert(plr->GetGUIDLow());
+	m_pendPlayers[team].insert(plr->GetGUIDLow());
 
 	/* Send a packet telling them that they can enter */
 	BattlegroundManager.SendBattlefieldStatus(plr, 2, m_type, m_id, 120000, m_mapMgr->GetMapId());		// You will be removed from the queue in 2 minutes.
@@ -570,11 +634,12 @@ void CBattleground::AddPlayer(Player * plr)
 void CBattleground::RemovePendingPlayer(Player * plr)
 {
 	m_mainLock.Acquire();
-	
-	m_pendPlayers[plr->GetTeam()].erase(plr->GetGUIDLow());
+	m_pendPlayers[plr->m_bgTeam].erase(plr->GetGUIDLow());
+
 	/* send a null bg update (so they don't join) */
 	BattlegroundManager.SendBattlefieldStatus(plr, 0, 0, 0, 0, 0);
 	plr->m_pendingBattleground =0;
+	plr->m_bgTeam=plr->GetTeam();
 
 	m_mainLock.Release();
 }
@@ -590,6 +655,9 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 		m_mainLock.Release();
 		return;
 	}
+
+	m_pendPlayers[plr->m_bgTeam].erase(plr->GetGUIDLow());
+	m_players[plr->m_bgTeam].insert(plr);
 
 	/* remove from any auto queue remove events */
 	sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
@@ -607,12 +675,10 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 		plr->m_bgEntryPointMap = plr->GetMapId();
 		plr->m_bgEntryPointInstance = plr->GetInstanceID();
 	
-		plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), GetStartingCoords(plr->GetTeam()));
+		plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), GetStartingCoords(plr->m_bgTeam));
 		BattlegroundManager.SendBattlefieldStatus(plr, 3, m_type, m_id, World::UNIXTIME - m_startTime, m_mapMgr->GetMapId());	// Elapsed time is the last argument
 	}
 
-	m_pendPlayers[plr->GetTeam()].erase(plr->GetGUIDLow());
-	m_players[plr->GetTeam()].insert(plr);
 	plr->m_pendingBattleground = 0;
 	plr->m_bg = this;
 	
@@ -630,7 +696,7 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 
 	/* add the player to the group */
 	if(!plr->GetGroup())
-		m_groups[plr->GetTeam()]->AddMember(plr->m_playerInfo, plr);
+		m_groups[plr->m_bgTeam]->AddMember(plr->m_playerInfo, plr);
 
 	if(!m_countdownStage)
 	{
@@ -854,7 +920,7 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 			data << Type;
 			data << uint16(0x1F90);
 			data << InstanceID;
-			data << uint8(plr->GetTeam());
+			data << uint8(plr->m_bgTeam);
 		}
 		
 		data << Status;
@@ -885,7 +951,7 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 	data << plr->GetGUID();
 
 	m_mainLock.Acquire();
-	m_players[plr->GetTeam()].erase(plr);
+	m_players[plr->m_bgTeam].erase(plr);
 	DistributePacketToAll(&data);
 
 	memset(&plr->m_bgScore, 0, sizeof(BGScore));
@@ -893,7 +959,7 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 	plr->m_bg = 0;
 
 	/* are we in the group? */
-	if(plr->GetGroup() == m_groups[plr->GetTeam()])
+	if(plr->GetGroup() == m_groups[plr->m_bgTeam])
 		plr->GetGroup()->RemovePlayer(plr->m_playerInfo, plr, true);
 
 	/* revive the player if he is dead */
@@ -921,6 +987,7 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 		sEventMgr.AddEvent(this, &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 600000, 1,0);
 	}
 
+	plr->m_bgTeam=plr->GetTeam();
 	m_mainLock.Release();
 }
 
@@ -1136,7 +1203,7 @@ void CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, uint32 
 
 void CBattleground::QueuePlayerForResurrect(Player * plr)
 {
-	m_resurrectQueue[plr->GetTeam()].insert(plr->GetGUIDLow());
+	m_resurrectQueue[plr->m_bgTeam].insert(plr->GetGUIDLow());
 }
 
 #define RESURRECT_SPELL 21074   // Spirit Healer Res

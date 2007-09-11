@@ -40,6 +40,14 @@ void Arena::OnAddPlayer(Player * plr)
 	plr->m_deathVision = true;
 	plr->CastSpell(plr, ARENA_PREPARATION, true);
 	UpdatePlayerCounts();
+
+	/* Add the green/gold team flag */
+	Aura * aura = new Aura(sSpellStore.LookupEntry(plr->m_bgTeam+32724), -1, plr, plr);
+	plr->AddAura(aura);
+	
+	/* Set FFA PvP Flag */
+	if(!plr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
+		plr->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
 }
 
 void Arena::OnRemovePlayer(Player * plr)
@@ -48,17 +56,30 @@ void Arena::OnRemovePlayer(Player * plr)
 	plr->m_deathVision = false;
 	plr->RemoveAura(ARENA_PREPARATION);
 	UpdatePlayerCounts();
+	
+	plr->RemoveAura(plr->m_bgTeam+32724);
+	if(plr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP))
+		plr->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_FREE_FOR_ALL_PVP);
 }
 
 void Arena::HookOnPlayerKill(Player * plr, Unit * pVictim)
 {
 	if(pVictim->GetTypeId() != TYPEID_UNIT)
 		plr->m_bgScore.KillingBlows++;
+
+	int32 honorpoints = HonorHandler::CalculateHonorPointsForKill(plr, pVictim);
+	if(honorpoints>0)
+	{
+		/* add these points to his team */
+		for(set<Player*>::iterator itr = m_players[plr->m_bgTeam].begin(); itr != m_players[plr->m_bgTeam].end(); ++itr)
+			HonorHandler::AddArenaPointsToPlayer((*itr), honorpoints);
+	}
 }
 
 void Arena::HookOnHK(Player * plr)
 {
 	plr->m_bgScore.HonorableKills++;
+	
 }
 
 void Arena::HookOnPlayerDeath(Player * plr)
@@ -176,6 +197,9 @@ void Arena::OnStart()
 	}
 
 	m_started = true;
+
+	/* Incase all players left */
+	UpdatePlayerCounts();
 }
 
 void Arena::UpdatePlayerCounts()
@@ -187,7 +211,7 @@ void Arena::UpdatePlayerCounts()
 	for(uint32 i = 0; i < 2; ++i) {
 		for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr) {
 			if((*itr)->isAlive())
-				players[(*itr)->GetTeam()]++;
+				players[i]++;
 		}
 	}
 

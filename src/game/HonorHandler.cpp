@@ -41,6 +41,16 @@ void HonorHandler::AddHonorPointsToPlayer(Player *pPlayer, uint32 uAmount)
 	RecalculateHonorFields(pPlayer);
 }
 
+void HonorHandler::AddArenaPointsToPlayer(Player *pPlayer, uint32 uAmount)
+{
+	pPlayer->m_arenaPoints += uAmount;
+
+	pPlayer->HandleProc(PROC_ON_GAIN_EXPIERIENCE, pPlayer, NULL);
+	pPlayer->m_procCounter = 0;
+
+	RecalculateHonorFields(pPlayer);
+}
+
 time_t HonorHandler::GetNextUpdateTime()
 {
 	time_t ct = time(NULL);
@@ -115,7 +125,7 @@ void HonorHandler::OnPlayerKilledUnit(Player *pPlayer, Unit* pVictim)
 {
 	if(pVictim && (!pVictim->IsPlayer() || static_cast<Player*>(pVictim)->m_honorless))
 		return;
-    if(pVictim && pVictim->IsPlayer() && static_cast<Player*>(pVictim)->GetTeam() == pPlayer->GetTeam())
+    if(pVictim && pVictim->IsPlayer() && static_cast<Player*>(pVictim)->m_bgTeam == pPlayer->m_bgTeam)
         return;
 
 	// Calculate points
@@ -191,6 +201,7 @@ void HonorHandler::RecalculateHonorFields(Player *pPlayer)
 //	if(pPlayer->m_honorPoints < 0)
   //	  return;
 	pPlayer->SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, pPlayer->m_honorPoints);
+	pPlayer->SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, pPlayer->m_arenaPoints);
 }
 
 void HonorHandler::DailyFieldMove(Player *pPlayer)

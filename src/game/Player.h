@@ -1221,6 +1221,7 @@ public:
 	bool m_AutoAddMem;
 	void StopMirrorTimer(uint32 Type);
 	BGScore m_bgScore;
+	uint32 m_bgTeam;
 	void UpdateChanceFields();
 	//Honor Variables
 	uint32 m_honorToday;
@@ -1230,6 +1231,7 @@ public:
 	uint32 m_killsToday;
 	uint32 m_killsYesterday;
 	uint32 m_killsLifetime;
+	uint32 m_arenaPoints;
 	bool m_honorless;
 	uint32 m_lastSeenWeather;
 	set<Object*> m_visibleFarsightObjects;
