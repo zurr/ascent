@@ -2014,7 +2014,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
 	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
 	{
-		if(itr->second.Skill->type != SKILL_TYPE_LANGUAGE)
+		if(itr->first && itr->second.Skill->type != SKILL_TYPE_LANGUAGE)
 		{
 			ss << itr->first << ";"
 				<< itr->second.CurrentValue << ";"
@@ -2463,10 +2463,13 @@ bool Player::LoadFromDB(uint32 guid)
 				start = end + 1;
 
 				/* add the skill */
-                sk.Reset(v1);
-				sk.CurrentValue = v2;
-				sk.MaximumValue = v3;
-				m_skills.insert(make_pair(v1, sk));
+				if(v1)
+				{
+					sk.Reset(v1);
+					sk.CurrentValue = v2;
+					sk.MaximumValue = v3;
+					m_skills.insert(make_pair(v1, sk));
+				}
 			}
 		}
 		free(f);
@@ -8264,8 +8267,15 @@ void Player::_UpdateSkillFields()
 {
 	uint32 f = PLAYER_SKILL_INFO_1_1;
 	/* Set the valid skills */
-	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
+	for(SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
 	{
+		if(!itr->first)
+		{
+			SkillMap::iterator it2 = itr++;
+			m_skills.erase(it2);
+			continue;
+		}
+
 		ASSERT(f <= PLAYER_CHARACTER_POINTS1);
 		if(itr->second.Skill->type == SKILL_TYPE_PROFESSION)
 			SetUInt32Value(f++, itr->first | 0x10000);
@@ -8274,6 +8284,7 @@ void Player::_UpdateSkillFields()
 
 		SetUInt32Value(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
 		SetUInt32Value(f++, itr->second.BonusValue);
+		++itr;
 	}
 
 	/* Null out the rest of the fields */
@@ -8435,6 +8446,9 @@ void Player::_AddLanguages(bool All)
 	{
 		for(uint32 i = 0; skills[i] != 0; ++i)
 		{
+			if(!m_skills[i])
+				break;
+
             sk.Reset(skills[i]);
 			sk.MaximumValue = sk.CurrentValue = 300;
 			m_skills.insert( make_pair(skills[i], sk) );
