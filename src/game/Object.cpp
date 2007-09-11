@@ -252,19 +252,23 @@ void Object::BuildFieldUpdatePacket(ByteBuffer * buf, uint32 Index, uint32 Value
 
 uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer *data, Player *target)
 {
-	// returns: update count
-	*data << (uint8) UPDATETYPE_VALUES;		// update type == update
-
-	ASSERT(m_wowGuid.GetNewGuidLen());
-	*data << m_wowGuid;
-
 	UpdateMask updateMask;
 	updateMask.SetCount( m_valuesCount );
 	_SetUpdateBits( &updateMask, target );
-	_BuildValuesUpdate( data, &updateMask, target );
+	for(uint32 x = 0; x < m_valuesCount; ++x)
+	{
+		if(updateMask.GetBit(x))
+		{
+			*data << (uint8) UPDATETYPE_VALUES;		// update type == update
+			ASSERT(m_wowGuid.GetNewGuidLen());
+			*data << m_wowGuid;
 
-	// 1 update.
-	return 1;
+			_BuildValuesUpdate( data, &updateMask, target );
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer * buf, UpdateMask * mask )

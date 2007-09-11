@@ -972,19 +972,20 @@ void MapMgr::_UpdateObjects()
 					((Unit*)pObj)->EventHealthChangeSinceLastUpdate();
 				// build the update
 				count = pObj->BuildValuesUpdateBlockForPlayer(&update, ((Player*)0));
-
-				it_start = pObj->GetInRangePlayerSetBegin();
-				it_end = pObj->GetInRangePlayerSetEnd();
-				for(itr = it_start; itr != it_end;)
+				if(count)
 				{
-					lplr = *itr;
-					++itr;
-					// Make sure that the target player can see us.
-					if(lplr->GetTypeId() == TYPEID_PLAYER && lplr->IsVisible(pObj))
-						lplr->PushUpdateData(&update, count);
+					it_start = pObj->GetInRangePlayerSetBegin();
+					it_end = pObj->GetInRangePlayerSetEnd();
+					for(itr = it_start; itr != it_end;)
+					{
+						lplr = *itr;
+						++itr;
+						// Make sure that the target player can see us.
+						if(lplr->GetTypeId() == TYPEID_PLAYER && lplr->IsVisible(pObj))
+							lplr->PushUpdateData(&update, count);
+					}
+					update.clear();
 				}
-
-				update.clear();
 			}
 		}
 		pObj->ClearUpdateMask();

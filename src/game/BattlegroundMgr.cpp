@@ -543,24 +543,20 @@ void CBattleground::UpdatePvPData()
 		m_mainLock.Acquire();
 		WorldPacket data(MSG_PVP_LOG_DATA, 50);
 		BGScore * bs;
-		/*if(m_type >= BATTLEGROUND_ARENA_2V2 && m_type <= BATTLEGROUND_ARENA_5V5 && !m_ended)
+		if(m_type >= BATTLEGROUND_ARENA_2V2 && m_type <= BATTLEGROUND_ARENA_5V5)
 		{
-			data << uint8(1);
-			data << uint32(0x6C0EF0F4);
-			data << uint32(0x00000400);
-			data << uint32(0x01010000);
-			data << uint32(0x00000009);
-			data << uint32(0x001A070E);
-			data << uint32(0x00000000);
-		}
-		else*/
-            data << uint8(0);
+			if(!m_ended)
+			{
+				m_mainLock.Release();
+				return;
+			}
 
-		if(m_ended)
-		{
 			data << uint8(1);
+			data << uint32(UNIXTIME);
 			data << uint8(m_winningteam);
-
+			data << uint16(0x0004);
+			data << uint8(0);
+			data << uint32(0x01010000);
 			data << uint32(m_players[0].size() + m_players[1].size());
 			for(uint32 i = 0; i < 2; ++i)
 			{
@@ -568,16 +564,11 @@ void CBattleground::UpdatePvPData()
 				{
 					data << (*itr)->GetGUID();
 					bs = &(*itr)->m_bgScore;
-
 					data << bs->KillingBlows;
-					data << bs->HonorableKills;
-					data << bs->Deaths;
-					data << bs->BonusHonor;
+					data << uint8((*itr)->m_bgTeam);
 					data << bs->DamageDone;
 					data << bs->HealingDone;
-					data << uint32(0x2);
-					data << bs->Misc1;
-					data << bs->Misc2;
+					data << bs->Misc1;	/* rating change */
 					(*itr)->Root();
 				}
 			}
@@ -892,7 +883,7 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 	{
 		if(Type >= BATTLEGROUND_ARENA_2V2 && Type <= BATTLEGROUND_ARENA_5V5)
 		{
-			data << uint32(1);
+			data << uint32(plr->m_bgTeam);
 			switch(Type)
 			{
 			case BATTLEGROUND_ARENA_2V2:
@@ -935,7 +926,7 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 			break;
 		case 3:
 			/*if(Type >= BATTLEGROUND_ARENA_2V2 && Type <= BATTLEGROUND_ARENA_5V5)
-				data << MapId << uint32(0x0001D4C0) << uint32(0x0002FC8A) << uint8(0);
+				data << MapId << uint32(0x0001D4C0) << uint32(0x0002FC8A) << uint8(1);
 			else*/
 				data << MapId << uint32(0) << Time << uint8(1);
 			break;
@@ -964,7 +955,10 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 
 	/* revive the player if he is dead */
 	if(!plr->isAlive())
+	{
+		plr->SetUInt32Value(UNIT_FIELD_HEALTH, plr->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 		plr->ResurrectPlayer();
+	}
 	
 	/* teleport out */
 	if(!logout)
@@ -996,28 +990,54 @@ void CBattleground::SendPVPData(Player * plr)
 	m_mainLock.Acquire();
 	WorldPacket data(MSG_PVP_LOG_DATA, 50);
 	BGScore * bs;
-	/*if(m_type >= BATTLEGROUND_ARENA_2V2 && m_type <= BATTLEGROUND_ARENA_5V5 && !m_ended)
+	if(m_type >= BATTLEGROUND_ARENA_2V2 && m_type <= BATTLEGROUND_ARENA_5V5)
 	{
-		data << uint8(1);
-		data << uint32(0x6C0EF0F4);
-		data << uint32(0x00000400);
-		data << uint32(0x01010000);
-		data << uint32(0x00000009);
-		data << uint32(0x001A070E);
-		data << uint32(0x00000000);
-	}
-	else*/
-		data << uint8(0);
+		if(!m_ended)
+		{
+			m_mainLock.Release();
+			return;
+		}
 
-	if(m_ended)
-	{
+		/*
+		18:28:55 {Server} MSG_PVP_LOG_DATA [0x02E0] 117 bytes
+		|------------------------------------------------|----------------|
+		|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
+		|------------------------------------------------|----------------|
+		|01 5C 2A 27 61 00 04 00 00 00 00 01 01 04 00 00 |.\*'a...........|
+		|00 A6 E0 27 00 00 00 00 00 01 00 00 00 00 A3 3A |...'...........:|
+		|00 00 00 00 00 00 00 00 00 00 A4 18 10 00 00 00 |................|
+		|00 00 00 00 00 00 01 EF 06 00 00 B7 01 00 00 00 |................|
+		|00 00 00 62 D4 27 00 00 00 00 00 00 00 00 00 00 |...b.'..........|
+		|1B 18 00 00 61 0E 00 00 00 00 00 00 EA FD 1A 00 |....a...........|
+		|00 00 00 00 02 00 00 00 01 AF 51 00 00 3D 10 00 |..........Q..=..|
+		|00 00 00 00 00                                  |.....           |
+		-------------------------------------------------------------------
+		*/
+
+
+		/*
+		01 - arena packet
+		5C 2A 27 61 - timestamp
+		00 - winning team
+		04 00 00 00 00 01 01 - constant
+		04 00 00 00  - count
+		*/
+		/* (loop each guid) */
+		/*
+		A6 E0 27 00 00 00 00 00  = guid
+		01 00 00 00 		 = KillingBlows
+		00 					 = team
+		A3 3A 00 00 		 = DamageDone
+		00 00 00 00			 = HealingDOne
+		00 00 00 00 		 = RatingChange
+		*/
+
 		data << uint8(1);
+		data << uint32(UNIXTIME);
 		data << uint8(m_winningteam);
-	}
-	else
-	{
-		data << uint8(0);		// If the game has ended - this will be 1
-
+		data << uint16(0x0004);
+		data << uint8(0);
+		data << uint32(0x01010000);
 		data << uint32(m_players[0].size() + m_players[1].size());
 		for(uint32 i = 0; i < 2; ++i)
 		{
@@ -1025,16 +1045,45 @@ void CBattleground::SendPVPData(Player * plr)
 			{
 				data << (*itr)->GetGUID();
 				bs = &(*itr)->m_bgScore;
-
 				data << bs->KillingBlows;
-				data << bs->HonorableKills;
-				data << bs->Deaths;
-				data << bs->BonusHonor;
+				data << uint8((*itr)->m_bgTeam);
 				data << bs->DamageDone;
 				data << bs->HealingDone;
-				data << uint32(0x2);
-				data << bs->Misc1;
-				data << bs->Misc2;
+				data << bs->Misc1;	/* rating change */
+			}
+		}
+	}
+	else
+	{
+		data << uint8(0);
+
+		if(m_ended)
+		{
+			data << uint8(1);
+			data << uint8(m_winningteam);
+		}
+		else
+		{
+			data << uint8(0);		// If the game has ended - this will be 1
+
+			data << uint32(m_players[0].size() + m_players[1].size());
+			for(uint32 i = 0; i < 2; ++i)
+			{
+				for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+				{
+					data << (*itr)->GetGUID();
+					bs = &(*itr)->m_bgScore;
+
+					data << bs->KillingBlows;
+					data << bs->HonorableKills;
+					data << bs->Deaths;
+					data << bs->BonusHonor;
+					data << bs->DamageDone;
+					data << bs->HealingDone;
+					data << uint32(0x2);
+					data << bs->Misc1;
+					data << bs->Misc2;
+				}
 			}
 		}
 	}

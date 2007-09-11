@@ -747,6 +747,9 @@ void Group::LoadFromDB(Field *fields)
 
 void Group::SaveToDB()
 {
+	if(!m_disbandOnNoMembers)	/* don't save bg groups */
+		return;
+
 	std::stringstream ss;
 	//uint32 i = 0;
 	uint32 fillers = 8 - m_SubGroupCount;

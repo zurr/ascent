@@ -22,6 +22,8 @@
 #define ARENA_PREPARATION 32727
 #define ARENA_WORLD_STATE_A_PLAYER_COUNT 2544
 #define ARENA_WORLD_STATE_H_PLAYER_COUNT 2545
+#define GREEN_TEAM 0
+#define GOLD_TEAM 1
 
 Arena::Arena(MapMgr * mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
 {
@@ -64,8 +66,7 @@ void Arena::OnRemovePlayer(Player * plr)
 
 void Arena::HookOnPlayerKill(Player * plr, Unit * pVictim)
 {
-	if(pVictim->GetTypeId() != TYPEID_UNIT)
-		plr->m_bgScore.KillingBlows++;
+	plr->m_bgScore.KillingBlows++;
 
 	int32 honorpoints = HonorHandler::CalculateHonorPointsForKill(plr, pVictim);
 	if(honorpoints>0)
@@ -74,17 +75,17 @@ void Arena::HookOnPlayerKill(Player * plr, Unit * pVictim)
 		for(set<Player*>::iterator itr = m_players[plr->m_bgTeam].begin(); itr != m_players[plr->m_bgTeam].end(); ++itr)
 			HonorHandler::AddArenaPointsToPlayer((*itr), honorpoints);
 	}
+	UpdatePlayerCounts();
 }
 
 void Arena::HookOnHK(Player * plr)
 {
 	plr->m_bgScore.HonorableKills++;
-	
 }
 
 void Arena::HookOnPlayerDeath(Player * plr)
 {
-	UpdatePlayerCounts();
+	
 }
 
 void Arena::OnCreate()
@@ -215,8 +216,8 @@ void Arena::UpdatePlayerCounts()
 		}
 	}
 
-	SetWorldState(ARENA_WORLD_STATE_A_PLAYER_COUNT, players[0]);
-	SetWorldState(ARENA_WORLD_STATE_H_PLAYER_COUNT, players[1]);
+	SetWorldState(ARENA_WORLD_STATE_A_PLAYER_COUNT, players[1]);
+	SetWorldState(ARENA_WORLD_STATE_H_PLAYER_COUNT, players[0]);
 
 	if(!m_started)
 		return;
