@@ -566,6 +566,7 @@ void World::SetInitialWorldSettings()
 		//!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
         namehash = crc32((const unsigned char*)nametext, strlen(nametext));
 
+
 		//these mostly do not mix so we can use else 
         // look for seal, etc in name
         if(strstr(nametext, "Seal"))
@@ -622,6 +623,38 @@ void World::SetInitialWorldSettings()
 			type |= SPELL_TYPE_MAGE_AMPL_DUMP;
 		else if(strstr(desc, "Finishing move")==desc)
 			type |= SPELL_TYPE_FINISHING_MOVE;
+
+		//stupid spell ranking problem
+		if(sp->spellLevel==0)
+		{
+			uint32 new_level=0;
+			if(strstr(nametext, "Apprentice "))
+				new_level = 1;
+			else if(strstr(nametext, "Journeyman "))
+				new_level = 2;
+			else if(strstr(nametext, "Expert "))
+				new_level = 3;
+			else if(strstr(nametext, "Artisan "))
+				new_level = 4;
+			else if(strstr(nametext, "Master "))
+				new_level = 5;
+			if(new_level!=0)
+			{
+				uint32 teachspell=0;
+				if(sp->Effect[0]==SPELL_EFFECT_LEARN_SPELL)
+					teachspell = sp->EffectTriggerSpell[0];
+				else if(sp->Effect[1]==SPELL_EFFECT_LEARN_SPELL)
+					teachspell = sp->EffectTriggerSpell[1];
+				else if(sp->Effect[2]==SPELL_EFFECT_LEARN_SPELL)
+					teachspell = sp->EffectTriggerSpell[2];
+				if(teachspell)
+				{
+					SpellEntry *spellInfo = sSpellStore.LookupEntry(teachspell );
+					spellInfo->spellLevel = new_level;
+					sp->spellLevel = new_level;
+				}
+			}
+		}
 
 		/*FILE * f = fopen("C:\\spells.txt", "a");
 		fprintf(f, "case 0x%08X:		// %s\n", namehash, nametext);
