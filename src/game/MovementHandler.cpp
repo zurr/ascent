@@ -120,7 +120,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
-	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat && movement_info.flags & MOVEFLAG_FLYING)
+	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat && movement_info.flags & MOVEFLAG_FLYING && !(movement_info.flags & MOVEFLAG_FALLING))
 	{
 		sCheatLog.writefromsession(this, "Used flying hack {1}, movement flags: %u", movement_info.flags);
 		Disconnect();
