@@ -3139,7 +3139,8 @@ uint8 Spell::CanCast(bool rangetolerate)
 		uint32 ss = p_caster->GetShapeShift();
 		if(ss && (ss < FORM_BATTLESTANCE || ss > FORM_STEALTH))//druid shapeshift
 		{
-			return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;	
+			if(i_caster->GetProto()->InventoryType != INVTYPE_TRINKET)
+				return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;	
 		}	
 	}
 
