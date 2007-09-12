@@ -21,14 +21,26 @@
 
 void WorldSession::HandleBattlefieldPortOpcode(WorldPacket &recv_data)
 {
+	uint16 mapinfo, unk;
+	uint8 action;
+	uint32 bgtype;
+
 	if(!_player->IsInWorld()) return;
+	recv_data >> unk >> bgtype >> mapinfo >> action;
 
-	/* Usually the fields in the packet would've been used to check what instance we're porting into, however since we're not
-	 * doing "queue multiple battleground types at once" we can just use our cached pointer in the player class. - Burlex
-	 */
+	if(action == 0)
+	{
+		BattlegroundManager.RemovePlayerFromQueues(_player);
+	}
+	else
+	{
+		/* Usually the fields in the packet would've been used to check what instance we're porting into, however since we're not
+		 * doing "queue multiple battleground types at once" we can just use our cached pointer in the player class. - Burlex
+		 */
 
-	if(_player->m_pendingBattleground)
-		_player->m_pendingBattleground->PortPlayer(_player);
+		if(_player->m_pendingBattleground)
+			_player->m_pendingBattleground->PortPlayer(_player);
+	}
 }
 
 void WorldSession::HandleBattlefieldStatusOpcode(WorldPacket &recv_data)

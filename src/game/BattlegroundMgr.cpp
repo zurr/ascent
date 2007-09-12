@@ -176,11 +176,11 @@ void CBattlegroundManager::EventQueueUpdate()
 				{
 					if(itr->second->GetLevelGroup() != j)
 					{
-						Log.Debug("BgMgr", "Bad level group");
+						//Log.Debug("BgMgr", "Bad level group");
 						continue;
 					}
 
-					Log.Debug("BattlegroundMgr", "Trying instance %u", itr->second->GetId());
+					//Log.Debug("BattlegroundMgr", "Trying instance %u", itr->second->GetId());
 					if(!itr->second->IsFull())
 					{
 						bg = itr->second;
@@ -198,7 +198,7 @@ void CBattlegroundManager::EventQueueUpdate()
 								continue;
 							}
 
-							Log.Debug("BattlegroundMgr", "Trying player %u", plr->GetGUIDLow());
+							//Log.Debug("BattlegroundMgr", "Trying player %u", plr->GetGUIDLow());
 							/* Arenas are FFA battlegrounds, you can kill people of your same faction. */
 							if(i >= BATTLEGROUND_ARENA_2V2 && i <= BATTLEGROUND_ARENA_5V5)
 							{
@@ -216,10 +216,10 @@ void CBattlegroundManager::EventQueueUpdate()
 									}
 
 									it2->second.erase(it3);
-									Log.Debug("BattlegroundMgr", "Added!");
+									//Log.Debug("BattlegroundMgr", "Added!");
 								}
-								else
-                                    Log.Debug("BattlegroundMgr", "Fail.");
+								/*else
+                                    Log.Debug("BattlegroundMgr", "Fail.");*/
 							}
 							else
 							{
@@ -231,10 +231,10 @@ void CBattlegroundManager::EventQueueUpdate()
 										bg->AddPlayer(plr, plr->GetTeam());
 
 									it2->second.erase(it3);
-									Log.Debug("BattlegroundMgr", "Added!");
+									//Log.Debug("BattlegroundMgr", "Added!");
 								}
-								else
-									Log.Debug("BattlegroundMgr", "Fail.");
+								/*else
+									Log.Debug("BattlegroundMgr", "Fail.");*/
 							}
 						}
 
@@ -242,10 +242,10 @@ void CBattlegroundManager::EventQueueUpdate()
 						if(!it2->second.size())
 							break;
 					}
-					else
+					/*else
 					{
 						Log.Debug("BattlegroundMgr", "Instance is full.");
-					}
+					}*/
 				}
 
 				m_instanceLock.ReleaseReadLock();
@@ -324,7 +324,7 @@ void CBattlegroundManager::EventQueueUpdate()
 										Log.Debug("BattlegroundManager", "Trying to add player %u to bg", (*it6)->GetGUIDLow());
 										if(!bg->HasFreeSlots(k) || !bg->CanPlayerJoin(*it6))
 										{
-											Log.Debug("BattlegroundManager", "FAIL!", (*it6)->GetGUIDLow());
+											/*Log.Debug("BattlegroundManager", "FAIL!", (*it6)->GetGUIDLow());*/
 											break;
 										}
 
@@ -447,6 +447,9 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player * plr)
 		}
 	}
 	plr->m_bgIsQueued = false;
+	plr->m_bgTeam=plr->GetTeam();
+	plr->m_pendingBattleground=0;
+	SendBattlefieldStatus(plr,0,0,0,0,0);
     m_queueLock.Release();
 }
 
@@ -552,11 +555,13 @@ void CBattleground::UpdatePvPData()
 			}
 
 			data << uint8(1);
-			data << uint32(UNIXTIME);
-			data << uint8(m_winningteam);
-			data << uint16(0x0004);
+			data << uint32(0x61272A5C);
 			data << uint8(0);
-			data << uint32(0x01010000);
+			data << uint32(m_players[0].size() + m_players[1].size());
+			data << uint8(0);
+			data << uint8(1);
+			data << uint8(m_winningteam);
+
 			data << uint32(m_players[0].size() + m_players[1].size());
 			for(uint32 i = 0; i < 2; ++i)
 			{
@@ -569,7 +574,7 @@ void CBattleground::UpdatePvPData()
 					data << bs->DamageDone;
 					data << bs->HealingDone;
 					data << bs->Misc1;	/* rating change */
-					(*itr)->Root();
+					//(*itr)->Root();
 				}
 			}
 		}
@@ -648,14 +653,20 @@ void CBattleground::PortPlayer(Player * plr, bool skip_teleport /* = false*/)
 	}
 
 	m_pendPlayers[plr->m_bgTeam].erase(plr->GetGUIDLow());
-	m_players[plr->m_bgTeam].insert(plr);
-
-	/* remove from any auto queue remove events */
-	sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
+	if(m_players[plr->m_bgTeam].find(plr) != m_players[plr->m_bgTeam].end())
+	{
+		m_mainLock.Release();
+		return;
+	}
 
 	WorldPacket data(SMSG_BATTLEGROUND_PLAYER_JOINED, 8);
 	data << plr->GetGUID();
 	DistributePacketToAll(&data);
+
+	m_players[plr->m_bgTeam].insert(plr);
+
+	/* remove from any auto queue remove events */
+	sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
 
 	if(!skip_teleport)
 	{
@@ -925,9 +936,9 @@ void CBattlegroundManager::SendBattlefieldStatus(Player * plr, uint32 Status, ui
 			data << MapId << Time;
 			break;
 		case 3:
-			/*if(Type >= BATTLEGROUND_ARENA_2V2 && Type <= BATTLEGROUND_ARENA_5V5)
-				data << MapId << uint32(0x0001D4C0) << uint32(0x0002FC8A) << uint8(1);
-			else*/
+			if(Type >= BATTLEGROUND_ARENA_2V2 && Type <= BATTLEGROUND_ARENA_5V5)
+				data << MapId << uint32(0) << Time << uint8(0);
+			else
 				data << MapId << uint32(0) << Time << uint8(1);
 			break;
 		}
@@ -992,7 +1003,7 @@ void CBattleground::SendPVPData(Player * plr)
 	BGScore * bs;
 	if(m_type >= BATTLEGROUND_ARENA_2V2 && m_type <= BATTLEGROUND_ARENA_5V5)
 	{
-		if(!m_ended)
+		/*if(!m_ended)*/
 		{
 			m_mainLock.Release();
 			return;
@@ -1033,11 +1044,11 @@ void CBattleground::SendPVPData(Player * plr)
 		*/
 
 		data << uint8(1);
-		data << uint32(UNIXTIME);
+		data << uint32(0);
 		data << uint8(m_winningteam);
-		data << uint16(0x0004);
+		data << uint16(0);
 		data << uint8(0);
-		data << uint32(0x01010000);
+		data << uint32(0);
 		data << uint32(m_players[0].size() + m_players[1].size());
 		for(uint32 i = 0; i < 2; ++i)
 		{
@@ -1104,7 +1115,7 @@ int32 CBattleground::event_GetInstanceID()
 
 void CBattleground::EventCountdown()
 {
-	if(m_countdownStage == 1)
+	/*if(m_countdownStage == 1)
 	{
 		m_countdownStage = 2;
 		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "One minute until the battle for %s begins!", GetName());
@@ -1121,7 +1132,7 @@ void CBattleground::EventCountdown()
 		sEventMgr.ModifyEventTime(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
 		sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
 	}
-	else
+	else*/
 	{
 		SendChatMessage(CHAT_MSG_BATTLEGROUND_EVENT, 0, "The battle for %s has begun!", GetName());
 		sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
