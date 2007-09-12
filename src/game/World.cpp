@@ -1573,6 +1573,13 @@ void World::SetInitialWorldSettings()
 		sp->EffectApplyAuraName[0] = 42;
 		sp->procFlags=uint32(PROC_ON_CAST_SPELL|PROC_TAGRGET_SELF);
 	}
+	//this an on equip item spell(2824) :  ice arrow
+	sp = sSpellStore.LookupEntry(20554);
+	if(sp)
+	{
+		sp->procChance = 20;//some say it is triggered every now and then
+		sp->procFlags = PROC_ON_RANGED_ATTACK;
+	}
 	//winfury weapon changes. Start to hate these day by day
 	EnchantEntry * Enchantment = sEnchantStore.LookupEntry(283);
 	if(Enchantment)

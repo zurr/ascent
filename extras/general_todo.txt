@@ -62,6 +62,7 @@ Zack - test my shit :
 - add old combat (again)
 - ai_agents fillup
 - ai spell cooldown when not known
+- additem : 2824 and test trigger of the spell 29501
 
 ==========================================================================
 Capt - test my shit :
