@@ -890,6 +890,9 @@ enum SpellTypes
     SPELL_TYPE_MAGE_AMPL_DUMP       = 0x020000,
     SPELL_TYPE_WARLOCK_IMMOLATE     = 0x040000, //maybe there is a better way to trigger the aura state for immolate spell
     SPELL_TYPE_FINISHING_MOVE       = 0x080000, 
+    SPELL_TYPE_ELIXIR_BATTLE		= 0x100000, 
+    SPELL_TYPE_ELIXIR_GUARDIAN      = 0x200000, 
+    SPELL_TYPE_ELIXIR_FLASK         = 0x400000, 
 };
 
 inline bool CanAgroHash(uint32 spellhashname)

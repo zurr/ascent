@@ -623,6 +623,12 @@ void World::SetInitialWorldSettings()
 			type |= SPELL_TYPE_MAGE_AMPL_DUMP;
 		else if(strstr(desc, "Finishing move")==desc)
 			type |= SPELL_TYPE_FINISHING_MOVE;
+        else if(strstr(desc, "Battle Elixir"))
+            type |= SPELL_TYPE_ELIXIR_BATTLE;
+        else if(strstr(desc, "Guardian Elixir"))
+            type |= SPELL_TYPE_ELIXIR_GUARDIAN;
+        else if(strstr(desc, "Battle and Guardian elixir"))
+            type |= SPELL_TYPE_ELIXIR_FLASK;
 
 		//stupid spell ranking problem
 		if(sp->spellLevel==0)
