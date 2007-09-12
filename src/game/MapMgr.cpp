@@ -386,7 +386,7 @@ void MapMgr::RemoveObject(Object *obj)
 	}
 
 	// That object types are not map objects. TODO: add AI groups here?
-	if(obj->GetTypeId() == TYPEID_ITEM || obj->GetTypeId() == TYPEID_CONTAINER)
+	if(obj->GetTypeId() == TYPEID_ITEM || obj->GetTypeId() == TYPEID_CONTAINER || obj->GetTypeId()==10)
 	{
 		return;
 	}

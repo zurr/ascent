@@ -2015,24 +2015,34 @@ void Spell::SendSpellStart()
 		ItemPrototype* ip = NULL;
         if (m_spellInfo->Id == SPELL_RANGED_THROW) // throw
         {
-            Item *itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-            if(itm)
-            {
-                ip = itm->GetProto();
-                /* Throwing Weapon Patch by Supalosa
-                p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
-                (Supalosa: Instead of removing one from the stack, remove one from durability)
-                We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
-                */
-
-                // burlex - added a check here anyway (wpe suckers :P)
-                if(itm->GetDurability() > 0)
-                    itm->SetDurability( itm->GetDurability() - 1 );
+			if(p_caster)
+			{
+				Item *itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+				if(itm)
+				{
+	                ip = itm->GetProto();
+					/* Throwing Weapon Patch by Supalosa
+					p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
+					(Supalosa: Instead of removing one from the stack, remove one from durability)
+					We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
+					*/
+	
+					// burlex - added a check here anyway (wpe suckers :P)
+					if(itm->GetDurability() > 0)
+	                    itm->SetDurability( itm->GetDurability() - 1 );
+				}
+				else
+				{
+					ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
+				}
             }
         }
         else if(m_spellInfo->Flags4 & FLAGS4_PLAYER_RANGED_SPELLS)
         {
-            ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+			if(p_caster)
+				ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+			else
+				ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
         }
 		
 		if(ip)
@@ -2118,14 +2128,23 @@ void Spell::SendSpellGo()
 		{
 		case SPELL_RANGED_THROW:  // throw
 			{
-				   Item * it=p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-				if(it)
-					ip = it->GetProto();
+				if(p_caster)
+				{
+					Item * it=p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+					if(it)
+						ip = it->GetProto();
+				}
+				else
+				{
+					ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
+				}
 			}break;
 		default:
 			{
-				ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
-				// removing taken care of in RemoveItems()
+				if(p_caster)
+					ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+				else
+					ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
 			}break;
 		}
 		if(ip)
