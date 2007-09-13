@@ -53,14 +53,14 @@ SMT_RESIST_DISPEL - check if it is used
 - creatures keep yelling no content messgs
 - horde does not have PVP flag and A does
 - rogues can exit combat instantly, this is bad i think.
+- quest loot from elites should be lootable by everybody who shares the quest
+- some kill quest does not give kill revard to whole group ?
 
 ==========================================================================
 Zack - test my shit :
 
 - test function RemoveThreatByPtr
 - don't let rogues stealth with dots
-- add old combat (again)
-- ai_agents fillup
 - ai spell cooldown when not known
 
 ==========================================================================

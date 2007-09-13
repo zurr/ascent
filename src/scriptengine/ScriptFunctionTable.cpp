@@ -83,7 +83,6 @@ void ScriptEngine::SetPlayerFunctionTable()
 		{ "GetPositionY",						Unit_GetPositionY					},
 		{ "GetPositionZ",						Unit_GetPositionZ					},
 		{ "GetFacing",							Unit_GetFacing						},
-		{ "AttackReaction",						Unit_AddToHated						},
 		{ "Spawngameobject",                    Unit_Spawngameobject                },
 	};
 
@@ -145,6 +144,9 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "GetFacing",							Unit_GetFacing						},
 		{ "ReturnToSpawn",						Unit_ReturnToSpawn					},
 		{ "GetRandomPlayer",					Unit_GetRandomPlayer				},
+		{ "AddThreat",							Unit_AddThreat						},
+		{ "ForgetMostHated",					Unit_ForgetMostHated				},
+		{ "ClearHateList",						Unit_ClearHateList					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));
@@ -179,7 +181,6 @@ void ScriptEngine::SetGameObjectFunctionTable()
 		{ "GetPositionY",						Unit_GetPositionY					},
 		{ "GetPositionZ",						Unit_GetPositionZ					},
 		{ "GetFacing",							Unit_GetFacing						},
-		{ "AddThreat",							Unit_AddThreat						},
 	};
 
 	m_machine->RegisterTypeLibrary(m_gameObjectType, table, sizeof(table) / sizeof(table[0]));

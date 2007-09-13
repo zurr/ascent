@@ -101,6 +101,9 @@ T * GetThisPointer(gmThread * a_thread)
 	int GM_CDECL Unit_GetClosestUnit(gmThread * a_thread);
 	int GM_CDECL Unit_GetRandomPlayer(gmThread * a_thread);
 	int GM_CDECL Unit_InCombat(gmThread * a_thread);
+	int GM_CDECL Unit_ForgetMostHated(gmThread * a_thread);
+	int GM_CDECL Unit_ClearHateList(gmThread * a_thread);
+	int GM_CDECL Unit_AddThreat(gmThread * a_thread);
 	
 	// Escort Quest System
 		int GM_CDECL Unit_SpawnWithoutWorld(gmThread * a_thread);
@@ -129,9 +132,7 @@ T * GetThisPointer(gmThread * a_thread)
 		int GM_CDECL Unit_GetPositionY(gmThread * a_thread);
 		int GM_CDECL Unit_GetPositionZ(gmThread * a_thread);
 		int GM_CDECL Unit_GetFacing(gmThread * a_thread);
-		int GM_CDECL Unit_AddToHated(gmThread * a_thread);
 		int GM_CDECL Unit_ReturnToSpawn(gmThread * a_thread);
-		int GM_CDECL Unit_AddThreat(gmThread * a_thread);
 
 /* GameObject Functions */
 	int GM_CDECL GameObject_Despawn(gmThread * a_thread);

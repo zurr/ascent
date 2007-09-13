@@ -1526,19 +1526,52 @@ int Unit_GetFacing(gmThread * a_thread)
 	return GM_OK;
 }
 
-int Unit_AddToHated(gmThread * a_thread)
+int Unit_AddThreat(gmThread * a_thread)
 {
-	GM_CHECK_NUM_PARAMS(1);
-	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, victim, 0);
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, target, 0);
+	GM_CHECK_INT_PARAM(damage, 1);
+
+	if(target->GetTypeId() == TYPEID_GAMEOBJECT) // Come on, wtf are you smoking?
+		return GM_OK;
 
 	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	pThis->GetAIInterface()->AttackReaction((Unit*)target, damage, 0);
+
+	return GM_OK;
+}
+
+int Unit_ClearHateList(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+
 	if(!pThis->IsInWorld())
-		return GM_OK;
+		return GM_EXCEPTION;
 
-	if(pThis->GetTypeId() == TYPEID_GAMEOBJECT) // WTF YOU NEWB?
-		return GM_OK;
+	if(pThis->GetTypeId() != TYPEID_UNIT) //this should never ocure
+		return GM_EXCEPTION;
 
-	((Creature*)pThis)->GetAIInterface()->AttackReaction(static_cast<Unit*>(victim), 1, 0);
+	pThis->GetAIInterface()->WipeTargetList();
+
+	return GM_OK;
+}
+
+int Unit_ForgetMostHated(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+
+	if(!pThis->IsInWorld())
+		return GM_EXCEPTION;
+
+	if(pThis->GetTypeId() != TYPEID_UNIT) //this should never ocure
+		return GM_EXCEPTION;
+
+	pThis->GetAIInterface()->RemoveThreatByPtr(pThis->GetAIInterface()->GetMostHated());
+
 	return GM_OK;
 }
 
@@ -1558,20 +1591,6 @@ int Unit_ReturnToSpawn(gmThread * a_thread)
 	return GM_OK;
 }
 
-int Unit_AddThreat(gmThread * a_thread)
-{
-	GM_CHECK_NUM_PARAMS(2);
-	GM_CHECK_USER_PARAM(Object*, ScriptSystem->m_unitType, target, 0);
-	GM_CHECK_INT_PARAM(damage, 1);
-
-	if(target->GetTypeId() == TYPEID_GAMEOBJECT) // Come on, wtf are you smoking?
-		return GM_OK;
-
-	Unit * pThis = GetThisPointer<Unit>(a_thread);
-	pThis->GetAIInterface()->AttackReaction((Unit*)target, damage, 0);
-
-	return GM_OK;
-}
 int Unit_Spawngameobject(gmThread * a_thread)
 {
     GM_CHECK_NUM_PARAMS(6);
