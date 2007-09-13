@@ -6179,14 +6179,8 @@ void Player::ProcessPendingUpdates()
 		return;
 	}
 
-
-    uint32 bBuffer_size =  bCreationBuffer.size() + 10 + (mOutOfRangeIds.size() * 9);
-    uint8 * update_buffer = NULL;
-    //we got creation packets. Join them with out of range packets and skip update ones.
-    if(bCreationBuffer.size())
-    {
-	    update_buffer = new uint8[bBuffer_size];
-    }
+	uint32 bBuffer_size =  (bCreationBuffer.size() > bUpdateBuffer.size() ? bCreationBuffer.size() : bUpdateBuffer.size()) + 10 + (mOutOfRangeIds.size() * 9);
+    uint8 * update_buffer = new uint8[bBuffer_size];
 	uint32 c = 0;
 
     //build out of range updates if creation updates are queued
@@ -6208,12 +6202,13 @@ void Player::ProcessPendingUpdates()
             #else
 		            *(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
             #endif
-		            memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
-		            mOutOfRangeIds.clear();
-		            mOutOfRangeIdCount = 0;
+		    memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
+		    mOutOfRangeIds.clear();
+		    mOutOfRangeIdCount = 0;
 	    }
+
         if(bCreationBuffer.size())
-		memcpy(&update_buffer[c], bCreationBuffer.contents(), bCreationBuffer.size());  c += bCreationBuffer.size();
+			memcpy(&update_buffer[c], bCreationBuffer.contents(), bCreationBuffer.size());  c += bCreationBuffer.size();
 
         // clear our update buffer
 	    bCreationBuffer.clear();
@@ -6226,53 +6221,51 @@ void Player::ProcessPendingUpdates()
 		    // send uncompressed packet -> because we failed
 		    m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
 	    }
-    	
-	    delete [] update_buffer;
     }
-    
-	uint32 aBuffer_size =  bUpdateBuffer.size() + 10 + (mOutOfRangeIds.size() * 9);
-    update_buffer = new uint8[aBuffer_size];
-	c = 0;
-
-    #ifdef USING_BIG_ENDIAN
-	    *(uint32*)&update_buffer[c] = swap32(uint32(((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount)));	c += 4;
-    #else
-	    *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);	c += 4;
-    #endif
-	update_buffer[c] = 1;																			   ++c;
-
-	// append any out of range updates
-	if(mOutOfRangeIdCount)
-	{
-		update_buffer[c]				= UPDATETYPE_OUT_OF_RANGE_OBJECTS;			 ++c;
-        #ifdef USING_BIG_ENDIAN
-		        *(uint32*)&update_buffer[c]	 = swap32(mOutOfRangeIdCount);						  c += 4;
-        #else
-		        *(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
-        #endif
-		memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
-		mOutOfRangeIds.clear();
-		mOutOfRangeIdCount = 0;
-	}
 
 	if(bUpdateBuffer.size())
-		memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());  c += bUpdateBuffer.size();
+	{
+		c = 0;
 
-	// clear our update buffer
-	bUpdateBuffer.clear();
-	bProcessPending = false;
-	mUpdateCount = 0;
+		#ifdef USING_BIG_ENDIAN
+			*(uint32*)&update_buffer[c] = swap32(uint32(((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount)));	c += 4;
+		#else
+			*(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);	c += 4;
+		#endif
+		update_buffer[c] = 1;																			   ++c;
+
+		// append any out of range updates
+		if(mOutOfRangeIdCount)
+		{
+			update_buffer[c]				= UPDATETYPE_OUT_OF_RANGE_OBJECTS;			 ++c;
+			#ifdef USING_BIG_ENDIAN
+					*(uint32*)&update_buffer[c]	 = swap32(mOutOfRangeIdCount);						  c += 4;
+			#else
+					*(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
+			#endif
+			memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
+			mOutOfRangeIds.clear();
+			mOutOfRangeIdCount = 0;
+		}
+
+		if(bUpdateBuffer.size())
+			memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());  c += bUpdateBuffer.size();
+
+		// clear our update buffer
+		bUpdateBuffer.clear();
+		bProcessPending = false;
+		mUpdateCount = 0;
+
+		// compress update packet
+		// while we said 350 before, i'm gonna make it 500 :D
+		if(c < sWorld.compression_threshold || !CompressAndSendUpdateBuffer(c, update_buffer))
+		{
+			// send uncompressed packet -> because we failed
+			m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
+		}
+	}
 
 	_bufferS.Release();
-
-	// compress update packet
-	// while we said 350 before, i'm gonna make it 500 :D
-	if(c < sWorld.compression_threshold || !CompressAndSendUpdateBuffer(c, update_buffer))
-	{
-		// send uncompressed packet -> because we failed
-		m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
-	}
-    
 	delete [] update_buffer;
 
 	// send any delayed packets

@@ -113,14 +113,16 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
-	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f && _player->m_runSpeed < 50.0f)	/*50*50*/
+	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f
+		&& _player->m_runSpeed < 50.0f && !(movement_info.flags & MOVEFLAG_TAXI))	/*50*50*/
 	{
 		sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 		Disconnect();
 		return;
 	}
 
-	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat && movement_info.flags & MOVEFLAG_FLYING && !(movement_info.flags & MOVEFLAG_FALLING))
+	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat &&
+		movement_info.flags & MOVEFLAG_FLYING && !(movement_info.flags & MOVEFLAG_FALLING) && !(movement_info.flags & MOVEFLAG_TAXI))
 	{
 		sCheatLog.writefromsession(this, "Used flying hack {1}, movement flags: %u", movement_info.flags);
 		Disconnect();
@@ -346,14 +348,16 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 		return;
 	}
 
-	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f)	/*50*50*/
+	if(sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f
+		&& _player->m_runSpeed < 50.0f && !(movement_info.flags & MOVEFLAG_TAXI))	/*50*50*/
 	{
 		sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 		Disconnect();
 		return;
 	}
 
-	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat && movement_info.flags & MOVEFLAG_FLYING)
+	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat &&
+		movement_info.flags & MOVEFLAG_FLYING && !(movement_info.flags & MOVEFLAG_FALLING) && !(movement_info.flags & MOVEFLAG_TAXI))
 	{
 		sCheatLog.writefromsession(this, "Used flying hack {1}, movement flags: %u", movement_info.flags);
 		Disconnect();
