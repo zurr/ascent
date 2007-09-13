@@ -979,9 +979,13 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				sp=m_spellInfo->EffectTriggerSpell[0];
 			else
 				sp=m_spellInfo->EffectTriggerSpell[1];
+			if(!sp)
+				break;//something went wrong, we are missing the triger spell
 			SpellCastTargets tgt;
 			tgt.m_unitTarget = unitTarget->GetGUID();
 			SpellEntry  * inf =sSpellStore.LookupEntry(sp);
+			if(!inf)
+				break;//something wrong again, triggering unexistant spell
 			Spell * spe = new Spell(u_caster,inf,true,NULL);
 			spe->prepare(&tgt);
 		}break;
