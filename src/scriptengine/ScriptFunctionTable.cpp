@@ -145,8 +145,10 @@ void ScriptEngine::SetUnitFunctionTable()
 		{ "ReturnToSpawn",						Unit_ReturnToSpawn					},
 		{ "GetRandomPlayer",					Unit_GetRandomPlayer				},
 		{ "AddThreat",							Unit_AddThreat						},
-		{ "ForgetMostHated",					Unit_ForgetMostHated				},
 		{ "ClearHateList",						Unit_ClearHateList					},
+		{ "GetMostHated",						Unit_GetMostHated					},
+		{ "ForgetHate",							Unit_ForgetHate						},
+		{ "IsInMeleeRange",						Unit_IsInMeleRange					},
 	};
 
 	m_machine->RegisterTypeLibrary(m_unitType, table, sizeof(table) / sizeof(table[0]));

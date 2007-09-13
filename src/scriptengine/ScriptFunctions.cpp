@@ -1548,7 +1548,10 @@ int Unit_ClearHateList(gmThread * a_thread)
 	Unit * pThis = GetThisPointer<Unit>(a_thread);
 
 	if(!pThis->IsInWorld())
+	{
+		GM_EXCEPTION_MSG("Unit is not in world!");
 		return GM_EXCEPTION;
+	}
 
 	if(pThis->GetTypeId() != TYPEID_UNIT) //this should never ocure
 		return GM_EXCEPTION;
@@ -1558,20 +1561,65 @@ int Unit_ClearHateList(gmThread * a_thread)
 	return GM_OK;
 }
 
-int Unit_ForgetMostHated(gmThread * a_thread)
+int Unit_ForgetHate(gmThread * a_thread)
 {
-	GM_CHECK_NUM_PARAMS(0);
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_USER_PARAM(Unit*, ScriptSystem->m_unitType, target, 0);
 
 	Unit * pThis = GetThisPointer<Unit>(a_thread);
 
 	if(!pThis->IsInWorld())
+	{
+		GM_EXCEPTION_MSG("Unit is not in world!");
 		return GM_EXCEPTION;
+	}
 
 	if(pThis->GetTypeId() != TYPEID_UNIT) //this should never ocure
 		return GM_EXCEPTION;
 
-	pThis->GetAIInterface()->RemoveThreatByPtr(pThis->GetAIInterface()->GetMostHated());
+	pThis->GetAIInterface()->RemoveThreatByPtr(target);
 
+	return GM_OK;
+}
+
+int Unit_GetMostHated(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(0);
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	if(!pThis->IsInWorld())
+	{
+		GM_EXCEPTION_MSG("Unit is not in world!");
+		return GM_EXCEPTION;
+	}
+
+	if(pThis->GetTypeId() != TYPEID_UNIT) //this should never ocure
+		return GM_EXCEPTION;
+
+	Unit * mosthated = pThis->GetAIInterface()->GetMostHated();
+
+	if(mosthated == NULL)
+	{
+		return GM_EXCEPTION;
+	}
+
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_user = (void*)mosthated;
+	ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]->m_userType = ScriptSystem->m_unitType;
+	a_thread->PushUser(ScriptSystem->m_userObjects[ScriptSystem->m_userObjectCounter]);
+	ScriptSystem->m_userObjectCounter++;
+
+	return GM_OK;
+}
+
+int Unit_IsInMeleRange(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(2);
+	GM_CHECK_USER_PARAM(Unit*, ScriptSystem->m_unitType, unit1, 0);
+	GM_CHECK_USER_PARAM(Unit*, ScriptSystem->m_unitType, unit2, 1);
+
+	float distance = unit1->CalcDistance(unit2);
+	float combatrange=unit1->GetAIInterface()->_CalcCombatRange(unit2, false);
+
+	a_thread->PushInt(combatrange>=distance);
 	return GM_OK;
 }
 
