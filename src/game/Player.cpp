@@ -6184,7 +6184,7 @@ void Player::ProcessPendingUpdates()
 	uint32 c = 0;
 
     //build out of range updates if creation updates are queued
-    if(bCreationBuffer.size())
+    if(bCreationBuffer.size() || mOutOfRangeIdCount)
     {
         #ifdef USING_BIG_ENDIAN
 	        *(uint32*)&update_buffer[c] = swap32(uint32(((mOutOfRangeIds.size() > 0) ? (mCreationCount + 1) : mCreationCount)));	c += 4;
@@ -6233,27 +6233,10 @@ void Player::ProcessPendingUpdates()
 			*(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);	c += 4;
 		#endif
 		update_buffer[c] = 1;																			   ++c;
-
-		// append any out of range updates
-		if(mOutOfRangeIdCount)
-		{
-			update_buffer[c]				= UPDATETYPE_OUT_OF_RANGE_OBJECTS;			 ++c;
-			#ifdef USING_BIG_ENDIAN
-					*(uint32*)&update_buffer[c]	 = swap32(mOutOfRangeIdCount);						  c += 4;
-			#else
-					*(uint32*)&update_buffer[c]	 = mOutOfRangeIdCount;						  c += 4;
-			#endif
-			memcpy(&update_buffer[c], mOutOfRangeIds.contents(), mOutOfRangeIds.size());   c += mOutOfRangeIds.size();
-			mOutOfRangeIds.clear();
-			mOutOfRangeIdCount = 0;
-		}
-
-		if(bUpdateBuffer.size())
-			memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());  c += bUpdateBuffer.size();
+		memcpy(&update_buffer[c], bUpdateBuffer.contents(), bUpdateBuffer.size());  c += bUpdateBuffer.size();
 
 		// clear our update buffer
 		bUpdateBuffer.clear();
-		bProcessPending = false;
 		mUpdateCount = 0;
 
 		// compress update packet
@@ -6264,7 +6247,8 @@ void Player::ProcessPendingUpdates()
 			m_session->OutPacket(SMSG_UPDATE_OBJECT, c, update_buffer);
 		}
 	}
-
+	
+	bProcessPending = false;
 	_bufferS.Release();
 	delete [] update_buffer;
 

@@ -383,6 +383,10 @@ bool Master::Run(int argc, char ** argv)
 		fprintf(fPid, "%u", (unsigned int)pid);
 		fclose(fPid);
 	}
+#ifdef WIN32
+	HANDLE hThread = GetCurrentThread();
+#endif
+
 #ifndef CLUSTERING
 	/* Connect to realmlist servers / logon servers */
 	new LogonCommHandler();
@@ -462,8 +466,13 @@ bool Master::Run(int argc, char ** argv)
 		sWorld.UpdateQueuedSessions(diff);
 
 		if(50 > etime)
-			Sleep(50 - etime);
-
+		{
+#ifdef WIN32
+			WaitForSingleObject(hThread, 50 - etime);
+#else
+			Sleep(50-etime);
+#endif
+		}
 	}
 	_UnhookSignals();
 

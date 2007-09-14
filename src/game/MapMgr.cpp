@@ -1289,6 +1289,9 @@ void MapMgr::Do()
 
 	uint32 exec_time, exec_start;
 	time_t t = 0;
+#ifdef WIN32
+	HANDLE hThread = GetCurrentThread();
+#endif
 	while((ThreadState != THREADSTATE_TERMINATE) && !_shutdown)
 	{
 		t = time(NULL);
@@ -1313,7 +1316,22 @@ void MapMgr::Do()
 		last_exec=getMSTime();
 		exec_time=last_exec-exec_start;
 		if(exec_time<MAP_MGR_UPDATE_PERIOD)
+		{
+			/*
+				The common place I see this is waiting for a Win32 thread to exit. I used to come up with all sorts of goofy,
+				elaborate event-based systems to do this myself until I discovered that thread handles are waitable. Just use
+				WaitForSingleObject() on the thread handle and you're done. No risking race conditions with the thread exit code.
+				I think pthreads has pthread_join() for this too.
+
+				- http://www.virtualdub.org/blog/pivot/entry.php?id=62
+			*/
+
+#ifdef WIN32
+			WaitForSingleObject(hThread, MAP_MGR_UPDATE_PERIOD-exec_time);
+#else
 			Sleep(MAP_MGR_UPDATE_PERIOD-exec_time);
+#endif
+		}
 
 		////////////////////////////////////
 		// Instance Soft Reset Handler

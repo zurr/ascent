@@ -1516,10 +1516,17 @@ void Spell::cast(bool check)
 			}
 			if(p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_REMAIN_STEALTHED))
 			{
-				uint32 stealthid = p_caster->m_stealth;
-				p_caster->m_stealth = 0;
+				/* talents procing - don't remove stealth either */
+				if(m_spellInfo->Attributes & 64 || (pSpellId && sSpellStore.LookupEntry(pSpellId)->Attributes & 64))
+				{
 
-				p_caster->RemoveAura(stealthid);
+				}
+				else
+				{
+					uint32 stealthid = p_caster->m_stealth;
+					p_caster->m_stealth = 0;
+					p_caster->RemoveAura(stealthid);
+				}
 			}
 		}
 
