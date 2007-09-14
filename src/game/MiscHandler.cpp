@@ -1815,8 +1815,36 @@ void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recv_data)
     uint32 data;
     recv_data >> data;
 
-    _player->iInstanceType = data;
-    sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
+    if(_player->GetGroup() && _player->IsGroupLeader())
+    {
+        WorldPacket pData;
+        pData.Initialize(CMSG_DUNGEON_DIFFICULTY);
+        pData << data;
+
+        _player->iInstanceType = data;
+        sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
+
+        Group * m_Group = _player->GetGroup();
+
+        m_Group->Lock();
+		for(uint32 i = 0; i < m_Group->GetSubGroupCount(); ++i)
+		{
+			for(GroupMembersSet::iterator itr = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); itr != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+			{
+				if(itr->player)
+				{
+                    itr->player->iInstanceType = data;
+					itr->player->GetSession()->SendPacket(&pData);
+				}
+			}
+		}
+		m_Group->Unlock();
+    }
+    else if(!_player->GetGroup())
+    {
+        _player->iInstanceType = data;
+        sInstanceSavingManager.ResetSavedInstancesForPlayer(_player);
+    }
 }
 
 void WorldSession::HandleSummonResponseOpcode(WorldPacket & recv_data)

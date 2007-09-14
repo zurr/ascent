@@ -56,6 +56,7 @@ Group::Group()
 	m_GroupType = GROUP_TYPE_PARTY;	 // Always init as party
 
 	// Create initial subgroup
+    memset(m_SubGroups,0, sizeof(SubGroup*)*8);
 	m_SubGroups[0] = new SubGroup(this, 0);
 
 	m_Leader = NULL;

@@ -7335,6 +7335,16 @@ void Player::CompleteLoading()
 	if(!m_Group && m_playerInfo->m_Group)
 	{
 		m_playerInfo->m_Group->AddMember(m_playerInfo, this, m_playerInfo->subGroup);
+        //player is not leader, check for instance difficulty
+        if(GetGroup() && !IsGroupLeader())
+        {
+            iInstanceType = this->GetGroup()->GetLeader()->iInstanceType;
+            WorldPacket datab(CMSG_DUNGEON_DIFFICULTY, 20);
+	        datab << iInstanceType;
+	        datab << uint32(0x01);
+	        datab << uint32(0x00);
+	        GetSession()->SendPacket(&datab);
+        }
 	}
 }
 
