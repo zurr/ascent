@@ -25,7 +25,7 @@
 
 void OutputCrashLogLine(const char * format, ...)
 {
-        std::string s = FormatOutputString("logs", "CrashLog", true);
+        std::string s = FormatOutputString("logs", "CrashLog", false);
         FILE * m_file = fopen(s.c_str(), "a");
         if(!m_file) return;
 
@@ -169,7 +169,7 @@ static const TCHAR *GetExceptionDescription(DWORD ExceptionCode)
 
 void echo(const char * format, ...)
 {
-	std::string s = FormatOutputString("logs", "CrashLog", true);
+	std::string s = FormatOutputString("logs", "CrashLog", false);
 	FILE * m_file = fopen(s.c_str(), "a");
 	if(!m_file) return;
 
@@ -289,7 +289,7 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry &en
 
 void CStackWalker::OnOutput(LPCSTR szText)
 {
-	std::string s = FormatOutputString("logs", "CrashLog", true);
+	std::string s = FormatOutputString("logs", "CrashLog", false);
 	FILE * m_file = fopen(s.c_str(), "a");
 	if(!m_file) return;
 
