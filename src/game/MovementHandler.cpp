@@ -622,7 +622,7 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 					_player->m_speedhackChances--;
 					
 					// TODO: replace with server plugin system later on
-					sCheatLog.writefromsession(this, "Speedhack warning, time diff of %u", time_difference);
+					sCheatLog.writefromsession(this, "Speedhack warning, time diff of %u", difference);
 				}
 				else if(_player->m_speedhackChances == 0)
 				{
