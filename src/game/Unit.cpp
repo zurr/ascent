@@ -4183,14 +4183,23 @@ void Unit::EventCastSpell(Unit * Target, SpellEntry * Sp)
 void Unit::SetFacing(float newo)
 {
 	SetOrientation(newo);
-	WorldPacket data(40);
+	/*WorldPacket data(40);
 	data.SetOpcode(MSG_MOVE_SET_FACING);
 	data << GetNewGUID();
 	data << (uint32)0; //flags
 	data << (uint32)0; //time
 	data << GetPositionX() << GetPositionY() << GetPositionZ() << newo;
 	data << (uint32)0; //unk
-	SendMessageToSet( &data, false );
+	SendMessageToSet( &data, false );*/
+
+	WorldPacket data(SMSG_MONSTER_MOVE, 60);
+	data << GetNewGUID();
+	data << m_position << getMSTime();
+	data << uint8(4) << newo;
+	data << uint32(0x00000000);		// flags
+	data << uint32(0);				// time
+	data << m_position;				// position
+	SendMessageToSet(&data, true);
 }
 
 //guardians are temporary spawn that will inherit master faction and will folow them. Apart from that they have their own mind

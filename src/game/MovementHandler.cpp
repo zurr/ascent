@@ -588,11 +588,8 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 	if(_player->_lastHeartbeatTime && _player->_lastHeartbeatX &&
 		_player->_lastHeartbeatY && _player->_lastHeartbeatZ)
 	{
-		uint32 new_time = getMSTime();
-		float distance_travelled = _player->CalcDistance(_player->_lastHeartbeatX,
-			_player->_lastHeartbeatY, _player->_lastHeartbeatZ, movement_info.x, movement_info.y, movement_info.z);
-		// get our time difference
-		uint32 time_difference = new_time - _player->_lastHeartbeatTime;
+		int32 time_diff = movement_info.time - _player->_lastHeartbeatTime;
+		float distance_travelled = _player->m_position.Distance2D(_player->_lastHeartbeatX, _player->_lastHeartbeatY);
 
 		// do our check calculation
 		float speed = _player->m_runSpeed;
@@ -611,9 +608,9 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 		uint32 move_time = (uint32)((float)distance_travelled / (float)(speed*0.001f));
 
 		// check if we're in the correct bounds
-		if(move_time > time_difference)
+		if(move_time > time_diff)
 		{
-			int32 difference = move_time - time_difference;
+			int32 difference = move_time - time_diff;
 			if(difference > 350)	// say this for now
 			{
 				if(_player->m_speedhackChances)
@@ -643,10 +640,10 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 			}
 
 			//printf("Move shit: %ums\n", abs(difference));
-			//sChatHandler.SystemMessage(this, "Move time : %u / %u, diff: %u", move_time, time_difference, difference);
+			sChatHandler.SystemMessage(this, "Move time : %d / %d, diff: %d", move_time, time_diff, difference);
 		}
 	}
-	_player->_lastHeartbeatTime = getMSTime();
+	_player->_lastHeartbeatTime = movement_info.time;
 	_player->_lastHeartbeatX = movement_info.x;
 	_player->_lastHeartbeatY = movement_info.y;
 	_player->_lastHeartbeatZ = movement_info.z;	 

@@ -2240,7 +2240,7 @@ void Spell::SendInterrupted(uint8 result)
 	if(!plr && u_caster)
 		plr = u_caster->m_redirectSpellPackets;
 
-	if(plr)
+	if(plr&&plr->IsPlayer())
 	{
 		data << m_caster->GetNewGUID();
 		data << m_spellInfo->Id;
@@ -4056,7 +4056,7 @@ void Spell::SendCastSuccess(Object * target)
 	Player * plr = p_caster;
 	if(!plr && u_caster)
 		plr = u_caster->m_redirectSpellPackets;
-	if(!plr)
+	if(!plr||!plr->IsPlayer())
 		return;
 
 	WorldPacket data(SMSG_TARGET_CAST_RESULT, 13);
@@ -4071,7 +4071,7 @@ void Spell::SendCastSuccess(const uint64& guid)
 	Player * plr = p_caster;
 	if(!plr && u_caster)
 		plr = u_caster->m_redirectSpellPackets;
-	if(!plr)
+	if(!plr || !plr->IsPlayer())
 		return;
     
 	// fuck bytebuffers
