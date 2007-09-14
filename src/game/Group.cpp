@@ -331,7 +331,11 @@ void Group::Update(bool delayed)
 			if(m_Looter != NULL) data << m_Looter->GetGUID();
 			else data << uint64(0);
 
-			data << uint16(m_LootThreshold);
+			data << uint8(m_LootThreshold);
+
+            if(m_Leader != NULL) 
+                data << (uint8)m_Leader->iInstanceType;
+			else data << uint8(0); // lol maybe we should save group difficulty also if there is no leader
 
 			/*data << uint64(0);	  // new in 2.0.3, dunno what it is
 			data << uint64(0);	  // new in 2.0.3, dunno what it is*/

@@ -7339,11 +7339,6 @@ void Player::CompleteLoading()
         if(GetGroup() && !IsGroupLeader())
         {
             iInstanceType = this->GetGroup()->GetLeader()->iInstanceType;
-            WorldPacket datab(CMSG_DUNGEON_DIFFICULTY, 20);
-	        datab << iInstanceType;
-	        datab << uint32(0x01);
-	        datab << uint32(0x00);
-	        GetSession()->SendPacket(&datab);
         }
 	}
 }
