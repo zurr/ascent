@@ -1621,6 +1621,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 			m_target->setAItoUse(true);
 		}
 		m_target->m_pacified++;
+		m_target->m_special_state |= UNIT_STATE_CONFUSE;
 		m_target->GetAIInterface()->HandleEvent(EVENT_WANDER, m_target, 0); 
 	}
 	else
@@ -1633,6 +1634,8 @@ void Aura::SpellAuraModConfuse(bool apply)
 			m_target->setAItoUse(false);
 		}
 		m_target->m_pacified--;
+		if (!m_target->m_pacified)
+			m_target->m_special_state &= ~UNIT_STATE_CONFUSE;
 		m_target->GetAIInterface()->HandleEvent(EVENT_UNWANDER, m_target, 0);
 		//somebody made us dizzy. It's paybacktime
 		Unit *m_caster = GetUnitCaster();
@@ -1666,6 +1669,7 @@ void Aura::SpellAuraModCharm(bool apply)
 
 	if(apply)
 	{
+		m_target->m_special_state |= UNIT_STATE_CHARM;
 		m_target->SetCharmTempVal(caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
 		m_target->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
 		m_target->_setFaction();
@@ -1694,6 +1698,7 @@ void Aura::SpellAuraModCharm(bool apply)
 	}
 	else
 	{
+		m_target->m_special_state &= ~UNIT_STATE_CHARM;
 		m_target->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, caster->GetCharmTempVal());
 		m_target->_setFaction();
 		m_target->GetAIInterface()->WipeHateList();
@@ -1726,6 +1731,7 @@ void Aura::SpellAuraModFear(bool apply)
 			data1 << m_target->GetNewGUID() << uint8(0x00); //block player movement ?
 			static_cast<Player*>(m_target)->GetSession()->SendPacket(&data1);
 		}
+		m_target->m_special_state |= UNIT_STATE_FEAR;
 		m_target->GetAIInterface()->SetUnitToFear(GetUnitCaster());
 		m_target->GetAIInterface()->HandleEvent(EVENT_FEAR, m_target, 0); 
 	}
@@ -1742,6 +1748,7 @@ void Aura::SpellAuraModFear(bool apply)
 			data1 << m_target->GetNewGUID() << uint8(0x01); //enable player movement ?
 			static_cast<Player*>(m_target)->GetSession()->SendPacket(&data1);
 		}
+		m_target->m_special_state &= ~UNIT_STATE_FEAR;
 		m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, m_target, 0);
 		m_target->GetAIInterface()->SetUnitToFear(NULL);
 		Unit*m_caster = GetUnitCaster();
@@ -1781,6 +1788,9 @@ void Aura::EventPeriodicHeal(uint32 amount)
 			bonus += float2int32(((Player*)c)->SpellHealDoneByInt[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT3));
 			bonus += float2int32(((Player*)c)->SpellHealDoneBySpr[m_spellProto->School] * ((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT4));
 			bonus += c->HealDoneMod[GetSpellProto()->School];
+			//Druid Tree of Life form. it should work not like this, but it's better then nothing. 
+			if (static_cast<Player*>(c)->IsInFeralForm() && static_cast<Player*>(c)->GetShapeShift() == FORM_TREE)
+				bonus += float2int32(0.25f*((Player*)c)->GetUInt32Value(UNIT_FIELD_STAT4));
 		}
 	bonus += m_target->HealTakenMod[GetSpellProto()->School];
 
@@ -1942,6 +1952,7 @@ void Aura::SpellAuraModStun(bool apply)
 
 		if(m_target->m_stunned == 0)
 		{
+			m_target->m_special_state |= UNIT_STATE_STUN;
 			// First stun. block rotation.
 			m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
 		}
@@ -1978,6 +1989,7 @@ void Aura::SpellAuraModStun(bool apply)
 
 		if(m_target->m_stunned == 0)
 		{
+			m_target->m_special_state &= ~UNIT_STATE_STUN;
 			// Last stun. Enable rotation again.
 			m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
 		}
@@ -2533,11 +2545,14 @@ void Aura::SpellAuraModPacify(bool apply)
 			SetPositive();
 		else
 			SetNegative();
+		m_target->m_special_state |= UNIT_STATE_PACIFY;
 		m_target->m_pacified++;
 	}
 	else
 	{
 		m_target->m_pacified--;
+		if (!m_target->m_pacified)
+			m_target->m_special_state &= ~UNIT_STATE_PACIFY;
 	}
 }
 
@@ -2575,6 +2590,7 @@ void Aura::SpellAuraModSilence(bool apply)
 {
 	if(apply)
 	{
+		m_target->m_special_state |= UNIT_STATE_SILENCE;
 		m_target->m_silenced++;
 
 		// remove the current spell (for channelers)
@@ -2586,7 +2602,11 @@ void Aura::SpellAuraModSilence(bool apply)
 		}
 	}
 	else
+	{
 		m_target->m_silenced--;
+		if (m_target->m_silenced==0)
+			m_target->m_special_state &= ~UNIT_STATE_SILENCE;
+	}
 }
 
 void Aura::SpellAuraReflectSpells(bool apply)
@@ -3201,7 +3221,7 @@ void Aura::SpellAuraModDispelImmunity(bool apply)
 	{
 		for(uint32 x=0;x<MAX_AURAS;x++)
 		{
-			if(m_target->m_auras[x])
+			if(m_target->m_auras[x] && m_target->m_auras[x]->GetSpellId() != 41425 && m_target->m_auras[x]->GetSpellId() != 25771)
 				if(m_target->m_auras[x]->GetSpellProto()->DispelType==(uint32)mod->m_miscValue)
 					m_target->m_auras[x]->Remove();
 		}
@@ -3733,6 +3753,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
 			SetPositive();
 		else
 			SetNegative();
+		m_target->m_special_state |= UNIT_STATE_SILENCE || UNIT_STATE_PACIFY;
 		m_target->m_silenced++;
 		m_target->m_pacified++;
 		if(m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid && 
@@ -3746,6 +3767,10 @@ void Aura::SpellAuraPacifySilence(bool apply)
 	{
 		m_target->m_pacified--;
 		m_target->m_silenced--;
+		if (m_target->m_pacified==0)
+			m_target->m_special_state &= ~UNIT_STATE_PACIFY;
+		if (m_target->m_silenced==0)
+			m_target->m_special_state &= ~UNIT_STATE_SILENCE;
 	}
 }
 
@@ -5378,18 +5403,16 @@ void Aura::SpellAuraModHaste(bool apply)
 	else 
 		SetPositive();
 
-	if(abs(mod->m_amount) == 100)
+	if(abs(mod->m_amount) >= 100)
 		return; // hacky fix
 
 	if (m_target->GetTypeId() == TYPEID_PLAYER)
 	{
-		if(apply)
-		{
-			//SetPositive();			
-			  static_cast<Player*>(m_target)->m_meleeattackspeedmod += mod->m_amount;
-		}
+		if(apply)			
+			static_cast<Player*>(m_target)->m_meleeattackspeedmod += mod->m_amount;
 		else
 			static_cast<Player*>(m_target)->m_meleeattackspeedmod -= mod->m_amount;
+
 		((Player*)m_target)->UpdateAttackSpeed();
 	}
 	else
@@ -6216,16 +6239,9 @@ void Aura::SpellAuraReduceEnemyRCritChance(bool apply)
 
 void Aura::SpellAuraIncreaseTimeBetweenAttacksPCT(bool apply)
 {
-	if(apply)
-	{
-		m_target->modAttackTimeIncreasePCT -= mod->m_amount;		
-		m_target->ModPFloatValue(UNIT_MOD_CAST_SPEED, -mod->m_amount, true);
-	}
-	else
-	{
-		m_target->modAttackTimeIncreasePCT += mod->m_amount;
-		m_target->ModPFloatValue(UNIT_MOD_CAST_SPEED, +mod->m_amount, false);
-	}
+	int32 val =  (apply) ? mod->m_amount : -mod->m_amount;
+	m_target->modAttackTimeIncreasePCT -= val;
+	m_target->ModPFloatValue(UNIT_MOD_CAST_SPEED, -val, false);
 }
 
 void Aura::SpellAuraIncreaseSpellDamageByInt(bool apply)

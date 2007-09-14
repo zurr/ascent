@@ -4173,11 +4173,13 @@ void Player::UpdateHit(int32 hit)
 
 void Player::UpdateChances()
 {
-	int clss = (int)getClass();
+	uint32 pClass = (uint32)this->getClass();
+	uint32 pLevel = (this->getLevel()>70) ? 70 : this->getLevel();
 	const float baseDodge[12] = { 0, 0, 0.75, 0.64, 0, 3, 0, 1.75, 3.25, 2, 0, 0.75 };
 	const float dodgeRatio[12] = { 0, 30, 30, 40, 21, 30, 0, 30, 30, 30, 0, 30 };
+	const float baseSpellCrit[12] = { 0, 0, 3.3355, 3.6020, 0, 1.2375, 0, 2.2010, 0.9075, 1.700, 0, 1.8515 };
  
-	float tmp = baseDodge[clss] + (GetUInt32Value( UNIT_FIELD_STAT1) / dodgeRatio[clss]) + this->GetDodgeFromSpell();
+	float tmp = baseDodge[pClass] + (GetUInt32Value( UNIT_FIELD_STAT1) / dodgeRatio[pClass]) + this->GetDodgeFromSpell();
 	tmp+=CalcRating(2);//dodge rating
 	SetFloatValue(PLAYER_DODGE_PERCENTAGE,min(tmp,95.0));
 
@@ -4205,7 +4207,7 @@ The crit constant is class and level dependent and for a level 70 character as f
 	* Warrior [33] 
 */
 
-	switch(clss)
+	switch(pClass)
 	{
 	case ROGUE: 
 		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 40.00);
@@ -4239,9 +4241,10 @@ The crit constant is class and level dependent and for a level 70 character as f
 	float rcr=tmp+CalcRating(9);
 	SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE,min(rcr,95.0));
 
-	//TODO: Correct spell crit chance calc.
-	spellcritperc = (GetUInt32Value(UNIT_FIELD_STAT3) / 60.0f) + this->GetSpellCritFromSpell();
-	spellcritperc+=CalcRating(10);
+	spellcritperc = baseSpellCrit[pClass] +
+					GetUInt32Value(UNIT_FIELD_STAT3)*SpellCritFromInt[pLevel][pClass] +
+					this->GetSpellCritFromSpell() +
+					this->CalcRating(10);
 	UpdateChanceFields();
 }
 
@@ -4395,15 +4398,6 @@ void Player::UpdateStats()
 	{
 		ModFloatValue(UNIT_MOD_CAST_SPEED,(SpellHasteRatingBonus-newb)/100.0);
 		SpellHasteRatingBonus=newb;
-	}
-	float NewShit = CalcRating(10);
-	if(NewShit !=SpellCrtiticalStrikeRatingBonus)
-	{
-		for(uint32 i = 0; i < 7; ++i)
-		{
-				SpellCritChanceSchool[i]+=(NewShit-SpellCrtiticalStrikeRatingBonus);
-		}
-		SpellCrtiticalStrikeRatingBonus=NewShit;
 	}
 ////////////////////RATINGS STUFF//////////////////////
 	UpdateChances();

@@ -606,6 +606,18 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
                 wspeed = 2800;
             }
         }
+		//Weapon speed constant in feral forms
+		if(pAttacker->IsPlayer())
+		{
+			if(static_cast<Player*>(pAttacker)->IsInFeralForm())
+			{
+				uint8 ss = static_cast<Player*>(pAttacker)->GetShapeShift();
+					if (ss == FORM_CAT)
+						wspeed = 1000.0;
+					else if(ss == FORM_DIREBEAR || ss == FORM_BEAR)
+						 wspeed = 2500.0;
+			}
+		}
 
 		bonus = (wspeed*ap)/14000.0f;
 
@@ -682,6 +694,20 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
                 }
             }
         }
+
+		//Weapon speed constant in feral forms
+	    if(pAttacker->IsPlayer())
+	    {
+	        if(static_cast<Player*>(pAttacker)->IsInFeralForm())
+	        {
+	            uint8 ss = static_cast<Player*>(pAttacker)->GetShapeShift();
+	            if(ss == FORM_CAT)
+	                wspeed = 1000.0;
+	            else if(ss == FORM_DIREBEAR || ss == FORM_BEAR)
+	                wspeed = 2500.0;
+	        }
+	    }
+
 		bonus = (wspeed*ap)/14000.0f;
 
 		min_damage += bonus;

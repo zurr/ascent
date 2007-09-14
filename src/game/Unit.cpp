@@ -27,6 +27,7 @@ Unit::Unit()
 	m_duelWield = false;
 
 	m_state = 0;
+	m_special_state = 0;
 	m_deathState = ALIVE;
 	m_currentSpell = NULL;
 	m_meleespell = 0;
@@ -1346,10 +1347,21 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			break;
 		}
 
-		if (it)
+		if (it && it->GetProto())
 			SubClassSkill = GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
+		else
+			SubClassSkill = SKILL_UNARMED;
+
 		if (SubClassSkill==SKILL_FIST_WEAPONS) 
 			SubClassSkill = SKILL_UNARMED;
+
+		//chances in feral form don't depend on weapon skill
+		if (static_cast<Player*>(this)->IsInFeralForm()) 
+		{
+			uint8 form = static_cast<Player*>(this)->GetShapeShift();
+			if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
+				SubClassSkill = SKILL_UNARMED;
+		}
 
 		self_skill += pr->_GetSkillLineCurrent(SubClassSkill);	
 		crit = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
@@ -3608,6 +3620,7 @@ void Unit::Root()
 
 void Unit::Root(uint32 time)
 {
+	this->m_special_state |= UNIT_STATE_ROOT;
 	if(m_objectTypeId == TYPEID_PLAYER)
 	{
 		static_cast<Player*>(this)->SetMovement(MOVE_ROOT, 1);
@@ -3621,6 +3634,7 @@ void Unit::Root(uint32 time)
 
 void Unit::Unroot()
 {
+	this->m_special_state &= ~(UNIT_STATE_ROOT);
 	if(m_objectTypeId == TYPEID_PLAYER)
 	{
 		static_cast<Player*>(this)->SetMovement(MOVE_UNROOT, 5);
@@ -3936,7 +3950,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive)
 {
 	for(uint32 x = 0; x < MAX_AURAS; ++x)
 	{
-		if(m_auras[x] && m_auras[x]->GetSpellProto()->School == School && (!m_auras[x]->IsPositive() || Positive))
+		if(m_auras[x]  && m_auras[x]->GetSpellProto()->School == School && (!m_auras[x]->IsPositive() || Positive))
 			m_auras[x]->Remove();
 	}
 }

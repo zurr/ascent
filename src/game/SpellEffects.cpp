@@ -2168,7 +2168,8 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 	if(unitTarget->m_auras[x])
 	{
 		aur = unitTarget->m_auras[x];
-		if(aur->GetSpellId() != 15007 && !aur->IsPassive()) //Nothing can dispel resurrection sickness
+		//Nothing can dispel resurrection sickness;
+		if(!aur->IsPassive() && aur->GetSpellId() != 15007)
 		{
 			if(m_spellInfo->DispelType == DISPEL_ALL)
 			{

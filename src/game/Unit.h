@@ -428,6 +428,25 @@ enum StandState
 	STANDSTATE_KNEEL			= 8
 };
 
+enum UnitStates
+{
+	UNIT_STATE_NORMAL    = 0x01,
+	UNIT_STATE_CHARM     = 0x02,
+	UNIT_STATE_FEAR      = 0x04,
+	UNIT_STATE_ROOT      = 0x08,
+	UNIT_STATE_SLEEP     = 0x10,
+	UNIT_STATE_SNARE     = 0x20,
+	UNIT_STATE_STUN      = 0x40,
+	UNIT_STATE_KNOCKOUT  = 0x80,
+	UNIT_STATE_BLEED     = 0x100,
+	UNIT_STATE_POLYMORPH = 0x200,
+	UNIT_STATE_BANISH    = 0x400,
+	UNIT_STATE_CONFUSE   = 0x800,
+	UNIT_STATE_PACIFY   = 0x1000,
+	UNIT_STATE_SILENCE   = 0x2000,
+	UNIT_STATE_MOUNT   = 0x4000,
+};
+
 enum UnitFieldBytes1
 {
 	U_FIELD_BYTES_ANIMATION_FROZEN = 0x01,
@@ -1048,6 +1067,8 @@ public:
 	//solo target auras
 	uint32 polySpell;
 	uint16 m_invisibityFlag;
+	uint32 m_special_state; //flags for special states (stunned,rooted etc)
+	
 //	uint32 fearSpell;
 	
 protected:
@@ -1058,7 +1079,7 @@ protected:
 
 	uint32 m_H_regenTimer;
 	uint32 m_P_regenTimer;
-	uint32 m_P_I_regenTimer; //PowerInterruptedRegenTimer.
+	uint32 m_P_I_regenTimer; //PowerInterruptedegenTimer.
 	uint32 m_state;		 // flags for keeping track of some states
 	uint32 m_attackTimer;   // timer for attack
 	uint32 m_attackTimer_1;

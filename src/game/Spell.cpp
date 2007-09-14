@@ -1717,28 +1717,32 @@ void Spell::cast(bool check)
 			if(!reflected)
 			{
 				for(uint32 x=0;x<3;x++)
-				if(m_spellInfo->Effect[x])
 				{
-					isDuelEffect = isDuelEffect ||  m_spellInfo->Effect[x] == SPELL_EFFECT_DUEL;
-					if(m_spellInfo->Effect[x] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
-						HandleEffects(m_caster->GetGUID(),x);
-					else  
+					if(m_spellInfo->Effect[x])
 					{
-/*						if(m_spellInfo->TargetAuraState)
+						isDuelEffect = isDuelEffect ||  m_spellInfo->Effect[x] == SPELL_EFFECT_DUEL;
+						if(m_spellInfo->Effect[x] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+							HandleEffects(m_caster->GetGUID(),x);
+						else  
 						{
-							for(i= m_targetUnits[x].begin();i != m_targetUnits[x].end();i++)
+	/*						if(m_spellInfo->TargetAuraState)
 							{
-								HandleEffects((*i),x);
-								//do not swap orders or unittarget will not be valid
-								Unit *ut=GetUnitTarget();
-								if(ut)
-									ut->RemoveFlag(UNIT_FIELD_AURASTATE,m_spellInfo->TargetAuraState);
+								for(i= m_targetUnits[x].begin();i != m_targetUnits[x].end();i++)
+								{
+									HandleEffects((*i),x);
+									//do not swap orders or unittarget will not be valid
+									Unit *ut=GetUnitTarget();
+									if(ut)
+										ut->RemoveFlag(UNIT_FIELD_AURASTATE,m_spellInfo->TargetAuraState);
+								}
 							}
-						}
-						else*/
-						{
-							for(i= m_targetUnits[x].begin();i != m_targetUnits[x].end();i++)
-								HandleEffects((*i),x);
+							else*/
+							if (m_targetUnits[x].size()>0)
+								for(i= m_targetUnits[x].begin();i != m_targetUnits[x].end();i++)
+									HandleEffects((*i),x);
+							else
+								if(m_spellInfo->Effect[x] == SPELL_EFFECT_TELEPORT_UNITS)
+									HandleEffects(m_caster->GetGUID(),x);
 						}
 					}
 				}
@@ -1859,7 +1863,7 @@ void Spell::update(uint32 difftime)
 	{	
 		if(u_caster)
 		{
-			if(u_caster->HasNoInterrupt() == 0)
+			if(u_caster->HasNoInterrupt() == 0 && m_spellInfo->EffectMechanic[1] != 14)
 			{
 				cancel();
 				return;
@@ -2660,6 +2664,8 @@ void Spell::HandleAddAura(uint64 guid)
 		spellid = 11196;
 	else if(m_spellInfo->MechanicsType == 19 && m_spellInfo->Id != 6788) // Cast spell Weakened Soul
 		spellid = 6788;
+	else if(m_spellInfo->Id == 11958) // Cast spell Hypothermia
+		spellid = 41425;
 
 	if(spellid && p_caster)
 	{
@@ -3113,7 +3119,24 @@ uint8 Spell::CanCast(bool rangetolerate)
 			if(now_ > u_caster->SchoolCastPrevent[m_spellInfo->School])//this limit has expired,remove
 				u_caster->SchoolCastPrevent[m_spellInfo->School]=0;
 			else 
-				return SPELL_FAILED_SILENCED;
+			{
+				switch (m_spellInfo->NameHash)
+				{
+				case 0x768F3B4B: //Ice Block
+				case 0x9840A1A6: //Divine Shield
+					break;
+				case 0x3DFA70E5: //Will of the Forsaken
+					if (u_caster->m_special_state | (UNIT_STATE_FEAR || UNIT_STATE_CHARM || UNIT_STATE_SLEEP))
+						break;
+				case 0xF60291F4: //Death Wish
+				case 0xD77038F4: //Fear Ward
+				case 0x19700707: //Berserker Rage
+					if (u_caster->m_special_state | UNIT_STATE_FEAR)
+						break;
+				default:
+					return SPELL_FAILED_SILENCED;
+				}
+			}
 		}
 
 		if(u_caster->m_silenced && m_spellInfo->School != NORMAL_DAMAGE)// can only silence non-physical
@@ -3134,10 +3157,31 @@ uint8 Spell::CanCast(bool rangetolerate)
 		}
 
 		if(u_caster->IsPacified() && m_spellInfo->School == NORMAL_DAMAGE) // only affects physical damage
-			return SPELL_FAILED_PACIFIED;
+		{
+			switch (m_spellInfo->NameHash)
+			{
+			case 0x768F3B4B: //Ice Block
+			case 0x9840A1A6: //Divine Shield
+			case 0x3DFA70E5: //Will of the Forsaken
+				if (u_caster->m_special_state | (UNIT_STATE_FEAR || UNIT_STATE_CHARM || UNIT_STATE_SLEEP))
+					break;
+			default:
+				return SPELL_FAILED_PACIFIED;
+			}
+		}
 
 		if(u_caster->IsStunned())
-			return SPELL_FAILED_STUNNED;
+		{
+			switch (m_spellInfo->NameHash)
+			{
+			case 0x768F3B4B: //Ice Block
+			case 0x9840A1A6: //Divine Shield
+			case 0xCD4CDF55: //Barkskin
+				break;
+			default:
+				return SPELL_FAILED_STUNNED;
+			}
+		}
 
         if(u_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) > 0)
         {
@@ -3165,7 +3209,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 		uint32 ss = p_caster->GetShapeShift();
 		if(ss && (ss < FORM_BATTLESTANCE || ss > FORM_STEALTH))//druid shapeshift
 		{
-			if(i_caster->GetProto()->InventoryType != INVTYPE_TRINKET)
+			if(i_caster->GetProto() && i_caster->GetProto()->InventoryType != INVTYPE_TRINKET)
 				return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;	
 		}	
 	}
