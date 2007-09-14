@@ -1131,21 +1131,24 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 	if(!unitTarget)
 		return;
 	// can't apply stuns/fear/polymorph/root etc on boss
-	Creature * c = (Creature*)(unitTarget);
-	if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
+	if (!unitTarget->IsPlayer())
 	{
-		switch(m_spellInfo->EffectApplyAuraName[i])
+		Creature * c = (Creature*)(unitTarget);
+		if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
 		{
-		case 6:
-		case 7:
-		case 12:
-		case 25:
-		case 26:
-		case 27:
-		case 31:
-		case 33:
-			SendCastResult(SPELL_FAILED_IMMUNE);
-			return;
+			switch(m_spellInfo->EffectApplyAuraName[i])
+			{
+			case 6:
+			case 7:
+			case 12:
+			case 25:
+			case 26:
+			case 27:
+			case 31:
+			case 33:
+				SendCastResult(SPELL_FAILED_IMMUNE);
+				return;
+			}
 		}
 	}
 	//check if we already have stronger aura
