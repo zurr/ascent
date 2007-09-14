@@ -2798,9 +2798,12 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
 	if(!unitTarget || !unitTarget->isAlive())
 		return;
 	// can't apply stuns/fear/polymorph/root etc on boss
-	Creature * c = (Creature*)(unitTarget);
-	if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
-		return;
+	if(unitTarget->GetTypeId()==TYPEID_UNIT)
+	{
+		Creature * c = (Creature*)(unitTarget);
+		if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
+			return;
+	}
 	// FIXME:This thing prevent target from spell casting too but cant find.
 	uint32 school=0;
 	if(unitTarget->GetCurrentSpell())
