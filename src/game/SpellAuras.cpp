@@ -3221,6 +3221,7 @@ void Aura::SpellAuraModDispelImmunity(bool apply)
 	{
 		for(uint32 x=0;x<MAX_AURAS;x++)
 		{
+            // HACK FIX FOR: 41425 and 25771
 			if(m_target->m_auras[x] && m_target->m_auras[x]->GetSpellId() != 41425 && m_target->m_auras[x]->GetSpellId() != 25771)
 				if(m_target->m_auras[x]->GetSpellProto()->DispelType==(uint32)mod->m_miscValue)
 					m_target->m_auras[x]->Remove();

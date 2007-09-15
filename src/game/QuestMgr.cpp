@@ -993,7 +993,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 		    if(!plr->HasSpell(qst->reward_spell))
 		    {
 			    // "Teaching" effect
-			    WorldPacket data(SMSG_SPELL_START, 200);
+			    WorldPacket data(SMSG_SPELL_START, 42);
 			    data << qst_giver->GetNewGUID() << qst_giver->GetNewGUID();
 			    data << uint32(7763);
 			    data << uint16(0);

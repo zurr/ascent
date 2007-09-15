@@ -20,7 +20,9 @@
 #include "StdAfx.h"
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 
+/// externals for spell system
 extern pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS];
+extern pSpellTarget SpellTargetHandler[TOTAL_SPELL_TARGET];
 
 void SpellCastTargets::read ( WorldPacket & data,uint64 caster )
 {
@@ -161,7 +163,7 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 	
 	m_requiresCP=false;
 	unitTarget = NULL;
-	MissedTargets.clear();
+	ModeratedTargets.clear();
 	itemTarget = NULL;
 	gameObjTarget = NULL;
 	playerTarget = NULL;
@@ -236,7 +238,7 @@ void Spell::FillAllTargetsInArea(std::vector<uint64> *tmpMap,float srcx,float sr
 					if(DidHit((*itr)->GetGUID()))
 						tmpMap->push_back((*itr)->GetGUID());
 					else
-						MissedTargets.push_back((*itr)->GetGUID());
+						ModeratedTargets.push_back(SpellTargetMod((*itr)->GetGUID(),2));
 				}
 					
 			}
@@ -683,527 +685,6 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 	if(store_buff->m_destX)
 		store_buff->m_targetMask |= TARGET_FLAG_DEST_LOCATION;
 }//end function
-
-void Spell::FillTargetMap(uint32 i)
-{
-	uint32 cur;
-	TargetsList *tmpMap=&m_targetUnits[i];
-	for(uint32 j=0;j<2;j++)
-	{
-		if(j==0)
-			cur = m_spellInfo->EffectImplicitTargetA[i];
-		else // if(j==1)
-			cur = m_spellInfo->EffectImplicitTargetB[i];
-		
-		switch(cur)
-		{
-		case 0:{
-			if(j==0 || (m_caster->IsPet() && j==1))
-			{
-				if(m_targets.m_unitTarget)
-					SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-				else if(m_targets.m_itemTarget)
-					SafeAddTarget(tmpMap,m_targets.m_itemTarget);
-				else if( (m_spellInfo->Effect[i] == SPELL_EFFECT_ADD_FARSIGHT
-					|| m_spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_DEMON) )
-					SafeAddTarget(tmpMap,m_caster->GetGUID());
-			}
-			   }break;
-		case 1:{// Self Target + in moonkin form party member in radius
-			if(p_caster)
-				if(m_spellInfo->RequiredShapeShift && (p_caster->getClass()==DRUID || p_caster->getClass()==WARRIOR))
-				if(m_spellInfo->Effect[i] != SPELL_EFFECT_LEARN_SPELL)//in talents
-				{	
-			
-					if(!p_caster->GetShapeShift())
-						break;
-					if(
-						! ((((uint32)1)<< (p_caster->GetShapeShift()-1)) & m_spellInfo->RequiredShapeShift)
-					)
-						break;
-				}
-
-			SafeAddTarget(tmpMap,m_caster->GetGUID());
-			   }break;		
-			// need more research
-		case 4:{ // dono related to "Wandering Plague", "Spirit Steal", "Contagion of Rot", "Retching Plague" and "Copy of Wandering Plague"
-			   }break;			
-		case 5:{// Target: Pet
-			if(p_caster)
-			{
-				if(p_caster->GetSummon())
-					SafeAddTarget(tmpMap,p_caster->GetSummon()->GetGUID());
-			}
-			   }break;
-		case 6:// Single Target Enemy
-		case 77:					// grep: i think this fits
-			{
-				if(m_spellInfo->TargetCreatureType  && GUID_HIPART(m_targets.m_unitTarget)==HIGHGUID_UNIT)
-				{		
-					Creature *cr=m_caster->GetMapMgr()->GetCreature( m_targets.m_unitTarget);
-					if(!cr)break;
-				
-					if(cr->GetCreatureName())
-						if(!(1<<(cr->GetCreatureName()->Type-1) & m_spellInfo->TargetCreatureType))
-                            break;
-				}
-				if(DidHit(m_targets.m_unitTarget))
-					SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-				else
-					SafeAddMissedTarget(m_targets.m_unitTarget);
-				if(m_spellInfo->EffectChainTarget[i])
-				{
-					uint32 jumps=m_spellInfo->EffectChainTarget[i]-1;
-					float range=GetMaxRange(sSpellRange.LookupEntry(m_spellInfo->rangeIndex));//this is probably wrong
-					range*=range;
-					std::set<Object*>::iterator itr;
-					for( itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++ )
-					{
-						if((*itr)->GetGUID()==m_targets.m_unitTarget)
-							continue;
-						if( !((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
-							continue;
-
-						if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),range))
-						{
-							if(isAttackable(u_caster,(Unit*)(*itr)))
-							{
-								if(DidHit(m_targets.m_unitTarget))
-									SafeAddTarget(tmpMap,((Unit*)*itr)->GetGUID());
-								else
-									SafeAddMissedTarget(((Unit*)*itr)->GetGUID());
-								if(!--jumps)
-									break;
-							}
-						}
-				   }
-			   }
-			
-			}break;
-			//need more research
-		// Point Blank Area of Effect
-		//case 7:{ // think its wrong, related to 2 spells, "Firegut Fear Storm" and "Mind Probe"
-			//FillAllTargetsInArea(tmpMap,m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,GetRadius(i));
-		  //	 }break;
-
-		case 8:{ // related to Chess Move (DND), Firecrackers, Spotlight, aedm, Spice Mortar
-			FillAllTargetsInArea(tmpMap,m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,GetRadius(i));
-			   }break;
-			// needs more research
-		//case 11:  // this is related to spellID: 4, as I think is a gm spell
-		  //  break;
-		case 15: // All Enemies in Area of Effect (TEST)
-		case 16:{ // All Enemies in Area of Effect instant (e.g. Flamestrike)
-			FillAllTargetsInArea(tmpMap,m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,GetRadius(i));
-				}break;
-
-			// spells like 17278:Cannon Fire and 21117:Summon Son of Flame A
-		case 17: // A single target at a xyz location or the target is a possition xyz
-			break;
-
-		case 18:{// Land under caster
-			if(m_spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_DEMON
-				|| m_spellInfo->Effect[i] == SPELL_EFFECT_SUMMON_OBJECT_WILD)
-			{
-				SafeAddTarget(tmpMap,m_caster->GetGUID());
-				break;
-			}
-			FillAllTargetsInArea(tmpMap,m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),GetRadius(i));
-				}break;
-		case 20:{// All Party Members around the Caster in given range NOT RAID!			
-			Player *p=p_caster;
-			if(!p)
-			{
-				if(((Creature*)u_caster)->IsTotem())
-					p=(Player*)((Creature*)u_caster)->GetTotemOwner();
-			}
-			if(!p)
-				break;
-
-			float r= GetRadius(i);
-				
-			r*=r;
-			if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
-				SafeAddTarget(tmpMap,p->GetGUID());	 
-
-			SubGroup * subgroup = p->GetGroup() ?
-				p->GetGroup()->GetSubGroup(p->GetSubGroup()) : 0;
-
-			if(subgroup)
-			{				
-				p->GetGroup()->Lock();
-				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
-				  {
-					  if(!itr->player || m_caster == itr->player) 
-						  continue;
-					  if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),itr->player,r))
-						  SafeAddTarget(tmpMap,itr->player->GetGUID());
-				  }
-				  p->GetGroup()->Unlock();
-			 }
-				}break;
-		case 21: {// Single Target Friend
-			Unit *Target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-			if(!Target)
-				continue;
-			float r= GetMaxRange(sSpellRange.LookupEntry(m_spellInfo->rangeIndex));
-			if(IsInrange (m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),Target, r*r))
-				SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-				 }break;
-		case 22:{// Enemy Targets around the Caster//changed party members around you
-			// grep: this is *totally* broken. AoE only attacking friendly party members and self
-			// is NOT correct.
-				FillAllTargetsInArea(tmpMap,m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),GetRadius(i));
-				}break;
-			/*if(m_caster->GetTypeId() == TYPEID_GAMEOBJECT)
-				FillAllTargetsInArea(tmpMap,m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),GetRadius(i));
-			else
-			{
-				Player *p=p_caster;
-				if(!p)
-				{
-					if(((Creature*)u_caster)->isTotem())
-						p=(Player*)((Creature*)u_caster)->GetTotemOwner();
-				}
-				float r= GetRadius(i);
-					
-				r*=r;
-				if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
-					SafeAddTarget(tmpMap,p->GetGUID());	 
-				
-				if(SubGroup* subgroup = p->GetSubGroup())
-				{				
-					for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
-					{
-						if(m_caster == (*itr)) 
-							continue;
-						if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),(*itr),r))
-							SafeAddTarget(tmpMap,(*itr)->GetGUID());
-					}
-				}
-					}break;
-			}*/
-		case 23:{// Gameobject Target
-			SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-				}break;
-		case 24:{// Targets in Front of the Caster
-			std::set<Object*>::iterator itr;
-			for( itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++ )
-			{
-				if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
-					continue;
-				//is Creature in range
-				if(m_caster->isInRange((Unit*)(*itr),GetRadius(i)))
-				{
-					if(m_caster->isInFront((Unit*)(*itr)))
-					{
-						if(isAttackable(u_caster, (Unit*)(*itr)))
-						{
-							if(DidHit(m_targets.m_unitTarget))
-								SafeAddTarget(tmpMap,((Unit*)*itr)->GetGUID());
-							else
-								SafeAddMissedTarget(((Unit*)*itr)->GetGUID());
-						}	
-					}
-				}
-			}
-				}break;
-		case 25: {// Single Target Friend Used in Duel
-			/*  Unit* Target = sObjHolder.GetObject<Player>(m_targets.m_unitTarget);
-
-			if(!Target)
-
-			break;
-
-			//if(_CalcDistance(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),Target->GetPositionX(),Target->GetPositionY(),Target->GetPositionZ()) < GetMaxRange(sSpellRange.LookupEntry(m_spellInfo->rangeIndex)))
-
-			*/ 
-				SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-
-				 }break;
-		case 26:{// Gameobject/Item Target
-			if(m_targets.m_unitTarget)
-				SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-
-			if(m_targets.m_itemTarget)
-				SafeAddTarget(tmpMap,m_targets.m_itemTarget);
-				}break;
-		case 27:{ // target is owner of pet
-			// please correct this if not correct does the caster variablen need a Pet caster variable?
-			if(u_caster)
-				if (u_caster->IsPet())
-					SafeAddTarget(tmpMap,((Pet*)u_caster)->GetPetOwner()->GetGUID());
-				}break;
-			//this is handled in DO
-		case 28:{// All Enemies in Area of Effect(Blizzard/Rain of Fire/volley) channeled
-			FillAllTargetsInArea(tmpMap,m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,GetRadius(i));
-				}break;
-
-		case 31: { // related to scripted effects
-			FillAllTargetsInArea(tmpMap,m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,GetRadius(i));
-				 }break;
-		case 32:
-		case 73:
-			{// Minion Target
-			if(m_caster->GetUInt64Value(UNIT_FIELD_SUMMON) == 0)
-				SafeAddTarget(tmpMap,m_caster->GetGUID());
-			else
-				SafeAddTarget(tmpMap,m_caster->GetUInt64Value(UNIT_FIELD_SUMMON));
-				}break;
-		case 33:{//Party members of totem, inside given range
-			if(u_caster)
-			{
-				if(u_caster->GetTypeId()==TYPEID_UNIT)
-				{
-					if(((Creature*)u_caster)->IsTotem())
-					{
-						float r =GetRadius(i);
-						r*=r;
-
-						Player*p=(Player*) ((Creature*)u_caster)->GetTotemOwner();
-						if(!p)
-							break;
-
-						if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
-							SafeAddTarget(tmpMap,p->GetGUID());
-						
-						SubGroup * pGroup = p->GetGroup() ?
-							p->GetGroup()->GetSubGroup(p->GetSubGroup()) : 0;
-
-						if(pGroup)
-						{
-							p->GetGroup()->Lock();
-							for(GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin();
-								itr != pGroup->GetGroupMembersEnd(); ++itr)
-							{
-								if(!itr->player || p == itr->player) 
-									continue;
-								if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),itr->player,r))
-								SafeAddTarget(tmpMap,itr->player->GetGUID());
-							}
-							p->GetGroup()->Unlock();
-						}
-					}
-				}
-			}
-				}break;
-		case 35:{// Single Target Party Member
-			Unit* Target = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
-			if(!Target)
-				break;
-			float r=GetMaxRange(sSpellRange.LookupEntry(m_spellInfo->rangeIndex));
-			if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),Target,r*r))
-				SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-				}break;
-		case 37:{ // all Members of the targets party
-				  // if no group target self
-			Player * Target = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
-			if(!Target)
-				break;
-
-			SubGroup * subgroup = Target->GetGroup() ?
-				Target->GetGroup()->GetSubGroup(Target->GetSubGroup()) : 0;
-
-			if(subgroup)
-			{
-				Target->GetGroup()->Lock();
-				for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
-				{
-					if(itr->player)
-                        SafeAddTarget(tmpMap,itr->player->GetGUID());
-				}
-				Target->GetGroup()->Unlock();
-			}
-			else
-			{
-				SafeAddTarget(tmpMap,Target->GetGUID());
-			}}break;
-		case 38:{//Dummy Target
-			if(m_spellInfo->Id == 12938)
-			{
-				//FIXME:this ll be immortal targets
-				FillAllTargetsInArea(tmpMap,m_targets.m_destX,m_targets.m_destY,m_targets.m_destZ,GetRadius(i));
-			}
-			SafeAddTarget(tmpMap,m_caster->GetGUID());
-				}break;
-		case 39:{//Fishing
-			SafeAddTarget(tmpMap,m_caster->GetGUID());
-				}break;
-		case 40:{//Activate Object target(probably based on focus)
-
-				}
-		case 41:
-		case 42:
-		case 43:
-		case 44:{// Totem
-			SafeAddTarget(tmpMap,m_caster->GetGUID());
-			/*
-			if( m_caster->GetTypeId() == TYPEID_UNIT )
-			{
-				if( ((Creature *)m_caster)->isTotem() )
-				{
-					printf("SPELL: A totem tried to cast a spell !!1\n");
-				}
-			}*/
-				}break;
-		case 45:{// Chain,!!only for healing!! for chain lightning =6 
-			//if selected target is party member, then jumps on party
-			Unit* firstTarget;
-
-			bool PartyOnly=false;
-			float range=GetMaxRange(sSpellRange.LookupEntry(m_spellInfo->rangeIndex));//this is probably wrong,
-			//this is cast distance, not searching distance
-			range *= range;
-
-			firstTarget = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
-			if(firstTarget && p_caster)
-			{
-				if(p_caster->InGroup())
-					if(p_caster->GetSubGroup()==((Player*)firstTarget)->GetSubGroup())
-						PartyOnly=true;					
-			}
-			else
-			{
-				firstTarget = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-				if(!firstTarget) 
-					break;
-			}
-			
-			uint32 jumps=m_spellInfo->EffectChainTarget[i];
-			if(m_spellInfo->SpellGroupType && u_caster)
-			{
-				SM_FIValue(u_caster->SM_FAdditionalTargets,(int32*)&jumps,m_spellInfo->SpellGroupType);
-			}
-			SafeAddTarget(tmpMap,firstTarget->GetGUID());
-			if(!jumps)
-				break;
-			jumps--;
-			if(PartyOnly)
-			{
-				GroupMembersSet::iterator itr;
-				SubGroup * pGroup = p_caster->GetGroup() ?
-					p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : 0;
-
-				if(pGroup)
-				{
-					p_caster->GetGroup()->Lock();
-					for(itr = pGroup->GetGroupMembersBegin();
-						itr != pGroup->GetGroupMembersEnd(); ++itr)
-					{
-						if(!itr->player || itr->player==u_caster)
-							continue;
-						if(IsInrange(u_caster->GetPositionX(),u_caster->GetPositionY(),u_caster->GetPositionZ(),itr->player, range))
-						{
-							SafeAddTarget(tmpMap,itr->player->GetGUID());
-							if(!--jumps)
-								break;
-						}
-					}
-					p_caster->GetGroup()->Unlock();
-				}
-			}//find nearby friendly target
-			else
-			{
-				std::set<Object*>::iterator itr;
-				for( itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); itr++ )
-				{
-					if( !(*itr)->IsUnit() || !((Unit*)(*itr))->isAlive())
-						continue;
-
-					if(IsInrange(firstTarget->GetPositionX(),firstTarget->GetPositionY(),firstTarget->GetPositionZ(),*itr, range))
-					{
-						if(!isAttackable(u_caster,(Unit*)(*itr)))
-						{
-							SafeAddTarget(tmpMap,(*itr)->GetGUID());
-							if(!--jumps)
-								break;
-						}
-					}
-				}
-			}
-				}break;
-		case 46:{//Unknown Summon Atal'ai Skeleton
-			SafeAddTarget(tmpMap,m_caster->GetGUID());
-				}break;
-		case 47:{// Portal
-			//FIXME: Not sure
-			SafeAddTarget(tmpMap,m_caster->GetGUID());
-				}break;
-		case 52:	// Lightwells, etc
-			{
-				SafeAddTarget(tmpMap, m_caster->GetGUID());
-			}break;
-		case 53:{// Target Area by Players CurrentSelection()
-			Unit *Target = NULL;
-			if(m_caster->IsInWorld())
-			{
-				if(p_caster)
-					Target = m_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
-				else
-					Target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-			}
-
-			if(!Target)
-				break;
-			FillAllTargetsInArea(tmpMap,Target->GetPositionX(),Target->GetPositionY(),Target->GetPositionZ(),GetRadius(i));
-				}break;
-		case 54:{// Targets in Front of the Caster
-			std::set<Object*>::iterator itr;
-			for( itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++ )
-			{
-				if(!((*itr)->IsUnit()) || !((Unit*)(*itr))->isAlive())
-					continue;
-				//is Creature in range
-				if(m_caster->isInRange((Unit*)(*itr),GetRadius(i)))
-				{
-					if(m_caster->isInFront((Unit*)(*itr)))
-					{
-						if(isAttackable(u_caster, (Unit*)(*itr)))
-						{
-							if(DidHit(m_targets.m_unitTarget))
-								SafeAddTarget(tmpMap,((Unit*)*itr)->GetGUID());
-							else
-								SafeAddMissedTarget(((Unit*)*itr)->GetGUID());
-						}	
-					}
-				}
-			 }
-		   }break;
-
-
-		case 57:{// Targeted Party Member
-			Unit* Target = m_caster->GetMapMgr()->GetPlayer (m_targets.m_unitTarget);
-			if(!Target)
-				break;
-
-			float r=GetMaxRange(sSpellRange.LookupEntry(m_spellInfo->rangeIndex));
-			if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),Target,r*r))
-				SafeAddTarget(tmpMap,m_targets.m_unitTarget);
-				}break;
-		case 61:{ // targets with the same group/raid and the same class
-					Player * Target = m_caster->GetMapMgr()->GetPlayer(m_targets.m_unitTarget);
-					if(!Target)
-						break;
-					
-					SubGroup * subgroup = Target->GetGroup() ?
-						Target->GetGroup()->GetSubGroup(Target->GetSubGroup()) : 0;
-
-					if(subgroup)
-					{
-						Target->GetGroup()->Lock();
-						for(GroupMembersSet::iterator itr = subgroup->GetGroupMembersBegin(); itr != subgroup->GetGroupMembersEnd(); ++itr)
-						{
-							if(!itr->player || Target->getClass() != itr->player->getClass()) 
-								continue;
-							SafeAddTarget(tmpMap,itr->player->GetGUID());
-						}
-						Target->GetGroup()->Unlock();
-					}
-				}break;
-		}
-		}
-}
-
 
 void Spell::prepare(SpellCastTargets * targets)
 {
@@ -1686,12 +1167,9 @@ void Spell::cast(bool check)
 				switch(m_spellInfo->EffectImplicitTargetA[j])
 				{
 					case 6:
-					//case 15:
-					//case 16:
 					case 22:
 					case 24:
 					case 25:
-					//case 28:
 						canreflect = true;
 						break;
 				}
@@ -2063,17 +1541,31 @@ void Spell::SendSpellStart()
 	m_caster->SendMessageToSet(&data, true);
 }
 
+/************************************************************************/
+/* General Spell Go Flags, for documentation reasons                    */
+/************************************************************************/
+enum SpellGoFlags
+{
+    SPELL_GO_FLAGS_RANGED           = 0x20,
+    SPELL_GO_FLAGS_ITEM_CASTER      = 0x100,
+    SPELL_GO_FLAGS_EXTRA_MESSAGE    = 0x400, //TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
+};
+
 void Spell::SendSpellGo()
 {
+    // no need to send this on passive spells
+    if(!m_caster->IsInWorld() || m_spellInfo->Attributes & 64)
+        return;
+
 	// Fill UniqueTargets
 	TargetsList::iterator i,j;
 	for(uint32 x=0;x<3;x++)
 	{
 		if(m_spellInfo->Effect[x])
 		{
-			for ( i = m_targetUnits[x].begin(); i != m_targetUnits[x].end(); i++ )
-			{
-				bool add=true;
+			//for ( i = m_targetUnits[x].begin(); i != m_targetUnits[x].end(); i++ )
+			//{
+				/*bool add=true;
 
 				for(j = UniqueTargets.begin(); j != UniqueTargets.end(); j++ )
 				{
@@ -2084,14 +1576,15 @@ void Spell::SendSpellGo()
 					}
 				}
 				if(add)
-					UniqueTargets.push_back((*i));
-			}
+					UniqueTargets.push_back((*i));*/
+                TargetsList::iterator itr = std::unique(m_targetUnits[x].begin(), m_targetUnits[x].end());
+                //UniqueTargets.insert(UniqueTargets.begin(),));
+                //UniqueTargets.insert(UniqueTargets.begin(), itr);
+			//}
 		}
 	}
 	
-	// no need to send this on passive spells
-	if(!m_caster->IsInWorld() || m_spellInfo->Attributes & 64)
-		return;
+	
 
 	// Start Spell
 	WorldPacket data(200);
@@ -2102,10 +1595,10 @@ void Spell::SendSpellGo()
 		flags |= 0x20;				    // 0x20 RANGED
 
 	if(i_caster)
-		flags |= 0x100;				    // 0x100 UNIT TARGET
+		flags |= 0x100;				    // 0x100 ITEM CASTER
 
-	if(MissedTargets.size() > 0)
-		flags |= 0x400;				    //0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
+	if(ModeratedTargets.size() > 0)
+		flags |= 0x400;				    // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
 
 	if(i_caster && u_caster)			// this is needed for correct cooldown on items
 	{
@@ -2121,7 +1614,7 @@ void Spell::SendSpellGo()
 	data << (uint8)(UniqueTargets.size()); //number of hits
 	
 	if (flags & 0x400)
-		data << (uint8)(MissedTargets.size()); //number if misses
+		data << (uint8)(ModeratedTargets.size()); //number if misses
   
 	writeSpellGoTargets(&data);
 	
@@ -2135,28 +1628,25 @@ void Spell::SendSpellGo()
 	if (GetType() == SPELL_TYPE_RANGED && p_caster)//ranged
 	{
 		ItemPrototype* ip=NULL;
-		switch(m_spellInfo->Id)
+		if(m_spellInfo->Id == SPELL_RANGED_THROW)
 		{
-		case SPELL_RANGED_THROW:  // throw
+			if(p_caster)
 			{
-				if(p_caster)
-				{
-					Item * it=p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-					if(it)
-						ip = it->GetProto();
-				}
-				else
-				{
-					ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
-				}
-			}break;
-		default:
+				Item * it=p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+				if(it)
+					ip = it->GetProto();
+			}
+			else
 			{
-				if(p_caster)
-					ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
-				else
-					ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
-			}break;
+				ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
+			}
+        }
+		else
+		{
+			if(p_caster)
+				ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+			else // HACK FIX
+				ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
 		}
 		if(ip)
 			data << ip->DisplayInfoID << ip->InventoryType;
@@ -2186,30 +1676,30 @@ void Spell::writeSpellMissedTargets( WorldPacket * data )
 	 * The flags at the end known to us so far are.
 	 * 1 = Miss
 	 * 2 = Resist
-	 * 3 = Dodge
+	 * 3 = Dodge // mellee only
 	 * 4 = Deflect
-	 * 5 = Block
+	 * 5 = Block // mellee only
 	 * 6 = Evade
 	 * 7 = Immune
 	 */
-	TargetsList::iterator i;
+	SpellTargetsList::iterator i;
 	if(u_caster && u_caster->isAlive())
 	{
-		for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ )
+		for ( i = ModeratedTargets.begin(); i != ModeratedTargets.end(); i++ )
 		{
-			*data << (*i);
-			*data << (uint8)2;
+			*data << (*i).TargetGuid;       // uint64
+			*data << (*i).TargetModType;    // uint8
 			///handle proc on resist spell
-			Unit* target = u_caster->GetMapMgr()->GetUnit(*i);
+			Unit* target = u_caster->GetMapMgr()->GetUnit((*i).TargetGuid);
 			if(target && target->isAlive())
 				u_caster->HandleProc(PROC_ON_RESIST_VICTIM,target,m_spellInfo/*,damage*/);		/** Damage is uninitialized at this point - burlex */
 		}
 	}
 	else
-		for ( i = MissedTargets.begin(); i != MissedTargets.end(); i++ )
+		for ( i = ModeratedTargets.begin(); i != ModeratedTargets.end(); i++ )
 		{
-			*data << (*i);
-			*data << (uint8)2;
+			*data << (*i).TargetGuid;       // uint64
+			*data << (*i).TargetModType;    // uint8
 		}
 }
 
@@ -3120,6 +2610,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 				u_caster->SchoolCastPrevent[m_spellInfo->School]=0;
 			else 
 			{
+                // HACK FIX
 				switch (m_spellInfo->NameHash)
 				{
 				case 0x768F3B4B: //Ice Block
@@ -3162,6 +2653,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 
 		if(u_caster->IsPacified() && m_spellInfo->School == NORMAL_DAMAGE) // only affects physical damage
 		{
+            // HACK FIX
 			switch (m_spellInfo->NameHash)
 			{
 			case 0x768F3B4B: //Ice Block
@@ -3178,6 +2670,7 @@ uint8 Spell::CanCast(bool rangetolerate)
 
 		if(u_caster->IsStunned())
 		{
+            // HACK FIX
 			switch (m_spellInfo->NameHash)
 			{
 			case 0x768F3B4B: //Ice Block
@@ -3376,7 +2869,7 @@ int32 Spell::CalculateEffect(uint32 i)
 	int32 basePoints            = m_spellInfo->EffectBasePoints[i] + 1;
 
 	/* Shady: it's so strange cause almost all spells has BPPL!=0 so at lvl70 Fireball takes +280 damage.
-	I think it's imbalanced so commited and replaced with dirty fix.
+	I think it's imbalanced so committed and replaced with dirty fix.
 	if (m_caster->IsUnit())
 		basePoints += static_cast<Unit*>(m_caster)->getLevel()*basePointsPerLevel; */
 	if (m_caster->IsUnit())
@@ -3407,12 +2900,13 @@ int32 Spell::CalculateEffect(uint32 i)
 	//scripted shit
 	else
 	if(m_spellInfo->Id == 34120)
-	{			//A steady shot that causes ${$RAP*0.3+$m1} damage. 
+	{	//A steady shot that causes ${$RAP*0.3+$m1} damage. 
 		if(i==0)
 			value += (uint32)(u_caster->GetRAP()*0.3);
-	}else
-	if(m_spellInfo->Id == 34428 || m_spellInfo->Id ==23881 ||m_spellInfo->Id == 23892 || m_spellInfo->Id==23893 ||m_spellInfo->Id == 23894||
-		m_spellInfo->Id == 25251 || m_spellInfo->Id == 30335)
+	}
+    // HACK FIX
+    else if(m_spellInfo->Id == 34428 || m_spellInfo->Id ==23881 ||m_spellInfo->Id == 23892 || m_spellInfo->Id==23893 ||m_spellInfo->Id == 23894||
+		    m_spellInfo->Id == 25251 || m_spellInfo->Id == 30335)
 	{//causing ${$AP*$m1/100} damage
 		if(i==0)
 		value = (value*u_caster->GetAP())/100;
@@ -3467,6 +2961,7 @@ int32 Spell::CalculateEffect(uint32 i)
 			for(itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
 			{
 				//DK:FIXME->yeni bir map oluþtur
+                // Capt: WHAT THE FUCK DOES THIS MEAN....
 				value += (sRand.randIntInternal(true)%(*itrSO)->damage);
 			}
 		}
@@ -3854,11 +3349,24 @@ void Spell::SafeAddTarget(TargetsList* tgt,uint64 guid)
 
 void Spell::SafeAddMissedTarget(uint64 guid)
 {
-	for(TargetsList::iterator i=MissedTargets.begin();i!=MissedTargets.end();i++)
-		if((*i)==guid)
-			return;
-	MissedTargets.push_back(guid);
+    for(SpellTargetsList::iterator i=ModeratedTargets.begin();i!=ModeratedTargets.end();i++)
+        if((*i).TargetGuid==guid)
+            return;
+    ModeratedTargets.push_back(SpellTargetMod(guid,2));
 }
+
+void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
+{
+	for(SpellTargetsList::iterator i=ModeratedTargets.begin();i!=ModeratedTargets.end();i++)
+		if((*i).TargetGuid==guid)
+        {
+            sLog.outDebug("[SPELL] Something goes wrong in spell target system");
+			return;
+        }
+
+	ModeratedTargets.push_back(SpellTargetMod(guid, type));
+}
+
 bool Spell::reflect(Unit *refunit)
 {
 	SpellEntry *refspell = NULL;
@@ -3965,6 +3473,9 @@ void UnapplyDiminishingReturnTimer(Unit * Target, SpellEntry * spell)
 	}
 }
 
+/// Calculate the Diminishing Group. This is based on a name hash.
+/// this off course is very hacky, but as its made done in a proper way
+/// I leave it here.
 uint32 GetDiminishingGroup(uint32 NameHash)
 {
 	int32 grp = -1;
@@ -4128,9 +3639,9 @@ void Spell::SendCastSuccess(const uint64& guid)
 	unsigned char buffer[13];
 	uint32 c = FastGUIDPack(guid, buffer, 0);
 #ifdef USING_BIG_ENDIAN
-	*(uint32*)&buffer[c] = swap32(m_spellInfo->Id);			c += 4;
+	*(uint32*)&buffer[c] = swap32(m_spellInfo->Id);         c += 4;
 #else
-	*(uint32*)&buffer[c] = m_spellInfo->Id;			c += 4;
+	*(uint32*)&buffer[c] = m_spellInfo->Id;                 c += 4;
 #endif
 
 	plr->GetSession()->OutPacket(SMSG_TARGET_CAST_RESULT, c, buffer);

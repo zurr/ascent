@@ -372,27 +372,6 @@
 				RelativePath="..\..\src\game\SocialMgr.h">
 			</File>
 			<File
-				RelativePath="..\..\src\game\Spell.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\game\Spell.h">
-			</File>
-			<File
-				RelativePath="..\..\src\game\SpellAuras.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\game\SpellAuras.h">
-			</File>
-			<File
-				RelativePath="..\..\src\game\SpellEffects.cpp">
-			</File>
-			<File
-				RelativePath="..\..\src\game\SpellFailure.h">
-			</File>
-			<File
-				RelativePath="..\..\src\game\SpellHandler.cpp">
-			</File>
-			<File
 				RelativePath="..\..\src\game\Stats.h">
 			</File>
 			<File
@@ -451,6 +430,34 @@
 				</File>
 				<File
 					RelativePath="..\..\src\game\WarsongGulch.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Spells"
+				Filter="">
+				<File
+					RelativePath="..\..\src\game\Spell.cpp">
+				</File>
+				<File
+					RelativePath="..\..\src\game\Spell.h">
+				</File>
+				<File
+					RelativePath="..\..\src\game\SpellAuras.cpp">
+				</File>
+				<File
+					RelativePath="..\..\src\game\SpellAuras.h">
+				</File>
+				<File
+					RelativePath="..\..\src\game\SpellEffects.cpp">
+				</File>
+				<File
+					RelativePath="..\..\src\game\SpellFailure.h">
+				</File>
+				<File
+					RelativePath="..\..\src\game\SpellHandler.cpp">
+				</File>
+				<File
+					RelativePath="..\..\src\game\SpellTarget.cpp">
 				</File>
 			</Filter>
 		</Filter>
