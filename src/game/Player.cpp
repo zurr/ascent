@@ -359,6 +359,7 @@ Player::Player ( uint32 high, uint32 low )
 	m_speedChangeCounter=1;
 	memset(&m_bgScore,0,sizeof(BGScore));
 	m_arenaPoints = 0;
+	_delayAntiFlyUntil=0;
 }
 
 
@@ -3162,8 +3163,9 @@ void Player::OnPushToWorld()
 
 void Player::ResetHeartbeatCoords()
 {
-	_lastHeartbeatX = _lastHeartbeatY = _lastHeartbeatZ = 0;
+	_lastHeartbeatX = _lastHeartbeatY = 0;
 	_lastHeartbeatTime = 0;
+	_heartBeatDisabledUntil = UNIXTIME + 3;
 }
 
 void Player::RemoveFromWorld()

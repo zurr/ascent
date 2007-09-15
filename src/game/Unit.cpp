@@ -3963,6 +3963,9 @@ void Unit::EnableFlight(bool delay /* = false */)
 		data << GetNewGUID();
 		data << uint32(2);
 		SendMessageToSet(&data, true);
+
+		if(IsPlayer())
+			((Player*)this)->_delayAntiFlyUntil = UNIXTIME + 3;
 	}
 	else
 	{
@@ -3971,6 +3974,7 @@ void Unit::EnableFlight(bool delay /* = false */)
 		*data << uint32(2);
 		SendMessageToSet(data, false);
 		static_cast<Player*>(this)->delayedPackets.add(data);
+		static_cast<Player*>(this)->_delayAntiFlyUntil=UNIXTIME+3;
 	}
 }
 

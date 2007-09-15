@@ -1278,7 +1278,8 @@ public:
 	void ResetHeartbeatCoords();
 	float _lastHeartbeatX;
 	float _lastHeartbeatY;
-	float _lastHeartbeatZ;
+	uint32 _heartBeatDisabledUntil;
+	uint32 _delayAntiFlyUntil;
 	uint32 _lastHeartbeatTime;
 	void AddSplinePacket(uint64 guid, ByteBuffer* packet);
 	ByteBuffer* GetAndRemoveSplinePacket(uint64 guid);

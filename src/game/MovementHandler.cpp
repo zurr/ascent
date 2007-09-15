@@ -122,7 +122,9 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat &&
-		movement_info.flags & MOVEFLAG_FLYING && !(movement_info.flags & MOVEFLAG_FALLING) && !(movement_info.flags & MOVEFLAG_TAXI))
+		(movement_info.flags & MOVEFLAG_FLYING || movement_info.flags & MOVEFLAG_AIR_SWIMMING) &&
+		&& !(movement_info.flags & MOVEFLAG_FALLING) &&	!(movement_info.flags & MOVEFLAG_TAXI) &&
+		_player->_delayAntiFlyUntil < UNIXTIME)
 	{
 		sCheatLog.writefromsession(this, "Used flying hack {1}, movement flags: %u", movement_info.flags);
 		Disconnect();
@@ -266,7 +268,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	//// speedhack protection
-	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
+	if(sWorld.SpeedhackProtection && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
 
@@ -452,15 +454,19 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	// speedhack protection
-	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
+	if(sWorld.SpeedhackProtection && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
 
 void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 {
     //player swiming.
+
     if(movement_info.flags & 0x200000)
     {
+		if(_player->m_MountSpellId)
+			_player->RemoveAura(_player->m_MountSpellId);
+
 		if(_player->FlyCheat)
 		{
 			if(_player->m_lastMoveType != 2)
@@ -490,13 +496,24 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
     }
 	else
 	{
-		if(_player->m_MountSpellId)
-			_player->RemoveAura(_player->m_MountSpellId);
-
-		if(_player->m_lastMoveType)
+		if(movement_info.flags & MOVEFLAG_AIR_SWIMMING)
 		{
-			_player->m_lastMoveType=0;
-			_player->ResetHeartbeatCoords();
+			if(_player->FlyCheat)
+			{
+				if(_player->m_lastMoveType != 2)
+				{
+					_player->m_lastMoveType = 2;		// flying
+					_player->ResetHeartbeatCoords();
+				}
+			}
+		}
+		else
+		{
+			if(_player->m_lastMoveType)
+			{
+				_player->m_lastMoveType=0;
+				_player->ResetHeartbeatCoords();
+			}
 		}
 	}
 
@@ -591,8 +608,7 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 	// beat!
 
 	// calculate distance between last heartbeat and this
-	if(_player->_lastHeartbeatTime && _player->_lastHeartbeatX &&
-		_player->_lastHeartbeatY && _player->_lastHeartbeatZ)
+	if(_player->_lastHeartbeatTime && _player->_heartBeatDisabledUntil < UNIXTIME)
 	{
 		int32 time_diff = movement_info.time - _player->_lastHeartbeatTime;
 		float distance_travelled = _player->m_position.Distance2D(_player->_lastHeartbeatX, _player->_lastHeartbeatY);
@@ -652,7 +668,6 @@ void WorldSession::_SpeedCheck(MovementInfo &mi)
 	_player->_lastHeartbeatTime = movement_info.time;
 	_player->_lastHeartbeatX = movement_info.x;
 	_player->_lastHeartbeatY = movement_info.y;
-	_player->_lastHeartbeatZ = movement_info.z;	 
 }
 
 void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket &recvdata)
