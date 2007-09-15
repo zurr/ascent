@@ -123,7 +123,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 	if(sWorld.antihack_flight && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->FlyCheat &&
 		(movement_info.flags & MOVEFLAG_FLYING || movement_info.flags & MOVEFLAG_AIR_SWIMMING) &&
-		&& !(movement_info.flags & MOVEFLAG_FALLING) &&	!(movement_info.flags & MOVEFLAG_TAXI) &&
+		!(movement_info.flags & MOVEFLAG_FALLING) && !(movement_info.flags & MOVEFLAG_TAXI) &&
 		_player->_delayAntiFlyUntil < UNIXTIME)
 	{
 		sCheatLog.writefromsession(this, "Used flying hack {1}, movement flags: %u", movement_info.flags);
