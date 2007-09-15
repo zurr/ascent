@@ -843,7 +843,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					//now if the target is facing his back to us then we could just cast dazed on him :P
 					//as far as i know dazed is casted by most of the creatures but feel free to remove this code if you think otherwise
 					if(!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->FriendlyMask==0 && m_Unit->m_faction->HostileMask==0) /* neutral creature */
-						&& m_nextTarget->IsPlayer() && !m_Unit->IsPet() && Rand(CREATURE_CHANCE_TO_DAZE))
+						&& m_nextTarget->IsPlayer() && !m_Unit->IsPet() && Rand(m_Unit->get_chance_to_daze(m_nextTarget)))
 					{
 						float our_facing=m_Unit->calcRadAngle(m_Unit->GetPositionX(),m_Unit->GetPositionY(),m_nextTarget->GetPositionX(),m_nextTarget->GetPositionY());
 						float his_facing=m_nextTarget->GetOrientation();

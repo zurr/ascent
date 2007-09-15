@@ -683,7 +683,8 @@ public:
 	void smsg_AttackStop(uint64 victimGuid);
 	
 	bool IsDazed();
-	
+	//this function is used for creatures to get chance to daze for another unit
+	float get_chance_to_daze(Unit *target);
 
 	// Stealth  
 	inline uint32 GetStealthLevel() { return m_stealthLevel+ 5* m_uint32Values[UNIT_FIELD_LEVEL]; }
