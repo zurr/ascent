@@ -1514,46 +1514,71 @@ public:
     bool IsAspect();
     bool IsSeal();
 
-    inline uint32 GetDuration()
+    uint32 GetDuration()
     {
         if(bDurSet)return Dur;
         bDurSet=true;
-        
-        
-        if(m_spellInfo->DurationIndex!=427)//resurrection sickness, has wierd duration 
+        int32 c_dur = 0;
+
+        if(m_spellInfo->DurationIndex)
         {
-                SpellDuration *sd=sSpellDuration.LookupEntry(m_spellInfo->DurationIndex);
-            if(m_spellInfo->DurationIndex)
-                Dur =::GetDuration(sd); 
-            else 
-                Dur = (uint32)-1;
-            if(p_caster)  
+            SpellDuration *sd=sSpellDuration.LookupEntry(m_spellInfo->DurationIndex);
+            if(sd)
             {
-                uint32 cp=p_caster->m_comboPoints;
-                if(cp)
+                //check for negative and 0 durations.
+                //duration affected by level
+                if((int32)sd->Duration1 < 0 && sd->Duration2 && u_caster)
                 {
-                    uint32 bonus=(cp*(sd->Duration3-sd->Duration1))/5;
-                    if(bonus)
+                    c_dur = ((int32)sd->Duration1 + (sd->Duration2 * u_caster->getLevel()));
+                    if(c_dur > 0 && sd->Duration3 > 0 && c_dur > sd->Duration3)
                     {
-                        Dur+=bonus;
-                        m_requiresCP=true;
+                        c_dur = sd->Duration3;
+                    }
+                    if(c_dur > 0)
+                    {
+                        Dur = c_dur;
+                    }
+                    if(c_dur < 0)
+                    {
+                        Dur = 0;
+                    }
+
+                }
+                if(sd->Duration1 > 0 && !c_dur)
+                {
+                    Dur = sd->Duration1;
+                }
+                //combo point lolerCopter? ;P
+                if(p_caster)  
+                {
+                    uint32 cp=p_caster->m_comboPoints;
+                    if(cp)
+                    {
+                        uint32 bonus=(cp*(sd->Duration3-sd->Duration1))/5;
+                        if(bonus)
+                        {
+                            Dur+=bonus;
+                            m_requiresCP=true;
+                        }
                     }
                 }
-            }
 
-            if(m_spellInfo->SpellGroupType && u_caster)
+                if(m_spellInfo->SpellGroupType && u_caster)
+                {
+                    SM_FIValue(u_caster->SM_FDur,(int32*)&Dur,m_spellInfo->SpellGroupType);
+                    SM_PIValue(u_caster->SM_PDur,(int32*)&Dur,m_spellInfo->SpellGroupType);
+                }
+            }
+            else
             {
-                SM_FIValue(u_caster->SM_FDur,(int32*)&Dur,m_spellInfo->SpellGroupType);
-                SM_PIValue(u_caster->SM_PDur,(int32*)&Dur,m_spellInfo->SpellGroupType);
+                Dur = (uint32)-1;
             }
         }
         else
         {
-            if(u_caster->getLevel()<11) Dur=0;
-            else if(u_caster ->getLevel()<=20)
-                Dur =(u_caster->getLevel()-10)*60*1000;
-            else Dur =10*60*1000;
+             Dur = (uint32)-1;
         }
+
         return Dur;
     }
 
