@@ -2250,7 +2250,6 @@ void World::Rehash(bool load)
 	MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
 	UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
 	BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
-	SpeedhackProtection = Config.MainConfig.GetBoolDefault("Server", "SpeedhackProtection", false);
 	SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
 	compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
 	LevelCap = Config.MainConfig.GetIntDefault("Server", "LevelCap", 60);
@@ -2366,4 +2365,5 @@ void World::Rehash(bool load)
 	antihack_falldmg = Config.MainConfig.GetBoolDefault("AntiHack", "FallDamage", true);
 	antihack_flight = Config.MainConfig.GetBoolDefault("AntiHack", "Flight", true);
 	no_antihack_on_gm = Config.MainConfig.GetBoolDefault("AntiHack", "DisableOnGM", false);
+	SpeedhackProtection = antihack_speed;
 }

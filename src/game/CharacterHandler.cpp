@@ -864,6 +864,10 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 		plr->AddToWorld();
 	}
 
+	/* delay antiflight hack checks and speedhack checks for 10 seconds. */
+	_player->_delayAntiFlyUntil = UNIXTIME + 10;
+	_player->_heartBeatDisabledUntil = UNIXTIME + 10;
+
 	sInstanceSavingManager.BuildSavedInstancesForPlayer(plr);
 	objmgr.AddPlayer(_player);
 	return true;
