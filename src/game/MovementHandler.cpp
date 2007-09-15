@@ -153,72 +153,6 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		(*itr)->GetSession()->OutPacket(recv_data.GetOpcode(), recv_data.size() + pos, movement_packet);
 	}
 
-	//Setup Transporter Positioning
-	if(movement_info.transGuid != 0 && !_player->m_lockTransportVariables)
-	{
-		if(!_player->m_TransporterGUID)
-		{
-			_player->m_CurrentTransporter = objmgr.GetTransporter(movement_info.transGuid);
-			if(_player->m_CurrentTransporter)
-			{
-                GetPlayer()->m_TransporterGUID = movement_info.transGuid;
-				_player->m_CurrentTransporter->AddPlayer(_player);
-			}
-		}
-
-		GetPlayer()->m_TransporterX = movement_info.transX;
-		GetPlayer()->m_TransporterY = movement_info.transY;
-		GetPlayer()->m_TransporterZ = movement_info.transZ;
-		GetPlayer()->m_TransporterO = movement_info.transO;
-		GetPlayer()->m_TransporterUnk = movement_info.transUnk;
-		
-		//float x = movement_info.x - movement_info.transX;
-		//float y = movement_info.y - movement_info.transY;
-		//float z = movement_info.z - movement_info.transZ;
-		/*Transporter* trans = _player->m_CurrentTransporter;
-		if(trans) sChatHandler.SystemMessageToPlr(_player, "Client t pos: %f %f\nServer t pos: %f %f   Diff: %f %f", x,y, trans->GetPositionX(), trans->GetPositionY(), trans->CalcDistance(x,y,z), trans->CalcDistance(movement_info.x, movement_info.y, movement_info.z));*/
-	}
-	else
-	{
-		if(_player->m_TransporterGUID && !_player->m_lockTransportVariables)
-		{
-			// remove us from the porter
-			GetPlayer()->m_TransporterGUID = 0;
-			GetPlayer()->m_TransporterX = 0.0f;
-			GetPlayer()->m_TransporterY = 0.0f;
-			GetPlayer()->m_TransporterZ = 0.0f;
-			GetPlayer()->m_TransporterO = 0.0f;
-
-			if(_player->m_CurrentTransporter)
-				_player->m_CurrentTransporter->RemovePlayer(_player);
-
-			GetPlayer()->m_CurrentTransporter = NULL;
-		}
-	}
-	_HandleBreathing(recv_data, movement_info);
-	_player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOVEMENT);
-
-	if( _player->m_CurrentCharm )
-	{
-		_player->m_CurrentCharm->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation);
-	}
-	else
-	{
-		if(!_player->m_CurrentTransporter) 
-		{
-			if( !_player->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation) )
-			{
-				GetPlayer()->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
-				GetPlayer()->KillPlayer();
-			}
-		}
-		else
-		{
-			_player->SetPosition(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), 
-				movement_info.orientation + movement_info.transO, false);
-		}
-	}	
- 
 	//Falling Handler
 	if (movement_info.flags & 0x2000) // Falling
 	{
@@ -267,9 +201,76 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		}
 	}
 
-	//// speedhack protection
-	if(sWorld.SpeedhackProtection && !_player->blinked)
-		_SpeedCheck(movement_info);
+	//Setup Transporter Positioning
+	if(movement_info.transGuid != 0 && !_player->m_lockTransportVariables)
+	{
+		if(!_player->m_TransporterGUID)
+		{
+			_player->m_CurrentTransporter = objmgr.GetTransporter(movement_info.transGuid);
+			if(_player->m_CurrentTransporter)
+			{
+				_player->m_CurrentTransporter->AddPlayer(_player);
+			}
+		}
+
+		GetPlayer()->m_TransporterX = movement_info.transX;
+		GetPlayer()->m_TransporterY = movement_info.transY;
+		GetPlayer()->m_TransporterZ = movement_info.transZ;
+		GetPlayer()->m_TransporterO = movement_info.transO;
+		GetPlayer()->m_TransporterUnk = movement_info.transUnk;
+		GetPlayer()->m_TransporterGUID = movement_info.transGuid;
+		
+		//float x = movement_info.x - movement_info.transX;
+		//float y = movement_info.y - movement_info.transY;
+		//float z = movement_info.z - movement_info.transZ;
+		/*Transporter* trans = _player->m_CurrentTransporter;
+		if(trans) sChatHandler.SystemMessageToPlr(_player, "Client t pos: %f %f\nServer t pos: %f %f   Diff: %f %f", x,y, trans->GetPositionX(), trans->GetPositionY(), trans->CalcDistance(x,y,z), trans->CalcDistance(movement_info.x, movement_info.y, movement_info.z));*/
+	}
+	else
+	{
+		if(_player->m_TransporterGUID && !_player->m_lockTransportVariables)
+		{
+			// remove us from the porter
+			GetPlayer()->m_TransporterGUID = 0;
+			GetPlayer()->m_TransporterX = 0.0f;
+			GetPlayer()->m_TransporterY = 0.0f;
+			GetPlayer()->m_TransporterZ = 0.0f;
+			GetPlayer()->m_TransporterO = 0.0f;
+
+			if(_player->m_CurrentTransporter)
+				_player->m_CurrentTransporter->RemovePlayer(_player);
+
+			GetPlayer()->m_CurrentTransporter = NULL;
+			_player->ResetHeartbeatCoords();
+		}
+
+		//// speedhack protection
+		if(sWorld.SpeedhackProtection && !_player->blinked)
+			_SpeedCheck(movement_info);
+	}
+	_HandleBreathing(recv_data, movement_info);
+	_player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOVEMENT);
+
+	if( _player->m_CurrentCharm )
+	{
+		_player->m_CurrentCharm->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation);
+	}
+	else
+	{
+		if(!_player->m_CurrentTransporter) 
+		{
+			if( !_player->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation) )
+			{
+				GetPlayer()->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
+				GetPlayer()->KillPlayer();
+			}
+		}
+		else
+		{
+			_player->SetPosition(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), 
+				movement_info.orientation + movement_info.transO, false);
+		}
+	}	
 }
 
 void WorldSession::HandleMoveStopOpcode( WorldPacket & recv_data )
@@ -398,7 +399,6 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 			_player->m_CurrentTransporter = objmgr.GetTransporter(movement_info.transGuid);
 			if(_player->m_CurrentTransporter)
 			{
-                GetPlayer()->m_TransporterGUID = movement_info.transGuid;
 				_player->m_CurrentTransporter->AddPlayer(_player);
 			}
 		}
@@ -408,6 +408,7 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 		GetPlayer()->m_TransporterZ = movement_info.transZ;
 		GetPlayer()->m_TransporterO = movement_info.transO;
 		GetPlayer()->m_TransporterUnk = movement_info.transUnk;
+		GetPlayer()->m_TransporterGUID = movement_info.transGuid;
 
 //		float x = movement_info.x - movement_info.transX;
  //	   float y = movement_info.y - movement_info.transY;
@@ -430,7 +431,12 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 				_player->m_CurrentTransporter->RemovePlayer(_player);
 			
 			GetPlayer()->m_CurrentTransporter = NULL;
+			_player->ResetHeartbeatCoords();
 		}
+
+		// speedhack protection
+		if(sWorld.SpeedhackProtection && !_player->blinked)
+			_SpeedCheck(movement_info);
 	}
 	_HandleBreathing(recv_data, movement_info);
 
@@ -454,10 +460,6 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 				movement_info.orientation + movement_info.transO, false);
 		}
 	}
-
-	// speedhack protection
-	if(sWorld.SpeedhackProtection && !_player->blinked)
-		_SpeedCheck(movement_info);
 }
 
 void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
