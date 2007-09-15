@@ -266,7 +266,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	//// speedhack protection
-	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
+	//if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
 
@@ -452,7 +452,7 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	// speedhack protection
-	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
+	//if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
 
@@ -461,25 +461,23 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
     //player swiming.
     if(movement_info.flags & 0x200000)
     {
-        if(!_player->m_lastMoveType)
+		if(_player->FlyCheat)
 		{
-            if(_player->FlyCheat)
+			if(_player->m_lastMoveType != 2)
 			{
-				if(_player->m_lastMoveType != 2)
-				{
-					_player->m_lastMoveType = 2;		// flying
-					_player->ResetHeartbeatCoords();
-				}
-			}
-			else
-			{
-				if(_player->m_lastMoveType != 1)
-				{
-					_player->m_lastMoveType = 1;		// swimming
-					_player->ResetHeartbeatCoords();
-				}
+				_player->m_lastMoveType = 2;		// flying
+				_player->ResetHeartbeatCoords();
 			}
 		}
+		else
+		{
+			if(_player->m_lastMoveType != 1)
+			{
+				_player->m_lastMoveType = 1;		// swimming
+				_player->ResetHeartbeatCoords();
+			}
+		}
+
         // get water level only if it was not set before
 		if (!m_bIsWLevelSet)
 		{
@@ -490,6 +488,18 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
 		if(!(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
 			_player->m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
     }
+	else
+	{
+		if(_player->m_MountSpellId)
+			_player->RemoveAura(_player->m_MountSpellId);
+
+		if(_player->m_lastMoveType)
+		{
+			_player->m_lastMoveType=0;
+			_player->ResetHeartbeatCoords();
+		}
+	}
+
     if(movement_info.flags & 0x2000 && _player->m_UnderwaterState)
     {
         //player jumped inside water but still underwater.
@@ -541,10 +551,6 @@ void WorldSession::_HandleBreathing(WorldPacket &recv_data, MovementInfo &mi)
     }
     if(m_bIsWLevelSet && (movement_info.z + _player->m_noseLevel) < m_wLevel)
 	{
-		// underwater, w000t!
-		if(_player->m_MountSpellId)
-			_player->RemoveAura(_player->m_MountSpellId);
-    	
 		if(!(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
 		{
 			// we only just entered the water
