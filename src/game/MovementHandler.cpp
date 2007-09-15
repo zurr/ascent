@@ -266,7 +266,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	//// speedhack protection
-	//if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
+	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
 
@@ -452,7 +452,7 @@ void WorldSession::HandleBasicMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	// speedhack protection
-	//if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
+	if(sWorld.SpeedhackProtection && GetPermissionCount() == 0 && !_player->blinked)
 		_SpeedCheck(movement_info);
 }
 
