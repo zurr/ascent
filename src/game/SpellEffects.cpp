@@ -1651,6 +1651,8 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 			summon->AddSpell(sSpellStore.LookupEntry(31707), true);
 		if (sSpellStore.LookupEntry(33395))
 			summon->AddSpell(sSpellStore.LookupEntry(33395), true);
+       summon->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, p_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+       summon->_setFaction();
 	}
 	else
 	{
