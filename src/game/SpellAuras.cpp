@@ -3753,7 +3753,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
 			SetPositive();
 		else
 			SetNegative();
-		m_target->m_special_state |= UNIT_STATE_SILENCE || UNIT_STATE_PACIFY;
+		m_target->m_special_state |= UNIT_STATE_SILENCE | UNIT_STATE_PACIFY;
 		m_target->m_silenced++;
 		m_target->m_pacified++;
 		if(m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid && 

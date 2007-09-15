@@ -3126,13 +3126,17 @@ uint8 Spell::CanCast(bool rangetolerate)
 				case 0x9840A1A6: //Divine Shield
 					break;
 				case 0x3DFA70E5: //Will of the Forsaken
-					if (u_caster->m_special_state | (UNIT_STATE_FEAR || UNIT_STATE_CHARM || UNIT_STATE_SLEEP))
-						break;
+					{
+						if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_SLEEP))
+							break;
+					}break;
 				case 0xF60291F4: //Death Wish
 				case 0xD77038F4: //Fear Ward
 				case 0x19700707: //Berserker Rage
-					if (u_caster->m_special_state | UNIT_STATE_FEAR)
-						break;
+					{
+						if (u_caster->m_special_state & UNIT_STATE_FEAR)
+							break;
+					}break;
 				default:
 					return SPELL_FAILED_SILENCED;
 				}
@@ -3163,8 +3167,10 @@ uint8 Spell::CanCast(bool rangetolerate)
 			case 0x768F3B4B: //Ice Block
 			case 0x9840A1A6: //Divine Shield
 			case 0x3DFA70E5: //Will of the Forsaken
-				if (u_caster->m_special_state | (UNIT_STATE_FEAR || UNIT_STATE_CHARM || UNIT_STATE_SLEEP))
-					break;
+				{
+					if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_SLEEP))
+						break;
+				}break;
 			default:
 				return SPELL_FAILED_PACIFIED;
 			}
