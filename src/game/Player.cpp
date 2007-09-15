@@ -4185,8 +4185,15 @@ void Player::UpdateChances()
 	tmp+=CalcRating(2);//dodge rating
 	SetFloatValue(PLAYER_DODGE_PERCENTAGE,min(tmp,95.0));
 
-	tmp = 5.0f + GetUInt32Value(UNIT_FIELD_STAT0) / 22.0 + this->GetBlockFromSpell();
-	tmp+=CalcRating(4);//block rating
+	//block = 0 if no shield
+	Item* it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+	if(it && it->GetProto()->InventoryType==INVTYPE_SHIELD)
+	{
+		tmp = 5.0f + GetUInt32Value(UNIT_FIELD_STAT0) / 22.0 + this->GetBlockFromSpell();
+		tmp+=CalcRating(4);//block rating
+	}
+	else
+		tmp = 0.0f;
 	SetFloatValue(PLAYER_BLOCK_PERCENTAGE,min(tmp,95.0));
 
 	tmp = 5.0f + this->GetParryFromSpell();

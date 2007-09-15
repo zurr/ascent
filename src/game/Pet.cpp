@@ -68,7 +68,7 @@ void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_
 		SetUInt32Value(UNIT_FIELD_PETNUMBER, GetGUIDLow());
 		SetPowerType(POWER_TYPE_MANA);
 		if(entry == WATER_ELEMENTAL)
-			m_name = "SBAL & DrMadison";
+			m_name = "Emsy good job";
 		else
 			m_name = sWorld.GenerateName();
 

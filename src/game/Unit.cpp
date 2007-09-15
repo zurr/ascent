@@ -1285,11 +1285,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		if((damage_type != RANGED) && !backAttack)
 		{
 //--------------------------------block chance----------------------------------------------
-			it = ((Player*)pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-			if(it && it->GetProto()->InventoryType==INVTYPE_SHIELD)
-			{
-				block = pVictim->GetFloatValue(PLAYER_BLOCK_PERCENTAGE);
-			}
+				block = pVictim->GetFloatValue(PLAYER_BLOCK_PERCENTAGE); //shield check already done in Update chances
 //--------------------------------dodge chance----------------------------------------------
 			if (pVictim->m_stunned<=0) 
 			{
