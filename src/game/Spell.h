@@ -1220,12 +1220,11 @@ struct SpellTargetMod
 
 typedef std::vector<uint64> TargetsList;
 typedef std::vector<SpellTargetMod> SpellTargetsList;
+
 typedef void(Spell::*pSpellEffect)(uint32 i);
+typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 
-typedef void(Spell::*pSpellTarget)(TargetsList *, uint32 i, uint32 j);
-
-
-#define POWER_TYPE_HEALTH -2 //0xFFFFFFFE // this is -2
+#define POWER_TYPE_HEALTH -2
 #define POWER_TYPE_MANA 0
 #define POWER_TYPE_RAGE 1
 #define POWER_TYPE_FOCUS 2
@@ -1313,11 +1312,6 @@ public:
     void HandleAddAura(uint64 guid);
     void writeSpellGoTargets( WorldPacket * data );
     void writeSpellMissedTargets( WorldPacket * data );
-
-   
-    
-
-
 
     SpellEntry * m_spellInfo;
     uint32 pSpellId;
@@ -1424,44 +1418,44 @@ public:
     void SpellEffectApplyAura128(uint32 i);
 
     // Spell Targets Handlers
-    void SpellTargetNULL(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetDefault(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetSelf(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetType4(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetPet(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetSingleTargetEnemy(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetCustomAreaOfEffect(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetAreaOfEffect(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetLandUnderCaster(TargetsList * tmpMap,uint32 i, uint32 j); /// I don't think this is the correct name for this one
-    void SpellTargetAllPartyMembersRangeNR(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetSingleTargetFriend(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetAoE(TargetsList * tmpMap,uint32 i, uint32 j); // something special
-    void SpellTargetSingleGameobjectTarget(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetInFrontOfCaster(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetSingleFriend(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetGameobject_itemTarget(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetPetOwner(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetEnemysAreaOfEffect(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetType29(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetPartyBasedAreaEffect(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetScriptedEffects(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetSummon(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetNearbyPartyMembers(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetSingleTargetPartyMember(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetScriptedEffects2(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetPartyMember(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetDummyTarget(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetFishing(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetType40(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetTotem(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetChainTargeting(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetType46(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetType47(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetType52(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetTargetAreaSelectedUnit(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetInFrontOfCaster2(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetTargetPartyMember(TargetsList * tmpMap,uint32 i, uint32 j);
-    void SpellTargetSameGroupSameClass(TargetsList * tmpMap,uint32 i, uint32 j);
+    void SpellTargetNULL(uint32 i, uint32 j);
+    void SpellTargetDefault(uint32 i, uint32 j);
+    void SpellTargetSelf(uint32 i, uint32 j);
+    void SpellTargetType4(uint32 i, uint32 j);
+    void SpellTargetPet(uint32 i, uint32 j);
+    void SpellTargetSingleTargetEnemy(uint32 i, uint32 j);
+    void SpellTargetCustomAreaOfEffect(uint32 i, uint32 j);
+    void SpellTargetAreaOfEffect(uint32 i, uint32 j);
+    void SpellTargetLandUnderCaster(uint32 i, uint32 j); /// I don't think this is the correct name for this one
+    void SpellTargetAllPartyMembersRangeNR(uint32 i, uint32 j);
+    void SpellTargetSingleTargetFriend(uint32 i, uint32 j);
+    void SpellTargetAoE(uint32 i, uint32 j); // something special
+    void SpellTargetSingleGameobjectTarget(uint32 i, uint32 j);
+    void SpellTargetInFrontOfCaster(uint32 i, uint32 j);
+    void SpellTargetSingleFriend(uint32 i, uint32 j);
+    void SpellTargetGameobject_itemTarget(uint32 i, uint32 j);
+    void SpellTargetPetOwner(uint32 i, uint32 j);
+    void SpellTargetEnemysAreaOfEffect(uint32 i, uint32 j);
+    void SpellTargetType29(uint32 i, uint32 j);
+    void SpellTargetPartyBasedAreaEffect(uint32 i, uint32 j);
+    void SpellTargetScriptedEffects(uint32 i, uint32 j);
+    void SpellTargetSummon(uint32 i, uint32 j);
+    void SpellTargetNearbyPartyMembers(uint32 i, uint32 j);
+    void SpellTargetSingleTargetPartyMember(uint32 i, uint32 j);
+    void SpellTargetScriptedEffects2(uint32 i, uint32 j);
+    void SpellTargetPartyMember(uint32 i, uint32 j);
+    void SpellTargetDummyTarget(uint32 i, uint32 j);
+    void SpellTargetFishing(uint32 i, uint32 j);
+    void SpellTargetType40(uint32 i, uint32 j);
+    void SpellTargetTotem(uint32 i, uint32 j);
+    void SpellTargetChainTargeting(uint32 i, uint32 j);
+    void SpellTargetType46(uint32 i, uint32 j);
+    void SpellTargetType47(uint32 i, uint32 j);
+    void SpellTargetType52(uint32 i, uint32 j);
+    void SpellTargetTargetAreaSelectedUnit(uint32 i, uint32 j);
+    void SpellTargetInFrontOfCaster2(uint32 i, uint32 j);
+    void SpellTargetTargetPartyMember(uint32 i, uint32 j);
+    void SpellTargetSameGroupSameClass(uint32 i, uint32 j);
 
     void Heal(int32 amount);
 
