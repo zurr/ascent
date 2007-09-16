@@ -183,9 +183,12 @@ ObjectMgr::~ObjectMgr()
 	}
 
 	sLog.outString("Deleting Charters...");
-	for(HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr =  m_charters.begin(); itr != m_charters.end(); ++itr)
+	for(int i = 0; i < NUM_CHARTER_TYPES; ++i)
 	{
-		delete itr->second;
+		for(HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr =  m_charters[i].begin(); itr != m_charters[i].end(); ++itr)
+		{
+			delete itr->second;
+		}
 	}
 
 	sLog.outString("Deleting reputation tables...");
@@ -329,6 +332,7 @@ void ObjectMgr::LoadPlayersInfo()
 			pn->acct = fields[11].GetUInt32();
 			pn->m_Group=0;
 			pn->subGroup=0;
+			pn->m_loggedInPlayer=NULL;
 
 			if(pn->race==RACE_HUMAN||pn->race==RACE_DWARF||pn->race==RACE_GNOME||pn->race==RACE_NIGHTELF||pn->race==RACE_DRAENEI)
 				pn->team = 0;
@@ -2729,30 +2733,30 @@ void ObjectMgr::LoadGuildCharters()
 	do 
 	{
 		Charter * c = new Charter(result->Fetch());
-		m_charters[c->GetID()] = c;
+		m_charters[c->CharterType].insert(make_pair(c->GetID(), c));
 		if(c->GetID() > m_hiCharterId)
 			m_hiCharterId = c->GetID();
 	} while(result->NextRow());
 	delete result;
-	Log.Notice("ObjectMgr", "%u charters loaded.", m_charters.size());
+	Log.Notice("ObjectMgr", "%u charters loaded.", m_charters[0].size());
 }
 
-Charter * ObjectMgr::GetCharter(uint32 CharterId)
+Charter * ObjectMgr::GetCharter(uint32 CharterId, CharterTypes Type)
 {
 	Charter * rv;
 	HM_NAMESPACE::hash_map<uint32,Charter*>::iterator itr;
 	m_charterLock.AcquireReadLock();
-	itr = m_charters.find(CharterId);
-	rv = (itr == m_charters.end()) ? 0 : itr->second;
+	itr = m_charters[Type].find(CharterId);
+	rv = (itr == m_charters[Type].end()) ? 0 : itr->second;
 	m_charterLock.ReleaseReadLock();
 	return rv;
 }
 
-Charter * ObjectMgr::CreateCharter(uint32 LeaderGuid)
+Charter * ObjectMgr::CreateCharter(uint32 LeaderGuid, CharterTypes Type)
 {
 	m_charterLock.AcquireWriteLock();
-	Charter * c = new Charter(++m_hiCharterId, LeaderGuid);
-	m_charters[c->GetID()] = c;
+	Charter * c = new Charter(++m_hiCharterId, LeaderGuid, Type);
+	m_charters[c->CharterType].insert(make_pair(c->GetID(), c));
 	m_charterLock.ReleaseWriteLock();
 	return c;
 }
@@ -2761,12 +2765,15 @@ Charter::Charter(Field * fields)
 {
 	uint32 f = 0;
 	CharterId = fields[f++].GetUInt32();
+	CharterType = fields[f++].GetUInt32();
 	LeaderGuid = fields[f++].GetUInt32();
 	GuildName = fields[f++].GetString();
 	ItemGuid = fields[f++].GetUInt64();
 	SignatureCount = 0;
+	Slots = GetNumberOfSlotsByType();
+	Signatures = new uint32[Slots];
 
-	for(uint32 i = 0; i < 9; ++i)
+	for(uint32 i = 0; i < Slots; ++i)
 	{
 		Signatures[i] = fields[f++].GetUInt32();
 		if(Signatures[i])
@@ -2776,12 +2783,12 @@ Charter::Charter(Field * fields)
 
 void Charter::AddSignature(uint32 PlayerGuid)
 {
-	if(SignatureCount >= 9)
+	if(SignatureCount >= Slots)
 		return;
 
 	SignatureCount++;
 	uint32 i;
-	for(i = 0; i < 9; ++i)
+	for(i = 0; i < Slots; ++i)
 	{
 		if(Signatures[i] == 0)
 		{
@@ -2790,12 +2797,12 @@ void Charter::AddSignature(uint32 PlayerGuid)
 		}
 	}
 
-	assert(i != 9);
+	assert(i != Slots);
 }
 
 void Charter::RemoveSignature(uint32 PlayerGuid)
 {
-	for(uint32 i = 0; i < 9; ++i)
+	for(uint32 i = 0; i < Slots; ++i)
 	{
 		if(Signatures[i] == PlayerGuid)
 		{
@@ -2816,13 +2823,13 @@ void Charter::Destroy()
 	CharacterDatabase.Execute("UPDATE characters SET charterId = 0 WHERE charterId = %u", CharterId);
 	CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", CharterId);
 	Player * p;
-	for(uint32 i = 0; i < 9; ++i)
+	for(uint32 i = 0; i < Slots; ++i)
 	{
 		if(!Signatures[i])
 			continue;
 		p =  objmgr.GetPlayer(Signatures[i]) ;
 		if(p)
-			p->m_charter = 0;
+			p->m_charters[CharterType] = 0;
 	}
 
 	// click, click, boom!
@@ -2831,38 +2838,78 @@ void Charter::Destroy()
 
 void Charter::SaveToDB()
 {
-	CharacterDatabase.Execute(
+	/*CharacterDatabase.Execute(
 		"REPLACE INTO charters VALUES(%u,%u,'%s',"I64FMTD",%u,%u,%u,%u,%u,%u,%u,%u,%u)",
 		CharterId,LeaderGuid,GuildName.c_str(),ItemGuid,Signatures[0],Signatures[1],
 		Signatures[2],Signatures[3],Signatures[4],Signatures[5],
-		Signatures[6],Signatures[7],Signatures[8]);
+		Signatures[6],Signatures[7],Signatures[8]);*/
+	std::stringstream ss;
+	uint32 i;
+	ss << "REPLACE INTO charters VALUES(" << CharterId << "," << CharterType << "," << LeaderGuid << ",'" << GuildName << "'," << ItemGuid;
 
+	for(i = 0; i < Slots; ++i)
+		ss << "," << Signatures[i];
+
+	for(; i < 9; ++i)
+		ss << ",0";
+
+    ss << ")";
+	CharacterDatabase.Execute(ss.str().c_str());
 }
 
 Charter * ObjectMgr::GetCharterByItemGuid(uint64 guid)
 {
-	Charter * rv = 0;
 	m_charterLock.AcquireReadLock();
-	HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr = m_charters.begin();
-	for(; itr != m_charters.end(); ++itr)
+	for(int i = 0; i < NUM_CHARTER_TYPES; ++i)
 	{
-		if(itr->second->ItemGuid == guid)
+		HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr = m_charters[i].begin();
+		for(; itr != m_charters[i].end(); ++itr)
 		{
-			rv = itr->second;
-			break;
+			if(itr->second->ItemGuid == guid)
+			{
+				m_charterLock.ReleaseReadLock();
+				return itr->second;
+			}
 		}
 	}
 	m_charterLock.ReleaseReadLock();
-	return rv;
+	return NULL;
 }
 
+Charter * ObjectMgr::GetCharterByGuid(uint64 playerguid, CharterTypes type)
+{
+	m_charterLock.AcquireReadLock();
+	for(int i = 0; i < NUM_CHARTER_TYPES; ++i)
+	{
+		HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr = m_charters[i].begin();
+		for(; itr != m_charters[i].end(); ++itr)
+		{
+			if(playerguid == itr->second->LeaderGuid)
+			{
+				m_charterLock.ReleaseReadLock();
+				return itr->second;
+			}
 
-Charter * ObjectMgr::GetCharterByName(string &charter_name)
+			for(int j = 0; j < itr->second->SignatureCount; ++j)
+			{
+				if(itr->second->Signatures[j] == playerguid)
+				{
+					m_charterLock.ReleaseReadLock();
+					return itr->second;
+				}
+			}
+		}
+	}
+	m_charterLock.ReleaseReadLock();
+	return NULL;
+}
+
+Charter * ObjectMgr::GetCharterByName(string &charter_name, CharterTypes Type)
 {
 	Charter * rv = 0;
 	m_charterLock.AcquireReadLock();
-	HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr = m_charters.begin();
-	for(; itr != m_charters.end(); ++itr)
+	HM_NAMESPACE::hash_map<uint32, Charter*>::iterator itr = m_charters[Type].begin();
+	for(; itr != m_charters[Type].end(); ++itr)
 	{
 		if(itr->second->GuildName == charter_name)
 		{
@@ -2878,7 +2925,7 @@ Charter * ObjectMgr::GetCharterByName(string &charter_name)
 void ObjectMgr::RemoveCharter(Charter * c)
 {
 	m_charterLock.AcquireWriteLock();
-	m_charters.erase(c->CharterId);
+	m_charters[c->CharterType].erase(c->CharterId);
 	m_charterLock.ReleaseWriteLock();
 }
 
@@ -3137,4 +3184,73 @@ void ObjectMgr::LoadGroups()
 	}
 
 	Log.Notice("ObjectMgr", "%u groups loaded.", this->mGroupSet.size());
+}
+
+void ObjectMgr::LoadArenaTeams()
+{
+	QueryResult * result = CharacterDatabase.Query("SELECT * FROM arena_teams");
+	if(result != NULL)
+	{
+		do 
+		{
+			ArenaTeam * team = new ArenaTeam(result->Fetch());
+			AddArenaTeam(team);
+		} while(result->NextRow());
+		delete result;
+	}
+}
+
+ArenaTeam * ObjectMgr::GetArenaTeamByGuid(uint32 guid, uint32 Type)
+{
+	m_arenaTeamLock.Acquire();
+	for(HM_NAMESPACE::hash_map<uint32,ArenaTeam*>::iterator itr = m_arenaTeamMap[Type].begin(); itr != m_arenaTeamMap[Type].end(); ++itr)
+	{
+		if(itr->second->HasMember(guid))
+		{
+			m_arenaTeamLock.Release();
+			return itr->second;
+		}
+	}
+	m_arenaTeamLock.Release();
+	return NULL;
+}
+
+ArenaTeam * ObjectMgr::GetArenaTeamById(uint32 id)
+{
+	HM_NAMESPACE::hash_map<uint32, ArenaTeam*>::iterator itr;
+	m_arenaTeamLock.Acquire();
+    itr = m_arenaTeams.find(id);
+	m_arenaTeamLock.Release();
+	return (itr == m_arenaTeams.end()) ? NULL : itr->second;
+}
+
+ArenaTeam * ObjectMgr::GetArenaTeamByName(string & name, uint32 Type)
+{
+	m_arenaTeamLock.Acquire();
+	for(HM_NAMESPACE::hash_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
+	{
+		if(!strnicmp(itr->second->m_name.c_str(), name.c_str(), name.size()))
+		{
+			m_arenaTeamLock.Release();
+			return itr->second;
+		}
+	}
+	m_arenaTeamLock.Release();
+	return NULL;
+}
+
+void ObjectMgr::RemoveArenaTeam(ArenaTeam * team)
+{
+	m_arenaTeamLock.Acquire();
+	m_arenaTeams.erase(team->m_id);
+	m_arenaTeamMap[team->m_type].erase(team->m_id);
+	m_arenaTeamLock.Release();
+}
+
+void ObjectMgr::AddArenaTeam(ArenaTeam * team)
+{
+	m_arenaTeamLock.Acquire();
+	m_arenaTeams[team->m_id] = team;
+	m_arenaTeamMap[team->m_type].insert(make_pair(team->m_id,team));
+	m_arenaTeamLock.Release();
 }

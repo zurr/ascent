@@ -481,10 +481,32 @@ void WorldSession::HandleDestroyItemOpcode( WorldPacket & recv_data )
 
 		if(it->GetProto()->ItemId == ITEM_ENTRY_GUILD_CHARTER)
 		{
-			Charter *gc = _player->m_charter;
+			Charter *gc = _player->m_charters[CHARTER_TYPE_GUILD];
 			if(gc)
 				gc->Destroy();
 		}
+
+		if(it->GetProto()->ItemId == ARENA_TEAM_CHARTER_2v2)
+		{
+			Charter *gc = _player->m_charters[CHARTER_TYPE_ARENA_2V2];
+			if(gc)
+				gc->Destroy();
+		}
+
+		if(it->GetProto()->ItemId == ARENA_TEAM_CHARTER_5v5)
+		{
+			Charter *gc = _player->m_charters[CHARTER_TYPE_ARENA_5V5];
+			if(gc)
+				gc->Destroy();
+		}
+
+		if(it->GetProto()->ItemId == ARENA_TEAM_CHARTER_3v3)
+		{
+			Charter *gc = _player->m_charters[CHARTER_TYPE_ARENA_3V3];
+			if(gc)
+				gc->Destroy();
+		}
+
 		uint32 mail_id = it->GetUInt32Value(ITEM_FIELD_ITEM_TEXT_ID);
 		if(mail_id)
 			sMailSystem.RemoveMessageIfDeleted(mail_id, _player->GetGUID());

@@ -133,6 +133,7 @@
 
 #include "Channel.h"
 #include "ChannelMgr.h"
+#include "ArenaTeam.h"
 
 #include "LogonCommClient.h"
 #include "LogonCommHandler.h"

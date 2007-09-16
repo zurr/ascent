@@ -316,7 +316,11 @@ Player::Player ( uint32 high, uint32 low )
 	tutorialsDirty = true;
 	m_TeleportState = 1;
 	m_beingPushed = false;
-	m_charter = 0;
+	for(int i = 0; i < NUM_CHARTER_TYPES; ++i)
+		m_charters[i]=NULL;
+	for(int i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+		m_arenaTeams[i]=NULL;
+
 	flying_aura = 0;
 	resend_speed = false;
 	rename_pending = false;
@@ -444,6 +448,9 @@ Player::~Player ( )
 	for(ReputationMap::iterator itr = m_reputation.begin(); itr != m_reputation.end(); ++itr)
 		delete itr->second;
 	m_objectTypeId = TYPEID_UNUSED;
+
+	if(m_playerInfo)
+		m_playerInfo->m_loggedInPlayer=NULL;
 }
 
 inline uint32 GetSpellForLanguage(uint32 SkillID)
@@ -2114,8 +2121,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 		ss << ",'','',0,0";
 	}
 
-	ss << ","
-		<< (m_charter ? m_charter->GetID() : uint32(0)) << ","
+	ss << "," << m_arenaPoints << ","
 		<< (uint32)m_StableSlotCount << ",";
 	
 	// instances
@@ -2599,9 +2605,9 @@ bool Player::LoadFromDB(uint32 guid)
 	//uint32 guildrank = get_next_field.GetUInt32();
 	SetGuildId(get_next_field.GetUInt32());
 	SetUInt32Value(PLAYER_GUILDRANK,get_next_field.GetUInt32());
-	uint32 cid = get_next_field.GetUInt32();
-	if(cid)
-		m_charter = objmgr.GetCharter(cid);
+	m_arenaPoints = get_next_field.GetUInt32();
+	for(uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
+		m_charters[z] = objmgr.GetCharterByGuid(GetGUID(), (CharterTypes)z);
 
 	m_StableSlotCount = get_next_field.GetUInt32();
 	m_instanceId = get_next_field.GetUInt32();
@@ -7541,7 +7547,13 @@ void Player::ModifyBonuses(uint32 type,int32 val)
 
 bool Player::CanSignCharter(Charter * charter, Player * requester)
 {
-	if(m_charter || IsInGuild() || requester->GetTeam() != GetTeam())
+	if(charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType-1] != NULL)
+		return false;
+	
+	if(charter->CharterType == CHARTER_TYPE_GUILD && IsInGuild())
+		return false;
+
+	if(m_charters[charter->CharterType] || requester->GetTeam() != GetTeam())
 		return false;
 	else
 		return true;

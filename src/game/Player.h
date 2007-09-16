@@ -160,6 +160,23 @@ enum PlayerFlags
     PLAYER_FLAG_NEED_REST_5_HOURS	= 0x2000,
 };
 
+enum CharterTypes
+{
+	CHARTER_TYPE_GUILD			= 0,
+	CHARTER_TYPE_ARENA_2V2		= 1,
+	CHARTER_TYPE_ARENA_3V3		= 2,
+	CHARTER_TYPE_ARENA_5V5		= 3,
+	NUM_CHARTER_TYPES			= 4,
+};
+
+enum ArenaTeamTypes
+{
+	ARENA_TEAM_TYPE_2V2			= 0,
+	ARENA_TEAM_TYPE_3V3			= 1,
+	ARENA_TEAM_TYPE_5V5			= 2,
+	NUM_ARENA_TEAM_TYPES		= 3,
+};
+
 struct spells
 {
 	uint16  spellId;
@@ -389,6 +406,8 @@ struct PlayerInfo
 	uint32 lastLevel;
 	Group * m_Group;
 	uint8 subGroup;
+
+	Player * m_loggedInPlayer;
 };
 struct PlayerPet
 {
@@ -523,6 +542,7 @@ struct PlayerSkill
 	void Reset(uint32 Id);
 };
 
+class ArenaTeam;
 //====================================================================
 //  Player
 //  Class that holds every created character on the server.
@@ -607,6 +627,8 @@ public:
 	void GiveXP(uint32 xp, const uint64 &guid, bool allowbonus);   // to stop rest xp being given
 	void ModifyBonuses(uint32 type,int32 val);
 	std::map<uint32, uint32> m_wratings;
+
+	ArenaTeam * m_arenaTeams[NUM_ARENA_TEAM_TYPES];
 	
     /************************************************************************/
     /* Taxi                                                                 */
@@ -1399,7 +1421,7 @@ public:
 	set<Unit*> visiblityChangableSet;
 	bool m_beingPushed;
 	bool CanSignCharter(Charter * charter, Player * requester);
-	Charter * m_charter;
+	Charter * m_charters[NUM_CHARTER_TYPES];
 	uint32 flying_aura;
 	stringstream LoadAuras;
 	bool resend_speed;

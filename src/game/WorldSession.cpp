@@ -843,6 +843,18 @@ void WorldSession::InitPacketHandlerTable()
 
 	WorldPacketHandlers[MSG_ADD_DYNAMIC_TARGET_OBSOLETE].handler				= &WorldSession::HandleAddDynamicTargetOpcode;
 
+
+	// Arenas
+	WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::HandleArenaTeamQueryOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::HandleArenaTeamRosterOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_ADD_MEMBER].handler = &WorldSession::HandleArenaTeamAddMemberOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE_ACCEPT].handler = &WorldSession::HandleArenaTeamInviteAcceptOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE_DECLINE].handler = &WorldSession::HandleArenaTeamInviteDenyOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::HandleArenaTeamLeaveOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE_PLAYER].handler = &WorldSession::HandleArenaTeamRemoveMemberOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::HandleArenaTeamDisbandOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_PROMOTE].handler = &WorldSession::HandleArenaTeamPromoteOpcode;
+
 #ifdef CLUSTERING
 	WorldPacketHandlers[CMSG_PING].handler = &WorldSession::HandlePingOpcode;
 #endif

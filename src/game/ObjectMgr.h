@@ -257,19 +257,49 @@ protected:
 class Charter
 {
 public:
+	inline uint32 GetNumberOfSlotsByType()
+	{
+		switch(CharterType)
+		{
+		case CHARTER_TYPE_GUILD:
+			return 9;
+
+		case CHARTER_TYPE_ARENA_2V2:
+			return 2;
+
+		case CHARTER_TYPE_ARENA_3V3:
+			return 3;
+
+		case CHARTER_TYPE_ARENA_5V5:
+			return 5;
+
+		default:
+			return 9;
+		}
+	}
+
 	uint32 SignatureCount;
-	uint32 Signatures[9];
+	uint32 * Signatures;
+	uint32 CharterType;
+	uint32 Slots;
 	uint32 LeaderGuid;
 	uint64 ItemGuid;
 	uint32 CharterId;
 	string GuildName;
 
 	Charter(Field * fields);
-	Charter(uint32 id, uint32 leader) : CharterId(id), LeaderGuid(leader)
+	Charter(uint32 id, uint32 leader, uint32 type) : CharterId(id), LeaderGuid(leader), CharterType(type)
 	{
 		SignatureCount = 0;
-		memset(Signatures, 0, sizeof(Signatures));
 		ItemGuid = 0;
+		Slots = GetNumberOfSlotsByType();
+		Signatures = new uint32[Slots];
+		memset(Signatures, 0, sizeof(uint32)*Slots);
+	}
+
+	~Charter()
+	{
+		delete [] Signatures;
 	}
 	
 	void SaveToDB();
@@ -281,7 +311,7 @@ public:
 	inline uint32 GetLeader() { return LeaderGuid; }
 	inline uint32 GetID() { return CharterId; }
 
-	inline bool IsFull() { return (SignatureCount == 9); }
+	inline bool IsFull() { return (SignatureCount == Slots); }
 };
 
 typedef std::map<uint32, std::list<SpellEntry*>* >                  OverrideIdMap;
@@ -486,13 +516,23 @@ public:
 	Transporter * GetTransporter(uint64 guid);
 	Transporter * GetTransporterByEntry(uint32 entry);
 
-	Charter * CreateCharter(uint32 LeaderGuid);
-	Charter * GetCharter(uint32 CharterId);
+	Charter * CreateCharter(uint32 LeaderGuid, CharterTypes Type);
+	Charter * GetCharter(uint32 CharterId, CharterTypes Type);
 	void RemoveCharter(Charter *);
 	void LoadGuildCharters();
-	Charter * GetCharterByName(string &charter_name);
+	Charter * GetCharterByName(string &charter_name, CharterTypes Type);
 	Charter * GetCharterByItemGuid(uint64 guid);
+	Charter * GetCharterByGuid(uint64 playerguid, CharterTypes type);
 
+	ArenaTeam * GetArenaTeamByName(string & name, uint32 Type);
+	ArenaTeam * GetArenaTeamById(uint32 id);
+	ArenaTeam * GetArenaTeamByGuid(uint32 guid, uint32 Type);
+	void LoadArenaTeams();
+	HM_NAMESPACE::hash_map<uint32, ArenaTeam*> m_arenaTeamMap[3];
+	HM_NAMESPACE::hash_map<uint32, ArenaTeam*> m_arenaTeams;
+	void RemoveArenaTeam(ArenaTeam * team);
+	void AddArenaTeam(ArenaTeam * team);
+	Mutex m_arenaTeamLock;
 
 	typedef HM_NAMESPACE::hash_map<uint32, NpcMonsterSay*> MonsterSayMap;
 	MonsterSayMap mMonsterSays[NUM_MONSTER_SAY_EVENTS];
@@ -544,7 +584,7 @@ protected:
 	ReputationModMap m_reputation_creature;
 	HM_NAMESPACE::hash_map<uint32, InstanceReputationModifier*> m_reputation_instance;
 
-	HM_NAMESPACE::hash_map<uint32, Charter*> m_charters;
+	HM_NAMESPACE::hash_map<uint32, Charter*> m_charters[NUM_CHARTER_TYPES];
 	
 	set<uint32> m_disabled_spells;
 	set<uint32> m_disabled_trainer_spells;

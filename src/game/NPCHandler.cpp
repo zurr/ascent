@@ -326,20 +326,41 @@ void WorldSession::HandleCharterShowListOpcode( WorldPacket & recv_data )
 void WorldSession::SendCharterRequest(Creature* pCreature)
 {
 	if(!_player->IsInWorld()) return;
-	WorldPacket data(29);
-	data.Initialize( SMSG_PETITION_SHOWLIST );
-	data << pCreature->GetGUID();
-	data << uint8(1);		   // BOOL SHOW_COST = 1
-	data << uint32(1);		  // unknown
-	data << uint16(0x16E7);	 // ItemId of the guild charter
-	data << float(0.62890625);  // strange floating point
-	data << uint16(0);		  // unknown
-//	data << uint32(0x3F21);	 // unknown
+	if(pCreature && pCreature->GetEntry()==19861 ||
+		pCreature->GetEntry()==18897 || pCreature->GetEntry()==19856)
+	{
+		WorldPacket data(SMSG_PETITION_SHOWLIST, 81);
+		static const uint8 tdata[73] = { 0x03, 0x01, 0x00, 0x00, 0x00, 0x08, 0x5C, 0x00, 0x00, 0x21, 0x3F, 0x00, 0x00, 0x00, 0x35, 0x0C, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x09, 0x5C, 0x00, 0x00, 0x21, 0x3F, 0x00, 0x00, 0x80, 0x4F, 0x12, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x0A, 0x5C, 0x00, 0x00, 0x21, 0x3F, 0x00, 0x00, 0x80, 0x84, 0x1E, 0x00, 0x01, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00 };
+		data << pCreature->GetGUID();
+		data.append(tdata,73);
+		SendPacket(&data);
+	}
+	else
+	{
+		WorldPacket data(29);
+		data.Initialize( SMSG_PETITION_SHOWLIST );
+		data << pCreature->GetGUID();
+		data << uint8(1);		   // BOOL SHOW_COST = 1
+		data << uint32(1);		  // unknown
+		if(pCreature && pCreature->GetEntry()==19861 ||
+			pCreature->GetEntry()==18897 || pCreature->GetEntry()==19856)
+		{
+			data << uint16(ARENA_TEAM_CHARTER_2v2);	 // ItemId of the guild charter
+		}
+		else
+		{
+			data << uint16(0x16E7);	 // ItemId of the guild charter
+		}
+		
+		data << float(0.62890625);  // strange floating point
+		data << uint16(0);		  // unknown
+	//	data << uint32(0x3F21);	 // unknown
 
-	data << uint32(1000);	   // charter prise
-	data << uint32(0);		  // unknown, maybe charter type
-	data << uint32(9);		  // amount of unique players needed to sign the charter
-	SendPacket( &data );
+		data << uint32(1000);	   // charter prise
+		data << uint32(0);		  // unknown, maybe charter type
+		data << uint32(9);		  // amount of unique players needed to sign the charter
+		SendPacket( &data );
+	}
 }
 
 //////////////////////////////////////////////////////////////
