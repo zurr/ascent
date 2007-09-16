@@ -72,12 +72,26 @@ void ArenaTeam::Destroy()
 
 bool ArenaTeam::AddMember(PlayerInfo * info)
 {
+	uint32 base_field;
+	Player * plr = info->m_loggedInPlayer;
 	if(m_memberCount >= m_slots)
 		return false;
 
 	memset(&m_members[m_memberCount], 0, sizeof(ArenaTeamMember));
 	m_members[m_memberCount++].Info = info;
 	SaveToDB();
+
+	if(plr)
+	{
+		base_field = (m_type*5) + PLAYER_FIELD_ARENA_TEAM_INFO_1_1;
+		plr->SetUInt32Value(base_field, m_id);
+		if(info->guid == m_leader)
+			plr->SetUInt32Value(base_field+1,0);
+		else
+			plr->SetUInt32Value(base_field+1,1);
+
+
+	}
 	return true;
 }
 

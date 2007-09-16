@@ -129,7 +129,7 @@ public:
 	{
 		m_id = Id;
 		m_type = Type;
-		AllocateSlots(m_slots);
+		AllocateSlots(Type);
 		m_leader = 0;
 		m_emblemStyle = 0;
 		m_emblemColour = 0;

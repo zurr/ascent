@@ -1089,6 +1089,7 @@ void SendShowSignatures(Charter * c, uint64 i, Player * p)
 		if(c->Signatures[i] == 0) continue;
 		data << uint64(c->Signatures[i]) << uint32(1);
 	}
+	data << uint8(0);
 	p->GetSession()->SendPacket(&data);
 }
 
@@ -1131,15 +1132,18 @@ void WorldSession::HandleCharterQuery(WorldPacket & recv_data)
 	//moreover it can't signature, blizz uses always fullguid so it must be uin64
 	//moreover this does not show ppl who signed this, for this purpose there is another opcde
 	uint32 charter_id;
+	uint64 item_guid;
 	recv_data >> charter_id;
-	Charter * c = objmgr.GetCharter(charter_id,CHARTER_TYPE_GUILD);
+	recv_data >> item_guid;
+	/*Charter * c = objmgr.GetCharter(charter_id,CHARTER_TYPE_GUILD);
 	if(c == 0)
 		c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_2V2);
 	if(c == 0)
 		c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_3V3);
 	if(c == 0)
-		c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_5V5);
+		c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_5V5);*/
 
+	Charter * c = objmgr.GetCharterByItemGuid(item_guid);
 	if(c == 0)
 		return;
 
@@ -1153,7 +1157,13 @@ void WorldSession::HandleCharterQuery(WorldPacket & recv_data)
 	}
 	else
 	{
-		data << uint32(c->CharterType-1) << uint32(c->CharterType-1);
+		uint32 v = c->CharterType;
+		if(c->CharterType == CHARTER_TYPE_ARENA_3V3)
+			v=3;
+		else if(c->CharterType == CHARTER_TYPE_ARENA_5V5)
+			v=5;
+
+		data << v << v;
 	}
 
 	data << uint32(0);                                      // 4
@@ -1162,7 +1172,7 @@ void WorldSession::HandleCharterQuery(WorldPacket & recv_data)
     data << uint32(0);                                      // 7
     data << uint32(0);                                      // 8
     data << uint16(0);                                      // 9 2 bytes field
-    data << uint32(0);                                      // 10
+    data << uint32(0x46);                                      // 10
     data << uint32(0);                                      // 11
     data << uint32(0);                                      // 13 count of next strings?
     data << uint32(0);                                      // 14
@@ -1340,7 +1350,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket & recv_data)
 		uint32 type;
 		uint32 i;
 		uint32 icon, iconcolor, bordercolor, border, background;
-		recv_data >> icon >> iconcolor >> border >> bordercolor >> background;
+		recv_data >> iconcolor >>icon >> bordercolor >> border >> background;
 
 		switch(pCharter->CharterType)
 		{
