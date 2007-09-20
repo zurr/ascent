@@ -1149,6 +1149,115 @@ bool ChatHandler::HandleResetSpellsCommand(const char* args, WorldSession *m_ses
 	return true;
 }
 
+bool ChatHandler::HandleAccountLevelCommand(const char * args, WorldSession * m_session)
+{
+    if(!*args) return false;
+
+	char account[100];
+	char gmlevel[100];
+	int argc = sscanf(args, "%s %s", account, gmlevel);
+	if(argc != 2)
+		return false;
+
+	std::stringstream my_sql;
+	my_sql << "UPDATE accounts SET gm = '" << gmlevel << "' WHERE login = '" << account << "'";
+
+	sLogonCommHandler.LogonDatabaseSQLExecute(my_sql.str().c_str());
+
+	GreenSystemMessage(m_session, "Account '%s' level has been updated to '%s'. The change will be effective with the next reload cycle.", account, gmlevel);
+
+	return true;
+}
+
+bool ChatHandler::HandleAccountPasswordCommand(const char * args, WorldSession * m_session)
+{
+   if(!*args) return false;
+
+	char account[100];
+	char password[100];
+	int argc = sscanf(args, "%s %s", account, password);
+	if(argc != 2)
+		return false;
+
+	std::stringstream my_sql;
+	my_sql << "UPDATE accounts SET password = '" << password << "' WHERE login = '" << account << "'";
+
+	sLogonCommHandler.LogonDatabaseSQLExecute(my_sql.str().c_str());
+
+	GreenSystemMessage(m_session, "Account '%s' password has been changed to '%s'. The change will be effective with the next reload cycle.", account, password);
+
+	return true;
+}
+
+bool ChatHandler::HandleAccountBannedCommand(const char * args, WorldSession * m_session)
+{
+    if(!*args) return false;
+
+	char account[100];
+	uint32 banned;
+	int argc = sscanf(args, "%s %u", account, (unsigned int*)&banned);
+	if(argc != 2)
+		return false;
+
+	std:stringstream my_sql;
+	my_sql << "UPDATE accounts SET banned = " << banned << " WHERE login = '" << account << "'";
+
+	sLogonCommHandler.LogonDatabaseSQLExecute(my_sql.str().c_str());
+
+	switch(banned)
+	{
+	case 0: {
+		GreenSystemMessage(m_session, "Account '%s' has been unbanned. The change will be effective with the next reload cycle.", account);
+		}break;
+
+	case 1: {
+		GreenSystemMessage(m_session, "Account '%s' has been banned. The change will be effective with the next reload cycle.", account);
+		}break;
+	}
+
+	return true;
+}
+
+bool ChatHandler::HandleAccountFlagsCommand(const char * args, WorldSession * m_session)
+{
+    if(!*args) return false;
+
+	char account[100];
+	uint32 flags;
+	int argc = sscanf(args, "%s %u", account, (unsigned int*)&flags);
+	if(argc != 2)
+		return false;
+
+	std:stringstream my_sql;
+	my_sql << "UPDATE accounts SET flags = " << flags << " WHERE login = '" << account << "'";
+
+	sLogonCommHandler.LogonDatabaseSQLExecute(my_sql.str().c_str());
+
+	GreenSystemMessage(m_session, "Account '%s' flags have been updated. The change will be effective with the next reload cycle.", account);
+
+	return true;
+}
+
+bool ChatHandler::HandleAccountEmailCommand(const char * args, WorldSession * m_session)
+{
+    if(!*args) return false;
+
+	char account[100];
+	char email[100];
+	int argc = sscanf(args, "%s %s", account, email);
+	if(argc != 2)
+		return false;
+
+	std:stringstream my_sql;
+	my_sql << "UPDATE accounts SET email = '" << email << "' WHERE login = '" << account << "'";
+
+	sLogonCommHandler.LogonDatabaseSQLExecute(my_sql.str().c_str());
+
+	GreenSystemMessage(m_session, "Account '%s' email has been updated to '%s'. The change will be effective with the next reload cycle.", account, email);
+
+	return true;
+}
+
 bool ChatHandler::HandleCreateAccountCommand(const char* args, WorldSession *m_session)
 {
 	char *user = strtok((char *)args, " ");
@@ -3005,5 +3114,67 @@ bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession *m_ses
 	}
 	pGuild->RenameGuild(args);
 	GreenSystemMessage(m_session, "Guild renamed!");
+	return true;
+}
+
+bool ChatHandler::HandleCreateArenaTeamCommands(const char * args, WorldSession * m_session)
+{
+	uint32 arena_team_type;
+	char name[1000];
+	uint32 real_type;
+	Player * plr = getSelectedChar(m_session, true);
+	if(sscanf(args, "%u %s", &arena_team_type, name) != 2)
+	{
+		SystemMessage(m_session, "Invalid syntax.");
+		return true;
+	}
+
+	switch(arena_team_type)
+	{
+	case 2:
+		real_type=0;
+		break;
+	case 3:
+		real_type=1;
+		break;
+	case 5:
+		real_type=2;
+		break;
+	default:
+		SystemMessage(m_session, "Invalid arena team type specified.");
+		return true;
+	}
+
+	if(!plr)
+		return true;
+
+	if(plr->m_arenaTeams[real_type] != NULL)
+	{
+		SystemMessage(m_session, "Already in an arena team of that type.");
+		return true;
+	}
+
+	ArenaTeam * t = new ArenaTeam(real_type,objmgr.GenerateArenaTeamId());
+	t->m_emblemStyle=22;
+	t->m_emblemColour=4292133532;
+	t->m_borderColour=4294931722;
+	t->m_borderStyle=1;
+	t->m_backgroundColour=4284906803;
+	t->m_leader=plr->GetGUIDLow();
+	t->m_name = string(name);
+	t->AddMember(plr->m_playerInfo);
+	objmgr.AddArenaTeam(t);
+	SystemMessage(m_session, "created arena team.");
+	return true;
+}
+
+bool ChatHandler::HandleGMCallCommand(const char * args, WorldSession * m_session)
+{
+	Player * plr = getSelectedChar(m_session);
+	if(!plr) return true;
+	if(ScriptSystem->CallGMFunction(args, plr))
+		SystemMessage(m_session, "Call succeeded.");
+	else
+		SystemMessage(m_session, "Call failed.");
 	return true;
 }

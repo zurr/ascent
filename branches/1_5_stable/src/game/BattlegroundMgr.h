@@ -155,6 +155,55 @@ inline static uint32 GetLevelGrouping(uint32 level)
 #define MAX_LEVEL_GROUP 8
 #define MINIMUM_PLAYERS_ON_EACH_SIDE_FOR_BG 1
 #define MAXIMUM_BATTLEGROUNDS_PER_LEVEL_GROUP 3
+#define LEVEL_GROUP_70 7
+
+
+template<class T>
+int32 RandomFrom2Vectors(list<T*> * v1, list<T*> * v2, typename list<T*>::iterator &i1, typename list<T*>::iterator &i2)
+{
+	uint32 choice = Rand(50);
+	list<T*> * v;
+	uint32 n;
+	if(choice)
+	{
+		if(v2->size())
+			v=v2;
+		else
+			v=v1;
+	}
+	else
+	{
+		if(v1->size())
+			v=v1;
+		else
+			v=v2;
+	}
+
+	if(!v->size())
+		return -1;
+
+	n = sRand.randInt(v1->size());
+	typename list<T*>::iterator itr;
+	for(itr = v->begin(); itr != v->begin() && n; ++itr)
+		--n;
+
+	if(itr == v->end())
+		itr = v->begin();
+
+	if(itr == v->end())
+		return -1;
+
+	if(choice)
+	{
+		i1 = itr;
+		return 1;
+	}
+	else
+	{
+		i2 = itr;
+		return 0;
+	}
+}
 
 class CBattlegroundManager : public Singleton<CBattlegroundManager>, public EventableObject
 {
@@ -168,6 +217,10 @@ class CBattlegroundManager : public Singleton<CBattlegroundManager>, public Even
 	/* Queue System */
 	// Instance Id -> list<Player guid> [ BattlegroundType ] [ Level Group ] (instance 0 - first available)
 	map<uint32, list<uint32> > m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
+
+	// Instance Id -> list<Group id> [BattlegroundType][LevelGroup]
+	list<uint32> m_queuedGroups[BATTLEGROUND_NUM_TYPES];
+
 	Mutex m_queueLock;
 
 public:
@@ -176,7 +229,7 @@ public:
 
 	/* Packet Handlers */
 	void HandleBattlegroundListPacket(WorldSession * m_session, uint32 BattlegroundType);
-	void HandleArenaJoin(WorldSession * m_session, uint32 BattlegroundType);
+	void HandleArenaJoin(WorldSession * m_session, uint32 BattlegroundType, uint8 as_group, uint8 rated_match);
 
 	/* Player Logout Handler */
 	void OnPlayerLogout(Player * plr);
@@ -189,6 +242,7 @@ public:
 
 	/* Remove Player From All Queues */
 	void RemovePlayerFromQueues(Player * plr);
+	void RemoveGroupFromQueues(Group * grp);
 
 	/* Create a battleground instance of type x */
 	CBattleground * CreateInstance(uint32 Type, uint32 LevelGroup);
@@ -200,7 +254,7 @@ public:
 	void DeleteBattleground(CBattleground * bg);
 
 	/* Build SMSG_BATTLEFIELD_STATUS */
-	void SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId);
+	void SendBattlefieldStatus(Player * plr, uint32 Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch);
 };
 
 class CBattleground : public EventableObject
@@ -302,7 +356,7 @@ public:
 	void PlaySoundToAll(uint32 Sound);
 
 	/* Full? */
-	inline bool IsFull() { return (!HasFreeSlots(0) && !HasFreeSlots(1)); }
+	inline bool IsFull() { return !(HasFreeSlots(0) || HasFreeSlots(1)); }
 
 	/* Are we full? */
 	inline bool HasFreeSlots(uint32 Team) { m_mainLock.Acquire(); bool res = ((m_players[Team].size() + m_pendPlayers[Team].size()) < m_playerCountPerTeam); m_mainLock.Release(); return res; }
@@ -357,6 +411,9 @@ public:
 	void EventResurrectPlayers();
 	virtual bool CanPlayerJoin(Player * plr) { return true; }
 	virtual bool CreateCorpse(Player * plr) { return true; }
+
+	void BuildPvPUpdateDataPacket(WorldPacket * data);
+	virtual uint8 Rated() { return 0; }
 };
 
 #define BattlegroundManager CBattlegroundManager::getSingleton( )

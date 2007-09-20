@@ -27,6 +27,7 @@ Unit::Unit()
 	m_duelWield = false;
 
 	m_state = 0;
+	m_special_state = 0;
 	m_deathState = ALIVE;
 	m_currentSpell = NULL;
 	m_meleespell = 0;
@@ -926,8 +927,6 @@ void Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell,uint32
 		}
 	}
 
-	HandleProcDmgShield(flag,victim);
-
 	std::map<uint32,struct SpellCharge>::iterator iter,iter2;
 	iter=m_chargeSpells.begin();
 	while(iter!= m_chargeSpells.end())
@@ -1284,11 +1283,7 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 		if((damage_type != RANGED) && !backAttack)
 		{
 //--------------------------------block chance----------------------------------------------
-			it = ((Player*)pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-			if(it && it->GetProto()->InventoryType==INVTYPE_SHIELD)
-			{
-				block = pVictim->GetFloatValue(PLAYER_BLOCK_PERCENTAGE);
-			}
+				block = pVictim->GetFloatValue(PLAYER_BLOCK_PERCENTAGE); //shield check already done in Update chances
 //--------------------------------dodge chance----------------------------------------------
 			if (pVictim->m_stunned<=0) 
 			{
@@ -1346,10 +1341,21 @@ void Unit::Strike(Unit *pVictim, uint32 damage_type, SpellEntry *ability, int32 
 			break;
 		}
 
-		if (it)
+		if (it && it->GetProto())
 			SubClassSkill = GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
+		else
+			SubClassSkill = SKILL_UNARMED;
+
 		if (SubClassSkill==SKILL_FIST_WEAPONS) 
 			SubClassSkill = SKILL_UNARMED;
+
+		//chances in feral form don't depend on weapon skill
+		if (static_cast<Player*>(this)->IsInFeralForm()) 
+		{
+			uint8 form = static_cast<Player*>(this)->GetShapeShift();
+			if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
+				SubClassSkill = SKILL_UNARMED;
+		}
 
 		self_skill += pr->_GetSkillLineCurrent(SubClassSkill);	
 		crit = GetFloatValue(PLAYER_CRIT_PERCENTAGE);
@@ -1895,6 +1901,8 @@ else
 	if(realdamage)
 	{
 		DealDamage(pVictim, realdamage, 0, targetEvent, 0);
+		//pVictim->HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,this);
+		HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,pVictim);
 
 		if (pVictim->GetCurrentSpell())
 			pVictim->GetCurrentSpell()->AddTime(0);
@@ -2127,13 +2135,17 @@ void Unit::AddAura(Aura *aur)
 		{
 			if(m_auras[x])
 			{
+				// Nasty check for Blood Fury debuff (spell system based on namehashes is bs anyways)
+				if(info->NameHash == 0xDE1C36C8)
+					continue;
+
 				if(m_auras[x]->GetSpellProto()->Id != aur->GetSpellId())
 				{
 					// Check for auras by specific type.
 					// Check for auras with the same name and a different rank.
 					
 					if(info->buffType > 0 && m_auras[x]->GetSpellProto()->buffType & info->buffType && maxStack == 0)
-						deleteAur = HasAurasOfBuffType(info->buffType, aur->m_casterGuid);
+						deleteAur = HasAurasOfBuffType(info->buffType, aur->m_casterGuid,0);
 					else
 					{
 						acr = AuraCheck(info->NameHash, info->RankNumber, m_auras[x]);
@@ -2958,6 +2970,8 @@ void Unit::MoveToWaypoint(uint32 wp_id)
 		}
 
 		ai->m_currentWaypoint = wp_id;
+		if(wp->flags!=0)
+			ai->m_moveRun = true;
 		ai->MoveTo(wp->x, wp->y, wp->z, 0);
 	}
 }
@@ -3346,21 +3360,21 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 	if(!HasFlag( UNIT_FIELD_FLAGS , U_FIELD_FLAG_MOUNT_SIT ))
 	{
 		if(IsPlayer())
-			m_runSpeed = PLAYER_NORMAL_RUN_SPEED*(1.0f + ((float)m_speedModifier)/100.0f);
+			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_speedModifier)/100.0f);
 		else
-			m_runSpeed = MONSTER_NORMAL_RUN_SPEED*(1.0f + ((float)m_speedModifier)/100.0f);
+			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_speedModifier)/100.0f);
 	}
 	else
 	{
 		if(IsPlayer())
 		{
-			m_runSpeed = PLAYER_NORMAL_RUN_SPEED*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
-			m_runSpeed += (m_speedModifier<0) ? (PLAYER_NORMAL_RUN_SPEED*((float)m_speedModifier)/100.0f) : 0;
+			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
+			m_runSpeed += (m_speedModifier<0) ? (m_base_runSpeed*((float)m_speedModifier)/100.0f) : 0;
 		}
 		else
 		{
-			m_runSpeed = MONSTER_NORMAL_RUN_SPEED*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
-			m_runSpeed += (m_speedModifier<0) ? (PLAYER_NORMAL_RUN_SPEED*((float)m_speedModifier)/100.0f) : 0;
+			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
+			m_runSpeed += (m_speedModifier<0) ? (m_base_runSpeed*((float)m_speedModifier)/100.0f) : 0;
 		}
 	}
 
@@ -3460,7 +3474,7 @@ void Unit::setAttackTarget(Unit* pUnit)
 
 	if(m_attackTarget != 0)
 	{
-		Unit *pTarget = GetMapMgr()->GetUnit(m_attackTarget);
+		Unit *pTarget = m_mapMgr ? m_mapMgr->GetUnit(m_attackTarget) : NULL;
 		if(pTarget)
 			pTarget->removeAttacker(this);
 	}
@@ -3608,6 +3622,7 @@ void Unit::Root()
 
 void Unit::Root(uint32 time)
 {
+	this->m_special_state |= UNIT_STATE_ROOT;
 	if(m_objectTypeId == TYPEID_PLAYER)
 	{
 		static_cast<Player*>(this)->SetMovement(MOVE_ROOT, 1);
@@ -3621,6 +3636,7 @@ void Unit::Root(uint32 time)
 
 void Unit::Unroot()
 {
+	this->m_special_state &= ~(UNIT_STATE_ROOT);
 	if(m_objectTypeId == TYPEID_PLAYER)
 	{
 		static_cast<Player*>(this)->SetMovement(MOVE_UNROOT, 5);
@@ -3631,25 +3647,35 @@ void Unit::Unroot()
 	}
 }
 
-void Unit::RemoveAurasByBuffType(uint32 buff_type, uint64 guid)
+void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 &guid, uint32 skip)
 {
 	uint64 sguid = buff_type >= SPELL_TYPE_BLESSING ? guid : 0;
 
 	for(uint32 x=0;x<MAX_AURAS;x++)
 	{
-		if(m_auras[x] && m_auras[x]->GetSpellProto()->buffType & buff_type)
+		if(m_auras[x] && m_auras[x]->GetSpellProto()->buffType & buff_type && m_auras[x]->GetSpellId()!=skip)
 			if(!sguid || (sguid && m_auras[x]->m_casterGuid == sguid))
 				m_auras[x]->Remove();
 	}
 }
 
-bool Unit::HasAurasOfBuffType(uint32 buff_type, uint64 guid)
+void Unit::RemoveAurasByBuffIndexType(uint32 buff_index_type, const uint64 &guid)
+{
+	for(uint32 x=0;x<MAX_AURAS;x++)
+	{
+		if(m_auras[x] && m_auras[x]->GetSpellProto()->buffIndexType == buff_index_type)
+			if(!guid || (guid && m_auras[x]->m_casterGuid == guid))
+				m_auras[x]->Remove();
+	}
+}
+
+bool Unit::HasAurasOfBuffType(uint32 buff_type, const uint64 &guid,uint32 skip)
 {
 	uint64 sguid = buff_type >= SPELL_TYPE_BLESSING ? guid : 0;
 
 	for(uint32 x=0;x<MAX_AURAS;x++)
 	{
-		if(m_auras[x] && m_auras[x]->GetSpellProto()->buffType & buff_type)
+		if(m_auras[x] && m_auras[x]->GetSpellProto()->buffType & buff_type && m_auras[x]->GetSpellId()!=skip)
 			if(!sguid || (sguid && m_auras[x]->m_casterGuid == sguid))
 				return true;
 	}
@@ -3936,7 +3962,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive)
 {
 	for(uint32 x = 0; x < MAX_AURAS; ++x)
 	{
-		if(m_auras[x] && m_auras[x]->GetSpellProto()->School == School && (!m_auras[x]->IsPositive() || Positive))
+		if(m_auras[x]  && m_auras[x]->GetSpellProto()->School == School && (!m_auras[x]->IsPositive() || Positive))
 			m_auras[x]->Remove();
 	}
 }
@@ -3949,6 +3975,9 @@ void Unit::EnableFlight(bool delay /* = false */)
 		data << GetNewGUID();
 		data << uint32(2);
 		SendMessageToSet(&data, true);
+
+		if(IsPlayer())
+			((Player*)this)->_delayAntiFlyUntil = UNIXTIME + 3;
 	}
 	else
 	{
@@ -3957,6 +3986,7 @@ void Unit::EnableFlight(bool delay /* = false */)
 		*data << uint32(2);
 		SendMessageToSet(data, false);
 		static_cast<Player*>(this)->delayedPackets.add(data);
+		static_cast<Player*>(this)->_delayAntiFlyUntil=UNIXTIME+3;
 	}
 }
 
@@ -3968,6 +3998,9 @@ void Unit::DisableFlight(bool delay /* = false */)
 		data << GetNewGUID();
 		data << uint32(5);
 		SendMessageToSet(&data, true);
+
+		if(IsPlayer())
+			((Player*)this)->_delayAntiFlyUntil = UNIXTIME + 3;
 	}
 	else
 	{
@@ -3976,6 +4009,7 @@ void Unit::DisableFlight(bool delay /* = false */)
 		*data << uint32(5);
 		SendMessageToSet(data, false);
 		static_cast<Player*>(this)->delayedPackets.add(data);
+		static_cast<Player*>(this)->_delayAntiFlyUntil=UNIXTIME+3;
 	}
 }
 
@@ -4183,14 +4217,24 @@ void Unit::EventCastSpell(Unit * Target, SpellEntry * Sp)
 void Unit::SetFacing(float newo)
 {
 	SetOrientation(newo);
-	WorldPacket data(40);
+	/*WorldPacket data(40);
 	data.SetOpcode(MSG_MOVE_SET_FACING);
 	data << GetNewGUID();
 	data << (uint32)0; //flags
 	data << (uint32)0; //time
 	data << GetPositionX() << GetPositionY() << GetPositionZ() << newo;
 	data << (uint32)0; //unk
-	SendMessageToSet( &data, false );
+	SendMessageToSet( &data, false );*/
+
+	/*WorldPacket data(SMSG_MONSTER_MOVE, 60);
+	data << GetNewGUID();
+	data << m_position << getMSTime();
+	data << uint8(4) << newo;
+	data << uint32(0x00000000);		// flags
+	data << uint32(0);				// time
+	data << m_position;				// position
+	SendMessageToSet(&data, true);*/
+	m_aiInterface->SendMoveToPacket(m_position.x,m_position.y,m_position.z,m_position.o,1,1);
 }
 
 //guardians are temporary spawn that will inherit master faction and will folow them. Apart from that they have their own mind
@@ -4229,3 +4273,20 @@ Unit* Unit::create_guardian(uint32 guardian_entry,uint32 duration,float angle)
 
 }
 
+float Unit::get_chance_to_daze(Unit *target)
+{
+//	if(GetTypeId()!=TYPEID_UNIT)
+//		return 0.0f;
+	float attack_skill=getLevel()*5;
+	float defense_skill;
+	if(target->IsPlayer())
+		defense_skill=((Player*)target)->_GetSkillLineCurrent(SKILL_DEFENSE,false);
+	else defense_skill=target->getLevel()*5;
+	if(!defense_skill)
+		defense_skill=1;
+	float chance_to_daze=attack_skill*20/defense_skill;//if level is equal then we get a 20% chance to daze
+	chance_to_daze = chance_to_daze*min(target->getLevel()/30.0f,1);//for targets below level 30 the chance decreses
+	if(chance_to_daze>40)
+		return 40.0f;
+	else return chance_to_daze;
+}

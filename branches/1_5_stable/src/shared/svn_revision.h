@@ -1,9 +1,9 @@
-// $Id: svn_revision.h 1484 2007-09-11 23:05:34Z LordDraike $
+// $Id$
 
 #ifndef _SVN_REVISION_H
 #define _SVN_REVISION_H
 
-static const char * REVISION_TEXT = "$Rev: 1484 $";
+static const char * REVISION_TEXT = "$Rev$";
 
 inline int g_getRevision()
 {
@@ -11,5 +11,5 @@ inline int g_getRevision()
 	return atoi(p);
 }
 
-//////////////////
+//////////////////////
 #endif

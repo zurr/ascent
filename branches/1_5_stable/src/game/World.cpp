@@ -488,6 +488,7 @@ void World::SetInitialWorldSettings()
 	MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
 	MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
 	MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
+	MAKE_TASK(ObjectMgr, LoadArenaTeams);
 
 #undef MAKE_TASK
 
@@ -567,6 +568,9 @@ void World::SetInitialWorldSettings()
         namehash = crc32((const unsigned char*)nametext, strlen(nametext));
 
 
+		if(namehash == 0x56392512)			/* seal of light */
+			sp->procChance=45;	/* this will do */
+
 		//these mostly do not mix so we can use else 
         // look for seal, etc in name
         if(strstr(nametext, "Seal"))
@@ -629,6 +633,8 @@ void World::SetInitialWorldSettings()
             type |= SPELL_TYPE_ELIXIR_GUARDIAN;
         else if(strstr(desc, "Battle and Guardian elixir"))
             type |= SPELL_TYPE_ELIXIR_FLASK;
+		else if(namehash==0xFF89ABD2)		// hunter's mark
+			type |= SPELL_TYPE_HUNTER_MARK;
 
 		//stupid spell ranking problem
 		if(sp->spellLevel==0)
@@ -668,6 +674,49 @@ void World::SetInitialWorldSettings()
 
 		// find diminishing status
 		sp->DiminishStatus = GetDiminishingGroup(namehash);
+		sp->buffIndexType=0;
+		switch(namehash)
+		{
+		case 0xFF89ABD2:		// Hunter's mark
+			sp->buffIndexType = SPELL_TYPE_INDEX_MARK;
+			break;
+
+		case 0x2266F1F2:		// Polymorph
+		case 0xB15D524E:		// Polymorph: Chicken
+		case 0xA73086F1:		// Polymorph: Pig
+		case 0xBD6B76DC:		// Polymorph: Sheep
+		case 0x0128F8E9:		// Polymorph: Turtle
+			sp->buffIndexType = SPELL_TYPE_INDEX_POLYMORPH;
+			break;
+
+		case 0x328E44DC:		// Fear
+			sp->buffIndexType = SPELL_TYPE_INDEX_FEAR;
+			break;
+
+		case 0x4219BB33:		// Sap
+			sp->buffIndexType = SPELL_TYPE_INDEX_SAP;
+			break;
+
+		case 0x94675337:		// Scare Beast
+			sp->buffIndexType = SPELL_TYPE_INDEX_SCARE_BEAST;
+			break;
+
+		case 0x898B6207:		// Hibernate
+			sp->buffIndexType = SPELL_TYPE_INDEX_HIBERNATE;
+			break;
+
+		case 0x0227BA8B:		// Earth Shield
+			sp->buffIndexType = SPELL_TYPE_INDEX_EARTH_SHIELD;
+			break;
+
+		case 0x73812928:		// Cyclone
+			sp->buffIndexType = SPELL_TYPE_INDEX_CYCLONE;
+			break;
+
+		case 0x3D46465A:		// Banish
+			sp->buffIndexType = SPELL_TYPE_INDEX_BANISH;
+			break;
+		}
 
 		// HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
 		if(!(sp->AuraInterruptFlags & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
@@ -1185,8 +1234,8 @@ void World::SetInitialWorldSettings()
 
 	sp = sSpellStore.LookupEntry(17364);
 	//remove stormstrike effect 0
-	if(sp && sp->Id==17364)
-		sp->Effect[0]=0;
+	//if(sp && sp->Id==17364)
+		//sp->Effect[0]=0;
 
 	//fix for the right Enchant ID for Enchant Cloak - Major Resistance
 	sp = sSpellStore.LookupEntry(27962);
@@ -2250,7 +2299,6 @@ void World::Rehash(bool load)
 	MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
 	UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
 	BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
-	SpeedhackProtection = Config.MainConfig.GetBoolDefault("Server", "SpeedhackProtection", false);
 	SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
 	compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
 	LevelCap = Config.MainConfig.GetIntDefault("Server", "LevelCap", 60);
@@ -2287,6 +2335,7 @@ void World::Rehash(bool load)
 	SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
 	sLog.SetScreenLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "Screen", 1));
 	sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", -1));
+	Log.log_level = Config.MainConfig.GetIntDefault("LogLevel", "Screen", 1);
 	gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
 #ifndef CLUSTERING
 	SocketRecvBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "RecvBufSize", WORLDSOCKET_RECVBUF_SIZE);
@@ -2366,4 +2415,5 @@ void World::Rehash(bool load)
 	antihack_falldmg = Config.MainConfig.GetBoolDefault("AntiHack", "FallDamage", true);
 	antihack_flight = Config.MainConfig.GetBoolDefault("AntiHack", "Flight", true);
 	no_antihack_on_gm = Config.MainConfig.GetBoolDefault("AntiHack", "DisableOnGM", false);
+	SpeedhackProtection = antihack_speed;
 }

@@ -34,10 +34,10 @@ struct LevelInfo;
 #define myabs(a) (a<0)?(-a):a
 #define MAX_PET_NO 3
 #define PLAYER_NORMAL_RUN_SPEED 7.0
-#define MONSTER_NORMAL_RUN_SPEED 8.0
 #define PLAYER_NORMAL_SWIM_SPEED 4.722222
 #define PLAYER_NORMAL_FLIGHT_SPEED 7.0
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
+#define MONSTER_NORMAL_RUN_SPEED 8.0
 //====================================================================
 //  Inventory
 //  Holds the display id and item type id for objects in
@@ -160,6 +160,23 @@ enum PlayerFlags
     PLAYER_FLAG_NEED_REST_5_HOURS	= 0x2000,
 };
 
+enum CharterTypes
+{
+	CHARTER_TYPE_GUILD			= 0,
+	CHARTER_TYPE_ARENA_2V2		= 1,
+	CHARTER_TYPE_ARENA_3V3		= 2,
+	CHARTER_TYPE_ARENA_5V5		= 3,
+	NUM_CHARTER_TYPES			= 4,
+};
+
+enum ArenaTeamTypes
+{
+	ARENA_TEAM_TYPE_2V2			= 0,
+	ARENA_TEAM_TYPE_3V3			= 1,
+	ARENA_TEAM_TYPE_5V5			= 2,
+	NUM_ARENA_TEAM_TYPES		= 3,
+};
+
 struct spells
 {
 	uint16  spellId;
@@ -243,6 +260,85 @@ struct LoginAura
     uint32 dur;
 };
 
+const float SpellCritFromInt[74][12] = { //[level][class]
+	// War Paladin Hunter Rog Priest  -  Shaman  Mage    Warlock -  Druid
+	   {0, 0, 0     , 0     , 0, 0     , 0, 0     , 0     , 0     , 0, 0      }, //level 0
+       {0, 0, 0.0832, 0.0699, 0, 0.1710, 0, 0.1333, 0.1637, 0.1500, 0, 0.1431 },
+       {0, 0, 0.0793, 0.0666, 0, 0.1636, 0, 0.1272, 0.1574, 0.1435, 0, 0.1369 },
+       {0, 0, 0.0793, 0.0666, 0, 0.1568, 0, 0.1217, 0.1516, 0.1375, 0, 0.1312 },
+       {0, 0, 0.0757, 0.0635, 0, 0.1505, 0, 0.1217, 0.1411, 0.1320, 0, 0.1259 },
+       {0, 0, 0.0757, 0.0635, 0, 0.1394, 0, 0.1166, 0.1364, 0.1269, 0, 0.1211 },
+       {0, 0, 0.0724, 0.0608, 0, 0.1344, 0, 0.1120, 0.1320, 0.1222, 0, 0.1166 },
+       {0, 0, 0.0694, 0.0608, 0, 0.1297, 0, 0.1077, 0.1279, 0.1179, 0, 0.1124 },
+       {0, 0, 0.0694, 0.0583, 0, 0.1254, 0, 0.1037, 0.1240, 0.1138, 0, 0.1124 },
+       {0, 0, 0.0666, 0.0583, 0, 0.1214, 0, 0.1000, 0.1169, 0.1100, 0, 0.1086 },
+       {0, 0, 0.0666, 0.0559, 0, 0.1140, 0, 0.1000, 0.1137, 0.1065, 0, 0.0984 },
+       {0, 0, 0.0640, 0.0559, 0, 0.1045, 0, 0.0933, 0.1049, 0.0971, 0, 0.0926 },
+       {0, 0, 0.0616, 0.0538, 0, 0.0941, 0, 0.0875, 0.0930, 0.0892, 0, 0.0851 },
+       {0, 0, 0.0594, 0.0499, 0, 0.0875, 0, 0.0800, 0.0871, 0.0825, 0, 0.0807 },
+       {0, 0, 0.0574, 0.0499, 0, 0.0784, 0, 0.0756, 0.0731, 0.0767, 0, 0.0750 },
+       {0, 0, 0.0537, 0.0466, 0, 0.0724, 0, 0.0700, 0.0671, 0.0717, 0, 0.0684 },
+       {0, 0, 0.0537, 0.0466, 0, 0.0684, 0, 0.0666, 0.0639, 0.0688, 0, 0.0656 },
+       {0, 0, 0.0520, 0.0451, 0, 0.0627, 0, 0.0636, 0.0602, 0.0635, 0, 0.0617 },
+       {0, 0, 0.0490, 0.0424, 0, 0.0597, 0, 0.0596, 0.0568, 0.0600, 0, 0.0594 },
+       {0, 0, 0.0490, 0.0424, 0, 0.0562, 0, 0.0571, 0.0538, 0.0569, 0, 0.0562 },
+       {0, 0, 0.0462, 0.0399, 0, 0.0523, 0, 0.0538, 0.0505, 0.0541, 0, 0.0516 },
+       {0, 0, 0.0450, 0.0388, 0, 0.0502, 0, 0.0518, 0.0487, 0.0516, 0, 0.0500 },
+       {0, 0, 0.0438, 0.0388, 0, 0.0470, 0, 0.0500, 0.0460, 0.0493, 0, 0.0477 },
+       {0, 0, 0.0427, 0.0368, 0, 0.0453, 0, 0.0474, 0.0445, 0.0471, 0, 0.0463 },
+       {0, 0, 0.0416, 0.0358, 0, 0.0428, 0, 0.0459, 0.0422, 0.0446, 0, 0.0437 },
+       {0, 0, 0.0396, 0.0350, 0, 0.0409, 0, 0.0437, 0.0405, 0.0429, 0, 0.0420 },
+       {0, 0, 0.0387, 0.0341, 0, 0.0392, 0, 0.0424, 0.0390, 0.0418, 0, 0.0409 },
+       {0, 0, 0.0387, 0.0333, 0, 0.0376, 0, 0.0412, 0.0372, 0.0398, 0, 0.0394 },
+       {0, 0, 0.0370, 0.0325, 0, 0.0362, 0, 0.0394, 0.0338, 0.0384, 0, 0.0384 },
+       {0, 0, 0.0362, 0.0318, 0, 0.0348, 0, 0.0383, 0.0325, 0.0367, 0, 0.0366 },
+       {0, 0, 0.0347, 0.0304, 0, 0.0333, 0, 0.0368, 0.0312, 0.0355, 0, 0.0346 },
+       {0, 0, 0.0340, 0.0297, 0, 0.0322, 0, 0.0354, 0.0305, 0.0347, 0, 0.0339 },
+       {0, 0, 0.0333, 0.0297, 0, 0.0311, 0, 0.0346, 0.0294, 0.0333, 0, 0.0325 },
+       {0, 0, 0.0326, 0.0285, 0, 0.0301, 0, 0.0333, 0.0286, 0.0324, 0, 0.0318 },
+       {0, 0, 0.0320, 0.0280, 0, 0.0289, 0, 0.0325, 0.0278, 0.0311, 0, 0.0309 },
+       {0, 0, 0.0308, 0.0269, 0, 0.0281, 0, 0.0314, 0.0269, 0.0303, 0, 0.0297 },
+       {0, 0, 0.0303, 0.0264, 0, 0.0273, 0, 0.0304, 0.0262, 0.0295, 0, 0.0292 },
+       {0, 0, 0.0297, 0.0264, 0, 0.0263, 0, 0.0298, 0.0254, 0.0284, 0, 0.0284 },
+       {0, 0, 0.0287, 0.0254, 0, 0.0256, 0, 0.0289, 0.0248, 0.0277, 0, 0.0276 },
+       {0, 0, 0.0282, 0.0250, 0, 0.0249, 0, 0.0283, 0.0241, 0.0268, 0, 0.0269 },
+       {0, 0, 0.0273, 0.0241, 0, 0.0241, 0, 0.0272, 0.0235, 0.0262, 0, 0.0256 },
+       {0, 0, 0.0268, 0.0237, 0, 0.0235, 0, 0.0267, 0.0230, 0.0256, 0, 0.0252 },
+       {0, 0, 0.0264, 0.0237, 0, 0.0228, 0, 0.0262, 0.0215, 0.0248, 0, 0.0244 },
+       {0, 0, 0.0256, 0.0229, 0, 0.0223, 0, 0.0254, 0.0211, 0.0243, 0, 0.0240 },
+       {0, 0, 0.0256, 0.0225, 0, 0.0216, 0, 0.0248, 0.0206, 0.0236, 0, 0.0233 },
+       {0, 0, 0.0248, 0.0218, 0, 0.0210, 0, 0.0241, 0.0201, 0.0229, 0, 0.0228 },
+       {0, 0, 0.0245, 0.0215, 0, 0.0206, 0, 0.0235, 0.0197, 0.0224, 0, 0.0223 },
+       {0, 0, 0.0238, 0.0212, 0, 0.0200, 0, 0.0231, 0.0192, 0.0220, 0, 0.0219 },
+       {0, 0, 0.0231, 0.0206, 0, 0.0196, 0, 0.0226, 0.0188, 0.0214, 0, 0.0214 },
+       {0, 0, 0.0228, 0.0203, 0, 0.0191, 0, 0.0220, 0.0184, 0.0209, 0, 0.0209 },
+       {0, 0, 0.0222, 0.0197, 0, 0.0186, 0, 0.0215, 0.0179, 0.0204, 0, 0.0202 },
+       {0, 0, 0.0219, 0.0194, 0, 0.0183, 0, 0.0210, 0.0176, 0.0200, 0, 0.0198 },
+       {0, 0, 0.0216, 0.0192, 0, 0.0178, 0, 0.0207, 0.0173, 0.0195, 0, 0.0193 },
+       {0, 0, 0.0211, 0.0186, 0, 0.0175, 0, 0.0201, 0.0170, 0.0191, 0, 0.0191 },
+       {0, 0, 0.0208, 0.0184, 0, 0.0171, 0, 0.0199, 0.0166, 0.0186, 0, 0.0186 },
+       {0, 0, 0.0203, 0.0179, 0, 0.0166, 0, 0.0193, 0.0162, 0.0182, 0, 0.0182 },
+       {0, 0, 0.0201, 0.0177, 0, 0.0164, 0, 0.0190, 0.0154, 0.0179, 0, 0.0179 },
+       {0, 0, 0.0198, 0.0175, 0, 0.0160, 0, 0.0187, 0.0151, 0.0176, 0, 0.0176 },
+       {0, 0, 0.0191, 0.0170, 0, 0.0157, 0, 0.0182, 0.0149, 0.0172, 0, 0.0173 },
+       {0, 0, 0.0189, 0.0168, 0, 0.0154, 0, 0.0179, 0.0146, 0.0168, 0, 0.0169 },
+       {0, 0, 0.0185, 0.0164, 0, 0.0151, 0, 0.0175, 0.0143, 0.0165, 0, 0.0164 },
+       {0, 0, 0.0157, 0.0157, 0, 0.0148, 0, 0.0164, 0.0143, 0.0159, 0, 0.0162 },
+       {0, 0, 0.0153, 0.0154, 0, 0.0145, 0, 0.0159, 0.0143, 0.0154, 0, 0.0157 },
+       {0, 0, 0.0148, 0.0150, 0, 0.0143, 0, 0.0152, 0.0143, 0.0148, 0, 0.0150 },
+       {0, 0, 0.0143, 0.0144, 0, 0.0139, 0, 0.0147, 0.0142, 0.0143, 0, 0.0146 },
+       {0, 0, 0.0140, 0.0141, 0, 0.0137, 0, 0.0142, 0.0142, 0.0138, 0, 0.0142 },
+       {0, 0, 0.0136, 0.0137, 0, 0.0134, 0, 0.0138, 0.0138, 0.0135, 0, 0.0137 },
+       {0, 0, 0.0133, 0.0133, 0, 0.0132, 0, 0.0134, 0.0133, 0.0130, 0, 0.0133 },
+       {0, 0, 0.0131, 0.0130, 0, 0.0130, 0, 0.0131, 0.0131, 0.0127, 0, 0.0131 },
+       {0, 0, 0.0128, 0.0128, 0, 0.0127, 0, 0.0128, 0.0128, 0.0125, 0, 0.0128 },
+       {0, 0, 0.0125, 0.0125, 0, 0.0125, 0, 0.0125, 0.0125, 0.0122, 0, 0.0125 },  // level 70
+};
+
+
+
+
+
 /*
 Exalted	        1,000	 Access to racial mounts. Capped at 999.7
 Revered	        21,000	 Heroic mode keys for Outland dungeons
@@ -273,7 +369,9 @@ struct FactionReputation
 	inline bool Positive() { return standing >= 0; }
 	FactionRating CalcRating()
 	{		
-		register long st=CalcStanding();
+		//changed by zack : nocturno patch : items bougth from Quartermasters relly on full standing value
+//		register long st=CalcStanding();
+		register long st=standing;
 		if(st>=42000)
 			return EXALTED;
 		if(st>=21000)
@@ -310,6 +408,8 @@ struct PlayerInfo
 	uint32 lastLevel;
 	Group * m_Group;
 	uint8 subGroup;
+
+	Player * m_loggedInPlayer;
 };
 struct PlayerPet
 {
@@ -444,6 +544,21 @@ struct PlayerSkill
 	void Reset(uint32 Id);
 };
 
+enum SPELL_INDEX
+{
+	SPELL_TYPE_INDEX_MARK			= 1,
+	SPELL_TYPE_INDEX_POLYMORPH		= 2,
+	SPELL_TYPE_INDEX_FEAR			= 3,
+	SPELL_TYPE_INDEX_SAP			= 4,
+	SPELL_TYPE_INDEX_SCARE_BEAST	= 5,
+	SPELL_TYPE_INDEX_HIBERNATE		= 6,
+	SPELL_TYPE_INDEX_EARTH_SHIELD	= 7,
+	SPELL_TYPE_INDEX_CYCLONE		= 8,
+	SPELL_TYPE_INDEX_BANISH			= 9,
+	NUM_SPELL_TYPE_INDEX			= 10,
+};
+
+class ArenaTeam;
 //====================================================================
 //  Player
 //  Class that holds every created character on the server.
@@ -511,6 +626,10 @@ public:
 	~Player ( );
 	bool ok_to_remove;
 	PlayerInfo * m_playerInfo;
+	uint64 m_spellIndexTypeTargets[NUM_SPELL_TYPE_INDEX];
+	void RemoveSpellTargets(uint32 Type);
+	void RemoveSpellIndexReferences(uint32 Type);
+	void SetSpellTargetType(uint32 Type, Unit* target);
 
 	void AddToWorld();
 	void RemoveFromWorld();
@@ -528,6 +647,8 @@ public:
 	void GiveXP(uint32 xp, const uint64 &guid, bool allowbonus);   // to stop rest xp being given
 	void ModifyBonuses(uint32 type,int32 val);
 	std::map<uint32, uint32> m_wratings;
+
+	ArenaTeam * m_arenaTeams[NUM_ARENA_TEAM_TYPES];
 	
     /************************************************************************/
     /* Taxi                                                                 */
@@ -588,7 +709,9 @@ public:
     bool                CanFinishQuest(Quest* qst);
 
     //Quest related variables
+	uint32 m_questbarrier1[25];
     QuestLogEntry*      m_questlog[25];
+	uint32 m_questbarrier2[25];
     std::set<uint32>    m_QuestGOInProgress;
     std::set<uint32>    m_removequests;
     std::set<uint32>    m_finishedQuests;
@@ -1197,7 +1320,8 @@ public:
 	void ResetHeartbeatCoords();
 	float _lastHeartbeatX;
 	float _lastHeartbeatY;
-	float _lastHeartbeatZ;
+	uint32 _heartBeatDisabledUntil;
+	uint32 _delayAntiFlyUntil;
 	uint32 _lastHeartbeatTime;
 	void AddSplinePacket(uint64 guid, ByteBuffer* packet);
 	ByteBuffer* GetAndRemoveSplinePacket(uint64 guid);
@@ -1317,7 +1441,7 @@ public:
 	set<Unit*> visiblityChangableSet;
 	bool m_beingPushed;
 	bool CanSignCharter(Charter * charter, Player * requester);
-	Charter * m_charter;
+	Charter * m_charters[NUM_CHARTER_TYPES];
 	uint32 flying_aura;
 	stringstream LoadAuras;
 	bool resend_speed;
@@ -1347,8 +1471,6 @@ public:
 	}
 
 	inline void NullComboPoints() { if(!m_retainComboPoints) { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints=0; } UpdateComboPoints(); }
-	Unit *GetSoloSpellTarget(uint32 spell_id);
-	void  SetSoloSpellTarget(uint32 spellid,uint64 newtarget);
 	uint32 m_speedChangeCounter;
 
 	void SendAreaTriggerMessage(const char * message, ...);
@@ -1410,6 +1532,7 @@ public:
 	LocationVector m_sentTeleportPosition;
 
 	void RemoveFromBattlegroundQueue();
+	uint32 m_arenateaminviteguid;
 
     /************************************************************************/
     /* Spell Packet wharper Please keep this separated                      */
@@ -1561,7 +1684,6 @@ protected:
 	Object *m_SummonedObject;
 
     // other system
-    SoloSpells	solospelltarget;
 	Corpse *    myCorpse;
 
 	uint32      m_cooldownTimer;

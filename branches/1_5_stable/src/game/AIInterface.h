@@ -34,7 +34,6 @@
 #define ENABLE_CREATURE_DAZE
 #ifdef ENABLE_CREATURE_DAZE
 	#define CREATURE_SPELL_TO_DAZE 1604
-	#define CREATURE_CHANCE_TO_DAZE 20
 	#define CREATURE_DAZE_TRIGGER_ANGLE M_PI/2 //for the beginners this means 45 degrees 
 #endif
 
@@ -355,7 +354,7 @@ public:
 	inline void SetWaypointMap(WayPointMap * m) { m_waypoints = m; }
 	bool m_hasWaypointEvents;
 	bool m_isGuard;
-	bool m_fastMove;
+//	bool m_fastMove;
 	void setGuardTimer(uint32 timer) { m_guardTimer = timer; }
 
 private:
@@ -402,7 +401,8 @@ private:
 
 
 	// Movement
-	float m_moveSpeed;
+	float m_walkSpeed;
+	float m_runSpeed;
 	float m_destinationX;
 	float m_destinationY;
 	float m_destinationZ;

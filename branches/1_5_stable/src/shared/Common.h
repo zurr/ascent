@@ -211,6 +211,7 @@ enum MsTimeVariables
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #else
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -519,11 +520,11 @@ static inline float long2float (long l)
 inline uint32 now()
 {	
 #ifdef WIN32
-return timeGetTime();
+	return GetTickCount();
 #else
-struct timeb tp;
-ftime(&tp);
-return  tp.time * 1000 + tp.millitm;
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 #endif
 }
 

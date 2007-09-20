@@ -68,7 +68,7 @@ void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_
 		SetUInt32Value(UNIT_FIELD_PETNUMBER, GetGUIDLow());
 		SetPowerType(POWER_TYPE_MANA);
 		if(entry == WATER_ELEMENTAL)
-			m_name = "SBAL & DrMadison";
+			m_name = "Water Elemental";
 		else
 			m_name = sWorld.GenerateName();
 
@@ -128,6 +128,10 @@ void Pet::CreateAsSummon(uint32 entry, CreatureInfo *ci, Creature* created_from_
 		pp->number = m_PetNumber;
 		static_cast<Player*>(owner)->AddPlayerPet(pp, pp->number);
 	}	
+
+	//maybe we should use speed from the tempalte we created the creature ?
+	m_base_runSpeed = m_runSpeed = owner->m_base_runSpeed; //should we be able to keep up with master ?
+	m_base_walkSpeed = m_walkSpeed = owner->m_base_walkSpeed; //should we be able to keep up with master ?
 
 	InitializeMe(true);
 }
@@ -816,6 +820,7 @@ void Pet::ApplySummonLevelAbilities()
 		break;*/
 	case 510:	// Mage's water elemental
 		stat_index = 5;
+		m_aiInterface->disable_melee = true;
 		break;
 	}
 	if(m_uint32Values[OBJECT_FIELD_ENTRY] == 89)

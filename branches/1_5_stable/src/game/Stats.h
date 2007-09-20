@@ -280,16 +280,16 @@ inline uint32 CalculateXpToGive(Unit *pVictim, Unit *pAttacker)
 		case 0: // normal mob
 			break;
 		case 1: // elite
-			xp *= 1.5f;
+			xp *= 2.0f;
 			break;
 		case 2: // rare elite
-			xp *= 3.0f;
+			xp *= 2.0f;
 			break;
 		case 3: // world boss
-			xp *= 10.0f;
+			xp *= 2.5f;
 			break;
 		default:	// rare or higher
-			xp *= 7.0f;
+//			xp *= 7.0f;
 			break;
 		}
 	}
@@ -606,6 +606,18 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
                 wspeed = 2800;
             }
         }
+		//Weapon speed constant in feral forms
+		if(pAttacker->IsPlayer())
+		{
+			if(static_cast<Player*>(pAttacker)->IsInFeralForm())
+			{
+				uint8 ss = static_cast<Player*>(pAttacker)->GetShapeShift();
+					if (ss == FORM_CAT)
+						wspeed = 1000.0;
+					else if(ss == FORM_DIREBEAR || ss == FORM_BEAR)
+						 wspeed = 2500.0;
+			}
+		}
 
 		bonus = (wspeed*ap)/14000.0f;
 
@@ -682,6 +694,20 @@ inline uint32 CalculateDamage(Unit *pAttacker, Unit *pVictim, uint32 damage_type
                 }
             }
         }
+
+		//Weapon speed constant in feral forms
+	    if(pAttacker->IsPlayer())
+	    {
+	        if(static_cast<Player*>(pAttacker)->IsInFeralForm())
+	        {
+	            uint8 ss = static_cast<Player*>(pAttacker)->GetShapeShift();
+	            if(ss == FORM_CAT)
+	                wspeed = 1000.0;
+	            else if(ss == FORM_DIREBEAR || ss == FORM_BEAR)
+	                wspeed = 2500.0;
+	        }
+	    }
+
 		bonus = (wspeed*ap)/14000.0f;
 
 		min_damage += bonus;
@@ -721,6 +747,7 @@ inline bool isEven (int num)
 }
 
 #endif
+
 
 
 

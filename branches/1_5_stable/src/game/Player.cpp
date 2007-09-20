@@ -49,6 +49,7 @@ Player::Player ( uint32 high, uint32 low )
 	TrackingSpell		   = 0;
 	m_status				= 0;
 	offhand_dmg_mod		 = 0.5;
+	m_walkSpeed			= 2.5f;
 	m_runSpeed			  = PLAYER_NORMAL_RUN_SPEED;
 	m_isMoving			  = false;
 	m_ShapeShifted		  = 0;
@@ -316,7 +317,11 @@ Player::Player ( uint32 high, uint32 low )
 	tutorialsDirty = true;
 	m_TeleportState = 1;
 	m_beingPushed = false;
-	m_charter = 0;
+	for(int i = 0; i < NUM_CHARTER_TYPES; ++i)
+		m_charters[i]=NULL;
+	for(int i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+		m_arenaTeams[i]=NULL;
+
 	flying_aura = 0;
 	resend_speed = false;
 	rename_pending = false;
@@ -359,6 +364,11 @@ Player::Player ( uint32 high, uint32 low )
 	m_speedChangeCounter=1;
 	memset(&m_bgScore,0,sizeof(BGScore));
 	m_arenaPoints = 0;
+	_delayAntiFlyUntil=0;
+	memset(&m_spellIndexTypeTargets, 0, sizeof(uint64)*NUM_SPELL_TYPE_INDEX);
+	m_base_runSpeed = m_runSpeed;
+	m_base_walkSpeed = m_walkSpeed;
+	m_arenateaminviteguid=0;
 }
 
 
@@ -443,6 +453,9 @@ Player::~Player ( )
 	for(ReputationMap::iterator itr = m_reputation.begin(); itr != m_reputation.end(); ++itr)
 		delete itr->second;
 	m_objectTypeId = TYPEID_UNUSED;
+
+	if(m_playerInfo)
+		m_playerInfo->m_loggedInPlayer=NULL;
 }
 
 inline uint32 GetSpellForLanguage(uint32 SkillID)
@@ -583,16 +596,16 @@ bool Player::Create(WorldPacket& data )
 	memset(m_taximask,0,sizeof(m_taximask));
 	switch(race)
 	{
-	case RACE_TAUREN:		m_taximask[0]= 1 << (22-1); break;
-	case RACE_HUMAN:		 m_taximask[0]= 1 << ( 2-1); break;
-	case RACE_DWARF:		 m_taximask[0]= 1 << ( 6-1); break;
-	case RACE_GNOME:		 m_taximask[0]= 1 << ( 6-1); break;
-	case RACE_ORC:		   m_taximask[0]= 1 << (23-1); break;
-	case RACE_TROLL:		 m_taximask[0]= 1 << (23-1); break;
-	case RACE_UNDEAD:		m_taximask[0]= 1 << (11-1); break;
-	case RACE_NIGHTELF:	  m_taximask[0]= 1 << (27-1); break;
-	case RACE_BLOODELF:		 m_taximask[2]= 1 << (18-1); break;
-	case RACE_DRAENEI:		 m_taximask[2]= 1 << (30-1); break;
+	case RACE_TAUREN:       m_taximask[0]= 1 << (22-1); break;
+	case RACE_HUMAN:        m_taximask[0]= 1 << ( 2-1); break;
+	case RACE_DWARF:        m_taximask[0]= 1 << ( 6-1); break;
+	case RACE_GNOME:        m_taximask[0]= 1 << ( 6-1); break;
+	case RACE_ORC:          m_taximask[0]= 1 << (23-1); break;
+	case RACE_TROLL:        m_taximask[0]= 1 << (23-1); break;
+	case RACE_UNDEAD:       m_taximask[0]= 1 << (11-1); break;
+	case RACE_NIGHTELF:     m_taximask[0]= 1 << (27-1); break;
+	case RACE_BLOODELF:     m_taximask[2]= 1 << (18-1); break;
+	case RACE_DRAENEI:      m_taximask[2]= 1 << (30-1); break;
 	}
 
 	// Set Starting stats for char
@@ -1140,6 +1153,11 @@ void Player::_EventExploration()
                     if(m_isResting) ApplyPlayerRestState(false);
                 }
             }
+			else
+			{
+				if(m_isResting)
+					ApplyPlayerRestState(false);
+			}
         }
         else
         {
@@ -1915,7 +1933,7 @@ void Player::_SetVisibleBits(UpdateMask *updateMask, Player *target) const
 	updateMask->SetBit(UNIT_FIELD_FACTIONTEMPLATE);
 	updateMask->SetBit(UNIT_FIELD_BYTES_0);
 	updateMask->SetBit(UNIT_FIELD_FLAGS);
-	for(uint32 i = UNIT_FIELD_AURA; i < UNIT_FIELD_AURASTATE; i ++)
+	for(uint32 i = UNIT_FIELD_AURA; i <= UNIT_FIELD_AURASTATE; i ++)
 		updateMask->SetBit(i);
 	updateMask->SetBit(UNIT_FIELD_BASEATTACKTIME);
 	updateMask->SetBit(UNIT_FIELD_BASEATTACKTIME+1);
@@ -2113,8 +2131,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 		ss << ",'','',0,0";
 	}
 
-	ss << ","
-		<< (m_charter ? m_charter->GetID() : uint32(0)) << ","
+	ss << "," << m_arenaPoints << ","
 		<< (uint32)m_StableSlotCount << ",";
 	
 	// instances
@@ -2598,9 +2615,21 @@ bool Player::LoadFromDB(uint32 guid)
 	//uint32 guildrank = get_next_field.GetUInt32();
 	SetGuildId(get_next_field.GetUInt32());
 	SetUInt32Value(PLAYER_GUILDRANK,get_next_field.GetUInt32());
-	uint32 cid = get_next_field.GetUInt32();
-	if(cid)
-		m_charter = objmgr.GetCharter(cid);
+	m_arenaPoints = get_next_field.GetUInt32();
+	for(uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
+		m_charters[z] = objmgr.GetCharterByGuid(GetGUID(), (CharterTypes)z);
+	for(uint32 z = 0; z < NUM_ARENA_TEAM_TYPES; ++z)
+	{
+		m_arenaTeams[z] = objmgr.GetArenaTeamByGuid(GetGUIDLow(), z);
+		if(m_arenaTeams[z] != NULL)
+		{
+			SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z*5), m_arenaTeams[z]->m_id);
+			if(m_arenaTeams[z]->m_leader == GetGUIDLow())
+				SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z*5) + 1, 0);
+			else
+				SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z*5) + 1, 1);
+		}
+	}
 
 	m_StableSlotCount = get_next_field.GetUInt32();
 	m_instanceId = get_next_field.GetUInt32();
@@ -3162,8 +3191,9 @@ void Player::OnPushToWorld()
 
 void Player::ResetHeartbeatCoords()
 {
-	_lastHeartbeatX = _lastHeartbeatY = _lastHeartbeatZ = 0;
+	_lastHeartbeatX = _lastHeartbeatY = 0;
 	_lastHeartbeatTime = 0;
+	_heartBeatDisabledUntil = UNIXTIME + 3;
 }
 
 void Player::RemoveFromWorld()
@@ -4173,16 +4203,25 @@ void Player::UpdateHit(int32 hit)
 
 void Player::UpdateChances()
 {
-	int clss = (int)getClass();
+	uint32 pClass = (uint32)this->getClass();
+	uint32 pLevel = (this->getLevel()>70) ? 70 : this->getLevel();
 	const float baseDodge[12] = { 0, 0, 0.75, 0.64, 0, 3, 0, 1.75, 3.25, 2, 0, 0.75 };
 	const float dodgeRatio[12] = { 0, 30, 30, 40, 21, 30, 0, 30, 30, 30, 0, 30 };
+	const float baseSpellCrit[12] = { 0, 0, 3.3355, 3.6020, 0, 1.2375, 0, 2.2010, 0.9075, 1.700, 0, 1.8515 };
  
-	float tmp = baseDodge[clss] + (GetUInt32Value( UNIT_FIELD_STAT1) / dodgeRatio[clss]) + this->GetDodgeFromSpell();
+	float tmp = baseDodge[pClass] + (GetUInt32Value( UNIT_FIELD_STAT1) / dodgeRatio[pClass]) + this->GetDodgeFromSpell();
 	tmp+=CalcRating(2);//dodge rating
 	SetFloatValue(PLAYER_DODGE_PERCENTAGE,min(tmp,95.0));
 
-	tmp = 5.0f + GetUInt32Value(UNIT_FIELD_STAT0) / 22.0 + this->GetBlockFromSpell();
-	tmp+=CalcRating(4);//block rating
+	//block = 0 if no shield
+	Item* it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+	if(it && it->GetProto()->InventoryType==INVTYPE_SHIELD)
+	{
+		tmp = 5.0f + GetUInt32Value(UNIT_FIELD_STAT0) / 22.0 + this->GetBlockFromSpell();
+		tmp+=CalcRating(4);//block rating
+	}
+	else
+		tmp = 0.0f;
 	SetFloatValue(PLAYER_BLOCK_PERCENTAGE,min(tmp,95.0));
 
 	tmp = 5.0f + this->GetParryFromSpell();
@@ -4205,7 +4244,7 @@ The crit constant is class and level dependent and for a level 70 character as f
 	* Warrior [33] 
 */
 
-	switch(clss)
+	switch(pClass)
 	{
 	case ROGUE: 
 		tmp = 5.0f + (GetUInt32Value(UNIT_FIELD_STAT1) / 40.00);
@@ -4222,12 +4261,12 @@ The crit constant is class and level dependent and for a level 70 character as f
 	}
 	//std::list<WeaponModifier>::iterator i = tocritchance.begin();
 	map<uint32, WeaponModifier>::iterator i = tocritchance.begin();
-	Item*it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-	float b=0;
+	Item * tItem = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+	float b = 0;
 	for(;i!=tocritchance.end();++i)
 	{
         //-1 = any weapon
-		if((i->second.wclass==(uint32)-1) || (it && (1 << it->GetProto()->SubClass & i->second.subclass)))
+		if((i->second.wclass==(uint32)-1) || (tItem && (1 << tItem->GetProto()->SubClass & i->second.subclass)))
 		{
 			b+=i->second.value;
 		}
@@ -4239,9 +4278,10 @@ The crit constant is class and level dependent and for a level 70 character as f
 	float rcr=tmp+CalcRating(9);
 	SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE,min(rcr,95.0));
 
-	//TODO: Correct spell crit chance calc.
-	spellcritperc = (GetUInt32Value(UNIT_FIELD_STAT3) / 60.0f) + this->GetSpellCritFromSpell();
-	spellcritperc+=CalcRating(10);
+	spellcritperc = baseSpellCrit[pClass] +
+					GetUInt32Value(UNIT_FIELD_STAT3)*SpellCritFromInt[pLevel][pClass] +
+					this->GetSpellCritFromSpell() +
+					this->CalcRating(10);
 	UpdateChanceFields();
 }
 
@@ -4395,15 +4435,6 @@ void Player::UpdateStats()
 	{
 		ModFloatValue(UNIT_MOD_CAST_SPEED,(SpellHasteRatingBonus-newb)/100.0);
 		SpellHasteRatingBonus=newb;
-	}
-	float NewShit = CalcRating(10);
-	if(NewShit !=SpellCrtiticalStrikeRatingBonus)
-	{
-		for(uint32 i = 0; i < 7; ++i)
-		{
-				SpellCritChanceSchool[i]+=(NewShit-SpellCrtiticalStrikeRatingBonus);
-		}
-		SpellCrtiticalStrikeRatingBonus=NewShit;
 	}
 ////////////////////RATINGS STUFF//////////////////////
 	UpdateChances();
@@ -4817,6 +4848,20 @@ void Player::OnRemoveInRangeObject(Object* pObj)
 			m_Summon->Remove(true, true, false);
 		}
 		m_Summon = 0;
+	}
+
+	/* wehee loop unrolling */
+/*	if(m_spellTypeTargets[0] == pObj)
+		m_spellTypeTargets[0] = NULL;
+	if(m_spellTypeTargets[1] == pObj)
+		m_spellTypeTargets[1] = NULL;
+	if(m_spellTypeTargets[2] == pObj)
+		m_spellTypeTargets[2] = NULL;*/
+	if(pObj->IsUnit())
+	{
+		for(uint32 x = 0; x < NUM_SPELL_TYPE_INDEX; ++x)
+			if(m_spellIndexTypeTargets[x] == pObj->GetGUID())
+				m_spellIndexTypeTargets[x] = 0;
 	}
 }
 
@@ -5340,11 +5385,54 @@ void Player::SendInitialLogonPackets()
 	//Factions
 	smsg_InitialFactions();
 
+
+    /* Some minor documentation about the time field
+    // MOVE THIS DOCUMENATION TO THE WIKI
+    
+    minute's = 0x0000003F                  00000000000000000000000000111111
+    hour's   = 0x000007C0                  00000000000000000000011111000000
+    weekdays = 0x00003800                  00000000000000000011100000000000
+    days     = 0x000FC000                  00000000000011111100000000000000
+    months   = 0x00F00000                  00000000111100000000000000000000
+    years    = 0x1F000000                  00011111000000000000000000000000
+    unk	     = 0xE0000000                  11100000000000000000000000000000
+    */
+
 	data.Initialize(SMSG_LOGIN_SETTIMESPEED);
 	time_t minutes = sWorld.GetGameTime( ) / 60;
 	time_t hours = minutes / 60; minutes %= 60;
-	time_t gameTime = minutes + ( hours << 6 );
-	data << (uint32)gameTime;
+    time_t gameTime = 0;
+    
+    // TODO: Add stuff to handle these variable's
+    uint32 DayOfTheWeek     = -1;    //(0b111 = (any) day, 0 = Monday ect)
+    uint32 DayOfTheMonth    = 20-1;   // Day - 1 (0 is actual 1) its now the 20e here. TODO: replace this one with the proper date
+    uint32 CurrentMonth     = 9-1;    // Month - 1 (0 is actual 1) same as above. TODO: replace it with the proper code
+    uint32 CurrentYear      = 7;    // 2000 + this number results in a correct value for this crap. TODO: replace this with the propper code
+
+    #define MINUTE_BITMASK      0x0000003F
+    #define HOUR_BITMASK        0x000007C0
+    #define WEEKDAY_BITMASK     0x00003800
+    #define DAY_BITMASK         0x000FC000
+    #define MONTH_BITMASK       0x00F00000
+    #define YEAR_BITMASK        0x1F000000
+    #define UNK_BITMASK         0xE0000000
+
+    #define MINUTE_SHIFTMASK    0
+    #define HOUR_SHIFTMASK      6
+    #define WEEKDAY_SHIFTMASK   11
+    #define DAY_SHIFTMASK       14
+    #define MONTH_SHIFTMASK     20
+    #define YEAR_SHIFTMASK      24
+    #define UNK_SHIFTMASK       29
+
+    gameTime = ((minutes << MINUTE_SHIFTMASK) & MINUTE_BITMASK);
+    gameTime|= ((hours << HOUR_SHIFTMASK) & HOUR_BITMASK);
+    gameTime|= ((DayOfTheWeek << WEEKDAY_SHIFTMASK) & WEEKDAY_BITMASK);
+    gameTime|= ((DayOfTheMonth << DAY_SHIFTMASK) & DAY_BITMASK);
+    gameTime|= ((CurrentMonth << MONTH_SHIFTMASK) & MONTH_BITMASK);
+    gameTime|= ((CurrentYear << YEAR_SHIFTMASK) & YEAR_BITMASK);
+
+    data << (uint32)gameTime;
 	data << (float)0.0166666669777748f;  // Normal Game Speed
 	GetSession()->SendPacket( &data );
 
@@ -6984,7 +7072,7 @@ void Player::UpdatePvPArea()
                 }
             }
 
-            if(at->AreaFlags & AREA_PVP_ARENA && !m_bg)			/* ffa pvp arenas will come later */
+            if(at->AreaFlags & AREA_PVP_ARENA)			/* ffa pvp arenas will come later */
             {
                 if(!IsPvPFlagged()) SetPvPFlag();
 
@@ -7538,7 +7626,13 @@ void Player::ModifyBonuses(uint32 type,int32 val)
 
 bool Player::CanSignCharter(Charter * charter, Player * requester)
 {
-	if(m_charter || IsInGuild() || requester->GetTeam() != GetTeam())
+	if(charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType-1] != NULL)
+		return false;
+	
+	if(charter->CharterType == CHARTER_TYPE_GUILD && IsInGuild())
+		return false;
+
+	if(m_charters[charter->CharterType] || requester->GetTeam() != GetTeam())
 		return false;
 	else
 		return true;
@@ -7897,32 +7991,6 @@ void Player::UpdateComboPoints()
 
 	m_session->OutPacket(SMSG_SET_COMBO_POINTS, c, buffer);
 }
-
-Unit *Player::GetSoloSpellTarget(uint32 spell_id)
-{
-	if(m_mapMgr == 0) return NULL;
-
-	SoloSpells::iterator iter=solospelltarget.find(spell_id);
-	if(iter!=solospelltarget.end())
-		return GetMapMgr()->GetUnit(iter->second);
-	return NULL;
-}
-
-void  Player::SetSoloSpellTarget(uint32 spellid,uint64 newtarget)
-{ 
-	if(newtarget)
-		solospelltarget.insert(make_pair( spellid, newtarget ));
-	else 
-	{
-		SoloSpells::iterator iter=solospelltarget.find(spellid);
-		if(iter!=solospelltarget.end())
-		{
-			solospelltarget.erase(iter);
-			return;
-		}
-	}
-}
-
 
 void Player::SendAreaTriggerMessage(const char * message, ...)
 {
@@ -8504,6 +8572,28 @@ void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 		itr->second.MaximumValue = NewMax;
 		_UpdateSkillFields();
 	}
+}
+
+void Player::RemoveSpellTargets(uint32 Type)
+{
+	if(m_spellIndexTypeTargets[Type] != 0)
+	{
+		Unit * pUnit = m_mapMgr ? m_mapMgr->GetUnit(m_spellIndexTypeTargets[Type]) : NULL;
+		if(pUnit)
+            pUnit->RemoveAurasByBuffIndexType(Type, GetGUID());
+
+		m_spellIndexTypeTargets[Type] = 0;
+	}
+}
+
+void Player::RemoveSpellIndexReferences(uint32 Type)
+{
+	m_spellIndexTypeTargets[Type] = 0;
+}
+
+void Player::SetSpellTargetType(uint32 Type, Unit* target)
+{
+	m_spellIndexTypeTargets[Type] = target->GetGUID();
 }
 
 /************************************************************************/

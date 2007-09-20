@@ -428,6 +428,25 @@ enum StandState
 	STANDSTATE_KNEEL			= 8
 };
 
+enum UnitStates
+{
+	UNIT_STATE_NORMAL    = 0x01,
+	UNIT_STATE_CHARM     = 0x02,
+	UNIT_STATE_FEAR      = 0x04,
+	UNIT_STATE_ROOT      = 0x08,
+	UNIT_STATE_SLEEP     = 0x10,
+	UNIT_STATE_SNARE     = 0x20,
+	UNIT_STATE_STUN      = 0x40,
+	UNIT_STATE_KNOCKOUT  = 0x80,
+	UNIT_STATE_BLEED     = 0x100,
+	UNIT_STATE_POLYMORPH = 0x200,
+	UNIT_STATE_BANISH    = 0x400,
+	UNIT_STATE_CONFUSE   = 0x800,
+	UNIT_STATE_PACIFY   = 0x1000,
+	UNIT_STATE_SILENCE   = 0x2000,
+	UNIT_STATE_MOUNT   = 0x4000,
+};
+
 enum UnitFieldBytes1
 {
 	U_FIELD_BYTES_ANIMATION_FROZEN = 0x01,
@@ -664,7 +683,8 @@ public:
 	void smsg_AttackStop(uint64 victimGuid);
 	
 	bool IsDazed();
-	
+	//this function is used for creatures to get chance to daze for another unit
+	float get_chance_to_daze(Unit *target);
 
 	// Stealth  
 	inline uint32 GetStealthLevel() { return m_stealthLevel+ 5* m_uint32Values[UNIT_FIELD_LEVEL]; }
@@ -1007,8 +1027,9 @@ public:
 
 	void SetFacing(float newo);//only working if creature is idle
 
-	void RemoveAurasByBuffType(uint32 buff_type, uint64 guid);
-	bool HasAurasOfBuffType(uint32 buff_type, uint64 guid);
+	void RemoveAurasByBuffIndexType(uint32 buff_index_type, const uint64 &guid);
+	void RemoveAurasByBuffType(uint32 buff_type, const uint64 &guid,uint32 skip);
+	bool HasAurasOfBuffType(uint32 buff_type, const uint64 &guid,uint32 skip);
 	bool HasAurasWithNameHash(uint32 name_hash);
 	bool HasNegativeAuraWithNameHash(uint32 name_hash); //just to reduce search range in some cases
 	bool HasNegativeAura(uint32 spell_id); //just to reduce search range in some cases
@@ -1048,6 +1069,8 @@ public:
 	//solo target auras
 	uint32 polySpell;
 	uint16 m_invisibityFlag;
+	uint32 m_special_state; //flags for special states (stunned,rooted etc)
+	
 //	uint32 fearSpell;
 	
 protected:
@@ -1058,7 +1081,7 @@ protected:
 
 	uint32 m_H_regenTimer;
 	uint32 m_P_regenTimer;
-	uint32 m_P_I_regenTimer; //PowerInterruptedRegenTimer.
+	uint32 m_P_I_regenTimer; //PowerInterruptedegenTimer.
 	uint32 m_state;		 // flags for keeping track of some states
 	uint32 m_attackTimer;   // timer for attack
 	uint32 m_attackTimer_1;

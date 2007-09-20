@@ -666,6 +666,20 @@ protected:
 	void HandlePartyMemberStatsOpcode(WorldPacket & recv_data);
 	void HandleSummonResponseOpcode(WorldPacket & recv_data);
 
+	void HandleArenaTeamAddMemberOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamRemoveMemberOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamInviteAcceptOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamInviteDenyOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamLeaveOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamDisbandOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamPromoteOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamQueryOpcode(WorldPacket & recv_data);
+	void HandleArenaTeamRosterOpcode(WorldPacket & recv_data);
+
+	void HandleTeleportCheatOpcode(WorldPacket & recv_data);
+	void HandleTeleportToUnitOpcode(WorldPacket & recv_data);
+	void HandleWorldportOpcode(WorldPacket & recv_data);
+
 public:
 
 	void SendInventoryList(Creature* pCreature);
@@ -716,6 +730,7 @@ public:
 	static void InitPacketHandlerTable();
 	uint32 floodLines;
 	uint32 floodTime;
+	void SystemMessage(const char * format, ...);
 };
 
 typedef std::set<WorldSession*> SessionSet;

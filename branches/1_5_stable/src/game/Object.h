@@ -167,6 +167,7 @@ public:
 	inline const float& GetSpawnO( ) const { return m_spawnLocation.o; }
 
 	inline const LocationVector & GetPosition() { return m_position; }
+	inline LocationVector * GetPositionV() { return &m_position; }
 
 	//Distance Calculation
 	float CalcDistance(Object* Ob);
@@ -409,7 +410,10 @@ public:
 	float m_turnRate;
 	float m_flySpeed;
 	float m_backFlySpeed;
-	
+
+	float m_base_runSpeed;
+	float m_base_walkSpeed;
+
 	inline bool IsUnit()//creature or player
 	{
 		return ( m_objectTypeId == TYPEID_UNIT || m_objectTypeId == TYPEID_PLAYER); 

@@ -168,8 +168,35 @@ void Item::LoadFromDB(	Field *fields, Player * plr, bool light)
 		SetUInt32Value(ITEM_FIELD_FLAGS, 1);
 		SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
 		SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
-		if(plr->m_charter)
-			SetUInt32Value(ITEM_FIELD_ENCHANTMENT, plr->m_charter->GetID());
+		if(plr->m_charters[CHARTER_TYPE_GUILD])
+			SetUInt32Value(ITEM_FIELD_ENCHANTMENT, plr->m_charters[CHARTER_TYPE_GUILD]->GetID());
+	}
+
+	if(m_uint32Values[OBJECT_FIELD_ENTRY] == ARENA_TEAM_CHARTER_2v2)
+	{
+		SetUInt32Value(ITEM_FIELD_FLAGS, 1);
+		SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+		SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
+		if(plr->m_charters[CHARTER_TYPE_ARENA_2V2])
+			SetUInt32Value(ITEM_FIELD_ENCHANTMENT, plr->m_charters[CHARTER_TYPE_ARENA_2V2]->GetID());
+	}
+
+	if(m_uint32Values[OBJECT_FIELD_ENTRY] == ARENA_TEAM_CHARTER_3v3)
+	{
+		SetUInt32Value(ITEM_FIELD_FLAGS, 1);
+		SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+		SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
+		if(plr->m_charters[CHARTER_TYPE_ARENA_3V3])
+			SetUInt32Value(ITEM_FIELD_ENCHANTMENT, plr->m_charters[CHARTER_TYPE_ARENA_3V3]->GetID());
+	}
+
+	if(m_uint32Values[OBJECT_FIELD_ENTRY] == ARENA_TEAM_CHARTER_5v5)
+	{
+		SetUInt32Value(ITEM_FIELD_FLAGS, 1);
+		SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+		SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
+		if(plr->m_charters[CHARTER_TYPE_ARENA_5V5])
+			SetUInt32Value(ITEM_FIELD_ENCHANTMENT, plr->m_charters[CHARTER_TYPE_ARENA_5V5]->GetID());
 	}
 }
 

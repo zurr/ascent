@@ -242,7 +242,7 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 		}
 	}
 
-	// do not let people attack each other in sancuary
+	// do not let people attack each other in sanctuary
 	// Dueling is already catered for
 	AreaTable *atA;
 	AreaTable *atB;
@@ -261,7 +261,7 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 		atB = NULL;
 
 	// We have the area codes
-	// We know they arent dueling
+	// We know they aren't dueling
 	if (atA && atB)
 	{
 		if(atA->AreaFlags & 0x800 || atB->AreaFlags & 0x800)
@@ -293,8 +293,6 @@ inline bool isAttackable(Object* objA, Object* objB)// A can attack B?
 
 	return attackable;
 }
-
-
 
 inline bool isFriendly(Object* objA, Object* objB)// B is friendly to A if its not hostile
 {

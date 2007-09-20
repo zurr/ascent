@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="logonserver"
 	ProjectGUID="{6E15F06D-5546-474D-BB42-39848DEF77E0}"
-	RootNamespace="logonserver"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -43,7 +42,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\game"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;NO_ACC_CACHE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -77,6 +76,7 @@
 				ProgramDatabaseFile="$(OutDir)/logonserver.pdb"
 				SubSystem="1"
 				TargetMachine="1"
+				FixedBaseAddress="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -101,7 +101,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if not exist ..\..\bin\debug\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\debug"/>
+				CommandLine="if not exist ..\..\bin\debug\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\debug"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -128,13 +129,14 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
+				Optimization="4"
 				InlineFunctionExpansion="2"
 				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\game"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				MinimalRebuild="false"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="false"
 				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="2"
@@ -192,7 +194,101 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if not exist ..\..\bin\release\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\release"/>
+				CommandLine="if not exist ..\..\bin\release\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\release"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Hoard|Win32"
+			OutputDirectory=".\..\..\bin\Release"
+			IntermediateDirectory=".\logonserver___Win32_Hoard"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="4"
+				InlineFunctionExpansion="2"
+				AdditionalIncludeDirectories="..\..\dep\include;..\..\src\shared;..\game"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;HOARD"
+				StringPooling="true"
+				MinimalRebuild="false"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="false"
+				EnableEnhancedInstructionSet="0"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough="LogonStdAfx.h"
+				PrecompiledHeaderFile=".\logonserver___Win32_Hoard/logonserver.pch"
+				AssemblerListingLocation=".\logonserver___Win32_Hoard/"
+				ObjectFile=".\logonserver___Win32_Hoard/"
+				ProgramDataBaseFileName=".\logonserver___Win32_Hoard/"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="libmySQL.lib libeay32.lib ws2_32.lib winmm.lib odbc32.lib odbccp32.lib dbghelp.lib mswsock.lib winhoard.lib"
+				OutputFile="$(OutDir)/logonserver.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\dep\lib\release"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/logonserver.pdb"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="if not exist ..\..\bin\release\logonserver.conf copy ..\..\src\logonserver.conf ..\..\bin\release"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -207,6 +303,14 @@
 			</File>
 			<File
 				RelativePath="..\..\src\logonserver\LogonCommServer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\logonserver\LogonOpcodes.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\logonserver\LogonOpcodes.h"
 				>
 			</File>
 		</Filter>
@@ -233,7 +337,7 @@
 				RelativePath="..\..\src\game\CThreads.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -241,7 +345,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Hoard|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -254,30 +358,46 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\src\logonserver\AccountCache.cpp"
+		<Filter
+			Name="Caching"
 			>
-		</File>
-		<File
-			RelativePath="..\..\src\logonserver\AccountCache.h"
+			<File
+				RelativePath="..\..\src\logonserver\AccountCache.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\logonserver\AccountCache.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Console"
 			>
-		</File>
-		<File
-			RelativePath="..\..\src\logonserver\LogonConsole.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\src\logonserver\LogonConsole.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\src\logonserver\LogonOpcodes.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\src\logonserver\LogonOpcodes.h"
-			>
-		</File>
+			<File
+				RelativePath="..\..\src\logonserver\LogonConsole.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Hoard|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\src\logonserver\LogonConsole.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\..\src\logonserver\LogonStdAfx.cpp"
 			>
@@ -291,6 +411,14 @@
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Hoard|Win32"
 				>
 				<Tool
 					Name="VCCLCompilerTool"
@@ -311,8 +439,24 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\logonserver\PeriodicFunctionCall_Thread.h"
+			RelativePath="..\..\src\ascent\usewinhoard.cpp"
 			>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Hoard|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+				/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>

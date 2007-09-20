@@ -338,7 +338,7 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	pn->officerNote="";
 	pn->m_Group=0;
 	pn->subGroup=0;
-	
+	pn->m_loggedInPlayer=NULL;
 	pn->team = pNewChar->GetTeam ();
 	objmgr.AddPlayerInfo(pn);
 
@@ -467,14 +467,36 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 			//sObjHolder.Delete<Player>(plr);
 			return;
 		}
+		plr->m_playerInfo = objmgr.GetPlayerInfo(guid);
 		plr->DeleteFromDB();
 		//if charter leader
-		if(plr->m_charter)
+		/*if(plr->m_charter)
 		{
 			plr->m_charter->RemoveSignature(plr->GetGUID());
 			if(plr->m_charter->GetLeader() == plr->GetGUIDLow())
 			{
 				plr->m_charter->Destroy();
+			}
+		}*/
+		for(int i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+		{
+			if(plr->m_arenaTeams[i] != NULL)
+			{
+				if(plr->m_arenaTeams[i]->m_leader == plr->GetGUIDLow())
+					plr->m_arenaTeams[i]->Destroy();
+				else
+					plr->m_arenaTeams[i]->RemoveMember(plr->m_playerInfo);
+			}
+		}
+
+		for(int i = 0; i < NUM_CHARTER_TYPES; ++i)
+		{
+			if(plr->m_charters[i])
+			{
+				if(plr->m_charters[i]->LeaderGuid == plr->GetGUIDLow())
+					plr->m_charters[i]->Destroy();
+				else
+					plr->m_charters[i]->RemoveSignature(plr->GetGUIDLow());
 			}
 		}
 		
@@ -662,6 +684,7 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 		objmgr.AddPlayerInfo(info);
 	}
 	plr->m_playerInfo = info;
+	info->m_loggedInPlayer = plr;
 
 	// account data == UI config
 #ifndef USING_BIG_ENDIAN
@@ -863,6 +886,10 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 		plr->SendInitialLogonPackets();
 		plr->AddToWorld();
 	}
+
+	/* delay antiflight hack checks and speedhack checks for 10 seconds. */
+	_player->_delayAntiFlyUntil = UNIXTIME + 10;
+	_player->_heartBeatDisabledUntil = UNIXTIME + 10;
 
 	sInstanceSavingManager.BuildSavedInstancesForPlayer(plr);
 	objmgr.AddPlayer(_player);

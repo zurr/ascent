@@ -1131,21 +1131,24 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 	if(!unitTarget)
 		return;
 	// can't apply stuns/fear/polymorph/root etc on boss
-	Creature * c = (Creature*)(unitTarget);
-	if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
+	if (!unitTarget->IsPlayer())
 	{
-		switch(m_spellInfo->EffectApplyAuraName[i])
+		Creature * c = (Creature*)(unitTarget);
+		if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
 		{
-		case 6:
-		case 7:
-		case 12:
-		case 25:
-		case 26:
-		case 27:
-		case 31:
-		case 33:
-			SendCastResult(SPELL_FAILED_IMMUNE);
-			return;
+			switch(m_spellInfo->EffectApplyAuraName[i])
+			{
+			case 6:
+			case 7:
+			case 12:
+			case 25:
+			case 26:
+			case 27:
+			case 31:
+			case 33:
+				SendCastResult(SPELL_FAILED_IMMUNE);
+				return;
+			}
 		}
 	}
 	//check if we already have stronger aura
@@ -1648,6 +1651,8 @@ void Spell::SpellEffectSummon(uint32 i) // Summon
 			summon->AddSpell(sSpellStore.LookupEntry(31707), true);
 		if (sSpellStore.LookupEntry(33395))
 			summon->AddSpell(sSpellStore.LookupEntry(33395), true);
+       summon->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, p_caster->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE));
+       summon->_setFaction();
 	}
 	else
 	{
@@ -2168,7 +2173,8 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 	if(unitTarget->m_auras[x])
 	{
 		aur = unitTarget->m_auras[x];
-		if(aur->GetSpellId() != 15007 && !aur->IsPassive()) //Nothing can dispel resurrection sickness
+		//Nothing can dispel resurrection sickness;
+		if(!aur->IsPassive() && aur->GetSpellId() != 15007)
 		{
 			if(m_spellInfo->DispelType == DISPEL_ALL)
 			{
@@ -2794,9 +2800,12 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
 	if(!unitTarget || !unitTarget->isAlive())
 		return;
 	// can't apply stuns/fear/polymorph/root etc on boss
-	Creature * c = (Creature*)(unitTarget);
-	if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
-		return;
+	if(unitTarget->GetTypeId()==TYPEID_UNIT)
+	{
+		Creature * c = (Creature*)(unitTarget);
+		if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == 3) //boss
+			return;
+	}
 	// FIXME:This thing prevent target from spell casting too but cant find.
 	uint32 school=0;
 	if(unitTarget->GetCurrentSpell())
@@ -3599,9 +3608,14 @@ void Spell::SpellEffectCharge(uint32 i)
 	//if(unitTarget->GetTypeId() == TYPEID_UNIT)
 	//	if(unitTarget->GetAIInterface())
 	//		unitTarget->GetAIInterface()->StopMovement(5000);
+	if(unitTarget->GetPositionX() == 0.0f || unitTarget->GetPositionY() == 0.0f)
+		return;
 	
 	dx=unitTarget->GetPositionX()-m_caster->GetPositionX();
 	dy=unitTarget->GetPositionY()-m_caster->GetPositionY();
+	if(dx == 0.0f || dy == 0.0f)
+		return;
+
 	float d = sqrt(dx*dx+dy*dy)-unitTarget->GetFloatValue(UNIT_FIELD_BOUNDINGRADIUS)-m_caster->GetFloatValue(UNIT_FIELD_BOUNDINGRADIUS);
 	float alpha = atan(dy/dx);
 	if(dx<0)

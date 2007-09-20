@@ -234,7 +234,7 @@ static const uint32 NextLevelXp[MAX_PREDEFINED_NEXTLEVELXP]= {
 	25200,	27300,	29400,	31700,	34000,	36400,	38900,	41400,	44300,	47400,
 	50800,	54500,	58600,	62800,	67100,	71600,	76100,	80800,	85700,	90700,
 	95800,	101000,	106300,	111800,	117500,	123200,	129100,	135100,	141200,	147500,
-	153900,	160400,	167100,	173900,	180800,	187900,	195000,	202300,	209800,	217000,
+	153900,	160400,	167100,	173900,	180800,	187900,	195000,	202300,	209800,	494000,
 	574700,	614400,	650300,	682300,	710200,	734100,	753700,	768900,	779700,	800100};
 
 class SERVER_DECL GossipMenu
@@ -257,19 +257,49 @@ protected:
 class Charter
 {
 public:
+	inline uint32 GetNumberOfSlotsByType()
+	{
+		switch(CharterType)
+		{
+		case CHARTER_TYPE_GUILD:
+			return 9;
+
+		case CHARTER_TYPE_ARENA_2V2:
+			return 1;
+
+		case CHARTER_TYPE_ARENA_3V3:
+			return 2;
+
+		case CHARTER_TYPE_ARENA_5V5:
+			return 4;
+
+		default:
+			return 9;
+		}
+	}
+
 	uint32 SignatureCount;
-	uint32 Signatures[9];
+	uint32 * Signatures;
+	uint32 CharterType;
+	uint32 Slots;
 	uint32 LeaderGuid;
 	uint64 ItemGuid;
 	uint32 CharterId;
 	string GuildName;
 
 	Charter(Field * fields);
-	Charter(uint32 id, uint32 leader) : CharterId(id), LeaderGuid(leader)
+	Charter(uint32 id, uint32 leader, uint32 type) : CharterId(id), LeaderGuid(leader), CharterType(type)
 	{
 		SignatureCount = 0;
-		memset(Signatures, 0, sizeof(Signatures));
 		ItemGuid = 0;
+		Slots = GetNumberOfSlotsByType();
+		Signatures = new uint32[Slots];
+		memset(Signatures, 0, sizeof(uint32)*Slots);
+	}
+
+	~Charter()
+	{
+		delete [] Signatures;
 	}
 	
 	void SaveToDB();
@@ -281,7 +311,7 @@ public:
 	inline uint32 GetLeader() { return LeaderGuid; }
 	inline uint32 GetID() { return CharterId; }
 
-	inline bool IsFull() { return (SignatureCount == 9); }
+	inline bool IsFull() { return (SignatureCount == Slots); }
 };
 
 typedef std::map<uint32, std::list<SpellEntry*>* >                  OverrideIdMap;
@@ -408,6 +438,16 @@ public:
 
 	Pet * CreatePet();
 	uint32 m_hiPetGuid;
+	uint32 m_hiArenaTeamId;
+	uint32 GenerateArenaTeamId()
+	{
+		uint32 ret;
+		m_arenaTeamLock.Acquire();
+		ret = ++m_hiArenaTeamId;
+		m_arenaTeamLock.Release();
+		return ret;
+	}
+
 	Mutex m_petlock;
 
 	Player * CreatePlayer();
@@ -486,13 +526,24 @@ public:
 	Transporter * GetTransporter(uint64 guid);
 	Transporter * GetTransporterByEntry(uint32 entry);
 
-	Charter * CreateCharter(uint32 LeaderGuid);
-	Charter * GetCharter(uint32 CharterId);
+	Charter * CreateCharter(uint32 LeaderGuid, CharterTypes Type);
+	Charter * GetCharter(uint32 CharterId, CharterTypes Type);
 	void RemoveCharter(Charter *);
 	void LoadGuildCharters();
-	Charter * GetCharterByName(string &charter_name);
+	Charter * GetCharterByName(string &charter_name, CharterTypes Type);
 	Charter * GetCharterByItemGuid(uint64 guid);
+	Charter * GetCharterByGuid(uint64 playerguid, CharterTypes type);
 
+	ArenaTeam * GetArenaTeamByName(string & name, uint32 Type);
+	ArenaTeam * GetArenaTeamById(uint32 id);
+	ArenaTeam * GetArenaTeamByGuid(uint32 guid, uint32 Type);
+	void UpdateArenaTeamRankings();
+	void LoadArenaTeams();
+	HM_NAMESPACE::hash_map<uint32, ArenaTeam*> m_arenaTeamMap[3];
+	HM_NAMESPACE::hash_map<uint32, ArenaTeam*> m_arenaTeams;
+	void RemoveArenaTeam(ArenaTeam * team);
+	void AddArenaTeam(ArenaTeam * team);
+	Mutex m_arenaTeamLock;
 
 	typedef HM_NAMESPACE::hash_map<uint32, NpcMonsterSay*> MonsterSayMap;
 	MonsterSayMap mMonsterSays[NUM_MONSTER_SAY_EVENTS];
@@ -544,7 +595,7 @@ protected:
 	ReputationModMap m_reputation_creature;
 	HM_NAMESPACE::hash_map<uint32, InstanceReputationModifier*> m_reputation_instance;
 
-	HM_NAMESPACE::hash_map<uint32, Charter*> m_charters;
+	HM_NAMESPACE::hash_map<uint32, Charter*> m_charters[NUM_CHARTER_TYPES];
 	
 	set<uint32> m_disabled_spells;
 	set<uint32> m_disabled_trainer_spells;

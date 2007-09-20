@@ -843,9 +843,26 @@ void WorldSession::InitPacketHandlerTable()
 
 	WorldPacketHandlers[MSG_ADD_DYNAMIC_TARGET_OBSOLETE].handler				= &WorldSession::HandleAddDynamicTargetOpcode;
 
+
+	// Arenas
+	WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::HandleArenaTeamQueryOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_ROSTER].handler = &WorldSession::HandleArenaTeamRosterOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_ADD_MEMBER].handler = &WorldSession::HandleArenaTeamAddMemberOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE_ACCEPT].handler = &WorldSession::HandleArenaTeamInviteAcceptOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_INVITE_DECLINE].handler = &WorldSession::HandleArenaTeamInviteDenyOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_LEAVE].handler = &WorldSession::HandleArenaTeamLeaveOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_REMOVE_PLAYER].handler = &WorldSession::HandleArenaTeamRemoveMemberOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_DISBAND].handler = &WorldSession::HandleArenaTeamDisbandOpcode;
+	WorldPacketHandlers[CMSG_ARENA_TEAM_PROMOTE].handler = &WorldSession::HandleArenaTeamPromoteOpcode;
+
 #ifdef CLUSTERING
 	WorldPacketHandlers[CMSG_PING].handler = &WorldSession::HandlePingOpcode;
 #endif
+
+	// cheat/gm commands?
+	WorldPacketHandlers[MSG_MOVE_TELEPORT_CHEAT].handler = &WorldSession::HandleTeleportCheatOpcode;
+	WorldPacketHandlers[CMSG_TELEPORT_TO_UNIT].handler = &WorldSession::HandleTeleportToUnitOpcode;
+	WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::HandleWorldportOpcode;
 }
 
 void WorldSession::CHECK_PACKET_SIZE(WorldPacket& data, uint32 size)
@@ -897,3 +914,17 @@ void WorldSession::HandlePingOpcode(WorldPacket& recvPacket)
 }
 
 #endif
+
+void WorldSession::SystemMessage(const char * format, ...)
+{
+	WorldPacket * data;
+	char buffer[1024];
+	va_list ap;
+	va_start(ap,format);
+	vsnprintf(buffer,1024,format,ap);
+	va_end(ap);
+
+	data = sChatHandler.FillSystemMessageData(buffer);
+	SendPacket(data);
+	delete data;
+}

@@ -928,7 +928,13 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 	uint32 crap2;
 	string name;
     uint8 error;
+	uint32 crap3,crap4,crap5,crap6,crap7,crap8,crap9,crap10,crap11,arena_index,crap12;
+	uint16 crap13;
+	uint8 crap14;
+	uint32 crap15;
 	recv_data >> creature_guid >> crap >> crap2 >> name;
+	recv_data >> crap3 >> crap4 >> crap5 >> crap6 >> crap7 >> crap8 >> crap9 >> crap10 >> crap11
+		>> crap12 >> crap13 >> crap14 >> arena_index >> crap15;
 
 	Creature * crt = _player->GetMapMgr()->GetCreature(creature_guid);
 	if(!crt)
@@ -937,58 +943,138 @@ void WorldSession::HandleCharterBuy(WorldPacket & recv_data)
 		return;
 	}
 
-	Guild * g = objmgr.GetGuildByGuildName(name);
-	Charter * c = objmgr.GetCharterByName(name);
-	if(g != 0 || c != 0)
+	if(crt->GetEntry()==19861 || crt->GetEntry()==18897 || crt->GetEntry()==19856)		/* i am lazy! */
 	{
-		SendNotification("A guild with that name already exists.");
-		return;
-	}
+		uint32 arena_type = arena_index - 1;
+		if(arena_type > 2)
+			return;
 
-	ItemPrototype * ip = ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER);
-	assert(ip);
-	SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
-	if(res.Result == 0)
+		if(_player->m_arenaTeams[arena_type] || _player->m_charters[arena_index])
+		{
+			SendNotification("You are already in an arena team.");
+			return;
+		}
+
+		ArenaTeam * t = objmgr.GetArenaTeamByName(name, arena_type);
+		if(t != NULL)
+		{
+			sChatHandler.SystemMessage(this,"That name is already in use.");
+			return;
+		}
+
+		if(objmgr.GetCharterByName(name, (CharterTypes)arena_index))
+		{
+			sChatHandler.SystemMessage(this,"That name is already in use.");
+			return;
+		}
+
+		if(_player->m_charters[arena_type])
+		{
+			SendNotification("You already have an arena charter.");
+			return;
+		}
+
+		static uint32 item_ids[] = {ARENA_TEAM_CHARTER_2v2, ARENA_TEAM_CHARTER_3v3, ARENA_TEAM_CHARTER_5v5};
+		static uint32 costs[] = {ARENA_TEAM_CHARTER_2v2_COST,ARENA_TEAM_CHARTER_3v3_COST,ARENA_TEAM_CHARTER_5v5_COST};
+
+		ItemPrototype * ip = ItemPrototypeStorage.LookupEntry(item_ids[arena_type]);
+		ASSERT(ip);
+		SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
+		if(res.Result == 0)
+		{
+			_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+			return;
+		}
+
+		error = _player->GetItemInterface()->CanReceiveItem(ip,1);
+		if(error)
+		{
+			_player->GetItemInterface()->BuildInventoryChangeError(NULL,NULL,error);
+		}
+		else
+		{
+			// Create the item and charter
+			Item * i = objmgr.CreateItem(item_ids[arena_type], _player);
+			Charter * c = objmgr.CreateCharter(_player->GetGUID(), (CharterTypes)arena_index);
+			c->GuildName = name;
+			c->ItemGuid = i->GetGUID();
+
+			i->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+			i->SetUInt32Value(ITEM_FIELD_FLAGS, 1);
+			i->SetUInt32Value(ITEM_FIELD_ENCHANTMENT, c->GetID());
+			i->SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
+			_player->GetItemInterface()->AddItemToFreeSlot(i);
+			c->SaveToDB();
+
+			WorldPacket data(45);
+			BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, 1, item_ids[arena_type], 0);
+			SendPacket(&data);
+
+			_player->m_charters[arena_index] = c;
+			_player->SaveToDB(false);
+		}
+	}
+	else
 	{
-		_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
-		return;
+		Guild * g = objmgr.GetGuildByGuildName(name);
+		Charter * c = objmgr.GetCharterByName(name, CHARTER_TYPE_GUILD);
+		if(g != 0 || c != 0)
+		{
+			SendNotification("A guild with that name already exists.");
+			return;
+		}
+
+		if(_player->m_charters[CHARTER_TYPE_GUILD])
+		{
+			SendNotification("You already have a guild charter.");
+			return;
+		}
+
+		ItemPrototype * ip = ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER);
+		assert(ip);
+		SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
+		if(res.Result == 0)
+		{
+			_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+			return;
+		}
+
+		error = _player->GetItemInterface()->CanReceiveItem(ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER),1);
+		if(error)
+		{
+			_player->GetItemInterface()->BuildInventoryChangeError(NULL,NULL,error);
+		}
+		else
+		{
+			// Meh...
+			WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 12);
+			data << uint32(0x000019C2);
+			data << creature_guid;
+			SendPacket(&data);
+
+			// Create the item and charter
+			Item * i = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
+			c = objmgr.CreateCharter(_player->GetGUID(), CHARTER_TYPE_GUILD);
+			c->GuildName = name;
+			c->ItemGuid = i->GetGUID();
+
+
+			i->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
+			i->SetUInt32Value(ITEM_FIELD_FLAGS, 1);
+			i->SetUInt32Value(ITEM_FIELD_ENCHANTMENT, c->GetID());
+			i->SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
+			_player->GetItemInterface()->AddItemToFreeSlot(i);
+			c->SaveToDB();
+
+			data.clear();
+			data.resize(45);
+			BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, 1, ITEM_ENTRY_GUILD_CHARTER, 0);
+			SendPacket(&data);
+
+			_player->m_charters[CHARTER_TYPE_GUILD] = c;
+			_player->SaveToDB(false);
+		}
 	}
-
-	error = _player->GetItemInterface()->CanReceiveItem(ItemPrototypeStorage.LookupEntry(ITEM_ENTRY_GUILD_CHARTER),1);
-	if(error)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(NULL,NULL,error);
-    }
-    else
-    {
-        // Meh...
-        WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 12);
-        data << uint32(0x000019C2);
-        data << creature_guid;
-        SendPacket(&data);
-
-        // Create the item and charter
-        Item * i = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);
-        c = objmgr.CreateCharter(_player->GetGUID());
-        c->GuildName = name;
-        c->ItemGuid = i->GetGUID();
-
-
-        i->SetUInt32Value(ITEM_FIELD_STACK_COUNT, 1);
-        i->SetUInt32Value(ITEM_FIELD_FLAGS, 1);
-        i->SetUInt32Value(ITEM_FIELD_ENCHANTMENT, c->GetID());
-        i->SetUInt32Value(ITEM_FIELD_PROPERTY_SEED, 57813883);
-        _player->GetItemInterface()->AddItemToFreeSlot(i);
-        c->SaveToDB();
-
-		data.clear();
-        data.resize(45);
-		BuildItemPushResult(&data, _player->GetGUID(), ITEM_PUSH_TYPE_RECEIVE, 1, ITEM_ENTRY_GUILD_CHARTER, 0);
-		SendPacket(&data);
-
-        _player->m_charter = c;
-        _player->SaveToDB(false);
-    }
 }
 
 void SendShowSignatures(Charter * c, uint64 i, Player * p)
@@ -998,22 +1084,24 @@ void SendShowSignatures(Charter * c, uint64 i, Player * p)
 	data << (uint64)c->GetLeader();
 	data << c->GetID();
 	data << uint8(c->SignatureCount);
-	for(uint32 i = 0; i < 9; ++i)
+	for(uint32 i = 0; i < c->Slots; ++i)
 	{
 		if(c->Signatures[i] == 0) continue;
 		data << uint64(c->Signatures[i]) << uint32(1);
 	}
+	data << uint8(0);
 	p->GetSession()->SendPacket(&data);
 }
 
 void WorldSession::HandleCharterShowSignatures(WorldPacket & recv_data)
 {
-	if(_player->m_charter == 0)
-		return;
-
+	Charter * pCharter;
 	uint64 item_guid;
 	recv_data >> item_guid;
-	SendShowSignatures(_player->m_charter, item_guid, _player);
+	pCharter = objmgr.GetCharterByItemGuid(item_guid);
+	
+	if(pCharter)
+		SendShowSignatures(pCharter, item_guid, _player);
 }
 
 void WorldSession::HandleCharterQuery(WorldPacket & recv_data)
@@ -1044,8 +1132,18 @@ void WorldSession::HandleCharterQuery(WorldPacket & recv_data)
 	//moreover it can't signature, blizz uses always fullguid so it must be uin64
 	//moreover this does not show ppl who signed this, for this purpose there is another opcde
 	uint32 charter_id;
+	uint64 item_guid;
 	recv_data >> charter_id;
-	Charter * c = objmgr.GetCharter(charter_id);
+	recv_data >> item_guid;
+	/*Charter * c = objmgr.GetCharter(charter_id,CHARTER_TYPE_GUILD);
+	if(c == 0)
+		c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_2V2);
+	if(c == 0)
+		c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_3V3);
+	if(c == 0)
+		c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_5V5);*/
+
+	Charter * c = objmgr.GetCharterByItemGuid(item_guid);
 	if(c == 0)
 		return;
 
@@ -1053,10 +1151,42 @@ void WorldSession::HandleCharterQuery(WorldPacket & recv_data)
 	data << charter_id;
 	data << (uint64)c->LeaderGuid;
 	data << c->GuildName << uint8(0);
-	data << uint32(9) << uint32(9);
-	for(uint32 i = 0; i < 10; ++i)
-		data << (uint32) 0;//c->Signatures[i];
-	data << uint16(0);
+	if(c->CharterType == CHARTER_TYPE_GUILD)
+	{
+		data << uint32(9) << uint32(9);
+	}
+	else
+	{
+		/*uint32 v = c->CharterType;
+		if(c->CharterType == CHARTER_TYPE_ARENA_3V3)
+			v=2;
+		else if(c->CharterType == CHARTER_TYPE_ARENA_5V5)
+			v=4;
+
+		data << v << v;*/
+		data << uint32(c->Slots) << uint32(c->Slots);
+	}
+
+	data << uint32(0);                                      // 4
+    data << uint32(0);                                      // 5
+    data << uint32(0);                                      // 6
+    data << uint32(0);                                      // 7
+    data << uint32(0);                                      // 8
+    data << uint16(0);                                      // 9 2 bytes field
+    data << uint32(0x46);                                      // 10
+    data << uint32(0);                                      // 11
+    data << uint32(0);                                      // 13 count of next strings?
+    data << uint32(0);                                      // 14
+
+	if (c->CharterType == CHARTER_TYPE_GUILD)
+	{
+		data << uint32(0);
+	}
+	else
+	{
+		data << uint32(1);
+	}
+
 	SendPacket(&data);
 }
 
@@ -1064,10 +1194,12 @@ void WorldSession::HandleCharterOffer( WorldPacket & recv_data )
 {
 	uint32 shit;
 	uint64 item_guid, target_guid;
+	Charter * pCharter;
 	recv_data >> shit >> item_guid >> target_guid;
 	
 	if(!_player->IsInWorld()) return;
 	Player * pTarget = _player->GetMapMgr()->GetPlayer(target_guid);
+	pCharter = objmgr.GetCharterByItemGuid(item_guid);
 
 	if(pTarget == 0 || pTarget->GetTeam() != _player->GetTeam() || pTarget == _player)
 	{
@@ -1075,17 +1207,13 @@ void WorldSession::HandleCharterOffer( WorldPacket & recv_data )
 		return;
 	}
 
-	Charter * c = _player->m_charter;
-	if(c == 0)
-		return;
-
-	if(!pTarget->CanSignCharter(c, _player))
+	if(!pTarget->CanSignCharter(pCharter, _player))
 	{
 		SendNotification("Target player cannot sign your charter for one or more reasons.");
 		return;
 	}
 
-	SendShowSignatures(c, item_guid, pTarget);
+	SendShowSignatures(pCharter, item_guid, pTarget);
 }
 
 void WorldSession::HandleCharterSign( WorldPacket & recv_data )
@@ -1111,7 +1239,7 @@ void WorldSession::HandleCharterSign( WorldPacket & recv_data )
 
 	c->AddSignature(_player->GetGUID());
 	c->SaveToDB();
-	_player->m_charter = c;
+	_player->m_charters[c->CharterType] = c;
 	_player->SaveToDB(false);
 
 	Player * l = _player->GetMapMgr()->GetPlayer(c->GetLeader());
@@ -1128,111 +1256,189 @@ void WorldSession::HandleCharterSign( WorldPacket & recv_data )
 
 void WorldSession::HandleCharterTurnInCharter(WorldPacket & recv_data)
 {
-	Charter * gc = _player->m_charter;
-	if(gc == 0)
-		return;
-	if(gc->SignatureCount < 9 && Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false))
+	uint64 mooguid;
+	recv_data >> mooguid;
+	Charter * pCharter = objmgr.GetCharterByItemGuid(mooguid);
+	if(!pCharter) return;
+
+	if(pCharter->CharterType == CHARTER_TYPE_GUILD)
 	{
-		SendNotification("You don't have the required amount of signatures to turn in this petition.");
-		return;
-	}
-
-	// dont know hacky or not but only solution for now
-	// If everything is fine create guild
-
-	Guild *pGuild = new Guild;
-	uint32 guildId = pGuild->GetFreeGuildIdFromDb();
-
-	if(guildId == 0)
-	{
-		printf("Error Getting Free Guild ID");
-		delete pGuild;
-		return;
-	}
-
-	//Guild Setup
-	pGuild->SetGuildId( guildId );
-	pGuild->SetGuildName( gc->GuildName );
-	pGuild->CreateRank("Guild Master", GR_RIGHT_ALL);
-	pGuild->CreateRank("Officer", GR_RIGHT_ALL);
-	pGuild->CreateRank("Veteran", GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);  
-	pGuild->CreateRank("Member", GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);
-	pGuild->CreateRank("Initiate", GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);
-	pGuild->SetGuildEmblemStyle( 0xFFFF );
-	pGuild->SetGuildEmblemColor( 0xFFFF );
-	pGuild->SetGuildBorderStyle( 0xFFFF );
-	pGuild->SetGuildBorderColor( 0xFFFF );
-	pGuild->SetGuildBackgroundColor( 0xFFFF );
-
-	objmgr.AddGuild(pGuild);
-
-	//Guild Leader Setup
-	_player->SetGuildId( pGuild->GetGuildId() );
-	_player->SetGuildRank(GUILDRANK_GUILD_MASTER);
-	pGuild->SetGuildLeaderGuid( _player->GetGUID() );
-	pGuild->AddNewGuildMember( _player );
-
-	//Other Guild Members Setup
-	Player *pMember;  
-
-	for(uint32 x=0;x<9;x++)
-	{	   
-		pMember = objmgr.GetPlayer(gc->Signatures[x]);
-		if(pMember)//online
+		Charter * gc = _player->m_charters[CHARTER_TYPE_GUILD];
+		if(gc == 0)
+			return;
+		if(gc->SignatureCount < 9 && Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false))
 		{
-			pMember->SetGuildId( pGuild->GetGuildId() );
-			pMember->SetGuildRank(GUILDRANK_MEMBER);		
-			//Charters
-			pMember->m_charter = 0;
-			pMember->SaveToDB(false);
-		}
-		else
-		{
-			CharacterDatabase.Execute("UPDATE characters SET guildid = %u WHERE guid = %u", pGuild->GetGuildId(), gc->Signatures[x]);
-			CharacterDatabase.Execute("UPDATE characters SET guildRank = %u WHERE guid = %u", GUILDRANK_MEMBER, gc->Signatures[x]);
+			SendNotification("You don't have the required amount of signatures to turn in this petition.");
+			return;
 		}
 
-		PlayerInfo *p=objmgr.GetPlayerInfo(gc->Signatures[x]);
-		if(!p)continue;//this should not ever happen though
-		p->Rank = GUILDRANK_MEMBER;
-		pGuild->AddGuildMember(p);			
-	}	
+		// dont know hacky or not but only solution for now
+		// If everything is fine create guild
 
-	pGuild->SaveToDb();
-	pGuild->SaveAllGuildMembersToDb();
-	pGuild->SaveRanksToDb();
+		Guild *pGuild = new Guild;
+		uint32 guildId = pGuild->GetFreeGuildIdFromDb();
+
+		if(guildId == 0)
+		{
+			printf("Error Getting Free Guild ID");
+			delete pGuild;
+			return;
+		}
+
+		//Guild Setup
+		pGuild->SetGuildId( guildId );
+		pGuild->SetGuildName( gc->GuildName );
+		pGuild->CreateRank("Guild Master", GR_RIGHT_ALL);
+		pGuild->CreateRank("Officer", GR_RIGHT_ALL);
+		pGuild->CreateRank("Veteran", GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);  
+		pGuild->CreateRank("Member", GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);
+		pGuild->CreateRank("Initiate", GR_RIGHT_GCHATLISTEN | GR_RIGHT_GCHATSPEAK);
+		pGuild->SetGuildEmblemStyle( 0xFFFF );
+		pGuild->SetGuildEmblemColor( 0xFFFF );
+		pGuild->SetGuildBorderStyle( 0xFFFF );
+		pGuild->SetGuildBorderColor( 0xFFFF );
+		pGuild->SetGuildBackgroundColor( 0xFFFF );
+
+		objmgr.AddGuild(pGuild);
+
+		//Guild Leader Setup
+		_player->SetGuildId( pGuild->GetGuildId() );
+		_player->SetGuildRank(GUILDRANK_GUILD_MASTER);
+		pGuild->SetGuildLeaderGuid( _player->GetGUID() );
+		pGuild->AddNewGuildMember( _player );
+
+		//Other Guild Members Setup
+		Player *pMember;  
+
+		for(uint32 x=0;x<9;x++)
+		{	   
+			pMember = objmgr.GetPlayer(gc->Signatures[x]);
+			if(pMember)//online
+			{
+				pMember->SetGuildId( pGuild->GetGuildId() );
+				pMember->SetGuildRank(GUILDRANK_MEMBER);		
+				//Charters
+				pMember->m_charters[gc->CharterType] = 0;
+				pMember->SaveToDB(false);
+			}
+			else
+			{
+				CharacterDatabase.Execute("UPDATE characters SET guildid = %u WHERE guid = %u", pGuild->GetGuildId(), gc->Signatures[x]);
+				CharacterDatabase.Execute("UPDATE characters SET guildRank = %u WHERE guid = %u", GUILDRANK_MEMBER, gc->Signatures[x]);
+			}
+
+			PlayerInfo *p=objmgr.GetPlayerInfo(gc->Signatures[x]);
+			if(!p)continue;//this should not ever happen though
+			p->Rank = GUILDRANK_MEMBER;
+			pGuild->AddGuildMember(p);			
+		}	
+
+		pGuild->SaveToDb();
+		pGuild->SaveAllGuildMembersToDb();
+		pGuild->SaveRanksToDb();
+
+		// Destroy the charter
+		_player->m_charters[CHARTER_TYPE_GUILD] = 0;
+		gc->Destroy();
+
+		_player->GetItemInterface()->RemoveItemAmt(ITEM_ENTRY_GUILD_CHARTER, 1);
+		sHookInterface.OnGuildCreate(_player, pGuild);
+	}
+	else
+	{
+		/* Arena charter - TODO: Replace with correct messages */
+		ArenaTeam * team;
+		uint32 type;
+		uint32 i;
+		uint32 icon, iconcolor, bordercolor, border, background;
+		recv_data >> iconcolor >>icon >> bordercolor >> border >> background;
+
+		switch(pCharter->CharterType)
+		{
+		case CHARTER_TYPE_ARENA_2V2:
+			type = ARENA_TEAM_TYPE_2V2;
+			break;
+
+		case CHARTER_TYPE_ARENA_3V3:
+			type = ARENA_TEAM_TYPE_3V3;
+			break;
+
+		case CHARTER_TYPE_ARENA_5V5:
+			type = ARENA_TEAM_TYPE_5V5;
+			break;
+
+		default:
+			SendNotification("Internal Error");
+			return;
+		}
+
+		if(_player->m_arenaTeams[pCharter->CharterType-1] != NULL)
+		{
+			sChatHandler.SystemMessage(this, "You are already in an arena team.");
+			return;
+		}
+
+		if(pCharter->SignatureCount < pCharter->GetNumberOfSlotsByType() && Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false))
+		{
+			sChatHandler.SystemMessage(this, "You don't have the required amount of signatures to turn in this petition.");
+			return;
+		}
+
+		team = new ArenaTeam(type, objmgr.GenerateArenaTeamId());
+		team->m_name = pCharter->GuildName;
+		team->m_emblemColour = iconcolor;
+		team->m_emblemStyle = icon;
+		team->m_borderColour = bordercolor;
+		team->m_borderStyle = border;
+		team->m_backgroundColour = background;
+		team->m_leader=_player->GetGUIDLow();
+		team->m_stat_rating=1500;
+        
+		objmgr.AddArenaTeam(team);
+		objmgr.UpdateArenaTeamRankings();
+		team->AddMember(_player->m_playerInfo);
+		
+
+		/* Add the members */
+		for(i = 0; i < pCharter->SignatureCount; ++i)
+		{
+			PlayerInfo * info = objmgr.GetPlayerInfo(pCharter->Signatures[i]);
+			if(info)
+			{
+				team->AddMember(info);
+			}
+		}
+
+		_player->GetItemInterface()->SafeFullRemoveItemByGuid(mooguid);
+		_player->m_charters[pCharter->CharterType] = NULL;
+		pCharter->Destroy();
+	}
 
 	WorldPacket data(4);
 	data.SetOpcode(SMSG_TURN_IN_PETITION_RESULTS);
 	data << uint32(0);
 	SendPacket( &data );
-
-	// Destroy the charter
-	_player->m_charter = 0;
-	gc->Destroy();
-
-	_player->GetItemInterface()->RemoveItemAmt(ITEM_ENTRY_GUILD_CHARTER, 1);
-	sHookInterface.OnGuildCreate(_player, pGuild);
 }
 
 void WorldSession::HandleCharterRename(WorldPacket & recv_data)
 {
-	if(_player->m_charter == 0)
-		return;
-
 	uint64 guid;
 	string name;
 	recv_data >> guid >> name;
-	
+
+	Charter * pCharter = objmgr.GetCharterByItemGuid(guid);
+	if(pCharter == 0)
+		return;
+
 	Guild * g = objmgr.GetGuildByGuildName(name);
-	Charter * c = objmgr.GetCharterByName(name);
+	Charter * c = objmgr.GetCharterByName(name, (CharterTypes)pCharter->CharterType);
 	if(c || g)
 	{
 		SendNotification("That name is in use by another guild.");
 		return;
 	}
 
-	c = _player->m_charter;
+	c = pCharter;
 	c->GuildName = name;
 	c->SaveToDB();
 	WorldPacket data(MSG_PETITION_RENAME, 100);
