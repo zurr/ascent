@@ -373,7 +373,7 @@ void WorldSession::HandleMessagechatOpcode( WorldPacket & recv_data )
 
 			Channel *chn = channelmgr.GetChannel(channel.c_str(),GetPlayer()); 
 			if(chn) 
-				chn->Say(GetPlayer(),msg.c_str(), NULL, false);
+				chn->Say(GetPlayer(),msg.c_str());
 
 			//sLog.outString("[%s] %s: %s", channel.c_str(), _player->GetName(), msg.c_str());
 			pMsg=msg.c_str();
