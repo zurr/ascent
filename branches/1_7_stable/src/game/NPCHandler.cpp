@@ -134,6 +134,8 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 			for(uint32 i = 0; i < pTrainer->SpellCount; ++i)
 			{
 				pSpell = pTrainer->SpellList[i];
+                if (!pSpell)
+                    continue;
 				Status = TrainerGetSpellStatus(pSpell,false);
 				data << pSpell->TeachingSpellID;
 				data << Status;		

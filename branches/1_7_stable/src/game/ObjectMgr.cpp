@@ -2053,6 +2053,7 @@ void ObjectMgr::LoadTrainers()
 		tr->SpellCount = fields2[0].GetUInt32();
 		tr->SpellList = new TrainerSpell*[tr->SpellCount];
 		delete result2;
+        memset(tr->SpellList,0,tr->SpellCount * sizeof(TrainerSpell*));
 
 		//now load the spells
 		result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%d'",entry);
