@@ -1495,7 +1495,7 @@ int Unit_InCombat(gmThread * a_thread)
 	{
 		return GM_EXCEPTION;
 	}
-	if(pThis->CombatStatus.IsInCombat())
+	if(pThis->isInCombat())
 		a_thread->PushInt(1);
 	else
 		a_thread->PushInt(0);
