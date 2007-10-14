@@ -21,20 +21,7 @@
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {
-	uint32 status = CalcQuestStatus(quest_giver, plr, qst->qst, qst->type, false);
-	if(status == QMGR_QUEST_FINISHED)
-	{
-		if(quest_giver->GetTypeId() == TYPEID_UNIT)
-		{
-			// Bleh, POI is the wrong icon.
-			// Turns out, dynamic_flags should be 0x02 :P
-			uint32 flags = quest_giver->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
-			flags |= 0x02;	// MINIMAP_TRACK
-
-			quest_giver->BuildFieldUpdatePacket(plr, UNIT_DYNAMIC_FLAGS, flags);
-		}
-	}
-	return status;
+	return CalcQuestStatus(quest_giver, plr, qst->qst, qst->type, false);
 }
 
 bool QuestMgr::isRepeatableQuestFinished(Player *plr, Quest *qst)
@@ -266,28 +253,36 @@ void QuestMgr::BuildOfferReward(WorldPacket *data, Quest* qst, Object* qst_giver
 	*data << uint32(1);										 // emote type
 
 	*data << qst->count_reward_choiceitem;
-	for(uint32 i = 0; i < 6; ++i)
-	{
-		if(qst->reward_choiceitem[i])
-		{
-			*data << qst->reward_choiceitem[i];
-			*data << qst->reward_choiceitemcount[i];
-			it = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[i]);
-			*data << (it ? it->DisplayInfoID : uint32(0));
-		}
-	}
+	if (qst->count_reward_choiceitem)
+    {
+        for(uint32 i = 0; i < 6; ++i)
+        {
+            if(qst->reward_choiceitem[i])
+            {
+                *data << qst->reward_choiceitem[i];
+                *data << qst->reward_choiceitemcount[i];
+                it = ItemPrototypeStorage.LookupEntry(qst->reward_choiceitem[i]);
+                *data << (it ? it->DisplayInfoID : uint32(0));
+            }
+        }
+    }
+    
 
 	*data << qst->count_reward_item;
-	for(uint32 i = 0; i < 6; ++i)
-	{
-		if(qst->reward_item[i])
-		{
-			*data << qst->reward_item[i];
-			*data << qst->reward_itemcount[i];
-			it = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
-			*data << (it ? it->DisplayInfoID : uint32(0));
-		}
-	}
+    if (qst->count_reward_item)
+    {
+        for(uint32 i = 0; i < 6; ++i)
+        {
+            if(qst->reward_item[i])
+            {
+                *data << qst->reward_item[i];
+                *data << qst->reward_itemcount[i];
+                it = ItemPrototypeStorage.LookupEntry(qst->reward_item[i]);
+                *data << (it ? it->DisplayInfoID : uint32(0));
+            }
+        }
+    }
+	
 
 	*data << qst->reward_money;
 	*data << qst->reward_spell;
@@ -455,6 +450,7 @@ void QuestMgr::BuildQuestComplete(Player*plr, Quest* qst)
 
 void QuestMgr::BuildQuestList(WorldPacket *data, Object* qst_giver, Player *plr)
 {
+	uint32 status;
 	list<QuestRelation *>::iterator it;
 	list<QuestRelation *>::iterator st;
 	list<QuestRelation *>::iterator ed;
@@ -504,8 +500,22 @@ void QuestMgr::BuildQuestList(WorldPacket *data, Object* qst_giver, Player *plr)
 				tmp_map.insert(std::map<uint32,uint8>::value_type((*it)->qst->id, 1));
 
 				*data << (*it)->qst->id;
-				*data << sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
-				*data << uint32(0);
+				/**data << sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
+				*data << uint32(0);*/
+				status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
+				switch(status)
+				{
+				case QMGR_QUEST_NOT_FINISHED:
+					*data << uint32(4) << uint32(0);
+					break;
+
+				case QMGR_QUEST_FINISHED:
+					*data << uint32(4) << uint32(1);
+					break;
+
+				default:
+					*data << status << uint32(0);
+				}
 				*data << (*it)->qst->title;
 			}
 		}
@@ -1109,8 +1119,8 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, Quest *qst, uint8 ty
 
 void QuestMgr::_CleanLine(std::string *str) 
 {
-	_RemoveChar("\r", str);
-	_RemoveChar("\n", str);
+	_RemoveChar((char*)"\r", str);
+	_RemoveChar((char*)"\n", str);
 
 	while (str->c_str()[0] == 32) 
 	{

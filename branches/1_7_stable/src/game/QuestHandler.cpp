@@ -549,7 +549,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 		bValid = quest_giver->isQuestGiver();
 		if(bValid)
 		{
-			qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_START);
+			qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
 			/*if(!qst) 
 				sQuestMgr.FindQuest(quest_id);*/
 			if(!qst)
@@ -593,10 +593,18 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 		return;
 	}
 
-	if (status == QMGR_QUEST_NOT_FINISHED || QMGR_QUEST_REPEATABLE)
+	if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_REPEATABLE)
 	{
         WorldPacket data;
 		sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status);
+		SendPacket(&data);
+		sLog.outDebug( "WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS." );
+	}
+
+	if (status == QMGR_QUEST_FINISHED)
+	{
+		WorldPacket data;
+		sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1);
 		SendPacket(&data);
 		sLog.outDebug( "WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS." );
 	}

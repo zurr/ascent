@@ -286,6 +286,17 @@ int Unit_CastSpell(gmThread * a_thread)
 	pUnit->CastSpell(pUnit, dbcSpell.LookupEntry(spellid), true);
 	return GM_OK;
 }
+
+int Unit_FullCastSpell(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(1);
+	GM_CHECK_INT_PARAM(spellid, 0);
+
+	Unit * pUnit = GetThisPointer<Unit>(a_thread);
+	pUnit->CastSpell(pUnit, dbcSpell.LookupEntry(spellid), false);
+	return GM_OK;
+}
+
 int Unit_SetStandState(gmThread * a_thread)
 {
 	GM_CHECK_NUM_PARAMS(1);
@@ -476,6 +487,37 @@ int Unit_SpawnMonster(gmThread * a_thread)
 	pCreature->SetMapId(pThis->GetMapId());
 	pCreature->SetInstanceID(pThis->GetInstanceID());
 	pCreature->PushToWorld(pThis->GetMapMgr());
+
+	return GM_OK;
+}
+
+int Unit_SpawnMonsterWithFaction(gmThread * a_thread)
+{
+	GM_CHECK_NUM_PARAMS(7);
+	GM_CHECK_INT_PARAM(entry, 0);
+	GM_CHECK_FLOAT_PARAM(posX, 1);
+	GM_CHECK_FLOAT_PARAM(posY, 2);
+	GM_CHECK_FLOAT_PARAM(posZ, 3);
+	GM_CHECK_FLOAT_PARAM(posO, 4);
+	GM_CHECK_INT_PARAM(faction, 5);
+	GM_CHECK_INT_PARAM(duration, 6);
+
+	Unit * pThis = GetThisPointer<Unit>(a_thread);
+	CreatureProto * p = CreatureProtoStorage.LookupEntry(entry);
+	if(!p)
+		return GM_EXCEPTION;
+
+	Creature * pCreature = pThis->GetMapMgr()->CreateCreature();
+	pCreature->spawnid = 0;
+	pCreature->m_spawn = 0;
+	pCreature->Load(p, posX, posY, posZ);
+	pCreature->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, faction);
+	pCreature->_setFaction();
+	pCreature->SetOrientation(posO);
+	pCreature->SetMapId(pThis->GetMapId());
+	pCreature->SetInstanceID(pThis->GetInstanceID());
+	pCreature->PushToWorld(pThis->GetMapMgr());
+	pCreature->Despawn(duration, 0);
 
 	return GM_OK;
 }
@@ -1129,11 +1171,11 @@ int Player_SetLevel(gmThread * a_thread)
 	// deny the setting of level above server limits
 	if ( p->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) )
 	{
-		if ( level > (int32)sWorld.Expansion1LevelCap )
-			level = (int32)sWorld.Expansion1LevelCap;
+		if ( level > (int32)70 )
+			level = (int32)70;
 	} else {
-		if ( level > (int32)sWorld.LevelCap )
-			level = (int32)sWorld.LevelCap;
+		if ( level > (int32)60 )
+			level = (int32)60;
 	}
 
 	for( ; curLevel < level ; curLevel++ )
@@ -1164,11 +1206,11 @@ int Player_LevelUp(gmThread * a_thread)
 
 	if ( p->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) )
 	{
-		if ( endLevel > sWorld.Expansion1LevelCap )
-			endLevel = sWorld.Expansion1LevelCap;
+		if ( endLevel > 70 )
+			endLevel = 70;
 	} else {
-		if ( endLevel > sWorld.LevelCap )
-			endLevel = sWorld.LevelCap;
+		if ( endLevel > 60 )
+			endLevel = 60;
 	};
 
 	for( ; curLevel < endLevel; curLevel++ )
@@ -1453,7 +1495,7 @@ int Unit_InCombat(gmThread * a_thread)
 	{
 		return GM_EXCEPTION;
 	}
-	if(pThis->isInCombat())
+	if(pThis->CombatStatus.IsInCombat())
 		a_thread->PushInt(1);
 	else
 		a_thread->PushInt(0);

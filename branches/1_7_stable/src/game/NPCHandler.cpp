@@ -240,6 +240,9 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 	uint32 i;
 	for(i = 0; i < pTrainer->SpellCount; ++i)
 	{
+		if(pTrainer->SpellList[i]==NULL)
+			continue;
+
 		if(pTrainer->SpellList[i]->TeachingSpellID == TeachingSpellID)
 			break;
 	}
@@ -247,7 +250,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 	if(i == pTrainer->SpellCount) return;
 	TrainerSpell *pSpell = pTrainer->SpellList[i];
 
-	if(TrainerGetSpellStatus(pSpell) > 0) return;
+	if(pSpell==NULL ||TrainerGetSpellStatus(pSpell) > 0) return;
 	
 	_player->ModUInt32Value(PLAYER_FIELD_COINAGE, -(int32)pSpell->Cost);
 	if(pSpell->DeleteSpell)
