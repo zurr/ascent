@@ -143,9 +143,8 @@ void Channel::Part(Player * plr)
 
 	if(m_members.size() == 0)
 	{
-		channelmgr.RemoveChannel(this);
 		m_lock.Release();
-		delete this;
+		channelmgr.RemoveChannel(this);
 	}
 	else
 		m_lock.Release();
