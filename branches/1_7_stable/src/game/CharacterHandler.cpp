@@ -845,13 +845,8 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	if(sWorld.sendRevisionOnJoin)
 	{
 		uint32 rev = g_getRevision();
-#ifdef HOARD
-		_player->BroadcastMessage("You are playing on %sAscent r%u/%s-%s-%s-Hoard", MSG_COLOR_WHITE,
-			rev, CONFIG, PLATFORM_TEXT, ARCH);
-#else
-		_player->BroadcastMessage("You are playing on %sAscent r%u/%s-%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE,
+		_player->BroadcastMessage("%sServer: Ascent %s r%u/%s-%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE, BUILD_TAG,
 			rev, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
-#endif
 	}
 
 	if(sWorld.SendStatsOnJoin)
