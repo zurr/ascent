@@ -845,10 +845,14 @@ bool WorldSession::PlayerLogin(uint32 playerGuid, uint32 forced_map_id, uint32 f
 	if(sWorld.sendRevisionOnJoin)
 	{
 		uint32 rev = g_getRevision();
-		_player->BroadcastMessage("%sServer: Ascent %s r%u/%s-%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE, BUILD_TAG,
-			rev, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
+#ifdef WIN32
+		_player->BroadcastMessage("Server: %sAscent %s r%u/%s-Win32 %s(www.ascentemu.com)", MSG_COLOR_WHITE, BUILD_TAG,
+			rev, CONFIG, MSG_COLOR_LIGHTBLUE);		
+#else
+		_player->BroadcastMessage("Server: %sAscent %s r%u/%s-%s %s(www.ascentemu.com)", MSG_COLOR_WHITE, BUILD_TAG,
+			rev, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
+#endif
 	}
-
 	if(sWorld.SendStatsOnJoin)
 	{
 		_player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
