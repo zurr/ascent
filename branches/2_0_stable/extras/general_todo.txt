@@ -1,0 +1,100 @@
+==========================================================================
+! test first then impelement if necesary !
+SMT_TREAT_REDUCED - this is not used anywhere. Threat formulas are kinda rough estimations ...
+SMT_DUMMY - work on this
+SMT_CAST_TIME - does not depend on charges, add this ability
+SMT_RESIST - not used. There is only 1 spell what is veryrarely used
+SMT_TRIGGER - check if this is used
+SMT_EFFECT_BONUS - check if it is used 
+SMT_RESIST_DISPEL - check if it is used
+- test if cooldown reduction is showed client side too. If not then force cooldown update on spells that have cooldown change (+ use cooldown cheat here - needed for tests)
+- rogue - cold blood - need a log why does not trigger cooldown decrease
+- water shield gets removed on first trigger and does not show effect log. But why ?
+- !help : Flameblade = 7806, Bonespike= 16550, Bone Shards = 17014,Blessing of Sanctuary=20911,Worgen's Spite=30564,Shadow Shield=31976,Fel Fire = 32008,Shadowguard = 32861,Thorns=34343,Energy Flare =35922,Arcane Shield=36640,Prismatic Shield=38905,Shadow Strikes=40334,
+- deadly poison trigger maybe. This is a weapon enchant ?. Also added aurastate so envenom can be casted too
+
+==========================================================================
+! Features !
+- make a proper loading for auras. Should restore caster guid, charges, procflags....
+- in world.cpp,line 788 removed stormstrike effect 0 until find a solution for : spell is casted on target and should apply 1 aura, but it also adds the other 2 effects that should be aplied only to caster.
+- a lot of spells have wrong trigger spell id. Lightning shield, Parry Mastery ...Make a tool to find them all and see what can be done for them.
+- some creatures should not enter or exit water. ex : spider - fish.
+- handleproc is getting huge, maybe we should break it into pieces
+- on server load a lot of spell.dbc data is processed. Maybe make an external tool
+- add conditioned aura removal. Ex: presence of mind should not be removed on instant cast spell (RemoveAurasByInterruptFlag)
+- maybe rewrite procspell on spell. There are like 140 spells who use this, and to function correctly most of them would need this
+- hunter : curently you can equip only 1 Ammo Bag. This is wrong (INV_ERR_CAN_EQUIP_ONLY1_AMMOPOUCH). It should only use effects of ammo bag that is actively used.
+- paladin - illumination - nasty spell. Started workin on it but just delayed it for a while
+- make Fishing chair item spell work. Should spawn a chair and auto sits you in it. While your fishing.
+- elemental creatures do not have fizical attack but magic type, add dmg type to db load
+- some creatures need to fly (is this made already ? ) on spawn
+- add new column to quests to be able to make required_quest_alternative
+- make cooldown cheat update client cooldown too
+- procs of enchants like Crusader,Demonslaying,Battlemaster,Mongoose is 100 %
+- make DOTs do not require infront check
+- add a combat exit timer so warrior and rogue cannot charge.stealth any time
+- add on_change_map event for scripts. Required for some instance scripts
+- make spells to run on startup Isdamaging and ishealing hunctions
+- summon guardians not working : 49,
+- clearcasting
+- there should a trigger type named : proc on effect - so we can know the effect value at which we proc
+- make a spellgroup generator for featured spells
+
+==========================================================================
+! BUGS !
+- group quest does not share quest loot.
+- if BG is over and you are dead then you are teleported as dead.
+- sometimes items are not created client side, making them invisible. A logout fixes it though it is not a good solution. Maybe createpackets can't be mixed ?
+- sometimes mount is removed only visually and not the aura itself. (sitting chairs...)
+- you can use instant canst/nomana spells from mounts= baaaad.
+- creatures keep yelling no content messgs
+- rogues can exit combat instantly, this is bad i think.
+- quest loot from elites should be lootable by everybody who shares the quest
+- some kill quest does not give kill revard to whole group ?
+- megic wards( like fire ward) and shields ( like ice barrier ) doesnt absorbing dot spells
+- u aways suffer "1" dmg when u absorb a spell with ward/shield and losing casting time ..
+- when someone cast a spell (firaball,frostbolt,shadowbolt, etc.) and u cast "ice block" when the spell is still "flying" toward u, still make u dmg when she reach u
+- the target is debuffed befor the spell reach it. For example: if a mage cast fireball, right after the cast the target is immediately debuffed with the fireball dot effect
+- some teleportation spells have target_type 17 and they will not generate a target to be teleported. Right now there is a special if for this in spell.cpp (ugly)
+- some minable things give the : item is beeing used error. There should be a timeout for this
+- when i cross trigger 197 in fargodeep mine it will alter my orientation
+- kidney shot stuns target until death
+- fear, slowes you down forever
+- getrandomplayer,getmosthated not woking ?
+- aura=68 = stalked should silance only some specific school and not all
+- channeled spells are not working ?
+- charmed creature is attacking me
+- why do we need enslavecount ?
+- hunter scattershot then rogue blind will make creature block (again)
+- there are spells that can go through iceblock. Just make the damn check in cancast and see if target is imune to spell type.
+- Pets - You can attack players from your faction with pets
+- starfire stuns the caster instead of target.
+- i can request and accept at the same time a duel ? request on second login char the duel then simply accept it :S
+- unlearning talents does not remove buffes from you. (it does for me :P )
+- check is_flags place in spellentry structure.Maybe we should place it elsewhere ?(193)
+- make aurastates get checked on spellcast and remove them on a sucessfull cast
+
+==========================================================================
+Zack - test my shit :
+
+- aura stalked silances more then it should (ex:hunters mark)
+- test function RemoveThreatByPtr
+- don't let rogues stealth with dots
+- ai spell cooldown when not known
+- warrior - Sweeping Strikes strike aditional enemy - well it seems there is no support yet for this
+- warlock(affliction talent) - Curse of Idiocy - rewrite this spell :
+	1 ) do not make him loop self it will be casted by cater for eternity ;)
+	2 ) there is no visual sighn that spell had effect (the negative values are missing ex : 23+1-6)
+- mage - Frost Warding - 28332 - does not reflect
+- Gnomish Poultryizer trinket - Poultryizer - need aura duration to set to 15 sec
+- priest - Force of Will - 18550 - what is the group type to increase here ?, all spells ?
+- isdamageing ishealing should not be put to bufftype. It makes spells remove each other
+
+==========================================================================
+Capt - test my shit :
+
+
+- changed the ranged weapon stuff
+
+
+==========================================================================
