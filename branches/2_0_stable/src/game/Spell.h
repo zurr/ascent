@@ -105,7 +105,7 @@ enum SPELL_MODIFIER_TYPE
     SMT_RANGE               =5,// spell range bonus // GOOD
     SMT_RADIUS              =6,// spell radius bonus // GOOD
     SMT_CRITICAL            =7,// critical chance bonus // GOOD //only 1 example in 2.1.1
-    SMT_SPELL_VALUE               =8,// dummy effect // needs work is not only pets Hp but effect of spells to
+    SMT_SPELL_VALUE         =8,// dummy effect // needs work is not only pets Hp but effect of spells to
     SMT_NONINTERRUPT        =9,// x% chance not to be interrupted by received damage (no flat)
     SMT_CAST_TIME           =10,// cast time decrease // GOOD
     SMT_COOLDOWN_DECREASE   =11,// cooldown decrease <-probably fully handled by client // GOOD
@@ -325,9 +325,9 @@ enum Attributes
     ATTRIBUTES_UNK2           = 0x1,
     ATTRIBUTES_UNK3           = 0x2, // related to ranged??
     ATTRIBUTE_ON_NEXT_ATTACK  = 0x4,
-    ATTRIBUTES_UNK5           = 0x8,
+    ATTRIBUTES_UNK5           = 0x8, // not used.
     ATTRIBUTES_UNK6           = 0x10,
-    ATTRIBUTES_UNK7           = 0x20, // Reagents??
+    ATTRIBUTES_UNK7           = 0x20, // Reagents
     ATTRIBUTES_PASSIVE        = 0x40,
     ATTRIBUTES_NO_VISUAL_AURA = 0x80,
     ATTRIBUTES_UNK10          = 0x100,//seems to be afflicts pet
@@ -955,8 +955,9 @@ enum SpellTypes
 //custom stuff generated for spells that will not change in time
 enum SpellIsFlags
 {
-    SPELL_FLAG_IS_DAMAGING				= 0x00800000,
-    SPELL_FLAG_IS_HEALING				= 0x01000000,
+    SPELL_FLAG_IS_DAMAGING				= 0x00000001,
+    SPELL_FLAG_IS_HEALING				= 0x00000002,
+    SPELL_FLAG_IS_TARGETINGSTEALTHED	= 0x00000004,
 };
 
 inline bool CanAgroHash(uint32 spellhashname)
@@ -1047,7 +1048,6 @@ inline bool IsDamagingSpell(SpellEntry *sp)
     return false;
 }
 
-//will rewrite this to constant flags later
 inline bool IsHealingSpell(SpellEntry *sp)
 {
     switch (sp->Effect[0])
@@ -1115,6 +1115,25 @@ inline bool IsHealingSpell(SpellEntry *sp)
 		return true;
 	
     return false;
+}
+
+inline bool IsTargetingStealthed(SpellEntry *sp)
+{
+	if(
+		sp->EffectImplicitTargetA[0]==3 ||
+		sp->EffectImplicitTargetA[1]==3 ||
+		sp->EffectImplicitTargetA[2]==3 ||
+		sp->EffectImplicitTargetB[0]==3 ||
+		sp->EffectImplicitTargetB[1]==3 ||
+		sp->EffectImplicitTargetB[2]==3 ||
+		sp->EffectImplicitTargetA[0]==22 ||
+		sp->EffectImplicitTargetA[1]==22 ||
+		sp->EffectImplicitTargetA[2]==22 ||
+		sp->EffectImplicitTargetB[0]==22 ||
+		sp->EffectImplicitTargetB[1]==22 ||
+		sp->EffectImplicitTargetB[2]==22 )
+		return 1;
+	return 0;
 }
 
 inline bool IsInrange(LocationVector & location, Object * o, float square_r)
@@ -1795,6 +1814,8 @@ protected:
     
     // Spell possibility's
     bool m_CanRelect;
+    
+    bool m_IsCastedOnSelf;
 
 
     bool hadEffect;

@@ -214,6 +214,15 @@ void Spell::FillSpecifiedTargetsInArea(float srcx,float srcy,float srcz,uint32 i
     FillSpecifiedTargetsInArea(&m_targetUnits[ind],srcx,srcy,srcz,GetRadius(ind), specification);
 }
 
+
+enum SpellTargetSpecification
+{
+    TARGET_SPECT_NONE       = 0,
+    TARGET_SPEC_INVISIBLE   = 1,
+    TARGET_SPEC_DEAD        = 2,
+};
+
+
 // for the moment we do invisible targets
 void Spell::FillSpecifiedTargetsInArea(TargetsList *tmpMap,float srcx,float srcy,float srcz, float range, uint32 specification)
 {
@@ -239,7 +248,7 @@ void Spell::FillSpecifiedTargetsInArea(TargetsList *tmpMap,float srcx,float srcy
         {
             if(u_caster)
             {
-                if(isAttackable(u_caster, (Unit*)(*itr)))
+                if(isAttackable(u_caster, (Unit*)(*itr),!(m_spellInfo->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                 {
                     if(DidHit((*itr)->GetGUID()))
                         tmpMap->push_back((*itr)->GetGUID());
@@ -253,7 +262,7 @@ void Spell::FillSpecifiedTargetsInArea(TargetsList *tmpMap,float srcx,float srcy
                 if(g_caster && g_caster->GetUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if(isAttackable(g_caster->m_summoner,(Unit*)(*itr)))
+                    if(isAttackable(g_caster->m_summoner,(Unit*)(*itr),!(m_spellInfo->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                         tmpMap->push_back((*itr)->GetGUID());
                 }
                 else
@@ -277,6 +286,7 @@ void Spell::FillAllTargetsInArea(float srcx,float srcy,float srcz,uint32 ind)
 	FillAllTargetsInArea(&m_targetUnits[ind],srcx,srcy,srcz,GetRadius(ind));
 }
 
+/// We fill all the targets in the area, including the stealth ed one's
 void Spell::FillAllTargetsInArea(TargetsList *tmpMap,float srcx,float srcy,float srcz, float range)
 {
 	float r = range*range;
@@ -296,7 +306,7 @@ void Spell::FillAllTargetsInArea(TargetsList *tmpMap,float srcx,float srcy,float
 		{
 			if(u_caster)
 			{
-				if(isAttackable(u_caster, (Unit*)(*itr)))
+				if(isAttackable(u_caster, (Unit*)(*itr),false))
 				{
 					if(DidHit((*itr)->GetGUID()))
 						tmpMap->push_back((*itr)->GetGUID());
@@ -309,7 +319,7 @@ void Spell::FillAllTargetsInArea(TargetsList *tmpMap,float srcx,float srcy,float
 				if(g_caster && g_caster->GetUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
 				{
 					//trap, check not to attack owner and friendly
-					if(isAttackable(g_caster->m_summoner,(Unit*)(*itr)))
+					if(isAttackable(g_caster->m_summoner,(Unit*)(*itr),false))
 						tmpMap->push_back((*itr)->GetGUID());
 				}
 				else
@@ -324,11 +334,18 @@ void Spell::FillAllTargetsInArea(TargetsList *tmpMap,float srcx,float srcy,float
 
 uint64 Spell::GetSinglePossibleEnemy(float prange)
 {
-	float range;
-	if(!prange)
-		range = GetMaxRange(dbcSpellRange.LookupEntry(m_spellInfo->rangeIndex));
-	else range = prange;
-	float r = range*range;
+	float r;
+	if(prange)
+		r = prange;
+	else
+	{
+		r = m_spellInfo->base_range_or_radius_sqr;
+		if(m_spellInfo->SpellGroupType && u_caster)
+		{
+			SM_FFValue(u_caster->SM_FRadius,&r,m_spellInfo->SpellGroupType);
+			SM_PFValue(u_caster->SM_PRadius,&r,m_spellInfo->SpellGroupType);
+		}
+	}
 	float srcx=m_caster->GetPositionX(),srcy=m_caster->GetPositionY(),srcz=m_caster->GetPositionZ();
 	for(std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++ )
 	{
@@ -346,7 +363,7 @@ uint64 Spell::GetSinglePossibleEnemy(float prange)
 		{
 			if(u_caster)
 			{
-				if(isAttackable(u_caster, (Unit*)(*itr)) && DidHit((*itr)->GetGUID()))
+				if(isAttackable(u_caster, (Unit*)(*itr),!(m_spellInfo->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) && DidHit((*itr)->GetGUID()))
 					return (*itr)->GetGUID(); 			
 			}
 			else //cast from GO
@@ -354,7 +371,7 @@ uint64 Spell::GetSinglePossibleEnemy(float prange)
 				if(g_caster && g_caster->GetUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
 				{
 					//trap, check not to attack owner and friendly
-					if(isAttackable(g_caster->m_summoner,(Unit*)(*itr)))
+					if(isAttackable(g_caster->m_summoner,(Unit*)(*itr),!(m_spellInfo->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
 						return (*itr)->GetGUID();
 				}
 			}			
@@ -365,11 +382,18 @@ uint64 Spell::GetSinglePossibleEnemy(float prange)
 
 uint64 Spell::GetSinglePossibleFriend(float prange)
 {
-	float range;
-	if(!prange)
-		range = GetMaxRange(dbcSpellRange.LookupEntry(m_spellInfo->rangeIndex));
-	else range = prange;
-	float r = range*range;
+	float r;
+	if(prange)
+		r = prange;
+	else
+	{
+		r = m_spellInfo->base_range_or_radius_sqr;
+		if(m_spellInfo->SpellGroupType && u_caster)
+		{
+			SM_FFValue(u_caster->SM_FRadius,&r,m_spellInfo->SpellGroupType);
+			SM_PFValue(u_caster->SM_PRadius,&r,m_spellInfo->SpellGroupType);
+		}
+	}
 	float srcx=m_caster->GetPositionX(),srcy=m_caster->GetPositionY(),srcz=m_caster->GetPositionZ();
 	for(std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++ )
 	{
@@ -499,17 +523,11 @@ bool Spell::DidHit(uint64 target)
 //!!!disabled parts that were not tested !!
 void Spell::GenerateTargets(SpellCastTargets *store_buff)
 {
-	float range = GetMaxRange(dbcSpellRange.LookupEntry(m_spellInfo->rangeIndex));
-	if(range==0)
+	float r = m_spellInfo->base_range_or_radius_sqr;
+	if(m_spellInfo->SpellGroupType && u_caster)
 	{
-		float tr1=GetRadius(0);
-		float tr2=GetRadius(1);
-		float tr3=GetRadius(2);
-		if(tr1>tr2)
-			range=tr1;
-		else range=tr2;
-		if(tr3>range)
-			range=tr3;
+		SM_FFValue(u_caster->SM_FRadius,&r,m_spellInfo->SpellGroupType);
+		SM_PFValue(u_caster->SM_PRadius,&r,m_spellInfo->SpellGroupType);
 	}
 	uint32 cur;
 	for(uint32 i=0;i<3;i++)
@@ -551,12 +569,12 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 						if(p_caster)
 						{
 							Unit *selected = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
-							if(isAttackable(p_caster,selected))
+							if(isAttackable(p_caster,selected,!(m_spellInfo->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
 								store_buff->m_unitTarget = p_caster->GetSelection();
 						}
 						else if(u_caster)
 						{
-							if(isAttackable(u_caster,u_caster->GetAIInterface()->GetNextTarget()))
+							if(isAttackable(u_caster,u_caster->GetAIInterface()->GetNextTarget(),!(m_spellInfo->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
 							{
 								store_buff->m_unitTarget = u_caster->GetAIInterface()->GetNextTarget()->GetGUID();
 							}
@@ -565,13 +583,12 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								//try to get most hated creature
 								TargetMap *m_aiTargets = u_caster->GetAIInterface()->GetAITargets();
 								TargetMap::iterator itr;
-								float rsq=range*range;
 								for(itr = m_aiTargets->begin(); itr != m_aiTargets->end();itr++)
 								{
 									if( /*m_caster->GetMapMgr()->GetUnit(itr->first->GetGUID()) &&*/ itr->first->GetMapMgr() == m_caster->GetMapMgr() && 
 										itr->first->isAlive() &&
-										m_caster->GetDistanceSq(itr->first) <= rsq &&
-										isAttackable(u_caster,itr->first)
+										m_caster->GetDistanceSq(itr->first) <= r &&
+										isAttackable(u_caster,itr->first,!(m_spellInfo->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
 										)
 									{
 										store_buff->m_unitTarget=itr->first->GetGUID();
@@ -583,7 +600,7 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 						//try to get a whatever target
 						if(!store_buff->m_unitTarget)
 						{
-							store_buff->m_unitTarget=GetSinglePossibleEnemy(range);
+							store_buff->m_unitTarget=GetSinglePossibleEnemy();
 						}
 						//if we still couldn't get a target, check maybe we could use 
 //						if(!store_buff->m_unitTarget)
@@ -607,8 +624,6 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 							if(((Creature*)u_caster)->IsTotem())
 								p=(Player*)((Creature*)u_caster)->GetTotemOwner();
 						}
-						float r= range;
-						r*=r;
 						if(!p)
 							break;
 
@@ -652,7 +667,7 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								store_buff->m_unitTarget = u_caster->GetUInt64Value(UNIT_FIELD_CREATEDBY);
 							else store_buff->m_unitTarget = u_caster->GetGUID();
 						}
-						else store_buff->m_unitTarget=GetSinglePossibleFriend(range);			
+						else store_buff->m_unitTarget=GetSinglePossibleFriend(r);			
 					}break;
 				case EFF_TARGET_GAMEOBJECT:
 					{
@@ -661,7 +676,7 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 					}break;
 				case EFF_TARGET_DUEL: 
 					{// Single Target Friend Used in Duel
-						if(p_caster && p_caster->DuelingWith && p_caster->DuelingWith->isAlive() && IsInrange(p_caster,p_caster->DuelingWith,range*range))
+						if(p_caster && p_caster->DuelingWith && p_caster->DuelingWith->isAlive() && IsInrange(p_caster,p_caster->DuelingWith,r))
 							store_buff->m_unitTarget = p_caster->GetSelection();
 					}break;
 				case EFF_TARGET_GAMEOBJECT_ITEM:{// Gameobject/Item Target
@@ -690,8 +705,6 @@ void Spell::GenerateTargets(SpellCastTargets *store_buff)
 								p=(Player*) ((Creature*)u_caster)->GetTotemOwner();
 						if(p_caster)
 						{
-							float r =range;
-							r*=r;
 							if(IsInrange(m_caster->GetPositionX(),m_caster->GetPositionY(),m_caster->GetPositionZ(),p,r))
 							{
 								store_buff->m_unitTarget = p->GetGUID();
@@ -3152,10 +3165,10 @@ exit:
 		int32 spell_flat_modifers=0;
 		int32 spell_pct_modifers=0;
 		int32 spell_pct_modifers2=0;//separated from the other for debugging purpuses
-//		SM_FIValue(u_caster->SM_FSPELL_VALUE,&spell_flat_modifers,m_spellInfo->SpellGroupType);
-//		SM_FIValue(u_caster->SM_PSPELL_VALUE,&spell_pct_modifers,m_spellInfo->SpellGroupType);
+		SM_FIValue(u_caster->SM_FSPELL_VALUE,&spell_flat_modifers,m_spellInfo->SpellGroupType);
+		SM_FIValue(u_caster->SM_PSPELL_VALUE,&spell_pct_modifers,m_spellInfo->SpellGroupType);
 		//it seems there is no Flat value only pct values for this mod. Maybe later ? Right now it is intended for testing
-//		SM_FIValue(u_caster->SM_PDOT,&spell_pct_modifers2,m_spellInfo->SpellGroupType);
+		SM_FIValue(u_caster->SM_PDOT,&spell_pct_modifers2,m_spellInfo->SpellGroupType);
 	
 //printf("!!!!spell value mod flat %d , spell value mod pct %d, spell value mod pct2 %d , spell dmg %d, spell group %u\n",spell_flat_modifers,spell_pct_modifers,spell_pct_modifers2,value,m_spellInfo->SpellGroupType);
 	

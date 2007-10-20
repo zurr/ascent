@@ -39,6 +39,7 @@ SMT_RESIST_DISPEL - check if it is used
 - clearcasting
 - there should a trigger type named : proc on effect - so we can know the effect value at which we proc
 - make a spellgroup generator for featured spells
+- channeled spells have a big chance to get interrupted
 
 ==========================================================================
 ! BUGS !
@@ -77,7 +78,6 @@ SMT_RESIST_DISPEL - check if it is used
 ==========================================================================
 Zack - test my shit :
 
-- aura stalked silances more then it should (ex:hunters mark)
 - test function RemoveThreatByPtr
 - don't let rogues stealth with dots
 - ai spell cooldown when not known
@@ -88,7 +88,8 @@ Zack - test my shit :
 - mage - Frost Warding - 28332 - does not reflect
 - Gnomish Poultryizer trinket - Poultryizer - need aura duration to set to 15 sec
 - priest - Force of Will - 18550 - what is the group type to increase here ?, all spells ?
-- isdamageing ishealing should not be put to bufftype. It makes spells remove each other
+- searing totem hunts you to the end of the world. probably range related problem in generatetargets
+- blessing of light applies it's effect on holy shock ? and value gets wrong
 
 ==========================================================================
 Capt - test my shit :

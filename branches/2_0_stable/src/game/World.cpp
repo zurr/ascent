@@ -518,6 +518,11 @@ bool World::SetInitialWorldSettings()
         namehash = crc32((const unsigned char*)nametext, strlen(nametext));
 		sp->NameHash   = namehash; //need these set before we start processing spells
 
+		float radius=max(::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[0])),::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[1])));
+		radius=max(::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[2])),radius);
+		radius=max(GetMaxRange(dbcSpellRange.LookupEntry(sp->rangeIndex)),radius);
+		sp->base_range_or_radius_sqr = radius*radius;
+
 		for(uint32 b=0;b<3;++b)
 		{
 			if(sp->EffectTriggerSpell[b] != 0 && dbcSpell.LookupEntryForced(sp->EffectTriggerSpell[b]) == NULL)
@@ -608,6 +613,8 @@ bool World::SetInitialWorldSettings()
 			sp->c_is_flags |= SPELL_FLAG_IS_DAMAGING;
 		if(IsHealingSpell(sp))
 			sp->c_is_flags |= SPELL_FLAG_IS_HEALING;
+		if(IsTargetingStealthed(sp))
+			sp->c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
 
 		//stupid spell ranking problem
 		if(sp->spellLevel==0)
@@ -1257,6 +1264,15 @@ bool World::SetInitialWorldSettings()
 				sp->procChance = itr->first;
 		}
 
+		if(namehash==0x8D4A2E9F)		// warlock - intensity
+		{
+			sp->EffectSpellGroupRelation[0] |= 1;		// shadow bolt
+			sp->EffectSpellGroupRelation[0] |= 4;		// immolatate
+		}
+
+		if(namehash==0x2bc0ae00)		// warlock - incinerate
+			sp->SpellGroupType=1;
+
 //junk code to get me has :P 
 //if(sp->Id==11267 || sp->Id==11289 || sp->Id==6409)
 //	printf("!!!!!!! name %s , id %u , hash %u \n",nametext,sp->Id, namehash);
@@ -1273,9 +1289,11 @@ bool World::SetInitialWorldSettings()
 
 	sp = dbcSpell.LookupEntry(17364);
 	//remove stormstrike effect 0
-	//if(sp && sp->Id==17364)
-		//sp->Effect[0]=0;
+	if(sp && sp->Id==17364)
+		sp->Effect[0]=0;
 
+/*
+	//disabled by Zack : BL will influence holy nova too if using flash of light spellgroup
 	//paladin - Blessing of Light
 		//first let us get the 2 spellgrouprelations
 	sp = dbcSpell.LookupEntry(635);//holy light
@@ -1338,7 +1356,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectMiscValue[1] = SMT_SPELL_VALUE;
 		sp->EffectSpellGroupRelation[0]=HL_grouprelation;
 		sp->EffectSpellGroupRelation[1]=FL_grouprelation;
-	}
+	}*/
 
 	//paladin - seal of blood
 	sp = dbcSpell.LookupEntry(31892);
@@ -1875,7 +1893,7 @@ bool World::SetInitialWorldSettings()
 	sp = dbcSpell.LookupEntry(20105);
 	if(sp)
 		sp->EffectSpellGroupRelation[0] = All_Seal_Groups_Combined | judgement_group;
-	// paladin - Improved Hammer of Justice
+/*	// paladin - Improved Hammer of Justice
 	uint32 Hammer_of_Justice_group=0;
 	tsp = dbcSpell.LookupEntry(853); //Hammer of Justice
 	if(tsp)
@@ -1891,14 +1909,14 @@ bool World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation[0] = Hammer_of_Justice_group;
 	sp = dbcSpell.LookupEntry(24188);
 	if(sp)
-		sp->EffectSpellGroupRelation[0] = Hammer_of_Justice_group;
+		sp->EffectSpellGroupRelation[0] = Hammer_of_Justice_group; 
 	// paladin - Improved Judgement
 	sp = dbcSpell.LookupEntry(25956);
 	if(sp)
 		sp->EffectSpellGroupRelation[0] = judgement_group;
 	sp = dbcSpell.LookupEntry(25957);
 	if(sp)
-		sp->EffectSpellGroupRelation[0] = judgement_group;
+		sp->EffectSpellGroupRelation[0] = judgement_group; */
 	// paladin - Improved Sanctity Aura
 	uint32 Sanctity_group=0;
 	tsp = dbcSpell.LookupEntry(20218); //Sanctity Aura
@@ -1918,7 +1936,7 @@ bool World::SetInitialWorldSettings()
 	}
 
 ///////////////////////////////
-	// druid - Improved Mark of the Wild
+/*	// druid - Improved Mark of the Wild
 	uint32 imarkofthv_group=0;
 	tsp = dbcSpell.LookupEntry(1126); //Mark of the wild
 	if(tsp)
@@ -1950,7 +1968,7 @@ bool World::SetInitialWorldSettings()
 		sp->procChance = 50;
 	sp = dbcSpell.LookupEntry(13980);
 	if(sp)
-		sp->procChance = 75;
+		sp->procChance = 75;*/
 
 	//winfury weapon changes. Start to hate these day by day
 	EnchantEntry * Enchantment = dbcEnchant.LookupEntry(283);

@@ -302,6 +302,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 	}
    
 	uint32 dmg;
+	bool static_damage=false;
 
 	if(m_spellInfo->EffectChainTarget[i])//chain
 	{
@@ -346,11 +347,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 					p_caster->EventAttackStop();
 					p_caster->smsg_AttackStop(unitTarget);
 				}break;
-			}
+			}break;
 		case 0xCBC738B8:	// Bloodthirst
 			{
                 dmg = u_caster->GetAP()*(m_spellInfo->EffectBasePoints[0]+1) / 100;
-			}
+			}break;
 		case 2189817683UL:	// Shield Slam - damage is increased by block value
 			{
 				if(p_caster)
@@ -361,7 +362,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 						dmg += it->GetProto()->Block;
 					}
 				}
-			}
+			}break;
+
+		case 0xf79e1873:		// fire armor, is static damage
+			static_damage=true;
+			break;
 		}
 	}
 
@@ -402,7 +407,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 		uint32 dmg_type = GetType();
 		if(dmg_type == SPELL_TYPE_MAGIC)		
 		{
-			m_caster->SpellNonMeleeDamageLog(unitTarget,m_spellInfo->Id, dmg, pSpellId==0);
+			m_caster->SpellNonMeleeDamageLog(unitTarget,m_spellInfo->Id, dmg, pSpellId==0,static_damage);
 		}
 		else 
 		{
@@ -3011,6 +3016,7 @@ void Spell::SpellEffectSummonPossessed(uint32 i) // eye of kilrog
 
 		//Setting faction
 		NewSummon->_setFaction();
+		NewSummon->m_temp_summon=true;
 
 		// Add To World
 		NewSummon->PushToWorld(m_caster->GetMapMgr());
@@ -3018,9 +3024,10 @@ void Spell::SpellEffectSummonPossessed(uint32 i) // eye of kilrog
 		// Force an update on the player to create this guid.
 		p_caster->ProcessPendingUpdates();
 
-		p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, NewSummon->GetGUID());
-		p_caster->SetUInt64Value(PLAYER_FARSIGHT, NewSummon->GetGUID());
-		p_caster->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
+		//p_caster->SetUInt64Value(UNIT_FIELD_SUMMON, NewSummon->GetGUID());
+		//p_caster->SetUInt64Value(PLAYER_FARSIGHT, NewSummon->GetGUID());
+		//p_caster->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
+		p_caster->Possess(NewSummon);
 		
 //		WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
 //		data << NewSummon->GetNewGUID() << uint8(1);

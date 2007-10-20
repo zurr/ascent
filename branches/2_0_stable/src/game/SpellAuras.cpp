@@ -1783,43 +1783,44 @@ void Aura::SpellAuraModFear(bool apply)
 		if(m_target->GetTypeId() == TYPEID_PLAYER)
 		{
 			m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
-			m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
+			m_target->SetFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER); // this isn't working in cities 
 			m_target->setAItoUse(true);
-			// Partha: I can't see what the point of this was, but...
-			// I believe it's preventing feared players from running away
-			// and allowing them to attack with melee and ranged weapon
-			/*
+
+			// this is a hackfix to stop player from moving
+			// I guess we have to continue to use it until the above problem can be found
 			WorldPacket data1(9);
 			data1.Initialize(SMSG_DEATH_NOTIFY_OBSOLETE);
 			data1 << m_target->GetNewGUID() << uint8(0x00); //block player movement ?
 			static_cast<Player*>(m_target)->GetSession()->SendPacket(&data1);
-			*/
 		}
+		m_target->m_pacified++; // another hackfix to account for players not running away while feared
 		m_target->m_special_state |= UNIT_STATE_FEAR;
 		m_target->GetAIInterface()->SetUnitToFear(GetUnitCaster());
 		m_target->GetAIInterface()->HandleEvent(EVENT_FEAR, m_target, 0); 
 	}
 	else
 	{
+		m_target->m_pacified--;
+		m_target->m_special_state &= ~UNIT_STATE_FEAR;
+		m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, m_target, 0);
+		m_target->GetAIInterface()->SetUnitToFear(NULL);
+
 		if(m_target->GetTypeId() == TYPEID_PLAYER)
 		{
-			m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
- 			m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
 			m_target->GetAIInterface()->StopMovement(1);
 			m_target->setAItoUse(false);
-			/*
+			m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_NO_ROTATE);
+ 			m_target->RemoveFlag(UNIT_FIELD_FLAGS, U_FIELD_FLAG_LOCK_PLAYER);
+
 			WorldPacket data1(9);
 			data1.Initialize(SMSG_DEATH_NOTIFY_OBSOLETE);
 			data1 << m_target->GetNewGUID() << uint8(0x01); //enable player movement ?
 			static_cast<Player*>(m_target)->GetSession()->SendPacket(&data1);
-			*/
 		}
-		m_target->m_special_state &= ~UNIT_STATE_FEAR;
-		m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, m_target, 0);
-		m_target->GetAIInterface()->SetUnitToFear(NULL);
+
 		Unit*m_caster = GetUnitCaster();
-		if(!m_caster)
-			return;
+		if(!m_caster) return;
+
 		if(m_caster->isAlive() && m_target->GetTypeId() != TYPEID_PLAYER)
 		{
 			m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
@@ -2500,9 +2501,25 @@ void Aura::EventPeriodicTriggerSpell(SpellEntry* spellInfo)
 	if(!m_caster || !m_caster->IsInWorld())
 		return;
 
-	Unit *pTarget = m_target->GetMapMgr()->GetUnit(periodic_target);
+	Object * oTarget = m_target->GetMapMgr()->_GetObject(periodic_target);
+	if(oTarget==NULL)
+		return;
+
+	if(oTarget->GetTypeId()==TYPEID_DYNAMICOBJECT)
+	{
+		Spell *spell = new Spell(m_caster, spellInfo, true, this);
+		SpellCastTargets targets;
+		targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+		targets.m_destX = oTarget->GetPositionX();
+		targets.m_destY = oTarget->GetPositionY();
+		targets.m_destZ = oTarget->GetPositionZ();
+		spell->prepare(&targets);
+		return;
+	}
+
+	Unit *pTarget = ((Unit*)oTarget);
 	int8 fail = -1;
-	if(!pTarget)
+	if(!oTarget->IsUnit())
 		return;
 	
 	if(!pTarget || pTarget->isDead())
@@ -2516,21 +2533,8 @@ void Aura::EventPeriodicTriggerSpell(SpellEntry* spellInfo)
 	}
 	if(fail > 0)
 	{
-		WorldPacket data(14);
-		if(m_caster->GetTypeId() == TYPEID_PLAYER)
-		{
-			data.SetOpcode(SMSG_SPELL_FAILURE);
-			data << m_caster->GetNewGUID() << GetSpellProto()->Id << fail;
-			static_cast<Player*>(m_caster)->GetSession()->SendPacket(&data);
-
-			data.Initialize(MSG_CHANNEL_UPDATE);
-			data << uint32(0);
-			static_cast<Player*>(m_caster)->GetSession()->SendPacket(&data);
-		}
-		data.Initialize(SMSG_SPELL_FAILED_OTHER);
-		data << m_caster->GetNewGUID() << GetSpellProto()->Id << fail;
-		m_caster->SendMessageToSet(&data, false);
-
+		SendInterrupted(fail, m_caster);
+		SendChannelUpdate(0, m_caster);
 		this->Remove();
 		return;
 	}
@@ -6700,4 +6704,33 @@ void Aura::SpellAuraModBlockValue(bool apply)
 			p_target->m_modblockvalue -= (uint32)mod->m_amount;
 		}
 	}
+}
+
+void Aura::SendInterrupted(uint8 result, Object * m_caster)
+{
+	if(!m_caster->IsInWorld())
+		return;
+
+	WorldPacket data(SMSG_SPELL_FAILURE, 20);
+	if(m_caster->IsPlayer())
+	{
+		data << m_caster->GetNewGUID();
+		data << m_spellProto->Id;
+		data << uint8(result);
+		((Player*)m_caster)->GetSession()->SendPacket(&data);
+	}
+
+	data.Initialize(SMSG_SPELL_FAILED_OTHER);
+	data << m_caster->GetNewGUID();
+	data << m_spellProto->Id;
+	m_caster->SendMessageToSet(&data, false);
+}
+
+void Aura::SendChannelUpdate(uint32 time, Object * m_caster)
+{
+	WorldPacket data(MSG_CHANNEL_UPDATE, 18);
+	data << m_caster->GetNewGUID();
+	data << time;
+
+	m_caster->SendMessageToSet(&data, true);	
 }
