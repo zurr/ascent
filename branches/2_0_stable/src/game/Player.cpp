@@ -24,6 +24,7 @@ Player::Player ( uint32 high, uint32 low ) : m_mailBox(low)
 	m_objectTypeId = TYPEID_PLAYER;
 	m_valuesCount = PLAYER_END;
 	m_uint32Values = _fields;
+	m_Group=NULL;
 	memset(m_uint32Values, 0,(PLAYER_END)*sizeof(uint32));
 	m_updateMask.SetCount(PLAYER_END);
 	SetUInt32Value( OBJECT_FIELD_TYPE,TYPE_PLAYER|TYPE_UNIT|TYPE_OBJECT);
@@ -158,7 +159,7 @@ Player::Player ( uint32 high, uint32 low ) : m_mailBox(low)
 	m_afk_reason			= "";
 	m_playedtime[0]		 = 0;
 	m_playedtime[1]		 = 0;
-	m_playedtime[2]		 = (uint32)time(NULL);
+	m_playedtime[2]		 = (uint32)UNIXTIME;
 
 	m_AllowAreaTriggerPort  = true;
 
@@ -1961,7 +1962,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	uint32 start_time = getMSTime();
  
 	//Calc played times
-	uint32 playedt = (uint32)time(NULL) - m_playedtime[2];
+	uint32 playedt = (uint32)UNIXTIME - m_playedtime[2];
 	m_playedtime[0] += playedt;
 	m_playedtime[1] += playedt;
 	m_playedtime[2] += playedt;
@@ -2064,7 +2065,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	
 	<< m_banned << ", '"
 	<< CharacterDatabase.EscapeString(m_banreason) << "', "
-	<< (uint32)time(NULL) << ",";
+	<< (uint32)UNIXTIME << ",";
 	
 	//online state
 	if(GetSession()->_loggingOut)
@@ -2876,7 +2877,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 	else
 		_AddLanguages(false);
 
-	OnlineTime	= time(NULL);
+	OnlineTime	= UNIXTIME;
 	if(GetGuildId())
 		SetUInt32Value(PLAYER_GUILD_TIMESTAMP, UNIXTIME);
 
@@ -3523,6 +3524,17 @@ void Player::RepopRequestedPlayer()
 	if(myCorpse)
 	{
 		GetSession()->SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
+		return;
+	}
+
+	if(m_CurrentTransporter != NULL)
+	{
+		m_CurrentTransporter->RemovePlayer(this);
+		m_CurrentTransporter = NULL;
+		m_TransporterGUID = 0;
+
+		ResurrectPlayer();
+		RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
 		return;
 	}
 
@@ -4324,8 +4336,8 @@ void Player::EventPlayerRest()
 		return;
 	}
 	// Rest timer
-	float diff = difftime(time(NULL),m_lastRestUpdate);
-	m_lastRestUpdate = (uint32)time(NULL);
+	float diff = difftime(UNIXTIME,m_lastRestUpdate);
+	m_lastRestUpdate = (uint32)UNIXTIME;
 	uint32 RestXP = CalculateRestXP((uint32)diff);
 	sLog.outDebug("REST: Adding %d rest XP for %.0f seconds of rest time", RestXP, diff);
 	AddRestXP(RestXP);
@@ -4352,7 +4364,7 @@ void Player::ApplyPlayerRestState(bool apply)
 		SetFlag(PLAYER_FLAGS, PLAYER_FLAG_RESTING);	//put zzz icon
 
 		UpdateRestState();
-		m_lastRestUpdate = (uint32)time(NULL);
+		m_lastRestUpdate = (uint32)UNIXTIME;
 
 		if(GetUInt32Value(UNIT_FIELD_LEVEL) >= GetUInt32Value(PLAYER_FIELD_MAX_LEVEL))		// Save CPU, don't waste time on this if you're >= 70
 			return;
@@ -7265,9 +7277,11 @@ void Player::CompleteLoading()
 				count_appearence++;
 			}
 */
+
+		// this stuff REALLY needs to be fixed - Burlex
 		SpellEntry * sp = dbcSpell.LookupEntry((*i).id);
 		Aura * a = new Aura(sp,(*i).dur,this,this);
-		
+
 		for(uint32 x =0;x<3;x++)
         {
 		    if(sp->Effect[x]==SPELL_EFFECT_APPLY_AURA)
@@ -7275,6 +7289,10 @@ void Player::CompleteLoading()
 			    a->AddMod(sp->EffectApplyAuraName[x],sp->EffectBasePoints[x]+1,sp->EffectMiscValue[x],x);
 		    }
         }
+
+		if(a->GetSpellId() == 8326 || a->GetSpellId() == 9036 || a->GetSpellId() == 20584 || a->GetSpellId() == 150007)		// death auras
+			a->SetNegative();
+
 		this->AddAura(a);		//FIXME: must save amt,pos/neg
 		//Somehow we should restore number of appearence. Right now i have no idea how :(
 //		if(count_appearence>1)

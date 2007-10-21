@@ -21,16 +21,6 @@
 
 initialiseSingleton( World );
 DayWatcherThread * dw = NULL;
-CircularQueue<uint32, 30> last_spells;
-FastMutex last_spell_lock;
-void pushLastSpell(uint32 spellid)
-{
-#ifdef WIN32
-	last_spell_lock.Acquire();
-	last_spells.push(spellid);
-	last_spell_lock.Release();
-#endif
-}
 
 World::World()
 {
@@ -259,7 +249,7 @@ bool World::SetInitialWorldSettings()
 {
 	CharacterDatabase.WaitExecute("UPDATE characters SET online = 0 WHERE online = 1");
    
-	m_lastTick = time(NULL);
+	m_lastTick = UNIXTIME;
 
 	// TODO: clean this
 	time_t tiempo;
@@ -267,7 +257,7 @@ bool World::SetInitialWorldSettings()
 	char minute[3];
 	char second[3];
 	struct tm *tmPtr;
-	tiempo = time(NULL);
+	tiempo = UNIXTIME;
 	tmPtr = localtime(&tiempo);
 	strftime( hour, 3, "%H", tmPtr );
 	strftime( minute, 3, "%M", tmPtr );
@@ -496,6 +486,18 @@ bool World::SetInitialWorldSettings()
 	uint32 effect;
 	uint32 All_Seal_Groups_Combined=0;
 
+	map<uint32, uint32> talentSpells;
+	map<uint32,uint32>::iterator talentSpellIterator;
+	unsigned int i,j;
+	for(i = 0; i < dbcTalent.GetNumRows(); ++i)
+	{
+		TalentEntry * tal = dbcTalent.LookupRow(i);
+		for(j = 0; j < 5; ++j)
+			if(tal->RankID[j] != 0)
+				talentSpells.insert(make_pair(tal->RankID[j], tal->TalentTree));
+	}
+
+
 	for(uint32 x=0; x < cnt; x++)
 	{
 		uint32 result = 0;
@@ -534,6 +536,12 @@ bool World::SetInitialWorldSettings()
 
 		sp->proc_interval = 0;//trigger at each event
 		sp->c_is_flags = 0;
+
+		talentSpellIterator = talentSpells.find(sp->Id);
+		if(talentSpellIterator == talentSpells.end())
+			sp->talent_tree = 0;
+		else
+			sp->talent_tree = talentSpellIterator->second;
 
 		// parse rank text
 		if(!sscanf(ranktext, "Rank %d", (unsigned int*)&rank))
@@ -2063,6 +2071,15 @@ bool World::SetInitialWorldSettings()
 	/* shadowstep - change proc flags */
 	dbcSpell.LookupEntry(36563)->procFlags = 0;
 
+	/* thrown - add a 1.6 second cooldown */
+	const static uint32 thrown_spells[] = {SPELL_RANGED_GENERAL,SPELL_RANGED_THROW,SPELL_RANGED_WAND, 26679, 27084, 29436, 37074, 41182, 41346, 0};
+	for(i = 0; thrown_spells[i] != 0; ++i)
+	{
+		sp = dbcSpell.LookupEntry(thrown_spells[i]);
+		if(sp->RecoveryTime==0 && sp->StartRecoveryTime == 0)
+			sp->RecoveryTime = 1600;
+	}
+
 	Log.Notice("World","Starting Transport System...");
 	objmgr.LoadTransporters();
 
@@ -2790,4 +2807,51 @@ void World::LoadAccountDataProc(QueryResultVector& results, uint32 AccountId)
 		return;
 
 	s->LoadAccountDataProc(results[0].result);
+}
+
+void World::CleanupCheaters()
+{
+	/*uint32 guid;
+	string name;
+	uint32 cl;
+	uint32 level;
+	uint32 talentpts;
+	char * start, *end;
+	Field * f;
+	uint32 should_talents;
+	uint32 used_talents;
+	SpellEntry * sp;
+
+	QueryResult * result = CharacterDatabase.Query("SELECT guid, name, class, level, available_talent_points, spells FROM characters");
+	if(result == NULL)
+		return;
+
+	do 
+	{
+		f = result->Fetch();
+		guid = f[0].GetUInt32();
+		name = string(f[1].GetString());
+		cl = f[2].GetUInt32();
+		level = f[3].GetUInt32();
+		talentpts = f[4].GetUInt32();
+		start = f[5].GetString();
+		should_talents = (level<10 ? 0 : level - 9);
+		used_talents -= 
+        		
+
+		start = (char*)get_next_field.GetString();//buff;
+		while(true) 
+		{
+			end = strchr(start,',');
+			if(!end)break;
+			*end=0;
+			sp = dbcSpell.LookupEntry(atol(start));
+			start = end +1;
+
+			if(sp->talent_tree)
+
+		}
+
+	} while(result->NextRow());*/
+
 }

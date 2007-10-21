@@ -116,6 +116,8 @@ bool Master::Run(int argc, char ** argv)
 	int screen_log_level = DEF_VALUE_NOT_SET;
 	int do_check_conf = 0;
 	int do_version = 0;
+	int do_cheater_check = 0;
+	int do_database_clean = 0;
 
 	struct ascent_option longopts[] =
 	{
@@ -125,6 +127,8 @@ bool Master::Run(int argc, char ** argv)
 		{ "version",			ascent_no_argument,				&do_version,			1		},
 		{ "conf",				ascent_required_argument,		NULL,					'c'		},
 		{ "realmconf",			ascent_required_argument,		NULL,					'r'		},
+		{ "databasecleanup",	ascent_no_argument,				&do_database_clean,		1		},
+		{ "cheatercheck",		ascent_no_argument,				&do_cheater_check,		1		},
 		{ 0, 0, 0, 0 }
 	};
 
@@ -148,7 +152,7 @@ bool Master::Run(int argc, char ** argv)
 		default:
 			sLog.m_fileLogLevel = -1;
 			sLog.m_screenLogLevel = 3;
-			printf("Usage: %s [--checkconf] [--screenloglevel <level>] [--fileloglevel <level>] [--conf <filename>] [--realmconf <filename>] [--version]\n", argv[0]);
+			printf("Usage: %s [--checkconf] [--screenloglevel <level>] [--fileloglevel <level>] [--conf <filename>] [--realmconf <filename>] [--version] [--databasecleanup] [--cheatercheck]\n", argv[0]);
 			return true;
 		}
 	}
@@ -202,7 +206,7 @@ bool Master::Run(int argc, char ** argv)
 	printf("The key combination <Ctrl-C> will safely shut down the server at any time.\n");
 	Log.Line();
     
-	uint32 seed = time(NULL);
+	uint32 seed = UNIXTIME;
 	new MTRand(seed);
 	srand(seed);
 	Log.Success("MTRand", "Initialized Random Number Generators.");
@@ -239,23 +243,8 @@ bool Master::Run(int argc, char ** argv)
 		return false;
 	}
 
-	/*Log.Color(TWHITE);
-	int left = 3;
-	bool dodb = false;
-	printf("\nHit F1 within the next 3 seconds to enter database maintenance mode.");
-	fflush(stdout);
-	while(left)
+	if(do_database_clean)
 	{
-        dodb = sConsole.PollForD();
-		if(dodb) break;
-		left--;
-		printf(".");
-		fflush(stdout);
-	}
-
-	if(dodb)
-	{
-		Log.Color(TNORMAL);
 		printf("\nEntering database maintenance mode.\n\n");
 		new DatabaseCleaner;
 		DatabaseCleaner::getSingleton().Run();
@@ -266,8 +255,6 @@ bool Master::Run(int argc, char ** argv)
 		fflush(stdout);
 		sConsole.WaitForSpace();
 	}
-	else
-		Log.Color(TNORMAL);*/
 
 	Log.Line();
 	sLog.outString("");
@@ -307,7 +294,10 @@ bool Master::Run(int argc, char ** argv)
 		return false;
 	}
 
-	sWorld.SetStartTime((uint32)time(NULL));
+	if(do_cheater_check)
+		sWorld.CleanupCheaters();
+
+	sWorld.SetStartTime((uint32)UNIXTIME);
 	
 	_HookSignals();
 
@@ -468,7 +458,7 @@ bool Master::Run(int argc, char ** argv)
 	sSocketMgr.CloseAll();
 
 	// begin server shutdown
-	time_t st = time(NULL);
+	time_t st = UNIXTIME;
 	sLog.outString("Server shutdown initiated at %s", ctime(&st));
 
 	// send a query to wake it up if its inactive

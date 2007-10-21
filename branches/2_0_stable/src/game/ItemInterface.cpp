@@ -1226,6 +1226,10 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 {
 	uint32 type=proto->InventoryType;
 	
+	if(slot >= INVENTORY_SLOT_BAG_START && slot < INVENTORY_SLOT_BAG_END && DstInvSlot == -1)
+		if(proto->ContainerSlots == 0)
+			return INV_ERR_ITEMS_CANT_BE_SWAPPED;
+
 	if((slot < INVENTORY_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET) || (slot >= BANK_SLOT_BAG_START && slot < BANK_SLOT_BAG_END && DstInvSlot == INVENTORY_SLOT_NOT_SET))
 	{
 		if (!ignore_combat && m_pOwner->CombatStatus.IsInCombat())
@@ -2036,7 +2040,7 @@ void ItemInterface::AddBuyBackItem(Item *it,uint32 price)
 
 		m_pOwner->SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + (2*(11)),m_pBuyBack[11]->GetGUID());
 		m_pOwner->SetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + 11,price);
-		m_pOwner->SetUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + 11,time(NULL));
+		m_pOwner->SetUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + 11,UNIXTIME);
 		return;
 	}
 
@@ -2050,7 +2054,7 @@ void ItemInterface::AddBuyBackItem(Item *it,uint32 price)
 			m_pOwner->SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + i,m_pBuyBack[i/2]->GetGUID());
 			//SetUInt64Value(PLAYER_FIELD_VENDORBUYBACK_SLOT_1 + i,it->GetGUID());
 			m_pOwner->SetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + (i/2),price);
-			m_pOwner->SetUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + (i/2),time(NULL));
+			m_pOwner->SetUInt32Value(PLAYER_FIELD_BUYBACK_TIMESTAMP_1 + (i/2),UNIXTIME);
 			return;
 		}
 	}

@@ -93,7 +93,6 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 {
 	ASSERT( Caster != NULL && info != NULL );
   
-	pushLastSpell(info->Id);
 	m_spellInfo = info;
 	m_caster = Caster;
 	duelSpell = false;
@@ -115,7 +114,7 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 		    i_caster=NULL;
 		    p_caster=NULL;
 		    u_caster=(Unit*)Caster;
-		    if(u_caster->IsPet() && ((Pet*)u_caster)->GetPetOwner()->DuelingWith)
+		    if(u_caster->IsPet() && ((Pet*)u_caster)->GetPetOwner() && ((Pet*)u_caster)->GetPetOwner()->DuelingWith)
 			    duelSpell = true;
         }break;
 
@@ -154,7 +153,9 @@ Spell::Spell(Object* Caster, SpellEntry *info, bool triggered, Aura* aur)
 	castedItemId = 0;
 	
 	m_usesMana = false;
-	SetSpellFailed(false);
+	m_Spell_Failed = false;
+	m_CanRelect = false;
+	m_IsReflected = false;
 	hadEffect = false;
 	bDurSet=false;
 	bRadSet[0]=false;
@@ -461,6 +462,9 @@ bool Spell::DidHit(uint64 target)
 		return true;
 
 	if(!u_caster)
+		return true;
+
+	if(u_caster == u_victim)
 		return true;
 
 	bool pvp =(p_caster && p_victim);
@@ -1570,7 +1574,11 @@ void Spell::SendSpellStart()
 	
 					// burlex - added a check here anyway (wpe suckers :P)
 					if(itm->GetDurability() > 0)
+					{
 	                    itm->SetDurability( itm->GetDurability() - 1 );
+						if(itm->GetDurability() == 0)
+							p_caster->ApplyItemMods(itm, EQUIPMENT_SLOT_RANGED, false, true);
+					}
 				}
 				else
 				{
