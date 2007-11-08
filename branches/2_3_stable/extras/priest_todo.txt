@@ -1,0 +1,39 @@
+Spells:
+	Mind Control - When used on anyone besides an NPC, the mind controlled victim is unusable.
+
+Absolution - Does not work at all.
+
+Mental Agility - Does not work at all.
+
+Focused Power - Does not work.
+
+Surge of Light - Does not work.
+
+Shadow Reach - Only visual. Says your out of range either way.
+
+Psychic Scream - On the Todo list I saw something alone the lines of "fix the chance of it breaking". Imo, I think it'd be best to make fear actually make the enemy run, because its glitched up pretty bad :/, especially in indoor environments.
+
+QUOTE(D@rk @ Sep 28 2007, 02:42 AM) *
+Vampiric Touch, doesn't give any mana.
+The only reason I didnt mention VT was cause I completely forgot it.. It's working to my favor in 1700, 98% of the time I get mana = to the persons health (o.O). I've had 12980/9785 mana before after a VT.
+
+Prayer of Mending is not working.
+Same for Blessed Recovery/Resilience.
+
+Shadow Resilience http://www.wowhead.com/?spell=14910
+Shadow Focus http://www.wowhead.com/?spell=15260
+Improved Power Word: Fortitude http://www.wowhead.com/?spell=14749
+Improved Power Word: Shield http://www.wowhead.com/?spell=14748
+Improved Divine Spirit http://www.wowhead.com/?spell=33174
+Absolution http://www.wowhead.com/?spell=33167
+Reflective Shield http://www.wowhead.com/?spell=33201
+Unbreakable Will http://www.wowhead.com/?spell=14522
+Blessed Recovery http://www.wowhead.com/?spell=27811
+Blessed Resilience http://www.wowhead.com/?spell=33142
+Spell Warding http://www.wowhead.com/?spell=27900
+
+Mind Control http://www.wowhead.com/?spell=605 Controled player can't attack and can't cast any skill/spell, controled mob can attack only in meele, can't use their skills, you loose crontrol of player/mob if you walk away from your own character.
+
+Psychic Scream http://www.wowhead.com/?spell=8124 Using Psychic Scream makes player/mob walk from you, not run.
+
+Mind Vision http://www.wowhead.com/?spell=2096 
