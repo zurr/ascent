@@ -1,0 +1,8 @@
+=====SPELLS AND ABILITIES =====
+Blessing of Protection - Doesn't work.
+Blessing of Sanctuary - Doesn't work.
+Divine protection - Doesn't work.
+Greater Blessing of Protection - Doesn't work.
+Greater Blessing of Sanctuary - Doesn't work.
+blessing of freedom
+resurrection sickness can be canceled by divine shield
