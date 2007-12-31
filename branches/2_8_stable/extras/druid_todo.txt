@@ -1,0 +1,34 @@
+Druid:
+Feline Gracie...once you left cat form this passive aura get stacked to you
+Can cast moonfire with they'r back,when they shouldn't.
+
+Skills
+
+TALENTS
+--BAL--
+Nature's Grace: doesn't trigger a buff
+Dreamstate: not working (similar to shaman's unrelenting storm)
+Wrath of cenarius: doesn't work (like all "empowered" talents)
+Moonkin aura - change you into humanoid type and not beast ?
+--FERAL--
+Ferocity: after update at r2319 it applies only on rake and claw... before that it worked on all except mangle
+Feral Aggression: doesn't increase Ferocious Bite damage (similar to imp eviscerate)
+Primal Fury: doesn't work in bear form
+Shredding Attacks: doens't lower Lacerate cost (works on Shred)
+--RESTO--
+Naturalist: increases spell damage instead of melee damage
+Natural Shapeshifter - works but only until you move
+Improved Mark of the Wild - affects only druid
+Gift of Nature: doesn't work (+x% to healign spells)
+imp regrowth: doesn't work (+crit to regrowth, similar to sanctified light)
+emp touch: doesn't work (like all "empowered" talents)
+swiftmend: can never be used
+emp reju: doesn't work (like all "empowered" talents, affects reju, lifebloom and regrowth hot - but not regrowth itself)
+
+revision 1602 - win32-x86
+while in aquatic form and underwater, no breath bar is displayed(thats fine), but after a while, HP goes down, as if the breathbar reached zero.happens exactly after 60seconds
+
+Aquatic Form:
+-You drowng, just take more time than usual (like 2 mins)
+- When casting Force of Nature the target must be standing still if you cast it on a moving target the spell does nothing, at least no treants summon.
+- Treants don't chase after the target you cast the spell on they go after the nearest person/mob that they can attack.
