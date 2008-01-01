@@ -1447,7 +1447,7 @@ void Player::smsg_InitialSpells()
 	   uint32 n = now();
 	   for (itr = m_itemcooldown.begin(); itr != m_itemcooldown.end();)
 	   {
-		   if((*itr)->CooldownTimeStamp <= n)
+		   if( n >= (*itr)->CooldownTimeStamp || ( ((*itr)->CooldownTimeStamp - n) < 5000 ) )
 		   {
 			   itr2 = itr++;
 			   m_itemcooldown.erase(itr2);
@@ -5312,6 +5312,14 @@ void Player::EventRepeatSpell()
 		return;
 	}
 
+	m_AutoShotDuration = m_uint32Values[UNIT_FIELD_RANGEDATTACKTIME];
+
+	if(m_isMoving)
+	{
+		m_AutoShotAttackTimer = m_AutoShotDuration;//avoid flooding client with error mesages
+		return;
+	}
+
 	int32 f= this->CanShootRangedWeapon(m_AutoShotSpell->Id, target, true);
 
 	if(f!=0)
@@ -5329,13 +5337,6 @@ void Player::EventRepeatSpell()
 	}
 	else
 	{		
-		uint32 duration2 = this->GetUInt32Value(UNIT_FIELD_RANGEDATTACKTIME);
-		
-		//Ranged Ammo Haste
-
-		if(m_AutoShotDuration != duration2)
-			m_AutoShotDuration = duration2;
-
 		m_AutoShotAttackTimer = m_AutoShotDuration;
 	
 		Spell *sp = new Spell(this, m_AutoShotSpell, true, NULL);
