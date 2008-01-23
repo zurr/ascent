@@ -8313,6 +8313,8 @@ void Player::SaveAuras(stringstream &ss)
 
 void Player::SetShapeShift(uint8 ss)
 {
+	// FORM_NORMAL = 0
+
 	uint8 old_ss = GetByte( UNIT_FIELD_BYTES_1, 2 );
 	SetByte( UNIT_FIELD_BYTES_1, 2, ss );
 
@@ -8322,9 +8324,9 @@ void Player::SetShapeShift(uint8 ss)
 		if( m_auras[x] != NULL )
 		{
 			uint32 reqss = m_auras[x]->GetSpellProto()->RequiredShapeShift;
-			if( reqss != 0 && m_auras[x]->IsPositive() )
+			if( reqss != FORM_NORMAL && m_auras[x]->IsPositive() )
 			{
-				if( old_ss > 0 )
+				if( old_ss > FORM_NORMAL )
 				{
 					if(  ( ((uint32)1 << (old_ss-1)) & reqss ) &&		// we were in the form that required it
 						!( ((uint32)1 << (ss-1) & reqss) ) )			// new form doesnt have the right form
@@ -8376,13 +8378,13 @@ void Player::SetShapeShift(uint8 ss)
 	}
 
 	//Add some specific forms auras
-	if( m_ssAuras.size() && ss )
+	if( m_ssAuras.size() && ss != FORM_NORMAL )
 	{
 		std::set<SSAura*>::iterator i;
 		for(i=m_ssAuras.begin();i!=m_ssAuras.end();i++)
 		{
 			SSAura* aura = *i;
-			if( aura != NULL )
+			if( aura != NULL /* && aura->IsPositive() */ )
 			{
 				if (!(ss &= aura->forms )) // Not in required form
 				{
