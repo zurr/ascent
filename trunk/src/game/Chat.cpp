@@ -217,7 +217,6 @@ void CommandTableStorage::Init()
 		{ "combatreach",'m',NULL,	 "Combat Reach",		NULL, UNIT_FIELD_COMBATREACH, 0, 2 },
 		{ "emotestate",'m', NULL,	 "NPC Emote State",	 NULL, UNIT_NPC_EMOTESTATE, 0, 1 },
 		{ "bytes",'m',NULL,"Bytes",NULL,UNIT_FIELD_BYTES_0,0,1},
-		{ "standstate",'m',NULL,"StandState",NULL,UNIT_FIELD_BYTES_1,0,1},
 		{ NULL,		  0, NULL,	 "",					NULL, 0, 0  }
 	};
 	dupe_command_table(modifyCommandTable, _modifyCommandTable);

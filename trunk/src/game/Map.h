@@ -53,7 +53,6 @@ typedef struct
 	uint32 channel_spell;
 	uint32 channel_target_go;
 	uint32 channel_target_creature;
-	uint32 stand_state;
 }CreatureSpawn;
 
 typedef struct

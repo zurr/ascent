@@ -294,11 +294,10 @@ void Creature::SaveToDB()
 		<< ((this->m_spawn ? m_spawn->respawnNpcLink : uint32(0))) << ",";
 
 	if(m_spawn)
-		ss << m_spawn->channel_spell << "," << m_spawn->channel_target_go << "," << m_spawn->channel_target_creature << ",";
+		ss << m_spawn->channel_spell << "," << m_spawn->channel_target_go << "," << m_spawn->channel_target_creature << ")";
 	else
-		ss << "0,0,0,";
+		ss << "0,0,0)";
 
-	ss << m_uint32Values[UNIT_FIELD_BYTES_1] << ")";
 	WorldDatabase.Execute(ss.str().c_str());
 }
 
@@ -988,7 +987,6 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);   // better set this one
 	SetUInt32Value(UNIT_FIELD_BYTES_0, spawn->bytes);
 	SetUInt32Value(UNIT_FIELD_BYTES_2, spawn->bytes2);
-	SetStandState((uint8)(m_spawn->stand_state)); //Stops people from having to create a C++ addon for this, and waste the AI script. ~Hdx
 
 ////////////AI
 	

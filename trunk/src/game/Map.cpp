@@ -166,7 +166,6 @@ void Map::LoadSpawns(bool reload)
 				cspawn->channel_spell = fields[15].GetUInt32();
 				cspawn->channel_target_go = fields[16].GetUInt32();
 				cspawn->channel_target_creature = fields[17].GetUInt32();
-				cspawn->stand_state = fields[18].GetUInt32();
 				spawns[cellx][celly]->CreatureSpawns.push_back(cspawn);
 				++CreatureSpawnCount;
 			}while(result->NextRow());

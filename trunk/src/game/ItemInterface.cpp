@@ -36,7 +36,7 @@ ItemInterface::~ItemInterface()
 {
 	for(int i = 0; i < MAX_INVENTORY_SLOT; i++)
 	{
-		if( m_pItems[i] != NULL )
+		if( m_pItems[i] != NULL && m_pItems[i]->GetOwner() == m_pOwner )
 		{
 			if( m_pItems[i]->IsContainer() )
 			{
