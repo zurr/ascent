@@ -7422,5 +7422,6 @@ void Aura::SpellAuraAxeSkillModifier(bool apply)
 			p_target->_ModifySkillBonus( SKILL_AXES, -mod->m_amount );
 			p_target->_ModifySkillBonus( SKILL_2H_AXES, -mod->m_amount );
 		}
+		p_target->UpdateStats();
 	}
 }

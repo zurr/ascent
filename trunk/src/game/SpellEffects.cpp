@@ -1693,55 +1693,63 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 
 void Spell::SpellEffectWeapon(uint32 i)
 {
-	if(!playerTarget)
+	if( playerTarget == NULL )
 		return;
 
 	uint32 skill = 0;
 	uint32 spell = 0;
 
-	switch(this->m_spellInfo->Id)
+	switch( this->m_spellInfo->Id )
 	{
 	case 201:    // one-handed swords
-		skill = SKILL_SWORDS;
-		break;
+		{
+			skill = SKILL_SWORDS;
+		}break;
 	case 202:   // two-handed swords
-		skill = SKILL_2H_SWORDS;
-		break;
+		{
+			skill = SKILL_2H_SWORDS;
+		}break;
 	case 203:   // Unarmed
-		skill = SKILL_UNARMED;
-		break;
+		{
+			skill = SKILL_UNARMED;
+		}break;
 	case 199:   // two-handed maces
-		skill = SKILL_2H_MACES;
-		break;
+		{
+			skill = SKILL_2H_MACES;
+		}break;
 	case 198:   // one-handed maces
-		skill = SKILL_MACES;
-		break;
+		{
+			skill = SKILL_MACES;
+		}break;
 	case 197:   // two-handed axes
-		skill = SKILL_2H_AXES;
-		break;
+		{
+			skill = SKILL_2H_AXES;
+		}break;
 	case 196:   // one-handed axes
-		skill = SKILL_AXES;
-		break;
+		{
+			skill = SKILL_AXES;
+		}break;
 	case 5011: // crossbows
 		{
 			skill = SKILL_CROSSBOWS;
 			spell = SPELL_RANGED_GENERAL;
 		}break;
 	case 227:   // staves
-		skill = SKILL_STAVES;
-		break;
+		{
+			skill = SKILL_STAVES;
+		}break;
 	case 1180:  // daggers
-		skill = SKILL_DAGGERS;
-		break;
-	case 3386:  // spears
-		skill = 0;   // ??!!
-		break;
+		{
+			skill = SKILL_DAGGERS;
+		}break;
 	case 200:   // polearms
-		skill = SKILL_POLEARMS;
-		break;
+		{
+			skill = SKILL_POLEARMS;
+		}break;
 	case 15590: // fist weapons
-		skill = SKILL_UNARMED;
-		break;
+		{
+			skill = SKILL_UNARMED;
+		}break;
 	case 264:   // bows
 		{
 			skill = SKILL_BOWS;
@@ -1753,8 +1761,17 @@ void Spell::SpellEffectWeapon(uint32 i)
 			spell = SPELL_RANGED_GENERAL;
 		}break;
 	case 2567:  // thrown
-		skill = SKILL_THROWN;
-		break;
+		{
+			skill = SKILL_THROWN;
+		}break;
+	case 5009:  // wands
+		{
+			skill = SKILL_WANDS;
+			spell = SPELL_RANGED_GENERAL;
+		}break;
+	//case 3386:  // spears
+	//	skill = 0;   // ??!!
+	//	break;
 	default:
 		{
 			skill = 0;
