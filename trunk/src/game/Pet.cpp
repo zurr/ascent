@@ -34,11 +34,21 @@ uint32 GetAutoCastTypeForSpell(SpellEntry * ent)
 
 	case SPELL_HASH_FIREBOLT:			// Firebolt
 	case SPELL_HASH_LASH_OF_PAIN:		// Lash of Pain
-	case SPELL_HASH_TORMENT:			// Torment
+	case SPELL_HASH_TORMENT:            // Torment
+	case SPELL_HASH_SUFFERING:
+	case SPELL_HASH_SOOTHING_KISS:
+	case SPELL_HASH_SEDUCTION:
+	case SPELL_HASH_CLEAVE:
+	case SPELL_HASH_INTERCEPT:
+	case SPELL_HASH_DEVOUR_MAGIC:
+	case SPELL_HASH_SPELL_LOCK:
+
 		return AUTOCAST_EVENT_ATTACK;
 		break;
 
-	case SPELL_HASH_BLOOD_PACT:			// Blood Pact
+	case SPELL_HASH_BLOOD_PACT:       // Blood Pact
+	case SPELL_HASH_AVOIDANCE:
+	case SPELL_HASH_PARANOIA:
 		return AUTOCAST_EVENT_ON_SPAWN;
 		break;
 
@@ -47,6 +57,8 @@ uint32 GetAutoCastTypeForSpell(SpellEntry * ent)
 		break;
 		
 	case SPELL_HASH_PHASE_SHIFT:		// Phase Shift
+	case SPELL_HASH_CONSUME_SHADOWS:     
+	case SPELL_HASH_LESSER_INVISIBILITY:
 		return AUTOCAST_EVENT_LEAVE_COMBAT;
 		break;
 
