@@ -2883,22 +2883,21 @@ else
 		}
 	}
 	//--------------------------rage processing-------------------------------------------------
-	float val;
 	//http://www.wowwiki.com/Formulas:Rage_generation
 
-	if(dmg.full_damage && IsPlayer() && GetPowerType() == POWER_TYPE_RAGE && !ability && 
-		CombatStatus.IsInCombat())
+	if( dmg.full_damage && IsPlayer() && GetPowerType() == POWER_TYPE_RAGE && !ability && CombatStatus.IsInCombat() )
 	{
+		float val;
 		float level = (float)getLevel();
 
-		// C thingy
+		// Conversion Value
 		float c = 0.0091107836f * level * level + 3.225598133f * level + 4.2652911f;
 
 		// Hit Factor
-		float f = (weapon_damage_type == OFFHAND) ? 1.75f : 3.5f;
+		float f = ( weapon_damage_type == OFFHAND ) ? 1.75f : 3.5f;
 
-		if(hit_status & HITSTATUS_CRICTICAL)
-			f *= 2;
+		if( hit_status & HITSTATUS_CRICTICAL )
+			f *= 2.0f;
 
 		float s = 1.0f;
 
@@ -2909,7 +2908,7 @@ else
 			if( weapon_damage_type == OFFHAND )
 				s = GetUInt32Value( UNIT_FIELD_BASEATTACKTIME_01 ) / 1000.0f;
 			else
-				s = GetUInt32Value( UNIT_FIELD_BASEATTACKTIME) / 1000.0f;
+				s = GetUInt32Value( UNIT_FIELD_BASEATTACKTIME ) / 1000.0f;
 		}
 		else
 		{
@@ -2925,29 +2924,31 @@ else
 		val *= ( 1 + ( static_cast< Player* >( this )->rageFromDamageDealt / 100.0f ) );
 		val *= 10;
 
-		//sLog.outString("Dmg is %u. C is %f, and fs is %f %f. val is %f", dmg.full_damage, c, f, s, val);
+		sLog.outDebug( "Rd(%i) d(%i) c(%f) f(%f) s(%f) rage = %f", realdamage, dmg.full_damage, c, f, s, val );
+
 		ModUInt32Value( UNIT_FIELD_POWER2, (int32)val );
 		if( GetUInt32Value( UNIT_FIELD_POWER2 ) > 1000 )
 			ModUInt32Value( UNIT_FIELD_POWER2, 1000 - GetUInt32Value( UNIT_FIELD_POWER2 ) );
 
-
 	}
+
 	// I am receiving damage!
-	if(dmg.full_damage && pVictim->IsPlayer() && pVictim->GetPowerType() == POWER_TYPE_RAGE 
-		&& pVictim->CombatStatus.IsInCombat())
+	if( dmg.full_damage && pVictim->IsPlayer() && pVictim->GetPowerType() == POWER_TYPE_RAGE && pVictim->CombatStatus.IsInCombat())
 	{
-		// 2.5d / c
+		float val;
 		float level = (float)getLevel();
 
-		// C "thingy"
-		float c = 0.0091107836f*level*level +3.225598133f*level+4.2652911f;
+		// Conversion Value
+		float c = 0.0091107836f * level * level + 3.225598133f * level + 4.2652911f;
+
 		val = 2.5f * dmg.full_damage / c;
 		val *= 10;
 
-		ModUInt32Value(UNIT_FIELD_POWER2, (int32)val);
-		if(GetUInt32Value(UNIT_FIELD_POWER2) > 1000)
-			ModUInt32Value(UNIT_FIELD_POWER2, 1000 - GetUInt32Value(UNIT_FIELD_POWER2));
+		sLog.outDebug( "Rd(%i) d(%i) c(%f) rage = %f", realdamage, dmg.full_damage, c, val );
 
+		ModUInt32Value( UNIT_FIELD_POWER2, (int32)val );
+		if( GetUInt32Value( UNIT_FIELD_POWER2) > 1000 )
+			ModUInt32Value( UNIT_FIELD_POWER2, 1000 - GetUInt32Value( UNIT_FIELD_POWER2 ) );
 
 	}
 		

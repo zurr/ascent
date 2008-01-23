@@ -3091,7 +3091,9 @@ bool World::SetInitialWorldSettings()
 	}
 
 	//Druid: Improved Leader of the Pack
-	sp = dbcSpell.LookupEntryForced( 34299 ); if( sp != NULL ) sp->proc_interval = 6000;//6 secs
+	sp = dbcSpell.LookupEntryForced( 34299 );
+	if( sp != NULL )
+		sp->proc_interval = 6000;//6 secs
 
 	//fix for the right Enchant ID for Enchant Cloak - Major Resistance
 	sp = dbcSpell.LookupEntryForced( 27962 );
