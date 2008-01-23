@@ -1468,7 +1468,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
 void Spell::SpellEffectQuestComplete(uint32 i) // Quest Complete
 {
-	//damage is id of the quest to complete
+	//misc value is id of the quest to complete
 }
 
 //wand->
@@ -2597,20 +2597,9 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
 	{
 		Pet * pPet = static_cast<Pet*>( unitTarget );
 		if(pPet->IsSummon())
-		{
 			p_caster->AddSummonSpell(unitTarget->GetEntry(), m_spellInfo->EffectTriggerSpell[i]);
-			pPet->AddSpell(dbcSpell.LookupEntry(m_spellInfo->EffectTriggerSpell[i]), true);
-		}
-		else
-		{
-			if(pPet->CanLearnSpellTP(m_spellInfo->EffectTriggerSpell[i]))
-				pPet->AddSpell(dbcSpell.LookupEntry(m_spellInfo->EffectTriggerSpell[i]), true);
-			else
-			{
-				SendCastResult(SPELL_FAILED_TRAINING_POINTS);
-				return;
-			}
-		}		
+		
+		pPet->AddSpell( dbcSpell.LookupEntry( m_spellInfo->EffectTriggerSpell[i] ), true );
 
 		// Send Packet
 		WorldPacket data(SMSG_PET_LEARNT_SPELL, 21);

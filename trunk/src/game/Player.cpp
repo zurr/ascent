@@ -1669,7 +1669,7 @@ void Player::_SavePet(QueryBuffer * buf)
 			<< itr->second->xp << "','"
 			<< (itr->second->active ?  1 : 0) + itr->second->stablestate * 10 << "','"
 			<< itr->second->level << "','"
-			<< itr->second->happiness << "','"
+			<< itr->second->loyaltyxp << "','"
 			<< itr->second->actionbar << "','"
 			<< itr->second->happinessupdate << "','"
 			<< itr->second->summon << "','"
@@ -1835,7 +1835,7 @@ void Player::_LoadPet(QueryResult * result)
 		pet->active  = fields[6].GetInt8()%10 > 0 ? true : false;
 		pet->stablestate = fields[6].GetInt8() / 10;
 		pet->level   = fields[7].GetUInt32();
-		pet->happiness = fields[8].GetUInt32();
+		pet->loyaltyxp = fields[8].GetUInt32();
 		pet->actionbar = fields[9].GetString();
 		pet->happinessupdate = fields[10].GetUInt32();
 		pet->summon = (fields[11].GetUInt32()>0 ? true : false);

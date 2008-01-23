@@ -3274,7 +3274,7 @@ bool AIInterface::taunt(Unit* caster, bool apply)
 	{
 		isTaunted = false;
 		tauntedBy = NULL;
-		//taunt is ower, we should get a new target based on most hated list
+		//taunt is over, we should get a new target based on most hated list
 		SetNextTarget(GetMostHated());
 	}
 

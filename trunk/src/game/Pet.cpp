@@ -228,7 +228,8 @@ Pet::Pet(uint32 high, uint32 low) : Creature(high, low)
 	m_Action = PET_ACTION_FOLLOW;
 	m_State = PET_STATE_DEFENSIVE;
 	TP = 0;
-	LoyaltyPts=0;
+	LoyaltyPts = LoyLvlRange[1];
+	LoyaltyXP = 0;
 }
 
 Pet::~Pet()
@@ -254,19 +255,17 @@ void Pet::Update(uint32 time)
 		{	
 			int32 val = GetUInt32Value(UNIT_FIELD_POWER5);
 			//amount of burned happiness is loyalty_lvl depended
-			int32 burn = HappinessTicks[GetLoyaltyLevel()-1]*125; //(ticks are 70/35/17/8/4/2 *1000 [per minute] ) /8 [per 7.5 sec]
+			int32 burn = HappinessTicks[ GetLoyaltyLevel() - 1 ];
+			if( CombatStatus.IsInCombat() )
+				burn = burn >> 1; //in combat reduce burn by half (guessed) 
 			if((val - burn)<0)
-			{	
 				val = 0;
-				bExpires=true; 
-				m_ExpireTime=10000;	//avoid loosing pet right after calling it			
-			}
 			else
 				val -= burn;
 			SetUInt32Value(UNIT_FIELD_POWER5, val);// Set the value
 			m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;// reset timer
 		} 
-	else 
+		else 
 		{
 			if( time > m_HappinessTimer )
 				m_HappinessTimer = 0;
@@ -429,6 +428,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 	m_HappinessTimer = mPi->happinessupdate;
 	m_LoyaltyTimer = mPi->loyaltyupdate;
 	LoyaltyPts = mPi->loyaltypts;
+	LoyaltyXP = mPi->loyaltyxp;
 
 	SetIsPet(true);
 	bExpires = false;   
@@ -583,7 +583,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 	pi->number = m_PetNumber;
 	pi->xp = m_PetXP;
 	pi->level = GetUInt32Value(UNIT_FIELD_LEVEL);
-	pi->happiness = GetUInt32Value(UNIT_FIELD_POWER5);
+	pi->loyaltyxp = LoyaltyXP;
 	pi->happinessupdate = m_HappinessTimer;
 	pi->loyaltypts = LoyaltyPts;
 	pi->loyaltyupdate = m_LoyaltyTimer;
@@ -680,10 +680,20 @@ void Pet::DelayedRemove(bool bTime, bool bDeath)
 		sEventMgr.AddEvent(this, &Pet::DelayedRemove, true, bDeath, EVENT_PET_DELAYED_REMOVE, PET_DELAYED_REMOVAL_TIME, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-void Pet::GiveXP(uint32 xp)
+void Pet::GiveXP( uint32 xp )
 {
-	if(!m_Owner || getLevel() >= myFamily->maxlevel || getLevel() > m_Owner->getLevel()) return;
+	if( !m_Owner || Summon )
+		return;	
+
+	if( GetLoyaltyLevel() < BEST_FRIEND && LoyaltyXP < m_Owner->GetUInt32Value( PLAYER_NEXT_LEVEL_XP ) / 20 )
+	{
+		LoyaltyXP += xp;
+		UpdateLoyalty( 0 );
+	}
 	
+	if( getLevel() >= m_Owner->getLevel() )		//pet do not get xp if its level >= owners level
+		return;
+
 	xp += m_uint32Values[UNIT_FIELD_PETEXPERIENCE];
 	uint32 nxp = m_uint32Values[UNIT_FIELD_PETNEXTLEVELEXP];
 	bool changed = false;
@@ -1484,9 +1494,10 @@ void Pet::UpdateTP()
 HappinessState Pet::GetHappinessState() 
 {
 	//gets happiness state from happiness points
-	if(GetUInt32Value(UNIT_FIELD_POWER5)<PET_HAPPINESS_UPDATE_VALUE)
+	uint32 pts = GetUInt32Value( UNIT_FIELD_POWER5 );
+	if( pts < PET_HAPPINESS_UPDATE_VALUE )
 		return UNHAPPY;
-	else if(GetUInt32Value(UNIT_FIELD_POWER5)>=2*PET_HAPPINESS_UPDATE_VALUE)
+	else if( pts >= PET_HAPPINESS_UPDATE_VALUE << 1 )
 		return HAPPY;
 	else
 		return CONTENT;
@@ -1529,23 +1540,37 @@ uint32 Pet::GetHighestRankSpell(uint32 spellId)
 	}
 	return tmp ? tmp->Id : 0;
 }
-void Pet::UpdateLoyalty(char pts)
+void Pet::UpdateLoyalty( char pts )
 {	
 	//updates loyalty_pts and loyalty lvl if needed
-	if((LoyaltyPts + pts) < 0)
-		LoyaltyPts = 0;
-	else if ((LoyaltyPts + pts) > BEST_FRIEND * PET_LOYALTY_LVL_RANGE)
-		LoyaltyPts = BEST_FRIEND * PET_LOYALTY_LVL_RANGE;
-	else 
-		LoyaltyPts += pts;
+	if( !m_Owner || Summon )
+		return;
+
 	char curLvl = GetLoyaltyLevel();
-	char newLvl = LoyaltyPts / PET_LOYALTY_LVL_RANGE; //result can be 0~7 ...
-	newLvl < BEST_FRIEND ? newLvl += 1 : newLvl = BEST_FRIEND;//...so make it 1~6
-	if (newLvl != curLvl)
-	{
-		SetUInt32Value(UNIT_FIELD_BYTES_1, 0 | (newLvl << 8));
-		UpdateTP();
+	char newLvl = curLvl;
+
+	LoyaltyPts += pts;
+
+	if( LoyaltyPts > LoyLvlRange[BEST_FRIEND] )	//cap
+		LoyaltyPts = LoyLvlRange[BEST_FRIEND];
+
+	if( LoyaltyPts < 0 && pts != 0 )
+		newLvl--;
+	else if( curLvl < BEST_FRIEND && LoyaltyPts > LoyLvlRange[ curLvl ] && 	// requires some loyalty pts ...
+		LoyaltyXP >= m_Owner->GetUInt32Value( PLAYER_NEXT_LEVEL_XP ) / 20 )	// ... and 5% of hunters nextlevel xp
+		newLvl++;
+	else return;
+
+	if( newLvl < REBELIOUS )
+	{	
+		Dismiss(); // pet runs away
+		return;
 	}
+	
+	SetUInt32Value( UNIT_FIELD_BYTES_1, 0 | ( newLvl << 8 ) );		//set new loy level
+	LoyaltyPts = newLvl > curLvl ? 0 : LoyLvlRange[ newLvl ];		//reset loy_pts
+	LoyaltyXP = 0;													//reset loy_xp
+	UpdateTP();
 }
 
 AI_Spell * Pet::HandleAutoCastEvent()

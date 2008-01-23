@@ -2473,6 +2473,10 @@ else
 
 			dmg.full_damage = (dmg.full_damage < 0) ? 0 : float2int32(dmg.full_damage*summaryPCTmod);
 
+			//pet happiness state dmg modifier
+			if( IsPet() && !static_cast<Pet*>(this)->IsSummon() )
+				dmg.full_damage = ( dmg.full_damage <= 0 ) ? 0 : float2int32( dmg.full_damage * static_cast< Pet* >( this )->GetHappinessDmgMod() );
+
 			if(dmg.full_damage < 0)
 				dmg.full_damage = 0;
 //--------------------------------check for special hits------------------------------------
@@ -6077,4 +6081,5 @@ void Unit::ReplaceAIInterface(AIInterface *new_interface)
 	delete m_aiInterface;	//be carefull when you do this. Might screw unit states !
 	m_aiInterface = new_interface; 
 }
+
 
