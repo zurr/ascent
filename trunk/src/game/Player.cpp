@@ -8387,7 +8387,7 @@ void Player::SetShapeShift(uint8 ss)
 				if (!(ss &= aura->forms )) // Not in required form
 				{
 					this->RemoveAura(aura->spellid);
-					sLog.outDebug("Shape shifting and removing wrong form aura", aura->GetSpellProto()->Id );
+					sLog.outDebug("Shape shifting and removing wrong form aura", aura->spellid );
 				}
 				else //in required form
 				{
