@@ -2920,13 +2920,13 @@ else
 			}
 		}
 
-		float r = ( 7.5f * dmg.full_damage / c + f * s ) / 2.0f;
-		float p = ( 1 + ( static_cast< Player* >( this )->rageFromDamageDealt / 100.0f ) );
-		val = r;
-		val *= p;
+		val = ( 7.5f * dmg.full_damage / c + f * s ) / 2.0f;;
+		val *= ( 1 + ( static_cast< Player* >( this )->rageFromDamageDealt / 100.0f ) );
 		val *= 10;
 
-		sLog.outDebug( "Rd(%i) d(%i) c(%f) f(%f) s(%f) p(%f) r(%f) rage = %f", realdamage, dmg.full_damage, c, f, s, p, r, val );
+		//float r = ( 7.5f * dmg.full_damage / c + f * s ) / 2.0f;
+		//float p = ( 1 + ( static_cast< Player* >( this )->rageFromDamageDealt / 100.0f ) );
+		//sLog.outDebug( "Rd(%i) d(%i) c(%f) f(%f) s(%f) p(%f) r(%f) rage = %f", realdamage, dmg.full_damage, c, f, s, p, r, val );
 
 		ModUInt32Value( UNIT_FIELD_POWER2, (int32)val );
 		if( GetUInt32Value( UNIT_FIELD_POWER2 ) > 1000 )
@@ -2935,7 +2935,7 @@ else
 	}
 
 	// I am receiving damage!
-	if( dmg.full_damage && pVictim->IsPlayer() && pVictim->GetPowerType() == POWER_TYPE_RAGE && pVictim->CombatStatus.IsInCombat())
+	if( dmg.full_damage && pVictim->IsPlayer() && pVictim->GetPowerType() == POWER_TYPE_RAGE && pVictim->CombatStatus.IsInCombat() )
 	{
 		float val;
 		float level = (float)getLevel();
@@ -2946,11 +2946,11 @@ else
 		val = 2.5f * dmg.full_damage / c;
 		val *= 10;
 
-		sLog.outDebug( "Rd(%i) d(%i) c(%f) rage = %f", realdamage, dmg.full_damage, c, val );
+		//sLog.outDebug( "Rd(%i) d(%i) c(%f) rage = %f", realdamage, dmg.full_damage, c, val );
 
-		ModUInt32Value( UNIT_FIELD_POWER2, (int32)val );
-		if( GetUInt32Value( UNIT_FIELD_POWER2) > 1000 )
-			ModUInt32Value( UNIT_FIELD_POWER2, 1000 - GetUInt32Value( UNIT_FIELD_POWER2 ) );
+		pVictim->ModUInt32Value( UNIT_FIELD_POWER2, (int32)val );
+		if( pVictim->GetUInt32Value( UNIT_FIELD_POWER2) > 1000 )
+			pVictim->ModUInt32Value( UNIT_FIELD_POWER2, 1000 - pVictim->GetUInt32Value( UNIT_FIELD_POWER2 ) );
 
 	}
 		
