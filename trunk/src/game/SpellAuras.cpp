@@ -3347,7 +3347,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 			spellId = 9635;
 			if(apply)
 			{
-				 m_target->SetByte(UNIT_FIELD_BYTES_0,3,POWER_TYPE_RAGE);
+				m_target->SetByte(UNIT_FIELD_BYTES_0,3,POWER_TYPE_RAGE);
 				m_target->SetUInt32Value(UNIT_FIELD_MAXPOWER2, 1000);
 				m_target->SetUInt32Value(UNIT_FIELD_POWER2, 0);//0 rage
 				if(m_target->getRace() == 4)//NE
