@@ -7413,8 +7413,14 @@ void Aura::SpellAuraAxeSkillModifier(bool apply)
 	{
 		SetPositive();
 		if( apply )
-			p_target->_ModifySkillBonus( SKILL_AXES, mod->m_amount );//re use
+		{
+			p_target->_ModifySkillBonus( SKILL_AXES, mod->m_amount );
+			p_target->_ModifySkillBonus( SKILL_2H_AXES, mod->m_amount );
+		}
 		else
-			p_target->_ModifySkillBonus( SKILL_AXES, -mod->m_amount );//re use
+		{
+			p_target->_ModifySkillBonus( SKILL_AXES, -mod->m_amount );
+			p_target->_ModifySkillBonus( SKILL_2H_AXES, -mod->m_amount );
+		}
 	}
 }
