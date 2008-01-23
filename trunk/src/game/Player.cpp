@@ -8329,7 +8329,6 @@ void Player::SetShapeShift(uint8 ss)
 					if(  ( ((uint32)1 << (old_ss-1)) & reqss ) &&		// we were in the form that required it
 						!( ((uint32)1 << (ss-1) & reqss) ) )			// new form doesnt have the right form
 					{
-						sLog.outDebug("Shape shifting and removing incompatible aura", m_auras[x]->m_spellInfo->Id );
 						m_auras[x]->Remove();
 						continue;
 					}
