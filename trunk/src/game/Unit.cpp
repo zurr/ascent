@@ -2923,7 +2923,7 @@ else
 		float r = ( 7.5f * dmg.full_damage / c + f * s ) / 2.0f;
 		float p = ( 1 + ( static_cast< Player* >( this )->rageFromDamageDealt / 100.0f ) );
 		val = r;
-		val *= percentage_modifier
+		val *= p;
 		val *= 10;
 
 		sLog.outDebug( "Rd(%i) d(%i) c(%f) f(%f) s(%f) p(%f) r(%f) rage = %f", realdamage, dmg.full_damage, c, f, s, p, r, val );
