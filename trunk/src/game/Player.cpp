@@ -8329,7 +8329,7 @@ void Player::SetShapeShift(uint8 ss)
 					if(  ( ((uint32)1 << (old_ss-1)) & reqss ) &&		// we were in the form that required it
 						!( ((uint32)1 << (ss-1) & reqss) ) )			// new form doesnt have the right form
 					{
-						sLog.outDebug("Shape shifting and removing incompatible aura", m_auras[x]->m_spellInfo->Id );
+						sLog.outDebug("Shape shifting and removing incompatible aura", m_auras[x]->GetSpellProto()->Id );
 						m_auras[x]->Remove();
 						continue;
 					}
@@ -8348,7 +8348,7 @@ void Player::SetShapeShift(uint8 ss)
 						case 31: //Movement speed
 						case 5:  //Confuse (polymorph)
 								m_auras[x]->Remove();
-								sLog.outDebug("Shape shifting and removing negative aura", m_auras[x]->m_spellInfo->Id );
+								sLog.outDebug("Shape shifting and removing negative aura", m_auras[x]->GetSpellProto()->Id );
 							break;
 						default:
 							break;
@@ -8387,7 +8387,7 @@ void Player::SetShapeShift(uint8 ss)
 				if (!(ss &= aura->forms )) // Not in required form
 				{
 					this->RemoveAura(aura->spellid);
-					sLog.outDebug("Shape shifting and removing wrong form aura", aura->m_spellInfo->Id );
+					sLog.outDebug("Shape shifting and removing wrong form aura", aura->GetSpellProto()->Id );
 				}
 				else //in required form
 				{
