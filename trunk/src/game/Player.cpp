@@ -8313,8 +8313,6 @@ void Player::SaveAuras(stringstream &ss)
 
 void Player::SetShapeShift(uint8 ss)
 {
-	// FORM_NORMAL = 0
-
 	uint8 old_ss = GetByte( UNIT_FIELD_BYTES_1, 2 );
 	SetByte( UNIT_FIELD_BYTES_1, 2, ss );
 
@@ -8324,14 +8322,14 @@ void Player::SetShapeShift(uint8 ss)
 		if( m_auras[x] != NULL )
 		{
 			uint32 reqss = m_auras[x]->GetSpellProto()->RequiredShapeShift;
-			if( reqss != FORM_NORMAL && m_auras[x]->IsPositive() )
+			if( reqss != 0 && m_auras[x]->IsPositive() )
 			{
-				if( old_ss > FORM_NORMAL )
+				if( old_ss > 0 )
 				{
 					if(  ( ((uint32)1 << (old_ss-1)) & reqss ) &&		// we were in the form that required it
 						!( ((uint32)1 << (ss-1) & reqss) ) )			// new form doesnt have the right form
 					{
-						sLog.outDebug("Shape shifting and removing incompatible aura %i", m_auras[x]->GetSpellProto()->Id );
+						sLog.outDebug("Shape shifting and removing incompatible aura", m_auras[x]->m_spellInfo->Id );
 						m_auras[x]->Remove();
 						continue;
 					}
@@ -8342,26 +8340,27 @@ void Player::SetShapeShift(uint8 ss)
 			{
 				for (uint32 y = 0; y < 3; ++y )
 				{
-					if( m_auras[x] != NULL )
+					switch( m_auras[x]->GetSpellProto()->EffectApplyAuraName[y])
 					{
-						switch( m_auras[x]->GetSpellProto()->EffectApplyAuraName[y] )
+					case SPELL_AURA_MOD_ROOT: //Root
+					case SPELL_AURA_MOD_DECREASE_SPEED: //Movement speed
+					case SPELL_AURA_MOD_CONFUSE:  //Confuse (polymorph)
 						{
-						case 26: //Root
-						case 31: //Movement speed
-						case 5:  //Confuse (polymorph)
-								m_auras[x]->Remove();
-								sLog.outDebug("Shape shifting and removing negative aura %i", m_auras[x]->GetSpellProto()->Id );
-							break;
-						default:
-							break;
+							m_auras[x]->Remove();
 						}
+						break;
+					default:
+						break;
 					}
+
+					if( m_auras[x] == NULL )
+						break;
 				}
 			}
 		} 
 	}
 
-	if( m_SSSPecificSpells.size() )
+	if(m_SSSPecificSpells.size())
 	{//recalc modifiers
 		std::set<uint32>::iterator i;
 		for(i=m_SSSPecificSpells.begin();i!=m_SSSPecificSpells.end();i++)
@@ -8378,18 +8377,17 @@ void Player::SetShapeShift(uint8 ss)
 	}
 
 	//Add some specific forms auras
-	if( m_ssAuras.size() && ss != FORM_NORMAL )
+	if (m_ssAuras.size() && ss)
 	{
 		std::set<SSAura*>::iterator i;
 		for(i=m_ssAuras.begin();i!=m_ssAuras.end();i++)
 		{
 			SSAura* aura = *i;
-			if( aura != NULL /* && aura->IsPositive() */ )
+			if(aura)
 			{
 				if (!(ss &= aura->forms )) // Not in required form
 				{
 					this->RemoveAura(aura->spellid);
-					sLog.outDebug("Shape shifting and removing wrong form aura %i", aura->spellid );
 				}
 				else //in required form
 				{
