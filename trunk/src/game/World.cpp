@@ -6901,6 +6901,25 @@ void World::SendZoneMessage(WorldPacket *packet, uint32 zoneid, WorldSession *se
 	m_sessionlock.ReleaseReadLock();
 }
 
+void World::SendInstanceMessage(WorldPacket *packet, uint32 instanceid, WorldSession *self)
+{
+	m_sessionlock.AcquireReadLock();
+
+	SessionMap::iterator itr;
+	for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+	{
+		if (itr->second->GetPlayer() &&
+			itr->second->GetPlayer()->IsInWorld()
+			&& itr->second != self)  // dont send to self!
+		{
+			if (itr->second->GetPlayer()->GetInstanceID() == instanceid)
+				itr->second->SendPacket(packet);
+		}
+	}
+
+	m_sessionlock.ReleaseReadLock();
+}
+
 void World::SendWorldText(const char* text, WorldSession *self)
 {
     uint32 textLen = (uint32)strlen((char*)text) + 1;

@@ -231,12 +231,14 @@ int WorldSession::Update(uint32 InstanceID)
 
 void WorldSession::LogoutPlayer(bool Save)
 {
+	Player *pPlayer = GetPlayer();
 	if(_loggingOut)
 		return;
 
 	_loggingOut = true;
 	if (_player)
 	{
+		sHookInterface.OnLogout(pPlayer);
 		if(_player->DuelingWith)
 			_player->EndDuel(DUEL_WINNER_RETREAT);
 
