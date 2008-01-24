@@ -1565,7 +1565,6 @@ bool World::SetInitialWorldSettings()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
 		sp->EffectImplicitTargetA[2]=EFF_TARGET_PET;
-        sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = dbcSpell.LookupEntryForced( 35692 );
@@ -1580,7 +1579,6 @@ bool World::SetInitialWorldSettings()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
 		sp->EffectImplicitTargetA[2]=EFF_TARGET_PET;
-        sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = dbcSpell.LookupEntryForced( 35693 );
@@ -1595,7 +1593,6 @@ bool World::SetInitialWorldSettings()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
 		sp->EffectImplicitTargetA[2]=EFF_TARGET_PET;
-        sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = dbcSpell.LookupEntryForced( 35696 );
@@ -5081,7 +5078,7 @@ bool World::SetInitialWorldSettings()
 	{
 		sp->Effect[0] = 0; //delete this owerride effect :P
 		sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
-		sp->procFlags = PROC_ON_CAST_SPELL;
+		sp->procFlags = PROC_ON_SPELL_LAND;
 		sp->procChance = 13; //god, save us from fixed values !
 	}
 	sp = dbcSpell.LookupEntryForced( 18096 );
@@ -5089,7 +5086,7 @@ bool World::SetInitialWorldSettings()
 	{
 		sp->Effect[0] = 0; //delete this owerride effect :P
 		sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
-		sp->procFlags = PROC_ON_CAST_SPELL;
+		sp->procFlags = PROC_ON_SPELL_LAND;
 		sp->procChance = 26; //god, save us from fixed values !
 	}
 

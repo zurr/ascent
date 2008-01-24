@@ -234,7 +234,8 @@ enum procFlags
 //    PROC_ON_UNK_DAMAGE_VICTIM       = 0x80,//seems to be on ranged dmg victim 99% sure('each melee or ranged attack' -> flag =680 (dec))
     PROC_ON_PHYSICAL_ATTACK         = 0x100,
     PROC_ON_MELEE_ATTACK_VICTIM     = 0x200,
-    PROC_ON_ANY_ACTION              = 0x400,
+//    PROC_ON_ANY_ACTION              = 0x400,
+    PROC_ON_SPELL_LAND              = 0x400,
 //    PROC_UNK_DEFILLED               = 0x800,
     PROC_ON_RANGED_CRIT_ATTACK_VICTIM = 0x800,
     PROC_ON_CRIT_ATTACK             = 0x1000,

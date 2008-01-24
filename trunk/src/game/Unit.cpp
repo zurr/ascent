@@ -1512,6 +1512,7 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 					continue;
 				}
 				spell->pSpellId=origId;
+				sLog.outDebug("HandleProc: Spell %u proced %u with chance %u , owner %u victim %u and target %u",origId,spellId,itr->procChance,GetGUIDLow(),victim->GetGUIDLow(),(uint32)targets.m_unitTarget);
 				spell->prepare(&targets);
 			}//not always we have a spell to cast
 		}
