@@ -759,7 +759,7 @@ void WorldSession::HandleLogoutRequestOpcode( WorldPacket & recv_data )
 void WorldSession::HandlePlayerLogoutOpcode( WorldPacket & recv_data )
 {
 	sLog.outDebug( "WORLD: Recvd CMSG_PLAYER_LOGOUT Message" );
-	if(!_logoutTime && !HasGMPermissions())
+	if(!HasGMPermissions())
 	{
 		// send "You do not have permission to use this"
 		SendNotification(NOTIFICATION_MESSAGE_NO_PERMISSION);
