@@ -235,6 +235,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket & recv_data)
 
 	if(TradeSlot < 6 && pItem->IsSoulbound())
 	{
+		sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
 		Disconnect();
 		return;
 	}
@@ -244,6 +245,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket & recv_data)
 		// duping little shits
 		if(_player->mTradeItems[i] == pItem)
 		{
+			sCheatLog.writefromsession(this, "tried to dupe an item through trade");
 			Disconnect();
 			return;
 		}

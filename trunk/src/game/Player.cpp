@@ -573,7 +573,7 @@ bool Player::Create(WorldPacket& data )
 	if(!info)
 	{
 		// info not found... disconnect
-		sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u", race, class_);
+		//sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u", race, class_);
 		m_session->Disconnect();
 		return false;
 	}
@@ -581,7 +581,7 @@ bool Player::Create(WorldPacket& data )
 	// check that the account CAN create TBC characters, if we're making some
 	if(race >= RACE_BLOODELF && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01))
 	{
-		sCheatLog.writefromsession(m_session, "tried to create player with race %u and class %u but no expansion flags", race, class_);
+		//sCheatLog.writefromsession(m_session, "tried to create player with race %u and class %u but no expansion flags", race, class_);
 		m_session->Disconnect();
 		return false;
 	}

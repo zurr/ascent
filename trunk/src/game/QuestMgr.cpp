@@ -896,7 +896,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object *qst_giver, uint3
 	{
 		if(!((Creature*)qst_giver)->HasQuest(qst->id, 2))
 		{
-			sCheatLog.writefromsession(plr->GetSession(), "tried to finish quest from invalid npc.");
+			//sCheatLog.writefromsession(plr->GetSession(), "tried to finish quest from invalid npc.");
 			plr->GetSession()->Disconnect();
 			return;
 		}

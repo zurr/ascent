@@ -1200,7 +1200,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, int radius)
 					}
 				}
 				//Cell is no longer active
-				else if (!_CellActive(posX, posY) && objCell->IsActive() && Config.MainConfig.GetBoolDefault( "Terrain" , "DisableCellIdle" , false ))
+				else if (!_CellActive(posX, posY) && objCell->IsActive())
 				{
 					sLog.outDetail("Cell [%d,%d] on map %d (instance %d) is now idle.", 
 						posX, posY, this->_mapId, m_instanceID);
