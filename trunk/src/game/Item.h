@@ -65,11 +65,12 @@ public:
 	
 	ASCENT_INLINE void SoulBind()
 	{
-		this->SetFlag(ITEM_FIELD_FLAGS,ITEM_FLAG_SOULBOUND);
+		this->SetFlag( ITEM_FIELD_FLAGS, ITEM_FLAG_SOULBOUND );
 	}
+
 	ASCENT_INLINE bool IsSoulbound()
 	{
-		return this->HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_SOULBOUND);
+		return this->HasFlag( ITEM_FIELD_FLAGS, ITEM_FLAG_QUEST | ITEM_FLAG_SOULBOUND );
 	}
 
 	ASCENT_INLINE uint32 GetChargesLeft()
