@@ -186,8 +186,45 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 {
 	ASSERT(slot < MAX_INVENTORY_SLOT);
 	ASSERT(ContainerSlot < MAX_INVENTORY_SLOT);
-	ASSERT(item != NULL);
+	if( item == NULL || !item->GetProto() )
+		return false;
+
 	item->m_isDirty = true;
+
+	// doublechecking
+	/*uint32 i, j, k;
+	Item * tempitem;
+	for(i = 0; i < MAX_INVENTORY_SLOT; ++i)
+	{
+		tempitem = m_pItems[i];
+		if( tempitem != NULL )
+		{
+			if( tempitem == item )
+			{
+				OutputCrashLogLine("item duplication, callstack:");
+				printf("item duplication, callstack: ");
+				CStackWalker ws;
+				ws.ShowCallstack();
+				return false;
+			}
+
+			if( tempitem->IsContainer() )
+			{
+				k = tempitem->GetProto()->ContainerSlots;
+				for(j = 0; j < k; ++j)
+				{
+					if( static_cast<Container*>(tempitem)->GetItem( j ) == item )
+					{
+						OutputCrashLogLine("item duplication in container, callstack:");
+						printf("item duplication in container, callstack: ");
+						CStackWalker ws;
+						ws.ShowCallstack();
+						return false;
+					}
+				}
+			}
+		}
+	}*/
 
 	if(item->GetProto())
 	{
