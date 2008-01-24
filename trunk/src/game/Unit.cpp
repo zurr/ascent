@@ -4252,10 +4252,10 @@ void Unit::EscortSetEndWP(uint32 wp)
 
 int32 Unit::GetDamageDoneMod(uint32 school)
 {
-	if(this->IsPlayer())
-	   return (int32)(GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS+school)-GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG+school));
+	if( this->IsPlayer() )
+	   return (int32)GetUInt32Value( PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school ) - (int32)GetUInt32Value( PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school );
 	else
-	   return ((Creature*)this)->ModDamageDone[school];
+	   return static_cast< Creature* >( this )->ModDamageDone[school];
 }
 	
 float Unit::GetDamageDonePctMod(uint32 school)

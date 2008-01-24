@@ -2352,30 +2352,31 @@ void Aura::SpellAuraModStun(bool apply)
 void Aura::SpellAuraModDamageDone(bool apply)
 {
 	int32 val;
-	if(m_target->IsPlayer())
+
+	if( m_target->IsPlayer() )
 	{
 		uint32 index;
 		 
-		if(mod->m_amount > 0)
+		if( mod->m_amount > 0 )
 		{
-			if(apply)
+			if( apply )
 			{
 				SetPositive();
 				val = mod->m_amount;
 			}
 			else
 			{
-				val =- mod->m_amount;
+				val = -mod->m_amount;
 			}
 			index = PLAYER_FIELD_MOD_DAMAGE_DONE_POS;
 		
 		}
 		else
 		{
-			if(apply)
+			if( apply )
 			{
 				SetNegative();
-				val =- mod->m_amount;
+				val = -mod->m_amount;
 			}
 			else
 			{
@@ -2384,52 +2385,52 @@ void Aura::SpellAuraModDamageDone(bool apply)
 			index = PLAYER_FIELD_MOD_DAMAGE_DONE_NEG;
 		}
 
-		for(uint32 x=0;x<7;x++)
+		for( uint32 x = 0; x < 7; x++ )
 		{
-			if (mod->m_miscValue & (((uint32)1)<<x) )
+			if( mod->m_miscValue & ( ( (uint32)1 ) << x ) )
 			{
-				m_target->ModUInt32Value(index + x,val);
+				m_target->ModUInt32Value( index + x, val );
 			}
 		}
 	}
-	else if(m_target->GetTypeId() == TYPEID_UNIT)
+	else if( m_target->GetTypeId() == TYPEID_UNIT )
 	{
-		if(mod->m_amount > 0)
+		if( mod->m_amount > 0 )
 		{
-			if(apply)
+			if( apply )
 			{
 				SetPositive();
 				val = mod->m_amount;
 			}
 			else
 			{
-				val =- mod->m_amount;
+				val = -mod->m_amount;
 			}
 
 		}
 		else
 		{
-			if(apply)
+			if( apply )
 			{
 				SetNegative();
 				val = mod->m_amount;
 			}
 			else
 			{
-				val =- mod->m_amount;
+				val = -mod->m_amount;
 			}
 		}
 
-		for(uint32 x=0;x<7;x++)
+		for( uint32 x = 0; x < 7; x++ )
 		{
-			if (mod->m_miscValue & (((uint32)1)<<x) )
+			if( mod->m_miscValue & ( ( (uint32)1 ) << x ) )
 			{
-				static_cast<Creature*>(m_target)->ModDamageDone[x]+=val;
+				static_cast< Creature* >( m_target )->ModDamageDone[x] += val;
 			}
 		}
 	}
    
-	if(mod->m_miscValue&1)
+	if( mod->m_miscValue & 1 )
 		m_target->CalcDamage();
 }
 

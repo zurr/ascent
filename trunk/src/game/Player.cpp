@@ -8423,7 +8423,7 @@ void Player::CalcDamage()
 	int ss = GetShapeShift();
 /////////////////MAIN HAND
 		float ap_bonus = GetAP()/14000.0f;
-		delta = float(GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS)-GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG));
+		delta = (float)GetUInt32Value( PLAYER_FIELD_MOD_DAMAGE_DONE_POS ) - (float)GetUInt32Value( PLAYER_FIELD_MOD_DAMAGE_DONE_NEG );
 		if(IsInFeralForm())
 		{
 			uint32 lev = getLevel();
@@ -8484,7 +8484,7 @@ void Player::CalcDamage()
 					cr=itr->second;
 			}
 		}
-		SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_20,cr);
+		SetUInt32Value( PLAYER_RATING_MODIFIER_MELEE_MAIN_HAND_SKILL, cr );
 		/////////////// MAIN HAND END
 
 		/////////////// OFF HAND START
@@ -8522,7 +8522,7 @@ void Player::CalcDamage()
 					cr=itr->second;
 			}
 		}
-		SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_21,cr);
+		SetUInt32Value( PLAYER_RATING_MODIFIER_MELEE_OFF_HAND_SKILL, cr );
 
 /////////////second hand end
 ///////////////////////////RANGED
@@ -8576,7 +8576,7 @@ void Player::CalcDamage()
 			}
 		
 		}
-		SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1,cr);
+		SetUInt32Value( PLAYER_RATING_MODIFIER_RANGED_SKILL, cr );
 
 /////////////////////////////////RANGED end
 		tmp = 1;
@@ -8601,7 +8601,7 @@ uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
 		ap_bonus = AP_owerride/14000.0f;
 	else 
 		ap_bonus = GetAP()/14000.0f;
-	delta = float(GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS)-GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG));
+	delta = (float)GetUInt32Value( PLAYER_FIELD_MOD_DAMAGE_DONE_POS ) - (float)GetUInt32Value( PLAYER_FIELD_MOD_DAMAGE_DONE_NEG );
 	if(IsInFeralForm())
 	{
 		uint32 lev = getLevel();
