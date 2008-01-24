@@ -268,11 +268,11 @@ void Spell::SpellEffectInstantKill(uint32 i)
 			}break;
 		}
 		//now caster gains this buff
-		if ( spellid1 != 0)
+		if( spellid1 != 0 )
 		{
-			SpellEntry *sp=dbcSpell.LookupEntry(spellid1);
-			if ( sp != NULL )
-				u_caster->CastSpell(u_caster, , true);
+			SpellEntry* sp = dbcSpell.LookupEntry( spellid1 );
+			if( sp != NULL )
+				u_caster->CastSpell( u_caster, sp, true );
 		}
 	}
 
