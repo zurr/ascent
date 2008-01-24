@@ -8440,8 +8440,11 @@ void Player::CalcDamage()
 			//SetFloatValue(UNIT_FIELD_MINDAMAGE,r);
 			//SetFloatValue(UNIT_FIELD_MAXDAMAGE,r);
 
-			SetFloatValue(UNIT_FIELD_MINDAMAGE,r * 0.9f);
-			SetFloatValue(UNIT_FIELD_MAXDAMAGE,r * 1.1f);
+			r *= 0.9f;
+			r *= 1.1f;
+
+			SetFloatValue(UNIT_FIELD_MINDAMAGE,r>0?r:0);
+			SetFloatValue(UNIT_FIELD_MAXDAMAGE,r>0?r:0);
 
 			return;
 		}
