@@ -61,6 +61,8 @@ SMT_RESIST_DISPEL - check if it is used
 - some say that proc spells are not removed after they proc from items and taking items off you. Is this the same unexistatn bug as with talent unlearning ?
 - shadow trance is not removed by first shadow bolt
 - feign death kills player if it expires
+- warlock spell 35696 is procing all the time. Why ?
+- warlock pyroclasm procs on self - why ?
 
 ==========================================================================
 Zack - test my shit :
@@ -127,16 +129,11 @@ Zack - test my shit :
 - mage spellsteal 30449 should steal only 1 spell 
 - check when dismissing pet if auras are removed too
 - warlock: Improved Enslave Demon 18822
-- warlock: Demonic Knowledge 35693
-- warlock: Pyroclasm 18096
 - warlock: Master Conjuror 18768 - should work
 - warlock - Seed of Corruption 27243 - might not be perfect in all cases
 - warlock - Improved Drain Soul 18372
 - warlock - Unstable Affliction 30405
 - warlock - Improved Healthstone 18693 ->check for conjured items when traded
-- warlock - Demonic Sacrifice 18788
-- warlock - Cataclysm 17782
-- warlock - Intensity 18136
 
 ==========================================================================
 Capt - test my shit :

@@ -486,13 +486,18 @@ void Pet::LoadFromDB(Player* owner, PlayerPet * pi)
 		ApplyStatsForLevel();
 	}
 	
+	//Zack : moved these before casting self talents
 	// Nuke auras
-	for(uint32 x = UNIT_FIELD_AURA_01; x <= UNIT_FIELD_AURA_55; x++)
-		SetUInt32Value(x, 0);
+//	for(uint32 x = UNIT_FIELD_AURA_01; x <= UNIT_FIELD_AURA_55; x++)
+//		SetUInt32Value(x, 0);
 }
 
 void Pet::OnPushToWorld()
 {
+	// Nuke auras
+	for(uint32 x = UNIT_FIELD_AURA_01; x <= UNIT_FIELD_AURA_55; x++)
+		SetUInt32Value(x, 0);
+
 	//before we initialize pet spells so we can apply spell mods on them 
 	if( m_Owner && m_Owner->IsPlayer() )
 		static_cast<Player*>( m_Owner )->EventSummonPet( this );
@@ -556,6 +561,7 @@ void Pet::InitializeMe(bool first)
 	}
 
 	InitializeSpells(); 
+
 	PushToWorld(m_Owner->GetMapMgr());
 
 	if(first)

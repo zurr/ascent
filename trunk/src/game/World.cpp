@@ -1488,10 +1488,7 @@ bool World::SetInitialWorldSettings()
 				sp->procChance = itr->first;
 		}
 
-		// warlock - intensity
-		if( namehash == SPELL_HASH_INTENSITY)
-			sp->EffectSpellGroupRelation[0] |= 4 | 1 | 64 | 256 | 32 | 128 | 512; //destruction spell
-		else if(
+		if(
 			((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (sp->AttributesEx & ATTRIBUTESEX_DELAY_SOME_TRIGGERS)) //rogue cold blood
 			|| ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC))
 			)
@@ -1559,27 +1556,55 @@ bool World::SetInitialWorldSettings()
     sp = dbcSpell.LookupEntryForced( 35691 );
     if( sp != NULL )
 	{
-        sp->EffectApplyAuraName[0] = 42;
-        sp->EffectTriggerSpell[0] = 39576;
+        sp->EffectApplyAuraName[0] = 13;
+		sp->EffectImplicitTargetA[0]=EFF_TARGET_SELF;
+        sp->Effect[1] = 6;
+        sp->EffectApplyAuraName[1] = 13;
+        sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
+		sp->EffectImplicitTargetA[1]=EFF_TARGET_PET;
+        sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
+        sp->EffectTriggerSpell[2] = 35696;
+		sp->EffectImplicitTargetA[2]=EFF_TARGET_PET;
         sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = dbcSpell.LookupEntryForced( 35692 );
     if( sp != NULL )
 	{
-        sp->EffectApplyAuraName[0] = 42;
-        sp->EffectTriggerSpell[0] = 39576;
+        sp->EffectApplyAuraName[0] = 13;
+		sp->EffectImplicitTargetA[0]=EFF_TARGET_SELF;
+        sp->Effect[1] = 6;
+        sp->EffectApplyAuraName[1] = 13;
+        sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
+		sp->EffectImplicitTargetA[1]=EFF_TARGET_PET;
+        sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
+        sp->EffectTriggerSpell[2] = 35696;
+		sp->EffectImplicitTargetA[2]=EFF_TARGET_PET;
         sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = dbcSpell.LookupEntryForced( 35693 );
     if( sp != NULL )
 	{
-        sp->EffectApplyAuraName[0] = 42;
-        sp->EffectTriggerSpell[0] = 39576;
+        sp->EffectApplyAuraName[0] = 13;
+		sp->EffectImplicitTargetA[0]=EFF_TARGET_SELF;
+        sp->Effect[1] = 6;
+        sp->EffectApplyAuraName[1] = 13;
+        sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
+		sp->EffectImplicitTargetA[1]=EFF_TARGET_PET;
+        sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
+        sp->EffectTriggerSpell[2] = 35696;
+		sp->EffectImplicitTargetA[2]=EFF_TARGET_PET;
         sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
+    sp = dbcSpell.LookupEntryForced( 35696 );
+    if( sp != NULL )
+	{
+        sp->Effect[0] = 6; //making this only for the visible effect
+        sp->EffectApplyAuraName[0] = 4; //no effect here
+		sp->EffectImplicitTargetA[0]=EFF_TARGET_PET;
+	}
 
     //Priest - Holy Nova
     sp = dbcSpell.LookupEntry( 15237 );
@@ -4225,10 +4250,7 @@ bool World::SetInitialWorldSettings()
 	}
 	sp = dbcSpell.LookupEntryForced( 28682 );
 	if( sp != NULL )
-	{
 		sp->EffectSpellGroupRelation[0] = 8388608 | 16 | 2 | 4 | 4194304 | 1;
-		sp->NameHash = SPELL_HASH_COMBUSTION_PROC;
-	}
 
 	//mage - Empowered Fireball
 	sp = dbcSpell.LookupEntryForced( 31656 );
@@ -4522,16 +4544,22 @@ bool World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation[0] = 2 | 8 | 32768 | 2147483648UL | 1024 | 16384 | 262144 | 16 | 524288 | 4194304;
 
 	//warlock - Demonic Sacrifice
-	sp = dbcSpell.LookupEntryForced( 18788 );
-	if( sp != NULL )
-	{
-		sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-		sp->EffectTriggerSpell[1] = 18789;
-		sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
-	}
-	sp = dbcSpell.LookupEntryForced( 18788 );
+	sp = dbcSpell.LookupEntryForced( 18789 );
 	if( sp != NULL )
 		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+	sp = dbcSpell.LookupEntryForced( 18790 );
+	if( sp != NULL )
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+	sp = dbcSpell.LookupEntryForced( 18791 );
+	if( sp != NULL )
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+	sp = dbcSpell.LookupEntryForced( 18792 );
+	if( sp != NULL )
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+	sp = dbcSpell.LookupEntryForced( 35701 );
+	if( sp != NULL )
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+	
 
 	//warlock - Improved Imp
 	sp = dbcSpell.LookupEntryForced( 18694 );
@@ -5489,12 +5517,6 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF;
 		sp->EffectTriggerSpell[0] = sp->EffectTriggerSpell[1];
 	}
-	sp = dbcSpell.LookupEntryForced( 30031 );
-	if( sp != NULL )
-		sp->NameHash = SPELL_HASH_RAMPAGE_PROC;
-	sp = dbcSpell.LookupEntryForced( 30032 );
-	if( sp != NULL )
-		sp->NameHash = SPELL_HASH_RAMPAGE_PROC;
 
 	//warrior - Unbridled Wrath
 	sp = dbcSpell.LookupEntryForced( 12322 );

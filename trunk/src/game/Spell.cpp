@@ -2208,6 +2208,14 @@ bool Spell::HasPower()
 	{
 		SM_FIValue(u_caster->SM_FCost,&cost,m_spellInfo->SpellGroupType);
 		SM_PIValue(u_caster->SM_PCost,&cost,m_spellInfo->SpellGroupType);
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+		int32 spell_flat_modifers=0;
+		int32 spell_pct_modifers=1;
+		SM_FIValue(u_caster->SM_FCost,&spell_flat_modifers,m_spellInfo->SpellGroupType);
+		SM_PIValue(u_caster->SM_PCost,&spell_pct_modifers,m_spellInfo->SpellGroupType);
+		if(spell_flat_modifers!=0 || spell_pct_modifers!=0)
+			printf("!!!!!spell cost mod flat %f , spell cost mod pct %f , spell cost %f, spell group %u\n",spell_flat_modifers,spell_pct_modifers,cost,m_spellInfo->SpellGroupType);
+#endif
 	}
 
 	if (cost <=0)
