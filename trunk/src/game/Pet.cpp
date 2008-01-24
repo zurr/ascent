@@ -1682,14 +1682,17 @@ void Pet::HandleAutoCastEvent(uint32 Type)
 		return;
 	}
 
-	for( list<AI_Spell*>::iterator itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end(); ++itr )
+	for( list<AI_Spell*>::iterator itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end(); )
 	{
-		if( (*itr)->spelltargetType == TTYPE_OWNER )
-			CastSpell( m_Owner, (*itr)->spell, false );
+		AI_Spell * sp;
+		++itr;
+
+		if( sp->spelltargetType == TTYPE_OWNER )
+			CastSpell( m_Owner, sp->spell, false );
 		else
 		{
 			//modified by Zack: Spell targetting will be generated in the castspell function now.You cannot force to target self all the time
-			CastSpell( static_cast< Unit* >( NULL ), (*itr)->spell, false);
+			CastSpell( static_cast< Unit* >( NULL ), sp->spell, false);
 		}
 	}
 }

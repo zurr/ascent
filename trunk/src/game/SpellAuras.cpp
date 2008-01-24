@@ -1653,7 +1653,7 @@ void Aura::SpellAuraDummy(bool apply)
 	case 24125:
 	case 21171:
 		{
-			if(!apply && m_target->GetTypeId() == TYPEID_PLAYER && m_target->IsInWorld())
+			/*if(!apply && m_target->GetTypeId() == TYPEID_PLAYER && m_target->IsInWorld())
 			{
 				// reset players vision
 				Player * plr = static_cast<Player*>(m_target);
@@ -1666,7 +1666,7 @@ void Aura::SpellAuraDummy(bool apply)
 					farsight->RemoveFromWorld(false,true);
 					delete farsight;
 				}
-			}
+			}*/
 		}break;
 	case 33763: // LifeBloom
 		 {

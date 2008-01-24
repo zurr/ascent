@@ -1688,9 +1688,13 @@ void Spell::finish()
 		}
 		if(m_Delayed)
 		{
-			Unit *pTarget = p_caster->GetMapMgr()->GetUnit(m_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
-			if(!pTarget)
-				pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
+			Unit *pTarget = NULL;
+			if( p_caster->IsInWorld() )
+			{
+				pTarget = p_caster->GetMapMgr()->GetUnit(m_caster->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT));
+				if(!pTarget)
+					pTarget = p_caster->GetMapMgr()->GetUnit(p_caster->GetSelection());
+			}
 			   
 			if(pTarget)
 			{

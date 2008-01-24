@@ -4642,6 +4642,9 @@ void Unit::EventSummonPetExpire()
 
 void Unit::CastSpell(Unit* Target, SpellEntry* Sp, bool triggered)
 {
+	if( Sp == NULL )
+		return;
+
 	Spell *newSpell = new Spell(this, Sp, triggered, 0);
 	SpellCastTargets targets(0);
 	if(Target)
@@ -4666,6 +4669,9 @@ void Unit::CastSpell(Unit* Target, uint32 SpellID, bool triggered)
 
 void Unit::CastSpell(uint64 targetGuid, SpellEntry* Sp, bool triggered)
 {
+	if( Sp == NULL )
+		return;
+
 	SpellCastTargets targets(targetGuid);
 	Spell *newSpell = new Spell(this, Sp, triggered, 0);
 	newSpell->prepare(&targets);
@@ -4680,6 +4686,9 @@ void Unit::CastSpell(uint64 targetGuid, uint32 SpellID, bool triggered)
 }
 void Unit::CastSpellAoF(float x,float y,float z,SpellEntry* Sp, bool triggered)
 {
+	if( Sp == NULL )
+		return;
+
 	SpellCastTargets targets;
 	targets.m_destX = x;
 	targets.m_destY = y;
