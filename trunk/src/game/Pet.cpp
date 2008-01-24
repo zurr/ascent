@@ -1684,7 +1684,7 @@ void Pet::HandleAutoCastEvent(uint32 Type)
 
 	for( list<AI_Spell*>::iterator itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end(); )
 	{
-		AI_Spell * sp;
+		AI_Spell * sp = *itr;
 		++itr;
 
 		if( sp->spelltargetType == TTYPE_OWNER )
