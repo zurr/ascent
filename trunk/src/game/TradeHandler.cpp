@@ -230,14 +230,23 @@ void WorldSession::HandleSetTradeItem(WorldPacket & recv_data)
 	uint8 SourceSlot = recv_data.contents()[2];
 
 	Item * pItem = _player->GetItemInterface()->GetInventoryItem(SourceBag, SourceSlot);
-	if(pItem == 0 || TradeSlot > 6 || (TradeSlot < 6 && pItem->IsSoulbound()) )
+	if(pItem == 0 || TradeSlot > 6)
 		return;
+
+	if(TradeSlot < 6 && pItem->IsSoulbound())
+	{
+		Disconnect();
+		return;
+	}
 
 	for(uint32 i = 0; i < 8; ++i)
 	{
 		// duping little shits
 		if(_player->mTradeItems[i] == pItem)
+		{
+			Disconnect();
 			return;
+		}
 	}
 
 	_player->mTradeItems[TradeSlot] = pItem;
