@@ -7946,7 +7946,20 @@ void Player::CompleteLoading()
 		if ( sp->c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET )
 			continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
-		Aura * a = new Aura(sp,(*i).dur,this,this);
+		Aura * a;
+		if(sp->Id == 8326 || sp->Id == 9036 || sp->Id == 20584 || sp->Id == 150007)		// death auras
+		{
+			if(!isDead())
+				continue;
+
+			a = new Aura(sp,(*i).dur,this,this);
+			a->SetNegative();
+		}
+		else
+		{
+			a = new Aura(sp,(*i).dur,this,this);
+		}
+		
 
 		for(uint32 x =0;x<3;x++)
         {
@@ -7956,8 +7969,6 @@ void Player::CompleteLoading()
 		    }
         }
 
-		if(a->GetSpellId() == 8326 || a->GetSpellId() == 9036 || a->GetSpellId() == 20584 || a->GetSpellId() == 150007)		// death auras
-			a->SetNegative();
 
 		this->AddAura(a);		//FIXME: must save amt,pos/neg
 		//Somehow we should restore number of appearence. Right now i have no idea how :(
