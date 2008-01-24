@@ -519,8 +519,10 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 				t->RemoveMember(inf);
 		}
 		
-		if( _socket != NULL )
-			sPlrLog.write("Account: %s | IP: %s >> Deleted player %s", GetAccountName().c_str(), GetSocket()->GetRemoteIP().c_str(), name.c_str());
+		/*if( _socket != NULL )
+			sPlrLog.write("Account: %s | IP: %s >> Deleted player %s", GetAccountName().c_str(), GetSocket()->GetRemoteIP().c_str(), name.c_str());*/
+		
+		sPlrLog.writefromsession(this, "deleted character %s (GUID: %u)", name.c_str(), (uint32)guid);
 
 		sSocialMgr.RemovePlayer((uint32)guid);
 
@@ -605,6 +607,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket & recv_data)
 
 	// correct capitalization
 	CapitalizeString(name);
+
+	sPlrLog.writefromsession(this, "a rename was pending. renamed character %s (GUID: %u) to %s.", pi->name, pi->guid, name.c_str());
 
 	// If we're here, the name is okay.
 	free(pi->name);
@@ -1006,5 +1010,7 @@ bool ChatHandler::HandleRenameCommand(const char * args, WorldSession * m_sessio
 	}
 
 	GreenSystemMessage(m_session, "Changed name of '%s' to '%s'.", name1, name2);
+	sGMLog.writefromsession(m_session, "renamed character %s (GUID: %u) to %s", name1, pi->guid, name2);
+	sPlrLog.writefromsession(m_session, "GM renamed character %s (GUID: %u) to %s", name1, pi->guid, name2);
 	return true;
 }

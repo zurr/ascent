@@ -334,33 +334,38 @@ Item *ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int8 
 		}
 
 		m_pItems[(int)slot] = NULL;
-		pItem->m_isDirty = true;
-
-		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (slot*2), 0 );
-
-		if ( slot < EQUIPMENT_SLOT_END )
+		if(pItem->GetOwner() == m_pOwner)
 		{
-			m_pOwner->ApplyItemMods( pItem, slot, false );
-			int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * 16);
-			for (int i = VisibleBase; i < VisibleBase + 12; ++i)
+			pItem->m_isDirty = true;
+
+			m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (slot*2), 0 );
+
+			if ( slot < EQUIPMENT_SLOT_END )
 			{
-				m_pOwner->SetUInt32Value(i, 0);
+				m_pOwner->ApplyItemMods( pItem, slot, false );
+				int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * 16);
+				for (int i = VisibleBase; i < VisibleBase + 12; ++i)
+				{
+					m_pOwner->SetUInt32Value(i, 0);
+				}
+			}
+			else if ( slot < INVENTORY_SLOT_BAG_END )
+				m_pOwner->ApplyItemMods( pItem, slot, false );
+
+			if(slot == EQUIPMENT_SLOT_OFFHAND)
+				m_pOwner->SetDuelWield(false);
+
+			if(destroy)
+			{
+				if (pItem->IsInWorld())
+				{
+					pItem->RemoveFromWorld();
+				}
+				pItem->DeleteFromDB();
 			}
 		}
-		else if ( slot < INVENTORY_SLOT_BAG_END )
-			m_pOwner->ApplyItemMods( pItem, slot, false );
-
-		if(slot == EQUIPMENT_SLOT_OFFHAND)
-			m_pOwner->SetDuelWield(false);
-
-		if(destroy)
-		{
-			if (pItem->IsInWorld())
-			{
-				pItem->RemoveFromWorld();
-			}
-			pItem->DeleteFromDB();
-		}
+		else
+			pItem = NULL;
 	}
 	else
 	{
@@ -491,32 +496,36 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int8 slot)
 		}
 
 		m_pItems[(int)slot] = NULL;
-		pItem->m_isDirty = true;
-
-		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (slot*2), 0 );
-
-		if ( slot < EQUIPMENT_SLOT_END )
+		// hacky crashfix
+		if( pItem->GetOwner() == m_pOwner )
 		{
-			m_pOwner->ApplyItemMods(pItem, slot, false );
-			int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * 16);
-			for (int i = VisibleBase; i < VisibleBase + 12; ++i)
+			pItem->m_isDirty = true;
+
+			m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (slot*2), 0 );
+
+			if ( slot < EQUIPMENT_SLOT_END )
 			{
-				m_pOwner->SetUInt32Value(i, 0);
+				m_pOwner->ApplyItemMods(pItem, slot, false );
+				int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * 16);
+				for (int i = VisibleBase; i < VisibleBase + 12; ++i)
+				{
+					m_pOwner->SetUInt32Value(i, 0);
+				}
 			}
+			else if( slot < INVENTORY_SLOT_BAG_END )
+				m_pOwner->ApplyItemMods(pItem, slot, false ); //watch containers that give attackspeed and stuff ;)
+
+			if(slot == EQUIPMENT_SLOT_OFFHAND)
+				m_pOwner->SetDuelWield(false);
+
+			if (pItem->IsInWorld())
+			{
+				pItem->RemoveFromWorld();
+			}
+
+			pItem->DeleteFromDB();
+			delete pItem;
 		}
-		else if( slot < INVENTORY_SLOT_BAG_END )
-			m_pOwner->ApplyItemMods(pItem, slot, false ); //watch containers that give attackspeed and stuff ;)
-
-		if(slot == EQUIPMENT_SLOT_OFFHAND)
-			m_pOwner->SetDuelWield(false);
-
-		if (pItem->IsInWorld())
-		{
-			pItem->RemoveFromWorld();
-		}
-
-		pItem->DeleteFromDB();
-		delete pItem;
 	}
 	else
 	{

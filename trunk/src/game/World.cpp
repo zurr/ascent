@@ -7443,6 +7443,18 @@ void World::Rehash(bool load)
 		if(log_enabled)
 			GMCommand_Log->Open();
 
+	log_enabled = Config.MainConfig.GetBoolDefault("Log", "Player", false);
+	if(Player_Log->IsOpen())
+	{
+		if(!log_enabled)
+			Player_Log->Close();
+	}
+	else
+	{
+		if(log_enabled)
+			Player_Log->Open();
+	}
+
 #ifdef WIN32
 	DWORD current_priority_class = GetPriorityClass( GetCurrentProcess() );
 	bool high = Config.MainConfig.GetBoolDefault( "Server", "AdjustPriority", false );

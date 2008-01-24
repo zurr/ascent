@@ -2229,6 +2229,7 @@ bool ChatHandler::HandleForceRenameCommand(const char * args, WorldSession * m_s
 
 	CharacterDatabase.Execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.EscapeString(string(pi->name)).c_str());
 	GreenSystemMessage(m_session, "Forcing %s to rename his character next logon.", args);
+	sGMLog.writefromsession(m_session, "forced %s to rename his charater (%u)", pi->name, pi->guid);
 	return true;
 }
 
