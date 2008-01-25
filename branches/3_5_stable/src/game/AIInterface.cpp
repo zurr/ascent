@@ -141,10 +141,6 @@ AIInterface::~AIInterface()
 	for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
 		if((*itr)->custom_pointer)
 			delete (*itr);
-#ifdef COLLISION_CRAP
-	for(list<LocationVector*>::iterator itr = AttackWaypoints.begin(); itr != AttackWaypoints.end(); ++itr)
-		delete (*itr);
-#endif
 }
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt, Unit *owner)
@@ -1712,67 +1708,10 @@ void AIInterface::_CalcDestinationAndMove(Unit *target, float dist)
 		float ResY = target->GetPositionY();
 		float ResZ = target->GetPositionZ();
 
-#ifdef COLLISION_CRAP	
-		uint32 mapid = m_Unit->GetMapId();
-		LocationVector* v2add = new LocationVector(ResX,ResY,ResZ);
-
-		bool los = CollideInterface.CheckLOS(mapid,m_Unit->GetPositionNC(),target->GetPositionNC());
-		if (los)
-		{
-			AttackWaypoints.clear();
-			AttackWaypoints.push_back(v2add);
-		//	printf("Pushed: %f %f \n",v2add->x,v2add->y);
-		}
-		else
-		{
-			int32 i=0;
-			int32 index=-1;
-			//printf("\n===============\n");
-			for (list<LocationVector*>::iterator itr = AttackWaypoints.begin();itr!=AttackWaypoints.end();++itr)
-			{
-				LocationVector* cur = *itr;
-				if (CollideInterface.CheckLOS(mapid,m_Unit->GetPositionNC(),*cur))
-					index=i;
-				++i;
-			//	printf("List: %f %f \n",cur->x,cur->y);
-			}
-			//printf("===============\n");
-			//printf("Index: %d\n",index);
-
-			for (int32 x =0;x<index;x++)
-			{
-				if (AttackWaypoints.size()>0)
-				{
-					//printf(" deletion ");
-					AttackWaypoints.erase(AttackWaypoints.begin());
-				}
-			}
-
-			LocationVector* Res = v2add;
-			if (AttackWaypoints.size()>0)
-			{
-/*				LocationVector* Last = AttackWaypoints.back();
-				if (!CollideInterface.CheckLOS(mapid,*Last,target->GetPositionNC()))
-					AttackWaypoints.push_back(WaypointLOS);
-				*/
-
-				Res = *AttackWaypoints.begin();
-				//printf("Res: %f %f\n",Res->x,Res->y);
-			}
-
-			ResX = Res->x;
-			ResY = Res->y;
-		}
-		WaypointLOS = v2add;
-#endif
-
 		float angle = m_Unit->calcAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), ResX, ResY) * float(M_PI) / 180.0f;
 		float x = dist * cosf(angle);
 		float y = dist * sinf(angle);
 
-#ifdef COLLISION_CRAP
-		if (los)
-#endif
 		if(target->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >( target )->m_isMoving )
 		{
 			// cater for moving player vector based on orientation
