@@ -684,7 +684,6 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 		{
 			printf("HandleAutoEquip: Error while adding item to Slot");
 		}
-		
 	}
 
 	if(eitem->GetProto()->Bonding==ITEM_BIND_ON_EQUIP)
