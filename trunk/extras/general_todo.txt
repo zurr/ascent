@@ -133,18 +133,6 @@ Zack - test my shit :
 - warlock - Unstable Affliction 30405
 - warlock - Improved Healthstone 18693 ->check for conjured items when traded
 
-CREATE TABLE IF NOT EXISTS `creature_timed_emotes` (
-  `spawnid` int(10) unsigned NOT NULL DEFAULT '' ,
-  `type` tinyint(1) unsigned NOT NULL DEFAULT '1' ,
-  `value` int(10) unsigned NOT NULL DEFAULT '0' ,
-  `msg` text NOT NULL DEFAULT '' ,
-  `msg_type` int(10) unsigned NOT NULL DEFAULT '0' ,
-  `msg_lang` int(10) unsigned NOT NULL DEFAULT '0' ,
-  `expire_after` int(10) unsigned NOT NULL DEFAULT '0' ,
-  PRIMARY KEY (`spawnid`),
-   KEY spawnid (`spawnid`)
-);
-
 ==========================================================================
 Capt - test my shit :
 

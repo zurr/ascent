@@ -625,10 +625,9 @@ struct WayPoint
 
 };
 
-//#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 struct spawn_timed_emotes
 {
-	uint8		type; //1 standstate, 2 emotestate
+	uint8		type; //1 standstate, 2 emotestate, 3 emoteoneshot
 	uint32		value; //get yar list elsewhere
 	char		*msg; //maybe we wish to say smething while changing emote state
 	uint8		msg_type; //yell ? say ?

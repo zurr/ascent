@@ -466,9 +466,7 @@ bool World::SetInitialWorldSettings()
 	tl.wait();
 
 	MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 	MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);
-#endif
 	MAKE_TASK(ObjectMgr, LoadTrainers);
 	MAKE_TASK(ObjectMgr, LoadTotemSpells);
 	MAKE_TASK(ObjectMgr, LoadSpellSkills);

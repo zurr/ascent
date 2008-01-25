@@ -21,8 +21,6 @@
 #define _OBJECTMGR_H
 #include "../shared/Threading/RWLock.h"
 
-//#define COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-
 ASCENT_INLINE bool FindXinYString(std::string& x, std::string& y)
 {
 	return y.find(x) != std::string::npos;
@@ -279,10 +277,8 @@ public:
 	ObjectMgr();
 	~ObjectMgr();
 	void LoadCreatureWaypoints();
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 	void LoadCreatureTimedEmotes();
 	TimedEmoteList * GetTimedEmoteList(uint32 spawnid);
-#endif
 
 	// other objects
     
@@ -566,9 +562,8 @@ protected:
 	HM_NAMESPACE::hash_map<uint32,PlayerInfo*> m_playersinfo;
 	
 	HM_NAMESPACE::hash_map<uint32,WayPointMap*> m_waypoints;//stored by spawnid
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 	HM_NAMESPACE::hash_map<uint32,TimedEmoteList*> m_timedemotes;//stored by spawnid
-#endif
+
 	uint32 m_hiCreatureSpawnId;
 	
 	Mutex m_CreatureSpawnIdMutex;

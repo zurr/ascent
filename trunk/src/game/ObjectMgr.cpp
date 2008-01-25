@@ -102,7 +102,6 @@ ObjectMgr::~ObjectMgr()
 		delete i->second;
 	}
 
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 	Log.Notice("ObjectMgr", "Deleting timed emote Cache...");
 	for(HM_NAMESPACE::hash_map<uint32, TimedEmoteList*>::iterator i = m_timedemotes.begin(); i != m_timedemotes.end(); ++i)
 	{
@@ -115,7 +114,6 @@ ObjectMgr::~ObjectMgr()
 
 		delete i->second;
 	}
-#endif
 
 	Log.Notice("ObjectMgr", "Deleting NPC Say Texts...");
 	for(uint32 i = 0 ; i < NUM_MONSTER_SAY_EVENTS ; ++i)
@@ -1892,28 +1890,28 @@ void ObjectMgr::SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_)
 	mVendors[Entry] = list_;
 }
 
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 void ObjectMgr::LoadCreatureTimedEmotes()
 {
-	QueryResult *result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes");
+	QueryResult *result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes order by `rowid` asc");
 	if(!result)return;
 
 	do
 	{
 		Field *fields = result->Fetch();
 		spawn_timed_emotes* te = new spawn_timed_emotes;
-		te->type = fields[1].GetUInt8();
-		te->value = fields[2].GetUInt32();
-		if ( fields[3].GetString() )
+		te->type = fields[2].GetUInt8();
+		te->value = fields[3].GetUInt32();
+		char *str = ( char* ) fields[4].GetString();
+		if ( str )
 		{
-			uint32 len = ( int ) strlen ( fields[3].GetString() ) ;
-			te->msg = new char[ len ];
-			memcpy ( te->msg, fields[3].GetString(), len );
+			uint32 len = ( int ) strlen ( str ) ;
+			te->msg = new char[ len+1 ];
+			memcpy ( te->msg, str, len+1 );
 		}
 		else te->msg = NULL;
-		te->msg_type = fields[4].GetUInt32();
-		te->msg_lang = fields[5].GetUInt32();
-		te->expire_after = fields[6].GetUInt32();
+		te->msg_type = fields[5].GetUInt32();
+		te->msg_lang = fields[6].GetUInt32();
+		te->expire_after = fields[7].GetUInt32();
 
 		HM_NAMESPACE::hash_map<uint32,TimedEmoteList*>::const_iterator i;
 		uint32 spawnid=fields[0].GetUInt32();
@@ -1944,8 +1942,6 @@ TimedEmoteList*ObjectMgr::GetTimedEmoteList(uint32 spawnid)
 	}
 	else return NULL;
 }
-
-#endif
 
 void ObjectMgr::LoadCreatureWaypoints()
 {

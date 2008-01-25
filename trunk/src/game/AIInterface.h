@@ -417,12 +417,9 @@ public:
 	void setGuardTimer(uint32 timer) { m_guardTimer = timer; }
 	virtual void _UpdateCombat(uint32 p_time);
 
-//#define COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 	TimedEmoteList								*timed_emotes;
 	std::list<spawn_timed_emotes*>::iterator	next_timed_emote;
 	uint32										timed_emote_expire;
-#endif
 
 protected:
 	bool m_AllowedToEnterCombat;

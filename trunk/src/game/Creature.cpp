@@ -936,9 +936,7 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	m_spawnLocation.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
 	m_aiInterface->setMoveType(spawn->movetype);	
 	m_aiInterface->m_waypoints = objmgr.GetWayPointMap(spawn->id);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
 	m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
-#endif
 	m_faction = dbcFactionTemplate.LookupEntry(spawn->factionid);
 	if(m_faction)
 	{
