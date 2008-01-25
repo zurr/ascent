@@ -1,5 +1,4 @@
 #include <AscentConfig.h>
-//#define HOARD
 /* -*- C++ -*- */
 
 /*

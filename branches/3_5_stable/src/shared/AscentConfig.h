@@ -68,7 +68,7 @@
  */
 //#define USE_MEMORY_MAPPING_FOR_MAPS
 
-#define HOARD
+//#define HOARD
 
 #endif		// __ASCENTCONFIG_H
 
