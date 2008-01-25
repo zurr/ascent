@@ -1,0 +1,19 @@
+Improved Scorch (talent) - not stacking on target
+
+Problems not related with only one spell/talent:
+- Problem with multiple mages in one group: if a mage cast fireball for example on a mob, if i cast a lower rank of fireball it says that a another more powerfull spell effect is active...this should work on buffs like Arcane Intellect not casting damage spells
+
+TALENTS
+--ARC--
+arcane potency: not working - this is a proc on proc or add effect to spell
+--FIRE--
+Master of Elements: still disabled, haven't tried it -> what is the problem with it ? Should work
+Imp fire ward: not working for me, tho similar frost talents works
+Molten Fury: doesn't work
+
+Combustion: http://www.wowwiki.com/Combustion
+The buff isn't removed by 3 fire critical strikes as it should, and this way it could be stacked to 10 charges, making every mage fire spell a critical hit until the mage dies or the effect is removed via right click (or some actually working dispell spell).
+
+Cone of Cold is never applying any damage, only debufs.
+When summoning your water elemental, Winter's Chill is applied to the player himself/herself.
+Ritual of Refreshment mage spell does not work, the spell casts but when players of the party right click the bubble they get no items out of it.
