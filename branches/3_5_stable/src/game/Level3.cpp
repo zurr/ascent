@@ -355,6 +355,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession *m_se
 	// rather than just sscanf'ing it.
 	char * pCharacter = (char*)args;
 	char * pBanDuration = strchr(pCharacter, ' ');
+	PlayerInfo * pInfo = NULL;
 	if(pBanDuration == NULL)
 		return false;
 
@@ -376,7 +377,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession *m_se
 	if(pPlayer == NULL)
 	{
 		string sCharacter = string(pCharacter);
-		PlayerInfo * pInfo = objmgr.GetPlayerInfoByName(sCharacter);
+		pInfo = objmgr.GetPlayerInfoByName(sCharacter);
 		if(pInfo == NULL)
 		{
 			SystemMessage(m_session, "Player not found.");
@@ -395,6 +396,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession *m_se
 		string sReason = string(pReason);
 		uint32 uBanTime = BanTime ? BanTime+(uint32)UNIXTIME : 1;
 		pPlayer->SetBanned(uBanTime, sReason);
+		pInfo = pPlayer->m_playerInfo;
 	}
 
 	SystemMessage(m_session, "This ban is due to expire %s%s.", BanTime ? "on " : "", BanTime ? ConvertTimeStampToDataTime(BanTime+(uint32)UNIXTIME).c_str() : "Never");
@@ -405,6 +407,11 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession *m_se
 	}
 
 	sGMLog.writefromsession(m_session, "used ban character on %s reason %s for %s", pCharacter, pReason, BanTime ? ConvertTimeStampToString(BanTime).c_str() : "ever");
+	if( sWorld.m_banTable && pInfo )
+	{
+		CharacterDatabase.Execute("INSERT INTO %s VALUES('%s', '%s', %u, %u, '%s')", 
+			m_session->GetPlayer()->GetName(), pInfo->name, (uint32)UNIXTIME, (uint32)UNIXTIME + BanTime, CharacterDatabase.EscapeString(string(pReason)).c_str() );
+	}
 	return true;
 }
 

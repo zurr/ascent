@@ -52,6 +52,7 @@ World::World()
 	m_levelCap=70;
 	m_genLevelCap=70;
 	m_limitedNames=false;
+	m_banTable = NULL;
 }
 
 void CleanupRandomNumberGenerators();
@@ -7538,6 +7539,15 @@ void World::Rehash(bool load)
 	m_genLevelCap = Config.MainConfig.GetIntDefault("Server", "GenLevelCap", 70);
 	m_limitedNames = Config.MainConfig.GetBoolDefault("Server", "LimitedNames", true);
 	m_useAccountData = Config.MainConfig.GetBoolDefault("Server", "UseAccountData", false);
+
+	if( m_banTable != NULL )
+		free( m_banTable );
+
+	m_banTable = NULL;
+	string s = Config.MainConfig.GetStringDefault( "Server", "BanTable", "" );
+	if( !s.empty() )
+		m_banTable = strdup( s.c_str() );
+
 	if( load )
 		Channel::LoadConfSettings();
 }
