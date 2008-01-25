@@ -51,7 +51,7 @@
 #ifdef ENABLE_COLLISION
 # define COLLISION 1
 #endif
-#define COLLISION 1
+//#define COLLISION 1
 
 /** Enable instance checkpoint system
  * This is not blizzlike, but a cool feature :p
