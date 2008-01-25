@@ -192,7 +192,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 	item->m_isDirty = true;
 
 	// doublechecking
-	/*uint32 i, j, k;
+	uint32 i, j, k;
 	Item * tempitem;
 	for(i = 0; i < MAX_INVENTORY_SLOT; ++i)
 	{
@@ -224,7 +224,7 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 				}
 			}
 		}
-	}*/
+	}
 
 	if(item->GetProto())
 	{
