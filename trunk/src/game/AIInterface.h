@@ -276,6 +276,7 @@ public:
 	bool HealReaction(Unit* caster, Unit* victim, uint32 amount);
 	void Event_Summon_EE_totem(uint32 summon_duration);
 	void Event_Summon_FE_totem(uint32 summon_duration);
+	void EventAiInterfaceParamsetFinish();
 
 	// Update
 	void Update(uint32 p_time);
@@ -415,6 +416,13 @@ public:
 //	bool m_fastMove;
 	void setGuardTimer(uint32 timer) { m_guardTimer = timer; }
 	virtual void _UpdateCombat(uint32 p_time);
+
+//#define COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+	TimedEmoteList								*timed_emotes;
+	std::list<spawn_timed_emotes*>::iterator	next_timed_emote;
+	uint32										timed_emote_expire;
+#endif
 
 protected:
 	bool m_AllowedToEnterCombat;

@@ -936,7 +936,9 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 	m_spawnLocation.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
 	m_aiInterface->setMoveType(spawn->movetype);	
 	m_aiInterface->m_waypoints = objmgr.GetWayPointMap(spawn->id);
-
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+	m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
+#endif
 	m_faction = dbcFactionTemplate.LookupEntry(spawn->factionid);
 	if(m_faction)
 	{
@@ -968,7 +970,6 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 		auctionHouse = sAuctionMgr.GetAuctionHouse(GetEntry());
 
 //NPC FLAGS
-	 m_aiInterface->m_waypoints=objmgr.GetWayPointMap(spawn->id);
 
 	//load resistances
 	for(uint32 x=0;x<7;x++)
@@ -1067,6 +1068,9 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 		SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DEAD);
 	}
 	m_invisFlag = proto->invisibility_type;
+
+	m_aiInterface->EventAiInterfaceParamsetFinish(); //wonder if any other values are added later :S
+
 	return true;
 }
 

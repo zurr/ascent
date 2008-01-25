@@ -44,7 +44,6 @@ Spells:
 -ll-
 
 Talents:
-Combustion -> I really have to write what's problem with combustion?
 Ignite -> Last time I checked, putting one talent in it is the same as putting 5. Overpowered, test it anyway
 Improved Scorch -> Same like Ignite, putting 1 talent point is the same as putting 3 talent points. Overpowered.
 
@@ -59,3 +58,11 @@ Elemental Precision -> Reduces mana cost, not sure about target's resist.
 Frost warding -> Same like Magic Attunement, increases the armor gained from Frost Armor and Ice Armor. Not sure about reflecting spells.
 Frost Channeling -> Reduces mana cost, not sure about threat.
 Artic Winds -> Increases Frost damage. Not sure if it reduces the chance you are hit by melee or ranged attacks. test it
+
+
+Molten Armor: mobdeath by its damage keeps you in combat
+Mage Armor: doesn't keep up 30% of your mana regeneration while casting
+Ritual of Refreshment: does not work
+Arcane Concentration: does not trigger
+Master of Elements: does not refund mana
+Icy Veins: does nothing instead of reducing spell cast time by 20% and increasing chance of chill effects to freeze by 10% for 20s

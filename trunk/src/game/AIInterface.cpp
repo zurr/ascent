@@ -105,7 +105,23 @@ AIInterface::AIInterface()
 	m_isGuard = false;
 	m_is_in_instance=false;
 	skip_reset_hp=false;
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+	timed_emotes =  NULL;
+	timed_emote_expire = 0xFFFFFFFF;
+#endif
 }
+
+void AIInterface::EventAiInterfaceParamsetFinish()
+{
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+	if( timed_emotes )
+	{
+		timed_emote_expire = getMSTime();
+		next_timed_emote = timed_emotes->begin();
+	}
+#endif
+}
+
 
 void AIInterface::Init(Unit *un, AIType at, MovementType mt)
 {
@@ -539,6 +555,34 @@ void AIInterface::Update(uint32 p_time)
 		}
 		return;
 	}
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+	if ( !m_nextTarget )
+	{
+		if ( timed_emote_expire < p_time ) // note that creature might go idle and p_time might get big next time ...We do not skip emotes because of lost time
+		{
+			if ( (*next_timed_emote)->type == 1)
+			{
+				m_Unit->SetStandState( (*next_timed_emote)->value );
+				m_Unit->SetUInt32Value ( UNIT_NPC_EMOTESTATE, 0 );
+			}
+			else if ( (*next_timed_emote)->type == 2)
+			{
+				m_Unit->SetUInt32Value ( UNIT_NPC_EMOTESTATE, (*next_timed_emote)->value );
+				m_Unit->SetStandState( 0 );
+			}
+			if ( (*next_timed_emote)->msg )
+			{
+				m_Unit->SendChatMessage((*next_timed_emote)->msg_type, (*next_timed_emote)->msg_lang, (*next_timed_emote)->msg);
+			}
+
+			timed_emote_expire = getMSTime() + (*next_timed_emote)->expire_after;
+			next_timed_emote++;
+			if ( next_timed_emote == timed_emotes->end() )
+				next_timed_emote = timed_emotes->begin();
+		}
+		else timed_emote_expire -= p_time;
+	}
+#endif
 
 	_UpdateTimer(p_time);
 	_UpdateTargets();

@@ -102,6 +102,21 @@ ObjectMgr::~ObjectMgr()
 		delete i->second;
 	}
 
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+	Log.Notice("ObjectMgr", "Deleting timed emote Cache...");
+	for(HM_NAMESPACE::hash_map<uint32, TimedEmoteList*>::iterator i = m_timedemotes.begin(); i != m_timedemotes.end(); ++i)
+	{
+		for(TimedEmoteList::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
+			if((*i2))
+			{
+				delete [] (*i2)->msg;
+				delete (*i2); 
+			}
+
+		delete i->second;
+	}
+#endif
+
 	Log.Notice("ObjectMgr", "Deleting NPC Say Texts...");
 	for(uint32 i = 0 ; i < NUM_MONSTER_SAY_EVENTS ; ++i)
 	{
@@ -1877,6 +1892,60 @@ void ObjectMgr::SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_)
 	mVendors[Entry] = list_;
 }
 
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+void ObjectMgr::LoadCreatureTimedEmotes()
+{
+	QueryResult *result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes");
+	if(!result)return;
+
+	do
+	{
+		Field *fields = result->Fetch();
+		spawn_timed_emotes* te = new spawn_timed_emotes;
+		te->type = fields[1].GetUInt8();
+		te->value = fields[2].GetUInt32();
+		if ( fields[3].GetString() )
+		{
+			uint32 len = ( int ) strlen ( fields[3].GetString() ) ;
+			te->msg = new char[ len ];
+			memcpy ( te->msg, fields[3].GetString(), len );
+		}
+		else te->msg = NULL;
+		te->msg_type = fields[4].GetUInt32();
+		te->msg_lang = fields[5].GetUInt32();
+		te->expire_after = fields[6].GetUInt32();
+
+		HM_NAMESPACE::hash_map<uint32,TimedEmoteList*>::const_iterator i;
+		uint32 spawnid=fields[0].GetUInt32();
+		i=m_timedemotes.find(spawnid);
+		if(i==m_timedemotes.end())
+		{
+			TimedEmoteList* m=new TimedEmoteList;
+			m->push_back( te );
+			m_timedemotes[spawnid]=m;		
+		}else
+		{
+			i->second->push_back( te );
+		}
+	}while( result->NextRow() );
+
+	Log.Notice("ObjectMgr", "%u timed emotes cached.", result->GetRowCount());
+	delete result;
+}
+
+TimedEmoteList*ObjectMgr::GetTimedEmoteList(uint32 spawnid)
+{
+	HM_NAMESPACE::hash_map<uint32,TimedEmoteList*>::const_iterator i;
+	i=m_timedemotes.find(spawnid);
+	if(i!=m_timedemotes.end())
+	{
+		TimedEmoteList * m=i->second;
+		return m;
+	}
+	else return NULL;
+}
+
+#endif
 
 void ObjectMgr::LoadCreatureWaypoints()
 {

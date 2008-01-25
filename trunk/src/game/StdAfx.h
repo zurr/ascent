@@ -177,6 +177,9 @@ extern "C" {		// we're C++, and LUA is C, so the compiler needs to know to use C
 #include "CollideInterface.h"
 #endif
 
-//#define COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS 1
+//avoid multiple definitions
+#ifndef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS 
+//	#define COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS 1
+#endif
 
 #endif
