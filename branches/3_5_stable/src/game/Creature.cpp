@@ -1068,6 +1068,9 @@ bool Creature::Load(CreatureSpawn *spawn, uint32 mode, MapInfo *info)
 		SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DEAD);
 	}
 	m_invisFlag = proto->invisibility_type;
+	if( spawn->stand_state )
+		SetStandState( (uint8)spawn->stand_state );
+
 	return true;
 }
 

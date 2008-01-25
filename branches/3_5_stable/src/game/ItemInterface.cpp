@@ -1848,6 +1848,18 @@ void ItemInterface::BuyItem(ItemPrototype *item, uint32 total_amount, Creature *
 
 }
 
+enum CanAffordItem
+{
+	CAN_AFFORD_ITEM_ERROR_NOT_FOUND				= 0,
+	CAN_AFFORD_ITEM_ERROR_SOLD_OUT				= 1,
+	CAN_AFFORD_ITEM_ERROR_NOT_ENOUGH_MONEY		= 2,
+	CAN_AFFORD_ITEM_ERROR_DOESNT_LIKE_YOU		= 4,
+	CAN_AFFORD_ITEM_ERROR_TOO_FAR_AWAY			= 5,
+	CAN_AFFORD_ITEM_ERROR_CANT_CARRY_ANY_MORE	= 8,
+	CAN_AFFORD_ITEM_ERROR_NOT_REQUIRED_RANK		= 11,
+	CAN_AFFORD_ITEM_ERROR_REPUTATION			= 12,
+};
+
 int8 ItemInterface::CanAffordItem(ItemPrototype * item,uint32 amount, Creature * pVendor)
 {
 	if(item->ItemExtendedCost)
@@ -1860,13 +1872,13 @@ int8 ItemInterface::CanAffordItem(ItemPrototype * item,uint32 amount, Creature *
 				if(ex->item[i])
 				{
 					if(m_pOwner->GetItemInterface()->GetItemCount(ex->item[i], false) < (ex->count[i]*amount))
-						return INV_ERR_NOT_ENOUGH_MONEY;
+						return CAN_AFFORD_ITEM_ERROR_NOT_ENOUGH_MONEY;
 				}
 			}
 			if(m_pOwner->GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY) < (ex->honor*amount))
-				return INV_ERR_NOT_ENOUGH_MONEY;
+				return CAN_AFFORD_ITEM_ERROR_NOT_ENOUGH_MONEY;
 			if(m_pOwner->GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY ) < (ex->arena*amount))
-				return INV_ERR_NOT_ENOUGH_MONEY;
+				return CAN_AFFORD_ITEM_ERROR_NOT_ENOUGH_MONEY;
 		}
 		else sLog.outDebug("Warning: item %u has extended cost but could not find the value in ItemExtendedCostStore",item->ItemId);
 	}
@@ -1875,7 +1887,7 @@ int8 ItemInterface::CanAffordItem(ItemPrototype * item,uint32 amount, Creature *
 		int32 price = GetBuyPriceForItem(item, amount, m_pOwner, pVendor) * amount;
 		if((int32)m_pOwner->GetUInt32Value(PLAYER_FIELD_COINAGE) < price)
 		{
-			return INV_ERR_NOT_ENOUGH_MONEY;
+			return CAN_AFFORD_ITEM_ERROR_NOT_ENOUGH_MONEY;
 		}
 	}
 	if(item->RequiredFaction)
@@ -1888,10 +1900,10 @@ int8 ItemInterface::CanAffordItem(ItemPrototype * item,uint32 amount, Creature *
 		if(m_pOwner->reputationByListId[factdbc->RepListId] == 0 || m_pOwner->reputationByListId[factdbc->RepListId]->CalcRating()
 			< (int32)item->RequiredFactionStanding)
 		{
-			return INV_ERR_ITEM_REPUTATION_NOT_ENOUGH;
+			return CAN_AFFORD_ITEM_ERROR_REPUTATION;
 		}
 	}
-	return (int8)NULL;
+	return 0;
 }
 
 //-------------------------------------------------------------------//
