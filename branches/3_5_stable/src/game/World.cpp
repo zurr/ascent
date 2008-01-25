@@ -7181,25 +7181,6 @@ WorldSession* World::FindSessionByName(const char * Name)//case insensetive
 	return 0;
 }
 
-void World::BroadcastExtendedMessage(WorldSession * self, const char* str, ...)
-{
-	va_list ap;
-	va_start(ap, str);
-	char msg[1024];
-	vsnprintf(msg, 1024, str, ap);
-	va_end(ap);
-	SessionSet::iterator itr = mExtendedSessions.begin();
-	WorldSession * s;
-	for(; itr != mExtendedSessions.end(); )
-	{
-		s = *itr;
-		++itr;
-
-		if(s->GetPlayer() /*&& s != this*/)
-			s->GetPlayer()->BroadcastMessage(msg);
-	}
-}
-
 void World::ShutdownClasses()
 {
 	Log.Notice("AddonMgr", "~AddonMgr()");
@@ -7213,13 +7194,6 @@ void World::ShutdownClasses()
 
 	Log.Notice("MailSystem", "~MailSystem()");
 	delete MailSystem::getSingletonPtr();
-}
-
-void World::EventDeleteBattleground(Battleground * BG)
-{
-	// remove the instance
-	//sWorldCreator.DestroyBattlegroundInstance(BG);
-	//sBattlegroundMgr.RemoveBattleground(BG->GetID());
 }
 
 void World::GetStats(uint32 * GMCount, float * AverageLatency)

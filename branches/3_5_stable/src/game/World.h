@@ -192,7 +192,7 @@ enum AccountFlags
 {
 	ACCOUNT_FLAG_VIP		 = 0x1,
 	ACCOUNT_FLAG_NO_AUTOJOIN = 0x2,
-	ACCOUNT_FLAG_XTEND_INFO  = 0x4,
+	//ACCOUNT_FLAG_XTEND_INFO  = 0x4,
 	ACCOUNT_FLAG_XPACK_01	= 0x8,
 };
 
@@ -529,15 +529,10 @@ public:
 	bool UnloadMapFiles;
 	bool BreathingEnabled;
 	bool SpeedhackProtection;
-	void EventDeleteBattleground(Battleground * BG);
 	uint32 mInWorldPlayerCount;
 	uint32 mAcceptedConnections;
 	uint32 SocketSendBufSize;
 	uint32 SocketRecvBufSize;
-
-	ASCENT_INLINE void AddExtendedSession(WorldSession * session) { mExtendedSessions.insert(session); }
-	ASCENT_INLINE void RemoveExtendedSession(WorldSession * session) { mExtendedSessions.erase(session); }
-	void BroadcastExtendedMessage(WorldSession * self, const char* str, ...);	
 
 	uint32 HordePlayers;
 	uint32 AlliancePlayers;
@@ -628,7 +623,6 @@ protected:
 	uint32 m_queueUpdateTimer;
 
 	QueueSet mQueuedSessions;
-	SessionSet mExtendedSessions;
 
 	uint32	m_KickAFKPlayers;//don't lag the server if you are useless anyway :P
 public:

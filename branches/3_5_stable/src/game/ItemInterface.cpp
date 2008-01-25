@@ -201,10 +201,12 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 		{
 			if( tempitem == item )
 			{
+#ifdef WIN32
 				OutputCrashLogLine("item duplication, callstack:");
 				printf("item duplication, callstack: ");
 				CStackWalker ws;
 				ws.ShowCallstack();
+#endif
 				return false;
 			}
 
@@ -215,10 +217,12 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 				{
 					if( static_cast<Container*>(tempitem)->GetItem( j ) == item )
 					{
+#ifdef WIN32
 						OutputCrashLogLine("item duplication in container, callstack:");
 						printf("item duplication in container, callstack: ");
 						CStackWalker ws;
 						ws.ShowCallstack();
+#endif
 						return false;
 					}
 				}

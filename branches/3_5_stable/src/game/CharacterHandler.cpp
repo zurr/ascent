@@ -797,42 +797,10 @@ void WorldSession::FullLogin(Player * plr)
 
 	Log.Debug("Login", "Player %s logged in.", plr->GetName());
 
-#ifndef CLUSTERING
-	// send extended message
-	sWorld.BroadcastExtendedMessage(this, "[SM:PLRLOGIN:%u:%u]%s", plr->getRace(), plr->getClass(), plr->GetName());
-	if(HasFlag(ACCOUNT_FLAG_XTEND_INFO))
-	{
-		// send gm list
-		stringstream ssg;
-		uint32 c = 0;
-		for(set<WorldSession*>::iterator itr = sWorld.gmList.begin(); itr != sWorld.gmList.end(); ++itr)
-		{
-			if((*itr)->GetPlayer())
-			{
-				ssg << *(*itr)->GetPlayer()->GetNameString();
-				ssg << ",";
-				++c;
-			}
-		}
-		_player->BroadcastMessage("[SM:GMLIST:%s]", ssg.str().c_str());
-	}
-
-	if(HasGMPermissions())
-	{
-		sWorld.BroadcastExtendedMessage(this, "[SM:GMLOGIN]%s", plr->GetName());
-	}
-
-#endif
-
 	if(plr->GetTeam() == 1)
 		sWorld.HordePlayers++;
 	else
 		sWorld.AlliancePlayers++;
-
-#ifndef CLUSTERING
-	// send info
-	sWorld.BroadcastExtendedMessage(0, "[SM:INFO:%u:%u]", sWorld.HordePlayers, sWorld.AlliancePlayers);
-#endif
 
 	if(plr->m_FirstLogin && !HasGMPermissions())
 	{
