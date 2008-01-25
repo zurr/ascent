@@ -2422,6 +2422,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 		sLog.outError("SPELL: unknown effect %u spellid %u",m_spellInfo->Effect[i], m_spellInfo->Id);
 
 	// remove stealth!
+	if( unitTarget )
 	unitTarget->RemoveAllAuraType( SPELL_AURA_MOD_STEALTH );
 }
 
