@@ -610,6 +610,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 				}
 
 				offhandweapon = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
+				_player->ApplyItemMods( offhandweapon, EQUIPMENT_SLOT_OFFHAND, false, false );
 				if( offhandweapon == NULL )
 					return;		// should never happen
 
@@ -633,6 +634,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 				}
 
 				mainhandweapon = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND, false);
+				_player->ApplyItemMods( mainhandweapon, EQUIPMENT_SLOT_MAINHAND, false, false );
 				if( mainhandweapon == NULL )
 					return;		// should never happen
 

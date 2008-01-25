@@ -1353,7 +1353,8 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
 	sp->o = plr->GetOrientation();
 	sp->x = plr->GetPositionX();
 	sp->y = plr->GetPositionY();
-	sp->respawnNpcLink = 0;
+	//sp->respawnNpcLink = 0;
+	sp->stand_state = 0;
 	sp->channel_spell=sp->channel_target_creature=sp->channel_target_go=0;
 	pCreature->Load(sp, (uint32)NULL, NULL);
 
@@ -2137,7 +2138,8 @@ bool ChatHandler::HandleCreatureSpawnCommand(const char *args, WorldSession *m_s
 	sp->factionid = proto->Faction;
 	sp->bytes=0;
 	sp->bytes2=0;
-	sp->respawnNpcLink = 0;
+	//sp->respawnNpcLink = 0;
+	sp->stand_state = 0;
 	sp->channel_spell=sp->channel_target_creature=sp->channel_target_go=0;
 
 
