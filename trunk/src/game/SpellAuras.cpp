@@ -485,7 +485,7 @@ void Aura::Remove()
 	* m_spellProto->Attributes == 0x2040100
 	* are handled. Its possible there are more spells like this
 	*************************************************************/
-	if( caster != NULL && caster->IsPlayer() && caster->IsInWorld() && m_spellProto->c_is_flags & SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE )
+	if( caster != NULL && caster->IsPlayer() && caster->IsInWorld() && m_spellProto->c_is_flags & SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE && static_cast<Player*>(caster)->CooldownCheat )
 	{
 		WorldPacket data( 12 );
 		data.SetOpcode( SMSG_COOLDOWN_EVENT );

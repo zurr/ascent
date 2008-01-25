@@ -37,7 +37,7 @@ void SpellCastTargets::read( WorldPacket & data,uint64 caster )
 	m_unitTarget = m_itemTarget = 0;
 	m_srcX = m_srcY = m_srcZ = m_destX = m_destY = m_destZ = 0;
 	m_strTarget = "";
-
+	
 	data >> m_targetMask;
 	WoWGuid guid;
 
@@ -2420,6 +2420,9 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	}
 	else
 		sLog.outError("SPELL: unknown effect %u spellid %u",m_spellInfo->Effect[i], m_spellInfo->Id);
+
+	// remove stealth!
+	unitTarget->RemoveAllAuraType( SPELL_AURA_MOD_STEALTH );
 }
 
 void Spell::HandleAddAura(uint64 guid)

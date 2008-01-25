@@ -4937,7 +4937,9 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 							detectRange = 5.0f + getLevel() + 0.2f * (float)(GetStealthDetectBonus() - pObj->GetStealthLevel());
 						else
 							detectRange = 65.0f + 0.2f * (float)(GetStealthDetectBonus() - pObj->GetStealthLevel());
-
+						// Hehe... stealth skill is increased by 5 each level and detection skill is increased by 5 each level too.
+						// This way, a level 70 should easily be able to detect a level 4 rogue (level 4 because that's when you get stealth)
+							detectRange += 0.2f * ( getLevel() - pObj->getLevel() );
 						if(detectRange < 1.0f) detectRange = 1.0f; // Minimum Detection Range = 1yd
 					}
 					else // stealthed player is behind us
@@ -4948,8 +4950,8 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
 					detectRange += GetFloatValue(UNIT_FIELD_BOUNDINGRADIUS); // adjust range for size of player
 					detectRange += pObj->GetFloatValue(UNIT_FIELD_BOUNDINGRADIUS); // adjust range for size of stealthed player
-
-					if(GetDistance2dSq(pObj) > detectRange * detectRange)
+					sLog.outString( "Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , ( GetDistance2dSq(pObj) > detectRange * detectRange ) ? "yes" : "no" , GetDistanceSq(pObj) );
+					if(GetDistanceSq(pObj) > detectRange * detectRange)
 						return bGMTagOn; // GM can see stealthed players
 				}
 
@@ -9357,6 +9359,7 @@ void Player::save_GuildData()
 		string escaped_note2 = m_playerInfo->officerNote ?  CharacterDatabase.EscapeString(m_playerInfo->officerNote) : "";
 		CharacterDatabase.Execute("UPDATE characters SET guildid=%u, guildRank=%u, publicNote='%s', officerNote='%s' WHERE guid = %u",
 			GetGuildId(), GetGuildRank(), escaped_note.c_str(), escaped_note2.c_str(), m_uint32Values[OBJECT_FIELD_GUID]);
+
 	}
 	else
 	{
