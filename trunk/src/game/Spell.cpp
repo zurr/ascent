@@ -578,7 +578,7 @@ uint8 Spell::DidHit(uint32 effindex,Unit* target)
 	/* Check if the spell is a melee attack and if it was missed/parried    */
 	/************************************************************************/
 	uint32 melee_test_result;
-	if( m_spellInfo->is_melee_spell)
+	if( m_spellInfo->is_melee_spell || m_spellInfo->is_ranged_spell )
 	{
 		melee_test_result = u_caster->GetSpellDidHitResult( u_victim, ( GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE ), m_spellInfo );
 		if(melee_test_result != SPELL_DID_HIT_SUCCESS)
@@ -588,7 +588,7 @@ uint8 Spell::DidHit(uint32 effindex,Unit* target)
 	/************************************************************************/
 	/* Check if the spell is resisted.                                      */
 	/************************************************************************/
-	if( m_spellInfo->School==0)
+	if( m_spellInfo->School==0 || m_spellInfo->is_ranged_spell )
 		return SPELL_DID_HIT_SUCCESS;
 
 	bool pvp =(p_caster && p_victim);

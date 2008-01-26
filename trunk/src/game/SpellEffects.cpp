@@ -4879,7 +4879,7 @@ void Spell::SpellEffectApplyPetAura(uint32 i)
 	SpellEffectApplyAura(i);
 }
 
-void Spell::SpellEffectDummyMelee( uint32 i ) // Normalized Weapon damage +
+void Spell::SpellEffectDummyMelee( uint32 i ) // Normalized Weapon damage + (NOT melee! Aimed Shot uses this...)
 {
 	if( unitTarget == NULL || u_caster == NULL )
 		return;

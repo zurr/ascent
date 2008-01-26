@@ -2001,7 +2001,7 @@ uint32 Unit::GetSpellDidHitResult( Unit* pVictim, uint32 weapon_damage_type, Spe
 	//==========================================================================================
 	//--------------------------------cummulative chances generation----------------------------
 	float chances[4];
-	chances[0]=std::max(0.0f,100.0f-hitchance);
+	chances[0]=std::max(0.0f,100.0f-hitchance); // miss chance?
 	chances[1]=chances[0]+dodge;
 	chances[2]=chances[1]+parry;
 	chances[3]=chances[2]+block;
@@ -2013,8 +2013,8 @@ uint32 Unit::GetSpellDidHitResult( Unit* pVictim, uint32 weapon_damage_type, Spe
 	{
 		r++;
 	}
-
-	uint32 roll_results[5] = { SPELL_DID_HIT_SUCCESS,SPELL_DID_HIT_DODGE,SPELL_DID_HIT_DEFLECT,SPELL_DID_HIT_BLOCK,SPELL_DID_HIT_SUCCESS };
+	
+	uint32 roll_results[5] = { SPELL_DID_HIT_MISS,SPELL_DID_HIT_DODGE,SPELL_DID_HIT_DEFLECT,SPELL_DID_HIT_BLOCK,SPELL_DID_HIT_SUCCESS };
 	return roll_results[r];
 }
 
