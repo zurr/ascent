@@ -21,6 +21,18 @@
 #ifndef __LUAENGINE_H
 #define __LUAENGINE_H
 
+extern "C" {		// we're C++, and LUA is C, so the compiler needs to know to use C function names.
+#include "lua/lua.h"
+#include "lua/lauxlib.h"
+#include "lua/lualib.h"
+};
+
+class LuaEngine;
+class LuaEngineMgr;
+
+extern LuaEngineMgr g_luaMgr;
+extern LuaEngine * g_engine;
+
 /** Macros for calling lua-based events
  */
 #define LUA_ON_UNIT_EVENT(unit,eventtype,miscunit,misc) if(unit->GetTypeId()==TYPEID_UNIT && unit->IsInWorld()) { unit->GetMapMgr()->GetScriptEngine()->OnUnitEvent(unit,eventtype,miscunit,misc); }
@@ -93,8 +105,8 @@ public:
 	ASCENT_INLINE Mutex& GetLock() { return m_Lock; }
 
 	void OnUnitEvent(Unit * pUnit, const char * FunctionName, uint32 EventType, Unit * pMiscUnit, uint32 Misc);
-	void OnQuestEvent(Player * QuestOwner, uint32 QuestID, uint32 EventType, Object * QuestStarter);
-	void OnGameObjectEvent(GameObject * pGameObject, uint32 EventType, Unit * pMiscUnit);
+	void OnQuestEvent(Player * QuestOwner, const char * FunctionName, uint32 QuestID, uint32 EventType, Object * QuestStarter);
+	void OnGameObjectEvent(GameObject * pGameObject, const char * FunctionName, uint32 EventType, Unit * pMiscUnit);
 	void CallFunction(Unit * pUnit, const char * FuncName);
 };
 
@@ -126,18 +138,17 @@ public:
 		UnitBindingMap::iterator itr = m_unitBinding.find(Id);
 		return (itr == m_unitBinding.end()) ? NULL : &itr->second;
 	}
-	const char * GetQuestEvent(uint32 Id, uint32 Event)
+
+	LuaQuestBinding * GetQuestBinding(uint32 Id)
 	{
 		QuestBindingMap::iterator itr = m_questBinding.find(Id);
-		ASSERT(Event<QUEST_EVENT_COUNT);
-		return (itr == m_questBinding.end()) ? NULL : itr->second.Functions[Event];
+		return (itr == m_questBinding.end()) ? NULL : &itr->second;
 	}
 
-	const char * GetGameObjectEvent(uint32 Id, uint32 Event)
+	LuaGameObjectBinding * GetGameObjectBinding(uint32 Id)
 	{
 		GameObjectBindingMap::iterator itr =m_gameobjectBinding.find(Id);
-		ASSERT(Event<GAMEOBJECT_EVENT_COUNT);
-		return (itr == m_gameobjectBinding.end()) ? NULL : itr->second.Functions[Event];
+		return (itr == m_gameobjectBinding.end()) ? NULL : &itr->second;
 	}
 };
 

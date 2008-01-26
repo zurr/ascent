@@ -1348,7 +1348,8 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 
 void Creature::TriggerScriptEvent(string func)
 {
-	
+	if( _myScriptClass )
+		_myScriptClass->StringFunctionCall( func.c_str() );
 }
 
 void Creature::DestroyCustomWaypointMap()

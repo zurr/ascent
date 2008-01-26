@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "LUAEngine.h"
+#include "LUAFunctions.h"
+#include <CoreMemoryAllocator.cpp>
 
 #if PLATFORM != PLATFORM_WIN32
 #include <dirent.h>
@@ -8,6 +10,7 @@
 bool lua_is_starting_up = false;
 ScriptMgr * m_scriptMgr;
 LuaEngineMgr g_luaMgr;
+LuaEngine * g_engine;
 
 extern "C" SCRIPT_DECL uint32 _exp_get_version()
 {
@@ -20,6 +23,113 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 	g_luaMgr.Startup();
 }
 
+template<typename T> const char * GetTClassName() { return "UNKNOWN"; }
+
+template<>
+const char * GetTClassName<Unit>()
+{
+	return "Unit";
+}
+
+template<>
+const char * GetTClassName<GameObject>()
+{
+	return "GameObject";
+}
+
+template<typename T>
+struct RegType
+{
+	const char * name;
+	int(*mfunc)(lua_State*,T*);
+};
+
+
+/************************************************************************/
+/* SCRIPT FUNCTION TABLES                                               */
+/************************************************************************/
+RegType<Unit> UnitMethods[] = {
+	{ "GetName", &luaUnit_GetName },
+	{ "SendChatMessage", &luaUnit_SendChatMessage },
+	{ "MoveTo", &luaUnit_MoveTo },
+	{ "SetMovementType", &luaUnit_SetMovementType },
+	{ "CastSpell", &luaUnit_CastSpell },
+	{ "FullCastSpell", &luaUnit_FullCastSpell },
+	{ "CastSpellOnTarget", &luaUnit_CastSpell },
+	{ "FullCastSpellOnTarget", &luaUnit_FullCastSpellOnTarget },
+	{ "SpawnCreature", &luaUnit_SpawnCreature },
+	{ "SpawnGameObject", &luaUnit_SpawnGameObject },
+	{ "GetX", &luaUnit_GetX },
+	{ "GetY", &luaUnit_GetY },
+	{ "GetZ", &luaUnit_GetZ },
+	{ "GetO", &luaUnit_GetO },
+	{ "IsPlayer", &luaUnit_IsPlayer },
+	{ "IsCreature", &luaUnit_IsCreature },
+	{ "RegisterEvent", &luaUnit_RegisterEvent },
+	{ "RemoveEvents", &luaUnit_RemoveEvents },
+	{ "SendBroadcastMessage", &luaUnit_SendBroadcastMessage },
+	{ "SendAreaTriggerMessage", &luaUnit_SendAreaTriggerMessage },
+	{ "KnockBack", &luaUnit_KnockBack },
+	{ "MarkQuestObjectiveAsComplete", &luaUnit_MarkQuestObjectiveAsComplete },
+	{ "LearnSpell", &luaUnit_LearnSpell },
+	{ "UnlearnSpell", &luaUnit_UnlearnSpell },
+	{ "HasFinishedQuest", &luaUnit_HasFinishedQuest },
+	{ "GetItemCount", &luaUnit_GetItemCount },
+	{ "IsInCombat", &luaUnit_IsInCombat },
+	{ "GetMainTank", &luaUnit_GetMainTank },
+	{ "GetAddTank", &luaUnit_GetAddTank },
+	{ "ClearThreatList", &luaUnit_ClearThreatList },
+	{ "GetTauntedBy", &luaUnit_GetTauntedBy },
+	{ "SetTauntedBy", &luaUnit_SetTauntedBy },
+	{ "SetSoulLinkedWith", &luaUnit_SetSoulLinkedWith },
+	{ "GetSoulLinkedWith", &luaUnit_GetSoulLinkedWith },
+	{ "ChangeTarget", &luaUnit_ChangeTarget },
+	{ "GetHealthPct", &luaUnit_GetHealthPct },
+	{ "SetHealthPct", &luaUnit_SetHealthPct },
+	{ "GetManaPct", &luaUnit_GetManaPct },
+	{ "Despawn", &luaUnit_Despawn },
+	{ "GetUnitBySqlId", &luaUnit_GetUnitBySqlId },
+	{ "PlaySoundToSet", &luaUnit_PlaySoundToSet },
+	{ "RemoveAura", &luaUnit_RemoveAura },
+	{ "StopMovement", &luaUnit_StopMovement },
+	{ "Emote", &luaUnit_Emote },
+	{ "GetInstanceID", &luaUnit_GetInstanceID },
+	{ "GetClosestPlayer", &luaUnit_GetClosestPlayer },
+	{ "GetRandomPlayer", &luaUnit_GetRandomPlayer },
+	{ "GetRandomFriend", &luaUnit_GetRandomFriend },
+	{ "AddItem", &luaUnit_AddItem },
+	{ "RemoveItem", &luaUnit_RemoveItem },
+	{ "CreateCustomWaypointMap", &luaUnit_CreateCustomWaypointMap },
+	{ "CreateWaypoint", &luaUnit_CreateWaypoint },
+	{ "MoveToWaypoint", &luaUnit_MoveToWaypoint },
+	{ "DestroyCustomWaypointMap", &luaUnit_DestroyCustomWaypointMap },
+	{ "SetCombatCapable", &luaUnit_SetCombatCapable },
+	{ "SetCombatMeleeCapable", &luaUnit_SetCombatMeleeCapable },
+	{ "SetCombatRangedCapable", &luaUnit_SetCombatRangedCapable },
+	{ "SetCombatSpellCapable", &luaUnit_SetCombatSpellCapable },
+	{ "SetCombatTargetingCapable", &luaUnit_SetCombatTargetingCapable },
+	{ "SetNPCFlags", &luaUnit_SetNPCFlags },
+	{ "SetModel", &luaUnit_SetModel },
+	{ "SetScale", &luaUnit_SetScale },
+	{ "SetFaction", &luaUnit_SetFaction },
+	{ "SetStandState",&luaUnit_SetStandState },
+	{ "Teleport" , &luaUnit_TeleportUnit },
+	{ NULL, NULL },
+};
+
+RegType<GameObject> GOMethods[] = {
+	{ "GetName", &luaGameObject_GetName },
+	{ "Teleport" , &luaGameObject_Teleport },
+	{ NULL, NULL },
+};
+
+template<typename T> RegType<T>* GetMethodTable() { return NULL; }
+template<>
+RegType<Unit>* GetMethodTable<Unit>() { return UnitMethods; }
+
+template<>
+RegType<GameObject>* GetMethodTable<GameObject>() { return GOMethods; }
+
 template <typename T> class Lunar {
 	typedef struct { T *pT; } userdataType;
 public:
@@ -30,13 +140,13 @@ public:
 		lua_newtable(L);
 		int methods = lua_gettop(L);
 
-		luaL_newmetatable(L, T::className);
+		luaL_newmetatable(L, GetTClassName<T>());
 		int metatable = lua_gettop(L);
 
 		// store method table in globals so that
 		// scripts can add functions written in Lua.
 		lua_pushvalue(L, methods);
-		set(L, LUA_GLOBALSINDEX, T::className);
+		set(L, LUA_GLOBALSINDEX, GetTClassName<T>());
 
 		// hide metatable from Lua getmetatable()
 		lua_pushvalue(L, methods);
@@ -59,7 +169,7 @@ public:
 		lua_setmetatable(L, methods);
 
 		// fill method table with methods from class T
-		for (RegType *l = ((RegType*)T::methods); l->name; l++) {
+		for (RegType *l = ((RegType*)GetMethodTable<T>()); l->name; l++) {
 			lua_pushstring(L, l->name);
 			lua_pushlightuserdata(L, (void*)l);
 			lua_pushcclosure(L, thunk, 1);
@@ -104,8 +214,8 @@ public:
 	// push onto the Lua stack a userdata containing a pointer to T object
 	static int push(lua_State *L, T *obj, bool gc=false) {
 		if (!obj) { lua_pushnil(L); return 0; }
-		luaL_getmetatable(L, T::className);  // lookup metatable in Lua registry
-		if (lua_isnil(L, -1)) luaL_error(L, "%s missing metatable", T::className);
+		luaL_getmetatable(L, GetTClassName<T>());  // lookup metatable in Lua registry
+		if (lua_isnil(L, -1)) luaL_error(L, "%s missing metatable", GetTClassName<T>());
 		int mt = lua_gettop(L);
 		subtable(L, mt, "userdata", "v");
 		userdataType *ud =
@@ -131,8 +241,8 @@ public:
 	// get userdata from Lua stack and return pointer to T object
 	static T *check(lua_State *L, int narg) {
 		userdataType *ud =
-			static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
-		if(!ud) { luaL_typerror(L, narg, T::className); return NULL; }
+			static_cast<userdataType*>(luaL_checkudata(L, narg, GetTClassName<T>()));
+		if(!ud) { luaL_typerror(L, narg, GetTClassName<T>()); return NULL; }
 		return ud->pT;  // pointer to T object
 	}
 
@@ -154,7 +264,8 @@ private:
 	// push onto the Lua stack a userdata containing a pointer to T object
 	static int new_T(lua_State *L) {
 		lua_remove(L, 1);   // use classname:new(), instead of classname.new()
-		T *obj = new T(L);  // call constructor for T objects
+		T *obj = NULL/*new T(L)*/;  // call constructor for T objects
+		assert(false);
 		push(L, obj, true); // gc_T will delete this object
 		return 1;           // userdata containing pointer to T object
 	}
@@ -177,7 +288,7 @@ private:
 		userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
 		T *obj = ud->pT;
 		sprintf(buff, "%p", obj);
-		lua_pushfstring(L, "%s (%s)", T::className, buff);
+		lua_pushfstring(L, "%s (%s)", GetTClassName<T>(), buff);
 		return 1;
 	}
 
@@ -304,12 +415,6 @@ void LuaEngine::LoadScripts()
 			luaFiles.erase(it2);
 	}
 
-	//luaopen_base(L);
-	//luaopen_table(L);
-	//luaopen_io(L);
-	//luaopen_string(L);
-	//luaopen_math(L);
-	//luaopen_debug(L);
 	luaL_openlibs(L);
 	RegisterCoreFunctions();
 
@@ -377,19 +482,18 @@ void LuaEngine::OnUnitEvent(Unit * pUnit, const char * FunctionName, uint32 Even
 
 	m_Lock.Release();
 }
-void LuaEngine::OnQuestEvent(Player * QuestOwner, uint32 QuestID, uint32 EventType, Object * QuestStarter)
+
+void LuaEngine::OnQuestEvent(Player * QuestOwner, const char * FunctionName, uint32 QuestID, uint32 EventType, Object * QuestStarter)
 {
-	
-/*	const char * FuncName = LuaEngineMgr::getSingleton().GetQuestEvent(QuestID, EventType);
-	if(FuncName==NULL)
+	if(FunctionName==NULL)
 		return;
 
 	m_Lock.Acquire();
-	lua_pushstring(L, FuncName);
+	lua_pushstring(L, FunctionName);
 	lua_gettable(L, LUA_GLOBALSINDEX);
 	if(lua_isnil(L,-1))
 	{
-		printf("Tried to call invalid LUA function '%s' from Ascent (Quest)!\n", FuncName);
+		printf("Tried to call invalid LUA function '%s' from Ascent (Quest)!\n", FunctionName);
 		m_Lock.Release();
 		return;
 	}
@@ -410,7 +514,7 @@ void LuaEngine::OnQuestEvent(Player * QuestOwner, uint32 QuestID, uint32 EventTy
 	if(r)
 		report(L);
 
-	m_Lock.Release();*/
+	m_Lock.Release();
 	
 }
 void LuaEngine::CallFunction(Unit * pUnit, const char * FuncName)
@@ -433,18 +537,17 @@ void LuaEngine::CallFunction(Unit * pUnit, const char * FuncName)
 	m_Lock.Release();
 }
 
-void LuaEngine::OnGameObjectEvent(GameObject * pGameObject, uint32 EventType, Unit * pMiscUnit)
+void LuaEngine::OnGameObjectEvent(GameObject * pGameObject, const char * FunctionName, uint32 EventType, Unit * pMiscUnit)
 {
-/*	const char * FuncName = LuaEngineMgr::getSingleton().GetGameObjectEvent(pGameObject->GetEntry(),EventType);
-	if(FuncName==NULL)
+	if(FunctionName==NULL)
 		return;
 
 	m_Lock.Acquire();
-	lua_pushstring(L, FuncName);
+	lua_pushstring(L, FunctionName);
 	lua_gettable(L, LUA_GLOBALSINDEX);
 	if(lua_isnil(L,-1))
 	{
-		printf("Tried to call invalid LUA function '%s' from Ascent! (GO)\n", FuncName);
+		printf("Tried to call invalid LUA function '%s' from Ascent! (GO)\n", FunctionName);
 		m_Lock.Release();
 		return;
 	}
@@ -460,163 +563,8 @@ void LuaEngine::OnGameObjectEvent(GameObject * pGameObject, uint32 EventType, Un
 	if(r)
 		report(L);
 
-	m_Lock.Release();*/
+	m_Lock.Release();
 }
-
-/************************************************************************/
-/* SCRIPT FUNCTIONS DECLARATIONS                                        */
-/************************************************************************/
-int luaUnit_GetName(lua_State * L, Unit * ptr);
-int luaUnit_SendChatMessage(lua_State * L, Unit * ptr);
-int luaUnit_MoveTo(lua_State * L, Unit * ptr);
-int luaUnit_SetMovementType(lua_State * L, Unit * ptr);
-int luaUnit_CastSpell(lua_State * L, Unit * ptr);
-int luaUnit_CastSpellOnTarget(lua_State * L, Unit * ptr);
-int luaUnit_FullCastSpell(lua_State * L, Unit * ptr);
-int luaUnit_FullCastSpellOnTarget(lua_State * L, Unit * ptr);
-int luaUnit_SpawnGameObject(lua_State * L, Unit * ptr);
-int luaUnit_SpawnCreature(lua_State * L, Unit * ptr);
-int luaUnit_GetX(lua_State * L, Unit * ptr);
-int luaUnit_GetY(lua_State * L, Unit * ptr);
-int luaUnit_GetZ(lua_State * L, Unit * ptr);
-int luaUnit_GetO(lua_State * L, Unit * ptr);
-int luaUnit_IsPlayer(lua_State * L, Unit * ptr);
-int luaUnit_IsCreature(lua_State * L, Unit * ptr);
-int luaUnit_RegisterEvent(lua_State * L, Unit * ptr);
-int luaUnit_RemoveEvents(lua_State * L, Unit * ptr);
-int luaUnit_SendBroadcastMessage(lua_State * L, Unit * ptr);
-int luaUnit_SendAreaTriggerMessage(lua_State * L, Unit * ptr);
-int luaUnit_KnockBack(lua_State * L, Unit * ptr);
-int luaUnit_MarkQuestObjectiveAsComplete(lua_State * L, Unit * ptr);
-int luaUnit_LearnSpell(lua_State * L, Unit* ptr);
-int luaUnit_UnlearnSpell(lua_State * L, Unit * ptr);
-int luaUnit_HasFinishedQuest(lua_State * L, Unit * ptr);
-int luaUnit_GetItemCount(lua_State * L, Unit * ptr);
-int luaUnit_IsInCombat(lua_State * L, Unit * ptr);
-int luaUnit_GetMainTank(lua_State * L, Unit * ptr);
-int luaUnit_GetAddTank(lua_State * L, Unit * ptr);
-int luaUnit_ClearThreatList(lua_State * L, Unit * ptr);
-int luaUnit_GetTauntedBy(lua_State * L, Unit * ptr);
-int luaUnit_SetTauntedBy(lua_State * L, Unit * ptr);
-int luaUnit_GetSoulLinkedWith(lua_State * L, Unit * ptr);
-int luaUnit_SetSoulLinkedWith(lua_State * L, Unit * ptr);
-int luaUnit_ChangeTarget(lua_State * L, Unit * ptr);
-int luaUnit_GetHealthPct(lua_State * L, Unit * ptr);
-int luaUnit_GetManaPct(lua_State * L, Unit * ptr);
-int luaUnit_Emote(lua_State * L, Unit * ptr);
-int luaUnit_SetHealthPct(lua_State * L, Unit * ptr);
-int luaUnit_Despawn(lua_State * L, Unit * ptr);
-int luaUnit_GetUnitBySqlId(lua_State * L, Unit * ptr);
-int luaUnit_PlaySoundToSet(lua_State * L, Unit * ptr);
-int luaUnit_RemoveAura(lua_State * L, Unit * ptr);
-int luaUnit_StopMovement(lua_State * L, Unit * ptr);
-int luaUnit_GetInstanceID(lua_State * L, Unit * ptr);
-int luaUnit_GetClosestPlayer(lua_State * L, Unit * ptr);
-int luaUnit_GetRandomPlayer(lua_State * L, Unit * ptr);
-int luaUnit_GetRandomFriend(lua_State * L, Unit * ptr);
-int luaUnit_AddItem(lua_State * L, Unit * ptr);
-int luaUnit_RemoveItem(lua_State * L, Unit * ptr);
-int luaUnit_CreateCustomWaypointMap(lua_State * L, Unit * ptr);
-int luaUnit_CreateWaypoint(lua_State * L, Unit * ptr);
-int luaUnit_DestroyCustomWaypointMap(lua_State * L, Unit * ptr);
-int luaUnit_MoveToWaypoint(lua_State * L, Unit * ptr);
-int luaUnit_SetCombatCapable(lua_State * L, Unit * ptr);
-int luaUnit_SetCombatMeleeCapable(lua_State * L, Unit * ptr);
-int luaUnit_SetCombatRangedCapable(lua_State * L, Unit * ptr);
-int luaUnit_SetCombatSpellCapable(lua_State * L, Unit * ptr);
-int luaUnit_SetCombatTargetingCapable(lua_State * L, Unit * ptr);
-int luaUnit_SetNPCFlags(lua_State * L, Unit * ptr);
-int luaUnit_SetModel(lua_State * L, Unit * ptr);
-int luaUnit_SetScale(lua_State * L, Unit * ptr);
-int luaUnit_SetFaction(lua_State * L, Unit * ptr);
-int luaUnit_SetStandState(lua_State * L, Unit * ptr);
-int luaUnit_TeleportUnit(lua_State * L, Unit * ptr);
-
-int luaGameObject_GetName(lua_State * L, GameObject * ptr);
-int luaGameObject_Teleport(lua_State * L, GameObject * ptr);
-int luaGameObject_SpawnCreature(lua_State * L, GameObject * ptr);
-int luaGameObject_PlayCustomAnim(lua_State * L, GameObject * ptr);
-int luaGameObject_PlaySoundToSet(lua_State * L, GameObject * ptr);
-
-/************************************************************************/
-/* SCRIPT FUNCTION TABLES                                               */
-/************************************************************************/
-const char Unit::className[] = "Unit";
-Unit::RegType Unit::methods[] = {
-	{ "GetName", &luaUnit_GetName },
-	{ "SendChatMessage", &luaUnit_SendChatMessage },
-	{ "MoveTo", &luaUnit_MoveTo },
-	{ "SetMovementType", &luaUnit_SetMovementType },
-	{ "CastSpell", &luaUnit_CastSpell },
-	{ "FullCastSpell", &luaUnit_FullCastSpell },
-	{ "CastSpellOnTarget", &luaUnit_CastSpell },
-	{ "FullCastSpellOnTarget", &luaUnit_FullCastSpellOnTarget },
-	{ "SpawnCreature", &luaUnit_SpawnCreature },
-	{ "SpawnGameObject", &luaUnit_SpawnGameObject },
-	{ "GetX", &luaUnit_GetX },
-	{ "GetY", &luaUnit_GetY },
-	{ "GetZ", &luaUnit_GetZ },
-	{ "GetO", &luaUnit_GetO },
-	{ "IsPlayer", &luaUnit_IsPlayer },
-	{ "IsCreature", &luaUnit_IsCreature },
-	{ "RegisterEvent", &luaUnit_RegisterEvent },
-	{ "RemoveEvents", &luaUnit_RemoveEvents },
-	{ "SendBroadcastMessage", &luaUnit_SendBroadcastMessage },
-	{ "SendAreaTriggerMessage", &luaUnit_SendAreaTriggerMessage },
-	{ "KnockBack", &luaUnit_KnockBack },
-	{ "MarkQuestObjectiveAsComplete", &luaUnit_MarkQuestObjectiveAsComplete },
-	{ "LearnSpell", &luaUnit_LearnSpell },
-	{ "UnlearnSpell", &luaUnit_UnlearnSpell },
-	{ "HasFinishedQuest", &luaUnit_HasFinishedQuest },
-	{ "GetItemCount", &luaUnit_GetItemCount },
-	{ "IsInCombat", &luaUnit_IsInCombat },
-	{ "GetMainTank", &luaUnit_GetMainTank },
-	{ "GetAddTank", &luaUnit_GetAddTank },
-	{ "ClearThreatList", &luaUnit_ClearThreatList },
-	{ "GetTauntedBy", &luaUnit_GetTauntedBy },
-	{ "SetTauntedBy", &luaUnit_SetTauntedBy },
-	{ "SetSoulLinkedWith", &luaUnit_SetSoulLinkedWith },
-	{ "GetSoulLinkedWith", &luaUnit_GetSoulLinkedWith },
-	{ "ChangeTarget", &luaUnit_ChangeTarget },
-	{ "GetHealthPct", &luaUnit_GetHealthPct },
-	{ "SetHealthPct", &luaUnit_SetHealthPct },
-	{ "GetManaPct", &luaUnit_GetManaPct },
-	{ "Despawn", &luaUnit_Despawn },
-	{ "GetUnitBySqlId", &luaUnit_GetUnitBySqlId },
-	{ "PlaySoundToSet", &luaUnit_PlaySoundToSet },
-	{ "RemoveAura", &luaUnit_RemoveAura },
-	{ "StopMovement", &luaUnit_StopMovement },
-	{ "Emote", &luaUnit_Emote },
-	{ "GetInstanceID", &luaUnit_GetInstanceID },
-	{ "GetClosestPlayer", &luaUnit_GetClosestPlayer },
-	{ "GetRandomPlayer", &luaUnit_GetRandomPlayer },
-	{ "GetRandomFriend", &luaUnit_GetRandomFriend },
-	{ "AddItem", &luaUnit_AddItem },
-	{ "RemoveItem", &luaUnit_RemoveItem },
-	{ "CreateCustomWaypointMap", &luaUnit_CreateCustomWaypointMap },
-	{ "CreateWaypoint", &luaUnit_CreateWaypoint },
-	{ "MoveToWaypoint", &luaUnit_MoveToWaypoint },
-	{ "DestroyCustomWaypointMap", &luaUnit_DestroyCustomWaypointMap },
-	{ "SetCombatCapable", &luaUnit_SetCombatCapable },
-	{ "SetCombatMeleeCapable", &luaUnit_SetCombatMeleeCapable },
-	{ "SetCombatRangedCapable", &luaUnit_SetCombatRangedCapable },
-	{ "SetCombatSpellCapable", &luaUnit_SetCombatSpellCapable },
-	{ "SetCombatTargetingCapable", &luaUnit_SetCombatTargetingCapable },
-	{ "SetNPCFlags", &luaUnit_SetNPCFlags },
-	{ "SetModel", &luaUnit_SetModel },
-	{ "SetScale", &luaUnit_SetScale },
-	{ "SetFaction", &luaUnit_SetFaction },
-	{ "SetStandState",&luaUnit_SetStandState },
-	{ "Teleport" , &luaUnit_TeleportUnit },
-	{ NULL, NULL },
-};
-
-const char GameObject::className[] = "GameObject";
-GameObject::RegType GameObject::methods[] = {
-	{ "GetName", &luaGameObject_GetName },
-	{ "Teleport" , &luaGameObject_Teleport },
-	{ NULL, NULL },
-};
 
 static int RegisterUnitEvent(lua_State * L);
 static int RegisterQuestEvent(lua_State * L);
@@ -650,6 +598,7 @@ static int RegisterUnitEvent(lua_State * L)
 	g_luaMgr.RegisterUnitEvent(entry,ev,str);
 	return 0;
 }
+
 static int RegisterQuestEvent(lua_State * L)
 {
 	int entry = luaL_checkint(L, 1);
@@ -675,6 +624,300 @@ static int RegisterGameObjectEvent(lua_State * L)
 	g_luaMgr.RegisterGameObjectEvent(entry,ev,str);
 	return 0;
 }
+
+/************************************************************************/
+/* Manager Stuff                                                        */
+/************************************************************************/
+
+class LuaCreature : public CreatureAIScript
+{
+public:
+	LuaCreature(Creature* creature) : CreatureAIScript(creature) {};
+	~LuaCreature() {};
+
+	void OnCombatStart(Unit* mTarget)
+	{
+		if( m_binding->Functions[CREATURE_EVENT_ON_ENTER_COMBAT] != NULL )
+			g_engine->OnUnitEvent( _unit, m_binding->Functions[CREATURE_EVENT_ON_ENTER_COMBAT], CREATURE_EVENT_ON_ENTER_COMBAT, mTarget, 0 );
+	}
+
+	void OnCombatStop(Unit* mTarget)
+	{
+		if( m_binding->Functions[CREATURE_EVENT_ON_LEAVE_COMBAT] != NULL )
+			g_engine->OnUnitEvent( _unit, m_binding->Functions[CREATURE_EVENT_ON_LEAVE_COMBAT], CREATURE_EVENT_ON_LEAVE_COMBAT, mTarget, 0 );
+	}
+
+	void OnTargetDied(Unit* mTarget)
+	{
+		if( m_binding->Functions[CREATURE_EVENT_ON_KILLED_TARGET] != NULL )
+			g_engine->OnUnitEvent( _unit, m_binding->Functions[CREATURE_EVENT_ON_KILLED_TARGET], CREATURE_EVENT_ON_KILLED_TARGET, mTarget, 0 );
+	}
+
+	void OnDied(Unit *mKiller)
+	{
+		if( m_binding->Functions[CREATURE_EVENT_ON_DIED] != NULL )
+			g_engine->OnUnitEvent( _unit, m_binding->Functions[CREATURE_EVENT_ON_DIED], CREATURE_EVENT_ON_DIED, mKiller, 0 );
+	}
+
+	void OnLoad()
+	{
+		if( m_binding->Functions[CREATURE_EVENT_ON_SPAWN] != NULL )
+			g_engine->OnUnitEvent( _unit, m_binding->Functions[CREATURE_EVENT_ON_SPAWN], CREATURE_EVENT_ON_SPAWN, NULL, 0 );
+	}
+
+	void OnReachWP(uint32 iWaypointId, bool bForwards)
+	{
+		if( m_binding->Functions[CREATURE_EVENT_ON_REACH_WP] != NULL )
+			g_engine->OnUnitEvent( _unit, m_binding->Functions[CREATURE_EVENT_ON_REACH_WP], CREATURE_EVENT_ON_REACH_WP, NULL, iWaypointId );
+	}
+
+	void AIUpdate()
+	{
+		if( m_binding->Functions[CREATURE_EVENT_AI_TICK] != NULL )
+			g_engine->OnUnitEvent( _unit, m_binding->Functions[CREATURE_EVENT_AI_TICK], CREATURE_EVENT_AI_TICK, NULL, 0 );
+	}
+
+	void StringFunctionCall(const char * pFunction)
+	{
+		g_engine->CallFunction( _unit, pFunction );
+	}
+
+	void Destroy()
+	{
+		delete this;
+	}
+
+	LuaUnitBinding * m_binding;
+};
+
+class LuaGameObject : public GameObjectAIScript
+{
+public:
+	LuaGameObject(GameObject * go) : GameObjectAIScript(go) {}
+	~LuaGameObject() {}
+
+	void OnSpawn()
+	{
+		if( m_binding->Functions[GAMEOBJECT_EVENT_ON_SPAWN] != NULL )
+			g_engine->OnGameObjectEvent( _gameobject, m_binding->Functions[GAMEOBJECT_EVENT_ON_SPAWN], GAMEOBJECT_EVENT_ON_SPAWN, NULL );
+	}
+
+	void OnActivate(Player * pPlayer)
+	{
+		if( m_binding->Functions[GAMEOBJECT_EVENT_ON_USE] != NULL )
+			g_engine->OnGameObjectEvent( _gameobject, m_binding->Functions[GAMEOBJECT_EVENT_ON_USE], GAMEOBJECT_EVENT_ON_USE, pPlayer );
+	}
+
+	LuaGameObjectBinding * m_binding;
+};
+
+class LuaQuest : public QuestScript
+{
+public:
+	LuaQuest() : QuestScript() {}
+	~LuaQuest() {}
+
+	void OnQuestStart(Player* mTarget, QuestLogEntry *qLogEntry)
+	{
+		if( m_binding->Functions[QUEST_EVENT_ON_ACCEPT] != NULL )
+			g_engine->OnQuestEvent( mTarget, m_binding->Functions[QUEST_EVENT_ON_ACCEPT], qLogEntry->GetQuest()->id, QUEST_EVENT_ON_ACCEPT, mTarget );
+	}
+
+	void OnQuestComplete(Player* mTarget, QuestLogEntry *qLogEntry)
+	{
+		if( m_binding->Functions[QUEST_EVENT_ON_COMPLETE] != NULL )
+			g_engine->OnQuestEvent( mTarget, m_binding->Functions[QUEST_EVENT_ON_COMPLETE], qLogEntry->GetQuest()->id, QUEST_EVENT_ON_COMPLETE, mTarget );
+	}
+
+	LuaQuestBinding * m_binding;
+};
+
+CreatureAIScript * CreateLuaCreature(Creature * src)
+{
+	LuaUnitBinding * pBinding = g_luaMgr.GetUnitBinding( src->GetEntry() );
+	if( pBinding == NULL )
+		return NULL;
+
+	LuaCreature * pLua = new LuaCreature( src );
+	pLua->m_binding = pBinding;
+	return pLua;
+}
+
+GameObjectAIScript * CreateLuaGameObject(GameObject * src)
+{
+	LuaGameObjectBinding * pBinding = g_luaMgr.GetGameObjectBinding( src->GetEntry() );
+	if( pBinding == NULL )
+		return NULL;
+
+	LuaGameObject * pLua = new LuaGameObject( src );
+	pLua->m_binding = pBinding;
+	return pLua;
+}
+
+QuestScript * CreateLuaQuestScript(uint32 id)
+{
+	LuaQuestBinding * pBinding = g_luaMgr.GetQuestBinding( id );
+	if( pBinding == NULL )
+		return NULL;
+
+	LuaQuest * pLua = new LuaQuest();
+	pLua->m_binding = pBinding;
+	return pLua;
+}
+
+void LuaEngineMgr::Startup()
+{
+	Log.Notice("LuaEngineMgr", "Spawning Lua Engine...");
+	m_engine = new LuaEngine();
+	lua_is_starting_up = true;
+	m_engine->LoadScripts();
+	g_engine = m_engine;
+	lua_is_starting_up = false;
+
+	// stuff is registered, so lets go ahead and make our emulated C++ scripted lua classes.
+	for(UnitBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
+	{
+		m_scriptMgr->register_creature_script( itr->first, CreateLuaCreature );
+	}
+
+	for(GameObjectBindingMap::iterator itr = m_gameobjectBinding.begin(); itr != m_gameobjectBinding.end(); ++itr)
+	{
+		m_scriptMgr->register_gameobject_script( itr->first, CreateLuaGameObject );
+	}
+
+	for(QuestBindingMap::iterator itr = m_questBinding.begin(); itr != m_questBinding.end(); ++itr)
+	{
+		QuestScript * qs = CreateLuaQuestScript( itr->first );
+		if( qs != NULL )
+			m_scriptMgr->register_quest_script( itr->first, qs );
+	}
+}
+
+void LuaEngineMgr::RegisterUnitEvent(uint32 Id, uint32 Event, const char * FunctionName)
+{
+	UnitBindingMap::iterator itr = m_unitBinding.find(Id);
+	if(itr == m_unitBinding.end())
+	{
+		LuaUnitBinding ub;
+		memset(&ub,0,sizeof(LuaUnitBinding));
+		ub.Functions[Event] = strdup(FunctionName);
+		m_unitBinding.insert(make_pair(Id,ub));
+	}
+	else
+	{
+		if(itr->second.Functions[Event]!=NULL)
+			free((void*)itr->second.Functions[Event]);
+
+		itr->second.Functions[Event]=strdup(FunctionName);
+	}
+}
+
+void LuaEngineMgr::RegisterQuestEvent(uint32 Id, uint32 Event, const char * FunctionName)
+{
+	QuestBindingMap::iterator itr = m_questBinding.find(Id);
+	if(itr == m_questBinding.end())
+	{
+		LuaQuestBinding qb;
+		memset(&qb,0,sizeof(LuaQuestBinding));
+		qb.Functions[Event] = strdup(FunctionName);
+		m_questBinding.insert(make_pair(Id,qb));
+	}
+	else
+	{
+		if(itr->second.Functions[Event]!=NULL)
+			free((void*)itr->second.Functions[Event]);
+
+		itr->second.Functions[Event]=strdup(FunctionName);
+	}
+}
+void LuaEngineMgr::RegisterGameObjectEvent(uint32 Id, uint32 Event, const char * FunctionName)
+{
+	GameObjectBindingMap::iterator itr = m_gameobjectBinding.find(Id);
+	if(itr == m_gameobjectBinding.end())
+	{
+		LuaGameObjectBinding ub;
+		memset(&ub,0,sizeof(LuaGameObjectBinding));
+		ub.Functions[Event] = strdup(FunctionName);
+		m_gameobjectBinding.insert(make_pair(Id,ub));
+	}
+	else
+	{
+		if(itr->second.Functions[Event]!=NULL)
+			free((void*)itr->second.Functions[Event]);
+
+		itr->second.Functions[Event]=strdup(FunctionName);
+	}
+}
+
+/*void LuaEngineMgr::ReloadScripts()
+{
+	m_lock.Acquire();
+
+	// acquire the locks on all the luaengines so they don't do anything.
+	for(LuaEngineMap::iterator itr = m_engines.begin(); itr != m_engines.end(); ++itr)
+		itr->first->GetLock().Acquire();
+
+	// remove all the function name bindings
+	for(UnitBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
+	{
+		for(uint32 i = 0; i < CREATURE_EVENT_COUNT; ++i)
+			if(itr->second.Functions[i] != NULL)
+				free((void*)itr->second.Functions[i]);
+	}
+	
+	for(GameObjectBindingMap::iterator itr = m_gameobjectBinding.begin(); itr != m_gameobjectBinding.end(); ++itr)
+	{
+		for(uint32 i = 0; i < GAMEOBJECT_EVENT_COUNT; ++i)
+			if(itr->second.Functions[i] != NULL)
+				free((void*)itr->second.Functions[i]);
+	}
+
+	// clear the maps
+	m_gameobjectBinding.clear();
+	m_unitBinding.clear();
+
+	// grab the first lua engine in the list, use it to re-create all the binding names.
+	LuaEngine * l = m_engines.begin()->first;
+	lua_is_starting_up = true;
+	l->Restart();
+	lua_is_starting_up = false;
+
+	// all our bindings have been re-created, go through the lua engines and restart them all, and then release their locks.
+	for(LuaEngineMap::iterator itr = m_engines.begin(); itr != m_engines.end(); ++itr)
+	{
+		if(itr->first != l)		// this one is already done
+		{
+			itr->first->Restart();
+			itr->first->GetLock().Release();
+		}
+	}
+
+	// release the big lock
+	m_lock.Release();
+}*/
+
+void LuaEngineMgr::Unload()
+{
+	/*m_lock.Acquire();
+	for(LuaEngineMap::iterator itr = m_engines.begin(); itr != m_engines.end(); ++itr)
+	{
+		delete itr->first;
+	}
+	m_lock.Release();*/
+}
+
+void LuaEngine::Restart()
+{
+	m_Lock.Acquire();
+	lua_close(L);
+	L = lua_open();
+	LoadScripts();
+	m_Lock.Release();
+}
+
+
+
+
 /************************************************************************/
 /* SCRIPT FUNCTION IMPLEMENTATION                                       */
 /************************************************************************/
@@ -716,27 +959,27 @@ int luaUnit_IsCreature(lua_State * L, Unit * ptr)
 
 int luaUnit_Emote(lua_State * L, Unit * ptr)
 {
-   if(ptr==NULL) return 0;
-   uint32 emote_id = luaL_checkint(L, 1);
-   uint32 time = luaL_checkint(L, 1);
-   if(emote_id==NULL) 
-	   return 0;
-   if (time)
-	ptr->EventAddEmote((EmoteType)emote_id,time);
-   else
-    ptr->Emote((EmoteType)emote_id);
-   return 1;
+	if(ptr==NULL) return 0;
+	uint32 emote_id = luaL_checkint(L, 1);
+	uint32 time = luaL_checkint(L, 1);
+	if(emote_id==NULL) 
+		return 0;
+	if (time)
+		ptr->EventAddEmote((EmoteType)emote_id,time);
+	else
+		ptr->Emote((EmoteType)emote_id);
+	return 1;
 }
 
 int luaUnit_GetManaPct(lua_State * L, Unit * ptr)
 {
-    if(!ptr) 
+	if(!ptr) 
 		return 0;
 	if (ptr->GetPowerType() == POWER_TYPE_MANA)
 		lua_pushnumber(L, (int)(ptr->GetUInt32Value(UNIT_FIELD_POWER1) * 100.0f / ptr->GetUInt32Value(UNIT_FIELD_MAXPOWER1)));
 	else
 		lua_pushnil(L);
-    return 1;
+	return 1;
 }
 
 int luaUnit_GetName(lua_State * L, Unit * ptr)
@@ -789,6 +1032,7 @@ int luaUnit_MoveTo(lua_State * L, Unit * ptr)
 	ptr->GetAIInterface()->MoveTo( (float)x, (float)y, (float)z, (float)o );
 	return 0;
 }
+
 int luaUnit_SetMovementType(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID(TYPEID_UNIT);
@@ -893,7 +1137,7 @@ int luaUnit_SpawnCreature(lua_State * L, Unit * ptr)
 	double o = luaL_checknumber(L, 5);
 	uint32 faction = luaL_checkint(L, 6);
 	uint32 duration = luaL_checkint(L, 7);
-	
+
 	if( !x || !y || !z || !entry_id || !faction /*|| !duration*/) //Shady: is it really required?
 	{
 		lua_pushnil(L);
@@ -935,7 +1179,7 @@ int luaUnit_SpawnGameObject(lua_State * L, Unit * ptr)
 	double z = luaL_checknumber(L, 4);
 	double o = luaL_checknumber(L, 5);
 	uint32 duration = luaL_checkint(L, 6);
-	
+
 	if(!entry_id || !duration)
 	{
 		lua_pushnil(L);
@@ -1492,7 +1736,7 @@ int luaUnit_GetRandomFriend(lua_State * L, Unit * ptr)
 		if (obj->IsUnit() && isFriendly(obj,ptr))
 			++count;
 	}
-	
+
 	if (count)
 	{
 		uint32 r = RandomUInt(count-1);
@@ -1747,7 +1991,7 @@ int luaUnit_TeleportUnit(lua_State * L, Unit * ptr)
 	float posZ = (float)luaL_checknumber(L, 4);
 	//if(!mapId || !posX || !posY || !posZ)
 	//	return 0;
-	
+
 	LocationVector vec(posX, posY, posZ);
 	((Player*)ptr)->SafeTeleport((uint32)mapId, 0, vec);
 	return 0;
@@ -1769,232 +2013,4 @@ int luaGameObject_Teleport(lua_State * L, GameObject * ptr)
 	((Player*)target)->SafeTeleport((uint32)mapId, 0, vec);
 	return 0;
 }
-
-
-/************************************************************************/
-/* Manager Stuff                                                        */
-/************************************************************************/
-
-class LuaCreature : public CreatureAIScript
-{
-public:
-	LuaCreature(Creature* creature);
-	~LuaCreature() {};
-
-	void OnCombatStart(Unit* mTarget)
-	{
-		if( m_binding->Functions[CREATURE_EVENT_ON_ENTER_COMBAT] != NULL )
-			m_engine->OnUnitEvent( _unit, CREATURE_EVENT_ON_ENTER_COMBAT, mTarget, 0 );
-	}
-
-	void OnCombatStop(Unit* mTarget)
-	{
-		if( m_binding->Functions[CREATURE_EVENT_ON_LEAVE_COMBAT] != NULL )
-			m_engine->OnUnitEvent( _unit, CREATURE_EVENT_ON_LEAVE_COMBAT, mTarget, 0 );
-	}
-
-	//virtual void OnDamageTaken(Unit* mAttacker, float fAmount) {}
-	//virtual void OnCastSpell(uint32 iSpellId) {}
-	//virtual void OnTargetParried(Unit* mTarget) {}
-	//virtual void OnTargetDodged(Unit* mTarget) {}
-	//virtual void OnTargetBlocked(Unit* mTarget, int32 iAmount) {}
-	//virtual void OnTargetCritHit(Unit* mTarget, float fAmount) {}
-	void OnTargetDied(Unit* mTarget)
-	{
-		if( m_binding->Functions[CREATURE_EVENT_ON_KILLED_TARGET] != NULL )
-			m_engine->OnUnitEvent( _unit, CREATURE_EVENT_ON_KILLED_TARGET, mTarget, 0 );
-	}
-
-	//virtual void OnParried(Unit* mTarget) {}
-	//virtual void OnDodged(Unit* mTarget) {}
-	//virtual void OnBlocked(Unit* mTarget, int32 iAmount) {}
-	//virtual void OnCritHit(Unit* mTarget, float fAmount) {}
-	//virtual void OnHit(Unit* mTarget, float fAmount) {}
-	void OnDied(Unit *mKiller)
-	{
-		if( m_binding->Functions[CREATURE_EVENT_ON_DIED] != NULL )
-			m_engine->OnUnitEvent( _unit, CREATURE_EVENT_ON_DIED, mKiller, 0 );
-	}
-
-	//virtual void OnAssistTargetDied(Unit* mAssistTarget) {}
-	//virtual void OnFear(Unit* mFeared, uint32 iSpellId) {}
-	//virtual void OnFlee(Unit* mFlee) {}
-	//virtual void OnCallForHelp() {}
-	void OnLoad()
-	{
-		if( m_binding->Functions[CREATURE_EVENT_ON_SPAWN] != NULL )
-			m_engine->OnUnitEvent( _unit, CREATURE_EVENT_ON_SPAWN, NULL, 0 );
-	}
-
-	void OnReachWP(uint32 iWaypointId, bool bForwards)
-	{
-		if( m_binding->Functions[CREATURE_EVENT_ON_REACH_WP] != NULL )
-			m_engine->OnUnitEvent( _unit, CREATURE_EVENT_ON_REACH_WP, NULL, iWaypointId );
-	}
-
-	//virtual void OnLootTaken(Player* pPlayer, ItemPrototype *pItemPrototype) {}
-	void AIUpdate()
-	{
-		if( m_binding->Functions[CREATURE_EVENT_AI_TICK] != NULL )
-			m_engine->OnUnitEvent( _unit, CREATURE_EVENT_AI_TICK, NULL, 0 );
-	}
-
-	//virtual void OnEmote(Player * pPlayer, EmoteType Emote) {}
-
-	void Destroy()
-	{
-		delete this;
-	}
-
-	LuaUnitBinding * m_binding;
-};
-
-CreatureAIScript * CreateLuaCreature(Creature * src)
-{
-	LuaUnitBinding * pBinding = g_luaMgr.GetUnitBinding( src->GetEntry() );
-	if( pBinding == NULL )
-		return NULL;
-
-	LuaCreature * pLua = new LuaCreature( src );
-	pLua->m_binding = pBinding;
-	return pLua;
-}
-
-void LuaEngineMgr::Startup()
-{
-	Log.Notice("LuaEngineMgr", "Spawning Lua Engine...");
-	m_engine = new LuaEngine();
-	lua_is_starting_up = true;
-	m_engine->LoadScripts();
-	lua_is_starting_up = false;
-
-	// stuff is registered, so lets go ahead and make our emulated C++ scripted lua classes.
-	for(UnitBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
-	{
-		m_scriptMgr->register_creature_script( itr->first, CreateLuaCreature );
-	}
-}
-
-void LuaEngineMgr::RegisterUnitEvent(uint32 Id, uint32 Event, const char * FunctionName)
-{
-	UnitBindingMap::iterator itr = m_unitBinding.find(Id);
-	if(itr == m_unitBinding.end())
-	{
-		LuaUnitBinding ub;
-		memset(&ub,0,sizeof(LuaUnitBinding));
-		ub.Functions[Event] = strdup(FunctionName);
-		m_unitBinding.insert(make_pair(Id,ub));
-	}
-	else
-	{
-		if(itr->second.Functions[Event]!=NULL)
-			free((void*)itr->second.Functions[Event]);
-
-		itr->second.Functions[Event]=strdup(FunctionName);
-	}
-}
-
-void LuaEngineMgr::RegisterQuestEvent(uint32 Id, uint32 Event, const char * FunctionName)
-{
-	QuestBindingMap::iterator itr = m_questBinding.find(Id);
-	if(itr == m_questBinding.end())
-	{
-		LuaQuestBinding qb;
-		memset(&qb,0,sizeof(LuaQuestBinding));
-		qb.Functions[Event] = strdup(FunctionName);
-		m_questBinding.insert(make_pair(Id,qb));
-	}
-	else
-	{
-		if(itr->second.Functions[Event]!=NULL)
-			free((void*)itr->second.Functions[Event]);
-
-		itr->second.Functions[Event]=strdup(FunctionName);
-	}
-}
-void LuaEngineMgr::RegisterGameObjectEvent(uint32 Id, uint32 Event, const char * FunctionName)
-{
-	GameObjectBindingMap::iterator itr = m_gameobjectBinding.find(Id);
-	if(itr == m_gameobjectBinding.end())
-	{
-		LuaGameObjectBinding ub;
-		memset(&ub,0,sizeof(LuaGameObjectBinding));
-		ub.Functions[Event] = strdup(FunctionName);
-		m_gameobjectBinding.insert(make_pair(Id,ub));
-	}
-	else
-	{
-		if(itr->second.Functions[Event]!=NULL)
-			free((void*)itr->second.Functions[Event]);
-
-		itr->second.Functions[Event]=strdup(FunctionName);
-	}
-}
-
-/*void LuaEngineMgr::ReloadScripts()
-{
-	m_lock.Acquire();
-
-	// acquire the locks on all the luaengines so they don't do anything.
-	for(LuaEngineMap::iterator itr = m_engines.begin(); itr != m_engines.end(); ++itr)
-		itr->first->GetLock().Acquire();
-
-	// remove all the function name bindings
-	for(UnitBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
-	{
-		for(uint32 i = 0; i < CREATURE_EVENT_COUNT; ++i)
-			if(itr->second.Functions[i] != NULL)
-				free((void*)itr->second.Functions[i]);
-	}
-	
-	for(GameObjectBindingMap::iterator itr = m_gameobjectBinding.begin(); itr != m_gameobjectBinding.end(); ++itr)
-	{
-		for(uint32 i = 0; i < GAMEOBJECT_EVENT_COUNT; ++i)
-			if(itr->second.Functions[i] != NULL)
-				free((void*)itr->second.Functions[i]);
-	}
-
-	// clear the maps
-	m_gameobjectBinding.clear();
-	m_unitBinding.clear();
-
-	// grab the first lua engine in the list, use it to re-create all the binding names.
-	LuaEngine * l = m_engines.begin()->first;
-	lua_is_starting_up = true;
-	l->Restart();
-	lua_is_starting_up = false;
-
-	// all our bindings have been re-created, go through the lua engines and restart them all, and then release their locks.
-	for(LuaEngineMap::iterator itr = m_engines.begin(); itr != m_engines.end(); ++itr)
-	{
-		if(itr->first != l)		// this one is already done
-		{
-			itr->first->Restart();
-			itr->first->GetLock().Release();
-		}
-	}
-
-	// release the big lock
-	m_lock.Release();
-}*/
-
-void LuaEngineMgr::Unload()
-{
-	/*m_lock.Acquire();
-	for(LuaEngineMap::iterator itr = m_engines.begin(); itr != m_engines.end(); ++itr)
-	{
-		delete itr->first;
-	}
-	m_lock.Release();*/
-}
-
-void LuaEngine::Restart()
-{
-	m_Lock.Acquire();
-	lua_close(L);
-	L = lua_open();
-	LoadScripts();
-	m_Lock.Release();
-}
-
 
