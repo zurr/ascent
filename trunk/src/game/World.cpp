@@ -3833,9 +3833,9 @@ bool World::SetInitialWorldSettings()
 	sp = dbcSpell.LookupEntryForced( 27243 );
 	if( sp != NULL )
 	{
-		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-		sp->EffectTriggerSpell[0] = 27285;
-		sp->procFlags = PROC_ON_TARGET_DIE;
+		sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[1] = 27285;
+		sp->procFlags = PROC_ON_DIE;
 		sp->procChance = 100;
 	}
 //	sp = dbcSpell.LookupEntry( 27285 );
@@ -4914,20 +4914,18 @@ bool World::SetInitialWorldSettings()
 	sp = dbcSpell.LookupEntryForced( 18692 );
 	if( sp != NULL )
 	{
-		sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
-		sp->EffectApplyAuraName[1] = SPELL_AURA_ADD_PCT_MODIFIER;
-		sp->EffectMiscValue[1] = SMT_SPELL_VALUE;
-		sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
-		sp->EffectSpellGroupRelation[1] = 65536;
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
+		sp->EffectSpellGroupRelation[0] = 65536;
 	}
 	sp = dbcSpell.LookupEntryForced( 18693 );
 	if( sp != NULL )
 	{
-		sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
-		sp->EffectApplyAuraName[1] = SPELL_AURA_ADD_PCT_MODIFIER;
-		sp->EffectMiscValue[1] = SMT_SPELL_VALUE;
-		sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
-		sp->EffectSpellGroupRelation[1] = 65536;
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
+		sp->EffectSpellGroupRelation[0] = 65536;
 	}
 
 	//warlock - Unstable Affliction
@@ -4939,7 +4937,7 @@ bool World::SetInitialWorldSettings()
 		sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
 		sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
 		sp->EffectTriggerSpell[1] = 43523;
-		sp->EffectImplicitTargetA[1] = EFF_TARGET_SINGLE_ENEMY;
+		sp->EffectImplicitTargetA[1] = EFF_TARGET_SINGLE_FRIEND;
 	}
 	sp = dbcSpell.LookupEntryForced( 30404 );
 	if( sp != NULL )
@@ -4949,7 +4947,7 @@ bool World::SetInitialWorldSettings()
 		sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
 		sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
 		sp->EffectTriggerSpell[1] = 43523;
-		sp->EffectImplicitTargetA[1] = EFF_TARGET_SINGLE_ENEMY;
+		sp->EffectImplicitTargetA[1] = EFF_TARGET_SINGLE_FRIEND;
 	}
 	sp = dbcSpell.LookupEntryForced( 30405 );
 	if( sp != NULL )
@@ -4959,7 +4957,7 @@ bool World::SetInitialWorldSettings()
 		sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
 		sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
 		sp->EffectTriggerSpell[1] = 43523;
-		sp->EffectImplicitTargetA[1] = EFF_TARGET_SINGLE_ENEMY;
+		sp->EffectImplicitTargetA[1] = EFF_TARGET_SINGLE_FRIEND;
 	}
 
 	//warlock - Improved Drain Soul

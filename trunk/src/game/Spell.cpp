@@ -2411,7 +2411,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	}	
 
 	damage = CalculateEffect(i,unitTarget);  
-	sLog.outDebug( "WORLD: Spell effect id = %u, damage = %d", m_spellInfo->Effect[i], damage); 
+	sLog.outDebug( "WORLD: Spell (%u) effect id = %u, damage = %d", m_spellInfo->Id,m_spellInfo->Effect[i], damage); 
 	
 	if( m_spellInfo->Effect[i]<TOTAL_SPELL_EFFECTS)
 	{
@@ -3712,7 +3712,11 @@ exit:
 		}
 	 }
 
-	if( u_caster != NULL )
+	Unit *tcaster;
+	if( i_caster != NULL && target)		
+		tcaster = target->GetMapMgr()->GetUnit( i_caster->GetUInt64Value( ITEM_FIELD_CREATOR ) ); //we should inherit the modifiers from the conjured food caster
+	else tcaster = u_caster;
+	if( tcaster != NULL )
 	{
 		int32 spell_flat_modifers=0;
 		int32 spell_pct_modifers=0;
@@ -3743,29 +3747,6 @@ exit:
 		value = value + value*(spell_pct_modifers+spell_pct_modifers2)/100 + spell_flat_modifers;
 
 	}
-	else if( i_caster != NULL && target)
-	{	
-		//we should inherit the modifiers from the conjured food caster
-		Unit *item_creator = target->GetMapMgr()->GetUnit( i_caster->GetUInt64Value( ITEM_FIELD_CREATOR ) );
-		if( item_creator != NULL )
-		{
-			int32 spell_flat_modifers=0;
-			int32 spell_pct_modifers=0;
-			int32 spell_pct_modifers2=0;//separated from the other for debugging purpuses
-
-			SM_FIValue(item_creator->SM_FSPELL_VALUE,&spell_flat_modifers,m_spellInfo->SpellGroupType);
-			SM_FIValue(item_creator->SM_PSPELL_VALUE,&spell_pct_modifers,m_spellInfo->SpellGroupType);
-
-			SM_FIValue(item_creator->SM_FEffectBonus,&spell_flat_modifers,m_spellInfo->SpellGroupType);
-			SM_FIValue(item_creator->SM_PEffectBonus,&spell_pct_modifers,m_spellInfo->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-			if(spell_flat_modifers!=0 || spell_pct_modifers!=0 || spell_pct_modifers2!=0)
-				printf("!!!!ITEMCASTER ! : spell value mod flat %d , spell value mod pct %d, spell value mod pct2 %d , spell dmg %d, spell group %u\n",spell_flat_modifers,spell_pct_modifers,spell_pct_modifers2,value,m_spellInfo->SpellGroupType);
-#endif
-			value = value + value*(spell_pct_modifers+spell_pct_modifers2)/100 + spell_flat_modifers;
-		}
-	}
-
 
 	return value;
 }

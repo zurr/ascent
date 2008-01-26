@@ -887,9 +887,37 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 								if( CastingSpell->NameHash!=SPELL_HASH_SHADOW_BOLT)//shadow bolt								
 									continue;
 							}break;
+						// warlock - Seed of Corruption
+						case 27285:
+							{
+//printf("!!!!!!!!we are in seed of corruption1\n");
+								if( !CastingSpell )
+									continue;
+//printf("!!!!!!!!we are in seed of corruption2 and spell id %u\n",CastingSpell->Id);
+								//only trigger effect for specified spells
+								if( CastingSpell->NameHash != SPELL_HASH_SEED_OF_CORRUPTION )						
+									continue;
+//printf("!!!!!!!!we are in seed of corruption3 \n");
+								Unit *new_caster = victim;
+								if( new_caster && new_caster->isAlive() )
+								{
+//printf("!!!!!!!!we are in seed of corruption4 \n");
+									SpellEntry *spellInfo = dbcSpell.LookupEntry( spellId ); //we already modified this spell on server loading so it must exist
+									Spell *spell = new Spell( new_caster, spellInfo ,true, NULL );
+									SpellCastTargets targets;
+									targets.m_unitTarget = GetGUID();
+									spell->prepare(&targets);
+								}
+								continue;
+							}break;							
 						// warlock - Improved Drain Soul
 						case 18371:
 							{
+								if( !CastingSpell )
+									continue;
+								//only trigger effect for specified spells
+								if( CastingSpell->NameHash != SPELL_HASH_DRAIN_SOUL )						
+									continue;
 								//null check was made before like 2 times already :P
 								dmg_overwrite = (ospinfo->EffectBasePoints[2] + 1) * GetUInt32Value( UNIT_FIELD_MAXPOWER1 ) / 100;
 							}break;

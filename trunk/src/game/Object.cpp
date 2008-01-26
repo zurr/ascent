@@ -1753,9 +1753,15 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 		}
 #endif
 		//warlock - seed of corruption
-		pVictim->HandleProc( PROC_ON_DIE, pVictim, NULL );
+		SpellEntry *killerspell;
+		if( spellId )
+			killerspell = dbcSpell.LookupEntry( spellId );
+		else killerspell = NULL;
+		pVictim->HandleProc( PROC_ON_DIE, pVictim, killerspell );
 		if( IsUnit() )
-			static_cast< Player* >( this )->HandleProc( PROC_ON_TARGET_DIE, pVictim, NULL );
+		{
+			static_cast< Player* >( this )->HandleProc( PROC_ON_TARGET_DIE, pVictim, killerspell );
+		}
 		pVictim->m_procCounter = 0;
 
 		/* victim died! */
