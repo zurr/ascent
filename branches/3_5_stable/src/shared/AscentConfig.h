@@ -43,13 +43,7 @@
 #ifdef ENABLE_COLLISION
 # define COLLISION 1
 #endif
-#define COLLISION 1
-
-/** Enable instance checkpoint system
- * This is not blizzlike, but a cool feature :p
- * Default: Disabled
- */
-//#define ENABLE_CHECKPOINT_SYSTEM
+//#define COLLISION 1
 
 /** Use memory mapping for map files for faster access (let OS take care of caching)
  * (currently only available under windows)

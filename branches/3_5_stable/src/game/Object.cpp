@@ -1745,13 +1745,6 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	/* -------------------------- HIT THAT CAUSES VICTIM TO DIE ---------------------------*/
 	if ((isCritter || health <= damage) )
 	{
-#ifdef ENABLE_CHECKPOINT_SYSTEM
-		if(pVictim->GetTypeId()==TYPEID_UNIT && IsPlayer())
-		{
-			if( ((Creature*)pVictim)->GetCreatureName() && ((Creature*)pVictim)->GetCreatureName()->Rank>0 && static_cast< Player* >( this )->GetGuildId())
-				CheckpointMgr::getSingleton().KilledCreature( static_cast< Player* >( this )->GetGuildId(), pVictim->GetEntry() );
-		}
-#endif
 		//warlock - seed of corruption
 		pVictim->HandleProc( PROC_ON_DIE, pVictim, NULL );
 		if( IsUnit() )
