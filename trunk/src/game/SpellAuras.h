@@ -243,6 +243,7 @@ enum MOD_TYPES
     SPELL_AURA_INCREASE_CASTING_TIME_PCT = 216,
     SPELL_AURA_REGEN_MANA_STAT_PCT=219,
     SPELL_AURA_HEALING_STAT_PCT=220,
+	SPELL_AURA_DUMMY_AURA =226 ,  // Used by Aspect of the Viper
     SPELL_AURA_INCREASE_MAX_HEALTH=230,//Used by Commanding Shout
 	SPELL_AURA_MODIFY_AXE_SKILL=240,
     TOTAL_SPELL_AURAS = 241,
@@ -555,7 +556,7 @@ public:
 	void SpellAuraModBlockValue(bool apply);
 	void SpellAuraFinishingMovesCannotBeDodged(bool apply);
 	void SpellAuraAxeSkillModifier(bool apply);
-
+	void SpellAuraDummyAura(bool apply);
 	void SendModifierLog(int32 ** m,int32 v,uint64 mask,uint8 type,bool pct = false);
 	void SendDummyModifierLog(std::map<SpellEntry*,uint32> * m,SpellEntry * spellInfo,uint32 i,bool apply,bool pct = false);
 

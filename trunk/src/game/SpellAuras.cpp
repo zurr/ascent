@@ -246,7 +246,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraNULL,//223 // used in one spell, cold stare 43593
 		&Aura::SpellAuraNULL,//224 // not used
 		&Aura::SpellAuraNULL,//225 // Prayer of Mending "Places a spell on the target that heals them for $s1 the next time they take damage.  When the heal occurs, Prayer of Mending jumps to a raid member within $a1 yards.  Jumps up to $n times and lasts $d after each jump.  This spell can only be placed on one target at a time."
-		&Aura::SpellAuraNULL,//226 // used in brewfest spells, headless hoerseman
+		&Aura::SpellAuraDummyAura,//226 // used in brewfest spells, headless hoerseman, **aspect of the viper**
 		&Aura::SpellAuraNULL,//227 Inflicts [SPELL DAMAGE] damage to enemies in a cone in front of the caster. (based on combat range) http://www.thottbot.com/s40938
 		&Aura::SpellAuraNULL,//228 Stealth Detection. http://www.thottbot.com/s34709
 		&Aura::SpellAuraNULL,//229 Apply Aura:Reduces the damage your pet takes from area of effect attacks http://www.thottbot.com/s35694
@@ -7427,5 +7427,35 @@ void Aura::SpellAuraAxeSkillModifier(bool apply)
 			p_target->_ModifySkillBonus( SKILL_2H_AXES, -mod->m_amount );
 		}
 		p_target->UpdateStats();
+	}
+}
+
+void Aura::SpellAuraDummyAura(bool apply)
+{
+	// I know, there's already an Aura::SpellAuraDummy, but some spells use a different aura ID (226), which is also Dummy.
+	switch( m_spellProto->NameHash )
+	{
+		case SPELL_HASH_ASPECT_OF_THE_VIPER:
+			if( p_target )
+			{
+				if( apply )
+				{
+					// LF a CORRECT formula, what i have here is appropriated data
+					float regenPct = 0.25f, regen;
+					// we start at 0.25*intellect at 60% mana - any lower and we increase this value, and any higher and we decrease it.
+					// at 0% mana we should have 0.5, and at 100% mana we should have 0.1
+					// the formula we'll use now is ( ManaPercent / 100 * 0.4 ) * Intellect
+					
+					regenPct = ( (float)( p_target->GetManaPct() / 100 ) * 0.4 );
+					regen = regenPct * (float)p_target->GetUInt32Value( UNIT_FIELD_STAT3 );
+
+				SetPositive();
+				sEventMgr.AddEvent(this, &Aura::EventPeriodicManaPct,(float)regen,
+				EVENT_AURA_PERIOCIC_MANA,	GetSpellProto()->EffectAmplitude[mod->i],0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+				}
+			}
+		break;
+		default:
+			sLog.outDetail( "[AURA] Unhandled DummyAura 226 used on spell %u!" , m_spellProto->Id );
 	}
 }
