@@ -2421,8 +2421,11 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	else
 		sLog.outError("SPELL: unknown effect %u spellid %u",m_spellInfo->Effect[i], m_spellInfo->Id);
 
-	// remove stealth!
-	if( unitTarget )
+	// remove stealth on hostile targets
+	// NOTE: Eek.. anyone familiar with the spell system,
+	// please change "unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction()"
+	// to "this spell is not hostile"
+	if( unitTarget && unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction()  )
 	unitTarget->RemoveAllAuraType( SPELL_AURA_MOD_STEALTH );
 }
 
@@ -3326,7 +3329,7 @@ uint8 Spell::CanCast(bool tolerate)
 
 					// {Insignia|Medallion} of the {Horde|Alliance}
 					case 0xC7C45478: //Immune Movement Impairment and Loss of Control
-					case 0x048c32f9:	// insignia of the alliance/horde
+					case SPELL_HASH_IMMUNE_MOVEMENT_IMPAIRMENT_AND_LOSS_OF_CONTROL:	// insignia of the alliance/horde
 						break;
 
 						{

@@ -4696,6 +4696,9 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
 					{
 						for(uint32 y = 0; y < 3; ++y)
 						{
+							if( m_target->m_auras[x]->GetSpellProto()->MechanicsType == MECHANIC_FLEEING )
+								m_target->m_auras[x]->Remove(); // haxfix: psychic scream/fear
+
 							switch(m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[y])
 							{
 							case SPELL_AURA_MOD_STUN:
