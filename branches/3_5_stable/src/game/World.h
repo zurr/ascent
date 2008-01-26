@@ -225,25 +225,7 @@ struct MapInfo
 	}
 };
 
-class CheckpointMgr : public Singleton<CheckpointMgr>
-{
-	typedef HM_NAMESPACE::hash_map<uint32,vector<uint32> > CheckpointMap;
-	CheckpointMap m_checkpoints;
-
-	typedef HM_NAMESPACE::hash_map<uint32,set<uint32> > CheckpointCMap;
-	CheckpointCMap m_cCheckpoints;
-
-public:
-	~CheckpointMgr();
-	void Load();
-	void KilledCreature(uint32 GuildId, uint32 CreatureId);
-	void GuildCompletedCheckpoint(uint32 GuildId, uint32 Cid);
-	bool HasCompletedCheckpointAndPrequsites(uint32 GuildId, MapCheckPoint * pCheckpoint);
-};
-
-#else
 #pragma pack(pop)
-#endif
 
 enum REALM_TYPE
 {
