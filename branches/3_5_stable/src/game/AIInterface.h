@@ -405,7 +405,6 @@ public:
 	void ResetProcCounts();
 
 	ASCENT_INLINE void SetWaypointMap(WayPointMap * m) { m_waypoints = m; }
-	bool m_hasWaypointEvents;
 	bool m_isGuard;
 //	bool m_fastMove;
 	void setGuardTimer(uint32 timer) { m_guardTimer = timer; }

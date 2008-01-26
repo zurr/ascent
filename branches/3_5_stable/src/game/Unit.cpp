@@ -4124,81 +4124,11 @@ void Unit::EmoteExpire()
 	sEventMgr.RemoveEvents(this, EVENT_UNIT_EMOTE);
 }
 
-void Unit::RegisterPeriodicChatMessage(uint32 delay, uint32 msgid, std::string message,bool sendnotify)
-{
-	EventMgr::getSingleton().AddEvent(this, &Unit::DelayedChatMessage, uint32(0), msgid, message, sendnotify, EVENT_UNIT_REPEAT_MSG, delay, 0,0);
-}
-
-void Unit::DelayedChatMessage(uint32 delay, uint32 msgid, std::string message, bool sendnotify)
-{
-	if(delay == 0)	  // Send instantly
-	{
-		SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, message.c_str());
-		if(sendnotify && msgid) SendNotifyToNearby(msgid);
-	}
-	else
-	{
-		if(delay > 0)
-			EventMgr::getSingleton().AddEvent(this, &Unit::DelayedChatMessage, uint32(0), msgid, message, sendnotify, EVENT_UNIT_CHAT_MSG, delay, 1,0);
-		else
-			// We shouldn't get here; Repeat this function again, but with a delay of 0 ;)
-			DelayedChatMessage(0, msgid, message, sendnotify);
-	}
-}
-
-void Unit::SendNotifyToNearby(uint32 msgid)
-{
-	//Zehamster: commented the full code, since it does nothing but wasting cpu cycles
-	/*
-	InRangeSet::iterator itr = GetInRangeSetBegin();
-	for(;itr!=GetInRangeSetEnd();++itr)
-	{
-		if((*itr)->GetTypeId() == TYPEID_UNIT)
-		{
-			// Send lua event
-			Creature *crt = ((Creature*)(*itr));
-			//Log::getSingleton().outDebug("LUA: Sending \"NOTIFY\" Msg %d to mob %s", msgid, crt->GetCreatureName()->Name.c_str());
-			//crt->LUA_SendEvent(ON_UNIT_NOTIFYMSG, msgid);
-		}
-	}
-	*/
-}
-
-void Unit::SendNotifyToNearbyCreature(uint32 msgid, uint32 entryid)
-{
-	//Zehamster: commented the full code since it does nothing but wasting cpu cycles
-	/*
-	InRangeSet::iterator itr = GetInRangeSetBegin();
-	for(;itr!=GetInRangeSetEnd();++itr)
-	{
-		if((*itr)->GetTypeId() == TYPEID_UNIT && (*itr)->GetEntry() == entryid)
-		{
-			// Send lua event
-			Creature *crt = ((Creature*)(*itr));
- //		   Log::getSingleton().outDebug("LUA: Sending \"NOTIFY\" Msg %d to mob %s", msgid, GetCreatureName()->Name.c_str());
-			//crt->LUA_SendEvent(ON_UNIT_NOTIFYMSG, msgid);
-		}
-	}
-	*/
-}
 
 uint32 Unit::GetResistance(uint32 type)
 {
 	return GetUInt32Value(UNIT_FIELD_RESISTANCES+type);
 }
-
-// grep: note to self.. this should be moved to creature.
-/*
-void Unit::InitializeEscortQuest(uint32 questid, bool stopatend, bool returnondie)
-{
-	this->bEscortActive = false;
-	this->bHasEscortQuest = true;
-	this->bStopAtEndOfWaypoints = stopatend;
-	this->m_escortquestid = questid;
-	this->m_escortupdatetimer = 0;
-	if(this->m_useAI && this->GetAIInterface() != NULL)
-		GetAIInterface()->setMoveType(10);				// Quest
-}*/
 
 void Unit::MoveToWaypoint(uint32 wp_id)
 {
@@ -4218,37 +4148,6 @@ void Unit::MoveToWaypoint(uint32 wp_id)
 		ai->MoveTo(wp->x, wp->y, wp->z, 0);
 	}
 }
-
-/*
-void Unit::StartEscortQuest()
-{
-	this->bEscortActive = true;
-	this->m_escortupdatetimer = 1000;
-}
-
-void Unit::PauseEscortQuest()
-{
-	this->bEscortActive = false;
-}
-
-void Unit::EndEscortQuest()
-{
-	// Return to spawn
-	Creature *crt = ((Creature*)this);
-	GetAIInterface()->MoveTo(crt->respawn_cord[0], crt->respawn_cord[1], crt->respawn_cord[2], crt->respawn_cord[3]);
-	this->bEscortActive = false;
-	this->m_escortupdatetimer = 0;
-}
-
-void Unit::EscortSetStartWP(uint32 wp)
-{
-	this->m_escortStartWP = wp;
-}
-
-void Unit::EscortSetEndWP(uint32 wp)
-{
-	this->m_escortEndWP = wp;
-}*/
 
 int32 Unit::GetDamageDoneMod(uint32 school)
 {

@@ -99,7 +99,6 @@ AIInterface::AIInterface()
 	disable_targeting = false;
 
 	next_spell_time = 0;
-	m_hasWaypointEvents = false;
 	waiting_for_cooldown = false;
 	UnitToFollow_backup = NULL;
 	m_isGuard = false;
@@ -183,7 +182,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 						objmgr.HandleMonsterSayEvent( static_cast< Creature* >( m_Unit ), MONSTER_SAY_EVENT_ENTER_COMBAT );
 
 					CALL_SCRIPT_EVENT(m_Unit, OnCombatStart)(pUnit);
-					LUA_ON_UNIT_EVENT(m_Unit, CREATURE_EVENT_ON_ENTER_COMBAT, pUnit, 0);
 
 					if( static_cast< Creature* >( m_Unit )->m_spawn && ( static_cast< Creature* >( m_Unit )->m_spawn->channel_target_go || static_cast< Creature* >( m_Unit )->m_spawn->channel_target_creature))
 					{
@@ -235,8 +233,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 					if(static_cast<Creature*>(m_Unit)->original_emotestate)
 						m_Unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, static_cast< Creature* >( m_Unit )->original_emotestate);
 					
-					LUA_ON_UNIT_EVENT(m_Unit, CREATURE_EVENT_ON_LEAVE_COMBAT, pUnit,0);
-
 					if(static_cast<Creature*>(m_Unit)->m_spawn && (static_cast< Creature* >( m_Unit )->m_spawn->channel_target_go || static_cast< Creature* >( m_Unit )->m_spawn->channel_target_creature ) )
 					{
 						if(static_cast<Creature*>(m_Unit)->m_spawn->channel_target_go)
@@ -439,7 +435,6 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 			if( pUnit == NULL ) return;
 
 			CALL_SCRIPT_EVENT(m_Unit, OnDied)(pUnit);
-			LUA_ON_UNIT_EVENT(m_Unit, CREATURE_EVENT_ON_DIED, pUnit,0);
 			m_AIState = STATE_IDLE;
 
 			StopMovement(0);
@@ -1097,7 +1092,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				MoveTo(dst->x, dst->y, dst->z,0);
 				delete dst;*/
 				_CalcDestinationAndMove(m_nextTarget, 5.0f);
-				if(!m_hasFleed) // to avoid lua excuting spam
+				if(!m_hasFleed)
 					CALL_SCRIPT_EVENT(m_Unit, OnFlee)(m_nextTarget);
 
 				m_AIState = STATE_FLEEING;
@@ -2377,11 +2372,6 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 					if(wp)
 					{
 						CALL_SCRIPT_EVENT(m_Unit, OnReachWP)(wp->id, !m_moveBackward);
-#ifdef ENABLE_LUA_SCRIPTING
-						if(m_hasWaypointEvents)
-							LUA_ON_UNIT_EVENT(m_Unit, CREATURE_EVENT_ON_REACH_WP, m_Unit, wp->id);
-#endif
-
 						if(((Creature*)m_Unit)->has_waypoint_text)
 							objmgr.HandleMonsterSayEvent(((Creature*)m_Unit), MONSTER_SAY_EVENT_RANDOM_WAYPOINT);
 

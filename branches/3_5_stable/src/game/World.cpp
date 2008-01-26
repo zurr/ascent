@@ -272,10 +272,6 @@ void CreateDummySpell(uint32 id)
 
 bool World::SetInitialWorldSettings()
 {
-#ifdef ENABLE_LUA_SCRIPTING
-	new LuaEngineMgr;
-	LuaEngineMgr::getSingleton().Startup();
-#endif
 	Log.Line();
 	Player::InitVisibleUpdateBits();
 

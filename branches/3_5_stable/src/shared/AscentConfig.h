@@ -23,14 +23,6 @@
 #ifndef __ASCENTCONFIG_H
 #define __ASCENTCONFIG_H
 
-/** Enable/disable LUA scripting system.
- * Default: Disabled
- */
-#ifdef HAVE_LUASCRIPT
-#  define ENABLE_LUA_SCRIPTING 1
-#endif
-//#define ENABLE_LUA_SCRIPTING 1
-
 /** Enable/disable Ascent world server cluster support.
  * Warning: Ascent will no longer function independantly when built in cluster mode. 
  * It will require a realmserver to function.

@@ -614,6 +614,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 					return;		// should never happen
 
 				_player->ApplyItemMods( offhandweapon, EQUIPMENT_SLOT_OFFHAND, false, false );
+				offhandweapon->m_isDirty = true;
 				if( !_player->GetItemInterface()->SafeAddItem(offhandweapon, result.ContainerSlot, result.Slot) )
 					_player->GetItemInterface()->AddItemToFreeSlot(offhandweapon);		// shouldn't happen either.
 			}
@@ -638,6 +639,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 					return;		// should never happen
 
 				_player->ApplyItemMods( mainhandweapon, EQUIPMENT_SLOT_MAINHAND, false, false );
+				mainhandweapon->m_isDirty = true;
 				if( !_player->GetItemInterface()->SafeAddItem(mainhandweapon, result.ContainerSlot, result.Slot) )
 					_player->GetItemInterface()->AddItemToFreeSlot(mainhandweapon);		// shouldn't happen either.
 			}
