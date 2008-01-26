@@ -952,9 +952,9 @@ enum SpellTypes // SPELL_ENTRY_buffType
     SPELL_TYPE_MAGE_AMPL_DUMP       = 0x00020000,
     SPELL_TYPE_WARLOCK_IMMOLATE     = 0x00040000, //maybe there is a better way to trigger the aura state for immolate spell
     SPELL_TYPE_ELIXIR_BATTLE		= 0x00080000, 
-    SPELL_TYPE_ELIXIR_GUARDIAN      = 0x00010000, 
+    SPELL_TYPE_ELIXIR_GUARDIAN      = 0x00100000, 
     SPELL_TYPE_ELIXIR_FLASK         = SPELL_TYPE_ELIXIR_BATTLE | SPELL_TYPE_ELIXIR_GUARDIAN, //weee, this contains both battle and guardian elixirs ;)
-    SPELL_TYPE_HUNTER_MARK			= 0x00020000,
+    SPELL_TYPE_HUNTER_MARK			= 0x00200000,
 };
 
 //custom stuff generated for spells that will not change in time

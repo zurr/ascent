@@ -6232,8 +6232,21 @@ void Aura::SpellAuraTrackStealthed(bool apply)
 	Unit * c;
 	if(!(c=GetUnitCaster()))
 		return;
-
-	c->trackStealth = apply;
+		c->trackStealth = apply;
+/*	if( !m_target || !p_target )
+		return;
+	if( apply )
+	{
+		if( p_target->TrackingSpell )
+			p_target->RemoveAura( p_target->TrackingSpell );
+	
+			p_target->TrackingSpell = GetSpellId();
+		}
+		else
+		{
+			p_target->TrackingSpell = 0;
+		}
+*/
 }
 
 void Aura::SpellAuraModDetectedRange(bool apply)
@@ -7446,7 +7459,7 @@ void Aura::SpellAuraDummyAura(bool apply)
 					// at 0% mana we should have 0.5, and at 100% mana we should have 0.1
 					// the formula we'll use now is ( ManaPercent / 100 * 0.4 ) * Intellect
 					
-					regenPct = ( (float)( p_target->GetManaPct() / 100 ) * 0.4 );
+					regenPct = ( (float)( p_target->GetManaPct() / 100 ) * 0.4f );
 					regen = regenPct * (float)p_target->GetUInt32Value( UNIT_FIELD_STAT3 );
 
 				SetPositive();
