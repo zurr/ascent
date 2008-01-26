@@ -1099,6 +1099,8 @@ void Spell::cancel()
 						delete dynObj;
 					}
 				}
+				// on next strike spell?
+				// NYI.
 
 				if(p_caster->GetSummonedObject())
 				{

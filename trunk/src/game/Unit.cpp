@@ -2905,8 +2905,8 @@ else
 		//sLog.outDebug( "Rd(%i) d(%i) c(%f) f(%f) s(%f) p(%f) r(%f) rage = %f", realdamage, dmg.full_damage, c, f, s, p, r, val );
 
 		ModUInt32Value( UNIT_FIELD_POWER2, (int32)val );
-		if( GetUInt32Value( UNIT_FIELD_POWER2 ) > 1000 )
-			ModUInt32Value( UNIT_FIELD_POWER2, 1000 - GetUInt32Value( UNIT_FIELD_POWER2 ) );
+		if( GetUInt32Value( UNIT_FIELD_POWER2 ) > GetUInt32Value( UNIT_FIELD_MAXPOWER2 ) )
+			ModUInt32Value( UNIT_FIELD_POWER2, GetUInt32Value( UNIT_FIELD_MAXPOWER2 ) - GetUInt32Value( UNIT_FIELD_POWER2 ) );
 
 	}
 
@@ -2925,8 +2925,8 @@ else
 		//sLog.outDebug( "Rd(%i) d(%i) c(%f) rage = %f", realdamage, dmg.full_damage, c, val );
 
 		pVictim->ModUInt32Value( UNIT_FIELD_POWER2, (int32)val );
-		if( pVictim->GetUInt32Value( UNIT_FIELD_POWER2) > 1000 )
-			pVictim->ModUInt32Value( UNIT_FIELD_POWER2, 1000 - pVictim->GetUInt32Value( UNIT_FIELD_POWER2 ) );
+		if( pVictim->GetUInt32Value( UNIT_FIELD_POWER2) > GetUInt32Value( UNIT_FIELD_MAXPOWER2 ) )
+			pVictim->ModUInt32Value( UNIT_FIELD_POWER2, GetUInt32Value( UNIT_FIELD_MAXPOWER2 ) - pVictim->GetUInt32Value( UNIT_FIELD_POWER2 ) );
 
 	}
 		

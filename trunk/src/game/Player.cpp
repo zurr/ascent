@@ -5544,7 +5544,8 @@ void Player::EventRepeatSpell()
 	if( m_isMoving )
 	{
 		//sLog.outDebug( "HUNTER AUTOSHOT 2) %i, %i", m_AutoShotAttackTimer, m_AutoShotDuration );
-		m_AutoShotAttackTimer = m_AutoShotDuration;//avoid flooding client with error mesages
+		//m_AutoShotAttackTimer = m_AutoShotDuration;//avoid flooding client with error mesages
+		m_AutoShotAttackTimer = 100; // shoot when we can
 		return;
 	}
 
