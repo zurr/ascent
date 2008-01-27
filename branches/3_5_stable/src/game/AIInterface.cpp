@@ -3285,25 +3285,43 @@ void AIInterface::CheckTarget(Unit* target)
 		UnitToFollow_backup = NULL;
 	}
 
+	AssistTargetSet::iterator  itr = m_assistTargets.find(target);
+	if(itr != m_assistTargets.end())
+		m_assistTargets.erase(itr);
+
 	TargetMap::iterator it2 = m_aiTargets.find( target );
 	if( it2 != m_aiTargets.end() || target == m_nextTarget )
 	{
 		target->CombatStatus.RemoveAttacker( m_Unit, m_Unit->GetGUID() );
 		m_Unit->CombatStatus.RemoveAttackTarget( target );
+
+		if(it2 != m_aiTargets.end())
+		{
+			m_aiTargets.erase(it2);
+		}
+
+		if (target == m_nextTarget)	 // no need to cast on these.. mem addresses are still the same
+		{
+			SetNextTarget(NULL);
+			m_nextSpell = NULL;
+
+			// find the one with the next highest threat
+			GetMostHated();
+		}
 	}
 
-	if(it2 != m_aiTargets.end())
+	if( target->GetTypeId() == TYPEID_UNIT )
 	{
-		m_aiTargets.erase(it2);
-	}
-
-	if (target == m_nextTarget)	 // no need to cast on these.. mem addresses are still the same
-	{
-		SetNextTarget(NULL);
-		m_nextSpell = NULL;
-		
-		// find the one with the next highest threat
-		GetMostHated();
+		it2 = target->GetAIInterface()->m_aiTargets.find( m_Unit );
+		if( it2 != target->GetAIInterface()->m_aiTargets.end() )
+			target->GetAIInterface()->m_aiTargets.erase( it2 );
+        
+		if( target->GetAIInterface()->m_nextTarget == m_Unit )
+		{
+			target->GetAIInterface()->m_nextTarget = NULL;
+			target->GetAIInterface()->m_nextSpell = NULL;
+			target->GetAIInterface()->GetMostHated();
+		}
 	}
 
 	if(target == UnitToFear)
@@ -3311,10 +3329,6 @@ void AIInterface::CheckTarget(Unit* target)
 
 	if(tauntedBy == target)
 		tauntedBy = NULL;
-
-	AssistTargetSet::iterator  itr = m_assistTargets.find(target);
-	if(itr != m_assistTargets.end())
-		m_assistTargets.erase(itr);
 }
 
 uint32 AIInterface::_CalcThreat(uint32 damage, SpellEntry * sp, Unit* Attacker)
