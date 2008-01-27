@@ -1011,10 +1011,6 @@ void Object::RemoveFromWorld(bool free_guid)
 	event_Relocate();
 }
 
-
-
-
-
 //! Set uint32 property
 void Object::SetUInt32Value( const uint32 index, const uint32 value )
 {

@@ -50,29 +50,35 @@ void WorldSession::HandleDuelAccepted(WorldPacket & recv_data)
 
 void WorldSession::HandleDuelCancelled(WorldPacket & recv_data)
 {
-	if(_player->DuelingWith == 0)
+	if( _player->DuelingWith == NULL )
 		return;
-	if (_player->m_duelState == DUEL_STATE_STARTED)
+
+	if( _player->m_duelState == DUEL_STATE_STARTED )
 	{
-		_player->DuelingWith->EndDuel(DUEL_WINNER_KNOCKOUT);
+		_player->DuelingWith->EndDuel( DUEL_WINNER_KNOCKOUT );
 		return;
 	}
-	WorldPacket data(SMSG_DUEL_COMPLETE, 1);
+
+	WorldPacket data( SMSG_DUEL_COMPLETE, 1 );
 	data << uint8(0);
-	SendPacket(&data);
-	_player->DuelingWith->m_session->SendPacket(&data);
-	GameObject *arbiter = _player->GetMapMgr() ? _player->GetMapMgr()->GetGameObject(_player->GetUInt32Value(PLAYER_DUEL_ARBITER)) : 0;
-	if(arbiter)
+	SendPacket( &data );
+
+	_player->DuelingWith->m_session->SendPacket( &data );
+	
+	GameObject* arbiter = _player->GetMapMgr() ? _player->GetMapMgr()->GetGameObject( _player->GetUInt32Value( PLAYER_DUEL_ARBITER ) ) : NULL;
+	if( arbiter != NULL )
 	{
-			arbiter->RemoveFromWorld(true);
+			arbiter->RemoveFromWorld( true );
 			delete arbiter;
- 		}
-	_player->SetUInt64Value(PLAYER_DUEL_ARBITER, 0);
-	_player->DuelingWith->SetUInt64Value(PLAYER_DUEL_ARBITER, 0);
-	_player->SetUInt32Value(PLAYER_DUEL_TEAM, 0);
-	_player->DuelingWith->SetUInt32Value(PLAYER_DUEL_TEAM, 0);
+	}
+
+	_player->DuelingWith->SetUInt64Value( PLAYER_DUEL_ARBITER, 0 );
+	_player->DuelingWith->SetUInt32Value( PLAYER_DUEL_TEAM, 0 );
+
+	_player->SetUInt64Value( PLAYER_DUEL_ARBITER, 0 );
+	_player->SetUInt32Value( PLAYER_DUEL_TEAM, 0 );
+
 	_player->DuelingWith->DuelingWith = NULL;
 	_player->DuelingWith = NULL;
 
-	}
-
+}
