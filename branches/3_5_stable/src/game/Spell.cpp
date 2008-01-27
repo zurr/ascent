@@ -2752,6 +2752,13 @@ uint8 Spell::CanCast(bool tolerate)
 				return SPELL_FAILED_ITEM_GONE;
 		}
 
+		// stealth check
+		if( m_spellInfo->NameHash == SPELL_HASH_STEALTH )
+		{
+			if( p_caster->CombatStatus.IsInCombat() )
+				return SPELL_FAILED_TARGET_IN_COMBAT;
+		}
+
 		// check if we have the required gameobject focus
 		if( m_spellInfo->RequiresSpellFocus)
 		{
