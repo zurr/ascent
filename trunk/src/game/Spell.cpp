@@ -2353,7 +2353,7 @@ bool Spell::TakePower()
 
 void Spell::HandleEffects(uint64 guid, uint32 i)
 {   
-	if(guid == m_caster->GetGUID())
+	if( guid == m_caster->GetGUID() )
 	{
 		unitTarget = u_caster;
 		gameObjTarget = g_caster;
@@ -2362,7 +2362,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	}
 	else
 	{
-		if(!m_caster->IsInWorld())
+		if( !m_caster->IsInWorld() )
 		{
 			unitTarget = 0;
 			playerTarget = 0;
@@ -2427,8 +2427,9 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	// NOTE: Eek.. anyone familiar with the spell system,
 	// please change "unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction()"
 	// to "this spell is not hostile"
-	if( unitTarget && u_caster && unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction()  )
-	unitTarget->RemoveAllAuraType( SPELL_AURA_MOD_STEALTH );
+	// this needs to be moved its stupid to put this here
+	if( unitTarget != NULL && u_caster != NULL && unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction() )
+		unitTarget->RemoveAllAuraType( SPELL_AURA_MOD_STEALTH );
 }
 
 void Spell::HandleAddAura(uint64 guid)
