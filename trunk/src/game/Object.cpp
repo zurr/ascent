@@ -2258,7 +2258,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				CritChance -= static_cast<Player*>(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE );
 			}
 			if( CritChance < 0 ) CritChance = 0;
-			if( CritChance > 95 ) CritChance = 0;
+			if( CritChance > 95 ) CritChance = 95;
 			critical = Rand(CritChance);
 			sLog.outString( "SpellNonMeleeDamageLog: Crit Chance %f%%, WasCrit = %s" , CritChance , critical ? "Yes" : "No" );
 //==========================================================================================
