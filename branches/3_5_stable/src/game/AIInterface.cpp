@@ -2742,52 +2742,60 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 	}
 
 	//Unit Follow Code
-	if(UnitToFollow != NULL && (m_AIState == STATE_IDLE || m_AIState == STATE_FOLLOWING) && UnitToFollow->IsInWorld())
+	if(UnitToFollow != NULL)
 	{
-		float dist = m_Unit->GetDistanceSq(UnitToFollow);
-
-		// re-calculate orientation based on target's movement
-		if(m_lastFollowX != UnitToFollow->GetPositionX() ||
-			m_lastFollowY != UnitToFollow->GetPositionY())
+		if( UnitToFollow->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() || !UnitToFollow->IsInWorld() )
+			UnitToFollow = NULL;
+		else
 		{
-			float dx = UnitToFollow->GetPositionX() - m_Unit->GetPositionX();
-			float dy = UnitToFollow->GetPositionY() - m_Unit->GetPositionY();
-			if(dy != 0.0f)
+			if(m_AIState == STATE_IDLE || m_AIState == STATE_FOLLOWING)
 			{
-				float angle = atan2(dx,dy);
-				m_Unit->SetOrientation(angle);
-			}
-			m_lastFollowX = UnitToFollow->GetPositionX();
-			m_lastFollowY = UnitToFollow->GetPositionY();
-		}
+				float dist = m_Unit->GetDistanceSq(UnitToFollow);
 
-		if (dist > (FollowDistance*FollowDistance)) //if out of range
-		{
-			m_AIState = STATE_FOLLOWING;
-			
-			if(dist > 25.0f) //25 yard away lets run else we will loose the them
-				m_moveRun = true;
-			else 
-				m_moveRun = false;
+				// re-calculate orientation based on target's movement
+				if(m_lastFollowX != UnitToFollow->GetPositionX() ||
+					m_lastFollowY != UnitToFollow->GetPositionY())
+				{
+					float dx = UnitToFollow->GetPositionX() - m_Unit->GetPositionX();
+					float dy = UnitToFollow->GetPositionY() - m_Unit->GetPositionY();
+					if(dy != 0.0f)
+					{
+						float angle = atan2(dx,dy);
+						m_Unit->SetOrientation(angle);
+					}
+					m_lastFollowX = UnitToFollow->GetPositionX();
+					m_lastFollowY = UnitToFollow->GetPositionY();
+				}
 
-			if(m_AIType == AITYPE_PET || UnitToFollow == m_formationLinkTarget) //Unit is Pet/formation
-			{
-				if(dist > 900.0f/*30*/)
-					m_moveSprint = true;
+				if (dist > (FollowDistance*FollowDistance)) //if out of range
+				{
+					m_AIState = STATE_FOLLOWING;
+					
+					if(dist > 25.0f) //25 yard away lets run else we will loose the them
+						m_moveRun = true;
+					else 
+						m_moveRun = false;
 
-				float delta_x = UnitToFollow->GetPositionX();
-				float delta_y = UnitToFollow->GetPositionY();
-				float d = 3;
-				if(m_formationLinkTarget)
-					d = m_formationFollowDistance;
+					if(m_AIType == AITYPE_PET || UnitToFollow == m_formationLinkTarget) //Unit is Pet/formation
+					{
+						if(dist > 900.0f/*30*/)
+							m_moveSprint = true;
 
-				MoveTo(delta_x+(d*(cosf(m_fallowAngle+UnitToFollow->GetOrientation()))),
-					   delta_y+(d*(sinf(m_fallowAngle+UnitToFollow->GetOrientation()))),
-					   UnitToFollow->GetPositionZ(),UnitToFollow->GetOrientation());				
-			}
-			else
-			{
-				_CalcDestinationAndMove(UnitToFollow, FollowDistance);
+						float delta_x = UnitToFollow->GetPositionX();
+						float delta_y = UnitToFollow->GetPositionY();
+						float d = 3;
+						if(m_formationLinkTarget)
+							d = m_formationFollowDistance;
+
+						MoveTo(delta_x+(d*(cosf(m_fallowAngle+UnitToFollow->GetOrientation()))),
+							delta_y+(d*(sinf(m_fallowAngle+UnitToFollow->GetOrientation()))),
+							UnitToFollow->GetPositionZ(),UnitToFollow->GetOrientation());				
+					}
+					else
+					{
+						_CalcDestinationAndMove(UnitToFollow, FollowDistance);
+					}
+				}
 			}
 		}
 	}
@@ -3342,6 +3350,9 @@ void AIInterface::CheckTarget(Unit* target)
 			target->GetAIInterface()->m_nextSpell = NULL;
 			target->GetAIInterface()->GetMostHated();
 		}
+
+		if( target->GetAIInterface()->UnitToFollow == m_Unit )
+			target->GetAIInterface()->UnitToFollow = NULL;
 	}
 
 	if(target == UnitToFear)
