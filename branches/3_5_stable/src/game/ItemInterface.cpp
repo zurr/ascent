@@ -202,10 +202,10 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 			if( tempitem == item )
 			{
 #ifdef WIN32
-				OutputCrashLogLine("item duplication, callstack:");
-				printf("item duplication, callstack: ");
-				CStackWalker ws;
-				ws.ShowCallstack();
+				//OutputCrashLogLine("item duplication, callstack:");
+				//printf("item duplication, callstack: ");
+				//CStackWalker ws;
+				//ws.ShowCallstack();
 #endif
 				return false;
 			}
@@ -218,10 +218,10 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 					if( static_cast<Container*>(tempitem)->GetItem( j ) == item )
 					{
 #ifdef WIN32
-						OutputCrashLogLine("item duplication in container, callstack:");
-						printf("item duplication in container, callstack: ");
-						CStackWalker ws;
-						ws.ShowCallstack();
+						//OutputCrashLogLine("item duplication in container, callstack:");
+						//printf("item duplication in container, callstack: ");
+						//CStackWalker ws;
+						//ws.ShowCallstack();
 #endif
 						return false;
 					}
@@ -2458,7 +2458,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 			m_pOwner->SetDuelWield( false );
 	}
 
-	// Reapply weapon mods immediately to prevent exploit
+/*	// Reapply weapon mods immediately to prevent exploit		// WTF? - Burlex
 	if( ( dstslot >= EQUIPMENT_SLOT_MAINHAND && dstslot <= EQUIPMENT_SLOT_RANGED ) || ( srcslot >= EQUIPMENT_SLOT_MAINHAND && srcslot <= EQUIPMENT_SLOT_RANGED ) )
 	{
 		if( m_pItems[dstslot] != NULL )
@@ -2471,7 +2471,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 			m_pOwner->ApplyItemMods( m_pItems[srcslot], srcslot, false, false );
 			m_pOwner->ApplyItemMods( m_pItems[srcslot], srcslot, true, false );
 		}
-	}
+	}*/
 
 }
 
