@@ -120,13 +120,9 @@ Zack - test my shit :
 - hunter : Steady Shot 34120
 - Hunter : Improved Stings 19468
 - Hunter : Mortal Shots 19490
-- Hunter : Improved Barrage 35111
 - Hunter : Clever Traps 19245
-- Hunter : Thrill of the Hunt 34499
 - warlock: Improved Enslave Demon 18822
 - warlock: Master Conjuror 18768 - should work
-- warlock - Seed of Corruption 27243 - might not be perfect in all cases
-- pyroclasm procs on self
 
 ==========================================================================
 Capt - test my shit :

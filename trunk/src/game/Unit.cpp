@@ -566,7 +566,9 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 		if(CastingSpell)
 		{
 			//this is to avoid spell proc on spellcast loop. We use dummy that is same for both spells
-			if( CastingSpell->Id == itr2->origId || CastingSpell->Id == itr2->spellId)
+			if( 
+				//CastingSpell->Id == itr2->origId || //removed by Zack : ex warlock - seed of corruption (or pyroclasm )ticks trigger the child effec
+				CastingSpell->Id == itr2->spellId )//proc should not proc on self
 			{
 				//printf("WOULD CRASH HERE ON PROC: CastingId: %u, OrigId: %u, SpellId: %u\n", CastingSpell->Id, itr2->origId, itr2->spellId);
 				continue;
@@ -574,7 +576,7 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 		}
 		SpellEntry *ospinfo = dbcSpell.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 		//this requires some specific spell check,not yet implemented
-		if(itr2->procFlags & flag)
+		if( (itr2->procFlags & flag) != 0 )
 		{
 			uint32 spellId = itr2->spellId;
 			if(itr2->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
@@ -689,841 +691,850 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 				if(itr2->procFlags & PROC_REMOVEONUSE)
 					RemoveAura(origId);
 				int dmg_overwrite=0;
-				//these are player talents. Fuckem they pull the emu speed down 
-				if(IsPlayer())
+				uint32 talentlevel=0;
+				switch(origId)
 				{
-					uint32 talentlevel=0;
-					switch(origId)
+					//mace specialization
+					case 12284:	{talentlevel=1;}break;
+					case 12701:	{talentlevel=2;}break;
+					case 12702:	{talentlevel=3;}break;
+					case 12703:	{talentlevel=4;}break;
+					case 12704:	{talentlevel=5;}break;
+					//Unbridled Wrath
+					case 12999:	{talentlevel=1;}break;
+					case 13000:	{talentlevel=2;}break;
+					case 13001:	{talentlevel=3;}break;
+					case 13002:	{talentlevel=4;}break;
+				}
+				switch(spellId)
+				{
+					case 14189: //Seal Fate
+					case 16953: //Blood Frenzy
 					{
-						//mace specialization
-						case 12284:	{talentlevel=1;}break;
-						case 12701:	{talentlevel=2;}break;
-						case 12702:	{talentlevel=3;}break;
-						case 12703:	{talentlevel=4;}break;
-						case 12704:	{talentlevel=5;}break;
-						//Unbridled Wrath
-						case 12999:	{talentlevel=1;}break;
-						case 13000:	{talentlevel=2;}break;
-						case 13001:	{talentlevel=3;}break;
-						case 13002:	{talentlevel=4;}break;
-					}
-					switch(spellId)
+						if(!this->IsPlayer() || 
+							!CastingSpell || 
+							CastingSpell->Id == 14189 ||
+							CastingSpell->Id == 16953)
+							continue;
+						if( CastingSpell->Effect[0]!=80 &&
+							CastingSpell->Effect[1]!=80 &&
+							CastingSpell->Effect[2]!=80 &&
+							CastingSpell->NameHash != SPELL_HASH_MANGLE__CAT_)
+							continue;
+					}break;
+					case 17106: //druid intencity
 					{
-						case 14189: //Seal Fate
-						case 16953: //Blood Frenzy
+						if( CastingSpell->Id != 5229)//enrage
+							continue;
+					}break;
+					case 31616:
+					{
+						//yep, another special case: Nature's grace
+						if(GetHealthPct()>30)
+							continue;
+					}break;
+					case 37309:
+					{
+						if (!this->IsPlayer())
+							continue;
+						if (static_cast<Player*>(this)->GetShapeShift() != FORM_BEAR ||
+							static_cast<Player*>(this)->GetShapeShift() != FORM_DIREBEAR)
+							continue;
+					}break;
+					case 37310:
+					{
+						if (!this->IsPlayer() || static_cast<Player*>(this)->GetShapeShift() != FORM_CAT)
+							continue;
+					}break;
+                    case 34754: //holy concentration
+                    {
+                        if (!CastingSpell)
+							continue;
+						if (CastingSpell->NameHash != SPELL_HASH_FLASH_HEAL &&
+							CastingSpell->NameHash != SPELL_HASH_BINDING_HEAL &&
+							CastingSpell->NameHash != SPELL_HASH_GREATER_HEAL)
+							continue;
+					}break;
+					case 5530:
+					{
+						//warrior/rogue mace specialization can trigger only when using maces
+						Item *it;
+						if(static_cast<Player*>(this)->GetItemInterface())
 						{
-							if(!this->IsPlayer() || 
-								!CastingSpell || 
-								CastingSpell->Id == 14189 ||
-								CastingSpell->Id == 16953)
-								continue;
-							if( CastingSpell->Effect[0]!=80 &&
-								CastingSpell->Effect[1]!=80 &&
-								CastingSpell->Effect[2]!=80 &&
-								CastingSpell->NameHash != SPELL_HASH_MANGLE__CAT_)
-								continue;
-						}break;
-						case 17106: //druid intencity
-						{
-							if( CastingSpell->Id != 5229)//enrage
-								continue;
-						}break;
-						case 31616:
-						{
-							//yep, another special case: Nature's grace
-							if(GetHealthPct()>30)
-								continue;
-						}break;
-						case 37309:
-						{
-							if (!this->IsPlayer())
-								continue;
-							if (static_cast<Player*>(this)->GetShapeShift() != FORM_BEAR ||
-								static_cast<Player*>(this)->GetShapeShift() != FORM_DIREBEAR)
-								continue;
-						}break;
-						case 37310:
-						{
-							if (!this->IsPlayer() || static_cast<Player*>(this)->GetShapeShift() != FORM_CAT)
-								continue;
-						}break;
-                        case 34754: //holy concentration
-                        {
-                            if (!CastingSpell)
-								continue;
-							if (CastingSpell->NameHash != SPELL_HASH_FLASH_HEAL &&
-								CastingSpell->NameHash != SPELL_HASH_BINDING_HEAL &&
-								CastingSpell->NameHash != SPELL_HASH_GREATER_HEAL)
-								continue;
-						}break;
-						case 5530:
-						{
-							//warrior/rogue mace specialization can trigger only when using maces
-							Item *it;
-							if(static_cast<Player*>(this)->GetItemInterface())
+							it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+							if(it && it->GetProto())
 							{
-								it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-								if(it && it->GetProto())
-								{
-									uint32 reqskill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
-									if(reqskill!=SKILL_MACES && reqskill!=SKILL_2H_MACES)
-										continue;
-								}
-								else continue; //no weapon no joy
+								uint32 reqskill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
+								if(reqskill!=SKILL_MACES && reqskill!=SKILL_2H_MACES)
+									continue;
 							}
 							else continue; //no weapon no joy
-							//let's recalc chance to cast since we have a full 100 all time on this one
-							//how lame to get talentpointlevel for this spell :(
+						}
+						else continue; //no weapon no joy
+						//let's recalc chance to cast since we have a full 100 all time on this one
+						//how lame to get talentpointlevel for this spell :(
 //							float chance=it->GetProto()->Delay*100*talentlevel/60000;
-							float chance=float(it->GetProto()->Delay)*float(talentlevel)/600.0f;
-							if(!Rand(chance))
-								continue;
-						}break;
-						case 4350:
+						float chance=float(it->GetProto()->Delay)*float(talentlevel)/600.0f;
+						if(!Rand(chance))
+							continue;
+					}break;
+					case 4350:
+					{
+						//sword specialization
+						if(static_cast<Player*>(this)->GetItemInterface())
 						{
-							//sword specialization
-							if(static_cast<Player*>(this)->GetItemInterface())
-							{
-								Item *it;
-								it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-								if(it && it->GetProto())
-								{
-									uint32 reqskill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
-									if(reqskill!=SKILL_SWORDS && reqskill!=SKILL_2H_SWORDS)
-										continue;
-								}
-								else continue; //no weapon no joy
-							}
-							else continue; //no weapon no joy
-						}break;
-						case 12721:
-						{
-							//deep wound requires a melee weapon
-							if(static_cast<Player*>(this)->GetItemInterface())
-							{
-								Item *it;
-								it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-								if(it && it->GetProto())
-								{
-									//class 2 means weapons ;)
-									if(it->GetProto()->Class!=2)
-										continue;
-								}
-								else continue; //no weapon no joy
-							}
-							else continue; //no weapon no joy
-						}break;
-						//warrior - Blood Frenzy
-						case 30069:
-						case 30070:
-						{
-							if( !CastingSpell )
-								continue;
-								if( CastingSpell->NameHash != SPELL_HASH_REND && 
-									CastingSpell->NameHash != SPELL_HASH_DEEP_WOUNDS )
-									continue;
-						}break;
-						//warrior - Unbridled Wrath
-						case 12964:
-						{
-							//let's recalc chance to cast since we have a full 100 all time on this one
 							Item *it;
-							if(static_cast<Player*>(this)->GetItemInterface())
+							it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+							if(it && it->GetProto())
 							{
-								it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-								if(!(it && it->GetProto()))
-									continue; //no weapon no joy
+								uint32 reqskill=GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
+								if(reqskill!=SKILL_SWORDS && reqskill!=SKILL_2H_SWORDS)
+									continue;
 							}
 							else continue; //no weapon no joy
+						}
+						else continue; //no weapon no joy
+					}break;
+					case 12721:
+					{
+						//deep wound requires a melee weapon
+						if(static_cast<Player*>(this)->GetItemInterface())
+						{
+							Item *it;
+							it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+							if(it && it->GetProto())
+							{
+								//class 2 means weapons ;)
+								if(it->GetProto()->Class!=2)
+									continue;
+							}
+							else continue; //no weapon no joy
+						}
+						else continue; //no weapon no joy
+					}break;
+					//warrior - Blood Frenzy
+					case 30069:
+					case 30070:
+					{
+						if( !CastingSpell )
+							continue;
+							if( CastingSpell->NameHash != SPELL_HASH_REND && 
+								CastingSpell->NameHash != SPELL_HASH_DEEP_WOUNDS )
+								continue;
+					}break;
+					//warrior - Unbridled Wrath
+					case 12964:
+					{
+						//let's recalc chance to cast since we have a full 100 all time on this one
+						Item *it;
+						if(static_cast<Player*>(this)->GetItemInterface())
+						{
+							it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+							if(!(it && it->GetProto()))
+								continue; //no weapon no joy
+						}
+						else continue; //no weapon no joy
 //							float chance=float(it->GetProto()->Delay)*float(talentlevel)/600.0f;
-							float chance=float(it->GetProto()->Delay)*float(talentlevel)/300.0f; //zack this had a very low proc rate. Kinda liek a waisted talent
-							uint32 myroll=RandomUInt(100);
-							if (myroll > chance )
-								continue;
-						}break;
+						float chance=float(it->GetProto()->Delay)*float(talentlevel)/300.0f; //zack this had a very low proc rate. Kinda liek a waisted talent
+						uint32 myroll=RandomUInt(100);
+						if (myroll > chance )
+							continue;
+					}break;
 /*						//disabled by zack until finished : this needs to get trigered on trap trigger and not trap cast
-						// hunter - Entrapment
-						case 19185:
+					// hunter - Entrapment
+					case 19185:
+					{
+						if( !CastingSpell )
+							continue;
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash!=SPELL_HASH_BACKSTAB && //immolation trap
+								CastingSpell->NameHash!=SPELL_HASH_SINISTER_STRIKE && //frost trap
+								CastingSpell->NameHash!=SPELL_HASH_SHIV && //shiv
+								CastingSpell->NameHash!=SPELL_HASH_GOUGE ) //gouge
+								continue;
+					}break;*/
+					// Mage ignite talent only for fire dmg
+					case 12654:
+					{
+						if( !CastingSpell )
+							continue;
+						if( CastingSpell->School!=SCHOOL_FIRE)
+							continue;
+					}break;
+					//rogue - blade twisting
+					case 31125:
 						{
 							if( !CastingSpell )
-								continue;
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash!=SPELL_HASH_BACKSTAB && //immolation trap
-									CastingSpell->NameHash!=SPELL_HASH_SINISTER_STRIKE && //frost trap
-									CastingSpell->NameHash!=SPELL_HASH_SHIV && //shiv
-									CastingSpell->NameHash!=SPELL_HASH_GOUGE ) //gouge
-									continue;
-						}break;*/
-						// Mage ignite talent only for fire dmg
-						case 12654:
-						{
-							if( !CastingSpell )
-								continue;
-							if( CastingSpell->School!=SCHOOL_FIRE)
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash != SPELL_HASH_BACKSTAB && //backstab
+								CastingSpell->NameHash != SPELL_HASH_SINISTER_STRIKE && //sinister strike
+								CastingSpell->NameHash != SPELL_HASH_SHIV && //shiv
+								CastingSpell->NameHash != SPELL_HASH_GOUGE ) //gouge
 								continue;
 						}break;
-						//rogue - blade twisting
-						case 31125:
+					//warlock - Improved Shadow Bolt
+					case 17794:
+					case 17798:
+					case 17797:
+					case 17799:
+					case 17800:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash!=SPELL_HASH_SHADOW_BOLT)//shadow bolt								
+								continue;
+						}break;
+					// warlock - Seed of Corruption
+					case 27285:
+						{
+							bool can_proc_now = false;
+							//if we proced on spell tick
+							if( flag & PROC_ON_SPELL_HIT_VICTIM )
 							{
 								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash != SPELL_HASH_BACKSTAB && //backstab
-									CastingSpell->NameHash != SPELL_HASH_SINISTER_STRIKE && //sinister strike
-									CastingSpell->NameHash != SPELL_HASH_SHIV && //shiv
-									CastingSpell->NameHash != SPELL_HASH_GOUGE ) //gouge
 									continue;
-							}break;
-						//warlock - Improved Shadow Bolt
-						case 17794:
-						case 17798:
-						case 17797:
-						case 17799:
-						case 17800:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash!=SPELL_HASH_SHADOW_BOLT)//shadow bolt								
-									continue;
-							}break;
-						// warlock - Seed of Corruption
-						case 27285:
-							{
-//printf("!!!!!!!!we are in seed of corruption1\n");
-								if( !CastingSpell )
-									continue;
-//printf("!!!!!!!!we are in seed of corruption2 and spell id %u\n",CastingSpell->Id);
 								//only trigger effect for specified spells
 								if( CastingSpell->NameHash != SPELL_HASH_SEED_OF_CORRUPTION )						
 									continue;
-//printf("!!!!!!!!we are in seed of corruption3 \n");
-								Unit *new_caster = victim;
-								if( new_caster && new_caster->isAlive() )
-								{
-//printf("!!!!!!!!we are in seed of corruption4 \n");
-									SpellEntry *spellInfo = dbcSpell.LookupEntry( spellId ); //we already modified this spell on server loading so it must exist
-									Spell *spell = new Spell( new_caster, spellInfo ,true, NULL );
-									SpellCastTargets targets;
-									targets.m_unitTarget = GetGUID();
-									spell->prepare(&targets);
-								}
+								//this spell builds up in time
+								(*itr2).procCharges += dmg;
+								if( (int32)(*itr2).procCharges >= ospinfo->EffectBasePoints[ 1 ] && //if charge built up
+									dmg < (int32)this->GetUInt32Value( UNIT_FIELD_HEALTH ) ) //if this is not a killer blow
+									can_proc_now = true;
+							}
+							else can_proc_now = true; //target died
+							if( can_proc_now == false )
 								continue;
-							}break;							
-						// warlock - Improved Drain Soul
-						case 18371:
+							Unit *new_caster = victim;
+							if( new_caster && new_caster->isAlive() )
 							{
-								if( !CastingSpell )
-									continue;
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash != SPELL_HASH_DRAIN_SOUL )						
-									continue;
-								//null check was made before like 2 times already :P
-								dmg_overwrite = (ospinfo->EffectBasePoints[2] + 1) * GetUInt32Value( UNIT_FIELD_MAXPOWER1 ) / 100;
-							}break;
-						// warlock - Unstable Affliction
-						case 43523:
-							{
-								//null check was made before like 2 times already :P
-								dmg_overwrite = (ospinfo->EffectBasePoints[0] + 1) * 9;
-							}break;
-						//warlock soul link
-						case 25228:
-							{
-								//we need a pet for this, else we do not trigger it at all
-								if(!this->IsPlayer())
-									continue;
-								Unit *new_caster;
-								if(((Player*)this)->GetSummon())
-									new_caster = ((Player*)this)->GetSummon();
-								else if(GetUInt64Value(UNIT_FIELD_CHARM))
-									new_caster = GetMapMgr()->GetUnit(GetUInt64Value(UNIT_FIELD_CHARM));
-								else new_caster=NULL;
-								if(new_caster && new_caster->isAlive())
-								{
-									SpellEntry *spellInfo = dbcSpell.LookupEntry(25228); //we already modified this spell on server loading so it must exist
-									Spell *spell = new Spell(new_caster, spellInfo ,true, NULL);
-									spell->forced_basepoints[0] = dmg;
-									SpellCastTargets targets;
-									targets.m_unitTarget = GetGUID();
-									spell->prepare(&targets);
-								}
+								SpellEntry *spellInfo = dbcSpell.LookupEntry( spellId ); //we already modified this spell on server loading so it must exist
+								Spell *spell = new Spell( new_caster, spellInfo ,true, NULL );
+								SpellCastTargets targets;
+								targets.m_destX = GetPositionX();
+								targets.m_destY = GetPositionY();
+								targets.m_destZ = GetPositionZ();
+								spell->prepare(&targets);
+							}
+							(*itr2).deleted = true;
+							continue;
+						}break;							
+					// warlock - Improved Drain Soul
+					case 18371:
+						{
+							if( !CastingSpell )
 								continue;
-							}break;
-						//warlock - Nighfall
-						case 17941:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash != SPELL_HASH_CORRUPTION && //Corruption
-									CastingSpell->NameHash != SPELL_HASH_DRAIN_LIFE )//Drain Life								
-									continue;
-							}break;
-						//mage - Arcane Blast proc
-						case 36032:
-							{
-								if( !CastingSpell )
-									continue;
-								if( CastingSpell->NameHash != SPELL_HASH_ARCANE_BLAST ) //Arcane Blast
-									continue;
-							}break;
-						//warlock - Shadow Embrace
-						case 32386:
-						case 32388:
-						case 32389:
-						case 32390:
-						case 32391:
-							{
-								if( !CastingSpell )
-									continue;
-								else
-								{
-									if( CastingSpell->NameHash != SPELL_HASH_FIRE_SHIELD_II && // Corruption
-										CastingSpell->NameHash != SPELL_HASH_CURSE_OF_AGONY && //CoA
-										CastingSpell->NameHash != SPELL_HASH_SIPHON_LIFE && //Siphon Life
-										CastingSpell->NameHash != SPELL_HASH_SEED_OF_CORRUPTION ) //SoC
-										continue;
-								}
-							}break;
-						//warlock - Aftermath
-						case 18118:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								skilllinespell* skillability = objmgr.GetSpellSkill(CastingSpell->Id);
-								if( !skillability )
-									continue;
-								if( skillability->skilline != SKILL_DESTRUCTION )
-									continue;
-							}break;
-						//warlock - Nether Protection
-						case 30300:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
-									continue;
-								if( CastingSpell->School!=SCHOOL_FIRE &&
-									CastingSpell->School!=SCHOOL_SHADOW)
-									continue;
-							}break;
-						//warlock - Soul Leech
-						//this whole spell should get rewriten. Uses bad formulas, bad trigger method, spell is rewriten ...
-						case 30294:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								uint32 amount;
-								switch( CastingSpell->NameHash )
-								{
-									case SPELL_HASH_SHADOW_BOLT: //Shadow Bolt
-									case SPELL_HASH_SOUL_FIRE: //Soul Fire
-									case SPELL_HASH_INCINERATE: //Incinerate
-									case SPELL_HASH_SEARING_PAIN: //Searing Pain
-									case SPELL_HASH_CONFLAGRATE: //Conflagrate
-									{
-										amount = CastingSpell->EffectBasePoints[0]+1;
-									}break;
-									case SPELL_HASH_SHADOWBURN: //Shadowburn
-									{
-										amount = CastingSpell->EffectBasePoints[1]+1;
-									}break;
-									default:
-										amount=0;
-								}
-								if(!amount)
-									continue;
-								SpellEntry *spellInfo = dbcSpell.LookupEntry(spellId );
-								if(!spellInfo)
-									continue;
-								Spell *spell = new Spell(this, spellInfo ,true, NULL);
-								spell->SetUnitTarget(this);
-								spell->Heal(amount*(ospinfo->EffectBasePoints[0]+1)/100);
-								delete spell;
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash != SPELL_HASH_DRAIN_SOUL )						
 								continue;
-							}break;
-						//warlock - pyroclasm
-						case 18093:
+							//null check was made before like 2 times already :P
+							dmg_overwrite = (ospinfo->EffectBasePoints[2] + 1) * GetUInt32Value( UNIT_FIELD_MAXPOWER1 ) / 100;
+						}break;
+					// warlock - Unstable Affliction
+					case 43523:
+						{
+							//null check was made before like 2 times already :P
+							dmg_overwrite = (ospinfo->EffectBasePoints[0] + 1) * 9;
+						}break;
+					//warlock soul link
+					case 25228:
+						{
+							//we need a pet for this, else we do not trigger it at all
+							if(!this->IsPlayer())
+								continue;
+							Unit *new_caster;
+							if(((Player*)this)->GetSummon())
+								new_caster = ((Player*)this)->GetSummon();
+							else if(GetUInt64Value(UNIT_FIELD_CHARM))
+								new_caster = GetMapMgr()->GetUnit(GetUInt64Value(UNIT_FIELD_CHARM));
+							else new_caster=NULL;
+							if(new_caster && new_caster->isAlive())
 							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash != SPELL_HASH_RAIN_OF_FIRE && //Rain of Fire
-									CastingSpell->NameHash != SPELL_HASH_HELLFIRE && //Hellfire
-									CastingSpell->NameHash != SPELL_HASH_SOUL_FIRE ) //Soul Fire
-									continue;
-							}break;
-						//mage - Improved Scorch
-						case 22959:
+								SpellEntry *spellInfo = dbcSpell.LookupEntry(25228); //we already modified this spell on server loading so it must exist
+								Spell *spell = new Spell(new_caster, spellInfo ,true, NULL);
+								spell->forced_basepoints[0] = dmg;
+								SpellCastTargets targets;
+								targets.m_unitTarget = GetGUID();
+								spell->prepare(&targets);
+							}
+							continue;
+						}break;
+					//warlock - Nighfall
+					case 17941:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash != SPELL_HASH_CORRUPTION && //Corruption
+								CastingSpell->NameHash != SPELL_HASH_DRAIN_LIFE )//Drain Life								
+								continue;
+						}break;
+					//mage - Arcane Blast proc
+					case 36032:
+						{
+							if( !CastingSpell )
+								continue;
+							if( CastingSpell->NameHash != SPELL_HASH_ARCANE_BLAST ) //Arcane Blast
+								continue;
+						}break;
+					//warlock - Shadow Embrace
+					case 32386:
+					case 32388:
+					case 32389:
+					case 32390:
+					case 32391:
+						{
+							if( !CastingSpell )
+								continue;
+							else
 							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash != SPELL_HASH_SCORCH ) //Scorch
-									continue;
-							}break;
-						//mage - Combustion
-						case 28682:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING)
-									|| CastingSpell->School != SCHOOL_FIRE )
-									continue;
-								if( flag & PROC_ON_SPELL_CRIT_HIT )
-								{
-									itr2->procCharges++;
-									if( itr2->procCharges >= 3 ) //whatch that number cause it depends on original stack count !
-										RemoveAllAuraByNameHash( SPELL_HASH_COMBUSTION );
-									continue;
-								}
-							}break;
-						//priest - Misery
-						case 33200:
-						case 33199:
-						case 33198:
-						case 33197:
-						case 33196:
-							{
-								if( !CastingSpell )
-									continue;
-								else
-								{
-									if( CastingSpell->NameHash != SPELL_HASH_MIND_FLAY && // Mind Flay
-										CastingSpell->NameHash != SPELL_HASH_SHADOW_WORD__PAIN && //SW:P
-										CastingSpell->NameHash != SPELL_HASH_VAMPIRIC_TOUCH ) //SoC
-										continue;
-								}
-							}break;
-						//priest - Shadow Weaving
-						case 15258:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								if( CastingSpell->School != SCHOOL_SHADOW || !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) ) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
-									continue;
-							}break;
-						//priest - Inspiration
-						case 15363:
-						case 14893:
-						case 15357:
-							{
-								if( !CastingSpell || !( CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING ) )
+								if( CastingSpell->NameHash != SPELL_HASH_FIRE_SHIELD_II && // Corruption
+									CastingSpell->NameHash != SPELL_HASH_CURSE_OF_AGONY && //CoA
+									CastingSpell->NameHash != SPELL_HASH_SIPHON_LIFE && //Siphon Life
+									CastingSpell->NameHash != SPELL_HASH_SEED_OF_CORRUPTION ) //SoC
 									continue;
 							}
-							break;
-						//priest - Blessed Recovery
-                        case 27813:
-                        case 27817:
-                        case 27818:
-                            {
-                                if(!IsPlayer() || !dmg)
-                                    continue;
-                                SpellEntry *parentproc= dbcSpell.LookupEntry(origId);
-                                SpellEntry *spellInfo = dbcSpell.LookupEntry(spellId);
-								if (!parentproc || !spellInfo)
-									continue;
-								int32 val = parentproc->EffectBasePoints[0] + 1;
-                                Spell *spell = new Spell(this, spellInfo ,true, NULL);
-                                spell->forced_basepoints[0] = (val*dmg)/300; //per tick
-                                SpellCastTargets targets;
-                                targets.m_unitTarget = GetGUID();
-                                spell->prepare(&targets);
-                                continue;
-                            }break;
-						//shaman - Healing Way
-						case 29203:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash != SPELL_HASH_HEALING_WAVE ) //healing wave
-									continue;
-							}break;
-						//shaman - Elemental Devastation
-						case 29177:
-						case 29178:
-						case 30165:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING)) //healing wave
-									continue;
-							}break;
-						//shaman - windfurry weapon
-						case 8232:
-						case 8235:
-						case 10486:
-						case 16362:
-						case 25505:
-							{
-								if(!IsPlayer())
-									continue;
-								//!! The wierd thing is that we need the spell thet trigegred this enchant spell in order to output logs ..we are using oldspell info too 
-								//we have to recalc the value of this spell
-								SpellEntry *spellInfo = dbcSpell.LookupEntry(origId);
-								uint32 AP_owerride=GetAP() + spellInfo->EffectBasePoints[0]+1;
-								uint32 dmg = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
-								SpellEntry *sp_for_the_logs = dbcSpell.LookupEntry(spellId);
-								Strike( victim, MELEE, sp_for_the_logs, dmg, 0, 0, true, false );
-								Strike( victim, MELEE, sp_for_the_logs, dmg, 0, 0, true, false );
-								//nothing else to be done for this trigger
+						}break;
+					//warlock - Aftermath
+					case 18118:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							skilllinespell* skillability = objmgr.GetSpellSkill(CastingSpell->Id);
+							if( !skillability )
 								continue;
-							}break;
-						//rogue - Ruthlessness
-						case 14157:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//we need a finishing move for this 
-								if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE) || victim==this)
-									continue;
-							}break;
-						//rogue - Relentless Strikes
-						case 14181:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								int32 proc_Chance;
-								//chance is based actually on combopoint count and not 100% always 
-								if( CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE && IsPlayer())
-									proc_Chance = static_cast<Player*>(this)->m_comboPoints*ospinfo->EffectBasePoints[1];
-								else continue;
-								if(!Rand(proc_Chance))
-									continue;
-							}break;
-						//rogue - Find Weakness
-						case 31234:
-						case 31235:
-						case 31236:
-						case 31237:
-						case 31238:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE))
-									continue;
-							}break;
-						//rogue - Initiative
-						case 13977:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//we need a Ambush, Garrote, or Cheap Shot
-								if( !CastingSpell )
-									continue;
-
-								if( CastingSpell->NameHash != SPELL_HASH_CHEAP_SHOT && //Cheap Shot
-									CastingSpell->NameHash != SPELL_HASH_AMBUSH && //Ambush
-									CastingSpell->NameHash != SPELL_HASH_GARROTE )  //Garrote
-									continue;
-							}break;
-						//Priest - Shadowguard
-						case 28377:
-						case 28378:
-						case 28379:
-						case 28380:
-						case 28381:
-						case 28382:
-						case 28385:
-							{
-								if( CastingSpell && ( this == victim || !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) ) ) //no self casts allowed or beneficial spells
-									continue;//we can proc on ranged weapons too
-							}break;
-						//Priest - blackout
-						case 15269:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								if( CastingSpell->School!=SCHOOL_SHADOW || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
-									continue;
-							}break;
-						//warrior - improved berserker rage 
-						case 23690:
-						case 23691:
-							{
-								if(!HasActiveAura(18499))
-									continue;
-							}break;
-						//mage - Arcane Concentration 
-						case 12536:
-							{
-								//requires damageing spell
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
-									continue;
-							}break;
-						//mage - Improved Blizzard
-						case 12484:
-						case 12485:
-						case 12486:
-							{
-								if( !CastingSpell )
-									continue;
-								if( CastingSpell->NameHash != SPELL_HASH_BLIZZARD || victim == this ) //Blizzard
-									continue;
-							}break;
-						//mage - Master of Elements
-						case 29077:
-							{
-								if( !CastingSpell )
-									continue;
-								if( CastingSpell->School!=SCHOOL_FIRE && CastingSpell->School!=SCHOOL_FROST) //fire and frost criticals
-									continue;
-								dmg_overwrite = CastingSpell->manaCost * (ospinfo->EffectBasePoints[0] + 1) / 100;
-							}break;
-						//Hunter - Thrill of the Hunt
-						case 34720:
-							{
-								if( !CastingSpell )
-									continue;
-								dmg_overwrite = CastingSpell->manaCost * 40 / 100;
-							}break;
-						//priest - Reflective Shield 
-						case 33619:
-							{
-								//requires Power Word: Shield active
-								int power_word_id = HasAurasWithNameHash( SPELL_HASH_POWER_WORD__SHIELD );
-								if( !power_word_id )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//make a direct strike then exit rest of handler
-								int tdmg=abs*(ospinfo->EffectBasePoints[0]+1)/100;
-								//somehow we should make this not caused any threat (tobedone)
-								SpellNonMeleeDamageLog(victim,power_word_id, tdmg, false, true);
+							if( skillability->skilline != SKILL_DESTRUCTION )
 								continue;
-							}break;
-						//rogue - improved sprint
-						case 30918:
+						}break;
+					//warlock - Nether Protection
+					case 30300:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+								continue;
+							if( CastingSpell->School!=SCHOOL_FIRE &&
+								CastingSpell->School!=SCHOOL_SHADOW)
+								continue;
+						}break;
+					//warlock - Soul Leech
+					//this whole spell should get rewriten. Uses bad formulas, bad trigger method, spell is rewriten ...
+					case 30294:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							uint32 amount;
+							switch( CastingSpell->NameHash )
 							{
-								if( !CastingSpell )
-									continue;
-								if( CastingSpell->NameHash != SPELL_HASH_SPRINT || victim != this ) //sprint
-									continue;
-							}break;
-						//rogue - combat potency
-						case 35542:
-						case 35545:
-						case 35546:
-						case 35547:
-						case 35548:
-							{
-								if(!IsPlayer() || !dmg)
-									continue;
-								//this needs offhand weapon
-								Item *it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-								if(!it || it->GetProto()->InventoryType!=INVTYPE_WEAPON )
-									continue;
-							}break;
-						//paladin - Seal of Blood
-						case 31893:
-							{
-								//we loose health depending on father of trigger spell when trigering this effect
-								int healthtoloose=ospinfo->EffectBasePoints[1]*GetUInt32Value(UNIT_FIELD_BASE_HEALTH)/100;
-								if(healthtoloose>(int)GetUInt32Value(UNIT_FIELD_HEALTH))
-									SetUInt32Value(UNIT_FIELD_HEALTH,1);
-								else ModUInt32Value(UNIT_FIELD_HEALTH,-(int32)healthtoloose);
-							}break;
-						//paladin - Spiritual Attunement
-						case 31786:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//trigger only on heal spell cast by NOT us
-								if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING) || this == victim)
-									continue; 
-							}break;
-						//paladin - Light's Grace
-						case 31834:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								if( CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT )
-									continue; 
-							}break;
-						//paladin - Eye for an Eye
-						case 25997:
-							{
-								if( victim == this )
-									continue; //not self casted crits
-								//requires damageing spell
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
-									continue;
-								dmg_overwrite = ( dmg *  (ospinfo->EffectBasePoints[0] + 1 )) / 100 ; //only half dmg
-								int32 half_health = this->GetUInt32Value(UNIT_FIELD_HEALTH) >> 1;
-								if( dmg_overwrite > half_health )
-									dmg_overwrite = half_health ;
-							}break;
-						//paladin - Blessed Life
-						case 31828:
-							{
-								//we should test is damage is from enviroment or not :S
-								ModUInt32Value(UNIT_FIELD_HEALTH,dmg/2);
-								continue; //there is no visual for this ?
-							}break;
-							//paladin - sanctified judgement
-							case 31930:
-							{
-								//!! not working since we use post even hook and seal disapears before event
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								if(	CastingSpell->NameHash != SPELL_HASH_JUDGEMENT )
-									continue;
-								if( !IsPlayer() )
-									continue; //great, we can only make this for players 
-								Player* c = static_cast< Player* >( this );
-								//printf("is there a seal on the player ? %u \n",c->Seal);
-								if( !c->Seal )
-									continue; //how the hack did we manage to cast judgement without a seal ?
-								SpellEntry *spellInfo = dbcSpell.LookupEntry( c->Seal ); //null pointer check was already made
-								if( !spellInfo )
-									continue;	//now this is getting freeky, how the hell did we manage to create this bug ?
-								dmg_overwrite = spellInfo->manaCost / 2 ; //only half dmg
-								//printf("is there a seal on the player ? %u \n",dmg_overwrite);
-							}break;
-						//Energized
-						case 43751:
-							{
-								if( !CastingSpell )
-									continue;
-								if(	CastingSpell->NameHash != SPELL_HASH_LIGHTNING_BOLT )
-									continue;
-							}break;
-						//Spell Haste Trinket
-						case 33370:
-							{
-								if( !CastingSpell )
-									continue;
-								if( !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) )
-									continue;
-							}break;
-						//shaman - Lightning Overload
-						case 39805:
-							{
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//trigger on lightning and chain lightning. Spell should be identical , well maybe next time :P
-								if(	CastingSpell->NameHash == SPELL_HASH_LIGHTNING_BOLT || CastingSpell->NameHash == SPELL_HASH_CHAIN_LIGHTNING )
+								case SPELL_HASH_SHADOW_BOLT: //Shadow Bolt
+								case SPELL_HASH_SOUL_FIRE: //Soul Fire
+								case SPELL_HASH_INCINERATE: //Incinerate
+								case SPELL_HASH_SEARING_PAIN: //Searing Pain
+								case SPELL_HASH_CONFLAGRATE: //Conflagrate
 								{
-									spellId = CastingSpell->Id;
-									dmg_overwrite = (CastingSpell->EffectBasePoints[0] + 1) / 2; //only half dmg
-								}
-								else continue;
-							}break;
-						//item - Band of the Eternal Sage
-						case 35084:
+									amount = CastingSpell->EffectBasePoints[0]+1;
+								}break;
+								case SPELL_HASH_SHADOWBURN: //Shadowburn
+								{
+									amount = CastingSpell->EffectBasePoints[1]+1;
+								}break;
+								default:
+									amount=0;
+							}
+							if(!amount)
+								continue;
+							SpellEntry *spellInfo = dbcSpell.LookupEntry(spellId );
+							if(!spellInfo)
+								continue;
+							Spell *spell = new Spell(this, spellInfo ,true, NULL);
+							spell->SetUnitTarget(this);
+							spell->Heal(amount*(ospinfo->EffectBasePoints[0]+1)/100);
+							delete spell;
+							continue;
+						}break;
+					//warlock - pyroclasm
+					case 18093:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash != SPELL_HASH_RAIN_OF_FIRE && //Rain of Fire
+								CastingSpell->NameHash != SPELL_HASH_HELLFIRE_EFFECT && //Hellfire
+								CastingSpell->NameHash != SPELL_HASH_SOUL_FIRE ) //Soul Fire
+								continue;
+						}break;
+					//mage - Improved Scorch
+					case 22959:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash != SPELL_HASH_SCORCH ) //Scorch
+								continue;
+						}break;
+					//mage - Combustion
+					case 28682:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING)
+								|| CastingSpell->School != SCHOOL_FIRE )
+								continue;
+							if( flag & PROC_ON_SPELL_CRIT_HIT )
 							{
-								if( !CastingSpell )
-									continue;
-								if( !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) ) //requires offensive spell. ! might not cover all spells
-									continue;
-							}break;
-						// druid - Celestial Focus
-						case 16922:
+								itr2->procCharges++;
+								if( itr2->procCharges >= 3 ) //whatch that number cause it depends on original stack count !
+									RemoveAllAuraByNameHash( SPELL_HASH_COMBUSTION );
+								continue;
+							}
+						}break;
+					//priest - Misery
+					case 33200:
+					case 33199:
+					case 33198:
+					case 33197:
+					case 33196:
+						{
+							if( !CastingSpell )
+								continue;
+							else
 							{
-								if( !CastingSpell )
+								if( CastingSpell->NameHash != SPELL_HASH_MIND_FLAY && // Mind Flay
+									CastingSpell->NameHash != SPELL_HASH_SHADOW_WORD__PAIN && //SW:P
+									CastingSpell->NameHash != SPELL_HASH_VAMPIRIC_TOUCH ) //SoC
 									continue;
-								if( CastingSpell->NameHash != SPELL_HASH_STARFIRE )
-									continue;
-							}break;
-						case 37565: //setbonus
+							}
+						}break;
+					//priest - Shadow Weaving
+					case 15258:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							if( CastingSpell->School != SCHOOL_SHADOW || !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) ) //we need damaging spells for this, so we suppose all shadow spells casted on target are dmging spells = Wrong
+								continue;
+						}break;
+					//priest - Inspiration
+					case 15363:
+					case 14893:
+					case 15357:
+						{
+							if( !CastingSpell || !( CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING ) )
+								continue;
+						}
+						break;
+					//priest - Blessed Recovery
+                    case 27813:
+                    case 27817:
+                    case 27818:
+                        {
+                            if(!IsPlayer() || !dmg)
+                                continue;
+                            SpellEntry *parentproc= dbcSpell.LookupEntry(origId);
+                            SpellEntry *spellInfo = dbcSpell.LookupEntry(spellId);
+							if (!parentproc || !spellInfo)
+								continue;
+							int32 val = parentproc->EffectBasePoints[0] + 1;
+                            Spell *spell = new Spell(this, spellInfo ,true, NULL);
+                            spell->forced_basepoints[0] = (val*dmg)/300; //per tick
+                            SpellCastTargets targets;
+                            targets.m_unitTarget = GetGUID();
+                            spell->prepare(&targets);
+                            continue;
+                        }break;
+					//shaman - Healing Way
+					case 29203:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash != SPELL_HASH_HEALING_WAVE ) //healing wave
+								continue;
+						}break;
+					//shaman - Elemental Devastation
+					case 29177:
+					case 29178:
+					case 30165:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING)) //healing wave
+								continue;
+						}break;
+					//shaman - windfurry weapon
+					case 8232:
+					case 8235:
+					case 10486:
+					case 16362:
+					case 25505:
+						{
+							if(!IsPlayer())
+								continue;
+							//!! The wierd thing is that we need the spell thet trigegred this enchant spell in order to output logs ..we are using oldspell info too 
+							//we have to recalc the value of this spell
+							SpellEntry *spellInfo = dbcSpell.LookupEntry(origId);
+							uint32 AP_owerride=GetAP() + spellInfo->EffectBasePoints[0]+1;
+							uint32 dmg = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
+							SpellEntry *sp_for_the_logs = dbcSpell.LookupEntry(spellId);
+							Strike( victim, MELEE, sp_for_the_logs, dmg, 0, 0, true, false );
+							Strike( victim, MELEE, sp_for_the_logs, dmg, 0, 0, true, false );
+							//nothing else to be done for this trigger
+							continue;
+						}break;
+					//rogue - Ruthlessness
+					case 14157:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//we need a finishing move for this 
+							if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE) || victim==this)
+								continue;
+						}break;
+					//rogue - Relentless Strikes
+					case 14181:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							int32 proc_Chance;
+							//chance is based actually on combopoint count and not 100% always 
+							if( CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE && IsPlayer())
+								proc_Chance = static_cast<Player*>(this)->m_comboPoints*ospinfo->EffectBasePoints[1];
+							else continue;
+							if(!Rand(proc_Chance))
+								continue;
+						}break;
+					//rogue - Find Weakness
+					case 31234:
+					case 31235:
+					case 31236:
+					case 31237:
+					case 31238:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE))
+								continue;
+						}break;
+					//rogue - Initiative
+					case 13977:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//we need a Ambush, Garrote, or Cheap Shot
+							if( !CastingSpell )
+								continue;
+
+							if( CastingSpell->NameHash != SPELL_HASH_CHEAP_SHOT && //Cheap Shot
+								CastingSpell->NameHash != SPELL_HASH_AMBUSH && //Ambush
+								CastingSpell->NameHash != SPELL_HASH_GARROTE )  //Garrote
+								continue;
+						}break;
+					//Priest - Shadowguard
+					case 28377:
+					case 28378:
+					case 28379:
+					case 28380:
+					case 28381:
+					case 28382:
+					case 28385:
+						{
+							if( CastingSpell && ( this == victim || !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) ) ) //no self casts allowed or beneficial spells
+								continue;//we can proc on ranged weapons too
+						}break;
+					//Priest - blackout
+					case 15269:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							if( CastingSpell->School!=SCHOOL_SHADOW || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+								continue;
+						}break;
+					//warrior - improved berserker rage 
+					case 23690:
+					case 23691:
+						{
+							if(!HasActiveAura(18499))
+								continue;
+						}break;
+					//mage - Arcane Concentration 
+					case 12536:
+						{
+							//requires damageing spell
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+								continue;
+						}break;
+					//mage - Improved Blizzard
+					case 12484:
+					case 12485:
+					case 12486:
+						{
+							if( !CastingSpell )
+								continue;
+							if( CastingSpell->NameHash != SPELL_HASH_BLIZZARD || victim == this ) //Blizzard
+								continue;
+						}break;
+					//mage - Master of Elements
+					case 29077:
+						{
+							if( !CastingSpell )
+								continue;
+							if( CastingSpell->School!=SCHOOL_FIRE && CastingSpell->School!=SCHOOL_FROST) //fire and frost criticals
+								continue;
+							dmg_overwrite = CastingSpell->manaCost * (ospinfo->EffectBasePoints[0] + 1) / 100;
+						}break;
+					//Hunter - Thrill of the Hunt
+					case 34720:
+						{
+							if( !CastingSpell )
+								continue;
+							//check if spell is a shot spell 
+							dmg_overwrite = CastingSpell->manaCost * 40 / 100;
+						}break;
+					//priest - Reflective Shield 
+					case 33619:
+						{
+							//requires Power Word: Shield active
+							int power_word_id = HasAurasWithNameHash( SPELL_HASH_POWER_WORD__SHIELD );
+							if( !power_word_id )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//make a direct strike then exit rest of handler
+							int tdmg=abs*(ospinfo->EffectBasePoints[0]+1)/100;
+							//somehow we should make this not caused any threat (tobedone)
+							SpellNonMeleeDamageLog(victim,power_word_id, tdmg, false, true);
+							continue;
+						}break;
+					//rogue - improved sprint
+					case 30918:
+						{
+							if( !CastingSpell )
+								continue;
+							if( CastingSpell->NameHash != SPELL_HASH_SPRINT || victim != this ) //sprint
+								continue;
+						}break;
+					//rogue - combat potency
+					case 35542:
+					case 35545:
+					case 35546:
+					case 35547:
+					case 35548:
+						{
+							if(!IsPlayer() || !dmg)
+								continue;
+							//this needs offhand weapon
+							Item *it = ((Player*)this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+							if(!it || it->GetProto()->InventoryType!=INVTYPE_WEAPON )
+								continue;
+						}break;
+					//paladin - Seal of Blood
+					case 31893:
+						{
+							//we loose health depending on father of trigger spell when trigering this effect
+							int healthtoloose=ospinfo->EffectBasePoints[1]*GetUInt32Value(UNIT_FIELD_BASE_HEALTH)/100;
+							if(healthtoloose>(int)GetUInt32Value(UNIT_FIELD_HEALTH))
+								SetUInt32Value(UNIT_FIELD_HEALTH,1);
+							else ModUInt32Value(UNIT_FIELD_HEALTH,-(int32)healthtoloose);
+						}break;
+					//paladin - Spiritual Attunement
+					case 31786:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//trigger only on heal spell cast by NOT us
+							if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING) || this == victim)
+								continue; 
+						}break;
+					//paladin - Light's Grace
+					case 31834:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							if( CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT )
+								continue; 
+						}break;
+					//paladin - Eye for an Eye
+					case 25997:
+						{
+							if( victim == this )
+								continue; //not self casted crits
+							//requires damageing spell
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+								continue;
+							dmg_overwrite = ( dmg *  (ospinfo->EffectBasePoints[0] + 1 )) / 100 ; //only half dmg
+							int32 half_health = this->GetUInt32Value(UNIT_FIELD_HEALTH) >> 1;
+							if( dmg_overwrite > half_health )
+								dmg_overwrite = half_health ;
+						}break;
+					//paladin - Blessed Life
+					case 31828:
+						{
+							//we should test is damage is from enviroment or not :S
+							ModUInt32Value(UNIT_FIELD_HEALTH,dmg/2);
+							continue; //there is no visual for this ?
+						}break;
+						//paladin - sanctified judgement
+						case 31930:
+						{
+							//!! not working since we use post even hook and seal disapears before event
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							if(	CastingSpell->NameHash != SPELL_HASH_JUDGEMENT )
+								continue;
+							if( !IsPlayer() )
+								continue; //great, we can only make this for players 
+							Player* c = static_cast< Player* >( this );
+							//printf("is there a seal on the player ? %u \n",c->Seal);
+							if( !c->Seal )
+								continue; //how the hack did we manage to cast judgement without a seal ?
+							SpellEntry *spellInfo = dbcSpell.LookupEntry( c->Seal ); //null pointer check was already made
+							if( !spellInfo )
+								continue;	//now this is getting freeky, how the hell did we manage to create this bug ?
+							dmg_overwrite = spellInfo->manaCost / 2 ; //only half dmg
+							//printf("is there a seal on the player ? %u \n",dmg_overwrite);
+						}break;
+					//Energized
+					case 43751:
+						{
+							if( !CastingSpell )
+								continue;
+							if(	CastingSpell->NameHash != SPELL_HASH_LIGHTNING_BOLT )
+								continue;
+						}break;
+					//Spell Haste Trinket
+					case 33370:
+						{
+							if( !CastingSpell )
+								continue;
+							if( !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) )
+								continue;
+						}break;
+					//shaman - Lightning Overload
+					case 39805:
+						{
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//trigger on lightning and chain lightning. Spell should be identical , well maybe next time :P
+							if(	CastingSpell->NameHash == SPELL_HASH_LIGHTNING_BOLT || CastingSpell->NameHash == SPELL_HASH_CHAIN_LIGHTNING )
 							{
-								if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_FLASH_HEAL)
-									continue;
-							}break;
-						//SETBONUSES
-						case 37379:
-							{
-								if (!CastingSpell || CastingSpell->School != SCHOOL_SHADOW || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
-									continue;
-							}break;
-						case 37378:
-							{
-								if (!CastingSpell || CastingSpell->School != SCHOOL_FIRE || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
-									continue;
-							}break;
-						case 39950:
-							{
-								if (!CastingSpell ||  !(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
-									continue;
-							}break;
-						case 37234:
-						case 37214:
-						case 37601:
-							{
-								if (!CastingSpell ||  !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
-									continue;
-							}break;
-						case 37237:
-							{
-								if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_LIGHTNING_BOLT)
-									continue;
-							}break;
-						case 37193:
-							{
-								if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_HOLY_SHIELD)
-									continue;
-							}break;
-						case 37196:
-						case 43838:
-							{
-								if (!CastingSpell)
-									continue;
-								if (CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER &&
-									CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_JUSTICE &&
-									CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_LIGHT &&
-									CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_WISDOM &&
-									CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS &&
-									CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_BLOOD &&
-									CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_VENGEANCE &&
-									CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND)
-									continue;
-							}break;
-						case 43837:
-							{
-								if (!CastingSpell || (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT))
-									continue;
-							}break;
-						case 37529:
-							{
-								if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_OVERPOWER)
-									continue;
-							}break;
-						case 37517:
-							{
-								if (!CastingSpell || CastingSpell->Id == 37517 || CastingSpell->NameHash != SPELL_HASH_REVENGE)
-									continue; 
-							}break;
-						//SETBONUSES END
-						//item - Band of the Eternal Restorer 
-						case 35087:
-							{
-								if( !CastingSpell )
-									continue;
-								if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING)) //requires healing spell.
-									continue;
-							}break;
+								spellId = CastingSpell->Id;
+								dmg_overwrite = (CastingSpell->EffectBasePoints[0] + 1) / 2; //only half dmg
+							}
+							else continue;
+						}break;
+					//item - Band of the Eternal Sage
+					case 35084:
+						{
+							if( !CastingSpell )
+								continue;
+							if( !( CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING ) ) //requires offensive spell. ! might not cover all spells
+								continue;
+						}break;
+					// druid - Celestial Focus
+					case 16922:
+						{
+							if( !CastingSpell )
+								continue;
+							if( CastingSpell->NameHash != SPELL_HASH_STARFIRE )
+								continue;
+						}break;
+					case 37565: //setbonus
+						{
+							if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_FLASH_HEAL)
+								continue;
+						}break;
+					//SETBONUSES
+					case 37379:
+						{
+							if (!CastingSpell || CastingSpell->School != SCHOOL_SHADOW || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+								continue;
+						}break;
+					case 37378:
+						{
+							if (!CastingSpell || CastingSpell->School != SCHOOL_FIRE || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+								continue;
+						}break;
+					case 39950:
+						{
+							if (!CastingSpell ||  !(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
+								continue;
+						}break;
+					case 37234:
+					case 37214:
+					case 37601:
+						{
+							if (!CastingSpell ||  !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+								continue;
+						}break;
+					case 37237:
+						{
+							if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_LIGHTNING_BOLT)
+								continue;
+						}break;
+					case 37193:
+						{
+							if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_HOLY_SHIELD)
+								continue;
+						}break;
+					case 37196:
+					case 43838:
+						{
+							if (!CastingSpell)
+								continue;
+							if (CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER &&
+								CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_JUSTICE &&
+								CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_LIGHT &&
+								CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_WISDOM &&
+								CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS &&
+								CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_BLOOD &&
+								CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_VENGEANCE &&
+								CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND)
+								continue;
+						}break;
+					case 43837:
+						{
+							if (!CastingSpell || (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT))
+								continue;
+						}break;
+					case 37529:
+						{
+							if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_OVERPOWER)
+								continue;
+						}break;
+					case 37517:
+						{
+							if (!CastingSpell || CastingSpell->Id == 37517 || CastingSpell->NameHash != SPELL_HASH_REVENGE)
+								continue; 
+						}break;
+					//SETBONUSES END
+					//item - Band of the Eternal Restorer 
+					case 35087:
+						{
+							if( !CastingSpell )
+								continue;
+							if(!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING)) //requires healing spell.
+								continue;
+						}break;
 /*						//paladin - illumination
-						case 18350:
-							{
-								continue; //disabled until finished
-								if( !CastingSpell )
-									continue;//this should not ocur unless we made a fuckup somewhere
-								//only trigger effect for specified spells
-								if( CastingSpell->NameHash!=666 && //Holy light
-									CastingSpell->NameHash!=666 && //Flash of light
-									CastingSpell->NameHash!=666 ) //Holy shock
-									continue;
-							}break;*/
-					}
+					case 18350:
+						{
+							continue; //disabled until finished
+							if( !CastingSpell )
+								continue;//this should not ocur unless we made a fuckup somewhere
+							//only trigger effect for specified spells
+							if( CastingSpell->NameHash!=666 && //Holy light
+								CastingSpell->NameHash!=666 && //Flash of light
+								CastingSpell->NameHash!=666 ) //Holy shock
+								continue;
+						}break;*/
 				}
 				if(spellId==22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be casted by creatures too
 					continue;

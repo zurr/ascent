@@ -3835,12 +3835,9 @@ bool World::SetInitialWorldSettings()
 	{
 		sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
 		sp->EffectTriggerSpell[1] = 27285;
-		sp->procFlags = PROC_ON_DIE;
+		sp->procFlags = PROC_ON_SPELL_HIT_VICTIM | PROC_ON_DIE;
 		sp->procChance = 100;
 	}
-//	sp = dbcSpell.LookupEntry( 27285 );
-//	if( sp != NULL )
-//		sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_FRIENDLY_IN_AREA;
 
 	//warlock -  soul link
 	sp = dbcSpell.LookupEntryForced( 19028 );
@@ -5082,7 +5079,7 @@ bool World::SetInitialWorldSettings()
 	{
 		sp->Effect[0] = 0; //delete this owerride effect :P
 		sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
-		sp->procFlags = PROC_ON_SPELL_LAND;
+		sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
 		sp->procChance = 13; //god, save us from fixed values !
 	}
 	sp = dbcSpell.LookupEntryForced( 18096 );
@@ -5090,7 +5087,7 @@ bool World::SetInitialWorldSettings()
 	{
 		sp->Effect[0] = 0; //delete this owerride effect :P
 		sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
-		sp->procFlags = PROC_ON_SPELL_LAND;
+		sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
 		sp->procChance = 26; //god, save us from fixed values !
 	}
 
