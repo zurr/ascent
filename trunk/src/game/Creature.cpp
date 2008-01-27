@@ -361,7 +361,7 @@ void Creature::AddQuest(QuestRelation *Q)
 void Creature::DeleteQuest(QuestRelation *Q)
 {
 	list<QuestRelation *>::iterator it;
-	for ( it = m_quests->begin(); it != m_quests->end(); ++it )
+	for( it = m_quests->begin(); it != m_quests->end(); ++it )
 	{
 		if (((*it)->type == Q->type) && ((*it)->qst == Q->qst ))
 		{
@@ -375,7 +375,7 @@ void Creature::DeleteQuest(QuestRelation *Q)
 Quest* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
 {   
 	list<QuestRelation *>::iterator it;
-	for (it = m_quests->begin(); it != m_quests->end(); ++it)
+	for( it = m_quests->begin(); it != m_quests->end(); ++it )
 	{
 		QuestRelation *ptr = (*it);
 
@@ -392,7 +392,7 @@ uint16 Creature::GetQuestRelation(uint32 quest_id)
 	uint16 quest_relation = 0;
 	list<QuestRelation *>::iterator it;
 
-	for (it = m_quests->begin(); it != m_quests->end(); ++it)
+	for( it = m_quests->begin(); it != m_quests->end(); ++it )
 	{
 		if ((*it)->qst->id == quest_id)
 		{
