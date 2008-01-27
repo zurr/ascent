@@ -2427,7 +2427,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	// NOTE: Eek.. anyone familiar with the spell system,
 	// please change "unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction()"
 	// to "this spell is not hostile"
-	if( unitTarget && unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction()  )
+	if( unitTarget && u_caster && unitTarget != u_caster && unitTarget->_getFaction() != u_caster->_getFaction()  )
 	unitTarget->RemoveAllAuraType( SPELL_AURA_MOD_STEALTH );
 }
 
