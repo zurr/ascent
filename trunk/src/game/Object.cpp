@@ -2220,25 +2220,47 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 		else
 		{
 //------------------------------critical strike chance--------------------------------------	
-			float CritChance = caster->spellcritperc + caster->SpellCritChanceSchool[school] + pVictim->AttackerCritChanceMod[school];
-			if( caster->IsPlayer() && ( pVictim->m_rooted - pVictim->m_stunned ) )	
-				CritChance += static_cast< Player* >( caster )->m_RootedCritChanceBonus;
-
-			if( spellInfo->SpellGroupType )
+			// lol ranged spells were using spell crit chance
+			float CritChance;
+			if( spellInfo->is_ranged_spell )
 			{
-				SM_FFValue(caster->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-				float spell_flat_modifers=0;
-				SM_FFValue(caster->SM_CriticalChance,&spell_flat_modifers,spellInfo->SpellGroupType);
-				if(spell_flat_modifers!=0)
-					printf("!!!!spell critchance mod flat %f ,spell group %u\n",spell_flat_modifers,spellInfo->SpellGroupType);
-#endif
-			}
-			if( pVictim->IsPlayer() )
-				CritChance -= static_cast<Player*>(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_MELEE_CRIT_RESILIENCE );
-			if( CritChance < 0 ) CritChance = 0;
 
+				if( IsPlayer() )
+				{
+					CritChance = GetFloatValue( PLAYER_RANGED_CRIT_PERCENTAGE );
+					CritChance += static_cast<Player*>(pVictim)->res_R_crit_get();
+					CritChance += (float)(pVictim->AttackerCritChanceMod[spellInfo->School]);
+				}
+				else
+				{
+					CritChance = 5.0f; // static value for mobs.. not blizzlike, but an unfinished formula is not fatal :)
+				}
+				if( pVictim->IsPlayer() )
+				CritChance -= static_cast<Player*>(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_RANGED_CRIT_RESILIENCE );
+			}
+			else
+			{
+				CritChance = caster->spellcritperc + caster->SpellCritChanceSchool[school] + pVictim->AttackerCritChanceMod[school];
+				if( caster->IsPlayer() && ( pVictim->m_rooted - pVictim->m_stunned ) )	
+					CritChance += static_cast< Player* >( caster )->m_RootedCritChanceBonus;
+
+				if( spellInfo->SpellGroupType )
+				{
+					SM_FFValue(caster->SM_CriticalChance, &CritChance, spellInfo->SpellGroupType);
+	#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+					float spell_flat_modifers=0;
+					SM_FFValue(caster->SM_CriticalChance,&spell_flat_modifers,spellInfo->SpellGroupType);
+					if(spell_flat_modifers!=0)
+						printf("!!!!spell critchance mod flat %f ,spell group %u\n",spell_flat_modifers,spellInfo->SpellGroupType);
+	#endif
+				}
+				if( pVictim->IsPlayer() )
+				CritChance -= static_cast<Player*>(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE );
+			}
+			if( CritChance < 0 ) CritChance = 0;
+			if( CritChance > 95 ) CritChance = 0;
 			critical = Rand(CritChance);
+			sLog.outString( "SpellNonMeleeDamageLog: Crit Chance %f%%, WasCrit = %s" , CritChance , critical ? "Yes" : "No" );
 //==========================================================================================
 //==============================Spell Critical Hit==========================================
 //==========================================================================================
