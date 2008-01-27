@@ -652,6 +652,7 @@ void AuctionHouse::SendAuctionList(Player * plr, WorldPacket * packet)
 
 void WorldSession::HandleAuctionListItems( WorldPacket & recv_data )
 {
+	CHECK_INWORLD_RETURN
 	uint64 guid;
 	recv_data >> guid;
 

@@ -1425,7 +1425,17 @@ bool Object::isInBack(Object* target)
 {
 	double dx=double(target->GetPositionX()-GetPositionX());
 	double dy=double(target->GetPositionY()-GetPositionY());
-	double d=double(target->GetOrientation());
+	//double d=double(target->GetOrientation());
+	double d;
+
+	// if we are a unit and have a UNIT_FIELD_TARGET then we are always facing them
+	if( m_objectTypeId == TYPEID_UNIT && m_uint32Values[UNIT_FIELD_TARGET] != 0 && static_cast<Unit*>(this)->GetAIInterface()->GetNextTarget() )
+	{
+		Unit * pTarget = static_cast<Unit*>(this)->GetAIInterface()->GetNextTarget();
+		d = double( Object::calcRadAngle( target->m_position.x, target->m_position.y, pTarget->m_position.x, pTarget->m_position.y ) );
+	}
+	else
+		d = double( target->GetOrientation() );
 
 	while(d < 0) d+=2*M_PI;
 	while(d > 2*M_PI) d-=2*M_PI;

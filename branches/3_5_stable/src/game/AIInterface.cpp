@@ -25,6 +25,10 @@
 //#define LOS_ONLY_IN_INSTANCE 1
 #endif
 
+#ifdef WIN32
+#define HACKY_CRASH_FIXES 1		// SEH stuff
+#endif
+
 AIInterface::AIInterface()
 {
 	m_waypoints=NULL;
@@ -710,11 +714,16 @@ void AIInterface::_UpdateTargets()
 		for(itr = m_aiTargets.begin(); itr != m_aiTargets.end();)
 		{
 			it2 = itr++;
+#ifdef HACKY_CRASH_FIXES
+			if( !TargetUpdateCheck( it2->first) )
+				m_aiTargets.erase( it2 );
+#else
 			if( it2->first->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
 				!it2->first->isAlive() || m_Unit->GetDistanceSq(it2->first) >= 6400.0f )
 			{
 				m_aiTargets.erase( it2 );
 			}
+#endif
 		}
 		
 		if(m_aiTargets.size() == 0 
@@ -794,6 +803,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 		}
 	}
 
+#ifdef HACKY_CRASH_FIXES
+	bool cansee = (m_nextTarget != NULL) ? CheckCurrentTarget() : NULL;
+
+#else
 	bool cansee;
 	if(m_nextTarget && m_nextTarget->event_GetCurrentInstanceId() == m_Unit->event_GetCurrentInstanceId())
 	{
@@ -809,7 +822,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
 		cansee = false;
 	}
-
+#endif
 	if( cansee && m_nextTarget && m_nextTarget->isAlive() && m_AIState != STATE_EVADE && !m_Unit->isCasting() )
 	{
 		if( agent == AGENT_NULL || ( m_AIType == AITYPE_PET && !m_nextSpell ) ) // allow pets autocast
@@ -3487,3 +3500,65 @@ bool isGuard(uint32 id)
 	}
 	return false;
 }
+
+void AIInterface::WipeCurrentTarget()
+{
+	TargetMap::iterator itr = m_aiTargets.find( m_nextTarget );
+	if( itr != m_aiTargets.end() )
+		m_aiTargets.erase( itr );
+
+	m_nextTarget = NULL;
+
+	if( m_nextTarget == UnitToFollow )
+		UnitToFollow = NULL;
+
+	if( m_nextTarget == UnitToFollow_backup )
+		UnitToFollow_backup = NULL;
+}
+
+#ifdef HACKY_CRASH_FIXES
+
+bool AIInterface::CheckCurrentTarget()
+{
+	bool cansee = false;
+	__try
+	{
+		if(m_nextTarget && m_nextTarget->GetInstanceID() == m_Unit->GetInstanceID())
+		{
+			if( m_Unit->GetTypeId() == TYPEID_UNIT )
+				cansee = static_cast< Creature* >( m_Unit )->CanSee( m_nextTarget );
+			else
+				cansee = static_cast< Player* >( m_Unit )->CanSee( m_nextTarget );
+		}
+		else 
+		{
+			WipeCurrentTarget();
+		}
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		WipeCurrentTarget();
+	}
+
+	return cansee;
+}
+
+bool AIInterface::TargetUpdateCheck(Unit * ptr)
+{
+	__try
+	{
+		if( ptr->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+			!ptr->isAlive() || m_Unit->GetDistanceSq(ptr) >= 6400.0f )
+		{
+			return false;
+		}
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+#endif

@@ -490,5 +490,8 @@ public:
 	bool m_is_in_instance;
 	bool skip_reset_hp;
 
+	void WipeCurrentTarget();
+	bool CheckCurrentTarget();
+	bool TargetUpdateCheck(Unit * ptr);
 };
 #endif
