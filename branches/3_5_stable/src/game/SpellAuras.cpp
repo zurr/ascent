@@ -1382,7 +1382,7 @@ void Aura::SpellAuraDummy(bool apply)
 		}break;
 	case 126: //Eye of Killrog
 		{
-			if(m_target->IsInWorld() == false)
+			/*if(m_target->IsInWorld() == false)
 				return;
 
 			if(!apply)
@@ -1400,7 +1400,7 @@ void Aura::SpellAuraDummy(bool apply)
 				m_target->m_noInterrupt--;
 				if(m_target->m_noInterrupt < 0)
 					m_target->m_noInterrupt = 0;
-			}
+			}*/
 		}break;
 	case 17056://Furor
 	case 17058:

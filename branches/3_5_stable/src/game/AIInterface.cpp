@@ -649,8 +649,8 @@ void AIInterface::_UpdateTargets()
 	if( ( ( Creature* )m_Unit )->GetCreatureName() && ( ( Creature* )m_Unit )->GetCreatureName()->Type == CRITTER )
 		return;
 
-	AssistTargetSet::iterator i;
-	TargetMap::iterator itr;
+	AssistTargetSet::iterator i, i2;
+	TargetMap::iterator itr, it2;
 
 	// Find new Assist Targets and remove old ones
 	if(m_AIState == STATE_FLEEING)
@@ -665,37 +665,57 @@ void AIInterface::_UpdateTargets()
 	if( m_updateAssist )
 	{
 		m_updateAssist = false;
-		deque<Unit*> tokill;
+	/*	deque<Unit*> tokill;
 
 		//modified for vs2005 compatibility
 		for(i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
 		{
-			if(m_Unit->GetDistanceSq((*i)) > 2500.0f/*50.0f*/ || !(*i)->isAlive() || !(*i)->CombatStatus.IsInCombat())
+			if(m_Unit->GetDistanceSq((*i)) > 2500.0f|| !(*i)->isAlive() || !(*i)->CombatStatus.IsInCombat())
 			{
 				tokill.push_back(*i);
 			}
 		}
 
 		for(deque<Unit*>::iterator i2 = tokill.begin(); i2 != tokill.end(); ++i2)
-			m_assistTargets.erase(*i2);
+			m_assistTargets.erase(*i2);*/
+
+		for(i = m_assistTargets.begin(); i != m_assistTargets.end();)
+		{
+			i2 = i++;
+			if( (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+				!(*i2)->isAlive() || m_Unit->GetDistanceSq((*i2)) >= 2500.0f || !(*i2)->CombatStatus.IsInCombat() )
+			{
+				m_assistTargets.erase( i2 );
+			}
+		}
 	}
 
 	if( m_updateTargets )
 	{
 		m_updateTargets = false;
-		deque<Unit*> tokill;
+		/*deque<Unit*> tokill;
 
 		//modified for vs2005 compatibility
 		for(itr = m_aiTargets.begin(); itr != m_aiTargets.end();++itr)
 		{
-			if(!itr->first->isAlive() || m_Unit->GetDistanceSq(itr->first) >= 6400.0f/*80.0f*/)
+			if(!itr->first->isAlive() || m_Unit->GetDistanceSq(itr->first) >= 6400.0f)
 			{
 				tokill.push_back(itr->first);
 			}
 		}
 		for(deque<Unit*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
 			m_aiTargets.erase((*itr));
-		tokill.clear();
+		tokill.clear();*/
+
+		for(itr = m_aiTargets.begin(); itr != m_aiTargets.end();)
+		{
+			it2 = itr++;
+			if( it2->first->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+				!it2->first->isAlive() || m_Unit->GetDistanceSq(it2->first) >= 6400.0f )
+			{
+				m_aiTargets.erase( it2 );
+			}
+		}
 		
 		if(m_aiTargets.size() == 0 
 			&& m_AIState != STATE_IDLE && m_AIState != STATE_FOLLOWING 

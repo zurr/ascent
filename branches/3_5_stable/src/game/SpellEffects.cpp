@@ -3431,7 +3431,7 @@ void Spell::SpellEffectSummonPossessed(uint32 i) // eye of kilrog
 	pCaster->GetSession()->SendPacket(&data);
 	*/
 
-
+/*
 	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 	if( ci)
 	{
@@ -3467,33 +3467,7 @@ void Spell::SpellEffectSummonPossessed(uint32 i) // eye of kilrog
 		//p_caster->SetUInt64Value(PLAYER_FARSIGHT, NewSummon->GetGUID());
 		//p_caster->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 		p_caster->Possess(NewSummon);
-		
-//		WorldPacket data(SMSG_DEATH_NOTIFY_OBSOLETE, 10);
-//		data << NewSummon->GetNewGUID() << uint8(1);
-//		p_caster->GetSession()->SendPacket(&data);
-		p_caster->m_noInterrupt++;
-
-		//FIXME: use Spell::SentCHannelStart
-		/*if(m_spellInfo->ChannelInterruptFlags != 0)
-		{
-			uint32 duration = GetDuration();
-			if (m_caster->GetTypeId() == TYPEID_PLAYER)
-			{
-				// Send Channel Start
-				WorldPacket data(MSG_CHANNEL_START, 8);
-				data << m_spellInfo->Id;
-				data << duration;
-				((Player*)m_caster)->GetSession()->SendPacket( &data );
-			}
-
-			m_timer = duration;
-
-			m_caster->SetUInt32Value(UNIT_FIELD_CHANNEL_OBJECT,NewSummon->GetGUIDLow());
-			m_caster->SetUInt32Value(UNIT_FIELD_CHANNEL_OBJECT+1,NewSummon->GetGUIDHigh());
-			m_caster->SetUInt32Value(UNIT_CHANNEL_SPELL,m_spellInfo->Id);					
-		}
-		sLog.outDebug("New Possesed has guid %u", NewSummon->GetGUID());*/
-	}
+	}*/
 }
 
 void Spell::SpellEffectCreateSummonTotem(uint32 i)
