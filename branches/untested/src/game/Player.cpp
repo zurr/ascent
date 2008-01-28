@@ -4605,7 +4605,8 @@ void Player::UpdateStats()
 	}
 
 	int32 hp = GetUInt32Value( UNIT_FIELD_BASE_HEALTH );
-	int32 bonus = ( GetUInt32Value( UNIT_FIELD_POSSTAT2 ) - GetUInt32Value( UNIT_FIELD_NEGSTAT2 ) ) * 10 + m_healthfromspell + m_healthfromitems;
+	int32 bonus ;
+	bonus = GetUInt32Value( UNIT_FIELD_STAT2 ) * 10 + m_healthfromspell + m_healthfromitems;
 	int32 res = hp + bonus + hpdelta;
     int32 oldmaxhp = GetUInt32Value( UNIT_FIELD_MAXHEALTH );
 
@@ -4624,7 +4625,7 @@ void Player::UpdateStats()
 	{
 		// MP
 		int32 mana = GetUInt32Value( UNIT_FIELD_BASE_MANA );
-		bonus = (GetUInt32Value( UNIT_FIELD_POSSTAT3)-GetUInt32Value(UNIT_FIELD_NEGSTAT3))*15+m_manafromspell +m_manafromitems ;
+		bonus = GetUInt32Value( UNIT_FIELD_STAT3 ) * 15 + m_manafromspell + m_manafromitems ;
 		res = mana + bonus + manadelta;
 		if( res < mana )res = mana;	
 		SetUInt32Value(UNIT_FIELD_MAXPOWER1, res);

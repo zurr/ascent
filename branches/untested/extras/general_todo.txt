@@ -42,6 +42,10 @@ SMT_RESIST_DISPEL - check if it is used
 - detect all proc spells that have same name as mother spell and can be stacked more then once
 - cast druid ranquility on target then target enters instance .. tranquility will remain on him
 - buged ? : avenger's shield, avenging wrath, judgement of seal of crusader (when they judge the seal of crusader the mob gets is like using the judgment of seal of light)
+- instance cooldown
+- more then limit can enter an instance if palyers go in at the same time
+- http://www.wowwiki.com/Instance_reset, worldmap_info instance reset timer is only for the show ?
+- http://www.wowwiki.com/Vanish - nu face wipe la aggro, nu intra in improved stealth si nush daca elimina movement impairing effects
 
 ==========================================================================
 ! BUGS !
@@ -123,6 +127,7 @@ Zack - test my shit :
 - Hunter : Clever Traps 19245
 - warlock: Improved Enslave Demon 18822
 - warlock: Master Conjuror 18768 - should work
+- priest mind control should not be able to be casted on higher level creatures
 
 ==========================================================================
 Capt - test my shit :
