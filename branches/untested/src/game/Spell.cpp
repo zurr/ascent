@@ -2986,6 +2986,7 @@ uint8 Spell::CanCast(bool tolerate)
 		{
 			// Partha: +2.52yds to max range, this matches the range the client is calculating.
 			// see extra/supalosa_range_research.txt for more info
+			// Zack : This is due to lag compensation and can vary a lot from 1 pc to another ;)
 
 			if( tolerate ) // add an extra 33% to range on final check (squared = 1.78x)
 			{
@@ -3122,6 +3123,14 @@ uint8 Spell::CanCast(bool tolerate)
 					// should only affect Wyrmcult Blackwhelps
 					if(target->GetEntry()!= 21387)
 						return SPELL_FAILED_BAD_TARGETS;
+				}
+				//mind control is limted in target level
+				if(		( m_spellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOD_POSSESS && (m_spellInfo->EffectBasePoints[0] + 1) < (int32)target->getLevel() ) 
+					||	( m_spellInfo->EffectApplyAuraName[1] == SPELL_AURA_MOD_POSSESS && (m_spellInfo->EffectBasePoints[1] + 1) < (int32)target->getLevel() )
+					||	( m_spellInfo->EffectApplyAuraName[2] == SPELL_AURA_MOD_POSSESS && (m_spellInfo->EffectBasePoints[2] + 1) < (int32)target->getLevel() )
+					)
+				{
+						return SPELL_FAILED_HIGHLEVEL;
 				}
 
 				/***********************************************************
