@@ -7001,11 +7001,13 @@ void Aura::SpellAuraIncreaseHitRate( bool apply )
 {
 	if( !m_target->IsPlayer() )
 		return;
+
 	if( apply )
-		static_cast<Player*>(m_target)->ModifyBonuses( SPELL_HIT_RATING, mod->m_amount );
+		static_cast< Player* >( m_target )->ModifyBonuses( SPELL_HIT_RATING, mod->m_amount );
 	else
-		static_cast<Player*>(m_target)->ModifyBonuses( SPELL_HIT_RATING, -mod->m_amount );
-	static_cast<Player*>(m_target)->UpdateStats();
+		static_cast< Player* >( m_target )->ModifyBonuses( SPELL_HIT_RATING, -mod->m_amount );
+
+	static_cast< Player* >(m_target)->UpdateStats();
 }
 
 void Aura::SpellAuraIncreaseRageFromDamageDealtPCT(bool apply)

@@ -327,11 +327,11 @@ bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 	}
 	if( m_pOwner->IsInWorld() && slot < INVENTORY_SLOT_BAG_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
 	{
-		m_pOwner->ApplyItemMods( item,slot, true );
+		m_pOwner->ApplyItemMods( item, slot, true );
 	}
 
-	if(ContainerSlot == INVENTORY_SLOT_NOT_SET && slot == EQUIPMENT_SLOT_OFFHAND && item->GetProto()->Class == ITEM_CLASS_WEAPON)
-		m_pOwner->SetDuelWield(true);
+	if( ContainerSlot == INVENTORY_SLOT_NOT_SET && slot == EQUIPMENT_SLOT_OFFHAND && item->GetProto()->Class == ITEM_CLASS_WEAPON )
+		m_pOwner->SetDuelWield( true );
 
 	return true;
 }
@@ -542,7 +542,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int8 slot)
 
 			if ( slot < EQUIPMENT_SLOT_END )
 			{
-				m_pOwner->ApplyItemMods(pItem, slot, false );
+				m_pOwner->ApplyItemMods( pItem, slot, false );
 				int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * 16);
 				for (int i = VisibleBase; i < VisibleBase + 12; ++i)
 				{
@@ -550,7 +550,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int8 slot)
 				}
 			}
 			else if( slot < INVENTORY_SLOT_BAG_END )
-				m_pOwner->ApplyItemMods(pItem, slot, false ); //watch containers that give attackspeed and stuff ;)
+				m_pOwner->ApplyItemMods( pItem, slot, false ); //watch containers that give attackspeed and stuff ;)
 
 			if(slot == EQUIPMENT_SLOT_OFFHAND)
 				m_pOwner->SetDuelWield(false);
@@ -2262,100 +2262,117 @@ void ItemInterface::RemoveBuyBackItem(uint32 index)
 //-------------------------------------------------------------------//
 void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 {
-  // srcslot and dstslot are int... NULL might not be an int depending on arch where it is compiled
-	ASSERT(srcslot < MAX_INVENTORY_SLOT && srcslot >= 0);
-	ASSERT(dstslot < MAX_INVENTORY_SLOT && dstslot >= 0);
+	//srcslot and dstslot are int... NULL might not be an int depending on arch where it is compiled
+	ASSERT(srcslot < MAX_INVENTORY_SLOT && srcslot >= 0 );
+	ASSERT(dstslot < MAX_INVENTORY_SLOT && dstslot >= 0 );
 
 	Item *SrcItem = GetInventoryItem(srcslot);
 	Item *DstItem = GetInventoryItem(dstslot);
-	sLog.outDebug( "ItemInterface::SwapItemSlots(%u, %u);" , srcslot , dstslot );
-	Item * temp = GetInventoryItem( srcslot );
-//	if( temp )
-//	sLog.outDebug( "Source item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType( temp->GetProto()->InventoryType ) );
-//	temp = GetInventoryItem( dstslot );
-//	if( temp )
-//	sLog.outDebug( "Destination: Item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType( temp->GetProto()->InventoryType ) );
-//	else
-//	sLog.outDebug( "Destination: Empty" );
-	if(SrcItem && DstItem && SrcItem->GetEntry()==DstItem->GetEntry()&& SrcItem->GetProto()->MaxCount>1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0)
+	
+	//sLog.outDebug( "ItemInterface::SwapItemSlots(%u, %u);" , srcslot , dstslot );
+	//Item * temp = GetInventoryItem( srcslot );
+	//if( temp )
+	//	sLog.outDebug( "Source item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType( temp->GetProto()->InventoryType ) );
+	//temp = GetInventoryItem( dstslot );
+	//if( temp )
+	//	sLog.outDebug( "Destination: Item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType( temp->GetProto()->InventoryType ) );
+	//else
+	//	sLog.outDebug( "Destination: Empty" );
+
+	if( SrcItem != NULL && DstItem != NULL && SrcItem->GetEntry() == DstItem->GetEntry() && SrcItem->GetProto()->MaxCount > 1 && SrcItem->wrapped_item_id == 0 && DstItem->wrapped_item_id == 0 )
 	{
-		uint32 total=SrcItem->GetUInt32Value(ITEM_FIELD_STACK_COUNT)+DstItem->GetUInt32Value(ITEM_FIELD_STACK_COUNT);
-		if(total<=DstItem->GetProto()->MaxCount)
+		uint32 total = SrcItem->GetUInt32Value( ITEM_FIELD_STACK_COUNT) + DstItem->GetUInt32Value( ITEM_FIELD_STACK_COUNT );
+		if( total <= DstItem->GetProto()->MaxCount )
 		{
-			DstItem->ModUInt32Value(ITEM_FIELD_STACK_COUNT, SrcItem->GetUInt32Value(ITEM_FIELD_STACK_COUNT));
-			SafeFullRemoveItemFromSlot(INVENTORY_SLOT_NOT_SET, srcslot);
+			DstItem->ModUInt32Value( ITEM_FIELD_STACK_COUNT, SrcItem->GetUInt32Value( ITEM_FIELD_STACK_COUNT ) );
+			SafeFullRemoveItemFromSlot( INVENTORY_SLOT_NOT_SET, srcslot );
 			return;
 		}
 		else
 		{
-			if(DstItem->GetUInt32Value(ITEM_FIELD_STACK_COUNT) == DstItem->GetProto()->MaxCount)
+			if( DstItem->GetUInt32Value( ITEM_FIELD_STACK_COUNT ) == DstItem->GetProto()->MaxCount )
 			{
 
 			}
 			else
 			{
-				int32 delta=DstItem->GetProto()->MaxCount-DstItem->GetUInt32Value(ITEM_FIELD_STACK_COUNT);
-				DstItem->SetUInt32Value(ITEM_FIELD_STACK_COUNT,DstItem->GetProto()->MaxCount);
-				SrcItem->ModUInt32Value(ITEM_FIELD_STACK_COUNT,-delta);
+				int32 delta=DstItem->GetProto()->MaxCount-DstItem->GetUInt32Value( ITEM_FIELD_STACK_COUNT );
+				DstItem->SetUInt32Value( ITEM_FIELD_STACK_COUNT, DstItem->GetProto()->MaxCount );
+				SrcItem->ModUInt32Value( ITEM_FIELD_STACK_COUNT, -delta );
 				return;
 			}
 		}
 	}
-//	sLog.outDebug( "Putting items into slots..." );
+
+	//src item was equiped previously
+	if( srcslot < INVENTORY_SLOT_BAG_END ) 
+	{
+		if( m_pItems[(int)srcslot] )		
+			m_pOwner->ApplyItemMods( m_pItems[(int)srcslot], srcslot, false );
+	}
+
+	//dst item was equiped previously
+	if( dstslot < INVENTORY_SLOT_BAG_END ) 
+	{
+		if( m_pItems[(int)dstslot] )		
+			m_pOwner->ApplyItemMods( m_pItems[(int)dstslot], dstslot, false );
+	}
+
+	//sLog.outDebug( "Putting items into slots..." );
+
 	m_pItems[(int)srcslot] = DstItem;
 	m_pItems[(int)dstslot] = SrcItem;
 	
-	if(DstItem)
+	if( DstItem != NULL )
 		DstItem->m_isDirty = true;
-	if(SrcItem)
+
+	if( SrcItem != NULL )
 		SrcItem->m_isDirty = true;
 
-	if(m_pItems[(int)dstslot])
+	////applying the item stats
+	//if( srcslot < INVENTORY_SLOT_BAG_END && dstslot >= INVENTORY_SLOT_BAG_END ) //src item was equiped and we are removing it to backpack or something
+	//{
+	//	if( m_pItems[(int)srcslot] )		
+	//		m_pOwner->ApplyItemMods( m_pItems[(int)srcslot], dstslot, true );
+	//	if( m_pItems[(int)dstslot] )		
+	//		m_pOwner->ApplyItemMods( m_pItems[(int)dstslot], srcslot, false );
+	//}
+	//else if( srcslot >= INVENTORY_SLOT_BAG_END && dstslot < INVENTORY_SLOT_BAG_END ) //item was not equiped but we are quiping it now
+	//{
+	//	if( m_pItems[(int)srcslot] )		
+	//		m_pOwner->ApplyItemMods( m_pItems[(int)srcslot], dstslot, false );
+	//	if( m_pItems[(int)dstslot] )		
+	//		m_pOwner->ApplyItemMods( m_pItems[(int)dstslot], srcslot, true );
+	//}
+
+	if( m_pItems[(int)dstslot] )
 	{
-//		sLog.outDebug( "(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)dstslot]->GetGUID() );
-		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (dstslot*2),  m_pItems[(int)dstslot]->GetGUID()  );
+		//sLog.outDebug( "(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)dstslot]->GetGUID() );
+		m_pOwner->SetUInt64Value( PLAYER_FIELD_INV_SLOT_HEAD + (dstslot*2),  m_pItems[(int)dstslot]->GetGUID()  );
 	}
 	else
 	{
-//		sLog.outDebug( "(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2 );
-		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (dstslot*2), 0 );
+		//sLog.outDebug( "(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2 );
+		m_pOwner->SetUInt64Value( PLAYER_FIELD_INV_SLOT_HEAD + (dstslot*2), 0 );
 	}
 
-	if( m_pItems[(int)srcslot])
+	if( m_pItems[(int)srcslot] )
 	{
-//		sLog.outDebug( "(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)srcslot]->GetGUID() );
-		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (srcslot*2), m_pItems[(int)srcslot]->GetGUID() );
+		//sLog.outDebug( "(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)srcslot]->GetGUID() );
+		m_pOwner->SetUInt64Value( PLAYER_FIELD_INV_SLOT_HEAD + (srcslot*2), m_pItems[(int)srcslot]->GetGUID() );
 	}
 	else
 	{
-//		sLog.outDebug( "(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2 );
-		m_pOwner->SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD  + (srcslot*2), 0 );
+		//sLog.outDebug( "(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2 );
+		m_pOwner->SetUInt64Value( PLAYER_FIELD_INV_SLOT_HEAD + (srcslot*2), 0 );
 	}
 
-
-	//applying the item stats
-	if(srcslot < INVENTORY_SLOT_BAG_END && dstslot >= INVENTORY_SLOT_BAG_END) //src item was equiped and we are removing it to backpack or something
-	{
-		if(m_pItems[(int)srcslot])		
-			m_pOwner->ApplyItemMods(m_pItems[(int)srcslot], dstslot, true);
-		if(m_pItems[(int)dstslot])		
-			m_pOwner->ApplyItemMods(m_pItems[(int)dstslot], srcslot, false);
-	}
-	else if(srcslot >= INVENTORY_SLOT_BAG_END && dstslot < INVENTORY_SLOT_BAG_END) //item was not equiped but we are quiping it now
-	{
-		if(m_pItems[(int)srcslot])		
-			m_pOwner->ApplyItemMods(m_pItems[(int)srcslot], dstslot, false);
-		if(m_pItems[(int)dstslot])		
-			m_pOwner->ApplyItemMods(m_pItems[(int)dstslot], srcslot, true);
-	}
-
-
-	if(srcslot < INVENTORY_SLOT_BAG_END)	// source item is equiped
+	if( srcslot < INVENTORY_SLOT_BAG_END )	// source item is equiped
 	{
 		if(m_pItems[(int)srcslot]) // dstitem goes into here.
 		{
 			// Bags aren't considered "visible".
-			if(srcslot < EQUIPMENT_SLOT_END)
+			if( srcslot < EQUIPMENT_SLOT_END )
 			{
 				int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
 				m_pOwner->SetUInt32Value(VisibleBase, m_pItems[(int)srcslot]->GetEntry());
@@ -2370,13 +2387,13 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 			}
 
 			// handle bind on equip
-			if(m_pItems[(int)srcslot]->GetProto()->Bonding == ITEM_BIND_ON_EQUIP)
+			if( m_pItems[(int)srcslot]->GetProto()->Bonding == ITEM_BIND_ON_EQUIP )
 				m_pItems[(int)srcslot]->SoulBind();
 		} 
 		else 
 		{
 			// Bags aren't considered "visible".
-			if(srcslot < EQUIPMENT_SLOT_END)
+			if( srcslot < EQUIPMENT_SLOT_END )
 			{
 				int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (srcslot * 16);
 				m_pOwner->SetUInt32Value(VisibleBase, 0);
@@ -2392,12 +2409,12 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 		}
 	}  
 
-	if(dstslot < INVENTORY_SLOT_BAG_END)   // source item is inside inventory
+	if( dstslot < INVENTORY_SLOT_BAG_END )   // source item is inside inventory
 	{
-		if(m_pItems[(int)dstslot]) // srcitem goes into here.
+		if( m_pItems[(int)dstslot] ) // srcitem goes into here.
 		{	
 			// Bags aren't considered "visible".
-			if(dstslot < EQUIPMENT_SLOT_END)
+			if( dstslot < EQUIPMENT_SLOT_END )
 			{
 				int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (dstslot * 16);
 				m_pOwner->SetUInt32Value(VisibleBase, m_pItems[(int)dstslot]->GetEntry());
@@ -2412,10 +2429,12 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 			}
 
 			// handle bind on equip
-			if(m_pItems[(int)dstslot]->GetProto()->Bonding == ITEM_BIND_ON_EQUIP)
+			if( m_pItems[(int)dstslot]->GetProto()->Bonding == ITEM_BIND_ON_EQUIP )
 				m_pItems[(int)dstslot]->SoulBind();
 
-		} else {
+		}
+		else
+		{
 
 			// bags aren't considered visible
 			if(dstslot < EQUIPMENT_SLOT_END)
@@ -2442,20 +2461,34 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 			m_pOwner->SetDuelWield( false );
 	}
 
-	// Reapply weapon mods immediately to prevent exploit
-	if( ( dstslot >= EQUIPMENT_SLOT_MAINHAND && dstslot <= EQUIPMENT_SLOT_RANGED ) || ( srcslot >= EQUIPMENT_SLOT_MAINHAND && srcslot <= EQUIPMENT_SLOT_RANGED ) )
+	//src item is equiped now
+	if( srcslot < INVENTORY_SLOT_BAG_END ) 
 	{
-		if( m_pItems[dstslot] != NULL )
-		{
-			m_pOwner->ApplyItemMods( m_pItems[dstslot], dstslot, false, false );
-			m_pOwner->ApplyItemMods( m_pItems[dstslot], dstslot, true, false );
-		}
-		if( m_pItems[srcslot] != NULL )
-		{
-			m_pOwner->ApplyItemMods( m_pItems[srcslot], srcslot, false, false );
-			m_pOwner->ApplyItemMods( m_pItems[srcslot], srcslot, true, false );
-		}
+		if( m_pItems[(int)srcslot] )		
+			m_pOwner->ApplyItemMods( m_pItems[(int)srcslot], dstslot, true );
 	}
+
+	//dst item is equiped now
+	if( dstslot < INVENTORY_SLOT_BAG_END ) 
+	{
+		if( m_pItems[(int)dstslot] )		
+			m_pOwner->ApplyItemMods( m_pItems[(int)dstslot], srcslot, true );
+	}
+
+	// Reapply weapon mods immediately to prevent exploit
+	//if( ( dstslot >= EQUIPMENT_SLOT_MAINHAND && dstslot <= EQUIPMENT_SLOT_RANGED ) || ( srcslot >= EQUIPMENT_SLOT_MAINHAND && srcslot <= EQUIPMENT_SLOT_RANGED ) )
+	//{
+	//	if( m_pItems[dstslot] != NULL )
+	//	{
+	//		m_pOwner->ApplyItemMods( m_pItems[dstslot], dstslot, false, false );
+	//		m_pOwner->ApplyItemMods( m_pItems[dstslot], dstslot, true, false );
+	//	}
+	//	if( m_pItems[srcslot] != NULL )
+	//	{
+	//		m_pOwner->ApplyItemMods( m_pItems[srcslot], srcslot, false, false );
+	//		m_pOwner->ApplyItemMods( m_pItems[srcslot], srcslot, true, false );
+	//	}
+	//}
 
 }
 
@@ -2785,7 +2818,7 @@ void ItemInterface::ReduceItemDurability()
 			   //check final durabiity
 			   if(!pItem->GetUInt32Value(ITEM_FIELD_DURABILITY)) //no dur left
 			   {
-					this->GetOwner()->ApplyItemMods(pItem,slot,false,true);
+					this->GetOwner()->ApplyItemMods( pItem, slot, false, true );
 			   }
 		   }
 	   }

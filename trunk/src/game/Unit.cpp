@@ -552,46 +552,48 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 	bProcInUse = true; //locking the proc list
 
 	std::list<uint32> remove;
-	std::list<struct ProcTriggerSpell>::iterator itr,itr2;
-	for( itr = m_procSpells.begin();itr != m_procSpells.end();)  // Proc Trigger Spells for Victim
+	std::list<struct ProcTriggerSpell>::iterator itr, itr2;
+	for( itr = m_procSpells.begin(); itr != m_procSpells.end(); )  // Proc Trigger Spells for Victim
 	{
-		itr2= itr;
+		itr2 = itr;
 		++itr;
-		if(itr2->deleted)
+		if( itr2->deleted )
 		{
-			if(can_delete) m_procSpells.erase(itr2);
+			if( can_delete )
+				m_procSpells.erase( itr2 );
 			continue;
 		}
 		uint32 origId = itr2->origId;
-		if(CastingSpell)
+		if( CastingSpell != NULL )
 		{
 			//this is to avoid spell proc on spellcast loop. We use dummy that is same for both spells
-			if( 
-				//CastingSpell->Id == itr2->origId || //removed by Zack : ex warlock - seed of corruption (or pyroclasm )ticks trigger the child effec
-				CastingSpell->Id == itr2->spellId )//proc should not proc on self
+			//CastingSpell->Id == itr2->origId || //removed by Zack : ex warlock - seed of corruption (or pyroclasm )ticks trigger the child effec
+			//proc should not proc on self
+			if( CastingSpell->Id == itr2->spellId )
 			{
 				//printf("WOULD CRASH HERE ON PROC: CastingId: %u, OrigId: %u, SpellId: %u\n", CastingSpell->Id, itr2->origId, itr2->spellId);
 				continue;
 			}
 		}
-		SpellEntry *ospinfo = dbcSpell.LookupEntry(origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
+
+		SpellEntry* ospinfo = dbcSpell.LookupEntry( origId );//no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 		//this requires some specific spell check,not yet implemented
-		if( (itr2->procFlags & flag) != 0 )
+		if( ( itr2->procFlags & flag ) != 0 )
 		{
 			uint32 spellId = itr2->spellId;
-			if(itr2->procFlags & PROC_ON_CAST_SPECIFIC_SPELL)
+			if( itr2->procFlags & PROC_ON_CAST_SPECIFIC_SPELL )
 			{
 
-				if( !CastingSpell )
+				if( CastingSpell == NULL )
 					continue;
 				
 				//this is wrong, dummy is too common to be based on this, we should use spellgroup or something
-				SpellEntry *sp=dbcSpell.LookupEntry(spellId);
-				if(sp->dummy != CastingSpell->dummy)
+				SpellEntry* sp = dbcSpell.LookupEntry( spellId );
+				if( sp->dummy != CastingSpell->dummy )
 				{
-					if(!ospinfo->School)
+					if( !ospinfo->School )
 						continue;
-					if(ospinfo->School != CastingSpell->School)
+					if( ospinfo->School != CastingSpell->School )
 						continue;
 					if( CastingSpell->EffectImplicitTargetA[0] == 1 || 
 						CastingSpell->EffectImplicitTargetA[1] == 1 || 
@@ -599,12 +601,12 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 						continue;
 				}
 				else
-					if(sp->dummy == 1)
+					if( sp->dummy == 1 )
 						continue;
 			}			
 			uint32 proc_Chance = itr2->procChance;
 
-			SpellEntry* spe  = dbcSpell.LookupEntry(spellId);
+			SpellEntry* spe  = dbcSpell.LookupEntry( spellId );
 
 			//Custom procchance modifications based on equipped weapon speed.
 			if( this->IsPlayer() && spe != NULL && (
@@ -1639,8 +1641,8 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 		m_chargeSpellRemoveQueue.pop_front();
 	}
 
-	m_chargeSpellsInUse=false;
-	if(can_delete) //are we the upper level of nested procs ? If yes then we can remove the lock
+	m_chargeSpellsInUse = false;
+	if( can_delete ) //are we the upper level of nested procs ? If yes then we can remove the lock
 		bProcInUse = false;
 }
 
