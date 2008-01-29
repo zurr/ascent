@@ -1416,8 +1416,9 @@ bool World::SetInitialWorldSettings()
 			sp->SpellGroupType |= 1; //some of them do have the flags but i's hard to write down those some from 130 spells
 
 		//mage Ice Floes affects these spells : Cone of Cold,Cold Snap,Ice Barrier,Ice Block
-		if( sp->NameHash == SPELL_HASH_CONE_OF_COLD || sp->NameHash == SPELL_HASH_COLD_SNAP || sp->NameHash == SPELL_HASH_ICE_BARRIER || sp->NameHash == SPELL_HASH_ICE_BLOCK )
-			sp->EffectSpellGroupRelation[0] = 0x00200000;
+		// Zack : WTF ? talents have group relations not target spells !
+//		if( sp->NameHash == SPELL_HASH_CONE_OF_COLD || sp->NameHash == SPELL_HASH_COLD_SNAP || sp->NameHash == SPELL_HASH_ICE_BARRIER || sp->NameHash == SPELL_HASH_ICE_BLOCK )
+//			sp->EffectSpellGroupRelation[0] = 0x00200000;
 
 /*		else if( strstr( nametext, "Anesthetic Poison"))
 			sp->SpellGroupType |= 0; //not yet known ? 
@@ -3523,6 +3524,48 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 		sp->EffectSpellGroupRelation[0] = 1 | 4;
 
+	//Hunter -  Unleashed Fury
+	sp = dbcSpell.LookupEntryForced( 19616 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_PERCENT_DONE;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->EffectMiscValue[0] = 1; //tweekign melee dmg
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+	}
+	sp = dbcSpell.LookupEntryForced( 19617 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_PERCENT_DONE;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->EffectMiscValue[0] = 1; //tweekign melee dmg
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+	}
+	sp = dbcSpell.LookupEntryForced( 19618 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_PERCENT_DONE;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->EffectMiscValue[0] = 1; //tweekign melee dmg
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+	}
+	sp = dbcSpell.LookupEntryForced( 19619 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_PERCENT_DONE;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->EffectMiscValue[0] = 1; //tweekign melee dmg
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+	}
+	sp = dbcSpell.LookupEntryForced( 19620 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_PERCENT_DONE;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->EffectMiscValue[0] = 1; //tweekign melee dmg
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+	}
+
 	//Hunter : Pathfinding
 	sp = dbcSpell.LookupEntryForced( 19559 );
 	if( sp != NULL )
@@ -5243,7 +5286,7 @@ bool World::SetInitialWorldSettings()
 		sp->procChance = 26; //god, save us from fixed values !
 	}
 
-	//improved scorch
+	//Mage - improved scorch
 	sp = dbcSpell.LookupEntryForced( 11095 );
 	if( sp != NULL )
 	{

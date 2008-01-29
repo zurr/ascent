@@ -17,14 +17,13 @@ part with "n additional X each time they are struck by a ranged attack" never wo
 
 + all what scatler said + what i posted 2 weeks ago, and this is: Arcane Shot and Steady Shot crit chance based on intellect instead of agility and 1.5x crit damage for both of those shots (instead of 2x or 2.3x with talent)
 
--Counterattack
+- Counterattack
 
 
 //////////////////////////////////////////////////
 
 Adds to Beast Mastery:
 
-Unleashed Fury - Broken. Does not increase pet damage.
 Improved Aspect of the Hawk - It procs and shows the buff icon but there's no speed increase at all.
 Bestial Discipline
 

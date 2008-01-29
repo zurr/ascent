@@ -175,7 +175,6 @@ Unit::Unit()
 		HealTakenMod[x] = 0;
 		HealTakenPctMod[x] = 0;
 		DamageTakenMod[x] = 0;
-		DamageDoneModPCT[x]= 0;
 		SchoolCastPrevent[x]=0;
 		DamageTakenPctMod[x] = 1;
 		SpellCritChanceSchool[x] = 0;
@@ -2490,7 +2489,7 @@ else
 			if(ability && ability->MechanicsType == MECHANIC_BLEEDING)
 				disable_dR = true; 
 			
-			float summaryPCTmod = pVictim->DamageTakenPctMod[dmg.school_type]+this->DamageDoneModPCT[dmg.school_type];
+			float summaryPCTmod = pVictim->DamageTakenPctMod[dmg.school_type]+GetDamageDonePctMod( dmg.school_type );
 
 			if(pct_dmg_mod > 0)
 				dmg.full_damage = float2int32(dmg.full_damage*(float(pct_dmg_mod)/100.0f));
@@ -3729,7 +3728,7 @@ int32 Unit::GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg
 //------------------------------by school----------------------------------------------
 	float summaryPCTmod = caster->GetDamageDonePctMod(school)-1; //value is initialized with 1
 	summaryPCTmod += pVictim->DamageTakenPctMod[school]-1;//value is initialized with 1
-	summaryPCTmod += caster->DamageDoneModPCT[school];
+	summaryPCTmod += caster->GetDamageDonePctMod( school );
 	summaryPCTmod += pVictim->ModDamageTakenByMechPCT[spellInfo->MechanicsType];
 	int32 res = (int32)((base_dmg+bonus_damage)*summaryPCTmod + bonus_damage); // 1.x*(base_dmg+bonus_damage) == 1.0*base_dmg + 1.0*bonus_damage + 0.x*(base_dmg+bonus_damage) -> we add the returned value to base damage so we do not add it here (function returns bonus only)
 return res;
@@ -4308,8 +4307,8 @@ void Unit::CalcDamage()
 
 		float bonus = ap_bonus*GetUInt32Value(UNIT_FIELD_BASEATTACKTIME);
 	
-		delta = float(((Creature*)this)->ModDamageDone[0]);
-		mult = float(((Creature*)this)->ModDamageDonePct[0]);
+		delta = (float)((Creature*)this)->ModDamageDone[0];
+		mult = ((Creature*)this)->ModDamageDonePct[0];
 		r = BaseDamage[0]*mult+delta+bonus;
 		SetFloatValue(UNIT_FIELD_MINDAMAGE,r>0?r:0);
 		r = BaseDamage[1]*mult+delta+bonus;

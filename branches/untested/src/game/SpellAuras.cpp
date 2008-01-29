@@ -4838,13 +4838,14 @@ Zack : shady, next time check all possible spells, yes there are spells that are
 			}
 		}
 	}
-	else 
+	else if ( m_target->IsCreature() )
 	{
+		Creature *c_target = static_cast<Creature *>(m_target);
 		uint32 school_selector=1;
 		for (uint32 x=0;x<7;x++)
 		{
 			if(school_selector & mod->m_miscValue)
-				m_target->DamageDoneModPCT[x] += val;
+				c_target->ModDamageDonePct[x] += val;
 			school_selector = school_selector << 1;
 		}
 	}

@@ -128,6 +128,8 @@ Zack - test my shit :
 - mage ignite scale with leveling 12847 / 12848
 - Mage - Elemental Precision 29440
 - Mage - Frost Channeling 12519
+- Mage - improved scorch 12873 should stack
+- Hunter - Unleashed Fury 19620
 
 ==========================================================================
 Capt - test my shit :
