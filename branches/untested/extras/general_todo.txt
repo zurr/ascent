@@ -116,22 +116,12 @@ Zack - test my shit :
 - Hunter : Clever Traps 19245
 - warlock: Improved Enslave Demon 18822
 - warlock: Master Conjuror 18768 - should work
-- priest mind control should not be able to be casted on higher level creatures
 - warrior - two-handed weapon specialization 12714
 - warrior - one-handed weapon specialization 16542
 - warrior - second wind 29838, also test mage frostbite 12497 for rooting effects
 - mage - wand specialization 6085
 - priest wand specialization 14528
-- Mage - Magic Attunement 12606
-- Mage - Arcane Concentration 12577
-- Mage - Spell Power 35581
-- mage ignite scale with leveling 12847 / 12848
-- Mage - Elemental Precision 29440
-- Mage - Frost Channeling 12519
-- Mage - improved scorch 12873 should stack
-- Hunter - Unleashed Fury 19620
-- Hunter - Frenzy 19625
-- hunter - Aspect of the Pack should also buff hunter's pet, as long as the pet stays within their range.
+- Mage - Arcane Concentration 12577 - stupid clearcasting gets removed as it is casted .cast 12536
 
 ==========================================================================
 Capt - test my shit :

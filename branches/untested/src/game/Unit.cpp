@@ -861,7 +861,10 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 							continue;
 						if( CastingSpell->School!=SCHOOL_FIRE)
 							continue;
-						dmg_overwrite = (ospinfo->EffectBasePoints[0] + 1) * dmg / 100;
+						SpellEntry *spellInfo = dbcSpell.LookupEntry( spellId ); //we already modified this spell on server loading so it must exist
+						SpellDuration *sd = dbcSpellDuration.LookupEntryForced( spellInfo->DurationIndex );
+						uint32 tickcount = GetDuration( sd ) / spellInfo->EffectAmplitude[0] ;
+						dmg_overwrite = ospinfo->EffectBasePoints[0] * dmg / (100  * tickcount );
 					}break;
 					//rogue - blade twisting
 					case 31125:

@@ -3883,6 +3883,7 @@ bool World::SetInitialWorldSettings()
 	sp = dbcSpell.LookupEntryForced( 29438 );
 	if( sp != NULL )
 	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
 		sp->EffectSpellGroupRelation[0] = 8388608 | 2 | 16 | 4 | 1573376 | 524288 | 8 | 131072 | 262144 | 4194304 | 1 ;
 		sp->EffectSpellGroupRelation_high[0] = 64 | 128 | 1;
 		sp->EffectMiscValue[0] = SMT_COST;
@@ -3890,6 +3891,7 @@ bool World::SetInitialWorldSettings()
 	sp = dbcSpell.LookupEntryForced( 29439 );
 	if( sp != NULL )
 	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
 		sp->EffectSpellGroupRelation[0] = 8388608 | 2 | 16 | 4 | 1573376 | 524288 | 8 | 131072 | 262144 | 4194304 | 1 ;
 		sp->EffectSpellGroupRelation_high[0] = 64 | 128 | 1;
 		sp->EffectMiscValue[0] = SMT_COST;
@@ -3897,6 +3899,7 @@ bool World::SetInitialWorldSettings()
 	sp = dbcSpell.LookupEntryForced( 29440 );
 	if( sp != NULL )
 	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
 		sp->EffectSpellGroupRelation[0] = 8388608 | 2 | 16 | 4 | 1573376 | 524288 | 8 | 131072 | 262144 | 4194304 | 1 ;
 		sp->EffectSpellGroupRelation_high[0] = 64 | 128 | 1;
 		sp->EffectMiscValue[0] = SMT_COST;
@@ -3917,7 +3920,18 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL | PROC_TARGET_SELF;
 	sp = dbcSpell.LookupEntryForced( 12577 );
 	if( sp != NULL )
+	{
 		sp->procFlags = PROC_ON_CAST_SPELL | PROC_TARGET_SELF;
+//sp->procChance = 100;
+	}
+
+	//Mage - ClearCasting Effect
+	sp = dbcSpell.LookupEntryForced( 12536 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 0xFFFFFFFF;		//!!!this will set value multiple times but we do not care since it is 100%
+		sp->EffectSpellGroupRelation_high[0] = 0xFFFFFFFF;	//!!!this will set value multiple times but we do not care since it is 100%
+	}	
 
 	//Mage - Arcane Blast
 	sp = dbcSpell.LookupEntryForced( 30451 );

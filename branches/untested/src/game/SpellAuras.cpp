@@ -770,10 +770,10 @@ void Aura::EventUpdateAA(float r)
 		Unit *summon = plr->GetSummon();
 		if( summon->isAlive() && summon->GetDistanceSq(u_caster) <= r && !summon->HasActiveAura( m_spellProto->Id ))
 		{
-			Aura * aura = new Aura(m_spellProto, -1, u_caster, plr);
+			Aura * aura = new Aura(m_spellProto, -1, u_caster, summon );
 			aura->m_areaAura = true;
-			aura->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
-			summon->AddAura(aura);
+			aura->AddMod( mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
+			summon->AddAura( aura );
 			//make sure we remove this
 //			sEventMgr.AddEvent(((Unit*)summon), &Unit::EventRemoveAura, m_spellProto->Id, EVENT_DELETE_TIMER, 10, 1,0);
 		}
@@ -880,7 +880,7 @@ void Aura::RemoveAA()
 
 	//report say that aura should also affect pet 
 	Player *plr = NULL;
-	if( GetUnitCaster() && GetUnitCaster()->GetTypeId() == TYPEID_PLAYER)
+	if( GetUnitCaster() && GetUnitCaster()->IsPlayer() )
 		plr = static_cast<Player*>(GetUnitCaster());
 	if( plr && plr->GetSummon() && 
 		(
@@ -892,7 +892,7 @@ void Aura::RemoveAA()
 	{
 		Unit *summon = plr->GetSummon();
 		if( summon->isAlive() )
-			plr->RemoveAura( m_spellProto->Id );
+			summon->RemoveAura( m_spellProto->Id );
 	}
 
 	for(itr = targets.begin(); itr != targets.end(); ++itr)

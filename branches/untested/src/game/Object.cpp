@@ -2265,7 +2265,15 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			{		
 				float b = res / 2.0f;
 				if( spellInfo->SpellGroupType )
+				{
 					SM_PFValue( caster->SM_PCriticalDamage, &b, spellInfo->SpellGroupType );
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+					float spell_pct_modifers=0;
+					SM_FFValue(caster->SM_PCriticalDamage,&spell_pct_modifers,spellInfo->SpellGroupType);
+					if(spell_pct_modifers!=0)
+						printf("!!!!!spell crit dmg bonus pct %f , spell crit dmg %f, spell group %u\n",spell_pct_modifers,b,spellInfo->SpellGroupType);
+#endif
+				}
 				res += b;
 				if( pVictim->IsPlayer() )
 				{

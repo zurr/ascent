@@ -1456,6 +1456,12 @@ void Spell::cast(bool check)
 						HandleAddAura((*i));
 					}
 				}
+
+				// we're much better to remove this here, because otherwise spells that change powers etc,
+				// don't get applied.
+				if(u_caster && !m_triggeredSpell && !m_triggeredByAura)
+					u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, m_spellInfo->Id);
+
 				// spells that proc on spell cast, some talents
 				if(p_caster && p_caster->IsInWorld())
 				{
@@ -1476,11 +1482,6 @@ void Spell::cast(bool check)
 					}
 				}
 			}
-			// we're much better to remove this here, because otherwise spells that change powers etc,
-			// don't get applied.
-
-			if(u_caster && !m_triggeredSpell && !m_triggeredByAura)
-				u_caster->RemoveAurasByInterruptFlagButSkip(AURA_INTERRUPT_ON_CAST_SPELL, m_spellInfo->Id);
 
 			if(m_spellState != SPELL_STATE_CASTING)
 				finish();
@@ -3053,16 +3054,17 @@ uint8 Spell::CanCast(bool tolerate)
 				}
 			}
 
-			if( m_spellInfo->EffectApplyAuraName[0]==2)//mind control
-			if( m_spellInfo->EffectBasePoints[0])//got level req;
-				if((int32)target->getLevel() > m_spellInfo->EffectBasePoints[0]+1 + int32(p_caster->getLevel() - m_spellInfo->spellLevel))
+			if( m_spellInfo->NameHash == SPELL_HASH_MIND_CONTROL)//got level req;
+			{
+				if( (int32)target->getLevel() > m_spellInfo->EffectBasePoints[0] + 1 )
 					return SPELL_FAILED_HIGHLEVEL;
 				else if(target->GetTypeId() == TYPEID_UNIT) 
 				{ 
 					Creature * c = (Creature*)(target);
-					if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank >ELITE_ELITE)
+					if ( c && c->GetCreatureName() && c->GetCreatureName()->Rank >= ELITE_ELITE)
 						return SPELL_FAILED_HIGHLEVEL;
 				} 
+			}
 
 			// scripted spell stuff
 			switch(m_spellInfo->Id)
@@ -3122,14 +3124,6 @@ uint8 Spell::CanCast(bool tolerate)
 					// should only affect Wyrmcult Blackwhelps
 					if(target->GetEntry()!= 21387)
 						return SPELL_FAILED_BAD_TARGETS;
-				}
-				//mind control is limted in target level
-				if(		( m_spellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOD_POSSESS && (m_spellInfo->EffectBasePoints[0] + 1) < (int32)target->getLevel() ) 
-					||	( m_spellInfo->EffectApplyAuraName[1] == SPELL_AURA_MOD_POSSESS && (m_spellInfo->EffectBasePoints[1] + 1) < (int32)target->getLevel() )
-					||	( m_spellInfo->EffectApplyAuraName[2] == SPELL_AURA_MOD_POSSESS && (m_spellInfo->EffectBasePoints[2] + 1) < (int32)target->getLevel() )
-					)
-				{
-						return SPELL_FAILED_HIGHLEVEL;
 				}
 
 				/***********************************************************
