@@ -130,6 +130,7 @@ Zack - test my shit :
 - Mage - Frost Channeling 12519
 - Mage - improved scorch 12873 should stack
 - Hunter - Unleashed Fury 19620
+- Hunter - Frenzy 19625
 
 ==========================================================================
 Capt - test my shit :

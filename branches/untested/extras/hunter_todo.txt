@@ -34,27 +34,12 @@ Mend Pet - Still working as a channeled spell. This has changed. Now it should b
 Track Hidden - Broken. Does not increase your stealth detection and of course, no target on the mini-map.
 Snake Trap - Never seen it working.
 
-Regarding Scatter Shot: it's a little bit confused in the list. Basically, in pvp, the target affected by Scatter will still be able to control itself. It will be unable to attack, but that's not the only effect we want.
-
-AUTO-SHOT: Currently I'm playing on the revision 2801 and Auto-Shot is all messed up!!! Most times you stand still and don't shoot. The only commit after 2801 that deals with it is the 2805 but is not clear if it's a fix. For God's sake, Hunter without Auto-shot is a rogue without stuns!!! It's ridiculous! If it's not fixed yet, please do it.
-
 Pets:
 
 Pet's attack power bonus based on Hunter's ranged attack power is not working properly. If you do any change in your atk power (increase/decrease), it won't affect the pet. It seems to be happening with stats like stamina and armor too. A feedback would be good.
 Also, Spell Damage Bonus is not adding any damage to pet spells.
 
 Skills like Dash and Dive are not working properly. You should be able to cast them anytime you want but they only work when the pet is hitting the target (which makes the skill useless).
-
-Natural Armor and Great Stamina reset the respectives stats to zero and adds only the amount mentioned.
-
-Most times if someone try to buff your pet will reset all stats to zero.
-
-*cough* Cobra Reflexes is decreasing attack speed instead of increasing and damage done should be reduced but it remains the same.
-
-Excluding the skills/spells, all training will be reset after some time and you'll get all training points back.
-
-Frenzy
-
 
 //////////////////////////////////////////////
 

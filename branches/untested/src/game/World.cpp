@@ -3524,6 +3524,58 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 		sp->EffectSpellGroupRelation[0] = 1 | 4;
 
+	//Hunter - Frenzy
+	sp = dbcSpell.LookupEntryForced( 19621 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 19615;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->procChance = sp->EffectBasePoints[0];
+		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
+	}
+	sp = dbcSpell.LookupEntryForced( 19622 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 19615;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->procChance = sp->EffectBasePoints[0];
+		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
+	}
+	sp = dbcSpell.LookupEntryForced( 19623 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 19615;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->procChance = sp->EffectBasePoints[0];
+		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
+	}
+	sp = dbcSpell.LookupEntryForced( 19624 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 19615;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->procChance = sp->EffectBasePoints[0];
+		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
+	}
+	sp = dbcSpell.LookupEntryForced( 19625 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+		sp->EffectTriggerSpell[0] = 19615;
+		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
+		sp->procChance = sp->EffectBasePoints[0];
+		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
+	}
+
 	//Hunter -  Unleashed Fury
 	sp = dbcSpell.LookupEntryForced( 19616 );
 	if( sp != NULL )
