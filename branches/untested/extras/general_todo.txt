@@ -119,6 +119,8 @@ Zack - test my shit :
 - priest mind control should not be able to be casted on higher level creatures
 - warrior - two-handed weapon specialization 12714
 - warrior - one-handed weapon specialization 16542
+- mage - wand specialization 6085
+- priest wand specialization 14528
 
 ==========================================================================
 Capt - test my shit :

@@ -3693,6 +3693,63 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL;
 	*/
 
+	//general wand shoot. Needs a group that is not used for mage and priest
+	sp = dbcSpell.LookupEntryForced( 5019 );
+	if( sp != NULL )
+		sp->SpellGroupType = 134217728;
+	
+	//Mage - Wand Specialization. Not the forst thing we messed up. Blizz uses attack as magic and wandds as weapons :S
+	sp = dbcSpell.LookupEntryForced( 6057 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectSpellGroupRelation[0] = 134217728;
+	}
+	sp = dbcSpell.LookupEntryForced( 6085 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectSpellGroupRelation[0] = 134217728;
+	}
+	//Priest - Wand Specialization
+	sp = dbcSpell.LookupEntryForced( 14524 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectSpellGroupRelation[0] = 134217728;
+	}
+	sp = dbcSpell.LookupEntryForced( 14525 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectSpellGroupRelation[0] = 134217728;
+	}
+	sp = dbcSpell.LookupEntryForced( 14526 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectSpellGroupRelation[0] = 134217728;
+	}
+	sp = dbcSpell.LookupEntryForced( 14527 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectSpellGroupRelation[0] = 134217728;
+	}
+	sp = dbcSpell.LookupEntryForced( 14528 );
+	if( sp != NULL )
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+		sp->EffectSpellGroupRelation[0] = 134217728;
+	}
+
 	//Mage:Arcane Blast
 	sp = dbcSpell.LookupEntryForced( 30451 );
 	if( sp != NULL )
