@@ -1689,13 +1689,13 @@ void Aura::SpellAuraDummy(bool apply)
 		{
 			Unit *caster = GetUnitCaster();
 			if(caster && caster->IsPlayer())
-				static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29841,100);//fixed 100% chance
+				static_cast<Player*>(caster)->SetTriggerStunOrImmobilize( 29841, 100, true );//fixed 100% chance
 		}break;
 	case 29838:
 		{
 			Unit *caster = GetUnitCaster();
 			if(caster && caster->IsPlayer())
-				static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(29842,100);//fixed 100% chance
+				static_cast<Player*>(caster)->SetTriggerStunOrImmobilize( 29842, 100, true );//fixed 100% chance
 		}break;
 	//mage Frostbite talent
 	case 11071:
@@ -1704,7 +1704,7 @@ void Aura::SpellAuraDummy(bool apply)
 		{
 			Unit *caster = GetUnitCaster();
 			if(caster && caster->IsPlayer())
-				static_cast<Player*>(caster)->SetTriggerStunOrImmobilize(12494,mod->m_amount);
+				static_cast<Player*>(caster)->SetTriggerStunOrImmobilize( 12494, mod->m_amount, false);
 		}break;
 	//mage Magic Absorption
 	case 29441:
@@ -2274,8 +2274,11 @@ void Aura::SpellAuraModStun(bool apply)
 		}
 
 		//warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
-		if(p_target)
-			p_target->EventStunOrImmobilize(NULL);
+		Unit *caster = GetUnitCaster();
+		if( caster && caster->IsPlayer() && m_target )
+			static_cast<Player*>(caster)->EventStunOrImmobilize( m_target );
+		if( m_target && m_target->IsPlayer() && caster )
+			static_cast<Player*>(m_target)->EventStunOrImmobilize( caster );
 	}
 	else
 	{
@@ -2890,6 +2893,12 @@ void Aura::SpellAuraModRoot(bool apply)
 			m_target->Root();
 
 		/* -Supalosa- TODO: Mobs will attack nearest enemy in range on aggro list when rooted. */
+
+		Unit *caster = GetUnitCaster();
+		if( caster && caster->IsPlayer() && m_target )
+			static_cast<Player*>(caster)->EventStunOrImmobilize( m_target );
+		if( m_target && m_target->IsPlayer() && caster )
+			static_cast<Player*>(m_target)->EventStunOrImmobilize( caster );
 	}
 	else
 	{
@@ -3152,10 +3161,12 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 		//let's check Mage talents if we proc anythig 
 		if(m_spellProto->School==SCHOOL_FROST)
 		{
-			Unit *caster=GetUnitCaster();
 			//yes we are freezing the bastard, so can we proc anything on this ?
-			if(caster && caster->IsPlayer() && m_target)
-				static_cast<Player*>(caster)->EventStunOrImmobilize(m_target);
+			Unit *caster = GetUnitCaster();
+			if( caster && caster->IsPlayer() && m_target )
+				static_cast<Player*>(caster)->EventStunOrImmobilize( m_target );
+			if( m_target && m_target->IsPlayer() && caster )
+				static_cast<Player*>(m_target)->EventStunOrImmobilize( caster );
 		}
 		m_target->speedReductionMap.insert(make_pair(m_spellProto->Id, mod->m_amount));
 		//m_target->m_slowdown=this;

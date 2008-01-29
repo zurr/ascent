@@ -30,7 +30,6 @@ Conjured food and water -> creates everytime more and don't have timer
 
 Talents:
 Presence of Mind -> isn't working for me, dunno 4 others try to test it
-Wand Specialization -> I think that isnt working try to test it
 Magic Attunement - It doesn't change your tooltip, it doesn't change your buff information either but it is actually working.
 Arcane Concetration -> Isn't working I guess, test it
 Arcane Meditation -> also isn't working

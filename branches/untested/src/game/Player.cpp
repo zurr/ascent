@@ -346,6 +346,8 @@ Player::Player ( uint32 high, uint32 low ) : m_mailBox(low)
 	ok_to_remove = false;
 	trigger_on_stun = 0;
 	trigger_on_stun_chance = 100;
+	trigger_on_stun_victim = 0;
+	trigger_on_stun_chance_victim = 100;
 	m_modphyscritdmgPCT = 0;
 	m_RootedCritChanceBonus = 0;
 	m_ModInterrMRegenPCT = 0;
@@ -8943,28 +8945,38 @@ void Player::UnPossess()
 }
 
 //what is an Immobilize spell ? Have to add it later to spell effect handler
-void Player::EventStunOrImmobilize(Unit *proc_target)
+void Player::EventStunOrImmobilize(Unit *proc_target, bool is_victim)
 {
-	if(trigger_on_stun)
+	uint32 t_trigger_on_stun,t_trigger_on_stun_chance;
+	if( is_victim == false )
 	{
-		if(trigger_on_stun_chance<100 && !Rand(trigger_on_stun_chance))
+		t_trigger_on_stun = trigger_on_stun;
+		t_trigger_on_stun_chance = trigger_on_stun_chance;
+	}
+	else
+	{
+		t_trigger_on_stun = trigger_on_stun_victim;
+		t_trigger_on_stun_chance = trigger_on_stun_chance_victim;
+	}
+
+	if(t_trigger_on_stun)
+	{
+		if(t_trigger_on_stun_chance<100 && !Rand(t_trigger_on_stun_chance))
 			return;
-		SpellEntry *spellInfo = dbcSpell.LookupEntry(trigger_on_stun);
+		SpellEntry *spellInfo = dbcSpell.LookupEntry(t_trigger_on_stun);
 		if(!spellInfo)
 			return;
 		Spell *spell = new Spell(this, spellInfo ,true, NULL);
 		SpellCastTargets targets;
-/*		if(spellInfo->procFlags & PROC_TAGRGET_ATTACKER)
-		{
-			if(!attacker)
-				return;
-			targets.m_unitTarget = attacker->GetGUID();
-		}
-		else targets.m_unitTarget = GetGUID();
-		*/
-		if(proc_target)
+		if ( spellInfo->procFlags & PROC_TARGET_SELF )
+			targets.m_unitTarget = GetGUID() ;
+		else if ( proc_target ) 
+			targets.m_unitTarget = proc_target->GetGUID() ;
+		else 
+			targets.m_unitTarget = NULL ;
+/*		if(proc_target)
 			targets.m_unitTarget = proc_target->GetGUID();
-		else targets.m_unitTarget = GetGUID();
+		else targets.m_unitTarget = GetGUID();*/
 		spell->prepare(&targets);
 	}
 }

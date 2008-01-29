@@ -18,11 +18,6 @@ Bug:
 If you damage target of Intimidating Shout - the one "cowering in fear" - you will fear yourself (and duration renews each time you damage "cowering in fear" target again - basic situation is having DoT on your target and fearing it - your target fear is sometimes removed after 1st DoT tick and you get 8sec fear on yourself, or DoT doesnt remove his fear and you keep getting 8sec fear each time your DoT damages your feared target).
 Enrage talent doesnt give a slightest bonus dmg. Good thing that Flurry seems to work fine.
 
-4. second wind doesn't activate when getting immobilized by frost nova.
-
-talent -
-arms
-
 fury
 5. rampage doesn't stacks(only gives the initial AP)
 

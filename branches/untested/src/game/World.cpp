@@ -5530,6 +5530,14 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_RANGED_ATTACK;
 	}
 
+	//warrior - second wind should trigger on self
+	sp = dbcSpell.LookupEntryForced( 29841 );
+	if( sp != NULL )
+		sp->procFlags |= PROC_TARGET_SELF;
+	sp = dbcSpell.LookupEntryForced( 29842 );
+	if( sp != NULL )
+		sp->procFlags |= PROC_TARGET_SELF;
+
 	//warrior - berserker rage is missing 1 effect = regenerate rage
 	sp = dbcSpell.LookupEntryForced( 18499 );
 	if( sp != NULL )
