@@ -3750,7 +3750,24 @@ bool World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation[0] = 134217728;
 	}
 
-	//Mage:Arcane Blast
+	//Mage - Arcane Concentration
+	sp = dbcSpell.LookupEntryForced( 11213 );
+	if( sp != NULL )
+		sp->procFlags = PROC_ON_CAST_SPELL | PROC_TARGET_SELF;
+	sp = dbcSpell.LookupEntryForced( 12574 );
+	if( sp != NULL )
+		sp->procFlags = PROC_ON_CAST_SPELL | PROC_TARGET_SELF;
+	sp = dbcSpell.LookupEntryForced( 12575 );
+	if( sp != NULL )
+		sp->procFlags = PROC_ON_CAST_SPELL | PROC_TARGET_SELF;
+	sp = dbcSpell.LookupEntryForced( 12576 );
+	if( sp != NULL )
+		sp->procFlags = PROC_ON_CAST_SPELL | PROC_TARGET_SELF;
+	sp = dbcSpell.LookupEntryForced( 12577 );
+	if( sp != NULL )
+		sp->procFlags = PROC_ON_CAST_SPELL | PROC_TARGET_SELF;
+
+	//Mage - Arcane Blast
 	sp = dbcSpell.LookupEntryForced( 30451 );
 	if( sp != NULL )
 	{

@@ -123,6 +123,7 @@ Zack - test my shit :
 - mage - wand specialization 6085
 - priest wand specialization 14528
 - Mage - Magic Attunement 12606
+- Mage - Arcane Concentration 12577
 
 ==========================================================================
 Capt - test my shit :
