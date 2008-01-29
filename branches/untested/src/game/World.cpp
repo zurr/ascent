@@ -3764,6 +3764,29 @@ bool World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation_high[0] = 0xFFFFFFFF;
 	}
 
+	//Mage - Elemental Precision
+	sp = dbcSpell.LookupEntryForced( 29438 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 8388608 | 2 | 16 | 4 | 1573376 | 524288 | 8 | 131072 | 262144 | 4194304 | 1 ;
+		sp->EffectSpellGroupRelation_high[0] = 64 | 128 | 1;
+		sp->EffectMiscValue[0] = SMT_COST;
+	}
+	sp = dbcSpell.LookupEntryForced( 29439 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 8388608 | 2 | 16 | 4 | 1573376 | 524288 | 8 | 131072 | 262144 | 4194304 | 1 ;
+		sp->EffectSpellGroupRelation_high[0] = 64 | 128 | 1;
+		sp->EffectMiscValue[0] = SMT_COST;
+	}
+	sp = dbcSpell.LookupEntryForced( 29440 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 8388608 | 2 | 16 | 4 | 1573376 | 524288 | 8 | 131072 | 262144 | 4194304 | 1 ;
+		sp->EffectSpellGroupRelation_high[0] = 64 | 128 | 1;
+		sp->EffectMiscValue[0] = SMT_COST;
+	}
+
 	//Mage - Arcane Concentration
 	sp = dbcSpell.LookupEntryForced( 11213 );
 	if( sp != NULL )

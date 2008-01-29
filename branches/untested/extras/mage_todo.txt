@@ -33,16 +33,6 @@ Spells:
 -ll-
 
 Talents:
-Improved Scorch -> Same like Ignite, putting 1 talent point is the same as putting 3 talent points. Overpowered.
-
-Frost:
-Spells:
-Frostnova is bugged, fading from pyroblast or fireball dots. Also frost nova spell coefficient is wrong, level 70 mage with 800~ spell damage hits frost nova for 400, and coeff is only 13%. so adding to ~150 base damage 800*0.13 =/= 300
-Frostbolt rank1 kite is bugged. Cant use it enemy, slowed with frostbolt with higher rank.
-
-Talents:
-Frostbite is bugged -> Procs only from the very first frostbolt or enemy hit, but in the same time works ok with cone of cold. Procs on self too. (When casting Ice Block, when getting stunned/incapacitated, when summoning WE ) , test it
-Elemental Precision -> Reduces mana cost, not sure about target's resist.
 Frost warding -> Same like Magic Attunement, increases the armor gained from Frost Armor and Ice Armor. Not sure about reflecting spells.
 Frost Channeling -> Reduces mana cost, not sure about threat.
 Artic Winds -> Increases Frost damage. Not sure if it reduces the chance you are hit by melee or ranged attacks. test it

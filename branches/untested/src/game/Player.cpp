@@ -8947,6 +8947,8 @@ void Player::UnPossess()
 //what is an Immobilize spell ? Have to add it later to spell effect handler
 void Player::EventStunOrImmobilize(Unit *proc_target, bool is_victim)
 {
+	if ( this == proc_target )
+		return; //how and why would we stun ourselfs
 	uint32 t_trigger_on_stun,t_trigger_on_stun_chance;
 	if( is_victim == false )
 	{
