@@ -862,6 +862,7 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 							continue;
 						if( CastingSpell->School!=SCHOOL_FIRE)
 							continue;
+						dmg_overwrite = (ospinfo->EffectBasePoints[0] + 1) * dmg / 100;
 					}break;
 					//rogue - blade twisting
 					case 31125:

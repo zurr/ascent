@@ -33,7 +33,6 @@ Spells:
 -ll-
 
 Talents:
-Ignite -> Last time I checked, putting one talent in it is the same as putting 5. Overpowered, test it anyway
 Improved Scorch -> Same like Ignite, putting 1 talent point is the same as putting 3 talent points. Overpowered.
 
 Frost:

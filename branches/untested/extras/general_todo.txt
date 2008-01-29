@@ -125,6 +125,7 @@ Zack - test my shit :
 - Mage - Magic Attunement 12606
 - Mage - Arcane Concentration 12577
 - Mage - Spell Power 35581
+- mage ignite scale with leveling 12847 / 12848
 
 ==========================================================================
 Capt - test my shit :
