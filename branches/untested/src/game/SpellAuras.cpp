@@ -746,7 +746,7 @@ void Aura::EventUpdateAA(float r)
 	vector<uint32> NewTargets;
 
 	// Add the aura to the caster, if he's in range of course.
-	if(plr->GetDistanceSq(u_caster) < r)
+	if(plr->GetDistanceSq(u_caster) <= r)
 	{
 		if(!plr->HasActiveAura(m_spellProto->Id))
 		{
@@ -755,6 +755,27 @@ void Aura::EventUpdateAA(float r)
 			aura->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
 			plr->AddAura(aura);
 			NewTargets.push_back(plr->GetGUIDLow());
+		}
+	}
+
+	//report say that aura should also affect pet 
+	if( plr && plr->GetSummon() && 
+		(
+			GetSpellProto()->NameHash == SPELL_HASH_TRUESHOT_AURA ||
+			GetSpellProto()->NameHash == SPELL_HASH_ASPECT_OF_THE_PACK ||
+			GetSpellProto()->NameHash == SPELL_HASH_ASPECT_OF_THE_WILD
+			)
+		 )
+	{
+		Unit *summon = plr->GetSummon();
+		if( summon->isAlive() && summon->GetDistanceSq(u_caster) <= r && !summon->HasActiveAura( m_spellProto->Id ))
+		{
+			Aura * aura = new Aura(m_spellProto, -1, u_caster, plr);
+			aura->m_areaAura = true;
+			aura->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
+			summon->AddAura(aura);
+			//make sure we remove this
+//			sEventMgr.AddEvent(((Unit*)summon), &Unit::EventRemoveAura, m_spellProto->Id, EVENT_DELETE_TIMER, 10, 1,0);
 		}
 	}
 
@@ -856,6 +877,23 @@ void Aura::RemoveAA()
 {
 	AreaAuraList::iterator itr;
 	Unit * caster = GetUnitCaster();
+
+	//report say that aura should also affect pet 
+	Player *plr = NULL;
+	if( GetUnitCaster() && GetUnitCaster()->GetTypeId() == TYPEID_PLAYER)
+		plr = static_cast<Player*>(GetUnitCaster());
+	if( plr && plr->GetSummon() && 
+		(
+			GetSpellProto()->NameHash == SPELL_HASH_TRUESHOT_AURA ||
+			GetSpellProto()->NameHash == SPELL_HASH_ASPECT_OF_THE_PACK ||
+			GetSpellProto()->NameHash == SPELL_HASH_ASPECT_OF_THE_WILD
+			)
+		 )
+	{
+		Unit *summon = plr->GetSummon();
+		if( summon->isAlive() )
+			plr->RemoveAura( m_spellProto->Id );
+	}
 
 	for(itr = targets.begin(); itr != targets.end(); ++itr)
 	{

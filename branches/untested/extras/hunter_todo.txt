@@ -45,95 +45,25 @@ Skills like Dash and Dive are not working properly. You should be able to cast t
 
 Spell:
 
-
-
-Aspect of the Viper: doesn't work at all, should be:
-
-* Regenerating mana equal to 25% of Intellect every 5 sec.
-
-* Stacks with equipment and items consisting of +mana every 5 seconds bonuses.
-
-
-
-Hunter's mark: puts the mark on the target, but has no effect, except lets you see them when they stealth.
-
-* Places the Hunter's Mark on the target, increasing the ranged attack power of all attackers against that target by X and by an additional X each time they are struck by a ranged attack (anyone's ranged attack!), up to a maximum of X.
-
-- In addition, the target of this ability can always be seen by the hunter whether it stealths or turns invisible (this part seems to be working).
-
-- The target also appears on the mini-map. Lasts for 2 min.
-
-- Adding AP per hit:
-
-Hunters Mark - Rank 1 : Additional 2 each time they are struck by a ranged attack, up to a maximum of 80
-
-Hunters Mark - Rank 2 : Additional 4 each time they are struck by a ranged attack, up to a maximum of 180
-
-Hunters Mark - Rank 3 : Additional 7 each time they are struck by a ranged attack, up to a maximum of 300
-
-Hunters Mark - Rank 4 : Additional 11 each time they are struck by a ranged attack, up to a maximum of 440
-
-- General AP:
-
-Rank 1 +20 RAP
-
-Rank 2 +45 RAP
-
-Rank 3 +75 RAP
-
-Rank 4 +110 RAP
-
-
-
-Auto-shot: almost fixed, has a few glitches yet though:
-
-* After using Aimed Shot or Steady Shot it's likely to stop working until you re-cast.
-
-
+EventPeriodicManaPct - should receive bonus from items..what items ? give examples
 
 Scorpid Sting: pus the sting on the target, but has no effect, tested with recount.
-
 * reduces the target's chance to hit with melee and ranged attacks by 5%.
-
-
-
-Mend pet: should be instant heal over time, just like druid spell rejuvenation/lifebloom or priest's renew, just appliable only on pet, instead of channeling, like it is now.
-
-* If you are targeting an enemy and cast mend pet, it will start channeling but if you stop, the healing effect will still be on the pet during the supposed time, just like it's supposed to.
-
-
+m_hitfrommeleespell- this needs to be added to the formulas
 
 Frost trap: no longer works since 33xx:
-
 * The radius of the trap was too small, here's an example of how it should be: <a href="http://www.youtube.com/watch?v=gRGCI0FXv3Y" target="_blank">http://www.youtube.com/watch?v=gRGCI0FXv3Y</a>
-
 * Creates an ice slick around itself for 30 sec when the first enemy approaches it. All enemies within 10 yards will be slowed to 40% of their normal movement speed while in the area of effect. Trap will exist for 1 min. Traps may be placed in combat, but have a 2 second arming time (it will become active in 2 seconds after trapping).
 
-
-
 Track Hidden: Broken.
-
 * Does not increase your stealth detection and of course, no target on the mini-map.
 
-
-
 Snake Trap: Never seen it working.
-
 * A trap that will release several venomous snakes to attack the first enemy to approach. The snakes will die after 15 sec.
-
 * The snakes have 3 rogue-style poisons:
-
 - Crippling Poison: Enemy movement speed is reduced by 50%.
-
 - Mind-Numbing Poison: Enemy spell-casting speed is incresed by 50%.
-
 - Deadly Poison: Enemy gets 15 nature damage over 12 seconds. Stacks up to 5 times.
-
-
-
-* Trueshot Aura, Aspect of the Wild and Aspect of the Pack should also buff hunter's pet, as long as the pet stays within their range. Confirmed with a little google research.
-
-
 
 Haste effects:
 

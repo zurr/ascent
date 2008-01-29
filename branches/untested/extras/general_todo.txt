@@ -131,6 +131,8 @@ Zack - test my shit :
 - Mage - improved scorch 12873 should stack
 - Hunter - Unleashed Fury 19620
 - Hunter - Frenzy 19625
+- hunter - Aspect of the Pack should also buff hunter's pet, as long as the pet stays within their range.
+* Trueshot Aura, Aspect of the Wild and Aspect of the Pack should also buff hunter's pet, as long as the pet stays within their range. Confirmed with a little google research.
 
 ==========================================================================
 Capt - test my shit :

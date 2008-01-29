@@ -3532,7 +3532,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 19615;
 		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
 		sp->procChance = sp->EffectBasePoints[0];
-		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->procFlags = PROC_ON_CRIT_ATTACK;
 		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
 	}
 	sp = dbcSpell.LookupEntryForced( 19622 );
@@ -3542,7 +3542,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 19615;
 		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
 		sp->procChance = sp->EffectBasePoints[0];
-		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->procFlags = PROC_ON_CRIT_ATTACK;
 		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
 	}
 	sp = dbcSpell.LookupEntryForced( 19623 );
@@ -3552,7 +3552,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 19615;
 		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
 		sp->procChance = sp->EffectBasePoints[0];
-		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->procFlags = PROC_ON_CRIT_ATTACK;
 		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
 	}
 	sp = dbcSpell.LookupEntryForced( 19624 );
@@ -3562,7 +3562,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 19615;
 		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
 		sp->procChance = sp->EffectBasePoints[0];
-		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->procFlags = PROC_ON_CRIT_ATTACK;
 		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
 	}
 	sp = dbcSpell.LookupEntryForced( 19625 );
@@ -3572,7 +3572,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 19615;
 		sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
 		sp->procChance = sp->EffectBasePoints[0];
-		sp->procFlags = PROC_ON_CRIT_ATTACK
+		sp->procFlags = PROC_ON_CRIT_ATTACK;
 		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | PROC_TARGET_SELF;
 	}
 
