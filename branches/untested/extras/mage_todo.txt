@@ -34,7 +34,6 @@ Spells:
 
 Talents:
 Frost warding -> Same like Magic Attunement, increases the armor gained from Frost Armor and Ice Armor. Not sure about reflecting spells.
-Frost Channeling -> Reduces mana cost, not sure about threat.
 Artic Winds -> Increases Frost damage. Not sure if it reduces the chance you are hit by melee or ranged attacks. test it
 
 

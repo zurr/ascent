@@ -3764,6 +3764,26 @@ bool World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation_high[0] = 0xFFFFFFFF;
 	}
 
+	//Mage - Frost Channeling
+	sp = dbcSpell.LookupEntryForced( 11160 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 524288 | 131072  ;
+		sp->EffectSpellGroupRelation_high[0] = 1;
+	}
+	sp = dbcSpell.LookupEntryForced( 12518 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 524288 | 131072  ;
+		sp->EffectSpellGroupRelation_high[0] = 1;
+	}
+	sp = dbcSpell.LookupEntryForced( 12519 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 524288 | 131072  ;
+		sp->EffectSpellGroupRelation_high[0] = 1;
+	}
+
 	//Mage - Elemental Precision
 	sp = dbcSpell.LookupEntryForced( 29438 );
 	if( sp != NULL )
