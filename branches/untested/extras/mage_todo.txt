@@ -25,13 +25,11 @@ Arcane
 
 Spells:
 Invisibility -> isn't working
-Spellsteal -> isn't working
 Blink -> should be a little faster, try to fix it
 Conjured food and water -> creates everytime more and don't have timer
 
 Talents:
 Presence of Mind -> isn't working for me, dunno 4 others try to test it
-Improved Arcane Missiles -> Your channeling isn't intrerrupted even without putting talents here.
 Wand Specialization -> I think that isnt working try to test it
 Magic Attunement - It doesn't change your tooltip, it doesn't change your buff information either but it is actually working.
 Arcane Concetration -> Isn't working I guess, test it
