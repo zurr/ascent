@@ -3759,6 +3759,14 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
 	}
 
+	//Mage - Magic Attunement
+	sp = dbcSpell.LookupEntryForced( 11247 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 8192;
+	sp = dbcSpell.LookupEntryForced( 12606 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 8192; //strange lvl 2 was working 
+
 	//Mage:Arcane Blast proc spell
 	sp = dbcSpell.LookupEntryForced( 36032 );
 	if( sp != NULL )

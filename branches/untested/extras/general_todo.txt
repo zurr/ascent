@@ -122,6 +122,7 @@ Zack - test my shit :
 - warrior - second wind 29838, also test mage frostbite 12497 for rooting effects
 - mage - wand specialization 6085
 - priest wand specialization 14528
+- Mage - Magic Attunement 12606
 
 ==========================================================================
 Capt - test my shit :
