@@ -26,9 +26,7 @@ Conjured food and water -> creates everytime more and don't have timer
 
 Talents:
 Presence of Mind -> isn't working for me, dunno 4 others try to test it
-Arcane Meditation -> also isn't working
 Arcane Potency -> Isn't working, test it
-Spell Power -> Isn't working, test it
 
 Fire:
 Spells:

@@ -3750,6 +3750,20 @@ bool World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation[0] = 134217728;
 	}
 
+	//Mage - Spell Power
+	sp = dbcSpell.LookupEntryForced( 35578 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 0xFFFFFFFF;
+		sp->EffectSpellGroupRelation_high[0] = 0xFFFFFFFF;
+	}
+	sp = dbcSpell.LookupEntryForced( 35581 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 0xFFFFFFFF;
+		sp->EffectSpellGroupRelation_high[0] = 0xFFFFFFFF;
+	}
+
 	//Mage - Arcane Concentration
 	sp = dbcSpell.LookupEntryForced( 11213 );
 	if( sp != NULL )
