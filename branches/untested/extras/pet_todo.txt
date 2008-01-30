@@ -5,12 +5,7 @@
 3) Pet talents, or what ever they are called are not added to your training book.
 For example if I have a cat with claw, when I abandon him the skill is not left to train to another pet.
 
-4) The pet command bar sometimes looses the first three commands.
-The only way to fix it is to train another pet. My friend lost six pets in two days either by having them vanish or having his pet bar go buggers. My present pet has been with me for 3 days a new record.
-
 5) And last the pet commands that control his temperament "Aggressive, Passive and Defensive", don't really seem to work. In defensive mode he will run around killing everything in site and then stand by and watch when I am attacked.
-
-6) I tried taming a Zehvra Runner and after the channeling bar was done, it just kept attacking me and didn't become a pet.
 
 7) Today, I put my pet in the stable and quit. When I logged back in, it was beside me. I don't know if that's a bug though.
 

@@ -4281,6 +4281,14 @@ bool World::SetInitialWorldSettings()
 		sp->EffectSpellGroupRelation[2] = 2048;
 	}
 
+	//warlock - Intensity
+	sp = dbcSpell.LookupEntryForced( 4224 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 4 | 1 | 64 | 256 | 32 | 128 | 512; //destruction spells
+	sp = dbcSpell.LookupEntryForced( 18135 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 4 | 1 | 64 | 256 | 32 | 128 | 512; //destruction spells
+
 	//warlock: Devastation
 	sp = dbcSpell.LookupEntryForced(  18130 );
 	if( sp != NULL )

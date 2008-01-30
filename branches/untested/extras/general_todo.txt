@@ -123,6 +123,7 @@ Zack - test my shit :
 - priest wand specialization 14528
 - Mage - Arcane Concentration 12577 - stupid clearcasting gets removed as it is casted .cast 12536
 - Mage - Icy Veins 12472
+- warlock - Intensity 18135
 
 ==========================================================================
 Capt - test my shit :
