@@ -1772,19 +1772,48 @@ bool World::SetInitialWorldSettings()
 		sp->EffectApplyAuraName[1] = 4;
 	}
 
+	//paladin - Improved Righteous Fury
+	sp = dbcSpell.LookupEntryForced( 20468 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 1;
+		sp->EffectSpellGroupRelation[1] = 1;
+	}
+	sp = dbcSpell.LookupEntryForced( 20469 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 1;
+		sp->EffectSpellGroupRelation[1] = 1;
+	}
+	sp = dbcSpell.LookupEntryForced( 20470 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation[0] = 1;
+		sp->EffectSpellGroupRelation[1] = 1;
+	}
+
 	//paladin ( grouping ) Healing Light
 	group_relation_paladin_healing_light = 0x40000000 | 0x80000000;
 
 	//paladin - 
 	sp = dbcSpell.LookupEntryForced( 20237 );
 	if( sp != NULL )
+	{
 		sp->EffectSpellGroupRelation[0] = group_relation_paladin_healing_light;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+	}
 	sp = dbcSpell.LookupEntryForced( 20238 );
 	if( sp != NULL )
+	{
 		sp->EffectSpellGroupRelation[0] = group_relation_paladin_healing_light;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+	}
 	sp = dbcSpell.LookupEntryForced( 20239 );
 	if( sp != NULL )
+	{
 		sp->EffectSpellGroupRelation[0] = group_relation_paladin_healing_light;
+		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
+	}
 
 	//paladin - Aura Mastery
 	sp = dbcSpell.LookupEntryForced( 31821 );
@@ -1864,33 +1893,25 @@ bool World::SetInitialWorldSettings()
 	//paladin - Reckoning
 	sp = dbcSpell.LookupEntryForced( 20177 );
 	if( sp != NULL )
-	{
 		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_TARGET_SELF;
-        sp->EffectTriggerSpell[0] = 32746;
-	}
 	sp = dbcSpell.LookupEntryForced( 20179 );
 	if( sp != NULL )
-	{
 		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_TARGET_SELF;
-        sp->EffectTriggerSpell[0] = 32746;
-	}
 	sp = dbcSpell.LookupEntryForced( 20180 );
 	if( sp != NULL )
-	{
 		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_TARGET_SELF;
-        sp->EffectTriggerSpell[0] = 32746;
-	}
 	sp = dbcSpell.LookupEntryForced( 20181 );
 	if( sp != NULL )
-	{
 		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_TARGET_SELF;
-        sp->EffectTriggerSpell[0] = 32746;
-	}
 	sp = dbcSpell.LookupEntryForced( 20182 );
 	if( sp != NULL )
-	{
 		sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_TARGET_SELF;
-        sp->EffectTriggerSpell[0] = 32746;
+	//the Reckoning effect = proc on proc
+	sp = dbcSpell.LookupEntryForced( 20178 );
+	if( sp != NULL )
+	{
+		sp->procChance = 100;
+		sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF;
 	}
 
 	//paladin - Judgement of Wisdom
