@@ -14,15 +14,6 @@ Felhunter
 General
 -Should receive soul shard when pet is dismissed due to out of range or getting on windrider
 
-Talents - Destruction
--Intensity: has no noticable effect (supposed to give 70% at max lvl to reduce the chance of spell interruption).
--Shadow and Flame: is supposed to give +20% damage to shadowbolt and incinerate but doesn't.
--Emberstorm: only applies to base damage, not damage after spell casts.
-
-Talents - Demonology
--Soul link: does not transfer 20% of damage to pet or give the +5% damage
--Demonic Sacrifice: Working, though fire damage gained from imp and shadow damage gained from succubus and felguard are applied to base spell damage, not total spell damage after all other effects. Also, ff you use Demonic Sacrifice and log out with no pet, your character will show a Voidwalker next to them. When you log onto another character than back on to your lock, you'll have both the Demonic Sacrifice you used, and a Voidwalker out. Sacrificing this one would make 2 Sacrifices stack.
-
 Pets
 -Pets on defense/passive immediately attacks the closest enemy if it kills the current mob. It also immediately attacks the closest enemy if it is just summoned or from log in.
 
