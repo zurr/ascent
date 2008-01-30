@@ -21,8 +21,6 @@ Pets
 
 Demonology Tree:
 Mana Feed - doesn't work
-Demonic Resilience - doesn't work
-Demonic Tactics
 
 Destruction Tree:
 Shadow Burn - skill works but doesn't return soul shard if target died withing 5 secs

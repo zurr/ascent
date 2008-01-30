@@ -126,6 +126,7 @@ Zack - test my shit :
 - warlock - Intensity 18135
 - warlock - demonic sacrifice 18788, logout / login = you have pet + aura
 - warlock - Demonic Resilience 30321
+- warlock - Demonic Tactics 30248
 
 ==========================================================================
 Capt - test my shit :

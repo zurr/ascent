@@ -4855,6 +4855,49 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 		sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
 	
+	//warlock - Demonic Tactics
+	sp = dbcSpell.LookupEntryForced( 30242 );
+	if( sp != NULL )
+	{
+		sp->Effect[0] = 0; //disble this. This is just blizz crap. Pure proove that they suck :P
+		sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
+		sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_SPELL_CRIT_CHANCE; //lvl 1 has it fucked up :O
+		sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
+		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER ;
+	}
+	sp = dbcSpell.LookupEntryForced( 30245 );
+	if( sp != NULL )
+	{
+		sp->Effect[0] = 0; //disble this. This is just blizz crap. Pure proove that they suck :P
+		sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
+		sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
+		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER ;
+	}
+	sp = dbcSpell.LookupEntryForced( 30246 );
+	if( sp != NULL )
+	{
+		sp->Effect[0] = 0; //disble this. This is just blizz crap. Pure proove that they suck :P
+		sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
+		sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
+		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER ;
+	}
+	sp = dbcSpell.LookupEntryForced( 30247 );
+	if( sp != NULL )
+	{
+		sp->Effect[0] = 0; //disble this. This is just blizz crap. Pure proove that they suck :P
+		sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
+		sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
+		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER ;
+	}
+	sp = dbcSpell.LookupEntryForced( 30248 );
+	if( sp != NULL )
+	{
+		sp->Effect[0] = 0; //disble this. This is just blizz crap. Pure proove that they suck :P
+		sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
+		sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
+		sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER ;
+	}
+
 	//warlock - Demonic Resilience
 	sp = dbcSpell.LookupEntryForced( 30319 );
 	if( sp != NULL )
