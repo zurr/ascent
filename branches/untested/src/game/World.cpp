@@ -3800,7 +3800,7 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[1] = 512;
-		sp->EffectMiscValue[1] = SMT_HITCHANCE;
+		sp->EffectMiscValue[1] = SMT_TRIGGER;
 	}
 
 	//Mage - Wand Specialization. Not the forst thing we messed up. Blizz uses attack as magic and wandds as weapons :S

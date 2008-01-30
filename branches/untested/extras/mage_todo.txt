@@ -1,5 +1,3 @@
-Improved Scorch (talent) - not stacking on target
-
 Problems not related with only one spell/talent:
 - Problem with multiple mages in one group: if a mage cast fireball for example on a mob, if i cast a lower rank of fireball it says that a another more powerfull spell effect is active...this should work on buffs like Arcane Intellect not casting damage spells
 
@@ -12,9 +10,6 @@ Imp fire ward: not working for me, tho similar frost talents works
 Molten Fury: doesn't work
 
 Cone of Cold is never applying any damage, only debufs.
-When summoning your water elemental, Winter's Chill is applied to the player himself/herself.
-Ritual of Refreshment mage spell does not work, the spell casts but when players of the party right click the bubble they get no items out of it.
-
 //////////////////////////////////
 
 Arcane
@@ -27,10 +22,6 @@ Conjured food and water -> creates everytime more and don't have timer
 Talents:
 Presence of Mind -> isn't working for me, dunno 4 others try to test it
 Arcane Potency -> Isn't working, test it
-
-Fire:
-Spells:
--ll-
 
 Talents:
 Frost warding -> Same like Magic Attunement, increases the armor gained from Frost Armor and Ice Armor. Not sure about reflecting spells.
