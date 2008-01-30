@@ -38,11 +38,11 @@ xuuuuuuuuu
 uifffuuuuu
 u */
 
-#define SPELL_DBC_CLIENT_NUMBER "2.2.0"
+#define SPELL_DBC_CLIENT_NUMBER "2.3.3"
 //this might change from 1 version to another of the DBC
 #define SPELL_COLUMN_COUNT 211
 
-#define SQL_INSERTS_PER_QUERY 1000
+#define SQL_INSERTS_PER_QUERY 200
 
 // Struct for 1 entry in Spell.dbc
 // this must be a direct mapping of the original dbc entry. (no more or less values)
@@ -213,6 +213,7 @@ struct SpellEntry
     uint32 unk201_4;						//209
     uint32 unk201_5;                        //210
     uint32 unk201_6;						//211
+	uint32 EffectSpellGroupRelation_high[3];	//custom
 };
 
 //last column is "skip_this_for_sql"
@@ -478,6 +479,12 @@ enum SpellIsFlags
     SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE	= 0x00000008, //it started with rogue cold blood but i'm sure others will come
     SPELL_FLAG_IS_POISON				= 0x00000010, //rogue has a few spells that can stack so can't use the spell_type enum ;)
     SPELL_FLAG_IS_FINISHING_MOVE		= 0x00000020, //rogue has a few spells that can stack so can't use the spell_type enum ;)
+    SPELL_FLAG_IS_NOT_USING_DMG_BONUS	= 0x00000040, 
+    SPELL_FLAG_IS_CHILD_SPELL			= 0x00000080, //auras proc auras that have same name, these should not remove mother aura when adding to target
+    SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET		= 0x00000100, //we should cast these on pet too
+    SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER	= 0x00000200, //we should cast these on owner too
+    SPELL_FLAG_IS_EXPIREING_WITH_PET	= 0x00000400, //when pet dies, we remove this too
+    SPELL_FLAG_IS_EXPIREING_ON_PET		= 0x00000800, //when pet is summoned
 };
 
 
@@ -1198,20 +1205,25 @@ enum procFlags
     PROC_ON_CAST_SPELL              = 0x10,
     PROC_ON_PHYSICAL_ATTACK_VICTIM  = 0x20,
     PROC_ON_RANGED_ATTACK           = 0x40,
-    PROC_ON_UNK_DAMAGE_VICTIM       = 0x80,//seems to be on ranged dmg victim 99% sure('each melee or ranged attack' -> flag =680 (dec))
+    PROC_ON_RANGED_CRIT_ATTACK      = 0x80,
+//    PROC_ON_UNK_DAMAGE_VICTIM       = 0x80,//seems to be on ranged dmg victim 99% sure('each melee or ranged attack' -> flag =680 (dec))
     PROC_ON_PHYSICAL_ATTACK         = 0x100,
     PROC_ON_MELEE_ATTACK_VICTIM     = 0x200,
-    PROC_ON_ANY_ACTION              = 0x400,
-    PROC_UNK_DEFILLED               = 0x800,
+//    PROC_ON_ANY_ACTION              = 0x400,
+    PROC_ON_SPELL_LAND              = 0x400,
+//    PROC_UNK_DEFILLED               = 0x800,
+    PROC_ON_RANGED_CRIT_ATTACK_VICTIM = 0x800,
     PROC_ON_CRIT_ATTACK             = 0x1000,
     PROC_ON_RANGED_ATTACK_VICTIM    = 0x2000,
-    PROC_ANYTIME                    = 0x4000,
+//    PROC_ANYTIME                    = 0x4000,
+    PROC_ON_PRE_DISPELL_AURA_VICTIM = 0x4000,
 //    PROC_UNK2_DEFILLED              = 0x8000,
 	PROC_ON_SPELL_LAND_VICTIM       = 0x8000,//custom flag. PROC only when spell landed on victim
     PROC_ON_CAST_SPECIFIC_SPELL     = 0x10000,
     PROC_ON_SPELL_HIT_VICTIM        = 0x20000,
     PROC_ON_SPELL_CRIT_HIT_VICTIM   = 0x40000,
-    PROC_ON_UNK2_DAMAGE_VICTIM      = 0x80000,
+//    PROC_ON_UNK2_DAMAGE_VICTIM      = 0x80000,
+    PROC_ON_TARGET_DIE		        = 0x80000,
     PROC_ON_ANY_DAMAGE_VICTIM       = 0x100000,
     PROC_ON_TRAP_TRIGGERED          = 0x200000,
     PROC_ON_AUTO_SHOT_HIT           = 0x400000,
@@ -1223,7 +1235,7 @@ enum procFlags
     PROC_MISC                       = 0x10000000,//our custom flag to decide if proc dmg or shield
     PROC_ON_BLOCK_VICTIM            = 0x20000000,//added it as custom, maybe already exists in another form ?
     PROC_ON_SPELL_CRIT_HIT          = 0x40000000,//added it as custom, maybe already exists in another form ?
-    PROC_TAGRGET_SELF               = 0x80000000,//our custom flag to decide if proc target is self or victim
+    PROC_TARGET_SELF               = 0x80000000,//our custom flag to decide if proc target is self or victim
 };
 
 enum School

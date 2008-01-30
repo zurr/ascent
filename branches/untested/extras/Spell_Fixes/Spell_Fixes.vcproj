@@ -131,6 +131,9 @@
 			<File
 				RelativePath="..\..\dep\lib32\libmySQL.lib">
 			</File>
+			<File
+				RelativePath="..\..\src\game\SpellNameHashes.h">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
