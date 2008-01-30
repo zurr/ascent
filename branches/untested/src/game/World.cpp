@@ -3795,6 +3795,14 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 		sp->SpellGroupType = 134217728;
 	
+	//Mage - Icy Veins
+	sp = dbcSpell.LookupEntryForced(  12472 );
+	if( sp != NULL )
+	{
+		sp->EffectSpellGroupRelation_high[1] = 512;
+		sp->EffectMiscValue[1] = SMT_HITCHANCE;
+	}
+
 	//Mage - Wand Specialization. Not the forst thing we messed up. Blizz uses attack as magic and wandds as weapons :S
 	sp = dbcSpell.LookupEntryForced(  6057 );
 	if( sp != NULL )
@@ -3810,6 +3818,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
 		sp->EffectSpellGroupRelation[0] = 134217728;
 	}
+
 	//Priest - Wand Specialization
 	sp = dbcSpell.LookupEntryForced(  14524 );
 	if( sp != NULL )

@@ -36,7 +36,4 @@ Talents:
 Frost warding -> Same like Magic Attunement, increases the armor gained from Frost Armor and Ice Armor. Not sure about reflecting spells.
 
 Molten Armor: mobdeath by its damage keeps you in combat
-Mage Armor: doesn't keep up 30% of your mana regeneration while casting
 Ritual of Refreshment: does not work
-Icy Veins: does nothing instead of reducing spell cast time by 20% and increasing chance of chill effects to freeze by 10% for 20s
-	- wtf ? when was this spell introduced ? isn't it called cold snap ? 12472
