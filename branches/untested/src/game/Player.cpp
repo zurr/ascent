@@ -8961,22 +8961,24 @@ void Player::EventStunOrImmobilize(Unit *proc_target, bool is_victim)
 		t_trigger_on_stun_chance = trigger_on_stun_chance_victim;
 	}
 
-	if(t_trigger_on_stun)
+	if( t_trigger_on_stun )
 	{
+		if( t_trigger_on_stun_chance < 100 && !Rand( t_trigger_on_stun_chance ) )
+			return;
+
 		SpellEntry *spellInfo = dbcSpell.LookupEntry(t_trigger_on_stun);
+
 		if(!spellInfo)
 			return;
+
 		SM_FIValue(SM_FChanceOfSuccess,&t_trigger_on_stun_chance,spellInfo->SpellGroupType);
-#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-		int spell_flat_modifers=0;
-		SM_FIValue(SM_FChanceOfSuccess,&spell_flat_modifers,spellInfo->SpellGroupType);
-		if(spell_flat_modifers!=0)
-			printf("!!!!! spell hitchance mod flat %d , spell hitchance bonus %d, spell group %u\n",spell_flat_modifers,bonus,spellInfo->SpellGroupType);
-#endif
+
 		if(t_trigger_on_stun_chance<100 && !Rand(t_trigger_on_stun_chance))
 			return;
+
 		Spell *spell = new Spell(this, spellInfo ,true, NULL);
 		SpellCastTargets targets;
+
 		if ( spellInfo->procFlags & PROC_TARGET_SELF )
 			targets.m_unitTarget = GetGUID() ;
 		else if ( proc_target ) 
