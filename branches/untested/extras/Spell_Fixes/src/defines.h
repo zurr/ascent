@@ -191,9 +191,10 @@ struct SpellEntry
     uint32 BuffDescriptionAlt10;            //185
     uint32 BuffDescriptionAlt11;            //186
     uint32 BuffDescriptionAlt12;            //187
-    uint32 BuffDescriptionAlt13;            //188
-    uint32 BuffDescriptionAlt14;            //189
-	uint32 BuffDescriptionAlt15;            //190
+//    uint32 BuffDescriptionAlt13;            //188
+//    uint32 BuffDescriptionAlt14;            //189
+//	uint32 BuffDescriptionAlt15;            //190
+	uint32 EffectSpellGroupRelation_high[3];	//custom
     uint32 buffdescflags;                   //191
     uint32 ManaCostPercentage;              //192
     uint32 unkflags;                        //193 
@@ -213,7 +214,6 @@ struct SpellEntry
     uint32 unk201_4;						//209
     uint32 unk201_5;                        //210
     uint32 unk201_6;						//211
-	uint32 EffectSpellGroupRelation_high[3];	//custom
 };
 
 //last column is "skip_this_for_sql"

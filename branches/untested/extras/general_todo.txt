@@ -46,6 +46,7 @@ SMT_RESIST_DISPEL - check if it is used
 - more then limit can enter an instance if palyers go in at the same time
 - http://www.wowwiki.com/Instance_reset, worldmap_info instance reset timer is only for the show ?
 - http://www.wowwiki.com/Vanish - nu face wipe la aggro, nu intra in improved stealth si nush daca elimina movement impairing effects
+[16:15] <~Walla> for quests : MaxRequiredRep / Value | MinRequiredRep / Value
 
 ==========================================================================
 ! BUGS !
