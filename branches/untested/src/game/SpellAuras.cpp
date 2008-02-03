@@ -2727,6 +2727,8 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 	if(m_spellProto->EffectTriggerSpell[mod->i] == 0)
 		return;
 
+/*
+	//Zack : i'm sure i'm creating bugs removing these but to compare an icon for a spell is very dumb..there are dosens of spells here ...somehow i have to find out what they are
 	if(IsPassive() && m_spellProto->dummy != 2010  && m_spellProto->dummy != 2020 && m_spellProto->dummy != 2255) //this spells are passive and are not done on the attack...
 	{
 		Unit * target = (m_target != 0) ? m_target : GetUnitCaster();
@@ -2742,7 +2744,8 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 
 		return;
 	}
-	
+*/
+
 	if(apply)
 	{
 		//FIXME: positive or negative?
@@ -2820,10 +2823,9 @@ void Aura::EventPeriodicTriggerSpell(SpellEntry* spellInfo)
 		return;
 	}
 
-	if(spellInfo->dummy == 225 ) // this is arcane missles to avoid casting on self
+	if(spellInfo->icon == 225 ) // this is arcane missles to avoid casting on self
 		if(m_casterGuid == pTarget->GetGUID())
 			return;
-
 	Spell *spell = new Spell(m_caster, spellInfo, true, this);
 	SpellCastTargets targets;
 	targets.m_unitTarget = pTarget->GetGUID();
@@ -6685,8 +6687,8 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
 		break;
 
 	case SMT_SPELL_VALUE:
-		if(GetSpellProto()->dummy==457) AffectedGroups=1;
-		if(GetSpellProto()->dummy==86) AffectedGroups=256;
+		if(GetSpellProto()->icon==457) AffectedGroups=1;
+		if(GetSpellProto()->icon==86) AffectedGroups=256;
 		SendModifierLog(&m_target->SM_FSPELL_VALUE,val,AffectedGroups,mod->m_miscValue);
 		break;
 

@@ -588,7 +588,7 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 				
 				//this is wrong, dummy is too common to be based on this, we should use spellgroup or something
 				SpellEntry* sp = dbcSpell.LookupEntry( spellId );
-				if( sp->dummy != CastingSpell->dummy )
+				if( sp->icon != CastingSpell->icon )
 				{
 					if( !ospinfo->School )
 						continue;
@@ -600,7 +600,7 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 						continue;
 				}
 				else
-					if( sp->dummy == 1 )
+					if( sp->icon == 1 )
 						continue;
 			}			
 			uint32 proc_Chance = itr2->procChance;
