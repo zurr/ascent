@@ -2492,14 +2492,14 @@ else
 			if(ability && ability->MechanicsType == MECHANIC_BLEEDING)
 				disable_dR = true; 
 			
-			float summaryPCTmod = pVictim->DamageTakenPctMod[dmg.school_type]+GetDamageDonePctMod( dmg.school_type );
+			float summaryPCTmod = pVictim->DamageTakenPctMod[dmg.school_type]+GetDamageDonePctMod( dmg.school_type )+1;
 
 			if(pct_dmg_mod > 0)
 				dmg.full_damage = float2int32(dmg.full_damage*(float(pct_dmg_mod)/100.0f));
 
 			//a bit dirty fix
 			if(ability && ability->NameHash == SPELL_HASH_SHRED)
-				summaryPCTmod += pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING];
+				summaryPCTmod *= 1+pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING];
 
 			dmg.full_damage = (dmg.full_damage < 0) ? 0 : float2int32(dmg.full_damage*summaryPCTmod);
 
@@ -3729,10 +3729,10 @@ int32 Unit::GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg
 #endif
 	}
 //------------------------------by school----------------------------------------------
-	float summaryPCTmod = caster->GetDamageDonePctMod(school)-1; //value is initialized with 1
-	summaryPCTmod += pVictim->DamageTakenPctMod[school]-1;//value is initialized with 1
-	summaryPCTmod += caster->GetDamageDonePctMod( school );
-	summaryPCTmod += pVictim->ModDamageTakenByMechPCT[spellInfo->MechanicsType];
+	float summaryPCTmod = caster->GetDamageDonePctMod(school); //value is initialized with 1
+	summaryPCTmod *= pVictim->DamageTakenPctMod[school];//value is initialized with 1
+	summaryPCTmod *= caster->GetDamageDonePctMod( school )+1;
+	summaryPCTmod *= pVictim->ModDamageTakenByMechPCT[spellInfo->MechanicsType]+1;
 	int32 res = (int32)((base_dmg+bonus_damage)*summaryPCTmod + bonus_damage); // 1.x*(base_dmg+bonus_damage) == 1.0*base_dmg + 1.0*bonus_damage + 0.x*(base_dmg+bonus_damage) -> we add the returned value to base damage so we do not add it here (function returns bonus only)
 return res;
 }
@@ -4812,7 +4812,7 @@ AuraCheckResponse Unit::AuraCheck(uint32 name_hash, uint32 rank, Object *caster)
 	for(uint32 x=0;x<MAX_AURAS;x++)
 	{
 //		if(m_auras[x] && m_auras[x]->GetSpellProto()->NameHash == name_hash && m_auras[x]->GetCaster()==caster)
-		if(m_auras[x] && m_auras[x]->GetSpellProto()->NameHash == name_hash)
+		if(m_auras[x] && m_auras[x]->GetSpellProto() && m_auras[x]->GetSpellProto()->NameHash == name_hash)
 		{
 			// we've got an aura with the same name as the one we're trying to apply
 			resp.Misc = m_auras[x]->GetSpellProto()->Id;
@@ -4943,7 +4943,7 @@ int Unit::HasAurasWithNameHash(uint32 name_hash)
 {
 	for(uint32 x = 0; x < MAX_AURAS; ++x)
 	{
-		if(m_auras[x] && m_auras[x]->GetSpellProto()->NameHash == name_hash)
+		if(m_auras[x] && m_auras[x]->GetSpellProto() && m_auras[x]->GetSpellProto()->NameHash == name_hash)
 			return m_auras[x]->m_spellProto->Id;
 	}
 
@@ -4954,7 +4954,7 @@ bool Unit::HasNegativeAuraWithNameHash(uint32 name_hash)
 {
 	for(uint32 x = MAX_POSITIVE_AURAS; x < MAX_AURAS; ++x)
 	{
-		if(m_auras[x] && m_auras[x]->GetSpellProto()->NameHash == name_hash)
+		if(m_auras[x] &&m_auras[x]->GetSpellProto() && m_auras[x]->GetSpellProto()->NameHash == name_hash)
 			return true;
 	}
 

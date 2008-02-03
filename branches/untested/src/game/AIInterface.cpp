@@ -3209,7 +3209,7 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 			}
 		}
 	}
-	else
+	else if (mod>0)
 	{
 		m_aiTargets.insert( make_pair( obj, mod ) );
 		if((mod + obj->GetThreatModifyer()) > m_currentHighestThreat)

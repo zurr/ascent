@@ -1714,8 +1714,11 @@ void Aura::SpellAuraDummy(bool apply)
 		 {
 			 if(!apply)
 			 {
-				 if (this->GetUnitCaster())
-						 this->GetUnitCaster()->Heal(m_target,33763,600);
+				 if (GetUnitCaster() && m_target && m_target->isAlive())
+				 {
+						GetUnitCaster()->Heal(m_target,pSpellId,mod->m_amount);
+						m_target->RemoveAllAuras(pSpellId,GetUnitCaster()->GetGUID());
+				 }
 			 }
 		 }break;
 

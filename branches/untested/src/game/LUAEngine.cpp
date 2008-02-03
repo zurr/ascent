@@ -1686,10 +1686,13 @@ int luaUnit_MarkQuestObjectiveAsComplete(lua_State * L, Unit * ptr)
 	int objective = luaL_checkint(L,2);
 	Player * pl = ((Player*)ptr);
 	QuestLogEntry * qle = pl->GetQuestLogForEntry(questid);
-	qle->SetMobCount(objective, qle->GetQuest()->required_mobcount[objective]);
-	qle->SendUpdateAddKill(objective);
-	if(qle->CanBeFinished())
-		qle->SendQuestComplete();
+	if (qle)
+	{
+		qle->SetMobCount(objective, qle->GetQuest()->required_mobcount[objective]);
+		qle->SendUpdateAddKill(objective);
+		if(qle->CanBeFinished())
+			qle->SendQuestComplete();
+	}
 
 	return 0;
 }

@@ -1630,8 +1630,11 @@ void Spell::SpellEffectCreateItem(uint32 i) // Create item
 			if (m_itemProto->RandomPropId)
 			{
 				RandomProps * iRandomProperty = lootmgr.GetRandomProperties(m_itemProto);
-				newItem->SetRandomProperty(iRandomProperty->ID);
-				newItem->ApplyRandomProperties(false);
+				if (iRandomProperty)
+				{
+					newItem->SetRandomProperty(iRandomProperty->ID);
+					newItem->ApplyRandomProperties(false);
+				}
 			}
 			if (m_itemProto->RandomSuffixId)
 			{

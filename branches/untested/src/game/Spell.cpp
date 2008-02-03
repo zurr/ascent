@@ -2354,7 +2354,7 @@ bool Spell::TakePower()
 
 void Spell::HandleEffects(uint64 guid, uint32 i)
 {   
-	if( guid == m_caster->GetGUID() )
+	if( m_caster &&  guid == m_caster->GetGUID() )
 	{
 		unitTarget = u_caster;
 		gameObjTarget = g_caster;
@@ -2363,7 +2363,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 	}
 	else
 	{
-		if( !m_caster->IsInWorld() )
+		if(!m_caster || !m_caster->IsInWorld() )
 		{
 			unitTarget = 0;
 			playerTarget = 0;
@@ -3562,10 +3562,10 @@ exit:
 	{
 		switch (m_spellInfo->NameHash)
 		{
-		case 0x7424D6B3: //Gift of the Naaru
-		case 0xDE1C36C8: //Blood Fury
-		case 0xEE91A232: //Mana Tap
-		case 0x6632EB62: //Arcane Torrent
+		case SPELL_HASH_GIFT_OF_THE_NAARU: //Gift of the Naaru
+		case SPELL_HASH_BLOOD_FURY: //Blood Fury
+		case SPELL_HASH_MANA_TAP: //Mana Tap
+		case SPELL_HASH_ARCANE_TORRENT: //Arcane Torrent
 			basePoints += float2int32(u_caster->getLevel()*basePointsPerLevel);
 			break;
 		}
@@ -3715,21 +3715,20 @@ exit:
 		}
 	 }
 
-	Unit *tcaster;
+	Unit *tcaster = u_caster;
 	if( i_caster != NULL && target)		
 		tcaster = target->GetMapMgr()->GetUnit( i_caster->GetUInt64Value( ITEM_FIELD_CREATOR ) ); //we should inherit the modifiers from the conjured food caster
-	else tcaster = u_caster;
 	if( tcaster != NULL )
 	{
 		int32 spell_flat_modifers=0;
 		int32 spell_pct_modifers=0;
 		int32 spell_pct_modifers2=0;//separated from the other for debugging purpuses
 
-		SM_FIValue(u_caster->SM_FSPELL_VALUE,&spell_flat_modifers,m_spellInfo->SpellGroupType);
-		SM_FIValue(u_caster->SM_PSPELL_VALUE,&spell_pct_modifers,m_spellInfo->SpellGroupType);
+		SM_FIValue(tcaster->SM_FSPELL_VALUE,&spell_flat_modifers,m_spellInfo->SpellGroupType);
+		SM_FIValue(tcaster->SM_PSPELL_VALUE,&spell_pct_modifers,m_spellInfo->SpellGroupType);
 
-		SM_FIValue(u_caster->SM_FEffectBonus,&spell_flat_modifers,m_spellInfo->SpellGroupType);
-		SM_FIValue(u_caster->SM_PEffectBonus,&spell_pct_modifers,m_spellInfo->SpellGroupType);
+		SM_FIValue(tcaster->SM_FEffectBonus,&spell_flat_modifers,m_spellInfo->SpellGroupType);
+		SM_FIValue(tcaster->SM_PEffectBonus,&spell_pct_modifers,m_spellInfo->SpellGroupType);
 
 		//now get mods from unit target. These are rare to find talents
 		if(target)
