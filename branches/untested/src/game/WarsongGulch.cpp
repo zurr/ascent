@@ -96,7 +96,7 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 		break;
 	}
 
-	if(buffslot > -1 )
+	if(buffslot > -1)
 	{
 		if(m_buffs[buffslot] != 0 && m_buffs[buffslot]->IsInWorld())
 		{
@@ -130,7 +130,7 @@ void WarsongGulch::HookOnAreaTrigger(Player * plr, uint32 id)
 		/* capture flag points */
 		plr->m_bgScore.Misc1++;
 
-		PlaySoundToAll( plr->GetTeam() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES );
+		PlaySoundToAll( plr->GetTeam() ? SOUND_ALLIANCE_SCORES : SOUND_HORDE_SCORES );
 
 		if( plr->GetTeam() == 1 )
 			SendChatMessage( CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "%s captured the Alliance flag!", plr->GetName() );
