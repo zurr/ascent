@@ -6134,7 +6134,7 @@ void Aura::SpellAuraForceReaction( bool apply )
 	}
 	else
 	{
-		SetCasterFaction(GetCasterFaction());
+		//...
 		m_target->SetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE, GetCasterFaction() );
 	}
 	m_target->_setFaction();
