@@ -2630,7 +2630,7 @@ else
 			//dmg.full_damage = (dmg.full_damage < 0) ? 0 : float2int32(dmg.full_damage*summaryPCTmod);
 
 			// burlex: fixed this crap properly
-			float inital_dmg = float(inital_dmg);
+			float inital_dmg = float(dmg.full_damage);
 			float dd_mod = GetDamageDonePctMod( dmg.school_type );
 			if( pVictim->DamageTakenPctMod[dmg.school_type] > 1.0f )
 				dmg.full_damage += float2int32( ( inital_dmg * pVictim->DamageTakenPctMod[ dmg.school_type ] ) - inital_dmg );
