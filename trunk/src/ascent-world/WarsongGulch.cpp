@@ -289,7 +289,7 @@ void WarsongGulch::HookFlagStand(Player * plr, GameObject * obj)
 	}
 
 	SpellEntry* pSp = dbcSpell.LookupEntry( 23333 + ( plr->GetTeam() * 2 ) );
-	Spellx* sp = new Spell( plr, pSp, true, 0 );
+	Spell* sp = new Spell( plr, pSp, true, 0 );
 	SpellCastTargets targets( plr->GetGUID() );
 	sp->prepare( &targets );
 
