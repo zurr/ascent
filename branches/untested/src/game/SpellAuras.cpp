@@ -2953,6 +2953,8 @@ void Aura::SpellAuraModRoot(bool apply)
 		if(m_target->m_rooted == 0)
 			m_target->Unroot();
 
+		m_target->EventRegainMovement();
+
 		if(m_target->GetTypeId() == TYPEID_UNIT)
 			m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 	}

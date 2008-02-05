@@ -38,6 +38,7 @@
 #endif
 
 #define DISTANCE_TO_SMALL_TO_WALK 1.0f
+#define CREATURE_MELEE_RANGE_TOLERANCE 5.0f
 
 class Object;
 class Creature;
@@ -346,6 +347,7 @@ public:
 	uint32 m_totemspelltimer;
 	uint32 m_totemspelltime;
 	SpellEntry * totemspell;
+	void EventRegainMovement();
 
 	float m_sourceX, m_sourceY, m_sourceZ;
 	uint32 m_totalMoveTime;
@@ -444,6 +446,8 @@ protected:
 	bool m_hasFleed;
 	bool m_hasCalledForHelp;
 	uint32 m_outOfCombatRange;
+
+	Unit * m_oldTarget; // when we switch targets due to roots, we keep the old one in memory kthx
 
 	Unit *m_Unit;
 	Unit *m_PetOwner;

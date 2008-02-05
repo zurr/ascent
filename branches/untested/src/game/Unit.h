@@ -786,6 +786,8 @@ public:
 		RemoveAura(SpellId);
 	}
 
+
+
 	//! Remove all auras
 	void RemoveAllAuras();
 	bool RemoveAllAuras(uint32 spellId,uint64 guid); //remove stacked auras but only if they come from the same caster. Shaman purge
@@ -809,6 +811,7 @@ public:
 	void castSpell(Spell * pSpell);
 	void InterruptSpell();
 
+	
 	//caller is the caster
 	int32 GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg);
    
@@ -835,6 +838,8 @@ public:
 	ASCENT_INLINE void SetOnMeleeSpell(uint32 spell ) { m_meleespell = spell; }
 	ASCENT_INLINE uint32 GetOnMeleeSpell() { return m_meleespell; }
 
+	// on regain movement
+	void EventRegainMovement();
 	// Spell Crit
 	float spellcritperc;
 

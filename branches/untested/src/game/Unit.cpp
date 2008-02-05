@@ -6159,4 +6159,11 @@ void Unit::ReplaceAIInterface(AIInterface *new_interface)
 	m_aiInterface = new_interface; 
 }
 
+void Unit::EventRegainMovement()
+{
+	if( IsCreature() && m_aiInterface )
+	{
+		m_aiInterface->EventRegainMovement();
+	}
+}
 
