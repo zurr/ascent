@@ -182,4 +182,7 @@ extern "C" {		// we're C++, and LUA is C, so the compiler needs to know to use C
 //	#define COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS 1
 #endif
 
+//Custom Db devs requested me to dump inserted spawns as sql query. They could just use a diff but nooo :P
+//#define DUMPNEWSPAWNSQLSTOFILE
+
 #endif

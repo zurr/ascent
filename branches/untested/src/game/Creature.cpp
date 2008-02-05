@@ -299,6 +299,17 @@ void Creature::SaveToDB()
 		ss << "0,0,0)";
 
 	WorldDatabase.Execute(ss.str().c_str());
+
+#ifdef DUMPNEWSPAWNSQLSTOFILE
+	FILE *sql_inserts = 0;
+	sql_inserts = fopen ( "new_spawns.sql", "a" );
+	if( sql_inserts )
+	{
+		fprintf ( sql_inserts, "%s;\n", ss.str().c_str() );
+		fclose ( sql_inserts );
+	}
+#endif
+
 }
 
 void Creature::SaveToFile(std::stringstream & name)
