@@ -2792,6 +2792,9 @@ else
 				SpellNonMeleeDamageLog(pVictim, itr->second.spellid, dmg, true);
 			}
 		}
+
+		// a dirty fix for refreshing judgements
+		// not yet
 	}
 	
 //==========================================================================================
@@ -4590,10 +4593,12 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 {
 	if(GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID) == 0)
 	{
+		// speed
 		if(IsPlayer())
 			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_speedModifier)/100.0f);
 		else
 			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_speedModifier)/100.0f);
+
 	}
 	else
 	{
@@ -4608,9 +4613,16 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 			m_runSpeed += (m_speedModifier<0) ? (m_base_runSpeed*((float)m_speedModifier)/100.0f) : 0;
 		}
 	}
-
+	if( m_maxspeed && m_runSpeed > m_maxspeed ) // Apply Aura: Limit Speed (Judgement of Justice #31896)
+	{
+		sLog.outString( "LOL STUCK %f,%f" , m_runSpeed , m_maxspeed );
+		m_runSpeed = m_maxspeed;
+	}
 	m_flySpeed = PLAYER_NORMAL_FLIGHT_SPEED*(1.0f + ((float)m_flyspeedModifier)/100.0f);
-
+	if( m_maxspeed && m_flySpeed > m_maxspeed )
+	{
+		m_flySpeed = m_maxspeed;
+	}
 	if(IsPlayer())
 	{
 		if(delay)

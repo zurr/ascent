@@ -1023,6 +1023,7 @@ public:
 	// Affect Speed
 	int32 m_speedModifier;
 	int32 m_slowdown;
+	float m_maxspeed;
 	map< uint32, int32 > speedReductionMap;
 	bool GetSpeedDecrease();
 	int32 m_mountedspeedModifier;

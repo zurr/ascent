@@ -211,7 +211,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS]={
 		&Aura::SpellAuraReduceEnemyRCritChance,//missing = 188 //used //Apply Aura: Reduces Attacker Chance to Crit with Ranged (Melee?) //http://www.thottbot.com/?sp=30893
 		&Aura::SpellAuraIncreaseRating,//missing = 189 //Apply Aura: Increases Rating
 		&Aura::SpellAuraIncreaseRepGainPct,//SPELL_AURA_MOD_FACTION_REPUTATION_GAIN //used // Apply Aura: Increases Reputation Gained by % //http://www.thottbot.com/?sp=30754
-		&Aura::SpellAuraNULL,//missing = 191 //used // noname //http://www.thottbot.com/?sp=29894
+		&Aura::SpellAuraLimitSpeed,//missing = 191 //used // noname //http://www.thottbot.com/?sp=29894
 		&Aura::SpellAuraNULL,//192 Apply Aura: Melee Slow %
 		&Aura::SpellAuraIncreaseTimeBetweenAttacksPCT,//193 Apply Aura: Increase Time Between Attacks (Melee, Ranged and Spell) by %
 		&Aura::SpellAuraIncreaseSpellDamageByInt,//194 Apply Aura: Increase Spell Damage by % of Intellect (All)
@@ -5186,7 +5186,7 @@ void Aura::SpellAuraModDetectRange(bool apply)
 
 void Aura::SpellAuraPreventsFleeing(bool apply)
 {
-	// Curse of Recklessness 
+	// Curse of Recklessness ... 
 }
 
 void Aura::SpellAuraModUnattackable(bool apply)
@@ -7344,6 +7344,20 @@ void Aura::SpellAuraIncreaseRepGainPct(bool apply)
 	}
 }
 
+void Aura::SpellAuraLimitSpeed(bool apply)
+{
+	// prevents them from going over EffectMiscVal speed.
+	SetNegative(); // only negative
+	if( m_target )
+	{
+		if( apply )
+		m_target->m_maxspeed = (float)mod->m_amount;
+		else
+		m_target->m_maxspeed = 0;
+
+		m_target->UpdateSpeed();
+	}
+}
 void Aura::SpellAuraIncreaseRangedAPStatPCT(bool apply)
 {
 	if(p_target)

@@ -551,6 +551,7 @@ public:
 	void SpellAuraSpiritOfRedemption(bool apply);
 	void SpellAuraIncreaseAttackerSpellCrit(bool apply);
 	void SpellAuraIncreaseRepGainPct(bool apply);
+	void SpellAuraLimitSpeed(bool apply);
 	void SpellAuraIncreaseRangedAPStatPCT(bool apply);
 	//void SpellAuraModRangedDamageTakenPCT(bool apply);
 	void SpellAuraModBlockValue(bool apply);
