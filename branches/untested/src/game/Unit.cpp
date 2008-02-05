@@ -2793,8 +2793,30 @@ else
 			}
 		}
 
-		// a dirty fix for refreshing judgements
-		// not yet
+		// a *very* dirty fix for refreshing judgements - but there is no SPELL_TYPE for judgements.
+		// I have a VERY good feeling that this will be removed by Burlex soon.
+		for( uint32 x = MAX_POSITIVE_AURAS ; x <= MAX_AURAS ; x ++ )
+		{
+			if( pVictim->m_auras[x] && pVictim->m_auras[x]->GetUnitCaster() && pVictim->m_auras[x]->GetUnitCaster()->GetGUID() == GetGUID() && pVictim->m_auras[x]->GetSpellProto()->is_judgement )
+			{
+				pVictim->m_auras[x]->SetDuration( 20000 ); // 20 seconds?
+				sEventMgr.ModifyEventTimeLeft(pVictim->m_auras[x], EVENT_AURA_REMOVE, 20000);
+			
+				// We have to tell the target that the aura has been refreshed.
+				if(pVictim->IsPlayer())
+				{
+					WorldPacket data(5);
+					data.SetOpcode(SMSG_UPDATE_AURA_DURATION);
+					data << (uint8)(pVictim->m_auras[x])->GetAuraSlot() << 20000;
+					((Player*)pVictim)->GetSession()->SendPacket(&data);
+				}
+				// However, there is also an opcode that tells the caster that the aura has been refreshed.
+				// This isn't implemented anywhere else in the source, so I can't work on that part :P
+				// (The 'cooldown' meter on the target frame that shows how long the aura has until expired does not get reset)
+
+				// I would say break; here, but apparently in Ascent, one paladin can have multiple judgements on the target. No idea if this is blizzlike or not.
+			}
+		}
 	}
 	
 //==========================================================================================
@@ -4615,7 +4637,6 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 	}
 	if( m_maxspeed && m_runSpeed > m_maxspeed ) // Apply Aura: Limit Speed (Judgement of Justice #31896)
 	{
-		sLog.outString( "LOL STUCK %f,%f" , m_runSpeed , m_maxspeed );
 		m_runSpeed = m_maxspeed;
 	}
 	m_flySpeed = PLAYER_NORMAL_FLIGHT_SPEED*(1.0f + ((float)m_flyspeedModifier)/100.0f);

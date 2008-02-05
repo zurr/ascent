@@ -348,8 +348,9 @@ struct SpellEntry
 	uint32 talent_tree;						//!!! CUSTOM,
 	bool removable_by_immunity;				//!!! CUSTOM,
 	uint32 in_front_status;					//!!! CUSTOM,
-	bool is_melee_spell;					//!!! CUSTOM,
-	bool is_ranged_spell;					//!!! CUSTOM,
+	bool is_melee_spell;					//!!! CUSTOM, is this a melee spell, i.e. Sinister Strike?
+	bool is_ranged_spell;					//!!! CUSTOM, is this a ranged spell, i.e. Arcane Shot?
+	bool is_judgement;						//!!! CUSTOM, is this a paladin judgement, i.e. Judgement of Righteousness?
     uint32 EffectSpellGroupRelation_high[3];     //!!! this is not contained in client dbc but server must have it
 	uint32 ThreatForSpell;
 };

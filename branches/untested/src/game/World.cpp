@@ -844,6 +844,18 @@ bool World::SetInitialWorldSettings()
 		case SPELL_HASH_BANISH:				// Banish
 			sp->buffIndexType = SPELL_TYPE_INDEX_BANISH;
 			break;
+
+
+		// This is not part of buffIndexType but...
+
+		// Paladin judgements that have a duration.
+		case SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER:
+		//case SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
+		case SPELL_HASH_JUDGEMENT_OF_LIGHT:
+		case SPELL_HASH_JUDGEMENT_OF_WISDOM:
+		case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
+			sp->is_judgement = true;
+			break;
 		}
 
 		// HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
