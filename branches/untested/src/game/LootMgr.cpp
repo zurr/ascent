@@ -559,7 +559,7 @@ LootRoll::LootRoll(uint32 timer, uint32 groupcount, uint64 guid, uint32 slotid, 
 	_guid = guid;
 	_slotid = slotid;
 	_itemid = itemid;
-	_itemunk1 = itemunk1;
+	_itemunk1 = itemunk1; // maybe... 
 	_itemunk2 = itemunk2;
 	_remaining = groupcount;
 	_passedGuid = 0;
@@ -703,7 +703,7 @@ void LootRoll::Finalize()
 		_player->GetGroup()->SendPacketToAll(&data);
 	else
 		_player->GetSession()->SendPacket(&data);
-
+	
 	ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
 
 	int8 error;

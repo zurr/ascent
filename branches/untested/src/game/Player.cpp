@@ -5382,10 +5382,14 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 					ipid=iter->iRandomProperty->ID;
 				else if(iter->iRandomSuffix)
 				{
+					//ipid = -int32(iter->iRandomSuffix->id);
+					// here we have (had?) a problem, the item random suffix was not sent correctly.
 					ipid = -int32(iter->iRandomSuffix->id);
+					// this is.. quite odd... we set it to a negative int, and then when the packet
+					// is sent, it's converted to a Uint? making the value like 2147234174?
 					factor=Item::GenerateRandomSuffixFactor(iter->item.itemproto);
 				}
-
+				//sLog.outString( "Item info %s: ipid %d (%u), Is RandomSuffix? %s" , iter->item.itemproto->Name1 , ipid , (uint32)ipid , iter->iRandomSuffix ? "Yes" : "No" ); 
 				if(iter->item.itemproto)
 				{
 					iter->roll = new LootRoll(60000, (m_Group != NULL ? m_Group->MemberCount() : 1),  guid, x, iter->item.itemproto->ItemId, factor, uint32(ipid), GetMapMgr());

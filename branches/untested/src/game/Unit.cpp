@@ -52,6 +52,7 @@ Unit::Unit()
 		PctPowerRegenModifier[x] = 1;
 	}
 	m_speedModifier = 0;
+	m_maxspeed = 0;
 	m_slowdown = 0;
 	m_mountedspeedModifier=0;
 	for(uint32 x=0;x<27;x++)
@@ -4637,6 +4638,7 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 	}
 	if( m_maxspeed && m_runSpeed > m_maxspeed ) // Apply Aura: Limit Speed (Judgement of Justice #31896)
 	{
+		//sLog.outString( "LOL STUCK (RunSpeed: %f, MaxSpeed: %f)" , m_runSpeed , m_maxspeed );
 		m_runSpeed = m_maxspeed;
 	}
 	m_flySpeed = PLAYER_NORMAL_FLIGHT_SPEED*(1.0f + ((float)m_flyspeedModifier)/100.0f);

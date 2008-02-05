@@ -7351,7 +7351,7 @@ void Aura::SpellAuraLimitSpeed(bool apply)
 	if( m_target )
 	{
 		if( apply )
-		m_target->m_maxspeed = (float)mod->m_amount;
+		m_target->m_maxspeed = mod->m_amount > 0 ? (float)mod->m_amount : 0; // seems that it goes negative, rooting us
 		else
 		m_target->m_maxspeed = 0;
 
