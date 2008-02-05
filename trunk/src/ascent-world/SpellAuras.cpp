@@ -5967,7 +5967,7 @@ void Aura::SpellAuraRAPAttackerBonus(bool apply)
 
 void Aura::SpellAuraModIncreaseSpeedAlways(bool apply)
 {
-	if(apply)
+	if( apply )
 	{  
 		SetPositive();
 		m_target->m_speedModifier -= mod->m_amount;//?????
