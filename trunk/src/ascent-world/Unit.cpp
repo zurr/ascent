@@ -1493,8 +1493,8 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 								//printf("is there a seal on the player ? %u \n",c->Seal);
 								if( !c->Seal )
 									continue; //how the hack did we manage to cast judgement without a seal ?
-								SpellEntry *spellInfo = dbcSpell.LookupEntry( c->Seal ); //null pointer check was already made
-								if( !spellInfo )
+								SpellEntry* spellInfo = dbcSpell.LookupEntry( c->Seal ); //null pointer check was already made
+								if( spellInfo == NULL )
 									continue;	//now this is getting freeky, how the hell did we manage to create this bug ?
 								dmg_overwrite = spellInfo->manaCost / 2 ; //only half dmg
 								//printf("is there a seal on the player ? %u \n",dmg_overwrite);
@@ -2930,6 +2930,32 @@ else
 				SpellNonMeleeDamageLog(pVictim, itr->second.spellid, dmg, true);
 			}
 		}
+
+		// a *very* dirty fix for refreshing judgements - but there is no SPELL_TYPE for judgements.
+		// I have a VERY good feeling that this will be removed by Burlex soon.
+		for( uint32 x = MAX_POSITIVE_AURAS; x <= MAX_AURAS; x++ )
+		{
+			if( pVictim->m_auras[x] && pVictim->m_auras[x]->GetUnitCaster() && pVictim->m_auras[x]->GetUnitCaster()->GetGUID() == GetGUID() && pVictim->m_auras[x]->GetSpellProto()->buffIndexType == SPELL_TYPE_INDEX_JUDGEMENT )
+			{
+				pVictim->m_auras[x]->SetDuration( 20000 ); // 20 seconds?
+				sEventMgr.ModifyEventTimeLeft( pVictim->m_auras[x], EVENT_AURA_REMOVE, 20000 );
+			
+				// We have to tell the target that the aura has been refreshed.
+				if( pVictim->IsPlayer() )
+				{
+					WorldPacket data( 5 );
+					data.SetOpcode( SMSG_UPDATE_AURA_DURATION );
+					data << (uint8)pVictim->m_auras[x]->GetAuraSlot() << 20000;
+					static_cast< Player* >( pVictim )->GetSession()->SendPacket( &data );
+				}
+				// However, there is also an opcode that tells the caster that the aura has been refreshed.
+				// This isn't implemented anywhere else in the source, so I can't work on that part :P
+				// (The 'cooldown' meter on the target frame that shows how long the aura has until expired does not get reset)
+
+				// I would say break; here, but apparently in Ascent, one paladin can have multiple judgements on the target. No idea if this is blizzlike or not.
+			}
+		}
+
 	}
 	
 //==========================================================================================
@@ -4625,24 +4651,24 @@ void Unit::DropAurasOnDeath()
 
 void Unit::UpdateSpeed(bool delay /* = false */)
 {
-	if(GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID) == 0)
+	if( GetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID ) == 0 )
 	{
-		if(IsPlayer())
-			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_speedModifier)/100.0f);
+		if( IsPlayer() )
+			m_runSpeed = m_base_runSpeed * ( 1.0f + float( m_speedModifier ) / 100.0f);
 		else
-			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_speedModifier)/100.0f);
+			m_runSpeed = m_base_runSpeed * ( 1.0f + float( m_speedModifier ) / 100.0f);
 	}
 	else
 	{
-		if(IsPlayer())
+		if( IsPlayer() )
 		{
-			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
-			m_runSpeed += (m_speedModifier<0) ? (m_base_runSpeed*((float)m_speedModifier)/100.0f) : 0;
+			m_runSpeed = m_base_runSpeed * ( 1.0f + float( m_mountedspeedModifier ) / 100.0f );
+			m_runSpeed += ( m_speedModifier < 0 ) ? ( m_base_runSpeed * float( m_speedModifier ) / 100.0f ) : 0;
 		}
 		else
 		{
-			m_runSpeed = m_base_runSpeed*(1.0f + ((float)m_mountedspeedModifier)/100.0f);
-			m_runSpeed += (m_speedModifier<0) ? (m_base_runSpeed*((float)m_speedModifier)/100.0f) : 0;
+			m_runSpeed = m_base_runSpeed * ( 1.0f + float( m_mountedspeedModifier ) / 100.0f);
+			m_runSpeed += ( m_speedModifier < 0 ) ? ( m_base_runSpeed * float( m_speedModifier ) / 100.0f ) : 0;
 		}
 	}
 
@@ -4651,13 +4677,10 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 	// Apply Aura: Limit Speed (Judgement of Justice #31896)
 	if( m_maxspeed != 0 && m_runSpeed > m_maxspeed ) 
 	{
-		//sLog.outString( "LOL STUCK %f,%f" , m_runSpeed , m_maxspeed );
 		m_runSpeed = m_maxspeed;
 	}
-
 	if( m_maxspeed != 0 && m_flySpeed > m_maxspeed )
 	{
-		//sLog.outString( "LOL STUCK %f,%f" , m_runSpeed , m_maxspeed );
 		m_flySpeed = m_maxspeed;
 	}
 
@@ -4667,8 +4690,8 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 			static_cast< Player* >( this )->resend_speed = delay;
 		else
 		{
-			static_cast< Player* >( this )->SetPlayerSpeed(RUN, m_runSpeed);
-			static_cast< Player* >( this )->SetPlayerSpeed(FLY, m_flySpeed);
+			static_cast< Player* >( this )->SetPlayerSpeed( RUN, m_runSpeed );
+			static_cast< Player* >( this )->SetPlayerSpeed( FLY, m_flySpeed );
 		}
 		static_cast< Player* >( this )->blinked = true;
 	}
@@ -4677,21 +4700,25 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 
 bool Unit::HasActiveAura(uint32 spellid)
 {
-	for(uint32 x=0;x<MAX_AURAS;x++)
-	if(m_auras[x] && m_auras[x]->GetSpellId()==spellid)
+	for( uint32 x = 0; x < MAX_AURAS; x++ )
 	{
-		return true;
+		if( m_auras[x] != NULL && m_auras[x]->GetSpellId() == spellid )
+		{
+			return true;
+		}
 	}
 
 	return false;
 }
 
-bool Unit::HasActiveAura(uint32 spellid,uint64 guid)
+bool Unit::HasActiveAura(uint32 spellid, uint64 guid)
 {
-	for(uint32 x=0;x<MAX_AURAS;x++)
-	if(m_auras[x] && m_auras[x]->GetSpellId()==spellid && m_auras[x]->m_casterGuid==guid)
+	for( uint32 x = 0; x < MAX_AURAS; x++ )
 	{
-		return true;
+		if( m_auras[x] != NULL && m_auras[x]->GetSpellId() == spellid && m_auras[x]->m_casterGuid == guid )
+		{
+			return true;
+		}
 	}
 
 	return false;
@@ -4699,27 +4726,27 @@ bool Unit::HasActiveAura(uint32 spellid,uint64 guid)
 
 void Unit::EventSummonPetExpire()
 {
-	if(summonPet)
+	if( summonPet != NULL )
 	{
-		if(summonPet->GetEntry() == 7915)//Goblin Bomb
+		if( summonPet->GetEntry() == 7915 )//Goblin Bomb
 		{
-			SpellEntry *spInfo = dbcSpell.LookupEntry(13259);
-			if(!spInfo)
+			SpellEntry* spInfo = dbcSpell.LookupEntryForced( 13259 );
+			if( spInfo == NULL )
 				return;
 
-			Spell*sp=new Spell(summonPet,spInfo,true,NULL);
+			Spell* sp = new Spell( summonPet, spInfo, true, NULL );
 			SpellCastTargets tgt;
-			tgt.m_unitTarget=summonPet->GetGUID();
-			sp->prepare(&tgt);
+			tgt.m_unitTarget = summonPet->GetGUID();
+			sp->prepare( &tgt );
 		}
 		else
 		{
-			summonPet->RemoveFromWorld(false, true);
+			summonPet->RemoveFromWorld( false, true );
 			delete summonPet;
 			summonPet = NULL;
 		}
 	}
-	sEventMgr.RemoveEvents(this, EVENT_SUMMON_PET_EXPIRE);
+	sEventMgr.RemoveEvents( this, EVENT_SUMMON_PET_EXPIRE );
 }
 
 void Unit::CastSpell( Unit* Target, SpellEntry* Sp, bool triggered )

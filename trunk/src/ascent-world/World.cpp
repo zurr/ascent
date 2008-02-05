@@ -794,49 +794,59 @@ bool World::SetInitialWorldSettings()
 
 		// find diminishing status
 		sp->DiminishStatus = GetDiminishingGroup(namehash);
-		sp->buffIndexType=0;
-		switch(namehash)
+		sp->buffIndexType = 0;
+
+		switch( namehash )
 		{
-		case SPELL_HASH_HUNTER_S_MARK:		// Hunter's mark
+		case SPELL_HASH_HUNTER_S_MARK:
 			sp->buffIndexType = SPELL_TYPE_INDEX_MARK;
 			break;
 
-		case SPELL_HASH_POLYMORPH:			// Polymorph
-		case SPELL_HASH_POLYMORPH__CHICKEN:	// Polymorph: Chicken
-		case SPELL_HASH_POLYMORPH__PIG:		// Polymorph: Pig
-		case SPELL_HASH_POLYMORPH__SHEEP:	// Polymorph: Sheep
-		case SPELL_HASH_POLYMORPH__TURTLE:	// Polymorph: Turtle
+		case SPELL_HASH_POLYMORPH:
+		case SPELL_HASH_POLYMORPH__CHICKEN:
+		case SPELL_HASH_POLYMORPH__PIG:
+		case SPELL_HASH_POLYMORPH__SHEEP:
+		case SPELL_HASH_POLYMORPH__TURTLE:
 			sp->buffIndexType = SPELL_TYPE_INDEX_POLYMORPH;
 			break;
 
-		case SPELL_HASH_FEAR:				// Fear
+		case SPELL_HASH_FEAR:
 			sp->buffIndexType = SPELL_TYPE_INDEX_FEAR;
 			break;
 
-		case SPELL_HASH_SAP:				// Sap
+		case SPELL_HASH_SAP:
 			sp->buffIndexType = SPELL_TYPE_INDEX_SAP;
 			break;
 
-		case SPELL_HASH_SCARE_BEAST:		// Scare Beast
+		case SPELL_HASH_SCARE_BEAST:
 			sp->buffIndexType = SPELL_TYPE_INDEX_SCARE_BEAST;
 			break;
 
-		case SPELL_HASH_HIBERNATE:			// Hibernate
+		case SPELL_HASH_HIBERNATE:
 			sp->buffIndexType = SPELL_TYPE_INDEX_HIBERNATE;
 			break;
 
-//		removed by Zack Earth shield stacks 10 times. Current code does not support it
-//		case SPELL_HASH_EARTH_SHIELD:		// Earth Shield
-//			sp->buffIndexType = SPELL_TYPE_INDEX_EARTH_SHIELD;
-//			break;
+		//removed by Zack Earth shield stacks 10 times. Current code does not support it
+		//case SPELL_HASH_EARTH_SHIELD:
+		//	sp->buffIndexType = SPELL_TYPE_INDEX_EARTH_SHIELD;
+		//	break;
 
-		case SPELL_HASH_CYCLONE:			// Cyclone
+		case SPELL_HASH_CYCLONE:
 			sp->buffIndexType = SPELL_TYPE_INDEX_CYCLONE;
 			break;
 
-		case SPELL_HASH_BANISH:				// Banish
+		case SPELL_HASH_BANISH:
 			sp->buffIndexType = SPELL_TYPE_INDEX_BANISH;
 			break;
+
+		//case SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
+		case SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER:
+		case SPELL_HASH_JUDGEMENT_OF_LIGHT:
+		case SPELL_HASH_JUDGEMENT_OF_WISDOM:
+		case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
+			sp->buffIndexType = SPELL_TYPE_INDEX_JUDGEMENT;
+			break;
+
 		}
 
 		// HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!

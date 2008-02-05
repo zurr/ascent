@@ -1059,8 +1059,8 @@ public:
 
 	int32 m_modlanguage;
 	
-	Creature *critterPet;
-	Creature *summonPet;
+	Creature* critterPet;
+	Creature* summonPet;
 
 	ASCENT_INLINE uint32 GetCharmTempVal() { return m_charmtemp; }
 	ASCENT_INLINE void SetCharmTempVal(uint32 val) { m_charmtemp = val; }
