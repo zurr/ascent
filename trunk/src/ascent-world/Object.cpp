@@ -2428,7 +2428,7 @@ void Object::SendSpellNonMeleeDamageLog( Object* Caster, Object* Target, uint32 
 int32 Object::event_GetInstanceID()
 {
 	// return -1 for non-inworld.. so we get our shit moved to the right thread
-	if(!IsInWorld())
+	if( !IsInWorld() )
 		return -1;
 	else
 		return m_instanceId;

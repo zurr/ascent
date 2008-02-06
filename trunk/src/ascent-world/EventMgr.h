@@ -354,12 +354,13 @@ public:
 		return obj->event_HasEvent( type );
 	}
 
-	EventableObjectHolder * GetEventHolder(int32 InstanceId)
+	EventableObjectHolder* GetEventHolder( int32 InstanceId )
 	{
-		HolderMap::iterator itr = mHolders.find(InstanceId);
+		HolderMap::iterator itr = mHolders.find( InstanceId );
 		if( itr == mHolders.end() )
-			return 0;
-		return itr->second;
+			return NULL;
+		else
+			return itr->second;
 	}
 
 	void AddEventHolder( EventableObjectHolder* holder, int32 InstanceId )
