@@ -2416,14 +2416,15 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 
 void Spell::HandleAddAura(uint64 guid)
 {
-	Unit* Target = 0;
 	if( guid == 0 )
 		return;
 
+	Unit* Target = NULL;
+
 	if( u_caster != NULL && u_caster->GetGUID() == guid )
 		Target = u_caster;
-	else if(m_caster->IsInWorld())
-		Target = m_caster->GetMapMgr()->GetUnit(guid);
+	else if( m_caster != NULL && m_caster->IsInWorld() )
+		Target = m_caster->GetMapMgr()->GetUnit( guid );
 
 	if( Target == NULL )
 		return;
