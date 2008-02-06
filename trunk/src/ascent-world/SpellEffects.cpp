@@ -701,16 +701,16 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 	case 20968: //Judgement of Command
 	case 27172: //Judgement of Command
 		{
-			uint32 SpellID = m_spellInfo->EffectBasePoints[i]+1;
-			Spell * spell=new Spell(m_caster,dbcSpell.LookupEntry(SpellID),true,NULL);
+			uint32 SpellID = m_spellInfo->EffectBasePoints[i] + 1;
+			Spell* spell = new Spell( m_caster, dbcSpell.LookupEntry( SpellID ), true, NULL );
 			SpellCastTargets targets;
 			targets.m_unitTarget = unitTarget->GetGUID();
-			spell->prepare(&targets);
+			spell->prepare( &targets );
 		}break;
 
 	case 20577:// Cannibalize
 		{
-			if(!p_caster)
+			if( p_caster == NULL )
 				return;
 			bool check = false;
 			float rad = GetRadius(i);
@@ -3686,16 +3686,17 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 	// Judgement
 	case 20271:
 		{
-			if(!unitTarget || !p_caster) return;
+			if( unitTarget == NULL || p_caster == NULL )
+				return;
 
-			SpellEntry*en=dbcSpell.LookupEntry(p_caster->judgespell);
-			Spell *sp=new Spell(p_caster,en,true,NULL);
+			SpellEntry* en = dbcSpell.LookupEntry( p_caster->judgespell );
+			Spell* sp = new Spell( p_caster, en, true, NULL );
 			SpellCastTargets tgt;
-			tgt.m_unitTarget=unitTarget->GetGUID();
-			tgt.m_targetMask=TARGET_FLAG_UNIT;
+			tgt.m_unitTarget = unitTarget->GetGUID();
+			tgt.m_targetMask = TARGET_FLAG_UNIT;
 			sp->judgement = true;
-			sp->prepare(&tgt);
-			p_caster->RemoveAura(p_caster->Seal);
+			sp->prepare( &tgt );
+			p_caster->RemoveAura( p_caster->Seal );
 		}break;
 	//warlock - Master Demonologist
 	case 23784:
