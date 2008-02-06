@@ -3564,6 +3564,7 @@ exit:
 		case SPELL_HASH_BLOOD_FURY: //Blood Fury
 		case SPELL_HASH_MANA_TAP: //Mana Tap
 		case SPELL_HASH_ARCANE_TORRENT: //Arcane Torrent
+		case SPELL_HASH_SERRATED_BLADES: // Serrated Blades
 			basePoints += float2int32(u_caster->getLevel()*basePointsPerLevel);
 			break;
 		}
