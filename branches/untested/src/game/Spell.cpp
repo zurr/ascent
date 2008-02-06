@@ -553,13 +553,13 @@ uint8 Spell::DidHit(uint32 effindex,Unit* target)
 		return SPELL_DID_HIT_IMMUNE; // Moved here from Spell::CanCast
 	}
 	
-	/**** HACK FIX: AoE Snare/Root spells (i.e. Frost Nova) ****/
+	/**** HACK FIX: AoE Snare/Root spells (i.e. Frost Nova) and also it seems, later spells ****/
 	/* If you find any other AoE effects that also apply something that SHOULD be a mechanic, add it here. */
 	if( u_victim->MechanicsDispels[MECHANIC_ROOTED] ||
 		u_victim->MechanicsDispels[MECHANIC_ENSNARED]
 		)
 	{
-	for( int i = 1 ; i <= 3 ; i ++ )
+	for( int i = 0 ; i <= 2 ; i ++ )
 		{
 			if( u_victim->MechanicsDispels[MECHANIC_ROOTED] && m_spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT )
 				return SPELL_DID_HIT_IMMUNE;
@@ -569,10 +569,7 @@ uint8 Spell::DidHit(uint32 effindex,Unit* target)
 
 	}
 
-	/************************************************************************/
-	/* Check if the target has a % resistance to this mechanic              */
-	/************************************************************************/
-		/* Never mind, it's already done below. Lucky I didn't go through with this, or players would get double resistance. */
+
 
 	/************************************************************************/
 	/* Check if the spell is a melee attack and if it was missed/parried    */
@@ -615,20 +612,21 @@ uint8 Spell::DidHit(uint32 effindex,Unit* target)
 				resistchance = baseresist[2] + (((float)lvldiff-2.0f)*11.0f);
 		}
 	}
-	//check mechanical resistance
-	//i have no idea what is the best pace for this code
+
+	//rating bonus
+	if( p_caster != NULL )
+	{
+		resistchance -= p_caster->CalcRating( PLAYER_RATING_MODIFIER_SPELL_HIT );
+		resistchance -= p_caster->GetHitFromSpell();
+	}
+
+	/* Check if the target has a % resistance to this mechanic              */
 	if( m_spellInfo->MechanicsType<27)
 	{
 		if(p_victim)
 			resistchance += p_victim->MechanicsResistancesPCT[m_spellInfo->MechanicsType];
 		else 
 			resistchance += u_victim->MechanicsResistancesPCT[m_spellInfo->MechanicsType];
-	}
-	//rating bonus
-	if( p_caster != NULL )
-	{
-		resistchance -= p_caster->CalcRating( PLAYER_RATING_MODIFIER_SPELL_HIT );
-		resistchance -= p_caster->GetHitFromSpell();
 	}
 
 	if(p_victim)

@@ -3191,11 +3191,11 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 	{
 		switch(m_spellProto->NameHash)
 		{
-			case 0x1931b37a:			// Stealth
+			case SPELL_HASH_STEALTH:			// Stealth
 				SetPositive();
 				break;
 
-			case 0x25dab9ca:			// Dazed
+			case SPELL_HASH_DAZED:			// Dazed
 				SetNegative();
 				break;
 

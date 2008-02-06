@@ -2068,7 +2068,7 @@ uint32 Unit::GetSpellDidHitResult( Unit* pVictim, uint32 weapon_damage_type, Spe
 	{
 		r++;
 	}
-	
+	// real pro debug sLog.outString( "DidHitResult with ability %s: miss chance %f, dodge chance %f, parry chance %f, block chance %f" , ability->Name , chances[0] , chances[1] , chances[2] , chances[3] );
 	uint32 roll_results[5] = { SPELL_DID_HIT_MISS,SPELL_DID_HIT_DODGE,SPELL_DID_HIT_DEFLECT,SPELL_DID_HIT_BLOCK,SPELL_DID_HIT_SUCCESS };
 	return roll_results[r];
 }
