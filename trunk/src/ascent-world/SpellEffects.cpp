@@ -389,10 +389,10 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 	/**************************************************************************
 	* This handles the correct damage of "Judgement of Command" (all ranks)
 	**************************************************************************/
-	if (m_spellInfo->NameHash == SPELL_HASH_JUDGEMENT_OF_COMMAND && !unitTarget->IsStunned())
+	if( m_spellInfo->NameHash == SPELL_HASH_JUDGEMENT_OF_COMMAND && !unitTarget->IsStunned() )
 			dmg = dmg >> 1;
 
-	if(m_spellInfo->speed > 0)
+	if( m_spellInfo->speed > 0 )
 	{
 		//FIXME:Use this one and check player movement and update distance
 		//It now only checks the first distance and hits the player after time expires.
@@ -429,10 +429,10 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 	uint32 spellId = m_spellInfo->Id;
 	
 	// Try a dummy SpellHandler
-	if(sScriptMgr.CallScriptedDummySpell(spellId, i, this))
+	if( sScriptMgr.CallScriptedDummySpell( spellId, i, this ) )
 		return;
 
-	switch(spellId)
+	switch( spellId )
 	{
 /*	case 35029: //hunter: Focused Fire
 	case 35030:
@@ -444,9 +444,9 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 	case 31789: //paladin - Righteous Defense
 		{
 			//we will try to lure 3 enemies from our target
-			if(!unitTarget || !u_caster)
+			if( unitTarget == NULL || u_caster == NULL )
 				break;
-			Unit *targets[3];
+			Unit* targets[3];
 			int targets_got=0;
 			for(std::set<Object*>::iterator itr = unitTarget->GetInRangeSetBegin(), i2; itr != unitTarget->GetInRangeSetEnd(); )
 			{
@@ -455,13 +455,13 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 				if((*i2)->GetTypeId()!= TYPEID_UNIT || !((Unit*)(*i2))->isAlive())
 					continue;
 		        
-				Creature *cr=((Creature*)(*i2));
-				if(cr->GetAIInterface()->GetNextTarget()==unitTarget)
-					targets[targets_got++]=cr;
-				if(targets_got==3)
+				Creature* cr = static_cast< Creature* >( *i2 );
+				if( cr->GetAIInterface()->GetNextTarget() == unitTarget )
+					targets[targets_got++] = cr;
+				if( targets_got == 3 )
 					break;
 			}
-			for(int i=0;i<targets_got;i++)
+			for( int i = 0; i < targets_got; i++ )
 			{
 				//set threat to this target so we are the msot hated
 				uint32 threat_to_him = targets[i]->GetAIInterface()->getThreatByPtr( unitTarget );
@@ -1237,10 +1237,10 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 	// can't apply stuns/fear/polymorph/root etc on boss
 	if (!unitTarget->IsPlayer())
 	{
-		Creature * c = (Creature*)( unitTarget );
-		if (c&&c->GetCreatureName()&&c->GetCreatureName()->Rank == ELITE_WORLDBOSS)
+		Creature* c = static_cast< Creature* >( unitTarget );
+		if( c != NULL && c->GetCreatureName()&&c->GetCreatureName()->Rank == ELITE_WORLDBOSS )
 		{
-			switch(m_spellInfo->EffectApplyAuraName[i])
+			switch( m_spellInfo->EffectApplyAuraName[i] )
 			{
 			case 5:  // confuse
 			case 6:  // charm
@@ -2260,7 +2260,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 				if(rand()%100 <= 30)
 				{
 					//30% chance to not be able to reskin on fail
-					((Creature*)unitTarget)->Skinned = true;
+					static_cast< Creature* >( unitTarget )->Skinned = true;
 					WorldPacket *pkt=unitTarget->BuildFieldUpdatePacket(UNIT_FIELD_FLAGS,0);
 					static_cast< Player* >( m_caster )->GetSession()->SendPacket(pkt);
 					delete pkt;
@@ -2403,10 +2403,10 @@ void Spell::SpellEffectSendEvent(uint32 i) //Send Event
 	uint32 spellId = m_spellInfo->Id;
 
 	// Try a dummy SpellHandler
-	if(sScriptMgr.CallScriptedDummySpell(spellId, i, this))
+	if( sScriptMgr.CallScriptedDummySpell( spellId, i, this ) )
 		return;
 
-	switch(spellId)
+	switch( spellId )
 	{
 
 	// Place Loot
@@ -3550,10 +3550,10 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 	uint32 spellId = m_spellInfo->Id;
 
 	// Try a dummy SpellHandler
-	if(sScriptMgr.CallScriptedDummySpell(spellId, i, this))
+	if( sScriptMgr.CallScriptedDummySpell( spellId, i, this ) )
 		return;
 
-	switch(spellId)
+	switch( spellId )
 	{
 
 	// Arcane Missiles
@@ -3581,82 +3581,82 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 
 	// Warlock Healthstones, just how much health does a lock need?
 	case 6201:		// Minor Healthstone
-		if (p_caster->HasSpell(18692))
+		if( p_caster->HasSpell( 18692 ) )
 		{
-			CreateItem(19004);
+			CreateItem( 19004 );
 			break;
 		}
-		if (p_caster->HasSpell(18693))
+		if( p_caster->HasSpell( 18693 ) )
 		{
-			CreateItem(19005);
+			CreateItem( 19005 );
 			break;
 		}
-		CreateItem(5512);
+		CreateItem( 5512 );
 		break;
 	case 6202:		// Lesser Healthstone
-		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		if( p_caster->HasSpell( 18693 ) )	// Improved Healthstone (2)
 		{
-			CreateItem(19007);
+			CreateItem( 19007 );
 			break;
 		}
-		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		if( p_caster->HasSpell( 18692 ) )	// Improved Healthstone (1)
 		{
-			CreateItem(19006);
+			CreateItem( 19006 );
 			break;
 		}
-		CreateItem(5511);
+		CreateItem( 5511 );
 		break;
 	case 5699:		// Healthstone
-		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		if( p_caster->HasSpell( 18693 ) )	// Improved Healthstone (2)
 		{
-			CreateItem(19009);
+			CreateItem( 19009 );
 			break;
 		}
-		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		if( p_caster->HasSpell( 18692 ) )	// Improved Healthstone (1)
 		{
-			CreateItem(19008);
+			CreateItem( 19008 );
 			break;
 		}
-		CreateItem(5509);
+		CreateItem( 5509 );
 		break;
 	case 11729:		// Greater Healthstone
-		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		if( p_caster->HasSpell( 18693 ) )	// Improved Healthstone (2)
 		{
-			CreateItem(19011);
+			CreateItem( 19011 );
 			break;
 		}
-		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		if( p_caster->HasSpell( 18692 ) )	// Improved Healthstone (1)
 		{
-			CreateItem(19010);
+			CreateItem( 19010 );
 			break;
 		}
-		CreateItem(5510);
+		CreateItem( 5510 );
 		break;
 	case 11730:		// Major Healthstone
-		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		if( p_caster->HasSpell( 18693 ) )	// Improved Healthstone (2)
 		{
-			CreateItem(19013);
+			CreateItem( 19013 );
 			break;
 		}
-		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		if( p_caster->HasSpell( 18692 ) )	// Improved Healthstone (1)
 		{
-			CreateItem(19012);
+			CreateItem( 19012 );
 			break;
 		}
-		CreateItem(9421);
+		CreateItem( 9421 );
 		break;
 	case 27230:		// Master Healthstone
-		if (p_caster->HasSpell(18693))	// Improved Healthstone (2)
+		if( p_caster->HasSpell( 18693 ) )	// Improved Healthstone (2)
 		{
-			CreateItem(22105);
+			CreateItem( 22105 );
 			break;
 		}
-		if (p_caster->HasSpell(18692))	// Improved Healthstone (1)
+		if( p_caster->HasSpell( 18692 ) )	// Improved Healthstone (1)
 		{
-			CreateItem(22104);
+			CreateItem( 22104 );
 			break;
 		}
-		CreateItem(22103);
+		CreateItem( 22103 );
 		break;
 
 	// Holy Light
@@ -3680,7 +3680,7 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
 	case 19942:
 	case 19943:
 	case 27137:
-		Heal((int32)damage);
+		Heal( (int32)damage );
 	break;
 
 	// Judgement

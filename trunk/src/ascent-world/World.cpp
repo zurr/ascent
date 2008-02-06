@@ -2047,7 +2047,7 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectApplyAuraName[0] = 42;
         sp->EffectTriggerSpell[0] = 31930;
-//sp->procChance=100;
+		//sp->procChance=100;
 	}
 
 	//paladin - Blessed Life

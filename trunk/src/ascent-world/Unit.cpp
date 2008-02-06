@@ -1487,8 +1487,6 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 									continue;//this should not ocur unless we made a fuckup somewhere
 								if(	CastingSpell->NameHash != SPELL_HASH_JUDGEMENT )
 									continue;
-								if( !IsPlayer() )
-									continue; //great, we can only make this for players 
 								Player* c = static_cast< Player* >( this );
 								//printf("is there a seal on the player ? %u \n",c->Seal);
 								if( !c->Seal )
@@ -1615,7 +1613,7 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 							{
 								if( CastingSpell == NULL )
 									continue;
-								if( (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT))
+								if( CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT )
 									continue;
 							}break;
 						case 37529:
@@ -2931,8 +2929,9 @@ else
 			}
 		}
 
-		// a *very* dirty fix for refreshing judgements - but there is no SPELL_TYPE for judgements.
-		// I have a VERY good feeling that this will be removed by Burlex soon.
+		// refresh judgements
+		// TODO: find the opcode to refresh the aura or just remove it and re add it
+		// rather than fuck with duration
 		for( uint32 x = MAX_POSITIVE_AURAS; x <= MAX_AURAS; x++ )
 		{
 			if( pVictim->m_auras[x] && pVictim->m_auras[x]->GetUnitCaster() && pVictim->m_auras[x]->GetUnitCaster()->GetGUID() == GetGUID() && pVictim->m_auras[x]->GetSpellProto()->buffIndexType == SPELL_TYPE_INDEX_JUDGEMENT )
@@ -2950,8 +2949,7 @@ else
 				}
 				// However, there is also an opcode that tells the caster that the aura has been refreshed.
 				// This isn't implemented anywhere else in the source, so I can't work on that part :P
-				// (The 'cooldown' meter on the target frame that shows how long the aura has until expired does not get reset)
-
+				// (The 'cooldown' meter on the target frame that shows how long the aura has until expired does not get reset)=
 				// I would say break; here, but apparently in Ascent, one paladin can have multiple judgements on the target. No idea if this is blizzlike or not.
 			}
 		}

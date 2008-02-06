@@ -5049,11 +5049,11 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
 	}
 	else
 	{
-		if(m_target->GetTypeId() == TYPEID_UNIT && ((Creature*)m_target)->GetCreatureName())
+		if( m_target->GetTypeId() == TYPEID_UNIT && static_cast< Creature* >( m_target )->GetCreatureName() )
 		{
-			if(((Creature*)m_target)->GetCreatureName()->Type != CRITTER)
+			if( static_cast< Creature* >( m_target )->GetCreatureName()->Type != CRITTER )
 			{
-				if(m_target->isDead())
+				if( m_target->isDead() )
 				{
 					Player *pCaster = m_target->GetMapMgr()->GetPlayer((uint32)m_casterGuid);
 					if(!pCaster)
