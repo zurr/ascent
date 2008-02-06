@@ -681,6 +681,10 @@ public:
 		m_duelWield = enabled;
 	}
 
+	ASCENT_INLINE bool IsDualWielding()
+	{
+		return m_duelWield;
+	}
 	bool __fastcall canReachWithAttack(Unit *pVictim);
 
   //void StrikeWithAbility( Unit* pVictim, Spell* spell, uint32 addspelldmg, uint32 weapon_damage_type );

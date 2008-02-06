@@ -3202,6 +3202,7 @@ void Spell::SpellEffectWeapondamage( uint32 i ) // Weapon damage +
 		add_damage += damage;
 		return;
 	}
+	
 	u_caster->Strike( unitTarget, ( GetType() == SPELL_DMG_TYPE_RANGED ? RANGED : MELEE ), m_spellInfo, damage, 0, 0, false, true );
 }
 
@@ -3234,8 +3235,13 @@ void Spell::SpellEffectTriggerSpell(uint32 i) // Trigger Spell
 {
 	if(!unitTarget)
 		return;
+	SpellEntry * spell = dbcSpell.LookupEntry(m_spellInfo->EffectTriggerSpell[i]);
+	// hackfix for stormstrike
+	if( spell->NameHash == SPELL_HASH_STORMSTRIKE && i == 2 && !u_caster->IsDualWielding() )
+		return; // won't strike with offhand if we're not dual wielding :)
 
-	Spell*sp=new Spell(m_caster,dbcSpell.LookupEntry(m_spellInfo->EffectTriggerSpell[i]),true,NULL);
+	
+	Spell*sp=new Spell(m_caster,spell,true,NULL);
 	SpellCastTargets tgt(unitTarget->GetGUID());
 	sp->prepare(&tgt);
 
