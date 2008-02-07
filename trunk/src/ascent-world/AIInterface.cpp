@@ -1574,25 +1574,25 @@ bool AIInterface::FindFriends(float dist)
 	bool result = false;
 	TargetMap::iterator it;
 
-	std::set<Object*>::iterator itr;
-	Unit *pUnit;
-
-	
+	std::set< Object* >::iterator itr;
+	Unit* pUnit;
 
 	for( itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); itr++ )
 	{
-		if(!(*itr) || (*itr)->GetTypeId() != TYPEID_UNIT)
+		if( (*itr) == NULL || (*itr)->GetTypeId() != TYPEID_UNIT )
 			continue;
 
-		pUnit = static_cast<Unit*>((*itr));
-		if(!pUnit->isAlive())
+		pUnit = static_cast< Unit* >( *itr );
+
+		if( !pUnit->isAlive() )
 			continue;
 
-		if(pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
+		if( pUnit->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE ) )
 		{
 			continue;
 		}
-		if(pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9))
+
+		if( pUnit->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9 ) )
 		{
 			continue;
 		}
@@ -1605,9 +1605,9 @@ bool AIInterface::FindFriends(float dist)
 					break;
 
 				result = true;
-				m_assistTargets.insert(pUnit);
+				m_assistTargets.insert( pUnit );
 					
-				for(it = m_aiTargets.begin(); it != m_aiTargets.end(); ++it)
+				for( it = m_aiTargets.begin(); it != m_aiTargets.end(); ++it )
 				{
 					static_cast< Unit* >( *itr )->GetAIInterface()->AttackReaction( it->first, 1, 0 );
 				}
@@ -1616,9 +1616,9 @@ bool AIInterface::FindFriends(float dist)
 	}
 
 	// check if we're a civillan, in which case summon guards on a despawn timer
-	uint8 civilian = (((Creature*)m_Unit)->GetCreatureName()) ? (((Creature*)m_Unit)->GetCreatureName()->Civilian) : 0;
-	uint32 family = (((Creature*)m_Unit)->GetCreatureName()) ? (((Creature*)m_Unit)->GetCreatureName()->Type) : 0;
-	if(family == HUMANOID && civilian && getMSTime() > m_guardTimer && !IS_INSTANCE(m_Unit->GetMapId()))
+	uint8 civilian = ( static_cast< Creature* >( m_Unit )->GetCreatureName()) ? ( static_cast< Creature* >( m_Unit )->GetCreatureName()->Civilian ) : 0;
+	uint32 family = ( static_cast< Creature* >( m_Unit )->GetCreatureName()) ? ( static_cast< Creature* >( m_Unit )->GetCreatureName()->Type ) : 0;
+	if( family == HUMANOID && civilian && getMSTime() > m_guardTimer && !IS_INSTANCE( m_Unit->GetMapId() ) )
 	{
 		m_guardTimer = getMSTime() + 15000;
 		uint16 AreaId = m_Unit->GetMapMgr()->GetAreaID(m_Unit->GetPositionX(),m_Unit->GetPositionY());
