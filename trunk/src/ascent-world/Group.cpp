@@ -1150,6 +1150,17 @@ void Group::RemoveVoiceMember(Player * pPlayer)
 
 }
 
+void Group::VoiceDied()
+{
+	m_groupLock.Acquire();
+	Log.Debug("Group", "voice died %u", m_Id);
+	m_voiceChannelId = -1;
+	m_voiceChannelRequested = false;
+	m_voiceMemberHigh = 1;
+	m_voiceMembers.clear();
+	m_groupLock.Release();
+}
+
 void Group::SendVoiceUpdate()
 {
 	m_groupLock.Acquire();

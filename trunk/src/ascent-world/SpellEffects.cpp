@@ -4727,28 +4727,32 @@ void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
 					}
 					else
 					{
-						sEventMgr.RemoveEvents(unitTarget, EVENT_PET_DELAYED_REMOVE);
-						sEventMgr.RemoveEvents(unitTarget, EVENT_CREATURE_REMOVE_CORPSE);
+						sEventMgr.RemoveEvents( unitTarget, EVENT_PET_DELAYED_REMOVE );
+						sEventMgr.RemoveEvents( unitTarget, EVENT_CREATURE_REMOVE_CORPSE );
 					}
-					unitTarget->SetUInt32Value(UNIT_FIELD_HEALTH, hlth);
-					unitTarget->SetUInt32Value(UNIT_FIELD_POWER1, mana);
-					unitTarget->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
-					unitTarget->setDeathState(ALIVE);
-					((Creature*)unitTarget)->Tagged=false;
-					((Creature*)unitTarget)->TaggerGuid=false;
-					((Creature*)unitTarget)->loot.gold=0;
-					((Creature*)unitTarget)->loot.looters.clear();
-					((Creature*)unitTarget)->loot.items.clear();
+					unitTarget->SetUInt32Value( UNIT_FIELD_HEALTH, hlth );
+					unitTarget->SetUInt32Value( UNIT_FIELD_POWER1, mana );
+					unitTarget->SetUInt32Value( UNIT_DYNAMIC_FLAGS, 0 );
+					unitTarget->setDeathState( ALIVE );
+					static_cast< Creature* >( unitTarget )->Tagged = false;
+					static_cast< Creature* >( unitTarget )->TaggerGuid = false;
+					static_cast< Creature* >( unitTarget )->loot.gold = 0;
+					static_cast< Creature* >( unitTarget )->loot.looters.clear();
+					static_cast< Creature* >( unitTarget )->loot.items.clear();
 				}
 			}
 
 			return;
 		}
-		playerTarget = objmgr.GetPlayer(corpseTarget->GetUInt32Value(CORPSE_FIELD_OWNER));
+		playerTarget = objmgr.GetPlayer( corpseTarget->GetUInt32Value( CORPSE_FIELD_OWNER ) );
 		if(!playerTarget) return;
 	}
 
+<<<<<<< .mine
 	if(playerTarget->isAlive() || !playerTarget->IsInWorld())
+=======
+	if( playerTarget->isAlive() || !playerTarget->IsInWorld() || playerTarget->GetMapId() != p_caster->GetMapId() )
+>>>>>>> .theirs
 		return;
 
 	uint32 health = m_spellInfo->EffectBasePoints[i];
@@ -4757,8 +4761,8 @@ void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
 	playerTarget->m_resurrectHealth = health;
 	playerTarget->m_resurrectMana = mana;
 
-	SendResurrectRequest(playerTarget);   
-	playerTarget->SetMovement(MOVE_UNROOT, 1);
+	SendResurrectRequest( playerTarget );   
+	playerTarget->SetMovement( MOVE_UNROOT, 1 );
 }
 
 void Spell::SpellEffectAttackMe(uint32 i)

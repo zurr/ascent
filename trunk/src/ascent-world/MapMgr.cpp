@@ -1408,6 +1408,12 @@ bool MapMgr::Do()
 	}
 
 	// Clear the instance's reference to us.
+	if(m_battleground)
+	{
+		BattlegroundManager.DeleteBattleground(m_battleground);
+		sInstanceMgr.DeleteBattlegroundInstance( GetMapId(), GetInstanceID() );
+	}
+
 	if(pInstance)
 	{
 		// check for a non-raid instance, these expire after 10 minutes.
@@ -1424,9 +1430,6 @@ bool MapMgr::Do()
 	}
 	else if(GetMapInfo()->type == INSTANCE_NULL)
 		sInstanceMgr.m_singleMaps[GetMapId()] = NULL;
-
-	if(m_battleground)
-		BattlegroundManager.DeleteBattleground(m_battleground);
 
 	// Teleport any left-over players out.
 	TeleportPlayers();	

@@ -335,6 +335,7 @@ Aura::Aura( SpellEntry* proto, int32 duration, Object* caster, Unit* target )
 	m_spellProto = proto;
 	m_duration = duration;
 	m_positive = 0; //we suppose spell will have positive impact on target
+	m_deleted = false;
 
 	m_casterGuid = caster->GetGUID();
 	m_target = target;
