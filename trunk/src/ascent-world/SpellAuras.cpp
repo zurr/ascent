@@ -363,8 +363,11 @@ Aura::Aura( SpellEntry* proto, int32 duration, Object* caster, Unit* target )
 	{
 		if( m_spellProto->buffIndexType > 0 && caster->IsPlayer() )
 		{
-			( ( Player* )caster )->RemoveSpellTargets( m_spellProto->buffIndexType);
-			( ( Player* )caster )->SetSpellTargetType( m_spellProto->buffIndexType, target);
+			if( m_spellProto->buffIndexType != SPELL_TYPE_INDEX_JUDGEMENT )
+			{
+				static_cast< Player* >( caster )->RemoveSpellTargets( m_spellProto->buffIndexType );
+				static_cast< Player* >( caster )->SetSpellTargetType( m_spellProto->buffIndexType, target );
+			}
 		}
 
 		if( isAttackable( ( Unit* )caster, target ) )
@@ -475,7 +478,12 @@ void Aura::Remove()
 		}
 
 		if( m_spellProto->buffIndexType != 0 && m_target->IsPlayer() )
-			static_cast< Player* >( m_target )->RemoveSpellIndexReferences( m_spellProto->buffIndexType );
+		{
+			if( m_spellProto->buffIndexType != SPELL_TYPE_INDEX_JUDGEMENT )
+			{
+				static_cast< Player* >( m_target )->RemoveSpellIndexReferences( m_spellProto->buffIndexType );
+			}
+		}
 	}
 	else
 		m_target->CombatStatus.RemoveAttacker( NULL, m_casterGuid );
