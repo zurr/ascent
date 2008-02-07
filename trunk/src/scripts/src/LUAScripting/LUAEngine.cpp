@@ -75,7 +75,6 @@ struct RegType
 	int(*mfunc)(lua_State*,T*);
 };
 
-
 /************************************************************************/
 /* SCRIPT FUNCTION TABLES                                               */
 /************************************************************************/
@@ -110,6 +109,7 @@ RegType<Unit> UnitMethods[] = {
 	{ "GetMainTank", &luaUnit_GetMainTank },
 	{ "GetAddTank", &luaUnit_GetAddTank },
 	{ "ClearThreatList", &luaUnit_ClearThreatList },
+	{ "WipeTargetList", &luaUnit_WipeTargetList },
 	{ "GetTauntedBy", &luaUnit_GetTauntedBy },
 	{ "SetTauntedBy", &luaUnit_SetTauntedBy },
 	{ "SetSoulLinkedWith", &luaUnit_SetSoulLinkedWith },
@@ -550,6 +550,7 @@ void LuaEngine::OnQuestEvent(Player * QuestOwner, const char * FunctionName, uin
 	m_Lock.Release();
 	
 }
+
 void LuaEngine::CallFunction(Unit * pUnit, const char * FuncName)
 {
 	m_Lock.Acquire();
@@ -863,6 +864,7 @@ void LuaEngineMgr::RegisterQuestEvent(uint32 Id, uint32 Event, const char * Func
 		itr->second.Functions[Event]=strdup(FunctionName);
 	}
 }
+
 void LuaEngineMgr::RegisterGameObjectEvent(uint32 Id, uint32 Event, const char * FunctionName)
 {
 	GameObjectBindingMap::iterator itr = m_gameobjectBinding.find(Id);
@@ -947,9 +949,6 @@ void LuaEngine::Restart()
 	LoadScripts();
 	m_Lock.Release();
 }
-
-
-
 
 /************************************************************************/
 /* SCRIPT FUNCTION IMPLEMENTATION                                       */
@@ -1269,6 +1268,7 @@ int luaUnit_RegisterEvent(lua_State * L, Unit * ptr)
 	sEventMgr.AddEvent(pCreature, &Creature::TriggerScriptEvent, strFunc, EVENT_CREATURE_UPDATE, (uint32)delay, (uint32)repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 	return 0;
 }
+
 int luaUnit_RemoveEvents(lua_State * L, Unit * ptr)
 {
 	if(!ptr||ptr->GetTypeId()!=TYPEID_UNIT)
@@ -1290,6 +1290,7 @@ int luaUnit_SetFaction(lua_State * L, Unit * ptr)
 	ptr->_setFaction();
 	return 0;
 }
+
 int luaUnit_SetStandState(lua_State * L, Unit * ptr) //states 0..8
 {
 	if (!ptr)
@@ -1300,6 +1301,7 @@ int luaUnit_SetStandState(lua_State * L, Unit * ptr) //states 0..8
 	ptr->SetStandState(state);
 	return 0;
 }
+
 int luaUnit_IsInCombat(lua_State * L, Unit * ptr)
 {
 	if (!ptr)
@@ -1494,6 +1496,7 @@ int luaUnit_AddItem(lua_State * L, Unit * ptr)
 
 	return 0;
 }
+
 int luaUnit_GetInstanceID(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID(TYPEID_UNIT);
@@ -1526,6 +1529,7 @@ int luaUnit_GetClosestPlayer(lua_State * L, Unit * ptr)
 
 	return 1;
 }
+
 int luaUnit_GetRandomPlayer(lua_State * L, Unit * ptr)
 {
 	if( ptr == NULL )
@@ -1755,6 +1759,7 @@ int luaUnit_GetRandomPlayer(lua_State * L, Unit * ptr)
 
 	return 1;
 }
+
 int luaUnit_GetRandomFriend(lua_State * L, Unit * ptr)
 {
 	if(!ptr)
@@ -1841,6 +1846,7 @@ int luaUnit_GetHealthPct(lua_State * L, Unit * ptr)
 
 	return 1;
 }
+
 int luaUnit_SetHealthPct(lua_State * L, Unit * ptr)
 {
 	int val = luaL_checkint(L,1);
@@ -1848,6 +1854,7 @@ int luaUnit_SetHealthPct(lua_State * L, Unit * ptr)
 		ptr->SetHealthPct(val);
 	return 1;
 }
+
 int luaUnit_GetItemCount(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID_RET_INT(TYPEID_PLAYER);
@@ -1866,6 +1873,7 @@ int luaUnit_GetMainTank(lua_State * L, Unit * ptr)
 		Lunar<Unit>::push(L,(ret),false);
 	return 1;
 }
+
 int luaUnit_GetAddTank(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID_RET_INT(TYPEID_UNIT);
@@ -1876,10 +1884,18 @@ int luaUnit_GetAddTank(lua_State * L, Unit * ptr)
 		Lunar<Unit>::push(L,(ret),false);
 	return 1;
 }
+
 int luaUnit_ClearThreatList(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID_RET_INT(TYPEID_UNIT);
 	ptr->ClearHateList();
+	return 1;
+}
+
+int luaUnit_WipeTargetList(lua_State * L, Unit * ptr)
+{
+	CHECK_TYPEID_RET_INT(TYPEID_UNIT);
+	ptr->WipeTargetList();
 	return 1;
 }
 
@@ -1893,6 +1909,7 @@ int luaUnit_GetTauntedBy(lua_State * L, Unit * ptr)
 			Lunar<Unit>::push(L,ptr->GetAIInterface()->getTauntedBy(),false);
 	return 1;
 }
+
 int luaUnit_SetTauntedBy(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID(TYPEID_UNIT)
@@ -1915,6 +1932,7 @@ int luaUnit_GetSoulLinkedWith(lua_State * L, Unit * ptr)
 			Lunar<Unit>::push(L,ptr->GetAIInterface()->getSoullinkedWith(),false);
 	return 1;
 }
+
 int luaUnit_SetSoulLinkedWith(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID(TYPEID_UNIT)
@@ -1926,6 +1944,7 @@ int luaUnit_SetSoulLinkedWith(lua_State * L, Unit * ptr)
 		ptr->GetAIInterface()->SetSoulLinkedWith(ptr);
 	return 1;
 }
+
 int luaUnit_ChangeTarget(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID(TYPEID_UNIT)
@@ -2048,4 +2067,3 @@ int luaGameObject_Teleport(lua_State * L, GameObject * ptr)
 	((Player*)target)->SafeTeleport((uint32)mapId, 0, vec);
 	return 0;
 }
-

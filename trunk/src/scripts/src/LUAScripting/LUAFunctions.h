@@ -54,6 +54,7 @@ int luaUnit_IsInCombat(lua_State * L, Unit * ptr);
 int luaUnit_GetMainTank(lua_State * L, Unit * ptr);
 int luaUnit_GetAddTank(lua_State * L, Unit * ptr);
 int luaUnit_ClearThreatList(lua_State * L, Unit * ptr);
+int luaUnit_WipeTargetList(lua_State * L, Unit * ptr);
 int luaUnit_GetTauntedBy(lua_State * L, Unit * ptr);
 int luaUnit_SetTauntedBy(lua_State * L, Unit * ptr);
 int luaUnit_GetSoulLinkedWith(lua_State * L, Unit * ptr);
