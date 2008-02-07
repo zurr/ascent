@@ -4652,8 +4652,6 @@ void Unit::DropAurasOnDeath()
 
 void Unit::UpdateSpeed(bool delay /* = false */)
 {
-	GetSpeedDecrease();
-
 	if( GetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID ) == 0 )
 	{
 		if( IsPlayer() )

@@ -3265,6 +3265,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 		//m_target->m_slowdown=NULL;
 	}
 
+	m_target->GetSpeedDecrease();
 	m_target->UpdateSpeed();
 }
 
