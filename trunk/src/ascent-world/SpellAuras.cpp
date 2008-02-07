@@ -4816,13 +4816,14 @@ out:
 
 void Aura::SpellAuraMounted(bool apply)
 {
-	if(!p_target) return;
+	if( p_target == NULL )
+		return;
 
-	if(m_target->IsStealth())
+	if( m_target->IsStealth() )
 	{
 		uint32 id = m_target->m_stealth;
 		m_target->m_stealth = 0;
-		m_target->RemoveAura(id);
+		m_target->RemoveAura( id );
 	}
 
 	if( apply )
@@ -4831,19 +4832,21 @@ void Aura::SpellAuraMounted(bool apply)
 
 		//p_target->AdvanceSkillLine(762); // advance riding skill
 
-		if(p_target->m_bg)
-			p_target->m_bg->HookOnMount(p_target);
+		if( p_target->m_bg != NULL )
+			p_target->m_bg->HookOnMount( p_target );
 
-		if(p_target->m_MountSpellId)
-			m_target->RemoveAura(p_target->m_MountSpellId);
+		if( p_target->m_MountSpellId )
+			m_target->RemoveAura( p_target->m_MountSpellId );
 
-		m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+		m_target->RemoveAurasByInterruptFlag( AURA_INTERRUPT_ON_MOUNT );
 
-		CreatureInfo* ci = CreatureNameStorage.LookupEntry(mod->m_miscValue);
-		if(!ci) return;
+		CreatureInfo* ci = CreatureNameStorage.LookupEntry( mod->m_miscValue );
+		if( ci == NULL )
+			return;
 
 		uint32 displayId = ci->Male_DisplayID;
-		if(!displayId) return;
+		if( !displayId )
+			return;
 
 		p_target->m_MountSpellId = m_spellProto->Id;
 		p_target->flying_aura = 0;
@@ -4857,6 +4860,9 @@ void Aura::SpellAuraMounted(bool apply)
 		m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
 		//m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 	}
+
+	m_target->UpdateSpeed();
+
 }
 
 void Aura::SpellAuraModDamagePercDone(bool apply)
@@ -7124,7 +7130,6 @@ void Aura::SpellAuraEnableFlight(bool apply)
 	{
 		m_target->EnableFlight(true);
 		m_target->m_flyspeedModifier += mod->m_amount;
-		m_target->UpdateSpeed(true);
 		if( m_target->IsPlayer() )
 		{
 			static_cast< Player* >( m_target )->flying_aura = m_spellProto->Id;
@@ -7134,12 +7139,13 @@ void Aura::SpellAuraEnableFlight(bool apply)
 	{
 		m_target->DisableFlight(true);
 		m_target->m_flyspeedModifier -= mod->m_amount;
-		m_target->UpdateSpeed(true);
+
 		if( m_target->IsPlayer() )
 		{
 			static_cast< Player* >( m_target )->flying_aura = 0;
 		}
 	}
+	m_target->UpdateSpeed();
 }
 
 void Aura::SpellAuraEnableFlightWithUnmountedSpeed(bool apply)
@@ -7149,7 +7155,6 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(bool apply)
 	{
 		m_target->EnableFlight(true);
 		m_target->m_flyspeedModifier += mod->m_amount;
-		m_target->UpdateSpeed(true);
 		if( m_target->IsPlayer() )
 		{
 			static_cast< Player* >( m_target )->flying_aura = m_spellProto->Id;
@@ -7159,12 +7164,12 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(bool apply)
 	{
 		m_target->DisableFlight(true);
 		m_target->m_flyspeedModifier -= mod->m_amount;
-		m_target->UpdateSpeed(true);
 		if( m_target->IsPlayer() )
 		{
 			static_cast< Player* >( m_target )->flying_aura = 0;
 		}
 	}
+	m_target->UpdateSpeed();
 }
 
 void Aura::SpellAuraIncreaseMovementAndMountedSpeed( bool apply )
