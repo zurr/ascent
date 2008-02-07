@@ -2947,21 +2947,29 @@ uint8 Spell::CanCast(bool tolerate)
 		}
 	}
 
-	if( m_spellInfo->Flags3 & 0x100000 && p_caster != NULL )
+	// TODO : BURLEX :> FIXME
+	// This should work but seems to fuck up lots of stuff
+	// Many spells return as failed because item not equipped
+	// Even though you have something equipped
+
+	// currently these spells are the only ones that need this check.
+	if( m_spellInfo->in_front_status == 2 && p_caster != NULL )
 	{
-		// currently these spells are the only ones that need this check.
-		Item* pItem = p_caster->GetItemInterface()->GetInventoryItem( INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND );
-		if( pItem == NULL )
+		if( p_caster->GetItemInterface() != NULL )
 		{
-			// these need an item equipped
-			return SPELL_FAILED_EQUIPPED_ITEM;
+			Item* pItem = p_caster->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_MAINHAND );
+			if( pItem == NULL )
+			{
+				// these need an item equipped
+				return SPELL_FAILED_EQUIPPED_ITEM;
+			}
+
+			if( m_spellInfo->EquippedItemClass && pItem->GetProto()->Class != m_spellInfo->EquippedItemClass )
+				return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
+
+			if( m_spellInfo->EquippedItemSubClass && !(m_spellInfo->EquippedItemSubClass & (1 << pItem->GetProto()->SubClass)) )
+				return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
 		}
-
-		if( m_spellInfo->EquippedItemClass && pItem->GetProto()->Class != m_spellInfo->EquippedItemClass )
-			return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
-
-		if( m_spellInfo->EquippedItemSubClass && !(m_spellInfo->EquippedItemSubClass & (1 << pItem->GetProto()->SubClass)) )
-			return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
 	}
 
 	// set up our max Range
