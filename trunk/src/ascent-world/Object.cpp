@@ -324,11 +324,11 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2,
 		}
 	}
 
-	if (flags & 0x20)
+	if( flags & 0x20 )
 	{
-		if(pThis && pThis->m_TransporterGUID != 0)
+		if( pThis != NULL && pThis->m_TransporterGUID != 0 )
 			flags2 |= 0x200;
-		else if(m_objectTypeId==TYPEID_UNIT && ((Creature*)this)->m_transportGuid != 0 && ((Creature*)this)->m_transportPosition != NULL)
+		else if( m_objectTypeId == TYPEID_UNIT && static_cast< Creature* >( this )->m_transportGuid != 0 && static_cast< Creature* >( this )->m_transportPosition != NULL)
 			flags2 |= 0x200;
 
 		if(splinebuf)
@@ -407,21 +407,23 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2,
 			*data << m_position.o;
 		}
 
-		if(flags & 0x20 && flags2 & 0x0200)
+		if( flags & 0x20 && flags2 & 0x0200 )
 		{
-			if(pThis)
+			if( pThis != NULL )
 			{
 				*data << pThis->m_TransporterGUID;
 				*data << pThis->m_TransporterX << pThis->m_TransporterY << pThis->m_TransporterZ << pThis->m_TransporterO;
 				*data << pThis->m_TransporterUnk;
 			}
-			else if(m_objectTypeId==TYPEID_UNIT && ((Creature*)this)->m_transportPosition != NULL)
+			else if( m_objectTypeId == TYPEID_UNIT && ((Creature*)this)->m_transportPosition != NULL)
 			{
-				*data << ((Creature*)this)->m_transportGuid;
-				*data << uint32(HIGHGUID_TRANSPORTER);
-				*data << ((Creature*)this)->m_transportPosition->x << ((Creature*)this)->m_transportPosition->y << 
-					((Creature*)this)->m_transportPosition->z << ((Creature*)this)->m_transportPosition->o;
-				*data << float(0.0f);
+				*data << static_cast< Creature* >( this )->m_transportGuid;
+				*data << uint32( HIGHGUID_TRANSPORTER );
+				*data << static_cast< Creature* >( this )->m_transportPosition->x;
+				*data << static_cast< Creature* >( this )->m_transportPosition->y;
+				*data << static_cast< Creature* >( this )->m_transportPosition->z;
+				*data << static_cast< Creature* >( this )->m_transportPosition->o;
+				*data << float( 0.0f );
 			}
 		}
 	}
@@ -1592,9 +1594,9 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 				// Loop inrange set, append to their update data.
 				for(std::set<Player*>::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
 				{
-					if (static_cast<Player*>(plr)->InGroup())
+					if (static_cast< Player* >(plr)->InGroup())
 					{
-						if (static_cast<Player*>(*itr)->GetGroup() && static_cast<Player*>(plr)->GetGroup()->GetID() == static_cast<Player*>(*itr)->GetGroup()->GetID())
+						if (static_cast< Player* >(*itr)->GetGroup() && static_cast< Player* >(plr)->GetGroup()->GetID() == static_cast< Player* >(*itr)->GetGroup()->GetID())
 						{
 							(*itr)->PushUpdateData(&buf1, 1);
 						} 
@@ -1643,7 +1645,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 
 	if( pVictim->IsPlayer() )
 	{
-		Player *pThis = static_cast<Player *>(pVictim);
+		Player *pThis = static_cast< Player* >(pVictim);
 		if(pThis->cannibalize)
 		{
 			sEventMgr.RemoveEvents(pVictim, EVENT_CANNIBALIZE);
@@ -1670,7 +1672,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	uint32 health = pVictim->GetUInt32Value(UNIT_FIELD_HEALTH );
 
 	/*------------------------------------ DUEL HANDLERS --------------------------*/
-	if((pVictim->IsPlayer()) && (this->IsPlayer()) && static_cast<Player*>(pVictim)->DuelingWith == static_cast< Player* >( this ) ) //Both Players
+	if((pVictim->IsPlayer()) && (this->IsPlayer()) && static_cast< Player* >(pVictim)->DuelingWith == static_cast< Player* >( this ) ) //Both Players
 	{
 		if((health <= damage) && static_cast< Player* >( this )->DuelingWith != NULL)
 		{
@@ -1694,7 +1696,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 
 	if((pVictim->IsPlayer()) && (IsPet())) 
 	{
-		if((health <= damage) && static_cast<Player*>(pVictim)->DuelingWith == static_cast<Pet*>(this)->GetPetOwner())
+		if((health <= damage) && static_cast< Player* >(pVictim)->DuelingWith == static_cast<Pet*>(this)->GetPetOwner())
 		{
 			Player *petOwner = static_cast<Pet*>(this)->GetPetOwner();
 			if(petOwner)
@@ -1714,9 +1716,9 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	/*------------------------------------ DUEL HANDLERS END--------------------------*/
 
 	bool isCritter = false;
-	if(pVictim->GetTypeId() == TYPEID_UNIT && ((Creature*)pVictim)->GetCreatureName())
+	if( pVictim->GetTypeId() == TYPEID_UNIT && static_cast< Creature* >( pVictim )->GetCreatureName() )
 	{
-			if(((Creature*)pVictim)->GetCreatureName()->Type == CRITTER)
+			if( static_cast< Creature* >( pVictim )->GetCreatureName()->Type == CRITTER )
 				isCritter = true;
 	}
 	/* -------------------------- HIT THAT CAUSES VICTIM TO DIE ---------------------------*/
@@ -1754,7 +1756,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
         if( pMapInfo && pMapInfo->type == INSTANCE_NULL && !pVictim->IsPlayer() && !pVictim->IsPet() && ( IsPlayer() || IsPet() ) )
 		{
 			// Only NPCs that bear the PvP flag can be truly representing their faction.
-			if( ((Creature*)pVictim)->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_PVP ) )
+			if( static_cast< Creature* >( pVictim )->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_PVP ) )
 			{
 				Player * pAttacker = NULL;
 				if( IsPet() && GetGUIDHigh() == HIGHGUID_PET )
@@ -2098,7 +2100,7 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 					//remove owner warlock soul link from caster
 					Unit *owner=pVictim->GetMapMgr()->GetUnit( pVictim->GetUInt64Value( UNIT_FIELD_CHARMEDBY ) );
 					if( owner != NULL && owner->IsPlayer())
-						static_cast<Player*>( owner )->EventDismissPet();
+						static_cast< Player* >( owner )->EventDismissPet();
 				}
 			}
 		}
@@ -2197,7 +2199,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				if( IsPlayer() )
 				{
 					CritChance = GetFloatValue( PLAYER_RANGED_CRIT_PERCENTAGE );
-					CritChance += static_cast<Player*>(pVictim)->res_R_crit_get();
+					CritChance += static_cast< Player* >(pVictim)->res_R_crit_get();
 					CritChance += (float)(pVictim->AttackerCritChanceMod[spellInfo->School]);
 				}
 				else
@@ -2205,7 +2207,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 					CritChance = 5.0f; // static value for mobs.. not blizzlike, but an unfinished formula is not fatal :)
 				}
 				if( pVictim->IsPlayer() )
-				CritChance -= static_cast<Player*>(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_RANGED_CRIT_RESILIENCE );
+				CritChance -= static_cast< Player* >(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_RANGED_CRIT_RESILIENCE );
 			}
 			else
 			{
@@ -2224,7 +2226,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	#endif
 				}
 				if( pVictim->IsPlayer() )
-				CritChance -= static_cast<Player*>(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE );
+				CritChance -= static_cast< Player* >(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE );
 			}
 			if( CritChance < 0 ) CritChance = 0;
 			if( CritChance > 95 ) CritChance = 95;
@@ -2241,13 +2243,13 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 				res += b;
 				if( pVictim->IsPlayer() )
 				{
-					//res = res*(1.0f-2.0f*static_cast<Player*>(pVictim)->CalcRating(PLAYER_RATING_MODIFIER_MELEE_CRIT_RESISTANCE));
+					//res = res*(1.0f-2.0f*static_cast< Player* >(pVictim)->CalcRating(PLAYER_RATING_MODIFIER_MELEE_CRIT_RESISTANCE));
 					//Resilience is a special new rating which was created to reduce the effects of critical hits against your character.
 					//It has two components; it reduces the chance you will be critically hit by x%, 
 					//and it reduces the damage dealt to you by critical hits by 2x%. x is the percentage resilience granted by a given resilience rating. 
 					//It is believed that resilience also functions against spell crits, 
 					//though it's worth noting that NPC mobs cannot get critical hits with spells.
-					float dmg_reduction_pct = 2 * static_cast<Player*>(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_MELEE_CRIT_RESILIENCE ) / 100.0f;
+					float dmg_reduction_pct = 2 * static_cast< Player* >(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_MELEE_CRIT_RESILIENCE ) / 100.0f;
 					if( dmg_reduction_pct > 1.0f )
 						dmg_reduction_pct = 1.0f; //we cannot resist more then he is criticalling us, there is no point of the critical then :P
 					res = res - res * dmg_reduction_pct;
@@ -2302,7 +2304,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 			res = float(dmg.full_damage - dmg.resisted_damage);
 	}
 	//------------------------------special states----------------------------------------------
-	if(pVictim->GetTypeId() == TYPEID_PLAYER && static_cast<Player*>(pVictim)->GodModeCheat == true)
+	if(pVictim->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >(pVictim)->GodModeCheat == true)
 	{
 		res = float(dmg.full_damage);
 		dmg.resisted_damage = dmg.full_damage;
@@ -2426,7 +2428,7 @@ void Object::SendSpellNonMeleeDamageLog( Object* Caster, Object* Target, uint32 
 int32 Object::event_GetInstanceID()
 {
 	// return -1 for non-inworld.. so we get our shit moved to the right thread
-	if(!IsInWorld())
+	if( !IsInWorld() )
 		return -1;
 	else
 		return m_instanceId;
@@ -2465,14 +2467,14 @@ bool Object::CanActivate()
 
 void Object::Activate(MapMgr * mgr)
 {
-	switch(m_objectTypeId)
+	switch( m_objectTypeId )
 	{
 	case TYPEID_UNIT:
-		mgr->activeCreatures.insert((Creature*)this);
+		mgr->activeCreatures.insert( static_cast< Creature* >( this ) );
 		break;
 
 	case TYPEID_GAMEOBJECT:
-		mgr->activeGameObjects.insert((GameObject*)this);
+		mgr->activeGameObjects.insert( static_cast< GameObject* >( this ) );
 		break;
 	}
 
@@ -2481,14 +2483,14 @@ void Object::Activate(MapMgr * mgr)
 
 void Object::Deactivate(MapMgr * mgr)
 {
-	switch(m_objectTypeId)
+	switch( m_objectTypeId )
 	{
 	case TYPEID_UNIT:
-		mgr->activeCreatures.erase((Creature*)this);
+		mgr->activeCreatures.erase( static_cast< Creature* >( this ) );
 		break;
 
 	case TYPEID_GAMEOBJECT:
-		mgr->activeGameObjects.erase((GameObject*)this);
+		mgr->activeGameObjects.erase( static_cast< GameObject* >( this ) );
 		break;
 	}
 	Active = false;

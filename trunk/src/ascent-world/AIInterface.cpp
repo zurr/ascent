@@ -67,6 +67,7 @@ AIInterface::AIInterface()
 
 	m_nextSpell = NULL;
 	m_nextTarget = NULL;
+	m_oldTarget = NULL;
 	totemspell = NULL;
 	m_Unit = NULL;
 	m_PetOwner = NULL;
@@ -648,22 +649,22 @@ void AIInterface::_UpdateTimer(uint32 p_time)
 
 void AIInterface::_UpdateTargets()
 {
-	if( m_Unit->IsPlayer() || (m_AIType != AITYPE_PET && disable_targeting ))
+	if( m_Unit->IsPlayer() || ( m_AIType != AITYPE_PET && disable_targeting ) )
 		return;
-	if( ( ( Creature* )m_Unit )->GetCreatureName() && ( ( Creature* )m_Unit )->GetCreatureName()->Type == CRITTER )
+	if( static_cast< Creature* >( m_Unit )->GetCreatureName() && static_cast< Creature* >( m_Unit )->GetCreatureName()->Type == CRITTER )
 		return;
 
 	AssistTargetSet::iterator i, i2;
 	TargetMap::iterator itr, it2;
 
 	// Find new Assist Targets and remove old ones
-	if(m_AIState == STATE_FLEEING)
+	if( m_AIState == STATE_FLEEING )
 	{
-		FindFriends(100.0f/*10.0*/);
+		FindFriends( 100.0f/*10.0*/ );
 	}
-	else if(m_AIState != STATE_IDLE && m_AIState != STATE_SCRIPTIDLE)
+	else if( m_AIState != STATE_IDLE && m_AIState != STATE_SCRIPTIDLE )
 	{
-		FindFriends(16.0f/*4.0f*/);
+		FindFriends( 16.0f/*4.0f*/ );
 	}
 
 	if( m_updateAssist )
@@ -902,11 +903,15 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				float distance = m_Unit->CalcDistance(m_nextTarget);
 
 				combatReach[0] = PLAYER_SIZE;
-				combatReach[1] = _CalcCombatRange(m_nextTarget, false);
+				combatReach[1] = _CalcCombatRange( m_nextTarget, false );
 
-				if(	
-					distance >= combatReach[0] && 
-					distance <= combatReach[1] + DISTANCE_TO_SMALL_TO_WALK) // Target is in Range -> Attack
+				// target is player and is moving? give some extra range
+				if( m_nextTarget->IsPlayer() && static_cast< Player* >( m_nextTarget )->m_isMoving )
+				{
+					combatReach[1] += CREATURE_MELEE_RANGE_TOLERANCE;
+				}
+
+				if( distance >= combatReach[0] && distance <= combatReach[1] + DISTANCE_TO_SMALL_TO_WALK ) // Target is in Range -> Attack
 				{
 					if(UnitToFollow != NULL)
 					{
@@ -963,7 +968,42 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 						}
 					}
 				}
-				else // Target out of Range -> Run to it
+				else if( m_Unit->m_rooted && !m_Unit->IsStunned() && !m_oldTarget ) // Target out of Range and we can't move -> Choose a new target if applicable
+				{
+					Unit * newTarget = NULL;
+					Unit * tmpTarget = NULL;
+					Object * obj;
+					float shortestdist = m_nextTarget->CalcDistance( m_Unit ) , dist;
+					// scan through nearby players. Essentially, a second aggro check
+					std::set<Object*>::iterator itr , it2;
+					for( itr = m_Unit->GetInRangeOppFactsSetBegin(); itr != m_Unit->GetInRangeOppFactsSetEnd(); )
+					{
+						it2 = itr;
+						++itr;
+						obj = (*it2);
+						if( !obj->IsUnit() )
+						continue;
+						
+						tmpTarget = static_cast<Unit*>(obj);
+
+						if( ( dist = m_Unit->CalcDistance( obj ) ) > _CalcCombatRange( tmpTarget , false ) ) // don't bother with out-of-range
+						continue;
+				
+						if( dist > shortestdist )
+						continue;
+
+						shortestdist = dist;
+
+						newTarget = tmpTarget;
+					}
+					if( newTarget )
+					{
+						m_oldTarget = m_nextTarget;
+						SetNextTarget( newTarget );
+						// We return to our old target on unroot (AIInterface::EventRegainMovement)
+					}
+				}
+				else // Target out of Range and we can move to them -> Move to them
 				{
 					//calculate next move
 					float dist = combatReach[1]-PLAYER_SIZE;
@@ -1352,30 +1392,31 @@ Unit* AIInterface::FindTarget()
 		++itr;
 
 		pObj = (*it2);
-		if(pObj->GetTypeId() == TYPEID_PLAYER)
+		if( pObj->GetTypeId() == TYPEID_PLAYER )
 		{
-			if(static_cast<Player*>(pObj)->GetTaxiState())	  // skip players on taxi
+			if(static_cast< Player* >( pObj )->GetTaxiState() )	  // skip players on taxi
 				continue;
 		}
-		else if(pObj->GetTypeId() != TYPEID_UNIT)
+		else if( pObj->GetTypeId() != TYPEID_UNIT )
 				continue;
 
-		pUnit = static_cast<Unit*>(pObj);
-		if(pUnit->bInvincible)
+		pUnit = static_cast< Unit* >( pObj );
+		if( pUnit->bInvincible )
 			continue;
 
 		// don't agro players on flying mounts
-		/*if(pUnit->GetTypeId() == TYPEID_PLAYER && static_cast<Player*>(pUnit)->FlyCheat)
+		/*if(pUnit->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >(pUnit)->FlyCheat)
 			continue;*/
 
 		//do not agro units that are faking death. Should this be based on chance ?
-		if(pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
+		if( pUnit->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH ) )
 			continue;
+
 		//target is immune to unit attacks however can be targeted
 		//as a part of AI we allow this mode to attack creatures as seen many times on oficial.
-		if(m_Unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9))
+		if( m_Unit->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9 ) )
 		{
-			if(pUnit->IsPlayer() || pUnit->IsPet())
+			if( pUnit->IsPlayer() || pUnit->IsPet() )
 			{
 				continue;
 			}
@@ -1533,25 +1574,25 @@ bool AIInterface::FindFriends(float dist)
 	bool result = false;
 	TargetMap::iterator it;
 
-	std::set<Object*>::iterator itr;
-	Unit *pUnit;
-
-	
+	std::set< Object* >::iterator itr;
+	Unit* pUnit;
 
 	for( itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); itr++ )
 	{
-		if(!(*itr) || (*itr)->GetTypeId() != TYPEID_UNIT)
+		if( (*itr) == NULL || (*itr)->GetTypeId() != TYPEID_UNIT )
 			continue;
 
-		pUnit = static_cast<Unit*>((*itr));
-		if(!pUnit->isAlive())
+		pUnit = static_cast< Unit* >( *itr );
+
+		if( !pUnit->isAlive() )
 			continue;
 
-		if(pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))
+		if( pUnit->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE ) )
 		{
 			continue;
 		}
-		if(pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9))
+
+		if( pUnit->HasFlag( UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9 ) )
 		{
 			continue;
 		}
@@ -1564,9 +1605,9 @@ bool AIInterface::FindFriends(float dist)
 					break;
 
 				result = true;
-				m_assistTargets.insert(pUnit);
+				m_assistTargets.insert( pUnit );
 					
-				for(it = m_aiTargets.begin(); it != m_aiTargets.end(); ++it)
+				for( it = m_aiTargets.begin(); it != m_aiTargets.end(); ++it )
 				{
 					static_cast< Unit* >( *itr )->GetAIInterface()->AttackReaction( it->first, 1, 0 );
 				}
@@ -1575,9 +1616,9 @@ bool AIInterface::FindFriends(float dist)
 	}
 
 	// check if we're a civillan, in which case summon guards on a despawn timer
-	uint8 civilian = (((Creature*)m_Unit)->GetCreatureName()) ? (((Creature*)m_Unit)->GetCreatureName()->Civilian) : 0;
-	uint32 family = (((Creature*)m_Unit)->GetCreatureName()) ? (((Creature*)m_Unit)->GetCreatureName()->Type) : 0;
-	if(family == HUMANOID && civilian && getMSTime() > m_guardTimer && !IS_INSTANCE(m_Unit->GetMapId()))
+	uint8 civilian = ( static_cast< Creature* >( m_Unit )->GetCreatureName()) ? ( static_cast< Creature* >( m_Unit )->GetCreatureName()->Civilian ) : 0;
+	uint32 family = ( static_cast< Creature* >( m_Unit )->GetCreatureName()) ? ( static_cast< Creature* >( m_Unit )->GetCreatureName()->Type ) : 0;
+	if( family == HUMANOID && civilian && getMSTime() > m_guardTimer && !IS_INSTANCE( m_Unit->GetMapId() ) )
 	{
 		m_guardTimer = getMSTime() + 15000;
 		uint16 AreaId = m_Unit->GetMapMgr()->GetAreaID(m_Unit->GetPositionX(),m_Unit->GetPositionY());
@@ -1709,7 +1750,7 @@ float AIInterface::_CalcAggroRange(Unit* target)
 	int32 modDetectRange = target->getDetectRangeMod(m_Unit->GetGUID());
 	AggroRange += modDetectRange;
 	if(target->IsPlayer())
-		AggroRange += static_cast<Player*>(target)->DetectedRange;
+		AggroRange += static_cast< Player* >( target )->DetectedRange;
 	if(AggroRange < 3.0f)
 	{
 		AggroRange = 3.0f;
@@ -1740,7 +1781,7 @@ void AIInterface::_CalcDestinationAndMove(Unit *target, float dist)
 		float x = dist * cosf(angle);
 		float y = dist * sinf(angle);
 
-		if(target->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >( target )->m_isMoving )
+		if( target->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >( target )->m_isMoving )
 		{
 			// cater for moving player vector based on orientation
 			x -= cosf(target->GetOrientation());
@@ -3120,10 +3161,11 @@ bool AIInterface::modThreatByGUID(uint64 guid, int32 mod)
 
 bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 {
-	if(!obj)
+	if( obj == NULL )
 		return false;
-	TargetMap::iterator it = m_aiTargets.find(obj);
-	if(it != m_aiTargets.end())
+
+	TargetMap::iterator it = m_aiTargets.find( obj );
+	if( it != m_aiTargets.end() )
 	{
 		it->second += mod;
 		if((it->second + obj->GetThreatModifyer()) > m_currentHighestThreat)
@@ -3136,7 +3178,7 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 			}
 		}
 	}
-	else
+	else if( mod > 0 )
 	{
 		m_aiTargets.insert( make_pair( obj, mod ) );
 		if((mod + obj->GetThreatModifyer()) > m_currentHighestThreat)
@@ -3149,10 +3191,10 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
 		}
 	}
 
-	if(obj == m_nextTarget)
+	if( obj == m_nextTarget )
 	{
 		// check for a possible decrease in threat.
-		if(mod < 0)
+		if( mod < 0 )
 		{
 			m_nextTarget = GetMostHated();
 			//if there is no more new targets then we can walk back home ?
@@ -3514,6 +3556,18 @@ void AIInterface::WipeCurrentTarget()
 
 	if( m_nextTarget == UnitToFollow_backup )
 		UnitToFollow_backup = NULL;
+}
+
+void AIInterface::EventRegainMovement()
+{
+	// uh, if we have an old target...
+	if( m_oldTarget )
+	{
+		// we return to our old target
+		SetNextTarget( m_oldTarget );
+		// and forget our temporary target :)
+		m_oldTarget = NULL;
+	}
 }
 
 #ifdef HACKY_CRASH_FIXES

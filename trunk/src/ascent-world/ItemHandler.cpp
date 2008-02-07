@@ -549,7 +549,9 @@ void WorldSession::HandleDestroyItemOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 {
-	if(!_player->IsInWorld()) return;
+	if( !_player->IsInWorld() )
+		return;
+
 	CHECK_PACKET_SIZE(recv_data, 2);
 	WorldPacket data;
 
@@ -563,11 +565,11 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 
 	sLog.outDetail("ITEM: autoequip, Inventory slot: %i Source Slot: %i", SrcInvSlot, SrcSlot); 
 
-	Item *eitem=_player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
+	Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
 
-	if(!eitem) 
+	if( eitem == NULL ) 
 	{
-		_player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_NOT_FOUND);
+		_player->GetItemInterface()->BuildInventoryChangeError( eitem, NULL, INV_ERR_ITEM_NOT_FOUND );
 		return;
 	}
 
@@ -661,7 +663,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 		}
 	}
 
-	Item * oitem = NULL;
+	Item* oitem = NULL;
 
 	if( SrcInvSlot == INVENTORY_SLOT_NOT_SET )
 	{
@@ -669,25 +671,27 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 	}
 	else
 	{
-		eitem=_player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot,SrcSlot, false);
-		oitem=_player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, Slot, false);
-		if(oitem)
+		eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot( SrcInvSlot, SrcSlot, false );
+		oitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot( INVENTORY_SLOT_NOT_SET, Slot, false );
+		if( oitem != NULL )
 		{
-			result = _player->GetItemInterface()->SafeAddItem(oitem,SrcInvSlot,SrcSlot);
-			if(!result)
+			result = _player->GetItemInterface()->SafeAddItem( oitem, SrcInvSlot, SrcSlot );
+			if( !result )
 			{
-				printf("HandleAutoEquip: Error while adding item to SrcSlot");
+				printf( "HandleAutoEquip: Error while adding item to SrcSlot" );
 			}
 		}
-		result = _player->GetItemInterface()->SafeAddItem(eitem, INVENTORY_SLOT_NOT_SET, Slot);
-		if(!result)
+		if( eitem != NULL )
 		{
-			printf("HandleAutoEquip: Error while adding item to Slot");
+			result = _player->GetItemInterface()->SafeAddItem( eitem, INVENTORY_SLOT_NOT_SET, Slot );
+			if( !result )
+			{
+				printf("HandleAutoEquip: Error while adding item to Slot");
+			}
 		}
-		
 	}
 
-	if(eitem->GetProto()->Bonding==ITEM_BIND_ON_EQUIP)
+	if( eitem != NULL && eitem->GetProto()->Bonding == ITEM_BIND_ON_EQUIP )
 		eitem->SoulBind();	   
 }
 
@@ -1386,6 +1390,12 @@ void WorldSession::SendInventoryList(Creature* unit)
 		{
 			if((curItem = ItemPrototypeStorage.LookupEntry(itr->itemid)))
 			{
+				if(curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
+					continue;
+
+				if(curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
+					continue;
+
 				int32 av_am = (itr->max_amount>0)?itr->available_amount:-1;
 				data << (counter + 1);
 				data << curItem->ItemId;
@@ -1542,10 +1552,13 @@ void WorldSession::HandleReadItemOpcode(WorldPacket &recvPacket)
 
 void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 {
-	if(!_player->IsInWorld()) return;
-	CHECK_PACKET_SIZE(recvPacket, 12);
-	if(!GetPlayer())
+	if( _player == NULL )
 		return;
+
+	if( !_player->IsInWorld() )
+		return;
+
+	CHECK_PACKET_SIZE(recvPacket, 12);
 
 	uint64 npcguid;
 	uint64 itemguid;
@@ -1560,10 +1573,10 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 				// maxdurability - currentdurability
 				// it its 0 no durabiliti needs to be set
 				uint32 dDurability = _player->GetItemInterface()->GetInventoryItem(i)->GetDurabilityMax() - _player->GetItemInterface()->GetInventoryItem(i)->GetDurability();
-				if (dDurability)
+				if( dDurability > 0 )
 				{
 					// the amount of durability that is needed to be added is the amount of money to be payed
-					if (dDurability <= _player->GetUInt32Value(PLAYER_FIELD_COINAGE))
+					if( dDurability <= _player->GetUInt32Value( PLAYER_FIELD_COINAGE ) )
 					{
 						int32 cDurability = _player->GetItemInterface()->GetInventoryItem(i)->GetDurability();
 					   _player->ModUInt32Value( PLAYER_FIELD_COINAGE , -(int32)dDurability );
@@ -1994,6 +2007,4 @@ void WorldSession::HandleWrapItemOpcode( WorldPacket& recv_data )
 	dst->m_isDirty = true;
 	dst->SaveToDB( destitem_bagslot, destitem_slot, false, NULL );
 }
-
-
 

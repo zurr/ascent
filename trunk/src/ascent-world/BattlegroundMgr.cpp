@@ -1079,11 +1079,11 @@ void CBattleground::RemovePlayer(Player * plr, bool logout)
 		plr->GetSession()->SendPacket(&data);
 	}
 
-	if(!m_ended && m_players[0].size() == 0 && m_players[1].size() == 0)
+	if( !m_ended && m_players[0].size() == 0 && m_players[1].size() == 0 )
 	{
 		/* create an inactive event */
-		sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);						// 10mins
-		sEventMgr.AddEvent(this, &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 600000, 1,0);
+		sEventMgr.RemoveEvents( this, EVENT_BATTLEGROUND_CLOSE );						
+		sEventMgr.AddEvent( this, &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, 0 ); // 2 mins
 	}
 
 	plr->m_bgTeam=plr->GetTeam();
@@ -1228,7 +1228,7 @@ Creature * CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, u
 	pCreature->SetUInt32Value(UNIT_FIELD_POWER3, 200);
 	pCreature->SetUInt32Value(UNIT_FIELD_POWER5, 2000000);
 
-	pCreature->SetUInt32Value(UNIT_FIELD_MAXHEALTH, 10000);
+	pCreature->SetUInt32Value(UNIT_FIELD_MAXHEALTH, 100000);
 	pCreature->SetUInt32Value(UNIT_FIELD_MAXPOWER1, 4868);
 	pCreature->SetUInt32Value(UNIT_FIELD_MAXPOWER3, 200);
 	pCreature->SetUInt32Value(UNIT_FIELD_MAXPOWER5, 2000000);
