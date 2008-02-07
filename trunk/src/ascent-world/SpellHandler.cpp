@@ -179,9 +179,15 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 	// check for spell id
 	SpellEntry *spellInfo = dbcSpell.LookupEntryForced(spellId );
 
-	if(!spellInfo || !sHookInterface.OnCastSpell(_player, spellInfo))
+	if( spellInfo == NULL )
 	{
-		sLog.outError("WORLD: unknown spell id %i\n", spellId);
+		sLog.outError( "WORLD: unknown spell id %i\n", spellId );
+		return;
+	}
+
+	if( !sHookInterface.OnCastSpell( _player, spellInfo ) )
+	{
+		sLog.outError( "SERVER_HOOK_EVENT_ON_CAST_SPELL: callback did not return true" );
 		return;
 	}
 
