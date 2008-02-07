@@ -2060,7 +2060,7 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
 
 void Spell::SpellEffectEnergize( uint32 i ) // Energize
 {
-	if( unitTarget == NULL || unitTarget->isAlive() )
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	uint32 POWER_TYPE = UNIT_FIELD_POWER1 + m_spellInfo->EffectMiscValue[i];
