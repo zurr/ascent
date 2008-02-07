@@ -38,7 +38,7 @@
 #endif
 
 #define DISTANCE_TO_SMALL_TO_WALK 1.0f
-#define CREATURE_MELEE_RANGE_TOLERANCE 5.0f
+#define CREATURE_MELEE_RANGE_TOLERANCE 1.0f
 
 class Object;
 class Creature;
