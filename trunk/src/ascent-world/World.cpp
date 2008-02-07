@@ -585,6 +585,7 @@ bool World::SetInitialWorldSettings()
 		//!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
         namehash = crc32((const unsigned char*)nametext, (unsigned int)strlen(nametext));
 		sp->NameHash   = namehash; //need these set before we start processing spells
+		sp->can_be_dispelled = true;
 
 		float radius=std::max(::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[0])),::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[1])));
 		radius=std::max(::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[2])),radius);
@@ -1602,41 +1603,47 @@ bool World::SetInitialWorldSettings()
 	}
 
     //Priest - Holy Nova
-    sp = dbcSpell.LookupEntry( 15237 );
+    sp = dbcSpell.LookupEntryForced( 15237 );
     if( sp != NULL )
     {
         sp->Effect[1] = 64;
         sp->EffectTriggerSpell[1] = 23455;
     }
-    sp = dbcSpell.LookupEntry( 15430 );
+    sp = dbcSpell.LookupEntryForced( 15430 );
     if( sp != NULL )
     {
         sp->Effect[1] = 64;
         sp->EffectTriggerSpell[1] = 23458;
     }
-    sp = dbcSpell.LookupEntry( 15431 );
+    sp = dbcSpell.LookupEntryForced( 15431 );
     if( sp != NULL )
     {
         sp->Effect[1] = 64;
         sp->EffectTriggerSpell[1] = 23459;
     }
-    sp = dbcSpell.LookupEntry( 27799 );
+    sp = dbcSpell.LookupEntryForced( 27799 );
     if( sp != NULL )
     {
         sp->Effect[1] = 64;
         sp->EffectTriggerSpell[1] = 27803;
     }
-    sp = dbcSpell.LookupEntry( 27800 );
+    sp = dbcSpell.LookupEntryForced( 27800 );
     if( sp != NULL )
     {
         sp->Effect[1] = 64;
         sp->EffectTriggerSpell[1] = 27804;
     }
-    sp = dbcSpell.LookupEntry( 27801 );
+    sp = dbcSpell.LookupEntryForced( 27801 );
     if( sp != NULL )
     {
         sp->Effect[1] = 64;
         sp->EffectTriggerSpell[1] = 27805;
+    }
+    sp = dbcSpell.LookupEntryForced( 25331 );
+    if( sp != NULL )
+    {
+        sp->Effect[1] = 64;
+        sp->EffectTriggerSpell[1] = 25329;
     }
 
 	//Bloodlust targets sorounding creatures instead of us
@@ -6772,6 +6779,25 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 		sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
 
+	// Res sicknesss
+	sp = dbcSpell.LookupEntryForced( 15007 );
+	if( sp != NULL )
+		sp->can_be_dispelled = false;
+
+	// Forbearance
+	sp = dbcSpell.LookupEntryForced( 25771 );
+	if( sp != NULL )
+		sp->can_be_dispelled = false;
+
+	// Recently bandaged
+	sp = dbcSpell.LookupEntryForced( 11196 );
+	if( sp != NULL )
+		sp->can_be_dispelled = false;
+
+	// Weakened soul
+	sp = dbcSpell.LookupEntryForced( 6788 );
+	if( sp != NULL )
+		sp->can_be_dispelled = false;
 // ------------------------------------------------------------------------------------------------
 
 	Log.Notice("World","Starting Transport System...");

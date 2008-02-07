@@ -8931,21 +8931,17 @@ void Player::EventStunOrImmobilize(Unit *proc_target)
 		if(trigger_on_stun_chance<100 && !Rand(trigger_on_stun_chance))
 			return;
 		SpellEntry *spellInfo = dbcSpell.LookupEntry(trigger_on_stun);
-		if(!spellInfo)
-			return;
 		Spell *spell = new Spell(this, spellInfo ,true, NULL);
+
+		if( spell == NULL)
+			return;
+
 		SpellCastTargets targets;
-/*		if(spellInfo->procFlags & PROC_TAGRGET_ATTACKER)
-		{
-			if(!attacker)
-				return;
-			targets.m_unitTarget = attacker->GetGUID();
-		}
-		else targets.m_unitTarget = GetGUID();
-		*/
-		if(proc_target)
+		if( spellInfo->procFlags & PROC_TARGET_SELF || !proc_target)
+			targets.m_unitTarget = GetGUID();
+		else if( proc_target )
 			targets.m_unitTarget = proc_target->GetGUID();
-		else targets.m_unitTarget = GetGUID();
+
 		spell->prepare(&targets);
 	}
 }
