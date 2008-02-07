@@ -9010,10 +9010,6 @@ void Player::EventStunOrImmobilize( Unit* proc_target, bool is_victim )
 			return;
 
 		Spell* spell = new Spell( this, spellInfo, true, NULL );
-
-		if( spell == NULL)
-			return;
-
 		SpellCastTargets targets;
 
 		if( spellInfo->procFlags & PROC_TARGET_SELF )

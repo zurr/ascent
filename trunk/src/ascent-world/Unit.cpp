@@ -4990,7 +4990,16 @@ void Unit::RemoveFromWorld(bool free_guid)
 	for(uint32 x = 0; x < MAX_AURAS+MAX_PASSIVE_AURAS; ++x)
 	{
 		if(m_auras[x] != 0)
+		{
+			/* f*cking shit crash fixes */
+			if(m_auras[x]->m_deleted)
+			{
+				m_auras[x] = NULL;
+				continue;
+			}
+
 			m_auras[x]->RelocateEvents();
+		}
 	}
 	m_aiInterface->WipeReferences();
 }

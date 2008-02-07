@@ -691,6 +691,7 @@ protected:
 
 	void SendInterrupted(uint8 result, Object * m_caster);
 	void SendChannelUpdate(uint32 time, Object * m_caster);
+public:
 	bool m_deleted;
 };
 
