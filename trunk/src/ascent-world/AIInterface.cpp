@@ -651,7 +651,7 @@ void AIInterface::_UpdateTargets()
 {
 	if( m_Unit->IsPlayer() || ( m_AIType != AITYPE_PET && disable_targeting ) )
 		return;
-	if( static_cast< Creature* >( mUnit )->GetCreatureName() && static_cast< Creature* >( mUnit )->GetCreatureName()->Type == CRITTER )
+	if( static_cast< Creature* >( m_Unit )->GetCreatureName() && static_cast< Creature* >( m_Unit )->GetCreatureName()->Type == CRITTER )
 		return;
 
 	AssistTargetSet::iterator i, i2;
