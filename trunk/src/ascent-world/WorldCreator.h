@@ -172,9 +172,6 @@ public:
 	void BuildSavedInstancesForPlayer(Player * plr);
 	MapMgr * CreateBattlegroundInstance(uint32 mapid);
 
-	// this only frees the instance pointer, not the mapmgr itself
-	void DeleteBattlegroundInstance(uint32 mapid, uint32 instanceid);
-
 private:
 	void _LoadInstances();
 	void _CreateMap(uint32 mapid);

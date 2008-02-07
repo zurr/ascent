@@ -2434,7 +2434,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player * pPlayer, Unit * pVict
 	if(itr == m_reputation_instance.end())
 		return false;
 
-	is_boss = 0;//static_cast< Creature* >( pVictim )->GetCreatureName() ? static_cast< Creature* >( pVictim )->GetCreatureName()->Rank : 0;
+	is_boss = 0;//static_cast< Creature* >( pVictim )->GetCreatureName() ? ((Creature*)pVictim)->GetCreatureName()->Rank : 0;
 	if( !is_boss && static_cast< Creature* >( pVictim )->proto && static_cast< Creature* >( pVictim )->proto->boss )
 		is_boss = 1;
 

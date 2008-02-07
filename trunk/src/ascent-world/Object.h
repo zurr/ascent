@@ -101,10 +101,10 @@ class MapMgr;
 class SERVER_DECL Object : public EventableObject
 {
 public:
-	typedef std::set< Object* > InRangeSet;
-	typedef std::map< string, void* > ExtensionSet;
+	typedef std::set<Object*> InRangeSet;
+	typedef std::map<string, void*> ExtensionSet;
 
-	virtual ~Object( );
+	virtual ~Object ( );
 
 	virtual void Update ( uint32 time ) { }
   //! True if object exists in world

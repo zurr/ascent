@@ -352,7 +352,6 @@ struct SpellEntry
 	bool is_ranged_spell;					//!!! CUSTOM,
     uint32 EffectSpellGroupRelation_high[3];     //!!! this is not contained in client dbc but server must have it
 	uint32 ThreatForSpell;
-	bool can_be_dispelled;					//!!! CUSTOM
 };
 
 struct ItemExtendedCostEntry

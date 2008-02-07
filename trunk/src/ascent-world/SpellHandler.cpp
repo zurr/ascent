@@ -176,34 +176,28 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 	uint8 cn;
 
 	recvPacket >> spellId >> cn;
-
 	// check for spell id
-	SpellEntry* spellInfo = dbcSpell.LookupEntryForced( spellId );
+	SpellEntry *spellInfo = dbcSpell.LookupEntryForced(spellId );
 
-	if( spellInfo == NULL )
+	if(!spellInfo || !sHookInterface.OnCastSpell(_player, spellInfo))
 	{
-		sLog.outError( "WORLD: unknown spell id %i\n", spellId );
+		sLog.outError("WORLD: unknown spell id %i\n", spellId);
 		return;
 	}
 
-	if( !sHookInterface.OnCastSpell( _player, spellInfo ) )
-	{
-		sLog.outError( "SERVER_HOOK_EVENT_ON_CAST_SPELL: callback did not return true" );
-		return;
-	}
-
-	sLog.outDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name, recvPacket.size() );
+	sLog.outDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i",
+		spellId, spellInfo->Name, recvPacket.size());
 	
 	// Cheat Detection only if player and not from an item
 	// this could fuck up things but meh it's needed ALOT of the newbs are using WPE now
 	// WPE allows them to mod the outgoing packet and basicly choose what ever spell they want :(
 
-	if( !GetPlayer()->HasSpell(spellId) || spellInfo->Attributes & 64 )
+	if( !GetPlayer()->HasSpell(spellId) )
 	{
-		_player->SendCastResult( spellId, SPELL_FAILED_NOT_KNOWN, 0 );
+		sLog.outDetail("WORLD: Spell isn't casted because player \"%s\" is cheating", GetPlayer()->GetName());
 		return;
 	}
-	
+
 	if (GetPlayer()->GetOnMeleeSpell() != spellId)
 	{
 		//autoshot 75

@@ -47,7 +47,6 @@ struct LevelInfo;
 //  Holds the display id and item type id for objects in
 //  a character's inventory
 //====================================================================
-
 enum Classes
 {
 	WARRIOR = 1,
@@ -60,7 +59,6 @@ enum Classes
 	WARLOCK = 9,
 	DRUID = 11,
 };
-
 enum Races
 {
 	RACE_HUMAN = 1,
@@ -74,7 +72,6 @@ enum Races
 	RACE_BLOODELF = 10,
 	RACE_DRAENEI = 11,
 };
-
 enum PlayerStatus
 {
 	NONE			 = 0,
@@ -129,7 +126,6 @@ enum PlayerMovementType
     MOVE_WATER_WALK = 3,
     MOVE_LAND_WALK  = 4,
 };
-
 enum PlayerSpeedType
 {
     RUN	            = 1,
@@ -139,7 +135,6 @@ enum PlayerSpeedType
     WALK	        = 5,
     FLY	            = 6,
 };
-
 enum Standing
 {
     STANDING_HATED,
@@ -151,7 +146,6 @@ enum Standing
     STANDING_REVERED,
     STANDING_EXALTED
 };
-
 enum PlayerFlags
 {
     PLAYER_FLAG_PARTY_LEADER		= 0x01,
@@ -192,7 +186,6 @@ struct spells
 	uint16  spellId;
 	uint16  slotId;
 };
-
 #pragma pack(push,1)
 struct ActionButton
 {
@@ -208,14 +201,12 @@ struct CreateInfo_ItemStruct
 	uint8   slot;
 	uint32  amount;
 };
-
 struct CreateInfo_SkillStruct
 {
 	uint32  skillid;
 	uint32  currentval;
 	uint32  maxval;
 };
-
 struct CreateInfo_ActionBarStruct
 {
 	uint32  button;
@@ -223,7 +214,6 @@ struct CreateInfo_ActionBarStruct
 	uint32  type;
 	uint32  misc;
 };
-
 struct PlayerCreateInfo{
 	uint8   index;
 	uint8   race;
@@ -256,7 +246,6 @@ struct PlayerCreateInfo{
 	//uint8 item_slot[10];
 	//uint16 spell[10];
 };
-
 struct DamageSplit
 {
 	Player* caster;
@@ -739,8 +728,7 @@ enum SPELL_INDEX
 	SPELL_TYPE_INDEX_EARTH_SHIELD	= 7,
 	SPELL_TYPE_INDEX_CYCLONE		= 8,
 	SPELL_TYPE_INDEX_BANISH			= 9,
-	SPELL_TYPE_INDEX_JUDGEMENT		= 10,
-	NUM_SPELL_TYPE_INDEX			= 11,
+	NUM_SPELL_TYPE_INDEX			= 10,
 };
 
 #define PLAYER_RATING_MODIFIER_RANGED_SKILL						PLAYER_FIELD_COMBAT_RATING_1
@@ -918,7 +906,7 @@ public:
 	}
 
 	int32                GetOpenQuestSlot();
-	QuestLogEntry* GetQuestLogForEntry( uint32 quest );
+	QuestLogEntry*       GetQuestLogForEntry(uint32 quest);
 	ASCENT_INLINE QuestLogEntry*GetQuestLogInSlot(uint32 slot)  { return m_questlog[slot]; }
     ASCENT_INLINE uint32        GetQuestSharer()                { return m_questSharer; }
     
@@ -952,20 +940,13 @@ public:
     /************************************************************************/
     /* Stun Immobilize                                                      */
     /************************************************************************/
-    void SetTriggerStunOrImmobilize( uint32 newtrigger, uint32 new_chance, bool is_victim = false )
+    void SetTriggerStunOrImmobilize(uint32 newtrigger,uint32 new_chance)
     {
-		if( is_victim == false )
-		{
-			trigger_on_stun = newtrigger;
-			trigger_on_stun_chance = new_chance;
-		}
-		else
-		{
-			trigger_on_stun_victim = newtrigger;
-			trigger_on_stun_chance_victim = new_chance;
-		}
+        trigger_on_stun = newtrigger;
+        trigger_on_stun_chance = new_chance;
     }
-    void EventStunOrImmobilize( Unit *proc_target, bool is_victim = false );
+    void EventStunOrImmobilize(Unit *proc_target);
+
     
     void EventPortToGM(Player *p);
 	ASCENT_INLINE uint32 GetTeam() { return m_team; }
@@ -1768,9 +1749,8 @@ public:
 	{
 		ResurrectPlayer();
 		SetMovement(MOVE_UNROOT, 5);
-		SetPlayerSpeed( RUN, (float)7 );
-		SetPlayerSpeed( SWIM, (float)4.9 );
-		blinked = true;
+		SetPlayerSpeed(RUN, (float)7);
+		SetPlayerSpeed(SWIM, (float)4.9);
 		SetMovement(MOVE_LAND_WALK, 8);
 		SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH) );
 	}
@@ -2001,8 +1981,6 @@ protected:
 	uint32      _fields[PLAYER_END];
 	uint32	    trigger_on_stun;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so i'm forced to used a special variable
 	uint32	    trigger_on_stun_chance; //also using this for mage "Frostbite" talent
-	uint32	    trigger_on_stun_victim;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so i'm forced to used a special variable
-	uint32	    trigger_on_stun_chance_victim; //also using this for mage "Frostbite" talent
 	int			hearth_of_wild_pct;		//druid hearth of wild talent used on shapeshifting. We eighter know what is last talent level or memo on learn
 
 	uint32 m_team;
