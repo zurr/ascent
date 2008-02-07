@@ -5431,11 +5431,6 @@ void Unit::GetSpeedDecrease()
 		m_slowdown = min( m_slowdown, (int32)itr->second );
 
 	m_speedModifier += m_slowdown;
-
-	//save bandwidth :P
-	if( m_speedModifier != before )
-		return true;
-	return false;
 }
 
 void Unit::EventCastSpell(Unit * Target, SpellEntry * Sp)
