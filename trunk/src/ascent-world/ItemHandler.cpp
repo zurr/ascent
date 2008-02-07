@@ -549,7 +549,9 @@ void WorldSession::HandleDestroyItemOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 {
-	if(!_player->IsInWorld()) return;
+	if( !_player->IsInWorld() )
+		return;
+
 	CHECK_PACKET_SIZE(recv_data, 2);
 	WorldPacket data;
 
@@ -563,11 +565,11 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 
 	sLog.outDetail("ITEM: autoequip, Inventory slot: %i Source Slot: %i", SrcInvSlot, SrcSlot); 
 
-	Item *eitem=_player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
+	Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
 
-	if(!eitem) 
+	if( eitem == NULL ) 
 	{
-		_player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_NOT_FOUND);
+		_player->GetItemInterface()->BuildInventoryChangeError( eitem, NULL, INV_ERR_ITEM_NOT_FOUND );
 		return;
 	}
 
@@ -661,7 +663,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 		}
 	}
 
-	Item * oitem = NULL;
+	Item* oitem = NULL;
 
 	if( SrcInvSlot == INVENTORY_SLOT_NOT_SET )
 	{
@@ -669,25 +671,27 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 	}
 	else
 	{
-		eitem=_player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot,SrcSlot, false);
-		oitem=_player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, Slot, false);
-		if(oitem)
+		eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot( SrcInvSlot, SrcSlot, false );
+		oitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot( INVENTORY_SLOT_NOT_SET, Slot, false );
+		if( oitem != NULL )
 		{
-			result = _player->GetItemInterface()->SafeAddItem(oitem,SrcInvSlot,SrcSlot);
-			if(!result)
+			result = _player->GetItemInterface()->SafeAddItem( oitem, SrcInvSlot, SrcSlot );
+			if( !result )
 			{
-				printf("HandleAutoEquip: Error while adding item to SrcSlot");
+				printf( "HandleAutoEquip: Error while adding item to SrcSlot" );
 			}
 		}
-		result = _player->GetItemInterface()->SafeAddItem(eitem, INVENTORY_SLOT_NOT_SET, Slot);
-		if(!result)
+		if( eitem != NULL )
 		{
-			printf("HandleAutoEquip: Error while adding item to Slot");
+			result = _player->GetItemInterface()->SafeAddItem( eitem, INVENTORY_SLOT_NOT_SET, Slot );
+			if( !result )
+			{
+				printf("HandleAutoEquip: Error while adding item to Slot");
+			}
 		}
-		
 	}
 
-	if(eitem->GetProto()->Bonding==ITEM_BIND_ON_EQUIP)
+	if( eitem != NULL && eitem->GetProto()->Bonding == ITEM_BIND_ON_EQUIP )
 		eitem->SoulBind();	   
 }
 

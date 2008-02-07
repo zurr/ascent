@@ -362,11 +362,12 @@ Item *ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int8 
 	ASSERT(ContainerSlot < MAX_INVENTORY_SLOT);
 	Item *pItem = NULL;
 
-	if(ContainerSlot == INVENTORY_SLOT_NOT_SET)
+	if( ContainerSlot == INVENTORY_SLOT_NOT_SET )
 	{
-		pItem = GetInventoryItem(ContainerSlot,slot);
+		pItem = GetInventoryItem( ContainerSlot, slot );
 
-		if (pItem == NULL) { return NULL; }
+		if( pItem == NULL )
+			return NULL;
 
 		if(pItem->GetProto()->ContainerSlots > 0 && pItem->GetTypeId() == TYPEID_CONTAINER && ((Container*)pItem)->HasItems())
 		{
