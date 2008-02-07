@@ -173,7 +173,7 @@ void Spell::SpellEffectNULL(uint32 i)
 
 void Spell::SpellEffectInstantKill(uint32 i)
 {
-	if(!unitTarget || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	//Sacrifice: if spell caster has "void walker" pet, pet dies and spell caster gets a 
@@ -281,7 +281,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
 void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 {
-	if(!unitTarget || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	if(unitTarget->SchoolImmunityList[m_spellInfo->School])
@@ -1141,7 +1141,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 		}break;*/
 	case 25228:	//warlock - soul link effect
 		{
-			if(!u_caster || !u_caster->isAlive() || !unitTarget || !unitTarget->isAlive())
+			if( u_caster == NULL || !u_caster->isAlive() || unitTarget == NULL || !unitTarget->isAlive())
 				return;
 			uint32 pet_dmg = this->forced_basepoints[0]*20/100;
 			unitTarget->ModUInt32Value(UNIT_FIELD_HEALTH,pet_dmg);
@@ -1150,7 +1150,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 
 	case 35729:	// rogue - cloak of shadows
 		{
-			if( !unitTarget || !unitTarget->isAlive())
+			if( unitTarget == NULL || !unitTarget->isAlive() )
 				return;
 
 			Aura * pAura;
@@ -1297,7 +1297,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 
 void Spell::SpellEffectPowerDrain(uint32 i)  // Power Drain
 {
-	if(!unitTarget || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	uint32 powerField = UNIT_FIELD_POWER1+m_spellInfo->EffectMiscValue[i];
@@ -1318,7 +1318,7 @@ void Spell::SpellEffectPowerDrain(uint32 i)  // Power Drain
 
 void Spell::SpellEffectHealthLeech(uint32 i) // Health Leech
 {
-	if(!unitTarget || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	uint32 curHealth = unitTarget->GetUInt32Value(UNIT_FIELD_HEALTH);
@@ -1392,7 +1392,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 			}break;
 		case 34299: //Druid: Improved Leader of the PAck
 			{
-				if (!unitTarget->IsPlayer() || !unitTarget->isAlive())
+				if( !unitTarget->IsPlayer() || !unitTarget->isAlive() )
 					break;
 
 				Player* mPlayer = static_cast< Player* >( unitTarget );
@@ -1408,7 +1408,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 			}break;
 		case 22845: // Druid: Frenzied Regeneration
 			{
-				if (!unitTarget->IsPlayer() || !unitTarget->isAlive())
+				if( !unitTarget->IsPlayer() || !unitTarget->isAlive() )
 					break;
 				Player* mPlayer = static_cast< Player* >( unitTarget );
 				if (!mPlayer->IsInFeralForm() || 
@@ -1864,24 +1864,19 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
 	{		
 	case TARGET_FLAG_SELF:
 		{
-			dynObj->Create(u_caster, this,	m_caster->GetPositionX(), 
-				m_caster->GetPositionY(), m_caster->GetPositionZ(), dur,r);		 
+			dynObj->Create(u_caster, this,	m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), dur, r );		 
 		}break;
 	case TARGET_FLAG_UNIT:
 		{
-			if(!unitTarget||!unitTarget->isAlive())
+			if( unitTarget == NULL || !unitTarget->isAlive() )
 				break;
-			dynObj->Create( u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(),
-				dur, r);
+			dynObj->Create( u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(), dur, r );
 		}break;
 	case TARGET_FLAG_OBJECT:
 		{
-			if(!unitTarget)
+			if( unitTarget == NULL || !unitTarget->isAlive() )
 				break;
-			if(!unitTarget->isAlive())
-				break;
-			dynObj->Create(u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(),
-				dur, r);
+			dynObj->Create(u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(), dur, r );
 		}break;
 	case TARGET_FLAG_SOURCE_LOCATION:
 		{
@@ -2488,9 +2483,9 @@ void Spell::SpellEffectSendEvent(uint32 i) //Send Event
 
 void Spell::SpellEffectApplyAA(uint32 i) // Apply Area Aura
 {
-	if(!unitTarget || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
-	if(u_caster!=unitTarget)
+	if( u_caster != unitTarget )
 		return;
 
 	Aura*pAura;
@@ -3231,9 +3226,7 @@ void Spell::SpellEffectWeapondamage( uint32 i ) // Weapon damage +
 
 void Spell::SpellEffectPowerBurn(uint32 i) // power burn
 {
-	if(!unitTarget)
-		return;
-	if(!unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 	if (unitTarget->GetPowerType() != POWER_TYPE_MANA)
 		return;
@@ -3246,7 +3239,7 @@ void Spell::SpellEffectPowerBurn(uint32 i) // power burn
 
 void Spell::SpellEffectThreat(uint32 i) // Threat
 {
-	if(!unitTarget || !unitTarget->isAlive() )
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster,m_spellInfo->EffectBasePoints[i]);
@@ -3269,9 +3262,7 @@ void Spell::SpellEffectTriggerSpell(uint32 i) // Trigger Spell
 
 void Spell::SpellEffectHealthFunnel(uint32 i) // Health Funnel
 {
-	if(!unitTarget)
-		return;		
-	if(!unitTarget->isAlive() || !unitTarget->IsPet())
+	if( unitTarget == NULL || !unitTarget->isAlive() || !unitTarget->IsPet() )
 		return;
 
 	//does not exist
@@ -3279,9 +3270,7 @@ void Spell::SpellEffectHealthFunnel(uint32 i) // Health Funnel
 
 void Spell::SpellEffectPowerFunnel(uint32 i) // Power Funnel
 {
-	if(!unitTarget)
-		return;		
-	if(!unitTarget->isAlive() || !unitTarget->IsPet())
+	if( unitTarget == NULL || !unitTarget->isAlive() || !unitTarget->IsPet() )
 		return;
 
 	//does not exist
@@ -3308,7 +3297,7 @@ void Spell::SpellEffectHealMaxHealth(uint32 i)   // Heal Max Health
 
 void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
 {
-	if(!unitTarget || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 	// can't apply stuns/fear/polymorph/root etc on boss
 	if(unitTarget->GetTypeId()==TYPEID_UNIT)
@@ -3333,9 +3322,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
 void Spell::SpellEffectDistract(uint32 i) // Distract
 {
 	//spellId 1725 Distract:Throws a distraction attracting the all monsters for ten sec's
-	if(!unitTarget)
-		return;
-	if(!unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	if(m_targets.m_destX != 0.0f || m_targets.m_destY != 0.0f || m_targets.m_destZ != 0.0f)
@@ -4335,17 +4322,15 @@ void Spell::SpellEffectSkinning(uint32 i)
 
 void Spell::SpellEffectCharge(uint32 i)
 {
-	if(!unitTarget)
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
-	if(!p_caster)
+	if( p_caster == NULL )
 		return;
-	if(!unitTarget->isAlive())
-		return;
-    if (p_caster->IsStunned() || p_caster->m_rooted || p_caster->IsPacified())
+    if( p_caster->IsStunned() || p_caster->m_rooted || p_caster->IsPacified() )
         return;
 
 	float x, y, z;
-	float dx,dy;
+	float dx, dy;
 
 	//if(unitTarget->GetTypeId() == TYPEID_UNIT)
 	//	if(unitTarget->GetAIInterface())
@@ -4480,7 +4465,7 @@ void Spell::SpellEffectSummonCritter(uint32 i)
 
 void Spell::SpellEffectKnockBack(uint32 i)
 {
-	if(!unitTarget || !unitTarget->isAlive() || !m_caster)
+	if( unitTarget == NULL || !unitTarget->isAlive() || m_caster == NULL )
 		return;
 
 	//float x, y, z;
@@ -4639,9 +4624,7 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 
 void Spell::SpellEffectDispelMechanic(uint32 i)
 {
-	if(!unitTarget)
-		return;
-	if(!unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 	/*
 	for(uint32 x=MAX_POSITIVE_AURAS;x<MAX_AURAS;x++)
@@ -4804,9 +4787,7 @@ void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
 
 void Spell::SpellEffectAttackMe(uint32 i)
 {
-	if(!unitTarget)
-		return;
-	if(!unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() )
 		return;
 
 	unitTarget->GetAIInterface()->AttackReaction(u_caster,1,0);	
@@ -4974,7 +4955,7 @@ void Spell::SpellEffectDummyMelee( uint32 i ) // Normalized Weapon damage +
 
 void Spell::SpellEffectSpellSteal( uint32 i )
 {
-	if (!unitTarget || !u_caster || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive() || u_caster == NULL )
 		return;
 
 		Aura *aur;

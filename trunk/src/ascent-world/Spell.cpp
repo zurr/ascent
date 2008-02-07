@@ -3968,7 +3968,7 @@ void Spell::SendHealManaSpellOnPlayer(Object * caster, Object * target, uint32 d
 
 void Spell::Heal(int32 amount)
 {
-	if(!unitTarget || !unitTarget->isAlive())
+	if( unitTarget == NULL || !unitTarget->isAlive())
 		return;
 	
 	if( p_caster != NULL )
