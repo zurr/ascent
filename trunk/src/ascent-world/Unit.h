@@ -1026,7 +1026,7 @@ public:
 	int32 m_slowdown;
 	float m_maxspeed;
 	map< uint32, int32 > speedReductionMap;
-	bool GetSpeedDecrease();
+	void GetSpeedDecrease();
 	int32 m_mountedspeedModifier;
 	int32 m_flyspeedModifier;
 	void UpdateSpeed(bool delay = false);

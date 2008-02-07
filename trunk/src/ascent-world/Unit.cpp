@@ -4652,6 +4652,8 @@ void Unit::DropAurasOnDeath()
 
 void Unit::UpdateSpeed(bool delay /* = false */)
 {
+	GetSpeedDecrease();
+
 	if( GetUInt32Value( UNIT_FIELD_MOUNTDISPLAYID ) == 0 )
 	{
 		if( IsPlayer() )
@@ -4684,6 +4686,13 @@ void Unit::UpdateSpeed(bool delay /* = false */)
 	{
 		m_flySpeed = m_maxspeed;
 	}
+
+	if( m_runSpeed < 0.0f )
+		m_runSpeed = 0.0f;
+
+	if( m_flySpeed < 0.0f )
+		m_flySpeed = 0.0f;
+
 
 	if( IsPlayer() )
 	{
@@ -5412,21 +5421,19 @@ int32 Unit::GetRAP()
 	return	0;
 }
 
-bool Unit::GetSpeedDecrease()
+void Unit::GetSpeedDecrease()
 {
-	int32 before=m_speedModifier;
-	m_speedModifier -= m_slowdown;
-	m_slowdown = 0;
-	map< uint32, int32 >::iterator itr = speedReductionMap.begin();
-	for(; itr != speedReductionMap.end(); ++itr)
-		m_slowdown = (int32)min( m_slowdown, itr->second );
+	int32 before = m_speedModifier;
 
-	if(m_slowdown<-100)
-		m_slowdown = 100; //do not walk backwards !
+	m_slowdown = 0;
+
+	for( map< uint32, int32 >::iterator itr = speedReductionMap.begin(); itr != speedReductionMap.end(); ++itr )
+		m_slowdown = min( m_slowdown, (int32)itr->second );
 
 	m_speedModifier += m_slowdown;
+
 	//save bandwidth :P
-	if(m_speedModifier!=before)
+	if( m_speedModifier != before )
 		return true;
 	return false;
 }
