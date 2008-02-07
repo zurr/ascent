@@ -649,22 +649,22 @@ void AIInterface::_UpdateTimer(uint32 p_time)
 
 void AIInterface::_UpdateTargets()
 {
-	if( m_Unit->IsPlayer() || (m_AIType != AITYPE_PET && disable_targeting ))
+	if( m_Unit->IsPlayer() || ( m_AIType != AITYPE_PET && disable_targeting ) )
 		return;
-	if( ( ( Creature* )m_Unit )->GetCreatureName() && ( ( Creature* )m_Unit )->GetCreatureName()->Type == CRITTER )
+	if( ( static_cast< Creature* >( mUnit )->GetCreatureName() && ( static_cast< Creature* >( mUnit )->GetCreatureName()->Type == CRITTER )
 		return;
 
 	AssistTargetSet::iterator i, i2;
 	TargetMap::iterator itr, it2;
 
 	// Find new Assist Targets and remove old ones
-	if(m_AIState == STATE_FLEEING)
+	if( m_AIState == STATE_FLEEING )
 	{
-		FindFriends(100.0f/*10.0*/);
+		FindFriends( 100.0f/*10.0*/ );
 	}
-	else if(m_AIState != STATE_IDLE && m_AIState != STATE_SCRIPTIDLE)
+	else if( m_AIState != STATE_IDLE && m_AIState != STATE_SCRIPTIDLE )
 	{
-		FindFriends(16.0f/*4.0f*/);
+		FindFriends( 16.0f/*4.0f*/ );
 	}
 
 	if( m_updateAssist )

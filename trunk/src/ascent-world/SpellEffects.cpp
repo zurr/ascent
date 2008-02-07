@@ -4138,11 +4138,14 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 		break;
 	}
 
-	uint32 displayID;
-	if ( p_caster->GetTeam() == 0)
+	uint32 displayID = 0;
+
+	if( p_caster->GetTeam() == 0 )
 	{
 		if ( ci->Female_DisplayID != 0 )
+		{
 			displayID = ci->Female_DisplayID; //this is the nice solution provided by emsy
+		}
 		else //this is the case when you are using a blizzlike db
 		{
 			if( ci->Male_DisplayID == 4587 )
@@ -4155,10 +4158,14 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 				displayID = 19071;
 			else if( ci->Male_DisplayID == 4683 )
 				displayID = 19074;
+			else
+				displayID = ci->Male_DisplayID;
 		}
 	}
 	else
+	{
 		displayID = ci->Male_DisplayID;
+	}
 
 	// Set up the creature.
 	pTotem->SetUInt32Value(OBJECT_FIELD_ENTRY, entry);
@@ -4191,10 +4198,9 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 
 	// Set up AI, depending on our spells.
 	uint32 j;
-	for(j = 0; j < 3; ++j)
+	for( j = 0; j < 3; ++j )
 	{
-		if(TotemSpell->Effect[j] == SPELL_EFFECT_APPLY_AREA_AURA
-			|| TotemSpell->Effect[j] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+		if( TotemSpell->Effect[j] == SPELL_EFFECT_APPLY_AREA_AURA || TotemSpell->Effect[j] == SPELL_EFFECT_PERSISTENT_AREA_AURA )
 		{
 			break;
 		}
