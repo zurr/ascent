@@ -911,8 +911,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					combatReach[1] += CREATURE_MELEE_RANGE_TOLERANCE;
 				}
 
-				if( distance >= combatReach[0] && 
-					distance <= combatReach[1] + DISTANCE_TO_SMALL_TO_WALK ) // Target is in Range -> Attack
+				if( distance >= combatReach[0] && distance <= combatReach[1] + DISTANCE_TO_SMALL_TO_WALK ) // Target is in Range -> Attack
 				{
 					if(UnitToFollow != NULL)
 					{
