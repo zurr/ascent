@@ -2947,10 +2947,11 @@ uint8 Spell::CanCast(bool tolerate)
 		}
 	}
 
-	// TODO : BURLEX :> FIXME
-	// This should work but seems to fuck up lots of stuff
-	// Many spells return as failed because item not equipped
-	// Even though you have something equipped
+	// TO BURLEX :> :)
+	// This should work as it was intended to
+	// as it was when i found it, it had fucked up lots of stuff
+	// Many spells returned as failed because item not equipped
+	// even though you have something equipped
 	// i changed it to use in front status like all other ( behind ) things
 	// i see no where that flags3 is used to detect require behind so i
 	// can only assume it is untested. since it was getting in here for judgements etc
