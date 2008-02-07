@@ -48,6 +48,7 @@ int luaUnit_KnockBack(lua_State * L, Unit * ptr);
 int luaUnit_MarkQuestObjectiveAsComplete(lua_State * L, Unit * ptr);
 int luaUnit_LearnSpell(lua_State * L, Unit* ptr);
 int luaUnit_UnlearnSpell(lua_State * L, Unit * ptr);
+int luaUnit_GetPlayerClass(lua_State * L, Unit * ptr);
 int luaUnit_HasFinishedQuest(lua_State * L, Unit * ptr);
 int luaUnit_GetItemCount(lua_State * L, Unit * ptr);
 int luaUnit_IsInCombat(lua_State * L, Unit * ptr);

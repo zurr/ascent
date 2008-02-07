@@ -103,6 +103,7 @@ RegType<Unit> UnitMethods[] = {
 	{ "MarkQuestObjectiveAsComplete", &luaUnit_MarkQuestObjectiveAsComplete },
 	{ "LearnSpell", &luaUnit_LearnSpell },
 	{ "UnlearnSpell", &luaUnit_UnlearnSpell },
+	{ "GetPlayerClass", &luaUnit_GetPlayerClass },
 	{ "HasFinishedQuest", &luaUnit_HasFinishedQuest },
 	{ "GetItemCount", &luaUnit_GetItemCount },
 	{ "IsInCombat", &luaUnit_IsInCombat },
@@ -1966,6 +1967,13 @@ int luaUnit_HasFinishedQuest(lua_State * L, Unit * ptr)
 	else
 		lua_pushboolean(L,0);
 
+	return 1;
+}
+
+int luaUnit_GetPlayerClass(lua_State * L, Unit * ptr)
+{
+	CHECK_TYPEID_RET( TYPEID_PLAYER );
+	lua_pushinteger( L, static_cast< Player* >( ptr )->getClass() );
 	return 1;
 }
 
