@@ -1497,9 +1497,12 @@ void Spell::SpellEffectQuestComplete(uint32 i) // Quest Complete
 	if( questlog == NULL )
 		return;
 
-	Quest* q = questlog->GetQuest();
+	Quest* quest = questlog->GetQuest();
 
-	questlog->SetMobCount( objective, q->required_mobcount[objective] );
+	if( quest == NULL )
+		return;
+
+	questlog->SetMobCount( objective, quest->required_mobcount[objective] );
 	questlog->SendUpdateAddKill( objective );
 
 	if( questlog->CanBeFinished() )
