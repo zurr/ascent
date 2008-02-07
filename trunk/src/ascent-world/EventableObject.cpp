@@ -301,7 +301,16 @@ void EventableObjectHolder::Update(uint32 time_difference)
 		if((uint32)ev->currTime <= time_difference)
 		{
 			// execute the callback
-			ev->cb->execute();
+			if(ev->eventFlag & EVENT_FLAG_DELETES_OBJECT)
+			{
+				ev->deleted = true;
+				ev->cb->execute();
+				m_events.erase(it2);
+				ev->DecRef();
+				continue;
+			}
+			else
+				ev->cb->execute();
 
 			// check if the event is expired now.
             if(ev->repeats && --ev->repeats == 0)
