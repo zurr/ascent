@@ -335,6 +335,7 @@ Aura::Aura( SpellEntry* proto, int32 duration, Object* caster, Unit* target )
 	m_spellProto = proto;
 	m_duration = duration;
 	m_positive = 0; //we suppose spell will have positive impact on target
+	m_deleted = false;
 
 	m_casterGuid = caster->GetGUID();
 	m_target = target;
@@ -403,6 +404,10 @@ Aura::Aura( SpellEntry* proto, int32 duration, Object* caster, Unit* target )
 
 void Aura::Remove()
 {
+	if( m_deleted )
+		return;
+
+	m_deleted = true;
 	if( m_spellProto != NULL )
 		sLog.outDebug("Aura::Remove %u (%s) from %u.", m_spellProto->Id, m_spellProto->Name != NULL ? m_spellProto->Name : "", m_target != NULL ? m_target->GetGUIDLow() : 0 );
 	else
