@@ -109,7 +109,8 @@ RegType<Unit> UnitMethods[] = {
 	{ "IsInCombat", &luaUnit_IsInCombat },
 	{ "GetMainTank", &luaUnit_GetMainTank },
 	{ "GetAddTank", &luaUnit_GetAddTank },
-	{ "ClearThreatList", &luaUnit_ClearThreatList },
+	{ "ClearThreatList", &luaUnit_ClearHateList },
+	{ "WipeThreatList", &luaUnit_WipeHateList },
 	{ "WipeTargetList", &luaUnit_WipeTargetList },
 	{ "WipeCurrentTarget", &luaUnit_WipeCurrentTarget },
 	{ "GetTauntedBy", &luaUnit_GetTauntedBy },
@@ -1887,10 +1888,17 @@ int luaUnit_GetAddTank(lua_State * L, Unit * ptr)
 	return 1;
 }
 
-int luaUnit_ClearThreatList(lua_State * L, Unit * ptr)
+int luaUnit_ClearHateList(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID_RET_INT(TYPEID_UNIT);
 	ptr->ClearHateList();
+	return 1;
+}
+
+int luaUnit_WipeHateList(lua_State * L, Unit * ptr)
+{
+	CHECK_TYPEID_RET_INT(TYPEID_UNIT);
+	ptr->WipeHateList();
 	return 1;
 }
 

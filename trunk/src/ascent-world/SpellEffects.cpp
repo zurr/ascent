@@ -1484,7 +1484,26 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
 void Spell::SpellEffectQuestComplete(uint32 i) // Quest Complete
 {
-	//misc value is id of the quest to complete
+ 	//damage is id of the quest to complete
+
+	if( p_caster == NULL || m_spellInfo == NULL )
+		return;
+
+	uint32 objective = 0;
+	uint32 questnumber = m_spellInfo->EffectMiscValue[i];
+
+	QuestLogEntry* questlog = p_caster->GetQuestLogForEntry( questnumber );
+
+	if( questlog == NULL )
+		return;
+
+	Quest* q = questlog->GetQuest();
+
+	questlog->SetMobCount( objective, q->required_mobcount[objective] );
+	questlog->SendUpdateAddKill( objective );
+
+	if( questlog->CanBeFinished() )
+		questlog->SendQuestComplete();
 }
 
 //wand->
