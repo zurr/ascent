@@ -2951,6 +2951,11 @@ uint8 Spell::CanCast(bool tolerate)
 	// This should work but seems to fuck up lots of stuff
 	// Many spells return as failed because item not equipped
 	// Even though you have something equipped
+	// i changed it to use in front status like all other ( behind ) things
+	// i see no where that flags3 is used to detect require behind so i
+	// can only assume it is untested. since it was getting in here for judgements etc
+	// i bet its fucked in dbc.
+	// i added crashy fixes too for p_caster being null and no interface 
 
 	// currently these spells are the only ones that need this check.
 	if( m_spellInfo->in_front_status == 2 && p_caster != NULL )
@@ -2958,9 +2963,10 @@ uint8 Spell::CanCast(bool tolerate)
 		if( p_caster->GetItemInterface() != NULL )
 		{
 			Item* pItem = p_caster->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_MAINHAND );
+
+			// these need an item equipped
 			if( pItem == NULL )
 			{
-				// these need an item equipped
 				return SPELL_FAILED_EQUIPPED_ITEM;
 			}
 
