@@ -5423,6 +5423,7 @@ void Unit::GetSpeedDecrease()
 {
 	int32 before = m_speedModifier;
 
+	m_speedModifier -= m_slowdown;
 	m_slowdown = 0;
 
 	for( map< uint32, int32 >::iterator itr = speedReductionMap.begin(); itr != speedReductionMap.end(); ++itr )

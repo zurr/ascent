@@ -3253,16 +3253,12 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
 				static_cast< Player* >( m_target )->EventStunOrImmobilize( caster, true );
 		}
 		m_target->speedReductionMap.insert( make_pair( m_spellProto->Id, mod->m_amount ) );
-		//m_target->m_slowdown=this;
-		//m_target->m_speedModifier += mod->m_amount;
 	}
 	else
 	{
 		map< uint32, int32 >::iterator itr = m_target->speedReductionMap.find( m_spellProto->Id );
 		if( itr != m_target->speedReductionMap.end() )
 			m_target->speedReductionMap.erase( itr );
-		//m_target->m_speedModifier -= mod->m_amount;
-		//m_target->m_slowdown=NULL;
 	}
 
 	m_target->GetSpeedDecrease();
