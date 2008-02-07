@@ -111,6 +111,7 @@ RegType<Unit> UnitMethods[] = {
 	{ "GetAddTank", &luaUnit_GetAddTank },
 	{ "ClearThreatList", &luaUnit_ClearThreatList },
 	{ "WipeTargetList", &luaUnit_WipeTargetList },
+	{ "WipeCurrentTarget", &luaUnit_WipeCurrentTarget },
 	{ "GetTauntedBy", &luaUnit_GetTauntedBy },
 	{ "SetTauntedBy", &luaUnit_SetTauntedBy },
 	{ "SetSoulLinkedWith", &luaUnit_SetSoulLinkedWith },
@@ -1896,7 +1897,14 @@ int luaUnit_ClearThreatList(lua_State * L, Unit * ptr)
 int luaUnit_WipeTargetList(lua_State * L, Unit * ptr)
 {
 	CHECK_TYPEID_RET_INT(TYPEID_UNIT);
-	ptr->WipeTargetList();
+	ptr->GetAIInterface()->WipeTargetList();
+	return 1;
+}
+
+int luaUnit_WipeCurrentTarget(lua_State * L, Unit * ptr)
+{
+	CHECK_TYPEID_RET_INT(TYPEID_UNIT);
+	ptr->GetAIInterface()->WipeCurrentTarget();
 	return 1;
 }
 
