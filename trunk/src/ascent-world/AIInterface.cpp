@@ -911,7 +911,9 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 					combatReach[1] += CREATURE_MELEE_RANGE_TOLERANCE;
 				}
 
-				if( distance >= combatReach[0] && distance <= combatReach[1] + DISTANCE_TO_SMALL_TO_WALK ) // Target is in Range -> Attack
+				if(	
+					distance >= combatReach[0] && 
+					distance <= combatReach[1] + DISTANCE_TO_SMALL_TO_WALK) // Target is in Range -> Attack
 				{
 					if(UnitToFollow != NULL)
 					{
@@ -1781,7 +1783,7 @@ void AIInterface::_CalcDestinationAndMove(Unit *target, float dist)
 		float x = dist * cosf(angle);
 		float y = dist * sinf(angle);
 
-		if( target->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >( target )->m_isMoving )
+		if(target->GetTypeId() == TYPEID_PLAYER && static_cast< Player* >( target )->m_isMoving )
 		{
 			// cater for moving player vector based on orientation
 			x -= cosf(target->GetOrientation());
