@@ -929,7 +929,8 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
 	RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 	RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-	SetPlayerSpeed(RUN, m_runSpeed);
+	SetPlayerSpeed( RUN, m_runSpeed );
+	blinked = true;
 
 	sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
 
@@ -6211,7 +6212,8 @@ void Player::JumpToEndTaxiNode(TaxiPath * path)
 	RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 	RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-	SetPlayerSpeed(RUN, m_runSpeed);
+	SetPlayerSpeed( RUN, m_runSpeed );
+	blinked = true;
 
 	SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 }
@@ -6827,10 +6829,11 @@ void Player::ProcessPendingUpdates()
 	}
 
 	// resend speed if needed
-	if(resend_speed)
+	if( resend_speed )
 	{
-		SetPlayerSpeed(RUN, m_runSpeed);
-		SetPlayerSpeed(FLY, m_flySpeed);
+		SetPlayerSpeed( RUN, m_runSpeed );
+		SetPlayerSpeed( FLY, m_flySpeed );
+		blinked = true;
 	}
 }
 

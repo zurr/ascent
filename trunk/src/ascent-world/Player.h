@@ -1768,8 +1768,9 @@ public:
 	{
 		ResurrectPlayer();
 		SetMovement(MOVE_UNROOT, 5);
-		SetPlayerSpeed(RUN, (float)7);
-		SetPlayerSpeed(SWIM, (float)4.9);
+		SetPlayerSpeed( RUN, (float)7 );
+		SetPlayerSpeed( SWIM, (float)4.9 );
+		blinked = true;
 		SetMovement(MOVE_LAND_WALK, 8);
 		SetUInt32Value(UNIT_FIELD_HEALTH, GetUInt32Value(UNIT_FIELD_MAXHEALTH) );
 	}

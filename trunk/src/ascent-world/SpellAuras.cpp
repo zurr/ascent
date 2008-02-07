@@ -4866,7 +4866,7 @@ void Aura::SpellAuraMounted(bool apply)
 		//m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 	}
 
-	m_target->UpdateSpeed();
+	m_target->UpdateSpeed( true );
 
 }
 
@@ -7150,7 +7150,7 @@ void Aura::SpellAuraEnableFlight(bool apply)
 			static_cast< Player* >( m_target )->flying_aura = 0;
 		}
 	}
-	m_target->UpdateSpeed();
+	m_target->UpdateSpeed( true );
 }
 
 void Aura::SpellAuraEnableFlightWithUnmountedSpeed(bool apply)
@@ -7374,7 +7374,7 @@ void Aura::SpellAuraLimitSpeed(bool apply)
 		if( apply )
 			m_target->m_maxspeed = mod->m_amount > 0 ? (float)mod->m_amount : 0.0f; // seems that it goes negative, rooting us
 		else
-			m_target->m_maxspeed = 0;
+			m_target->m_maxspeed = 0.0f;
 
 		m_target->UpdateSpeed();
 	}
