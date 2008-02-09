@@ -467,6 +467,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	if( movement_info.flags & MOVEFLAG_REDIRECTED && !( movement_info.flags & MOVEFLAG_FALLING ) )
 	{
 		_player->blinked = true;
+		_player->m_redirectCount++;
 	}
 	else
 	{
@@ -475,6 +476,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 			_player->blinked = false;
 			_player->m_fallDisabledUntil = UNIXTIME + 5;
 			_player->ResetHeartbeatCoords();
+			_player->m_redirectCount = 0;
 		}
 		else
 		{
@@ -602,7 +604,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 			speed = _player->m_flySpeed;
 		}
 
-		if( !_player->bFeatherFall && !_player->blinked && !_player->m_uint32Values[UNIT_FIELD_CHARM] && !_player->m_TransporterGUID && !( movement_info.flags & ( MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | MOVEFLAG_FREE_FALLING ) ) )
+		if( !_player->bFeatherFall && !_player->blinked && !_player->m_uint32Values[UNIT_FIELD_CHARM] && !_player->m_TransporterGUID && !( movement_info.flags & MOVEFLAG_FALLING_MASK ) && m_redirectCount < 8 )
 		{
 			if( _player->_lastHeartbeatT == 0 )
 			{

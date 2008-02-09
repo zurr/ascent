@@ -304,16 +304,17 @@ Player::Player ( uint32 high, uint32 low ) : m_mailBox(low)
 	m_attacking			 = false;
 	
 	myCorpse				= 0;
-	bCorpseCreateable	   = true;
-	blinked				 = false;
-	m_speedhackChances	  = 2;
-	m_explorationTimer	  = getMSTime();
-	linkTarget			  = 0;
-	stack_cheat			 = false;
-	triggerpass_cheat = false;
-	m_pvpTimer			  = 0;
-	m_cooldownTimer		 = getMSTime() + 10000;
-	GlobalCooldown		  = 0;
+	bCorpseCreateable		= true;
+	blinked					= false;
+	m_speedhackChances		= 2;
+	m_redirectCount			= 0;
+	m_explorationTimer		= getMSTime();
+	linkTarget				= 0;
+	stack_cheat				= false;
+	triggerpass_cheat		= false;
+	m_pvpTimer				= 0;
+	m_cooldownTimer			= getMSTime() + 10000;
+	GlobalCooldown			= 0;
 	m_lastHonorResetTime	= 0;
 	memset(&mActions, 0, PLAYER_ACTION_BUTTON_SIZE);
 	tutorialsDirty = true;

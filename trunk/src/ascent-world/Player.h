@@ -1633,6 +1633,7 @@ public:
 	uint32 m_resurrectHealth, m_resurrectMana;
 	uint32 resurrector;
 	bool blinked;
+	uint32 m_redirectCount;
 	uint16 m_speedhackChances;
 	uint32 m_explorationTimer;
 	// DBC stuff
