@@ -582,7 +582,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 	if( _player->m_redirectCount > 16 )
 	{
-		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server.");
+		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
 		sCheatLog.writefromsession( this, "Packet hacker kicked" );
 		_player->m_KickDelay = 0;
 		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
@@ -591,7 +591,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 	if( movement_info.flags & MOVEFLAG_REDIRECT | MOVEFLAG_TAXI )
 	{
-		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server.");
+		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
 		sCheatLog.writefromsession( this, "Packet hacker kicked" );
 		_player->m_KickDelay = 0;
 		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
@@ -648,7 +648,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 							{
 							case 2:
 								{
-									sChatHandler.SystemMessage( this, "Speedhacker detected this is your first warning. Your account has been flagged for later processing by server administrators. You will be unrooted in 10 seconds.");
+									sChatHandler.SystemMessage( this, "Speedhacker detected this is your first warning. Your account has been flagged for later processing by server administrators. You will be unrooted in 10 seconds." );
 									sCheatLog.writefromsession( this, "Speedhacker first warning, deterministic data : D(%f) DD(%f) S(%f) SD(%f) L(%f)", distance_xy_plane, distance_delta, speed, speed_delta, ( (float)_player->GetSession()->GetLatency() / 100.0f ) );
 									sLog.outDebug( "Speedhacker D(%f) DD(%f) S(%f) SD(%f) L(%f)", distance_xy_plane, distance_delta, speed, speed_delta, ( (float)_player->GetSession()->GetLatency() / 100.0f ) );
 									_player->SetMovement( MOVE_ROOT, 1 );
@@ -659,7 +659,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 								}
 							case 1:
 								{
-									sChatHandler.SystemMessage( this, "Speedhacker detected this is your second warning. Your account has been flagged for later processing by server administrators. You will be unrooted in 45 seconds.");
+									sChatHandler.SystemMessage( this, "Speedhacker detected this is your second warning. Your account has been flagged for later processing by server administrators. You will be unrooted in 45 seconds." );
 									sCheatLog.writefromsession( this, "Speedhacker second warning, deterministic data : D(%f) DD(%f) S(%f) SD(%f) L(%f)", distance_xy_plane, distance_delta, speed, speed_delta, ( (float)_player->GetSession()->GetLatency() / 100.0f ) );
 									sLog.outDebug( "Speedhacker D(%f) DD(%f) S(%f) SD(%f) L(%f)", distance_xy_plane, distance_delta, speed, speed_delta, ( (float)_player->GetSession()->GetLatency() / 100.0f ) );
 									_player->SetMovement( MOVE_ROOT, 1 );
@@ -670,7 +670,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 								}
 							case 0:
 								{
-									sChatHandler.SystemMessage( this, "Speedhacker detected you were warned. Your account has been flagged for later processing by server administrators. You will now be removed from the server.");
+									sChatHandler.SystemMessage( this, "Speedhacker detected you were warned. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
 									sCheatLog.writefromsession( this, "Speedhacker kicked, deterministic data : D(%f) DD(%f) S(%f) SD(%f) L(%f)", distance_xy_plane, distance_delta, speed, speed_delta, ( (float)_player->GetSession()->GetLatency() / 100.0f ) );
 									sLog.outDebug( "Speedhacker D(%f) DD(%f) S(%f) SD(%f) L(%f)", distance_xy_plane, distance_delta, speed, speed_delta, ( (float)_player->GetSession()->GetLatency() / 100.0f ) );
 									_player->m_KickDelay = 0;
