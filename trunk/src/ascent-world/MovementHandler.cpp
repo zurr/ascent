@@ -583,7 +583,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	if( _player->m_redirectCount > 16 )
 	{
 		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
-		sCheatLog.writefromsession( this, "Packet hacker kicked" );
+		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECT Packet hacker kicked" );
 		_player->m_KickDelay = 0;
 		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
 		_player->SetMovement( MOVE_ROOT, 1 );
@@ -592,7 +592,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	if( movement_info.flags & MOVEFLAG_REDIRECT | MOVEFLAG_TAXI )
 	{
 		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
-		sCheatLog.writefromsession( this, "Packet hacker kicked" );
+		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECT | MOVEFLAG_TAXI Packet hacker kicked" );
 		_player->m_KickDelay = 0;
 		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
 		_player->SetMovement( MOVE_ROOT, 1 );
@@ -704,12 +704,12 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	/************************************************************************/
 	/* Breathing System                                                     */
 	/************************************************************************/
-	_HandleBreathing(movement_info, _player, this);
+	_HandleBreathing( movement_info, _player, this );
 
 	/************************************************************************/
 	/* Remove Spells                                                        */
 	/************************************************************************/
-	_player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOVEMENT);
+	_player->RemoveAurasByInterruptFlag( AURA_INTERRUPT_ON_MOVEMENT );
 
 	/************************************************************************/
 	/* Update our position in the server.                                   */
