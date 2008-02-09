@@ -464,7 +464,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	/* Falling damage checks                                                */
 	/************************************************************************/
 
-	if( movement_info.flags & MOVEFLAG_REDIRECTED && !( movement_info.flags & MOVEFLAG_FALLING ) )
+	if( movement_info.flags & MOVEFLAG_REDIRECTED && !( movement_info.flags & MOVEFLAG_FALLING_MASK ) )
 	{
 		_player->blinked = true;
 		_player->m_redirectCount++;
