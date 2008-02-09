@@ -401,7 +401,9 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		{
 			_player->m_heightDecreaseCount++;
 			if( _player->m_heightDecreaseCount > 32.0f )
+			{
 				//this
+			}
 		}
 		else
 		{
@@ -612,7 +614,6 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 
 	if( UNIXTIME > _player->m_fallDisabledUntil )
 	{
-		if( 
 		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
 		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECT | MOVEFLAG_TAXI Packet hacker kicked" );
 		_player->m_KickDelay = 0;
