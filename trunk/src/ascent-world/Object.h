@@ -385,9 +385,10 @@ public:
 		m_objectsInRange.erase(itr);
 	}
 
-	ASCENT_INLINE bool RemoveIfInRange( Object * obj )
+	ASCENT_INLINE bool RemoveIfInRange( Object* obj )
 	{
-		InRangeSet::iterator itr = m_objectsInRange.find(obj);
+		InRangeSet::iterator itr = m_objectsInRange.find( obj );
+
 		if( obj->GetTypeId() == TYPEID_PLAYER )
 			m_inRangePlayers.erase( reinterpret_cast< Player* >( obj ) );
 
@@ -398,12 +399,12 @@ public:
 		return true;
 	}
 
-	ASCENT_INLINE void AddInRangePlayer( Object * obj )
+	ASCENT_INLINE void AddInRangePlayer( Object* obj )
 	{
 		m_inRangePlayers.insert( reinterpret_cast< Player* >( obj ) );
 	}
 
-	ASCENT_INLINE void RemoveInRangePlayer( Object * obj )
+	ASCENT_INLINE void RemoveInRangePlayer( Object* obj )
 	{
 		m_inRangePlayers.erase( reinterpret_cast< Player* >( obj ) );
 	}

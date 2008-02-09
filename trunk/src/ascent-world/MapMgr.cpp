@@ -364,109 +364,107 @@ void MapMgr::RemoveObject(Object *obj, bool free_guid)
 	//ASSERT(obj->GetPositionY() > _minY && obj->GetPositionY() < _maxY);
 	ASSERT(_cells);
 
-	if(obj->Active)
-		obj->Deactivate(this);
+	if( obj->Active )
+		obj->Deactivate( this );
 
 	_updates.erase( obj );
 	obj->ClearUpdateMask();
-	Player* plObj = (obj->GetTypeId() == TYPEID_PLAYER) ? static_cast< Player* >( obj ) : 0;
+	Player* plObj = obj->GetTypeId() == TYPEID_PLAYER ? static_cast< Player* >( obj ) : NULL;
 
 	///////////////////////////////////////
 	// Remove object from all needed places
 	///////////////////////////////////////
  
-	switch(UINT32_LOPART(obj->GetGUIDHigh()))
+	switch( UINT32_LOPART( obj->GetGUIDHigh() ) )
 	{
 		case HIGHGUID_UNIT:
 			ASSERT(obj->GetGUIDLow() <= m_CreatureHighGuid);
-			m_CreatureStorage[obj->GetGUIDLow()] = 0;
-			if(((Creature*)obj)->m_spawn != NULL)
+			m_CreatureStorage[obj->GetGUIDLow()] = NULL;
+			if( static_cast< Creature* >( obj )->m_spawn != NULL )
 			{
-				_sqlids_creatures.erase(((Creature*)obj)->m_spawn->id);
+				_sqlids_creatures.erase( static_cast< Creature* >( obj )->m_spawn->id );
 			}
 
-			if(free_guid)
-				_reusable_guids_creature.push_back(obj->GetGUIDLow());
+			if( free_guid )
+				_reusable_guids_creature.push_back( obj->GetGUIDLow() );
 
 			  break;
 
 		case HIGHGUID_PET:
-			m_PetStorage.erase(obj->GetGUIDLow());
+			m_PetStorage.erase( obj->GetGUIDLow() );
 			break;
 
 		case HIGHGUID_DYNAMICOBJECT:
-			m_DynamicObjectStorage.erase(obj->GetGUIDLow());
+			m_DynamicObjectStorage.erase( obj->GetGUIDLow() );
 			break;
 
 		case HIGHGUID_GAMEOBJECT:
 			ASSERT(obj->GetGUIDLow() <= m_GOHighGuid);
-			m_GOStorage[obj->GetGUIDLow()] = 0;
-			if(((GameObject*)obj)->m_spawn != NULL)
+			m_GOStorage[obj->GetGUIDLow()] = NULL;
+			if( static_cast< GameObject* >( obj )->m_spawn != NULL )
 			{
-				_sqlids_gameobjects.erase(((GameObject*)obj)->m_spawn->id);
+				_sqlids_gameobjects.erase( static_cast< GameObject* >( obj )->m_spawn->id );
 			}
 
-			if(free_guid)
-				_reusable_guids_gameobject.push_back(obj->GetGUIDLow());
+			if( free_guid )
+				_reusable_guids_gameobject.push_back( obj->GetGUIDLow() );
 
 			break;
 	}
 
 	// That object types are not map objects. TODO: add AI groups here?
-	if(obj->GetTypeId() == TYPEID_ITEM || obj->GetTypeId() == TYPEID_CONTAINER || obj->GetTypeId()==10)
+	if( obj->GetTypeId() == TYPEID_ITEM || obj->GetTypeId() == TYPEID_CONTAINER || obj->GetTypeId() == 10 )
 	{
 		return;
 	}
 
-	if(obj->GetTypeId() == TYPEID_CORPSE)
+	if( obj->GetTypeId() == TYPEID_CORPSE )
 	{
-		m_corpses.erase(((Corpse*)obj));
+		m_corpses.erase( static_cast< Corpse* >( obj ) );
 	}
 
-	if(!obj->GetMapCell())
+	if( !obj->GetMapCell() )
 	{
 		/* set the map cell correctly */
-		if(obj->GetPositionX() >= _maxX || obj->GetPositionX() <= _minY ||
-			obj->GetPositionY() >= _maxY || obj->GetPositionY() <= _minY)
+		if( obj->GetPositionX() >= _maxX || obj->GetPositionX() <= _minY || obj->GetPositionY() >= _maxY || obj->GetPositionY() <= _minY )
 		{
 			// do nothing
 		}
 		else
 		{
-			obj->SetMapCell(this->GetCellByCoords(obj->GetPositionX(), obj->GetPositionY()));
+			obj->SetMapCell( this->GetCellByCoords( obj->GetPositionX(), obj->GetPositionY() ) );
 		}		
 	}
 
-	if(obj->GetMapCell())
+	if( obj->GetMapCell() )
 	{
 		ASSERT(obj->GetMapCell());
 	
 		// Remove object from cell
-		obj->GetMapCell()->RemoveObject(obj);
+		obj->GetMapCell()->RemoveObject( obj );
 	
 		// Unset object's cell
-		obj->SetMapCell(NULL);
+		obj->SetMapCell( NULL );
 	}
 
 	// Clear any updates pending
-	if(obj->GetTypeId() == TYPEID_PLAYER)
+	if( obj->GetTypeId() == TYPEID_PLAYER )
 	{
 		_processQueue.erase( static_cast< Player* >( obj ) );
 		static_cast< Player* >( obj )->ClearAllPendingUpdates();
 	}
 	
 	// Remove object from all objects 'seeing' him
-	for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin();
-		iter != obj->GetInRangeSetEnd(); ++iter)
+	for( Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(); iter != obj->GetInRangeSetEnd(); ++iter )
 	{
-		if( (*iter) )
+		if( (*iter) != NULL )
 		{
 			if( (*iter)->GetTypeId() == TYPEID_PLAYER )
 			{
 				if( static_cast< Player* >( *iter )->IsVisible( obj ) && static_cast< Player* >( *iter )->m_TransporterGUID != obj->GetGUID() )
-					static_cast< Player* >( *iter )->PushOutOfRange(obj->GetNewGUID());
+					static_cast< Player* >( *iter )->PushOutOfRange( obj->GetNewGUID() );
 			}
-			(*iter)->RemoveInRangeObject(obj);
+			(*iter)->RemoveInRangeObject( obj );
 		}
 	}
 	
@@ -524,7 +522,7 @@ void MapMgr::ChangeObjectLocation( Object *obj )
 	}
 
 	Player* plObj;
-	ByteBuffer * buf = 0;
+	ByteBuffer* buf = 0;
 
 	if( obj->GetTypeId() == TYPEID_PLAYER )
 	{

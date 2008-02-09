@@ -4962,45 +4962,44 @@ void Unit::OnPushToWorld()
 void Unit::RemoveFromWorld(bool free_guid)
 {
 	CombatStatus.OnRemoveFromWorld();
-	if(critterPet != 0)
+	if( critterPet != NULL )
 	{
-		critterPet->RemoveFromWorld(false, true);
+		critterPet->RemoveFromWorld( false, true );
 		delete critterPet;
-		critterPet = 0;
+		critterPet = NULL;
 	}
 
-	if(dynObj != 0)
+	if( dynObj != NULL )
 		dynObj->Remove();
 
-	for(uint32 i = 0; i < 4; ++i)
+	for( uint32 i = 0; i < 4; ++i )
 	{
-		if(m_ObjectSlots[i] != 0)
+		if( m_ObjectSlots[i] != 0 )
 		{
-			GameObject * obj = m_mapMgr->GetGameObject(m_ObjectSlots[i]);
-			if(obj)
+			GameObject* obj = m_mapMgr->GetGameObject( m_ObjectSlots[i] );
+			if( obj != NULL )
 				obj->ExpireAndDelete();
 
 			m_ObjectSlots[i] = 0;
 		}
 	}
 
-	Object::RemoveFromWorld(free_guid);
+	Object::RemoveFromWorld( free_guid );
 
-
-	for(uint32 x = 0; x < MAX_AURAS+MAX_PASSIVE_AURAS; ++x)
+	for( uint32 x = 0; x < MAX_AURAS + MAX_PASSIVE_AURAS; ++x )
 	{
-		if(m_auras[x] != 0)
+		if( m_auras[x] != NULL )
 		{
 			/* f*cking shit crash fixes */
-			if(m_auras[x]->m_deleted)
+			if( m_auras[x]->m_deleted )
 			{
 				m_auras[x] = NULL;
 				continue;
 			}
-
 			m_auras[x]->RelocateEvents();
 		}
 	}
+
 	m_aiInterface->WipeReferences();
 }
 

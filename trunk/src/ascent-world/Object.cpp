@@ -1003,13 +1003,13 @@ void Object::PushToWorld(MapMgr*mgr)
 
 void Object::RemoveFromWorld(bool free_guid)
 {
-	ASSERT(m_mapMgr);
-	MapMgr * m = m_mapMgr;
-	m_mapMgr = 0;
+	ASSERT( m_mapMgr );
+	MapMgr* m = m_mapMgr;
+	m_mapMgr = NULL;
 
 	mSemaphoreTeleport = true;
 
-	m->RemoveObject(this, free_guid);
+	m->RemoveObject( this, free_guid );
 	
 	// update our event holder
 	event_Relocate();
