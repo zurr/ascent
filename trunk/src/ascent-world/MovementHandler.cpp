@@ -397,10 +397,10 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		/* Anti-Fall Damage                                                     */
 		/************************************************************************/
 
-		if( _player->_lastHeartbeatZ - movement_info.z > 1.0f )
+		if( _player->_lastHeartbeatZ - movement_info.z > 1.0f && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) )
 		{
 			_player->m_heightDecreaseCount++;
-			if( _player->m_heightDecreaseCount > 32.0f )
+			if( _player->m_heightDecreaseCount > 16.0f )
 			{
 				sChatHandler.SystemMessage( this, "Fall Damage hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
 				sCheatLog.writefromsession( this, "Fall Damage hacker kicked" );
