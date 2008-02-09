@@ -373,8 +373,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		/************************************************************************/
 		/* Anti-Teleport                                                        */
 		/************************************************************************/
-		if(sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 2500.0f
-			&& _player->m_runSpeed < 50.0f && !(movement_info.flags & MOVEFLAG_TAXI))
+		if( sWorld.antihack_teleport && _player->m_position.Distance2DSq( movement_info.x, movement_info.y ) > 2500.0f && _player->m_runSpeed < 50.0f && !( movement_info.flags & MOVEFLAG_TAXI ) )
 		{
 			sCheatLog.writefromsession(this, "Used teleport hack {3}, speed was %f", _player->m_runSpeed);
 			Disconnect();
@@ -577,10 +576,19 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	}
 
 	/************************************************************************/
-	/* Anti-Redirect Hack Checks                                            */
+	/* Anti-Packet Hack Checks                                              */
 	/************************************************************************/
 
-	if( _player->m_redirectCount > 128 )
+	if( _player->m_redirectCount > 16 )
+	{
+		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server.");
+		sCheatLog.writefromsession( this, "Packet hacker kicked" );
+		_player->m_KickDelay = 0;
+		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
+		_player->SetMovement( MOVE_ROOT, 1 );
+	}
+
+	if( movement_info.flags & MOVEFLAG_REDIRECT | MOVEFLAG_TAXI )
 	{
 		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server.");
 		sCheatLog.writefromsession( this, "Packet hacker kicked" );
@@ -617,7 +625,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 			speed = _player->m_flySpeed;
 		}
 
-		if( !_player->bFeatherFall && !_player->blinked && !_player->m_uint32Values[UNIT_FIELD_CHARM] && !_player->m_TransporterGUID && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) && _player->m_redirectCount < 8 )
+		if( !_player->bFeatherFall && !_player->blinked && !_player->m_uint32Values[UNIT_FIELD_CHARM] && !_player->m_TransporterGUID && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) && _player->m_redirectCount < 3 )
 		{
 			if( _player->_lastHeartbeatT == 0 )
 			{
