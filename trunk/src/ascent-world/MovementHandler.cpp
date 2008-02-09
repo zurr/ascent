@@ -612,15 +612,6 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		_player->SetMovement( MOVE_ROOT, 1 );
 	}
 
-	if( UNIXTIME > _player->m_fallDisabledUntil )
-	{
-		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
-		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECT | MOVEFLAG_TAXI Packet hacker kicked" );
-		_player->m_KickDelay = 0;
-		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
-		_player->SetMovement( MOVE_ROOT, 1 );
-	}
-
 	/************************************************************************/
 	/* Anti-Speed Hack Checks                                               */
 	/************************************************************************/
