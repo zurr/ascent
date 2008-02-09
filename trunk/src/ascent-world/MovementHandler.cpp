@@ -397,7 +397,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		/* Anti-Fall Damage                                                     */
 		/************************************************************************/
 
-		if( movement_info.z - _player->_lastHeartbeatZ > 1.0f )
+		if( _player->_lastHeartbeatZ - movement_info.z > 1.0f )
 		{
 			_player->m_heightDecreaseCount++;
 			if( _player->m_heightDecreaseCount > 32.0f )
