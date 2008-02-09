@@ -1656,6 +1656,13 @@ bool World::SetInitialWorldSettings()
         sp->EffectTriggerSpell[1] = 25329;
     }
 
+	// Moroes' garrote targets a single enemy instead of us
+	sp = dbcSpell.LookupEntryForced( 37066 );
+    if( sp != NULL )
+    {
+        sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_ENEMY;
+    }
+
 	//Bloodlust targets sorounding party members instead of us
 	sp = dbcSpell.LookupEntryForced( 2825 );
 	if( sp != NULL )
