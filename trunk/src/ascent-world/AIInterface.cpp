@@ -511,10 +511,10 @@ void AIInterface::Update(uint32 p_time)
 				m_nextTarget=NULL;
 				//something happend to our target, pick another one
 				pSpell->GenerateTargets(&targets);
-				if(targets.m_targetMask & TARGET_FLAG_UNIT)
-					m_nextTarget = m_Unit->GetMapMgr()->GetUnit(targets.m_unitTarget);
+				if( targets.m_targetMask & TARGET_FLAG_UNIT )
+					m_nextTarget = m_Unit->GetMapMgr()->GetUnit( targets.m_unitTarget );
 			}
-			if(m_nextTarget)
+			if( m_nextTarget )
 			{
 				SpellCastTargets targets(m_nextTarget->GetGUID());
 				pSpell->prepare(&targets);
@@ -536,13 +536,13 @@ void AIInterface::Update(uint32 p_time)
 		return;
 	}
 
-	_UpdateTimer(p_time);
+	_UpdateTimer( p_time );
 	_UpdateTargets();
 	if(m_Unit->isAlive() && m_AIState != STATE_IDLE 
 		&& m_AIState != STATE_FOLLOWING && m_AIState != STATE_FEAR 
 		&& m_AIState != STATE_WANDER && m_AIState != STATE_SCRIPTMOVE)
 	{
-		if(m_AIType == AITYPE_PET )
+		if( m_AIType == AITYPE_PET )
 		{
 			if(!m_Unit->bInvincible && m_Unit->GetGUIDHigh() == HIGHGUID_PET) 
 			{
@@ -554,22 +554,22 @@ void AIInterface::Update(uint32 p_time)
 				}
 			}
 			//we just use any creature as a pet guardian
-			else if(m_Unit->GetGUIDHigh() != HIGHGUID_PET)
+			else if( m_Unit->GetGUIDHigh() != HIGHGUID_PET )
 			{
-				_UpdateCombat(p_time);
+				_UpdateCombat( p_time );
 			}
 		}
 		else
 		{
-			_UpdateCombat(p_time);
+			_UpdateCombat( p_time );
 		}
 	}
 
-	_UpdateMovement(p_time);
-	if(m_AIState==STATE_EVADE)
+	_UpdateMovement( p_time );
+	if( m_AIState == STATE_EVADE )
 	{
-		tdist = m_Unit->GetDistanceSq(m_returnX,m_returnY,m_returnZ);
-		if(tdist <= 4.0f/*2.0*/)
+		tdist = m_Unit->GetDistanceSq( m_returnX, m_returnY, m_returnZ );
+		if( tdist <= 4.0f )
 		{
 			m_AIState = STATE_IDLE;
 			m_returnX = m_returnY = m_returnZ = 0.0f;
@@ -592,25 +592,24 @@ void AIInterface::Update(uint32 p_time)
 			}
 			*/
 			// Set health to full if they at there last location before attacking
-			if(m_AIType != AITYPE_PET&&!skip_reset_hp)
-				m_Unit->SetUInt32Value(UNIT_FIELD_HEALTH,m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+			if( m_AIType != AITYPE_PET && !skip_reset_hp )
+				m_Unit->SetUInt32Value( UNIT_FIELD_HEALTH, m_Unit->GetUInt32Value( UNIT_FIELD_MAXHEALTH ) );
 		}
 	}
 
-	if(m_fleeTimer)
+	if( m_fleeTimer )
 	{
-		if(m_fleeTimer > p_time)
+		if( m_fleeTimer > p_time )
 		{
 			m_fleeTimer -= p_time;
-			_CalcDestinationAndMove(m_nextTarget, 5.0f);
+			_CalcDestinationAndMove( m_nextTarget, 5.0f );
 		}
 		else
 		{
 			m_fleeTimer = 0;
-			SetNextTarget(FindTargetForSpell(m_nextSpell));
+			SetNextTarget( FindTargetForSpell( m_nextSpell ) );
 		}
 	}
-
 
 	//Pet Dismiss after a certian ditance away
 	/*if(m_AIType == AITYPE_PET && m_PetOwner != NULL)
@@ -839,16 +838,18 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 			}
 			*/
 
-			if(m_canFlee && !m_hasFleed 
-				&& ((m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH) / m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH)) < m_FleeHealth ))
-				agent = AGENT_FLEE;
-			else if(m_canCallForHelp 
-				&& !m_hasCalledForHelp 
-				/*&& (m_CallForHelpHealth > (m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH) / (m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) > 0 ? m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) : 1)))*/)
-				agent = AGENT_CALLFORHELP;
-			else if(m_nextSpell)
+			if( m_canFlee && !m_hasFleed && ( ( m_Unit->GetUInt32Value( UNIT_FIELD_HEALTH ) / m_Unit->GetUInt32Value( UNIT_FIELD_MAXHEALTH ) ) < m_FleeHealth ) )
 			{
-				if(m_nextSpell->agent != AGENT_NULL)
+				agent = AGENT_FLEE;
+			}
+			else if( m_canCallForHelp && !m_hasCalledForHelp )
+			{
+				/*&& (m_CallForHelpHealth > (m_Unit->GetUInt32Value(UNIT_FIELD_HEALTH) / (m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) > 0 ? m_Unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) : 1)))*/
+				agent = AGENT_CALLFORHELP;
+			}
+			else if( m_nextSpell != NULL )
+			{
+				if( m_nextSpell->agent != AGENT_NULL )
 				{
 					agent = m_nextSpell->agent;
 				}
@@ -862,12 +863,12 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 				agent = AGENT_MELEE;
 			}
 		}
-		if(agent == AGENT_RANGED || agent == AGENT_MELEE)
+		if( agent == AGENT_RANGED || agent == AGENT_MELEE )
 		{
-			if(m_canRangedAttack)
+			if( m_canRangedAttack )
 			{
 				agent = AGENT_MELEE;
-				if(m_nextTarget->GetTypeId() == TYPEID_PLAYER)
+				if( m_nextTarget->GetTypeId() == TYPEID_PLAYER )
 				{
 					float dist = m_Unit->GetDistanceSq(m_nextTarget);
 					if( static_cast< Player* >( m_nextTarget )->m_currentMovement == MOVE_ROOT || dist >= 64.0f )
@@ -886,7 +887,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 			}
 		}
 
-		if(this->disable_melee && agent == AGENT_MELEE)
+		if( this->disable_melee && agent == AGENT_MELEE )
 			agent = AGENT_NULL;
 		  
 		if(this->disable_ranged && agent == AGENT_RANGED)

@@ -1333,7 +1333,9 @@ void Spell::cast(bool check)
 					{
 						//Use channel interrupt flags here
 						if( m_targets.m_targetMask == TARGET_FLAG_DEST_LOCATION || m_targets.m_targetMask == TARGET_FLAG_SOURCE_LOCATION )
-							u_caster->SetUInt64Value( UNIT_FIELD_CHANNEL_OBJECT, p_caster->GetSelection() );					
+						{
+							u_caster->SetUInt64Value( UNIT_FIELD_CHANNEL_OBJECT, p_caster->GetSelection() );
+						}
 						else if( p_caster->GetSelection() == m_caster->GetGUID() )
 						{
 							if( p_caster->GetSummon() )

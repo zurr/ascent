@@ -610,9 +610,9 @@ void MapMgr::ChangeObjectLocation( Object *obj )
 #undef IN_RANGE_LOOP
 #undef END_IN_RANGE_LOOP*/
 
-	if(obj->HasInRangeObjects()) {
-		for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(), iter2;
-			iter != obj->GetInRangeSetEnd();)
+	if( obj->HasInRangeObjects() )
+	{
+		for( Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(), iter2; iter != obj->GetInRangeSetEnd(); )
 		{
 			curObj = *iter;
 			iter2 = iter++;
@@ -623,22 +623,22 @@ void MapMgr::ChangeObjectLocation( Object *obj )
 			else
 				fRange = m_UpdateDistance; // normal distance
 
-			if( fRange > 0.0f && curObj->GetDistance2dSq(obj) > fRange )
+			if( fRange > 0.0f && curObj->GetDistance2dSq( obj ) > fRange )
 			{
 				if( plObj )
-					plObj->RemoveIfVisible(curObj);
+					plObj->RemoveIfVisible( curObj );
 
 				if( curObj->IsPlayer() )
 					static_cast< Player* >( curObj )->RemoveIfVisible(obj);
 
-				curObj->RemoveInRangeObject(obj);
+				curObj->RemoveInRangeObject( obj );
 
 				if( obj->GetMapMgr() != this )
 				{
 					/* Something removed us. */
 					return;
 				}
-				obj->RemoveInRangeObject(iter2);
+				obj->RemoveInRangeObject( iter2 );
 			}
 		}
 	}
