@@ -402,7 +402,11 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 			_player->m_heightDecreaseCount++;
 			if( _player->m_heightDecreaseCount > 32.0f )
 			{
-				//this
+				sChatHandler.SystemMessage( this, "Fall Damage hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
+				sCheatLog.writefromsession( this, "Fall Damage hacker kicked" );
+				_player->m_KickDelay = 0;
+				sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
+				_player->SetMovement( MOVE_ROOT, 1 );
 			}
 		}
 		else
@@ -444,6 +448,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	/************************************************************************/
 	/* Calculate the timestamp of the packet we have to send out            */
 	/************************************************************************/
+
 	size_t pos = (size_t)m_MoverWoWGuid.GetNewGuidLen() + 1;
 	uint32 mstime = mTimeStamp();
 	int32 move_time;
@@ -453,6 +458,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	/************************************************************************/
 	/* Copy into the output buffer.                                         */
 	/************************************************************************/
+
 	if( _player->m_inRangePlayers.size() )
 	{
 		move_time = (movement_info.time - (mstime - m_clientTimeDelay)) + MOVEMENT_PACKET_TIME_DELAY + mstime;
@@ -541,6 +547,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	/************************************************************************/
 	/* Transporter Setup                                                    */
 	/************************************************************************/
+
 	if(!_player->m_lockTransportVariables)
 	{
 		if(_player->m_TransporterGUID && !movement_info.transGuid)
