@@ -1634,6 +1634,7 @@ public:
 	uint32 resurrector;
 	bool blinked;
 	uint32 m_redirectCount;
+	uint32 m_heightDecreaseCount;
 	uint16 m_speedhackChances;
 	uint32 m_explorationTimer;
 	// DBC stuff

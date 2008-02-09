@@ -308,6 +308,7 @@ Player::Player ( uint32 high, uint32 low ) : m_mailBox(low)
 	blinked					= false;
 	m_speedhackChances		= 2;
 	m_redirectCount			= 0;
+	m_heightDecreaseCount	= 0;
 	m_explorationTimer		= getMSTime();
 	linkTarget				= 0;
 	stack_cheat				= false;
