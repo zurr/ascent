@@ -6468,12 +6468,14 @@ bool World::SetInitialWorldSettings()
 
 
 	//Item Set: Thunderheart Harness
-	sp = dbcSpell.LookupEntryForced( 38447 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38447 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] |=1024;
 		sp->EffectSpellGroupRelation_high[1] |=64;
 	}
-	sp = dbcSpell.LookupEntryForced( 38416 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38416 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] |=8388608;
 		sp->EffectSpellGroupRelation_high[0] |=1048576;
@@ -6481,122 +6483,144 @@ bool World::SetInitialWorldSettings()
 	}
 
 	//Item Set: Thunderheart Regalia
-	sp = dbcSpell.LookupEntryForced( 38414 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38414 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] |=2;
 	}
-	sp = dbcSpell.LookupEntryForced( 38415 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38415 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] |=4;
 	}
 
 	//Item Set: Thunderheart Raiment
-	sp = dbcSpell.LookupEntryForced( 38417 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38417 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] |=2;
 	}
-	sp = dbcSpell.LookupEntryForced( 38420 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38420 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] |=32;
 	}
 
 	//Item Set: Nordrassil Harness
-	sp = dbcSpell.LookupEntryForced( 37333 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37333 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[1] |=256;
 		sp->EffectSpellGroupRelation[0] |=32768;
 	}
 
 	//Item Set: Nordrassil Raiment
-	sp = dbcSpell.LookupEntryForced( 37313 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37313 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] |=64;
 	}
-	sp = dbcSpell.LookupEntryForced( 37314 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37314 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] |=16;
 	}
 
 	//Item Set: Malorne Raiment
-	sp = dbcSpell.LookupEntryForced( 37292 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37292 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] |=524288;
 	}
 
 	//Item Set: Malorne Regalia
-	sp = dbcSpell.LookupEntryForced( 37297 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37297 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] |=4096;
 	}
 
 	//Item Set: Malorne Harness
-	sp = dbcSpell.LookupEntryForced( 37306 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37306 );
+	if( sp != NULL )
 	{
 		sp->procChance = 4;
 		sp->procFlags = PROC_ON_MELEE_ATTACK;
 	}
-	sp = dbcSpell.LookupEntryForced( 37311 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37311 );
+	if( sp != NULL )
 	{
 		sp->procChance = 4;
 		sp->procFlags = PROC_ON_MELEE_ATTACK;
 	}
 
 	//Item Set: Slayer's Armor
-	sp = dbcSpell.LookupEntryForced( 38388 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38388 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] |=262144;
 	}
-	sp = dbcSpell.LookupEntryForced( 38389 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38389 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] |= 2 | 4;
-		sp->EffectSpellGroupRelation[0] |=8388612 |8388610 |41943040;
+		sp->EffectSpellGroupRelation[0] |= 8388612 |8388610 |41943040;
 	}
 
 	//Item Set: Deathmantle
-	sp = dbcSpell.LookupEntryForced( 37170 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37170 );
+	if( sp != NULL )
 	{
 		sp->procChance = 4;
 		sp->procFlags = PROC_ON_MELEE_ATTACK;
 	}
 
 	//Item Set: Netherblade
-	sp = dbcSpell.LookupEntryForced( 37167 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37167 );
+	if( sp != NULL )
 	{
-		sp->EffectSpellGroupRelation[0] |=262144;
+		sp->EffectSpellGroupRelation[0] |= 262144;
 	}
-	sp = dbcSpell.LookupEntryForced( 37168 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37168 );
+	if( sp != NULL )
 	{
 		sp->procChance = 15;
 		//sp->procFlags = PROC_ON_CAST_SPELL; Need new flag - PROC_ON_FINISH_MOVE;
 	}
 
 	//Item Set: Tempest Regalia
-	sp = dbcSpell.LookupEntryForced( 38396 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38396 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 67108864;
 	}
-	sp = dbcSpell.LookupEntryForced( 38397 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38397 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 1572896 | 1 | 2048;
 	}
 
 	//Item Set: Tirisfal Regalia
-	sp = dbcSpell.LookupEntryForced( 37441 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37441 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 536870912;
 		sp->EffectSpellGroupRelation[1] = 536870912;
 	}
-	sp = dbcSpell.LookupEntryForced( 37443 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37443 );
+	if( sp != NULL )
 	{
 		sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 	}
 
 	//Item Set: Aldor Regalia
-	sp = dbcSpell.LookupEntryForced( 37438 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37438 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 1572896 | 1;
 	}
-	sp = dbcSpell.LookupEntryForced( 37439 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37439 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] = 32;
 		sp->EffectSpellGroupRelation_high[1] = 64;
@@ -6604,68 +6628,80 @@ bool World::SetInitialWorldSettings()
 	}
 
 	//Item Set: Absolution Regalia
-	sp = dbcSpell.LookupEntryForced( 38413 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38413 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 32768;
 	}
-	sp = dbcSpell.LookupEntryForced( 38412 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38412 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 8192;
 	}
 
 	//Item Set: Vestments of Absolution
-	sp = dbcSpell.LookupEntryForced( 38410 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38410 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 512;
 	}
-	sp = dbcSpell.LookupEntryForced( 38411 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38411 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 4096 ;
 	}
 
 	//Item Set: Avatar Raiment
-	sp = dbcSpell.LookupEntryForced( 26171 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 26171 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 64;
 	}
 
 	//Item Set: Avatar Regalia
-	sp = dbcSpell.LookupEntryForced( 37600 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37600 );
+	if( sp != NULL )
 	{
 		sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->procChance = 6;
 	}
 
 	//Item Set: Incarnate Raiment
-	sp = dbcSpell.LookupEntryForced( 37568 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37568 );
+	if( sp != NULL )
 	{
 		sp->procFlags = PROC_ON_CAST_SPELL;
 	}
-	sp = dbcSpell.LookupEntryForced( 37565 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37565 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 4096;
 	}
 
 	//Item Set: Incarnate Regalia
-	sp = dbcSpell.LookupEntryForced( 37570 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37570 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[1] = 256;
 	}
-	sp = dbcSpell.LookupEntryForced( 37571 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37571 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 128;
 		sp->EffectSpellGroupRelation[1] = 8388608;
 	}
 
 	//Item Set: Malefic Raiment
-	sp = dbcSpell.LookupEntryForced( 38393 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38393 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 1;
 		sp->EffectSpellGroupRelation_high[0] = 64;
 	}
 
 	//Item Set: Voidheart Raiment
-	sp = dbcSpell.LookupEntryForced( 37377 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37377 );
+	if( sp != NULL )
 	{
 		sp->Effect[0] = 6;
 		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -6674,7 +6710,8 @@ bool World::SetInitialWorldSettings()
 		sp->proc_interval = 20;
 		sp->EffectTriggerSpell[0] = 37379;
 	}
-	sp = dbcSpell.LookupEntryForced( 39437 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 39437 );
+	if( sp != NULL )
 	{
 		sp->Effect[0] = 6;
 		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -6683,19 +6720,22 @@ bool World::SetInitialWorldSettings()
 		sp->proc_interval = 20;
 		sp->EffectTriggerSpell[0] = 37378;
 	}
-	sp = dbcSpell.LookupEntryForced( 37380 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37380 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation[0] = 2|4;
 	}
 
 	//Item Set: Gronnstalker's Armor
-	sp = dbcSpell.LookupEntryForced( 38392 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 38392 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] = 1;
 	}
 
 	//Item Set: Rift Stalker Armor
-	sp = dbcSpell.LookupEntryForced( 37505 );if( sp != NULL )
+	sp = dbcSpell.LookupEntryForced( 37505 );
+	if( sp != NULL )
 	{
 		sp->EffectSpellGroupRelation_high[0] = 1;
 	}
