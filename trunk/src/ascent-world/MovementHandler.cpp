@@ -498,7 +498,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		if( _player->blinked )
 		{
 			_player->blinked = false;
-			_player->m_fallDisabledUntil = UNIXTIME + 5;
+			_player->m_fallDisabledUntil = UNIXTIME + 2;
 			_player->ResetHeartbeatCoords();
 		}
 		else
@@ -510,7 +510,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 			}
 			else //once we done falling lets do some damage
 			{
-				if( _player->m_fallTime > 800 && _player->isAlive() && !_player->GodModeCheat )
+				if( _player->m_fallTime > 750 && _player->isAlive() && !_player->GodModeCheat )
 				{
 					//Check if we aren't falling in water
 					if( !( movement_info.flags & MOVEFLAG_SWIMMING ) )
@@ -864,19 +864,19 @@ void MovementInfo::init(WorldPacket & data)
 	data >> flags >> unk_230 >> time;
 	data >> x >> y >> z >> orientation;
 
-	if (flags & MOVEFLAG_TAXI)
+	if( flags & MOVEFLAG_TAXI )
 	{
 		data >> transGuid >> transX >> transY >> transZ >> transO >> transUnk;
 	}
-	if (flags & MOVEFLAG_SWIMMING)
+	if( flags & MOVEFLAG_SWIMMING )
 	{
 		data >> unk6;
 	}
-	if (flags & MOVEFLAG_FALLING || flags & MOVEFLAG_REDIRECTED)
+	if( flags & MOVEFLAG_FALLING || flags & MOVEFLAG_REDIRECTED )
 	{
 		data >> FallTime >> unk8 >> unk9 >> unk10;
 	}
-	if (flags & MOVEFLAG_SPLINE_MOVER)
+	if( flags & MOVEFLAG_SPLINE_MOVER )
 	{
 		data >> unk12;
 	}
