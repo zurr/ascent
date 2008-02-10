@@ -268,10 +268,10 @@ void MapMgr::PushObject(Object *obj)
 	{
 		case HIGHGUID_UNIT:
 			ASSERT(obj->GetGUIDLow() <= m_CreatureHighGuid);
-			m_CreatureStorage[obj->GetGUIDLow()] = (Creature*)obj;
-			if(((Creature*)obj)->m_spawn != NULL)
+			m_CreatureStorage[obj->GetGUIDLow()] = static_cast< Creature* >( obj );
+			if( static_cast< Creature* >( obj )->m_spawn != NULL )
 			{
-				_sqlids_creatures.insert(make_pair( ((Creature*)obj)->m_spawn->id, ((Creature*)obj) ) );
+				_sqlids_creatures.insert(make_pair( static_cast< Creature* >( obj )->m_spawn->id, static_cast< Creature* >( obj ) ) );
 			}
 			break;
 
@@ -333,7 +333,7 @@ void MapMgr::PushStaticObject(Object *obj)
 	switch(UINT32_LOPART(obj->GetGUIDHigh()))
 	{
 		case HIGHGUID_UNIT:
-			m_CreatureStorage[obj->GetGUIDLow()] = (Creature*)obj;
+			m_CreatureStorage[obj->GetGUIDLow()] = static_cast< Creature* >( obj );
 			break;
 
 		case HIGHGUID_PET:
@@ -341,11 +341,11 @@ void MapMgr::PushStaticObject(Object *obj)
 			break;
 
 		case HIGHGUID_DYNAMICOBJECT:
-			m_DynamicObjectStorage[obj->GetGUIDLow()] = (DynamicObject*)obj;
+			m_DynamicObjectStorage[obj->GetGUIDLow()] = static_cast< DynamicObject* >( obj );
 			break;
 
 		case HIGHGUID_GAMEOBJECT:
-			m_GOStorage[obj->GetGUIDLow()] = (GameObject*)obj;
+			m_GOStorage[obj->GetGUIDLow()] = static_cast< GameObject* >( obj );
 			break;
 	}
 }

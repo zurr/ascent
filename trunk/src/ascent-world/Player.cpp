@@ -6455,14 +6455,14 @@ void Player::AddItemsToWorld()
 				_ApplyItemMods(pItem, i, true, false, true);
 			}
 
-			if(pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
+			if( pItem->IsContainer() && GetItemInterface()->IsBagSlot( i ) )
 			{
-				for(uint32 e=0; e < pItem->GetProto()->ContainerSlots; e++)
+				for( uint32 e=0; e < pItem->GetProto()->ContainerSlots; e++ )
 				{
-					Item *item = ((Container*)pItem)->GetItem(e);
-					if(item)
+					Item* item = static_cast< Container* >( pItem )->GetItem( e );
+					if( item != NULL )
 					{
-						item->PushToWorld(m_mapMgr);
+						item->PushToWorld( m_mapMgr );
 					}
 				}
 			}
@@ -6492,12 +6492,12 @@ void Player::RemoveItemsFromWorld()
 				pItem->RemoveFromWorld();
 			}
 	
-			if(pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
+			if( pItem->IsContainer() && GetItemInterface()->IsBagSlot( i ) )
 			{
-				for(uint32 e=0; e < pItem->GetProto()->ContainerSlots; e++)
+				for( uint32 e = 0; e < pItem->GetProto()->ContainerSlots; e++ )
 				{
-					Item *item = ((Container*)pItem)->GetItem(e);
-					if(item && item->IsInWorld())
+					Item* item = static_cast< Container* >( pItem )->GetItem( e );
+					if( item != NULL && item->IsInWorld() )
 					{
 						item->RemoveFromWorld();
 					}

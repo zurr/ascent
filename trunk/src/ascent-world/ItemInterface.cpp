@@ -56,13 +56,13 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer *data)
 	ASSERT(m_pOwner != NULL);
 	uint32 count = 0;
 
-	for(int i = 0; i < MAX_INVENTORY_SLOT; i++)
+	for( int i = 0; i < MAX_INVENTORY_SLOT; i++ )
 	{
-		if(m_pItems[i])
+		if( m_pItems[i] != NULL )
 		{
-			if(m_pItems[i]->IsContainer())
+			if( m_pItems[i]->IsContainer() )
 			{
-				count += ((Container*)(m_pItems[i]))->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
+				count += static_cast< Container* >( m_pItems[i] )->BuildCreateUpdateBlockForPlayer( data, m_pOwner );
 
 				if(m_pItems[i]->GetProto())
 				{

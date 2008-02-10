@@ -4021,11 +4021,11 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
 					data << uint32(0);			// new in 2.1.0
 					data << uint32(UnitNameLength);
 					data << UnitName;
-					data << ((Player*)(*i))->GetGUID();
+					data << static_cast< Player* >( *i )->GetGUID();
 					data << uint32(strlen(szMessage.str().c_str())+1);
 					data << szMessage.str().c_str();
 					data << uint8(0x00);
-					WorldSession *session = ((Player*)(*i))->GetSession();
+					WorldSession* session = static_cast< Player* >( *i )->GetSession();
 					session->SendPacket(&data);
 				}
 			}
@@ -4046,12 +4046,12 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
 					data << uint32(0);			// new in 2.1.0
 					data << uint32(UnitNameLength);
 					data << UnitName;
-					data << ((Player*)(*i))->GetGUID();
+					data << static_cast< Player* >( *i )->GetGUID();
 					data << uint32(strlen(szMessage.str().c_str())+1);
 					data << szMessage.str().c_str();
 					data << uint8(0x00);
 
-					WorldSession *session = ((Player*)(*i))->GetSession();
+					WorldSession* session = static_cast< Player* >( *i )->GetSession();
 					session->SendPacket(&data);
 				}
 			}
@@ -4069,12 +4069,12 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
 					data << uint32(0);			// new in 2.1.0
 					data << uint32(UnitNameLength);
 					data << UnitName;
-					data << ((Player*)(*i))->GetGUID();
+					data << static_cast< Player* >( *i )->GetGUID();
 					data << uint32(MessageLength);
 					data << msg;
 					data << uint8(0x00);
 
-					WorldSession *session = ((Player*)(*i))->GetSession();
+					WorldSession* session = static_cast< Player* >( *i )->GetSession();
 					session->SendPacket(&data);
 				}
 			}
@@ -4092,12 +4092,12 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
 					data << uint32(0);			// new in 2.1.0
 					data << uint32(UnitNameLength);
 					data << UnitName;
-					data << ((Player*)(*i))->GetGUID();
+					data << static_cast< Player* >( *i )->GetGUID();
 					data << uint32(MessageLength);
 					data << msg;
 					data << uint8(0x00);
 
-					WorldSession *session = ((Player*)(*i))->GetSession();
+					WorldSession* session = static_cast< Player* >( *i )->GetSession();
 					session->SendPacket(&data);
 				}
 			}
@@ -4115,12 +4115,12 @@ void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, 
 					data << uint32(0);			// new in 2.1.0
 					data << uint32(UnitNameLength);
 					data << UnitName;
-					data << ((Player*)(*i))->GetGUID();
+					data << static_cast< Player* >( *i )->GetGUID();
 					data << uint32(MessageLength);
 					data << msg;
 					data << uint8(0x00);
 
-					WorldSession *session = ((Player*)(*i))->GetSession();
+					WorldSession* session = static_cast< Player* >( *i )->GetSession();
 					session->SendPacket(&data);
 				}
 			}
@@ -4157,12 +4157,12 @@ void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 					data << uint32(0);			// new in 2.1.0
 					data << uint32(UnitNameLength);
 					data << UnitName;
-					data << ((Player*)(*i))->GetGUID();
+					data << static_cast< Player* >( *i )->GetGUID();
 					data << uint32(MessageLength);
 					data << msg;
 					data << uint8(0x00);
 
-					WorldSession *session = ((Player*)(*i))->GetSession();
+					WorldSession* session = static_cast< Player* >( *i )->GetSession();
 					session->SendPacket(&data);
 				}
 			}
@@ -4195,12 +4195,12 @@ void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 								data << uint32(0);			// new in 2.1.0
 								data << uint32(UnitNameLength);
 								data << UnitName;
-								data << ((Player*)(*i))->GetGUID();
+								data << static_cast< Player* >( *i )->GetGUID();
 								data << uint32(MessageLength);
 								data << msg;
 								data << uint8(0x00);
 
-								WorldSession *session = ((Player*)(*i))->GetSession();
+								WorldSession* session = static_cast< Player* >( *i )->GetSession();
 								session->SendPacket(&data);
 							}
 						}
@@ -4223,12 +4223,12 @@ void Unit::SendChatMessage(uint8 type, uint32 lang, const char *msg)
 					data << uint32(0);			// new in 2.1.0
 					data << uint32(UnitNameLength);
 					data << UnitName;
-					data << ((Player*)(*i))->GetGUID();
+					data << static_cast< Player* >( *i )->GetGUID();
 					data << uint32(MessageLength);
 					data << msg;
 					data << uint8(0x00);
 
-					WorldSession *session = ((Player*)(*i))->GetSession();
+					WorldSession* session = static_cast< Player* >( *i )->GetSession();
 					session->SendPacket(&data);
 				}
 			}
