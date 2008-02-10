@@ -202,13 +202,6 @@ void WarsongGulch::DropFlag(Player * plr)
 	SetWorldState(plr->GetTeam() ? WSG_ALLIANCE_FLAG_CAPTURED : WSG_HORDE_FLAG_CAPTURED, 1);
 	plr->m_bgHasFlag = false;
 
-<<<<<<< .mine
-	sEventMgr.AddEvent(((WarsongGulch*)m_dropFlags[plr->GetTeam()]), &WarsongGulch::ReturnFlag, plr->GetTeam(), this, EVENT_BATTLEGROND_WSG_AUTO_RETURN_FLAG, 60000, 1, 0);
-
-=======
-	//sLog.outDebug( "WSG %u: Flag will return in 60 seconds." , GetId() );
-	//sEventMgr.AddEvent(((WarsongGulch*)m_dropFlags[plr->GetTeam()]), &WarsongGulch::ReturnFlag, plr->GetTeam(), this, EVENT_BATTLEGROND_WSG_AUTO_RETURN_FLAG, 60000, 1, 0);
->>>>>>> .theirs
 	sEventMgr.AddEvent( this, &WarsongGulch::ReturnFlag, plr->GetTeam(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 60000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT );
 
 	if( plr->GetTeam() == 1 )

@@ -2492,33 +2492,12 @@ else
 			
 			if(ability && ability->MechanicsType == MECHANIC_BLEEDING)
 				disable_dR = true; 
-			
-<<<<<<< .mine
-			float summaryPCTmod = pVictim->DamageTakenPctMod[dmg.school_type]+this->DamageDoneModPCT[dmg.school_type];
-=======
-			//float summaryPCTmod = (pVictim->DamageTakenPctMod[dmg.school_type] / 100.0f) + (GetDamageDonePctMod( dmg.school_type ) / 100.0f) + 1;
->>>>>>> .theirs
 
 			if(pct_dmg_mod > 0)
 				dmg.full_damage = float2int32(dmg.full_damage*(float(pct_dmg_mod)/100.0f));
 
-			//a bit dirty fix
-<<<<<<< .mine
-			if(ability && ability->NameHash == SPELL_HASH_SHRED)
-				summaryPCTmod += pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING];
-
-
-=======
-			/*if( ability != NULL && ability->NameHash == SPELL_HASH_SHRED )
-			{
-				summaryPCTmod *= 1 + pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING];
-			}*/
->>>>>>> .theirs
-
-			//dmg.full_damage = (dmg.full_damage < 0) ? 0 : float2int32(dmg.full_damage*summaryPCTmod);
-
 			// burlex: fixed this crap properly
-			float inital_dmg = float(inital_dmg);
+			float inital_dmg = float(dmg.full_damage);
 			float dd_mod = GetDamageDonePctMod( dmg.school_type );
 			if( pVictim->DamageTakenPctMod[dmg.school_type] > 1.0f )
 				dmg.full_damage += float2int32( ( inital_dmg * pVictim->DamageTakenPctMod[ dmg.school_type ] ) - inital_dmg );
