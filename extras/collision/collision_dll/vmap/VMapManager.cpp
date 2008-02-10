@@ -324,7 +324,7 @@ namespace VMAP
         {
             MapTree* instanceTree = m_maps[ pMapId ];
             std::string dirFileName = getDirFileName(pMapId);
-            instanceTree->unloadMap(dirFileName, 0, true);
+            instanceTree->unloadMap(dirFileName, 0);
             if(instanceTree->size() == 0)
             {
 				m_maps[pMapId]=NULL;
@@ -838,6 +838,8 @@ namespace VMAP
                                 addModelConatiner(name, mc);
                                 newModelLoaded = true;
                             }
+							else
+								delete mc;
                         }
                         else
                         {
@@ -879,12 +881,11 @@ namespace VMAP
 
     //=========================================================
 
-    void MapTree::unloadMap(const std::string& dirFileName, unsigned int pMapTileIdent, bool pForce)
+    void MapTree::unloadMap(const std::string& dirFileName, unsigned int pMapTileIdent)
     {
-        if(hasDirFile(dirFileName) && (pForce || containsLoadedMapTile(pMapTileIdent)))
+        if(hasDirFile(dirFileName) && containsLoadedMapTile(pMapTileIdent))
         {
-            if(containsLoadedMapTile(pMapTileIdent))
-                removeLoadedMapTile(pMapTileIdent);
+            removeLoadedMapTile(pMapTileIdent);
             FilesInDir& filesInDir = getDirFiles(dirFileName);
             filesInDir.decRefCount();
             if(filesInDir.getRefCount() <= 0)
