@@ -6,7 +6,7 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 static const char * REVISION_TEXT	= "$Rev$";
-static const char * BUILD_TAG		= "3.6-TRUNK";
+static const char * BUILD_TAG		= "3.9-STABLE";
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -18,4 +18,4 @@ ASCENT_INLINE int g_getRevision()
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-#endif  
+#endif   
