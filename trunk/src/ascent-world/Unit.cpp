@@ -1211,7 +1211,7 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 						//priest - Inspiration
 						case 14893:
 						case 15357:
-						case 15359
+						case 15359:
 							{
 								if( CastingSpell == NULL )
 									continue;
