@@ -490,13 +490,13 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	}
 	else
 	{
+		if( _player->m_redirectCount > 0 )
+			_player->m_redirectCount--;
 		if( _player->blinked )
 		{
 			_player->blinked = false;
 			_player->m_fallDisabledUntil = UNIXTIME + 5;
 			_player->ResetHeartbeatCoords();
-			if( _player->m_redirectCount > 0 )
-				_player->m_redirectCount--;
 		}
 		else
 		{
@@ -604,7 +604,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	if( _player->m_redirectCount > 16 )
 	{
 		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
-		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECT Packet hacker kicked" );
+		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECTED Packet hacker kicked" );
 		_player->m_KickDelay = 0;
 		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
 		_player->SetMovement( MOVE_ROOT, 1 );
