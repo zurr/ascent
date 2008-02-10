@@ -1122,9 +1122,9 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 									continue;
 							}break;
 						//priest - Inspiration
-						case 15363:
 						case 14893:
 						case 15357:
+						case 15359:
 							{
 								if( !CastingSpell || !( CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING ) )
 									continue;
@@ -1167,6 +1167,16 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 									continue;//this should not ocur unless we made a fuckup somewhere
 								//only trigger effect for specified spells
 								if( !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING)) //healing wave
+									continue;
+							}break;
+							//shaman - Ancestral Fortitude
+						case 16177:
+						case 16236:
+						case 16237:
+							{
+								if( CastingSpell == NULL )
+									continue;
+								if( !(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING) ) //healing spell
 									continue;
 							}break;
 						//shaman - windfurry weapon
