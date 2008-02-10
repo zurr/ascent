@@ -5015,20 +5015,20 @@ void Unit::RemoveFromWorld(bool free_guid)
 
 void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
 {
-	Aura * a;
-	for(uint32 x=0;x<MAX_AURAS;x++)
+	Aura* a;
+	for( uint32 x = 0; x < MAX_AURAS; x++ )
 	{
 		a = m_auras[x];
-		if(a == 0)
+		if( a == NULL )
 			continue;
 
 		//some spells do not get removed all the time only at specific intervals
-		if((a->m_spellProto->AuraInterruptFlags & flag) && (a->m_spellProto->Id != skip) && a->m_spellProto->proc_interval==0)
+		if( ( a->m_spellProto->AuraInterruptFlags & flag ) && ( a->m_spellProto->Id != skip ) && a->m_spellProto->proc_interval == 0 )
 		{
 			//the black sheeps of sociaty
-			if(a->m_spellProto->AuraInterruptFlags & AURA_INTERRUPT_ON_CAST_SPELL)
+			if( a->m_spellProto->AuraInterruptFlags & AURA_INTERRUPT_ON_CAST_SPELL )
 			{
-				switch(a->GetSpellProto()->Id)
+				switch( a->GetSpellProto()->Id )
 				{
 					//priest - surge of light
 					case 33151:
@@ -5038,7 +5038,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
 								continue;
 
 							//this spell gets removed only when casting smite
-						    SpellEntry *spi = dbcSpell.LookupEntry( skip );
+						    SpellEntry* spi = dbcSpell.LookupEntry( skip );
 							if( spi && spi->NameHash != SPELL_HASH_SMITE )
 								continue;
 						}

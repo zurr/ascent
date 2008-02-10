@@ -3612,10 +3612,10 @@ exit:
 		value = basePoints + rand() % randomPoints;
 
     // druid passive forms
-	if( m_spellInfo->Id ==3025 ||m_spellInfo->Id==9635 || m_spellInfo->Id == 1178 || m_spellInfo->Id == 24905)
+	if( m_spellInfo->Id == 3025 || m_spellInfo->Id == 9635 || m_spellInfo->Id == 1178 || m_spellInfo->Id == 24905 )
 	{
 		if( u_caster != NULL )
-			value += float2int32(m_spellInfo->EffectRealPointsPerLevel[i]*(u_caster->getLevel()-m_spellInfo->baseLevel));
+			value += float2int32( m_spellInfo->EffectRealPointsPerLevel[i] * ( u_caster->getLevel() - m_spellInfo->baseLevel ) );
 	}
 	//scripted shit
 	else if( m_spellInfo->Id == 34120)
@@ -3623,21 +3623,21 @@ exit:
 		//	Actual Equation (http://www.wowwiki.com/Steady_Shot)
 		//		* The tooltip is proven to be wrong and the following is the best player worked out formula so far with data taken from [1]
 		//		* Formula: DamagePercentageBonus*RangedWeaponSpecialization*(150 + WeaponDamage/WeaponSpeed*2.8 + 0.2*RAP + [Dazed: 175]) 
-		if(i==0 && u_caster)
+		if( i == 0 && u_caster != NULL )
 		{
 			if( p_caster != NULL )
 			{
-				Item *it;
-				if(p_caster->GetItemInterface())
+				Item* it;
+				if( p_caster->GetItemInterface() )
 				{
-					it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-					if(it)
-						value += float2int32(150 + float(it->GetProto()->Damage[0].Min)/float(it->GetProto()->Delay)*2.8f);
+					it = p_caster->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_MAINHAND );
+					if( it != NULL )
+						value += float2int32( 150.0f + float( it->GetProto()->Damage[0].Min ) / float( it->GetProto()->Delay ) * 2.8f );
 				}
 			}
-			if(target && target->HasNegativeAura(CREATURE_SPELL_TO_DAZE))
+			if( target != NULL && target->HasNegativeAura( CREATURE_SPELL_TO_DAZE ) )
 				value += 175;
-			value += (uint32)(u_caster->GetRAP()*0.2);
+			value += (uint32)( u_caster->GetRAP() * 0.2 );
 		}
 	}
     // HACK FIX
