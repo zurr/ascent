@@ -250,7 +250,7 @@ public:
 		va_list ap;
 		va_start(ap, Colour);
 		
-		uint32 i,j,k;
+		size_t i,j,k;
 		pointer = va_arg(ap, char*);
 		while( pointer != NULL )
 		{
