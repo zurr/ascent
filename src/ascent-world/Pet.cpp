@@ -1640,6 +1640,8 @@ AI_Spell * Pet::HandleAutoCastEvent()
 
 void Pet::HandleAutoCastEvent(uint32 Type)
 {
+	list<AI_Spell*>::iterator itr, it2;
+	AI_Spell * sp;
 	if(!m_Owner)
 		return;
 
@@ -1654,7 +1656,7 @@ void Pet::HandleAutoCastEvent(uint32 Type)
 			{
 				uint32 c = RandomUInt((uint32)m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size());
 				uint32 j = 0;
-				list<AI_Spell*>::iterator itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
+				itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
 
 				for(; itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(), j < c; ++j, ++itr);
 				if(itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
@@ -1673,7 +1675,7 @@ void Pet::HandleAutoCastEvent(uint32 Type)
 		}
 		else if(m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size())
 		{
-			AI_Spell * sp =*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
+			sp =*m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin();
 			if(sp->cooldown && getMSTime() < sp->cooldowntime)
 				return;
 
@@ -1682,10 +1684,10 @@ void Pet::HandleAutoCastEvent(uint32 Type)
 		return;
 	}
 
-	for( list<AI_Spell*>::iterator itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end(); )
+	for(  itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end(); )
 	{
-		AI_Spell * sp = *itr;
-		++itr;
+		it2 = itr++;
+		sp = *it2;
 
 		if( sp->spelltargetType == TTYPE_OWNER )
 			CastSpell( m_Owner, sp->spell, false );
