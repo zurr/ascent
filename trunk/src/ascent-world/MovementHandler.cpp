@@ -397,7 +397,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		/* Anti-Fall Damage                                                     */
 		/************************************************************************/
 
-		if( _player->_lastHeartbeatZ - movement_info.z > 2.0f && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) )
+		if( !_player->bFeatherFall && ( !_player->blinked || _player->m_redirectCount > 6 ) && !_player->m_TransporterGUID && _player->_lastHeartbeatZ - movement_info.z > 2.5f && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) )
 		{
 			_player->m_heightDecreaseCount++;
 			if( _player->m_heightDecreaseCount > 16.0f )
