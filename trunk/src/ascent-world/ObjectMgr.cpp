@@ -1643,7 +1643,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 				else
 				{
 					// 2.2
-					//double MXP = 45 + ( 5 * level );
+					//double MXP = 45 + ( 5 * Level );
 					// 2.3
 					double MXP = 235 + ( 5 * Level );
 					double DIFF = Level < 29 ? 0.0 : Level < 30 ? 1.0 : Level < 31 ? 3.0 : Level < 32 ? 6.0 : 5.0 * ( double( Level ) - 30.0 );

@@ -4552,11 +4552,11 @@ void Spell::SpellEffectInebriate(uint32 i) // lets get drunk!
 void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
 {
 	// food flags and food level are checked in Spell::CanCast()
-	if(!itemTarget || !p_caster)
+	if( itemTarget == NULL || p_caster == NULL )
 		return;
 	
-	Pet *pPet = p_caster->GetSummon();
-	if(!pPet)
+	Pet* pPet = p_caster->GetSummon();
+	if( pPet == NULL )
 		return;
 
 	/**	Cast feed pet effect
@@ -4564,26 +4564,28 @@ void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
 	- http://petopia.brashendeavors.net/html/articles/basics_feeding.shtml */
 	int8 deltaLvl = pPet->getLevel() - itemTarget->GetProto()->ItemLevel;
 	damage /= 1000; //damage of Feed pet spell is 35000
-	if(deltaLvl > 10) damage = damage >> 1;//divide by 2
-	if(deltaLvl > 20) damage = damage >> 1;
+	if( deltaLvl > 10 )
+		damage = damage >> 1;//divide by 2
+	if( deltaLvl > 20 )
+		damage = damage >> 1;
 	damage *= 1000;
 
-	SpellEntry *spellInfo = dbcSpell.LookupEntry(m_spellInfo->EffectTriggerSpell[i]);
-	Spell *sp= new Spell((Object *)p_caster,spellInfo,true,NULL);
-	sp->forced_basepoints[0] = damage - 1;
+	SpellEntry* spellInfo = dbcSpell.LookupEntry( m_spellInfo->EffectTriggerSpell[i] );
+	Spell* sp = new Spell( static_cast< Object* >( p_caster ), spellInfo, true, NULL );
+	sp->forced_basepoints[0] = damage;
 	SpellCastTargets tgt;
-	tgt.m_unitTarget=pPet->GetGUID();
-	sp->prepare(&tgt);
+	tgt.m_unitTarget = pPet->GetGUID();
+	sp->prepare( &tgt );
 
-	if(itemTarget->GetUInt32Value(ITEM_FIELD_STACK_COUNT)>1)
+	if( itemTarget->GetUInt32Value( ITEM_FIELD_STACK_COUNT ) > 1 )
 	{
-		itemTarget->ModUInt32Value(ITEM_FIELD_STACK_COUNT, -1);
-		itemTarget->m_isDirty=true;
+		itemTarget->ModUInt32Value( ITEM_FIELD_STACK_COUNT, -1 );
+		itemTarget->m_isDirty = true;
 	}
 	else
 	{
-		p_caster->GetItemInterface()->SafeFullRemoveItemByGuid(itemTarget->GetGUID());
-		itemTarget=NULL;
+		p_caster->GetItemInterface()->SafeFullRemoveItemByGuid( itemTarget->GetGUID() );
+		itemTarget = NULL;
 	}
 }
 

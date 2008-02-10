@@ -723,28 +723,26 @@ void Pet::GiveXP( uint32 xp )
 	if(changed) ApplyStatsForLevel();
 }
 
-uint32 Pet::GetNextLevelXP(uint32 currentlevel)
+uint32 Pet::GetNextLevelXP( uint32 currentlevel )
 {
-	uint32 level = currentlevel + 1;
-	uint32 nextLvlXP = 0;
-	if( level > 0 && level <= 30 )
+	uint32 nextLvlXP;
+
+	if( ( currentlevel - 1 ) < MAX_PREDEFINED_NEXTLEVELXP )
 	{
-		nextLvlXP = ((int)((((double)(8 * level * ((level * 5) + 45)))/100)+0.5))*100;
-	}
-	else if( level == 31 )
-	{
-		nextLvlXP = ((int)((((double)(((8 * level) + 3) * ((level * 5) + 45)))/100)+0.5))*100;
-	}
-	else if( level == 32 )
-	{
-		nextLvlXP = ((int)((((double)(((8 * level) + 6) * ((level * 5) + 45)))/100)+0.5))*100;
+		nextLvlXP = NextLevelXp[( currentlevel - 1 )];
 	}
 	else
 	{
-		nextLvlXP = ((int)((((double)(((8 * level) + ((level - 30) * 5)) * ((level * 5) + 45)))/100)+0.5))*100;
+		// 2.2
+		//double MXP = 45 + ( 5 * currentlevel );
+		// 2.3
+		double MXP = 235 + ( 5 * currentlevel );
+		double DIFF = currentlevel < 29 ? 0.0 : currentlevel < 30 ? 1.0 : currentlevel < 31 ? 3.0 : currentlevel < 32 ? 6.0 : 5.0 * ( double( currentlevel ) - 30.0 );
+		double XP = ( ( 8.0 * double( currentlevel ) ) + DIFF ) * MXP;
+		nextLvlXP = (int)( ( XP / 100.0 ) + 0.5 ) * 100;
 	}
-	double xp = double(nextLvlXP) / 4.0;
-	return FL2UINT(xp);
+
+	return (uint32)( nextLvlXP / 6 );
 }
 
 void Pet::SetDefaultSpells()
