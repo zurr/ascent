@@ -7882,9 +7882,9 @@ void World::Rehash(bool load)
 	if(load)
 	{
 		#ifdef WIN32
-		Config.MainConfig.SetSource("ascent.conf", true);
+		Config.MainConfig.SetSource("ascent-world.conf", true);
 		#else
-		Config.MainConfig.SetSource((char*)CONFDIR "/ascent.conf", true);
+		Config.MainConfig.SetSource((char*)CONFDIR "/ascent-world.conf", true);
 		#endif
 	}
 
