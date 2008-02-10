@@ -350,7 +350,10 @@ bool World::SetInitialWorldSettings()
 
 	Log.Notice( "World", "Loading DBC files..." );
 	if( !LoadDBCs() )
+	{
+		Log.LargeErrorMessage(LARGERRORMESSAGE_ERROR, "One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", NULL);
 		return false;
+	}
 
 	/*{
 		DBCFile moo;
