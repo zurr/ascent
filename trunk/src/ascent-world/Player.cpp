@@ -7534,8 +7534,6 @@ void Player::SafeTeleport(MapMgr * mgr, const LocationVector & vec)
 
 	m_mapId = mgr->GetMapId();
 	m_instanceId = mgr->GetInstanceID();
-	m_mapMgr = mgr;
-
 	WorldPacket data(SMSG_TRANSFER_PENDING, 20);
 	data << mgr->GetMapId();
 	GetSession()->SendPacket(&data);
@@ -7548,13 +7546,6 @@ void Player::SafeTeleport(MapMgr * mgr, const LocationVector & vec)
 	m_sentTeleportPosition = vec;
 	SetPosition(vec);
 	ResetHeartbeatCoords();
-
-	if(m_session)
-	{
-		m_session->SetInstance(mgr->GetInstanceID());
-	}
-
-	mgr->AddObject(this);
 }
 
 void Player::SetGuildId(uint32 guildId)

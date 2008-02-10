@@ -2493,16 +2493,41 @@ else
 			if(ability && ability->MechanicsType == MECHANIC_BLEEDING)
 				disable_dR = true; 
 			
+<<<<<<< .mine
 			float summaryPCTmod = pVictim->DamageTakenPctMod[dmg.school_type]+this->DamageDoneModPCT[dmg.school_type];
+=======
+			//float summaryPCTmod = (pVictim->DamageTakenPctMod[dmg.school_type] / 100.0f) + (GetDamageDonePctMod( dmg.school_type ) / 100.0f) + 1;
+>>>>>>> .theirs
 
 			if(pct_dmg_mod > 0)
 				dmg.full_damage = float2int32(dmg.full_damage*(float(pct_dmg_mod)/100.0f));
 
 			//a bit dirty fix
+<<<<<<< .mine
 			if(ability && ability->NameHash == SPELL_HASH_SHRED)
 				summaryPCTmod += pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING];
 
-			dmg.full_damage = (dmg.full_damage < 0) ? 0 : float2int32(dmg.full_damage*summaryPCTmod);
+
+=======
+			/*if( ability != NULL && ability->NameHash == SPELL_HASH_SHRED )
+			{
+				summaryPCTmod *= 1 + pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING];
+			}*/
+>>>>>>> .theirs
+
+			//dmg.full_damage = (dmg.full_damage < 0) ? 0 : float2int32(dmg.full_damage*summaryPCTmod);
+
+			// burlex: fixed this crap properly
+			float inital_dmg = float(inital_dmg);
+			float dd_mod = GetDamageDonePctMod( dmg.school_type );
+			if( pVictim->DamageTakenPctMod[dmg.school_type] > 1.0f )
+				dmg.full_damage += float2int32( ( inital_dmg * pVictim->DamageTakenPctMod[ dmg.school_type ] ) - inital_dmg );
+
+			if( dd_mod > 1.0f )
+				dmg.full_damage += float2int32( ( inital_dmg * dd_mod) - inital_dmg );
+
+			if( ability != NULL && ability->NameHash == SPELL_HASH_SHRED )
+				dmg.full_damage += float2int32( ( inital_dmg * (1 + pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]) ) - inital_dmg );
 
 			//pet happiness state dmg modifier
 			if( IsPet() && !static_cast<Pet*>(this)->IsSummon() )
@@ -3278,7 +3303,10 @@ void Unit::AddAura(Aura *aur)
 	// We add 500ms here to allow for the last tick in DoT spells. This is a dirty hack, but at least it doesn't crash like my other method.
 	// - Burlex
 	if(aur->GetDuration() > 0)
-		sEventMgr.AddEvent(aur, &Aura::Remove, EVENT_AURA_REMOVE, aur->GetDuration() + 500, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+	{
+		sEventMgr.AddEvent(aur, &Aura::Remove, EVENT_AURA_REMOVE, aur->GetDuration() + 500, 1,
+			EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+	}
 
 	aur->RelocateEvents();
 
@@ -4191,7 +4219,7 @@ int32 Unit::GetDamageDoneMod(uint32 school)
 float Unit::GetDamageDonePctMod(uint32 school)
 {
    if(this->IsPlayer())
-	   return GetFloatValue(PLAYER_FIELD_MOD_DAMAGE_DONE_PCT+school);
+	   return m_floatValues[PLAYER_FIELD_MOD_DAMAGE_DONE_PCT+school];
 	else
 	   return ((Creature*)this)->ModDamageDonePct[school];
 }
