@@ -486,7 +486,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 	if( movement_info.flags & MOVEFLAG_REDIRECTED && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) )
 	{
 		_player->blinked = true;
-		_player->m_redirectCount += 2;
+		_player->m_redirectCount++;
 	}
 	else
 	{
@@ -606,23 +606,14 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		_player->m_redirectCount++;
 	}
 
-	if( _player->m_redirectCount > 16 )
+	if( _player->m_redirectCount > 12 )
 	{
 		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
-		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECTED Packet hacker kicked" );
+		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECTED or MOVEFLAG_TAXI Packet hacker kicked" );
 		_player->m_KickDelay = 0;
 		sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
 		_player->SetMovement( MOVE_ROOT, 1 );
 	}
-
-	//if( movement_info.flags & MOVEFLAG_REDIRECTED | MOVEFLAG_TAXI && _player->IsInWorld )
-	//{
-	//	sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
-	//	sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECTED | MOVEFLAG_TAXI Packet hacker kicked" );
-	//	_player->m_KickDelay = 0;
-	//	sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
-	//	_player->SetMovement( MOVE_ROOT, 1 );
-	//}
 
 	/************************************************************************/
 	/* Anti-Speed Hack Checks                                               */
@@ -652,7 +643,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 			speed = _player->m_flySpeed;
 		}
 
-		if( !_player->bFeatherFall && !_player->blinked && !_player->m_uint32Values[UNIT_FIELD_CHARM] && !_player->m_TransporterGUID && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) && _player->m_redirectCount < 5 )
+		if( !_player->bFeatherFall && ( !_player->blinked || _player->m_redirectCount > 6 ) && !_player->m_uint32Values[UNIT_FIELD_CHARM] && !_player->m_TransporterGUID && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) )
 		{
 			if( _player->_lastHeartbeatT == 0 )
 			{
