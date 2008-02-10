@@ -1209,9 +1209,9 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 									continue;
 							}break;
 						//priest - Inspiration
-						case 15363:
 						case 14893:
 						case 15357:
+						case 15359
 							{
 								if( CastingSpell == NULL )
 									continue;
@@ -1258,6 +1258,16 @@ void Unit::HandleProc( uint32 flag, Unit* victim, SpellEntry* CastingSpell, uint
 								if( !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING)) //healing wave
 									continue;
 							}break;
+                        //shaman - Ancestral Fortitude
+                        case 16177:
+                        case 16236:
+                        case 16237:
+                            {
+                                if( CastingSpell == NULL )
+                                    continue;
+                                if( !(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING) ) //healing spell
+                                    continue;
+                            }break;
 						//shaman - windfurry weapon
 						case 8232:
 						case 8235:

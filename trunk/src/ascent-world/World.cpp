@@ -2296,6 +2296,17 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 		sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 
+    //shaman - Ancestral healing proc spell
+    sp = dbcSpell.LookupEntryForced( 16177 );
+    if( sp != NULL )
+        sp->rangeIndex = 4;
+    sp = dbcSpell.LookupEntryForced( 16236 );
+    if( sp != NULL )
+        sp->rangeIndex = 4;
+    sp = dbcSpell.LookupEntryForced( 16237 );
+    if( sp != NULL )
+        sp->rangeIndex = 4;
+
 	//shaman ( grouping ) Mental Quickness (missing 18 spells which have no grouping)
 	group_relation_shaman_mental_quickness = 0x00000008 | 0x00000010 | 0x00000200 | 0x00000400 | 0x00080000 | 0x00100000 | 0x00400000 | 0x20000000 | 0x10000000 | 0x80000000;
 
@@ -5778,6 +5789,17 @@ bool World::SetInitialWorldSettings()
 		if( sp != NULL )
 			sp->EffectSpellGroupRelation[0] = group;
 	}
+
+    //Priest - Inspiration proc spell
+    sp = dbcSpell.LookupEntryForced( 14893 );
+    if( sp != NULL )
+        sp->rangeIndex = 4;
+    sp = dbcSpell.LookupEntryForced( 15357 );
+    if( sp != NULL )
+        sp->rangeIndex = 4;
+    sp = dbcSpell.LookupEntryForced( 15359 );
+    if( sp != NULL )
+        sp->rangeIndex = 4;
 
 	//Relentless Strikes
 	sp = dbcSpell.LookupEntryForced( 14179 );
