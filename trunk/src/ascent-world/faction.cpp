@@ -1,4 +1,27 @@
+/*
+ * Ascent MMORPG Server
+ * Copyright (C) 2005-2007 Ascent Team <http://www.ascentemu.com/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 #include "StdAfx.h"
+
+#ifdef WIN32
+#define HACKY_CRASH_FIXES 1		// SEH stuff
+#endif
 
 bool isHostile(Object* objA, Object* objB)// B is hostile for A?
 {
@@ -66,11 +89,25 @@ bool isHostile(Object* objA, Object* objB)// B is hostile for A?
 		}
 		if(objB->IsPet())
 		{
+#if defined(WIN32) && defined(HACKY_CRASH_FIXES)
+			__try {
+				// Check PvP Flags.
+				if(static_cast<Pet*>(objB)->GetPetOwner()->GetMapMgr() == objB->GetMapMgr() && static_cast<Pet*>(objB)->GetPetOwner() && static_cast<Pet*>(objB)->GetPetOwner()->IsPvPFlagged())
+					return true;
+				else
+					return false;
+			} __except(EXCEPTION_EXECUTE_HANDLER)
+			{
+				static_cast<Pet*>(objB)->ClearPetOwner();
+				static_cast<Pet*>(objB)->SafeDelete();
+			}
+#else
 			// Check PvP Flags.
-			if(static_cast<Pet*>(objB)->GetPetOwner() && static_cast<Pet*>(objB)->GetPetOwner()->IsPvPFlagged() && static_cast<Pet*>(objB)->GetPetOwner()->GetMapMgr() == objB->GetMapMgr())
+			if(static_cast<Pet*>(objB)->GetPetOwner()->GetMapMgr() == objB->GetMapMgr() && static_cast<Pet*>(objB)->GetPetOwner() && static_cast<Pet*>(objB)->GetPetOwner()->IsPvPFlagged())
 				return true;
 			else
 				return false;
+#endif
 		}
 	}
 

@@ -2601,7 +2601,7 @@ uint8 Spell::CanCast(bool tolerate)
 				return SPELL_FAILED_ONLY_STEALTHED;
 
 			Item * pMainHand = p_caster->GetItemInterface()->GetInventoryItem( INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND );
-			if( !pMainHand || pMainHand->GetProto()->Class != 2 || pMainHand->GetProto()->Class != 15 )
+			if( !pMainHand || pMainHand->GetProto()->Class != 2 || pMainHand->GetProto()->SubClass != 15 )
 				return SPELL_FAILED_EQUIPPED_ITEM_CLASS_MAINHAND;
 		}
 
