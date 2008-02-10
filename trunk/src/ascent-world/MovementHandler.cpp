@@ -610,7 +610,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		_player->SetMovement( MOVE_ROOT, 1 );
 	}
 
-	if( _player->m_redirectCount > 6 )
+	if( _player->m_redirectCount > 12 )
 	{
 		sChatHandler.SystemMessage( this, "Packet hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
 		sCheatLog.writefromsession( this, "MOVEFLAG_REDIRECTED Packet hacker kicked" );
