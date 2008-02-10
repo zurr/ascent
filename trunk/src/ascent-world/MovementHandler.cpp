@@ -498,8 +498,8 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		if( _player->blinked )
 		{
 			_player->blinked = false;
-			_player->m_fallDisabledUntil = UNIXTIME + 2;
 			_player->ResetHeartbeatCoords();
+			_player->m_fallTime = 0;
 		}
 		else
 		{
@@ -515,7 +515,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 					//Check if we aren't falling in water
 					if( !( movement_info.flags & MOVEFLAG_SWIMMING ) )
 					{
-						if( !_player->bFeatherFall && UNIXTIME > _player->m_fallDisabledUntil )
+						if( !_player->bFeatherFall ) //&& UNIXTIME > _player->m_fallDisabledUntil )
 						{
 							//10% dmg per sec after first 3 seconds
 							//it rL a*t*t
