@@ -684,8 +684,8 @@ public:
 
 private:
 	friend class Player;
-	Player *_player;
-	WorldSocket *_socket;
+	Player* _player;
+	WorldSocket* _socket;
 		
 	/* Preallocated buffers for movement handlers */
 	MovementInfo movement_info;
