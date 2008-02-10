@@ -800,7 +800,7 @@ void WorldSession::FullLogin(Player * plr)
 	}
 #endif
 
-	Log.Debug("Login", "Player %s logged in.", plr->GetName());
+	Log.Information("Login", "Player %s logged in.", plr->GetName());
 
 	if(plr->GetTeam() == 1)
 		sWorld.HordePlayers++;
