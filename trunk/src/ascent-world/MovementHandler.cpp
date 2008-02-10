@@ -397,21 +397,24 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 		/* Anti-Fall Damage                                                     */
 		/************************************************************************/
 
-		if( !_player->bFeatherFall && ( !_player->blinked || _player->m_redirectCount > 6 ) && !_player->m_TransporterGUID && _player->_lastHeartbeatZ - movement_info.z > 2.5f && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) )
+		if( sWorld.antihack_falldmg )
 		{
-			_player->m_heightDecreaseCount++;
-			if( _player->m_heightDecreaseCount > 16.0f )
+			if( !_player->bFeatherFall && ( !_player->blinked || _player->m_redirectCount > 6 ) && !_player->flying_aura && !_player->m_TransporterGUID && _player->_lastHeartbeatZ - movement_info.z > 2.5f && !( movement_info.flags & MOVEFLAG_FULL_FALLING_MASK ) )
 			{
-				sChatHandler.SystemMessage( this, "Fall Damage hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
-				sCheatLog.writefromsession( this, "Fall Damage hacker kicked" );
-				_player->m_KickDelay = 0;
-				sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
-				_player->SetMovement( MOVE_ROOT, 1 );
+				_player->m_heightDecreaseCount++;
+				if( _player->m_heightDecreaseCount > 16.0f )
+				{
+					sChatHandler.SystemMessage( this, "Fall Damage hacker detected. Your account has been flagged for later processing by server administrators. You will now be removed from the server." );
+					sCheatLog.writefromsession( this, "Fall Damage hacker kicked" );
+					_player->m_KickDelay = 0;
+					sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 15000, 1, 0 );
+					_player->SetMovement( MOVE_ROOT, 1 );
+				}
 			}
-		}
-		else
-		{
-			_player->m_heightDecreaseCount = 0;
+			else
+			{
+				_player->m_heightDecreaseCount = 0;
+			}
 		}
 
 		/*if(movement_info.flags & MOVEFLAG_FALLING_FAR && (!movement_info.FallTime) && sWorld.antihack_falldmg &&
