@@ -63,8 +63,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 				{
 					i1->ModUInt32Value(ITEM_FIELD_STACK_COUNT, -c);
 					i2->ModUInt32Value(ITEM_FIELD_STACK_COUNT, +c);
-					i1->m_isDirty = true;
-					i2->m_isDirty = true;
+					i1->m_isDirty = i2->m_isDirty = true;
 				}
 				else
 				{
@@ -91,7 +90,6 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 			i2=objmgr.CreateItem(i1->GetEntry(),_player);
 			i2->SetUInt32Value(ITEM_FIELD_STACK_COUNT,c);
 			i1->m_isDirty = true;
-			i2->m_isDirty = true;
 
 			if(DstSlot == -1)
 			{
@@ -123,13 +121,8 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 {
-	if( _player == NULL )
-		return;
-
-	if( !_player->IsInWorld() )
-		return;
-
-	CHECK_PACKET_SIZE( recv_data, 4 );
+	if(!_player->IsInWorld()) return;
+	CHECK_PACKET_SIZE(recv_data, 4);
 	WorldPacket data;
 	WorldPacket packet;
 	Item *SrcItem = NULL;
@@ -138,38 +131,35 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 	//Item *SrcTemp = NULL;
 	//Item *DstTemp = NULL;
 
-	int8 DstInvSlot = 0;
-	int8 DstSlot = 0;
-	int8 SrcInvSlot = 0;
-	int8 SrcSlot = 0;
-	int8 error = 0;
-
+	int8 DstInvSlot=0, DstSlot=0, SrcInvSlot=0, SrcSlot=0, error=0;
 	//	 20		   5			255	  26
+
+	if(!GetPlayer())
+		return;
 	
 	recv_data >> DstInvSlot >> DstSlot >> SrcInvSlot >> SrcSlot;
 
-	sLog.outDetail( "ITEM: swap, DstInvSlot %i DstSlot %i SrcInvSlot %i SrcSlot %i", DstInvSlot, DstSlot, SrcInvSlot, SrcSlot );
+	sLog.outDetail("ITEM: swap, DstInvSlot %i DstSlot %i SrcInvSlot %i SrcSlot %i", DstInvSlot, DstSlot, SrcInvSlot, SrcSlot);
 
-	if( DstInvSlot == SrcSlot && SrcInvSlot == -1 ) // player trying to add self container to self container slots
+	if(DstInvSlot == SrcSlot && SrcInvSlot == -1) // player trying to add self container to self container slots
 	{
-		GetPlayer()->GetItemInterface()->BuildInventoryChangeError( NULL, NULL, INV_ERR_ITEMS_CANT_BE_SWAPPED );
+		GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ITEMS_CANT_BE_SWAPPED);
 		return;
 	}
 
-	SrcItem = _player->GetItemInterface()->GetInventoryItem( SrcInvSlot, SrcSlot );
-	if( SrcItem == NULL )
+	SrcItem=_player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
+	if(!SrcItem)
 		return;
 
-	DstItem = _player->GetItemInterface()->GetInventoryItem( DstInvSlot, DstSlot );
+	DstItem=_player->GetItemInterface()->GetInventoryItem(DstInvSlot,DstSlot);
 
-	if( DstItem != NULL )
-	{
-		//check if it will go to equipment slot
-		if( SrcInvSlot == INVENTORY_SLOT_NOT_SET )//not bag
+	if(DstItem)
+	{   //check if it will go to equipment slot
+		if(SrcInvSlot==INVENTORY_SLOT_NOT_SET)//not bag
 		{
-			if( DstItem->IsContainer() )
+			if(DstItem->IsContainer())
 			{
-				if( static_cast< Container* >( DstItem )->HasItems() )
+				if(((Container*)DstItem)->HasItems())
 				{
 					if(SrcSlot < INVENTORY_SLOT_BAG_START || SrcSlot >= INVENTORY_SLOT_BAG_END || SrcSlot < BANK_SLOT_BAG_START || SrcSlot >= BANK_SLOT_BAG_END)
 					{
@@ -190,9 +180,9 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 		}
 		else
 		{
-			if( DstItem->IsContainer() )
+			if(DstItem->IsContainer())
 			{
-				if( static_cast< Container* >( DstItem )->HasItems() )
+				if(((Container*)DstItem)->HasItems())
 				{
 					_player->GetItemInterface()->BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
 					return;
@@ -207,15 +197,15 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 		}
 	}
 
-	if( SrcItem != NULL )
+	if(SrcItem)
 	{   //check if it will go to equipment slot
-		if( DstInvSlot==INVENTORY_SLOT_NOT_SET )//not bag
+		if(DstInvSlot==INVENTORY_SLOT_NOT_SET)//not bag
 		{
-			if( SrcItem->IsContainer() )
+			if(SrcItem->IsContainer())
 			{
-				if( static_cast< Container* >( SrcItem )->HasItems() )
+				if(((Container*)SrcItem)->HasItems())
 				{
-					if( DstSlot < INVENTORY_SLOT_BAG_START || DstSlot >= INVENTORY_SLOT_BAG_END || DstSlot < BANK_SLOT_BAG_START || DstSlot >= BANK_SLOT_BAG_END)
+					if(DstSlot < INVENTORY_SLOT_BAG_START || DstSlot >= INVENTORY_SLOT_BAG_END || DstSlot < BANK_SLOT_BAG_START || DstSlot >= BANK_SLOT_BAG_END)
 					{
 						_player->GetItemInterface()->BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
 						return;
@@ -234,9 +224,9 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 		}
 		else
 		{
-			if( SrcItem->IsContainer() )
+			if(SrcItem->IsContainer())
 			{
-				if( static_cast< Container* >( SrcItem )->HasItems() )
+				if(((Container*)SrcItem)->HasItems())
 				{
 					_player->GetItemInterface()->BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
 					return;
@@ -355,30 +345,27 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleSwapInvItemOpcode( WorldPacket & recv_data )
 {
-	if( _player == NULL )
-		return;
-
-	if( !_player->IsInWorld() )
-		return;
-
-	CHECK_PACKET_SIZE( recv_data, 2 );
+	if(!_player->IsInWorld()) return;
+	CHECK_PACKET_SIZE(recv_data, 2);
 	WorldPacket data;
-	int8 srcslot = 0;
-	int8 dstslot = 0;
-	int8 error = 0;
+	int8 srcslot=0, dstslot=0;
+	int8 error=0;
 
 	recv_data >> srcslot >> dstslot;
 
-	sLog.outDetail( "ITEM: swap, src slot: %u dst slot: %u", (uint32)srcslot, (uint32)dstslot );
+	if(!GetPlayer())
+		return;
 
-	if( dstslot == srcslot ) // player trying to add item to the same slot
+	sLog.outDetail("ITEM: swap, src slot: %u dst slot: %u", (uint32)srcslot, (uint32)dstslot);
+
+	if(dstslot == srcslot) // player trying to add item to the same slot
 	{
-		GetPlayer()->GetItemInterface()->BuildInventoryChangeError( NULL, NULL, INV_ERR_ITEMS_CANT_BE_SWAPPED );
+		GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ITEMS_CANT_BE_SWAPPED);
 		return;
 	}
 
-	Item* dstitem = _player->GetItemInterface()->GetInventoryItem( dstslot );
-	Item* srcitem = _player->GetItemInterface()->GetInventoryItem( srcslot );
+	Item * dstitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
+	Item * srcitem = _player->GetItemInterface()->GetInventoryItem(srcslot);
 	
 	// allow weapon switching in combat
 	bool skip_combat = false;
@@ -395,7 +382,7 @@ void WorldSession::HandleSwapInvItemOpcode( WorldPacket & recv_data )
 		}
 	}
 
-	if( srcitem == NULL )
+	if( !srcitem )
 	{
 		_player->GetItemInterface()->BuildInventoryChangeError( srcitem, dstitem, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM );
 		return;
@@ -416,15 +403,15 @@ void WorldSession::HandleSwapInvItemOpcode( WorldPacket & recv_data )
 		}
 	}
 
-	if( dstitem != NULL )
+	if(dstitem)
 	{
-		if( ( error = _player->GetItemInterface()->CanEquipItemInSlot( INVENTORY_SLOT_NOT_SET, srcslot, dstitem->GetProto(), skip_combat ) ) )
+		if((error=_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, srcslot, dstitem->GetProto(), skip_combat)))
 		{
-			if( srcslot < INVENTORY_KEYRING_END )
+			if(srcslot < INVENTORY_KEYRING_END)
 			{
 				data.Initialize( SMSG_INVENTORY_CHANGE_FAILURE );
 				data << error;
-				if( error == 1 ) 
+				if(error == 1) 
 				{
 					data << dstitem->GetProto()->RequiredLevel;
 				}
@@ -438,120 +425,118 @@ void WorldSession::HandleSwapInvItemOpcode( WorldPacket & recv_data )
 		}
 	}
 
-	if( srcitem->IsContainer() )
+	if(srcitem->IsContainer())
 	{
 		//source has items and dst is a backpack or bank
-		if( static_cast< Container* >( srcitem )->HasItems() )
-			if( !_player->GetItemInterface()->IsBagSlot( dstslot ) )
+		if(((Container*)srcitem)->HasItems())
+			if(!_player->GetItemInterface()->IsBagSlot(dstslot))
 			{
-				_player->GetItemInterface()->BuildInventoryChangeError( srcitem, dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG );
+				_player->GetItemInterface()->BuildInventoryChangeError(srcitem,dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
 				return;
 			}
 
-		if( dstitem != NULL )
+		if(dstitem)
 		{
 			//source is a bag and dst slot is a bag inventory and has items
-			if( dstitem->IsContainer() )
+			if(dstitem->IsContainer())
 			{
-				if( static_cast< Container* >( dstitem )->HasItems() && !_player->GetItemInterface()->IsBagSlot( srcslot ) )
+				if(((Container*)dstitem)->HasItems() && !_player->GetItemInterface()->IsBagSlot(srcslot))
 				{
-					_player->GetItemInterface()->BuildInventoryChangeError( srcitem, dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG );
+					_player->GetItemInterface()->BuildInventoryChangeError(srcitem,dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
 					return;
 				}
 			}
 			else
 			{
 				//dst item is not a bag, swap impossible
-				_player->GetItemInterface()->BuildInventoryChangeError( srcitem, dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG );
+				_player->GetItemInterface()->BuildInventoryChangeError(srcitem,dstitem,INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
 				return;
 			}
 		}
 
 		//dst is bag inventory
-		if( dstslot < INVENTORY_SLOT_BAG_END )
+		if(dstslot < INVENTORY_SLOT_BAG_END)
 		{
-			if( srcitem->GetProto()->Bonding == ITEM_BIND_ON_EQUIP )
+			if(srcitem->GetProto()->Bonding==ITEM_BIND_ON_EQUIP)
 				srcitem->SoulBind();
 		}
 	}
 
 	// swap items
-	_player->GetItemInterface()->SwapItemSlots( srcslot, dstslot );
+	_player->GetItemInterface()->SwapItemSlots(srcslot, dstslot);
 }
 
 void WorldSession::HandleDestroyItemOpcode( WorldPacket & recv_data )
 {
-	if( _player == NULL )
-		return;
-
-	if( !_player->IsInWorld() )
-		return;
-
-	CHECK_PACKET_SIZE( recv_data, 2 );
+	if(!_player->IsInWorld()) return;
+	CHECK_PACKET_SIZE(recv_data, 2);
+	//Player *plyr = GetPlayer();
 
 	int8 SrcInvSlot, SrcSlot;
 
 	recv_data >> SrcInvSlot >> SrcSlot;
 
 	sLog.outDetail( "ITEM: destroy, SrcInv Slot: %i Src slot: %i", SrcInvSlot, SrcSlot );
-	Item* it = _player->GetItemInterface()->GetInventoryItem( SrcInvSlot, SrcSlot );
+	Item *it = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
 
-	if( it != NULL )
+	if(it)
 	{
 		if(it->IsContainer())
 		{
-			if( static_cast< Container* >( it )->HasItems() )
+			if(((Container*)it)->HasItems())
 			{
-				_player->GetItemInterface()->BuildInventoryChangeError( it, NULL, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS );
+				_player->GetItemInterface()->BuildInventoryChangeError(
+				it, NULL, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
 				return;
 			}
 		}
 
-		if( it->GetProto()->ItemId == ITEM_ENTRY_GUILD_CHARTER )
+		if(it->GetProto()->ItemId == ITEM_ENTRY_GUILD_CHARTER)
 		{
-			Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
-			if( gc != NULL )
+			Charter *gc = _player->m_charters[CHARTER_TYPE_GUILD];
+			if(gc)
 				gc->Destroy();
 		}
 
-		if( it->GetProto()->ItemId == ARENA_TEAM_CHARTER_2v2 )
+		if(it->GetProto()->ItemId == ARENA_TEAM_CHARTER_2v2)
 		{
-			Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_2V2];
-			if( gc != NULL )
+			Charter *gc = _player->m_charters[CHARTER_TYPE_ARENA_2V2];
+			if(gc)
 				gc->Destroy();
 		}
 
-		if( it->GetProto()->ItemId == ARENA_TEAM_CHARTER_5v5 )
+		if(it->GetProto()->ItemId == ARENA_TEAM_CHARTER_5v5)
 		{
-			Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_5V5];
-			if( gc != NULL )
+			Charter *gc = _player->m_charters[CHARTER_TYPE_ARENA_5V5];
+			if(gc)
 				gc->Destroy();
 		}
 
-		if( it->GetProto()->ItemId == ARENA_TEAM_CHARTER_3v3 )
+		if(it->GetProto()->ItemId == ARENA_TEAM_CHARTER_3v3)
 		{
-			Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_3V3];
-			if( gc != NULL )
+			Charter *gc = _player->m_charters[CHARTER_TYPE_ARENA_3V3];
+			if(gc)
 				gc->Destroy();
 		}
 
-		uint32 mail_id = it->GetUInt32Value( ITEM_FIELD_ITEM_TEXT_ID );
-		if( mail_id )
-			sMailSystem.RemoveMessageIfDeleted( mail_id, _player );
+		uint32 mail_id = it->GetUInt32Value(ITEM_FIELD_ITEM_TEXT_ID);
+		if(mail_id)
+			sMailSystem.RemoveMessageIfDeleted(mail_id, _player);
+		
+
 
 		/*bool result =  _player->GetItemInterface()->SafeFullRemoveItemFromSlot(SrcInvSlot,SrcSlot);
 		if(!result)
 		{
 			sLog.outDetail("ITEM: Destroy, SrcInv Slot: %u Src slot: %u Failed", (uint32)SrcInvSlot, (uint32)SrcSlot);
 		}*/
-
-		Item* pItem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot( SrcInvSlot, SrcSlot, false );
-		if( pItem == NULL )
+		Item * pItem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot,SrcSlot,false);
+		if(!pItem)
 			return;
 
-		if( _player->GetCurrentSpell() && _player->GetCurrentSpell()->i_caster == pItem )
+		if(_player->GetCurrentSpell() && _player->GetCurrentSpell()->i_caster==pItem)
 		{
-			_player->GetCurrentSpell()->i_caster = NULL;
+			_player->GetCurrentSpell()->i_caster=NULL;
 			_player->GetCurrentSpell()->cancel();
 		}
 
@@ -562,9 +547,7 @@ void WorldSession::HandleDestroyItemOpcode( WorldPacket & recv_data )
 
 void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 {
-	if( !_player->IsInWorld() )
-		return;
-
+	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recv_data, 2);
 	WorldPacket data;
 
@@ -578,11 +561,11 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 
 	sLog.outDetail("ITEM: autoequip, Inventory slot: %i Source Slot: %i", SrcInvSlot, SrcSlot); 
 
-	Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
+	Item *eitem=_player->GetItemInterface()->GetInventoryItem(SrcInvSlot,SrcSlot);
 
-	if( eitem == NULL ) 
+	if(!eitem) 
 	{
-		_player->GetItemInterface()->BuildInventoryChangeError( eitem, NULL, INV_ERR_ITEM_NOT_FOUND );
+		_player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_NOT_FOUND);
 		return;
 	}
 
@@ -676,7 +659,7 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 		}
 	}
 
-	Item* oitem = NULL;
+	Item * oitem = NULL;
 
 	if( SrcInvSlot == INVENTORY_SLOT_NOT_SET )
 	{
@@ -684,27 +667,25 @@ void WorldSession::HandleAutoEquipItemOpcode( WorldPacket & recv_data )
 	}
 	else
 	{
-		eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot( SrcInvSlot, SrcSlot, false );
-		oitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot( INVENTORY_SLOT_NOT_SET, Slot, false );
-		if( oitem != NULL )
+		eitem=_player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot,SrcSlot, false);
+		oitem=_player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, Slot, false);
+		if(oitem)
 		{
-			result = _player->GetItemInterface()->SafeAddItem( oitem, SrcInvSlot, SrcSlot );
-			if( !result )
+			result = _player->GetItemInterface()->SafeAddItem(oitem,SrcInvSlot,SrcSlot);
+			if(!result)
 			{
-				printf( "HandleAutoEquip: Error while adding item to SrcSlot" );
+				printf("HandleAutoEquip: Error while adding item to SrcSlot");
 			}
 		}
-		if( eitem != NULL )
+		result = _player->GetItemInterface()->SafeAddItem(eitem, INVENTORY_SLOT_NOT_SET, Slot);
+		if(!result)
 		{
-			result = _player->GetItemInterface()->SafeAddItem( eitem, INVENTORY_SLOT_NOT_SET, Slot );
-			if( !result )
-			{
-				printf("HandleAutoEquip: Error while adding item to Slot");
-			}
+			printf("HandleAutoEquip: Error while adding item to Slot");
 		}
+		
 	}
 
-	if( eitem != NULL && eitem->GetProto()->Bonding == ITEM_BIND_ON_EQUIP )
+	if(eitem->GetProto()->Bonding==ITEM_BIND_ON_EQUIP)
 		eitem->SoulBind();	   
 }
 
@@ -898,11 +879,8 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 			return;
 		}
 		_player->ModUInt32Value( PLAYER_FIELD_COINAGE , -cost);
-		_player->GetItemInterface()->RemoveBuyBackItem(stuff);
-
 		if (!add)
 		{
-			it->m_isDirty = true;			// save the item again on logout
 			result = _player->GetItemInterface()->AddItemToFreeSlot(it);
 			if(!result)
 			{
@@ -913,13 +891,6 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 		{
 			add->SetCount(add->GetUInt32Value(ITEM_FIELD_STACK_COUNT) + amount);
 			add->m_isDirty = true;
-
-			// delete the item
-			it->DeleteFromDB();
-
-			// free the pointer
-			it->DestroyForPlayer( _player );
-			it->Delete();
 		}
 
 		data.Initialize( SMSG_BUY_ITEM );
@@ -927,6 +898,7 @@ void WorldSession::HandleBuyBackOpcode( WorldPacket & recv_data )
 		data << uint32(itemid) << uint32(amount);
 		SendPacket( &data );
 	}
+	_player->GetItemInterface()->RemoveBuyBackItem(stuff);
 }
 
 void WorldSession::HandleSellItemOpcode( WorldPacket & recv_data )
@@ -979,9 +951,9 @@ void WorldSession::HandleSellItemOpcode( WorldPacket & recv_data )
 		return; //our player doesn't have this item
 	}
 
-	if( item->IsContainer() && static_cast< Container* >( item )->HasItems() )
+	if(item->IsContainer() && ((Container*)item)->HasItems())
 	{
-		SendSellItem( vendorguid, itemguid, 6 );
+		SendSellItem(vendorguid, itemguid, 6);
 		return;
 	}
 
@@ -1022,7 +994,6 @@ void WorldSession::HandleSellItemOpcode( WorldPacket & recv_data )
 		if(item)
 		{
 			_player->GetItemInterface()->AddBuyBackItem(item,(it->SellPrice) * quantity);
-			item->DeleteFromDB();
 		}
 	}
 
@@ -1106,12 +1077,11 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 		}
 		else
 		{
-			c = static_cast< Container* >( _player->GetItemInterface()->GetItemByGUID( bagguid ) );
-			if( c == NULL )
-				return;
+			c=(Container*)_player->GetItemInterface()->GetItemByGUID(bagguid);
+			if(!c)return;
 			bagslot = _player->GetItemInterface()->GetBagSlotByGuid(bagguid);
 
-			if( bagslot == INVENTORY_SLOT_NOT_SET || (c->GetProto() && (uint32)slot > c->GetProto()->ContainerSlots))
+			if(bagslot == INVENTORY_SLOT_NOT_SET || (c->GetProto() && (uint32)slot > c->GetProto()->ContainerSlots))
 			{
 				_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
 				return;
@@ -1120,12 +1090,12 @@ void WorldSession::HandleBuyItemInSlotOpcode( WorldPacket & recv_data ) // drag 
 	}
 	else
 	{
-		if( ( bagguid >> 32 ) )
+		if((bagguid>>32))
 		{
-			c = static_cast< Container* >( _player->GetItemInterface()->GetItemByGUID( bagguid ) );
-			if( c == NULL )
+			c=(Container*)_player->GetItemInterface()->GetItemByGUID(bagguid);
+			if(!c)
 			{
-				_player->GetItemInterface()->BuildInventoryChangeError( 0, 0, INV_ERR_ITEM_NOT_FOUND );
+				_player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_NOT_FOUND);
 				return;//non empty
 			}
 
@@ -1331,11 +1301,10 @@ void WorldSession::HandleBuyItemOpcode( WorldPacket & recv_data ) // right-click
 		}
 		else 
 		{
-			Item* bag = _player->GetItemInterface()->GetInventoryItem( slotresult.ContainerSlot );
-			if( bag != NULL )
+			if(Item *bag = _player->GetItemInterface()->GetInventoryItem(slotresult.ContainerSlot))
 			{
-				static_cast< Container* >( bag )->AddItem( slotresult.Slot, itm );
-				SendItemPushResult( itm, false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1 );
+				((Container*)bag)->AddItem(slotresult.Slot, itm);
+				SendItemPushResult(itm, false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1);
 			}
 		}
 	}
@@ -1405,12 +1374,6 @@ void WorldSession::SendInventoryList(Creature* unit)
 		{
 			if((curItem = ItemPrototypeStorage.LookupEntry(itr->itemid)))
 			{
-				if(curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
-					continue;
-
-				if(curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
-					continue;
-
 				int32 av_am = (itr->max_amount>0)?itr->available_amount:-1;
 				data << (counter + 1);
 				data << curItem->ItemId;
@@ -1567,13 +1530,10 @@ void WorldSession::HandleReadItemOpcode(WorldPacket &recvPacket)
 
 void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 {
-	if( _player == NULL )
-		return;
-
-	if( !_player->IsInWorld() )
-		return;
-
+	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recvPacket, 12);
+	if(!GetPlayer())
+		return;
 
 	uint64 npcguid;
 	uint64 itemguid;
@@ -1588,10 +1548,10 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 				// maxdurability - currentdurability
 				// it its 0 no durabiliti needs to be set
 				uint32 dDurability = _player->GetItemInterface()->GetInventoryItem(i)->GetDurabilityMax() - _player->GetItemInterface()->GetInventoryItem(i)->GetDurability();
-				if( dDurability > 0 )
+				if (dDurability)
 				{
 					// the amount of durability that is needed to be added is the amount of money to be payed
-					if( dDurability <= _player->GetUInt32Value( PLAYER_FIELD_COINAGE ) )
+					if (dDurability <= _player->GetUInt32Value(PLAYER_FIELD_COINAGE))
 					{
 						int32 cDurability = _player->GetItemInterface()->GetInventoryItem(i)->GetDurability();
 					   _player->ModUInt32Value( PLAYER_FIELD_COINAGE , -(int32)dDurability );
@@ -1961,6 +1921,20 @@ void WorldSession::HandleWrapItemOpcode( WorldPacket& recv_data )
 
 	// all checks passed ok
 	source_entry = src->GetEntry();
+	dst->SetProto( src->GetProto() );
+
+	if( src->GetUInt32Value( ITEM_FIELD_STACK_COUNT ) <= 1 )
+	{
+		// destroy the source item
+		_player->GetItemInterface()->SafeFullRemoveItemByGuid( src->GetGUID() );
+	}
+	else
+	{
+		// reduce stack count by one
+		src->ModUInt32Value( ITEM_FIELD_STACK_COUNT, -1 );
+		src->m_isDirty = true;
+	}
+
 	itemid = source_entry;
 	switch( source_entry )
 	{
@@ -1987,25 +1961,6 @@ void WorldSession::HandleWrapItemOpcode( WorldPacket& recv_data )
 	case 21830:
 		itemid = 21831;
 		break;
-
-	default:
-		_player->GetItemInterface()->BuildInventoryChangeError( src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED );
-		return;
-		break;
-	}
-
-	dst->SetProto( src->GetProto() );
-
-	if( src->GetUInt32Value( ITEM_FIELD_STACK_COUNT ) <= 1 )
-	{
-		// destroy the source item
-		_player->GetItemInterface()->SafeFullRemoveItemByGuid( src->GetGUID() );
-	}
-	else
-	{
-		// reduce stack count by one
-		src->ModUInt32Value( ITEM_FIELD_STACK_COUNT, -1 );
-		src->m_isDirty = true;
 	}
 
 	// change the dest item's entry
