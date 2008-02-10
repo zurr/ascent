@@ -2593,6 +2593,18 @@ uint8 Spell::CanCast(bool tolerate)
 				return SPELL_FAILED_ONLY_OUTDOORS;
 		}
 #endif
+
+		// backstab/ambush
+		if( m_spellInfo->NameHash == SPELL_HASH_BACKSTAB || m_spellInfo->NameHash == SPELL_HASH_AMBUSH )
+		{
+			if( m_spellInfo->NameHash == SPELL_HASH_AMBUSH && !p_caster->IsStealth() )
+				return SPELL_FAILED_ONLY_STEALTHED;
+
+			Item * pMainHand = p_caster->GetItemInterface()->GetInventoryItem( INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND );
+			if( !pMainHand || pMainHand->GetProto()->Class != 2 || pMainHand->GetProto()->Class != 15 )
+				return SPELL_FAILED_EQUIPPED_ITEM_CLASS_MAINHAND;
+		}
+
 		// check for cooldowns
 		if(!tolerate && !p_caster->CanCastDueToCooldown(m_spellInfo))
 				return SPELL_FAILED_NOT_READY;
