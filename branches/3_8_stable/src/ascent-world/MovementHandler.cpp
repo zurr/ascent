@@ -366,6 +366,14 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 #endif
 
 	/************************************************************************/
+	/* Orientation dumping                                                  */
+	/************************************************************************/
+#if 0
+	printf("Packet: 0x%03X (%s)\n", recv_data.GetOpcode(), LookupName( recv_data.GetOpcode(), g_worldOpcodeNames ) );
+	printf("Orientation: %.10f\n", movement_info.orientation);
+#endif
+
+	/************************************************************************/
 	/* Anti-Hack Checks                                                     */
 	/************************************************************************/
 	if( !(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->m_uint32Values[UNIT_FIELD_CHARM])
@@ -456,7 +464,14 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 #else
 			*(uint32*)&movement_packet[pos+5] = uint32(move_time + (*itr)->GetSession()->m_moveDelayTime);
 #endif
-			(*itr)->GetSession()->OutPacket(recv_data.GetOpcode(), uint16(recv_data.size() + pos), movement_packet);
+#if defined(ENABLE_COMPRESSED_MOVEMENT) && defined(ENABLE_COMPRESSED_MOVEMENT_FOR_PLAYERS)
+			if( _player->GetPositionNC().Distance2DSq((*itr)->GetPosition()) >= World::m_movementCompressThreshold )
+				(*itr)->AppendMovementData( recv_data.GetOpcode(), uint16(recv_data.size() + pos), movement_packet );
+			else
+				(*itr)->GetSession()->OutPacket(recv_data.GetOpcode(), uint16(recv_data.size() + pos), movement_packet);
+#else
+			(*itr)->GetSession()->OutPacket(recv_data.GetOpcode(), uint16(recv_data.size() + pos), movement_packet);			
+#endif
 		}
 	}
 

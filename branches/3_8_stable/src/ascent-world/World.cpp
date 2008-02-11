@@ -22,6 +22,10 @@
 initialiseSingleton( World );
 DayWatcherThread * dw = NULL;
 
+float World::m_movementCompressThreshold;
+uint32 World::m_movementCompressRate;
+uint32 World::m_movementCompressInterval;
+
 World::World()
 {
 	m_playerLimit = 0;
@@ -7433,9 +7437,9 @@ void World::Rehash(bool load)
 	if(load)
 	{
 		#ifdef WIN32
-		Config.MainConfig.SetSource("ascent.conf", true);
+		Config.MainConfig.SetSource("ascent-world.conf", true);
 		#else
-		Config.MainConfig.SetSource((char*)CONFDIR "/ascent.conf", true);
+		Config.MainConfig.SetSource((char*)CONFDIR "/ascent-world.conf", true);
 		#endif
 	}
 
@@ -7589,6 +7593,13 @@ void World::Rehash(bool load)
 	m_genLevelCap = Config.MainConfig.GetIntDefault("Server", "GenLevelCap", 70);
 	m_limitedNames = Config.MainConfig.GetBoolDefault("Server", "LimitedNames", true);
 	m_useAccountData = Config.MainConfig.GetBoolDefault("Server", "UseAccountData", false);
+
+	// ======================================
+	m_movementCompressInterval = Config.MainConfig.GetIntDefault("Movement", "FlushInterval", 1000);
+	m_movementCompressRate = Config.MainConfig.GetIntDefault("Movement", "CompressRate", 1);
+	m_movementCompressThreshold = Config.MainConfig.GetFloatDefault("Movement", "CompressThreshold", 25.0f);
+	m_movementCompressThreshold *= m_movementCompressThreshold;		// square it to avoid sqrt() on checks
+	// ======================================
 
 	if( m_banTable != NULL )
 		free( m_banTable );
