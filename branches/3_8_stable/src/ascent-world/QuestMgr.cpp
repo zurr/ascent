@@ -78,7 +78,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst, bool skiplevelcheck)
 	}
 
 	// check quest level
-	if( plr->getLevel() >= ( qst->max_level + 5 ) )
+	if( plr->getLevel() >= ( qst->max_level + 5 ) && ( status != QMGR_QUEST_REPEATABLE ) )
 		return QMGR_QUEST_CHAT;
 
 	return status;
@@ -1440,7 +1440,7 @@ bool QuestMgr::OnActivateQuestGiver(Object *qst_giver, Player *plr)
 		}
 		
 		for(itr = q_begin; itr != q_end; ++itr) 
-			if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QMGR_QUEST_NOT_FINISHED)
+			if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QMGR_QUEST_CHAT)
 				break;
 
 		if (sQuestMgr.CalcStatus(qst_giver, plr) < QMGR_QUEST_NOT_FINISHED)
