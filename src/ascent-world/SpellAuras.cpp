@@ -1671,14 +1671,6 @@ void Aura::SpellAuraDummy(bool apply)
 				}
 			}*/
 		}break;
-	case 33763: // LifeBloom
-		 {
-			 if(!apply)
-			 {
-				 if (this->GetUnitCaster())
-						 this->GetUnitCaster()->Heal(m_target,33763,600);
-			 }
-		 }break;
 
 	case 23701://Darkmoon Card: Twisting Nether give 10% chance to self resurrect ->cast 23700
 		{
@@ -1798,6 +1790,22 @@ void Aura::SpellAuraDummy(bool apply)
 				sEventMgr.AddEvent(this, &Aura::EventPeriodicDamage, (uint32)mod->m_amount, EVENT_AURA_PERIODIC_DAMAGE, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 			else
 				sEventMgr.RemoveEvents(this, EVENT_AURA_PERIODIC_DAMAGE);
+		}break;
+
+	case 33763:		// lifebloom
+		{
+			if(apply)
+				return;
+
+			Unit * pCaster = GetUnitCaster();
+			if( pCaster == NULL )
+				pCaster = m_target;
+
+			// this is an ugly hack because i don't want to copy/paste code ;P
+			Spell spell(pCaster, m_spellProto, true, NULL);
+			spell.SetUnitTarget( m_target );
+			spell.Heal( mod->m_amount );
+			//pCaster->Heal( m_target, m_spellProto->Id, mod->m_amount );
 		}break;
 
 
