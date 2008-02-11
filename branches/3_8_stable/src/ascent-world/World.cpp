@@ -23,6 +23,7 @@ initialiseSingleton( World );
 DayWatcherThread * dw = NULL;
 
 float World::m_movementCompressThreshold;
+float World::m_movementCompressThresholdCreatures;
 uint32 World::m_movementCompressRate;
 uint32 World::m_movementCompressInterval;
 
@@ -7597,6 +7598,10 @@ void World::Rehash(bool load)
 	// ======================================
 	m_movementCompressInterval = Config.MainConfig.GetIntDefault("Movement", "FlushInterval", 1000);
 	m_movementCompressRate = Config.MainConfig.GetIntDefault("Movement", "CompressRate", 1);
+	
+	m_movementCompressThresholdCreatures = Config.MainConfig.GetFloatDefault("Movement", "CompressThresholdCreatures", 15.0f);
+	m_movementCompressThresholdCreatures *= m_movementCompressThresholdCreatures;
+
 	m_movementCompressThreshold = Config.MainConfig.GetFloatDefault("Movement", "CompressThreshold", 25.0f);
 	m_movementCompressThreshold *= m_movementCompressThreshold;		// square it to avoid sqrt() on checks
 	// ======================================
