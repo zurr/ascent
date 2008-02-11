@@ -274,8 +274,8 @@ Player::Player ( uint32 high, uint32 low ) : m_mailBox(low)
 	mUpdateCount			= 0;
     mCreationCount          = 0;
     bCreationBuffer.reserve(50000);
-	bUpdateBuffer.reserve(50000);//ought to be > than enough ;)
-	mOutOfRangeIds.reserve(20000);
+	bUpdateBuffer.reserve(30000);//ought to be > than enough ;)
+	mOutOfRangeIds.reserve(1000);
 	mOutOfRangeIdCount	  = 0;
 
 	bProcessPending		 = false;
