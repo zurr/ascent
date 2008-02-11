@@ -125,6 +125,12 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 		}
 	}
 	
+	if( itemProto->AllowableClass && !(_player->getClassMask() & itemProto->AllowableClass) || itemProto->AllowableRace && !(_player->getRaceMask() & itemProto->AllowableRace) )
+	{
+		_player->GetItemInterface()->BuildInventoryChangeError(tmpItem,NULL,INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM);
+		return;
+	}		
+
 	if(itemProto->Spells[x].Cooldown || itemProto->Spells[x].CategoryCooldown)
 	{
 		if(!_player->CanCastItemDueToCooldown(itemProto, x))	// damn cheaters
