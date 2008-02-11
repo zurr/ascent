@@ -1789,6 +1789,18 @@ void Aura::SpellAuraDummy(bool apply)
             		
 		}break;
 
+	case 16914:
+	case 17401:
+	case 17402:
+	case 27012:		// hurricane
+		{
+			if(apply)
+				sEventMgr.AddEvent(this, &Aura::EventPeriodicDamage, (uint32)mod->m_amount, EVENT_AURA_PERIODIC_DAMAGE, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+			else
+				sEventMgr.RemoveEvents(this, EVENT_AURA_PERIODIC_DAMAGE);
+		}break;
+
+
 	case 2584:			// Area spirit healer aura for BG's
 		{
 			if( !m_target->IsPlayer() || apply )		// already applied in opcode handler
