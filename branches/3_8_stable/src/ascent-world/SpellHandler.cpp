@@ -88,7 +88,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
 	if (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
 	{
-		if (p_User->CombatStatus.IsInCombat())
+		if (p_User->CombatStatus.IsInCombat() || p_User->IsMounted())
 		{
 			_player->GetItemInterface()->BuildInventoryChangeError(tmpItem,NULL,INV_ERR_CANT_DO_IN_COMBAT);
 			return;
