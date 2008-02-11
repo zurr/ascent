@@ -3221,6 +3221,9 @@ void Unit::AddAura(Aura *aur)
 	}
 	////////////////////////////////////////////////////////
 
+	if( aur->m_auraSlot != 0xffffffff )
+		m_auras[aur->m_auraSlot] = NULL;
+	
 	aur->m_auraSlot=255;
 	aur->ApplyModifiers(true);
 	
