@@ -1875,8 +1875,10 @@ void AIInterface::SendMoveToPacket(float toX, float toY, float toZ, float toO, u
 
 	for(set<Player*>::iterator itr = m_Unit->GetInRangePlayerSetBegin(); itr != m_Unit->GetInRangePlayerSetEnd(); ++itr)
 	{
-		//if( (*itr)->GetPositionNC().Distance2DSq( m_Unit->GetPosition() ) >= World::m_movementCompressThreshold )
+		if( (*itr)->GetPositionNC().Distance2DSq( m_Unit->GetPosition() ) >= World::m_movementCompressThresholdCreatures )
 			(*itr)->AppendMovementData( SMSG_MONSTER_MOVE, data.GetSize(), (const uint8*)data.GetBufferPointer() );
+		else
+			(*itr)->GetSession()->SendPacket(&data);
 	}
 #endif
 }
