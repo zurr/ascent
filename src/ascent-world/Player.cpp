@@ -4216,18 +4216,18 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 void Player::JoinedChannel(Channel *c)
 {
 	if( c != NULL )
-		m_channels.push_back(c);
+		m_channels.insert(c);
 }
 
 void Player::LeftChannel(Channel *c)
 {
 	if( c != NULL )
-		m_channels.remove(c);
+		m_channels.erase(c);
 }
 
 void Player::CleanupChannels()
 {
-	list<Channel *>::iterator i;
+	set<Channel *>::iterator i;
 	Channel * c;
 	for(i = m_channels.begin(); i != m_channels.end();)
 	{
@@ -9711,14 +9711,18 @@ void Player::PartLFGChannel()
 	if( pChannel == NULL )
 		return;
 
-	for(list<Channel*>::iterator itr = m_channels.begin(); itr != m_channels.end(); ++itr)
+	/*for(list<Channel*>::iterator itr = m_channels.begin(); itr != m_channels.end(); ++itr)
 	{
 		if( (*itr) == pChannel )
 		{
 			pChannel->Part(this);
 			return;
 		}
-	}
+	}*/
+	if( m_channels.find( pChannel) == m_channels.end() )
+		return;
+
+	pChannel->Part( this );
 }
 
 //if we charmed or simply summoned a pet, this function should get called
