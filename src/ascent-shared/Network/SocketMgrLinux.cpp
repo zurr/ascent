@@ -80,10 +80,11 @@ bool SocketWorkerThread::run()
     int fd_count;
     Socket * ptr;
     int i;
+    running = false;
     struct epoll_event ev;
     SocketMgr * mgr = SocketMgr::getSingletonPtr();
 
-    while(true)
+    while(running)
     {
         fd_count = epoll_wait(mgr->epoll_fd, events, THREAD_EVENT_SIZE, 5000);
         for(i = 0; i < fd_count; ++i)
