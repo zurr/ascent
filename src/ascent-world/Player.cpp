@@ -5310,7 +5310,7 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
             if(pQuest)
             {
                 //check if its a questline.
-                for(uint32 i = 0; i < pQuest->required_quests[4]; i++)
+                for(uint32 i = 0; i < pQuest->count_requiredquests; i++)
                 {
                     if(pQuest->required_quests[i])
                     {
