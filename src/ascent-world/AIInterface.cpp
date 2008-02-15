@@ -3060,6 +3060,25 @@ uint32 AIInterface::getThreatByPtr(Unit* obj)
 	return 0;
 }
 
+#if defined(WIN32) && defined(HACKY_CRASH_FIXES)
+__declspec(noinline) bool ___CheckTarget(Unit * ptr, Unit * him)
+{
+	__try
+	{
+		if( him->GetInstanceID() != ptr->GetInstanceID() || !him->isAlive() || !isAttackable( ptr, him ) )
+		{
+			return false;
+		}
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		return false;
+	}
+	return true;
+}
+#endif
+
+
 //should return a valid target
 Unit *AIInterface::GetMostHated()
 {
@@ -3083,11 +3102,22 @@ Unit *AIInterface::GetMostHated()
 		++it2;
 
 		/* check the target is valid */
+#if defined(WIN32) && defined(HACKY_CRASH_FIXES)
+		if(!___CheckTarget( m_Unit, itr->first ) )
+		{
+			if( m_nextTarget == itr->first )
+				m_nextTarget = NULL;
+
+			m_aiTargets.erase(itr);
+			continue;
+		}
+#else
 		if(itr->first->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() || !itr->first->isAlive() || !isAttackable(m_Unit, itr->first))
 		{
 			m_aiTargets.erase(itr);
 			continue;
 		}
+#endif
 
 		if((itr->second + itr->first->GetThreatModifyer()) > currentTarget.second)
 		{
