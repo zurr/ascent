@@ -80,7 +80,7 @@ bool SocketWorkerThread::run()
     int fd_count;
     Socket * ptr;
     int i;
-    running = false;
+    running = true;
     struct epoll_event ev;
     SocketMgr * mgr = SocketMgr::getSingletonPtr();
 
