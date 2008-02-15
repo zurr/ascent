@@ -1932,16 +1932,23 @@ uint32 Unit::GetSpellDidHitResult( Unit* pVictim, uint32 weapon_damage_type, Spe
 			it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_MAINHAND );
 			hitmodifier += pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_HIT );
 			self_skill = float2int32( pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_MAIN_HAND_SKILL ) );
+			if (it && it->GetProto())
+				dmg.school_type = it->GetProto()->Damage[0].Type;
 			break;
 		case OFFHAND: // melee offhand weapon (dualwield)
 			it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_OFFHAND );
 			hitmodifier += pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_HIT );
 			self_skill = float2int32( pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_OFF_HAND_SKILL ) );
+			hit_status |= HITSTATUS_DUALWIELD;//animation
+			if (it && it->GetProto())
+				dmg.school_type = it->GetProto()->Damage[0].Type;
 			break;
 		case RANGED:  // ranged weapon
 			it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_RANGED );
 			hitmodifier += pr->CalcRating( PLAYER_RATING_MODIFIER_RANGED_HIT );
 			self_skill = float2int32( pr->CalcRating( PLAYER_RATING_MODIFIER_RANGED_SKILL ) );
+			if (it && it->GetProto())
+				dmg.school_type = it->GetProto()->Damage[0].Type;
 			break;
 		}
 
