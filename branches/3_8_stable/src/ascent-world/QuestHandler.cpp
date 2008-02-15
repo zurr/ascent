@@ -27,7 +27,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
     if(!_player->IsInWorld()) return;
 
 	uint64 guid;
-	WorldPacket data;
+	WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
     Object *qst_giver = NULL;
 
 	recv_data >> guid;
@@ -68,8 +68,6 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
 		sLog.outDebug("WORLD: Invalid questgiver GUID "I64FMT".", guid);
 		return;
 	}
-
-	data.Initialize( SMSG_QUESTGIVER_STATUS );
 
 	data << guid << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
 	SendPacket( &data );
