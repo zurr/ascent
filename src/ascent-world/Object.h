@@ -568,6 +568,8 @@ public:
 				return ((T)itr->second);
 		}
 	}
+
+	bool m_loadedFromDB;
 };
 
 #endif

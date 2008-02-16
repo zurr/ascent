@@ -175,7 +175,7 @@ void Guild::AddGuildLogEntry(uint8 iEvent, uint8 iParamCount, ...)
 		ev->iLogId, m_guildId, ev->iTimeStamp, ev->iEvent, ev->iEventData[0], ev->iEventData[1], ev->iEventData[2]);
 
 	m_lock.Acquire();
-	if(m_log.size() >= 250)
+	if(m_log.size() >= 50)
 	{
 		// limit it to 250 events.
 		// delete the first (oldest) event.
@@ -1445,7 +1445,7 @@ void Guild::LogGuildBankAction(uint8 iAction, uint32 uGuid, uint32 uEntry, uint8
 
 	m_lock.Acquire();
 
-	if(pTab->lLog.size() >= 250)
+	if(pTab->lLog.size() >= 50)
 	{
 		// pop one off the end
 		GuildBankEvent * ev2 = *(pTab->lLog.begin());
@@ -1476,7 +1476,7 @@ void Guild::LogGuildBankActionMoney(uint8 iAction, uint32 uGuid, uint32 uAmount)
 
 	m_lock.Acquire();
 
-	if(m_moneyLog.size() >= 250)
+	if(m_moneyLog.size() >= 50)
 	{
 		// pop one off the end
 		GuildBankEvent * ev2 = *(m_moneyLog.begin());

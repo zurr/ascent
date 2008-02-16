@@ -267,7 +267,10 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 					if(m_Unit->GetGUIDHigh() == HIGHGUID_PET)
 					{
 						((Pet*)m_Unit)->SetPetAction(PET_ACTION_FOLLOW);
-						((Pet*)m_Unit)->HandleAutoCastEvent(AUTOCAST_EVENT_LEAVE_COMBAT);
+						if( m_Unit->GetEntry() == 416 && m_Unit->isAlive() && m_Unit->IsInWorld() )
+						{
+							((Pet*)m_Unit)->HandleAutoCastEvent(AUTOCAST_EVENT_LEAVE_COMBAT);
+						}
 					}
 					HandleEvent(EVENT_FOLLOWOWNER, 0, 0);
 				}

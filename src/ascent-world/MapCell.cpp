@@ -127,7 +127,7 @@ void MapCell::RemoveObjects()
 
 		itr++;
 
-		if(!obj || (_unloadpending && obj->GetGUIDHigh()==HIGHGUID_TRANSPORTER))
+		if(!obj || (_unloadpending && obj->GetGUIDHigh()==HIGHGUID_TRANSPORTER) || !obj->m_loadedFromDB)
 			continue;
 
 		if(_unloadpending && obj->GetTypeId()==TYPEID_CORPSE && obj->GetUInt32Value(CORPSE_FIELD_OWNER) != 0)
@@ -188,6 +188,7 @@ void MapCell::LoadObjects(CellSpawns * sp)
 
 			c->SetMapId(_mapmgr->GetMapId());
 			c->SetInstanceID(_mapmgr->GetInstanceID());
+			c->m_loadedFromDB = true;
 
             if(c->Load(*i, _mapmgr->iInstanceMode, _mapmgr->GetMapInfo()))
 			{
@@ -217,6 +218,7 @@ void MapCell::LoadObjects(CellSpawns * sp)
 					go->SetUInt32Value(GAMEOBJECT_STATE, (state ? 0 : 1));
 				}*/			   
 
+				go->m_loadedFromDB = true;
 				go->PushToWorld(_mapmgr);
 			}
 			else
