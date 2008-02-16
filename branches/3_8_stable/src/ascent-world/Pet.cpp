@@ -1555,7 +1555,7 @@ uint32 Pet::GetHighestRankSpell(uint32 spellId)
 void Pet::UpdateLoyalty( char pts )
 {	
 	//updates loyalty_pts and loyalty lvl if needed
-	if( !m_Owner || Summon )
+	if( !m_Owner || Summon || m_Owner->GetMapMgr() != this->GetMapMgr() )
 		return;
 
 	char curLvl = GetLoyaltyLevel();

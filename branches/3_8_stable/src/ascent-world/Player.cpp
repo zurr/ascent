@@ -1008,10 +1008,11 @@ void Player::_EventAttack( bool offhand )
 
 		if(this->IsStealth())
 		{
+			RemoveAura( m_stealth );
 			SetStealth(0);
 		}
 
-		if (!GetOnMeleeSpell() && !offhand)
+		if (!GetOnMeleeSpell() || offhand)
 		{
 			Strike( pVictim, ( offhand ? OFFHAND : MELEE ), NULL, 0, 0, 0, false, false );
 		} 
