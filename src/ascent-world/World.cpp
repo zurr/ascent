@@ -7016,9 +7016,6 @@ void World::Update(time_t diff)
 	sAuctionMgr.Update();
 	_UpdateGameTime();
 	UpdateQueuedSessions((uint32)diff);
-
-	/* since time() is an expensive system call, we only update it once per server loop */
-	UNIXTIME = time(NULL);
 }
 
 

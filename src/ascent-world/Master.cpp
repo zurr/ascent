@@ -406,6 +406,9 @@ bool Master::Run(int argc, char ** argv)
 			ThreadPool.IntegrityCheck();
 		}
 
+		/* since time() is an expensive system call, we only update it once per server loop */
+		UNIXTIME = time(NULL);
+
 #ifndef CLUSTERING
 		sLogonCommHandler.UpdateSockets();
 #ifdef VOICE_CHAT
