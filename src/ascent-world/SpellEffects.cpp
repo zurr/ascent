@@ -3144,72 +3144,62 @@ void Spell::SpellEffectTameCreature(uint32 i)
 
 void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
 {
-	uint32 entry = m_spellInfo->EffectMiscValue[i];
-	CreatureInfo *ci = CreatureNameStorage.LookupEntry(entry);
-	CreatureProto *cp = CreatureProtoStorage.LookupEntry(entry);
-	if (ci == NULL || cp == NULL)
-		return;
-
-	switch(m_spellInfo->Id)
+	if(m_spellInfo->Id == 883)
 	{
-	case 883:// "Call Pet"
-		{		
-			if(!p_caster)
-				return; 
-			if(p_caster->GetSummon() != 0)
-			{
-				p_caster->GetSession()->SendNotification("You already have a pet summoned.");
-				return;
-			}
-			uint32 petno = p_caster->GetUnstabledPetNumber();
-			if(petno)
-				p_caster->SpawnPet(petno);
-			else
-			{
-				WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 50);
-				data << uint32(0) << "You do not have any pets to call." << uint8(0);
-				p_caster->GetSession()->SendPacket(&data);
-			}
-		}break;
-	case 688:// "Summon Imp"
-	case 697:// "Summon Voidwalker"
-	case 712:// "Summon Succubus"
-	case 691:// "Summon Felhunter"
-	case 30146:// "Summon Felguard"
+		// "Call Pet" spell
+		if(!p_caster)
+			return;
+
+		if(p_caster->GetSummon() != 0)
 		{
-			//VoidWalker:torment, sacrifice, suffering, consume shadows
-			//Succubus:lash of pain, soothing kiss, seduce , lesser invisibility
-			//felhunter:	 Devour Magic,Paranoia,Spell Lock,	Tainted Blood
-			if(!p_caster || !u_caster)
-				return;
-			// remove old pet
-			Pet *old = static_cast<Player*>(m_caster)->GetSummon();
-			if(old)
-				old->Dismiss(false);
+			p_caster->GetSession()->SendNotification("You already have a pet summoned.");
+			return;
+		}
 
-			p_caster->RemoveAura(18789);
-			p_caster->RemoveAura(18790);
-			p_caster->RemoveAura(18791);
-			p_caster->RemoveAura(18792);
-			p_caster->RemoveAura(35701);
+		uint32 petno = p_caster->GetUnstabledPetNumber();
 
-			Pet *summon = objmgr.CreatePet();
-			summon->SetInstanceID(m_caster->GetInstanceID());
-			summon->CreateAsSummon(m_spellInfo->EffectMiscValue[i], ci, NULL, u_caster, m_spellInfo, 1, 0);
-		}break;
-	default:
+		if(petno)
 		{
-			if (!u_caster)
-				return;
+			p_caster->SpawnPet(petno);
+		}
+		else
+		{
+			WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 50);
+			data << uint32(0) << "You do not have any pets to call." << uint8(0);
+			p_caster->GetSession()->SendPacket(&data);
+		}
+		return;
+	}
+	
+	//uint32 entryId = m_spellInfo->EffectMiscValue[i];
 
-			if(u_caster->summonPet)
-			{
-				u_caster->summonPet->RemoveFromWorld(false,true);
-				delete u_caster->summonPet;
-				u_caster->summonPet = NULL;
-			}			
-			u_caster->create_guardian(entry, -1, (float(-(M_PI/2))));
-		}break;
+	//VoidWalker:torment, sacrifice, suffering, consume shadows
+	//Succubus:lash of pain, soothing kiss, seduce , lesser invisibility
+	//felhunter:	 Devour Magic,Paranoia,Spell Lock,	Tainted Blood
+ 
+	if(!p_caster || p_caster->getClass() != WARLOCK)
+		return;
+	
+	// remove old pet
+	Pet *old = static_cast< Player* >(m_caster)->GetSummon();
+	if(old)
+		old->Dismiss(false);		
+	
+	CreatureInfo *ci = CreatureNameStorage.LookupEntry(m_spellInfo->EffectMiscValue[i]);
+	if(ci)
+	{
+		//if demonic sacrifice auras are still active, remove them
+		//uint32 spids[] = { 18789, 18790, 18791, 18792, 35701, 0 };
+		//p_caster->RemoveAuras(spids);
+		p_caster->RemoveAura(18789);
+		p_caster->RemoveAura(18790);
+		p_caster->RemoveAura(18791);
+		p_caster->RemoveAura(18792);
+		p_caster->RemoveAura(35701);
+
+		Pet *summon = objmgr.CreatePet();
+		summon->SetInstanceID(m_caster->GetInstanceID());
+		summon->CreateAsSummon(m_spellInfo->EffectMiscValue[i], ci, NULL, u_caster, m_spellInfo, 1, 0);
 	}
 }
 
