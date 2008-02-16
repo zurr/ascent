@@ -468,7 +468,6 @@ bool Master::Run(int argc, char ** argv)
 		
 		Database_Character->CheckConnections();
 		Database_World->CheckConnections();
-		sWorld.UpdateQueuedSessions( diff );
 
 		if( 50 > etime )
 		{

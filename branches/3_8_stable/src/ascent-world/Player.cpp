@@ -1011,7 +1011,7 @@ void Player::_EventAttack( bool offhand )
 			SetStealth(0);
 		}
 
-		if (!GetOnMeleeSpell())
+		if (!GetOnMeleeSpell() && !offhand)
 		{
 			Strike( pVictim, ( offhand ? OFFHAND : MELEE ), NULL, 0, 0, 0, false, false );
 		} 
