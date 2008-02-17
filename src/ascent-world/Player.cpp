@@ -4547,52 +4547,52 @@ void Player::UpdateStats()
 	uint32 cl = getClass();   
 	switch (cl)
 	{
-		case DRUID:
-			AP = str * 2 - 20;
-		
-			if( GetShapeShift() == FORM_CAT )
-				AP += agi + lev * 2;
+	case DRUID:
+		AP = str * 2 - 20;
 
-			if( GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR )
-				AP += lev * 3;
+		if( GetShapeShift() == FORM_CAT )
+			AP += agi + lev * 2;
 
-			break;
-		
-		case ROGUE:
-			//AP = lev * 2 + str + agi - 20;
-			//RAP = lev + agi * 2 - 20;
-			//AP = str + agi - 20;
-			AP = lev * 2 + str + agi - 20;
-			RAP = lev + agi - 10;
-			break;
-		
-		case HUNTER:
-			//AP = lev* 2 + str + agi - 20;
-			//RAP = (lev + agi)*2 - 20;
-			AP = str + agi - 20;
-			RAP = lev * 2 + agi - 10;
-			break;
+		if( GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR )
+			AP += lev * 3;
 
-		case SHAMAN:
-			AP = (lev+str)*2 - 20;
-			break;
-	
-		case PALADIN:
-			//AP = lev * 3 + str * 2 - 20;
-			//AP = str * 2 - 20;
-			AP = lev * 3 + str * 2 - 20;
-			break;
+		break;
 
-		case WARRIOR:
-			//AP = lev * 3 + str * 2 - 20;
-			//RAP = (lev+agi)*2 - 20;
-			//AP = str * 2 - 20;
-			AP = lev * 3 + str * 2 - 20;
-			RAP = lev + agi - 20;
-			break;
+	case ROGUE:
+		//AP = lev * 2 + str + agi - 20;
+		//RAP = lev + agi * 2 - 20;
+		//AP = str + agi - 20;
+		AP = lev * 2 + str + agi - 20;
+		RAP = lev + agi - 10;
+		break;
 
-		default://mage,priest,warlock
-			AP = str - 10;
+	case HUNTER:
+		//AP = lev* 2 + str + agi - 20;
+		//RAP = (lev + agi)*2 - 20;
+		AP = str + agi - 20;
+		RAP = lev * 2 + agi - 10;
+		break;
+
+	case SHAMAN:
+		AP = (lev+str)*2 - 20;
+		break;
+
+	case PALADIN:
+		//AP = lev * 3 + str * 2 - 20;
+		//AP = str * 2 - 20;
+		AP = lev * 3 + str * 2 - 20;
+		break;
+
+	case WARRIOR:
+		//AP = lev * 3 + str * 2 - 20;
+		//RAP = (lev+agi)*2 - 20;
+		//AP = str * 2 - 20;
+		AP = lev * 3 + str * 2 - 20;
+		RAP = lev + agi - 20;
+		break;
+
+	default://mage,priest,warlock
+		AP = str - 10;
 	}
 
 	/* modifiers */
@@ -4622,30 +4622,34 @@ void Player::UpdateStats()
 
 	int32 hp = GetUInt32Value( UNIT_FIELD_BASE_HEALTH );
 
-	//int32 bonus = ( GetUInt32Value( UNIT_FIELD_POSSTAT2 ) - GetUInt32Value( UNIT_FIELD_NEGSTAT2 ) ) * 10 + m_healthfromspell + m_healthfromitems;
-	int32 bonus = GetUInt32Value( UNIT_FIELD_STAT2 ) * 10 + m_healthfromspell + m_healthfromitems;
+	int32 stat_bonus = GetUInt32Value( UNIT_FIELD_POSSTAT2 ) - GetUInt32Value( UNIT_FIELD_NEGSTAT2 );
+	if ( stat_bonus < 0 )
+		stat_bonus = 0; //avoid of having negative health
+	int32 bonus = stat_bonus * 10 + m_healthfromspell + m_healthfromitems;
 
 	int32 res = hp + bonus + hpdelta;
-    int32 oldmaxhp = GetUInt32Value( UNIT_FIELD_MAXHEALTH );
+	int32 oldmaxhp = GetUInt32Value( UNIT_FIELD_MAXHEALTH );
 
 	if( res < hp ) res = hp;
 	SetUInt32Value( UNIT_FIELD_MAXHEALTH, res );
-	
+
 	if( ( int32 )GetUInt32Value( UNIT_FIELD_HEALTH ) > res )
 		SetUInt32Value( UNIT_FIELD_HEALTH, res );
-    else if( ( cl == DRUID) && ( GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR ) )
-    {
-        res = float2int32( ( float )GetUInt32Value( UNIT_FIELD_MAXHEALTH ) * ( float )GetUInt32Value( UNIT_FIELD_HEALTH ) / float( oldmaxhp ) );
-        SetUInt32Value( UNIT_FIELD_HEALTH, res );
-    }
-		
+	else if( ( cl == DRUID) && ( GetShapeShift() == FORM_BEAR || GetShapeShift() == FORM_DIREBEAR ) )
+	{
+		res = float2int32( ( float )GetUInt32Value( UNIT_FIELD_MAXHEALTH ) * ( float )GetUInt32Value( UNIT_FIELD_HEALTH ) / float( oldmaxhp ) );
+		SetUInt32Value( UNIT_FIELD_HEALTH, res );
+	}
+
 	if( cl != WARRIOR && cl != ROGUE )
 	{
 		// MP
 		int32 mana = GetUInt32Value( UNIT_FIELD_BASE_MANA );
 
-		//bonus = (GetUInt32Value( UNIT_FIELD_POSSTAT3)-GetUInt32Value(UNIT_FIELD_NEGSTAT3))*15+m_manafromspell +m_manafromitems ;
-		bonus = GetUInt32Value( UNIT_FIELD_STAT3 ) * 15 + m_manafromspell + m_manafromitems;
+		stat_bonus = GetUInt32Value( UNIT_FIELD_POSSTAT3 ) - GetUInt32Value( UNIT_FIELD_NEGSTAT3 );
+		if ( stat_bonus < 0 )
+			stat_bonus = 0; //avoid of having negative mana
+		bonus = stat_bonus * 15 + m_manafromspell + m_manafromitems ;
 
 		res = mana + bonus + manadelta;
 		if( res < mana )res = mana;	
