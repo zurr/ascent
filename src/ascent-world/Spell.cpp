@@ -3098,6 +3098,11 @@ uint8 Spell::CanCast(bool tolerate)
 					if(pPet && !pPet->isDead())
 						return SPELL_FAILED_TARGET_NOT_DEAD;
 				}
+				case 38177:
+				{
+					if(target->GetEntry() != 21387)
+						return SPELL_FAILED_BAD_TARGETS;
+				}break;
 			}
 
 			// if the target is not the unit caster and not the masters pet
