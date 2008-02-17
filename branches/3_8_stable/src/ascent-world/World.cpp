@@ -20,7 +20,8 @@
 #include "StdAfx.h"
 
 initialiseSingleton( World );
-DayWatcherThread * dw = NULL;
+
+DayWatcherThread* dw = NULL;
 
 float World::m_movementCompressThreshold;
 float World::m_movementCompressThresholdCreatures;
@@ -6941,8 +6942,9 @@ bool World::SetInitialWorldSettings()
 	new CBattlegroundManager;
 
 	dw = new DayWatcherThread();
-	ThreadPool.ExecuteTask(dw);
-	ThreadPool.ExecuteTask(new CharacterLoaderThread());
+	ThreadPool.ExecuteTask( dw );
+
+	ThreadPool.ExecuteTask( new CharacterLoaderThread() );
 
 	// Preload and compile talent and talent tab data to speed up talent inspect
 

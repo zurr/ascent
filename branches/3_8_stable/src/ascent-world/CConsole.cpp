@@ -71,8 +71,11 @@ bool ConsoleThread::run()
 	while( m_killSwitch != true )
 	{
 #ifdef WIN32
+
 		// Read in single line from "stdin"
-		fgets( cmd, 300, stdin );
+		memset( cmd, 0, sizeof( cmd ) ); 
+		if( fgets( cmd, 300, stdin ) == NULL )
+			continue;
 
 		if( m_killSwitch )
 			break;
@@ -80,9 +83,9 @@ bool ConsoleThread::run()
 #else
 		tv.tv_sec = 1;
 		tv.tv_usec = 0;
-		FD_ZERO(&fds);
-		FD_SET(STDIN_FILENO, &fds);
-		if(select(1, &fds, NULL, NULL, &tv) <= 0)
+		FD_ZERO( &fds );
+		FD_SET( STDIN_FILENO, &fds );
+		if( select( 1, &fds, NULL, NULL, &tv ) <= 0 )
 		{
 			if(!m_killSwitch)	// timeout
 				continue;
@@ -90,7 +93,10 @@ bool ConsoleThread::run()
 				break;
 		}
 
-		fgets( cmd, 300, stdin );
+		// Read in single line from "stdin"
+		memset( cmd, 0, sizeof( cmd ) ); 
+		if( fgets( cmd, 300, stdin ) == NULL )
+			continue;
 #endif
 
 		len = strlen(cmd);
