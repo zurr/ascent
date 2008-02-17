@@ -87,7 +87,7 @@ bool isHostile(Object* objA, Object* objB)// B is hostile for A?
 			else
 				return false;
 		}
-		if(objB->IsPet())
+		if( objB->IsPet() )
 		{
 #if defined(WIN32) && defined(HACKY_CRASH_FIXES)
 			__try {
@@ -103,7 +103,7 @@ bool isHostile(Object* objA, Object* objB)// B is hostile for A?
 			}
 #else
 			// Check PvP Flags.
-			if(static_cast<Pet*>(objB)->GetPetOwner()->GetMapMgr() == objB->GetMapMgr() && static_cast<Pet*>(objB)->GetPetOwner() && static_cast<Pet*>(objB)->GetPetOwner()->IsPvPFlagged())
+			if( static_cast< Pet* >( objB )->GetPetOwner() != NULL && static_cast< Pet* >( objB )->GetPetOwner()->GetMapMgr() == objB->GetMapMgr() && static_cast< Pet* >( objB )->GetPetOwner()->IsPvPFlagged() )
 				return true;
 			else
 				return false;
