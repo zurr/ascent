@@ -747,7 +747,8 @@ void ArathiBasin::AssaultControlPoint(Player * pPlayer, uint32 Id)
 				for(set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
 				{
 					Player * r_plr = m_mapMgr->GetPlayer((*it2));
-					HookHandleRepop(r_plr);
+					if( r_plr != NULL && r_plr->isDead() )
+						HookHandleRepop(r_plr);
 				}
 			}
 			m_resurrectMap.erase(itr);
