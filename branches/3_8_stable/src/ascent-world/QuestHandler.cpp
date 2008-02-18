@@ -31,10 +31,12 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
     Object *qst_giver = NULL;
 
 	recv_data >> guid;
-
+	printf("GUID: "I64FMT"\n", guid);
+        printf("%u %u\n", GUID_HIPART(guid), (unsigned int)(UINT32_LOPART(GUID_HIPART(guid))));
     if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_UNIT)
     {
         Creature *quest_giver = _player->GetMapMgr()->GetCreature((uint32)guid);
+	printf("Pointer: %p\n", quest_giver);
         if(quest_giver)
 			qst_giver = (Object*)quest_giver;
 		else
