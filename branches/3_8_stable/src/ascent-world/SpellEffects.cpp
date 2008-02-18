@@ -2508,7 +2508,7 @@ void Spell::SpellEffectApplyAA(uint32 i) // Apply Area Aura
 
 void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
 {
-	if(playerTarget == 0 && unitTarget && UINT32_LOPART(unitTarget->GetGUIDHigh()) == HIGHGUID_UNIT)
+	if(playerTarget == 0 && unitTarget && unitTarget->GetGUIDHigh() == HIGHGUID_UNIT)
 	{
 		// bug in target map fill?
 		playerTarget = m_caster->GetMapMgr()->GetPlayer((uint32)m_targets.m_unitTarget);
@@ -2626,7 +2626,7 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
 		}
 	}*/
 
-	if(unitTarget && UINT32_LOPART(unitTarget->GetGUIDHigh()) == HIGHGUID_PET && p_caster)
+	if(unitTarget && unitTarget->GetGUIDHigh() == HIGHGUID_PET && p_caster)
 	{
 		Pet * pPet = static_cast<Pet*>( unitTarget );
 		if(pPet->IsSummon())

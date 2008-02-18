@@ -2456,7 +2456,7 @@ bool Object::CanActivate()
 	{
 	case TYPEID_UNIT:
 		{
-			if(UINT32_LOPART(GetGUIDHigh()) != HIGHGUID_PET)
+			if(GetGUIDHigh() != HIGHGUID_PET)
 				return true;
 		}break;
 

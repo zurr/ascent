@@ -94,7 +94,6 @@ uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, Quest* qst, u
 	{
 		if (type & QUESTGIVER_QUEST_START)
 		{
-			printf("Doing PlayerMeetsReqs()\n");
 			return PlayerMeetsReqs(plr, qst, skiplevelcheck);
 		}
 	}
@@ -140,7 +139,6 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 	else if( quest_giver->GetTypeId() == TYPEID_UNIT )
 	{
 		bValid = static_cast< Creature* >( quest_giver )->HasQuests();
-		printf("Valid: %u\n", (unsigned int)bValid);
 		if(bValid)
 		{
 			q_begin = ((Creature*)quest_giver)->QuestsBegin();
