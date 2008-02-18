@@ -213,7 +213,7 @@ bool ChatHandler::HandleWPDeleteCommand(const char* args, WorldSession *m_sessio
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session, "You should select a Waypoint.");
 		return true;
@@ -261,7 +261,7 @@ bool ChatHandler::HandleWPChangeNoCommand(const char* args, WorldSession *m_sess
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session, "You should select a Waypoint.");
 		return true;
@@ -318,7 +318,7 @@ bool ChatHandler::HandleWPFlagsCommand(const char* args, WorldSession *m_session
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session, "You should select a Waypoint.");
 		return true;
@@ -367,7 +367,7 @@ bool ChatHandler::HandleWPMoveHereCommand(const char* args, WorldSession *m_sess
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session, "You should select a Waypoint.");
 		return true;
@@ -422,7 +422,7 @@ bool ChatHandler::HandleWPWaitCommand(const char* args, WorldSession *m_session)
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session, "You should select a Waypoint.");
 		return true;
@@ -478,7 +478,7 @@ bool ChatHandler::HandleWPEmoteCommand(const char* args, WorldSession *m_session
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session, "You should select a Waypoint.");
 		return true;
@@ -542,7 +542,7 @@ bool ChatHandler::HandleWPSkinCommand(const char* args, WorldSession *m_session)
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session,  "You should select a Waypoint.");
 		return true;
@@ -601,7 +601,7 @@ bool ChatHandler::HandleWPInfoCommand(const char* args, WorldSession *m_session)
 		return true;
 	}
 
-	if(UINT32_LOPART(GUID_HIPART(guid)) != HIGHGUID_WAYPOINT)
+	if(GUID_HIPART(guid) != HIGHGUID_WAYPOINT)
 	{
 		SystemMessage(m_session, "You should select a Waypoint.");
 		return true;

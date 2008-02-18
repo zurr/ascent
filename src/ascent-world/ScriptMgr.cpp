@@ -98,11 +98,11 @@ void ScriptMgr::LoadScripts()
 				{
 					uint32 version = vcall();
 					uint32 stype = scall();
-					if(UINT32_LOPART(version) == SCRIPTLIB_VERSION_MINOR && UINT32_HIPART(version) == SCRIPTLIB_VERSION_MAJOR)
+					if(/*UINT32_LOPART(version) == SCRIPTLIB_VERSION_MINOR && UINT32_HIPART(version) == SCRIPTLIB_VERSION_MAJOR*/true)
 					{
 						if( stype & SCRIPT_TYPE_SCRIPT_ENGINE )
 						{
-							printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+							//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
 							printf("delayed load.\n");
 
 							ScriptingEngine se;
@@ -115,7 +115,7 @@ void ScriptMgr::LoadScripts()
 						else
 						{
 							_handles.push_back(((SCRIPT_MODULE)mod));
-							printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+							//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
 							rcall(this);
 							printf("loaded.\n");						
 						}
@@ -213,11 +213,11 @@ char *ext;
 					{
 						uint32 version = vcall();
 						uint32 stype = scall();
-						if(UINT32_LOPART(version) == SCRIPTLIB_VERSION_MINOR && UINT32_HIPART(version) == SCRIPTLIB_VERSION_MAJOR)
+						if(/*UINT32_LOPART(version) == SCRIPTLIB_VERSION_MINOR && UINT32_HIPART(version) == SCRIPTLIB_VERSION_MAJOR*/1)
 						{
 							if( stype & SCRIPT_TYPE_SCRIPT_ENGINE )
 							{
-								printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+								//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
 								printf("delayed load.\n");
 
 								ScriptingEngine se;
@@ -230,7 +230,7 @@ char *ext;
 							else
 							{
 								_handles.push_back(((SCRIPT_MODULE)mod));
-								printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+								//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
 								rcall(this);
 								printf("loaded.\n");						
 							}

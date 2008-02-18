@@ -5214,13 +5214,13 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 	if(!IsInWorld()) return;
 	Loot * pLoot = NULL;
 	
-	if(UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_UNIT)
+	if(GUID_HIPART(guid) == HIGHGUID_UNIT)
 	{
 		Creature* pCreature = GetMapMgr()->GetCreature((uint32)guid);
 		if(!pCreature)return;
 		pLoot=&pCreature->loot;
 		m_currentLoot = pCreature->GetGUID();
-	}else if(UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_GAMEOBJECT)
+	}else if(GUID_HIPART(guid) == HIGHGUID_GAMEOBJECT)
 	{
 		GameObject* pGO = GetMapMgr()->GetGameObject((uint32)guid);
 		if(!pGO)return;
@@ -5228,21 +5228,21 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 		pLoot=&pGO->loot;
 		m_currentLoot = pGO->GetGUID();
 	}
-	else if((UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_PLAYER) )
+	else if((GUID_HIPART(guid) == HIGHGUID_PLAYER) )
 	{
 		Player *p=GetMapMgr()->GetPlayer((uint32)guid);
 		if(!p)return;
 		pLoot=&p->loot;
 		m_currentLoot = p->GetGUID();
 	}
-	else if( (UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_CORPSE))
+	else if( (GUID_HIPART(guid) == HIGHGUID_CORPSE))
 	{
 		Corpse *pCorpse = objmgr.GetCorpse((uint32)guid);
 		if(!pCorpse)return;
 		pLoot=&pCorpse->loot;
 		m_currentLoot = pCorpse->GetGUID();
 	}
-	else if( (UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_ITEM) )
+	else if( (GUID_HIPART(guid) == HIGHGUID_ITEM) )
 	{
 		Item *pItem = GetItemInterface()->GetItemByGUID(guid);
 		if(!pItem)
