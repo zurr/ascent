@@ -1726,6 +1726,7 @@ void Spell::finish()
 
 void Spell::SendCastResult(uint8 result)
 {
+	uint32 Extra = 0;
 	if(result == SPELL_CANCAST_OK) return;
 
 	SetSpellFailed();
@@ -1739,7 +1740,10 @@ void Spell::SendCastResult(uint8 result)
 	if(!plr) return;
 
 	// for some reason, the result extra is not working for anything, including SPELL_FAILED_REQUIRES_SPELL_FOCUS
-	plr->SendCastResult(m_spellInfo->Id, result, 0);
+	if( result == SPELL_FAILED_REQUIRES_SPELL_FOCUS )
+		Extra = m_spellInfo->RequiresSpellFocus;
+
+	plr->SendCastResult(m_spellInfo->Id, result, extra_cast_number, Extra);
 }
 
 // uint16 0xFFFF

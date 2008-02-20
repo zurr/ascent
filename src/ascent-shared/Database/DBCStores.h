@@ -26,6 +26,12 @@
 
 #pragma pack(push,1)
 
+struct BankSlotPrice
+{
+	uint32 Id;
+	uint32 Price;
+};
+
 struct ItemSetEntry
 {
     uint32 id;                  //1
@@ -864,6 +870,11 @@ struct ItemRandomSuffixEntry
 	uint32 prefixes[3];
 };
 
+struct gtFloat
+{
+	float val;
+};
+
 struct CombatRatingDBC
 {
 	float val;
@@ -1193,6 +1204,12 @@ extern SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 extern SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
 extern SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
 extern SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
+extern SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
+extern SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices; //uses same structure as Bank
+extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
+extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
+extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;
+extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCritBase;
 
 bool LoadDBCs();
 

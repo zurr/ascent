@@ -54,6 +54,12 @@ SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
 SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
 SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
+SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
+SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices;
+SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
+SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
+SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;
+SERVER_DECL DBCStorage<gtFloat> dbcSpellCritBase;
 
 const char* ItemSetFormat = "usxxxxxxxxxxxxxxxuuuuuuuuuxxxxxxxxxuuuuuuuuuuuuuuuuuu";
 const char* LockFormat = "uuuuuuxxxuuuuuxxxuuuuuxxxxxxxxxxx";
@@ -84,10 +90,11 @@ const char* charclassFormat = "uxuxsxxxxxxxxxxxxxxxxxxx";
 const char* creaturefamilyFormat = "ufufuuuusxxxxxxxxxxxxxxxxx";
 const char* mapentryFormat = "usuxsxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* itemrandomsuffixformat = "uxxxxxxxxxxxxxxxxxxuuuuuu";
-const char* combatratingformat = "f";
 const char* chatchannelformat = "uuxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char * durabilityqualityFormat = "uf";
 const char * durabilitycostsFormat = "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
+const char* bankslotpriceformat = "uu";
+const char* gtfloat = "f";
 
 template<class T>
 bool loader_stub(const char * filename, const char * format, bool ind, T& l, bool loadstrs)
@@ -129,10 +136,16 @@ bool LoadDBCs()
 	LOAD_DBC("DBC/Map.dbc", mapentryFormat, true, dbcMap, true);
 	LOAD_DBC("DBC/AuctionHouse.dbc", auctionhousedbcFormat, true, dbcAuctionHouse, false);
 	LOAD_DBC("DBC/ItemRandomSuffix.dbc", itemrandomsuffixformat, true, dbcItemRandomSuffix, false);
-	LOAD_DBC("DBC/gtCombatRatings.dbc", combatratingformat, false, dbcCombatRating, false);
+	LOAD_DBC("DBC/gtCombatRatings.dbc", gtfloat, false, dbcCombatRating, false);
 	LOAD_DBC("DBC/ChatChannels.dbc", chatchannelformat, true, dbcChatChannels, false);
 	LOAD_DBC("DBC/DurabilityQuality.dbc", durabilityqualityFormat, true, dbcDurabilityQuality, false);
 	LOAD_DBC("DBC/DurabilityCosts.dbc", durabilitycostsFormat, true, dbcDurabilityCosts, false);
+	LOAD_DBC("DBC/BankBagSlotPrices.dbc", bankslotpriceformat, true, dbcBankSlotPrices, false);
+	LOAD_DBC("DBC/StableSlotPrices.dbc", bankslotpriceformat, true, dbcStableSlotPrices, false);
+	LOAD_DBC("DBC/gtChanceToMeleeCrit.dbc", gtfloat, false, dbcMeleeCrit, false);
+	LOAD_DBC("DBC/gtChanceToMeleeCritBase.dbc", gtfloat, false, dbcMeleeCritBase, false);
+	LOAD_DBC("DBC/gtChanceToSpellCrit.dbc", gtfloat, false, dbcSpellCrit, false);
+	LOAD_DBC("DBC/gtChanceToSpellCritBase.dbc", gtfloat, false, dbcSpellCritBase, false);
 	return true;
 }
 
