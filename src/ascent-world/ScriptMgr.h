@@ -20,7 +20,6 @@
 #ifndef SCRIPTMGR_H
 #define SCRIPTMGR_H
 
-#define MAKE_SCRIPT_VERSION(major, minor) (uint32)(((uint16)major << 16) | ((uint16)minor))
 #define SCRIPT_MODULE void*
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature * c) { return new cl(c); }
 
