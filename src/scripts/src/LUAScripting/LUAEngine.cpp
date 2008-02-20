@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "LUAEngine.h"
 #include "LUAFunctions.h"
-#include <CoreMemoryAllocator.cpp>
+#include <ScriptSetup.h>
 
 #if PLATFORM != PLATFORM_WIN32
 #include <dirent.h>
@@ -11,11 +11,6 @@ bool lua_is_starting_up = false;
 ScriptMgr * m_scriptMgr;
 LuaEngineMgr g_luaMgr;
 LuaEngine * g_engine;
-
-extern "C" SCRIPT_DECL uint32 _exp_get_version()
-{
-	return MAKE_SCRIPT_VERSION(SCRIPTLIB_VERSION_MAJOR, SCRIPTLIB_VERSION_MINOR);
-}
 
 extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 {

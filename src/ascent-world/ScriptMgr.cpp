@@ -28,6 +28,9 @@
     #include <cstring>
 #endif
 
+#define SCRIPTLIB_HIPART(x) ((x >> 16))
+#define SCRIPTLIB_LOPART(x) ((x & 0x0000ffff))
+
 initialiseSingleton(ScriptMgr);
 initialiseSingleton(HookInterface);
 
@@ -57,13 +60,13 @@ void ScriptMgr::LoadScripts()
 	if(!HookInterface::getSingletonPtr())
 		new HookInterface;
 
-	sLog.outString("Loading External Script Libraries...");
-	sLog.outString("");
+	sLog.outString( "Loading External Script Libraries..." );
+	sLog.outString( "");
 
-	string start_path = Config.MainConfig.GetStringDefault("Script", "BinaryLocation", "script_bin") + "\\";
+	string start_path = Config.MainConfig.GetStringDefault( "Script", "BinaryLocation", "script_bin" ) + "\\";
 	string search_path = start_path + "*.";
 
-	vector<ScriptingEngine> ScriptEngines;
+	vector< ScriptingEngine > ScriptEngines;
 
 	/* Loading system for win32 */
 #ifdef WIN32
@@ -71,16 +74,16 @@ void ScriptMgr::LoadScripts()
 
 	WIN32_FIND_DATA data;
 	uint32 count = 0;
-	HANDLE find_handle = FindFirstFile(search_path.c_str(), &data);
+	HANDLE find_handle = FindFirstFile( search_path.c_str(), &data );
 	if(find_handle == INVALID_HANDLE_VALUE)
-		sLog.outError("  No external scripts found! Server will continue to function with limited functionality.");
+		sLog.outError( "  No external scripts found! Server will continue to function with limited functionality." );
 	else
 	{
 		do
 		{
 			string full_path = start_path + data.cFileName;
-			HMODULE mod = LoadLibrary(full_path.c_str());
-			printf("  %s : 0x%p : ", data.cFileName, reinterpret_cast<uint32*>(mod));
+			HMODULE mod = LoadLibrary( full_path.c_str() );
+			printf( "  %s : 0x%p : ", data.cFileName, reinterpret_cast< uint32* >( mod ));
 			if(mod == 0)
 				printf("error!\n");
 			else
@@ -98,11 +101,11 @@ void ScriptMgr::LoadScripts()
 				{
 					uint32 version = vcall();
 					uint32 stype = scall();
-					if(/*UINT32_LOPART(version) == SCRIPTLIB_VERSION_MINOR && UINT32_HIPART(version) == SCRIPTLIB_VERSION_MAJOR*/true)
+					if(SCRIPTLIB_LOPART(version) == SCRIPTLIB_VERSION_MINOR && SCRIPTLIB_HIPART(version) == SCRIPTLIB_VERSION_MAJOR)
 					{
 						if( stype & SCRIPT_TYPE_SCRIPT_ENGINE )
 						{
-							//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+							printf("v%u.%u : ", SCRIPTLIB_HIPART(version), SCRIPTLIB_LOPART(version));
 							printf("delayed load.\n");
 
 							ScriptingEngine se;
@@ -115,7 +118,7 @@ void ScriptMgr::LoadScripts()
 						else
 						{
 							_handles.push_back(((SCRIPT_MODULE)mod));
-							//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+							printf("v%u.%u : ", SCRIPTLIB_HIPART(version), SCRIPTLIB_LOPART(version));
 							rcall(this);
 							printf("loaded.\n");						
 						}
@@ -213,11 +216,11 @@ char *ext;
 					{
 						uint32 version = vcall();
 						uint32 stype = scall();
-						if(/*UINT32_LOPART(version) == SCRIPTLIB_VERSION_MINOR && UINT32_HIPART(version) == SCRIPTLIB_VERSION_MAJOR*/1)
+						if(SCRIPTLIB_LOPART(version) == SCRIPTLIB_VERSION_MINOR && SCRIPTLIB_HIPART(version) == SCRIPTLIB_VERSION_MAJOR)
 						{
 							if( stype & SCRIPT_TYPE_SCRIPT_ENGINE )
 							{
-								//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+								printf("v%u.%u : ", SCRIPTLIB_HIPART(version), SCRIPTLIB_LOPART(version));
 								printf("delayed load.\n");
 
 								ScriptingEngine se;
@@ -230,7 +233,7 @@ char *ext;
 							else
 							{
 								_handles.push_back(((SCRIPT_MODULE)mod));
-								//printf("v%u.%u : ", UINT32_HIPART(version), UINT32_LOPART(version));
+								printf("v%u.%u : ", SCRIPTLIB_HIPART(version), SCRIPTLIB_LOPART(version));
 								rcall(this);
 								printf("loaded.\n");						
 							}
