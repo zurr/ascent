@@ -21,7 +21,7 @@
 
 #define ENABLE_AB
 //#define ENABLE_EOTS
-#define ONLY_ONE_PERSON_REQUIRED_TO_JOIN_DEBUG
+//#define ONLY_ONE_PERSON_REQUIRED_TO_JOIN_DEBUG
 
 initialiseSingleton(CBattlegroundManager);
 typedef CBattleground*(*CreateBattlegroundFunc)(MapMgr* mgr,uint32 iid,uint32 group, uint32 type);
