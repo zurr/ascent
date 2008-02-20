@@ -867,6 +867,18 @@ struct ChatChannelDBC
 	uint32 flags;
 };
 
+struct DurabilityQualityEntry
+{
+    uint32 id;
+    float quality_modifier;
+};
+
+struct DurabilityCostsEntry
+{
+    uint32 itemlevel;
+    uint32 modifier[29];
+};
+
 #pragma pack(pop)
 
 ASCENT_INLINE float GetRadius(SpellRadius *radius)
@@ -1171,6 +1183,8 @@ extern SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
 extern SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 extern SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 extern SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
+extern SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
+extern SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
 
 bool LoadDBCs();
 
