@@ -974,6 +974,15 @@ enum SpellIsFlags
     SPELL_FLAG_IS_EXPIREING_ON_PET		= 0x00000800, //when pet is summoned
 };
 
+enum SpellCoefficientsFlags
+{
+	SPELL_FLAG_IS_DOT_OR_HOT_SPELL		= 0x00000001, //Damage over Time or Healing over Time Spells
+	SPELL_FLAG_IS_DD_OR_DH_SPELL		= 0x00000002, //Direct Damage or Direct Healing Spells
+	SPELL_FLAG_IS_DD_DH_DOT_SPELL		= SPELL_FLAG_IS_DOT_OR_HOT_SPELL | SPELL_FLAG_IS_DD_OR_DH_SPELL, //DoT+(DD|DH) Spells
+	SPELL_FLAG_AOE_SPELL				= 0x00000004, //AoE Spells
+	SPELL_FLAG_ADITIONAL_EFFECT			= 0x00000008, //Spells with aditional effect not DD or DoT or HoT
+};
+
 ASCENT_INLINE bool CanAgroHash(uint32 spellhashname)
 {
     if (spellhashname == 4287212498UL) //hunter's mark
