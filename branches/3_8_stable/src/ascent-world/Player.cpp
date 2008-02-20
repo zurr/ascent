@@ -4491,10 +4491,12 @@ void Player::UpdateChances()
 	float rcr = tmp + CalcRating( PLAYER_RATING_MODIFIER_RANGED_CRIT ) + ranged_bonus;
 	SetFloatValue( PLAYER_RANGED_CRIT_PERCENTAGE, min( rcr, 95.0f ) );
 
-	spellcritperc = baseSpellCrit[pClass] +
-					GetUInt32Value( UNIT_FIELD_STAT3 ) * float( SpellCritFromInt[pLevel][pClass] ) +
-					this->GetSpellCritFromSpell() +
-					this->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT );
+	gtFloat* SpellCritBase  = dbcSpellCritBase.LookupEntry(pClass-1);
+	gtFloat* SpellCritPerInt = dbcSpellCrit.LookupEntry(pLevel - 1 + (pClass-1)*100);
+
+	spellcritperc = 100*(SpellCritBase->val + GetUInt32Value( UNIT_FIELD_STAT3 ) * SpellCritPerInt->val) +
+		this->GetSpellCritFromSpell() +
+		this->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT );
 	UpdateChanceFields();
 }
 
@@ -5581,7 +5583,7 @@ int32 Player::CanShootRangedWeapon( uint32 spellid, Unit* target, bool autoshot 
 */
 	if( fail > 0 )// && fail != SPELL_FAILED_OUT_OF_RANGE)
 	{
-		SendCastResult( autoshot ? 75 : spellid, fail, 0 );
+		SendCastResult( autoshot ? 75 : spellid, fail, 0, 0 );
 		if( fail != SPELL_FAILED_OUT_OF_RANGE )
 		{
 			uint32 spellid2 = autoshot ? 75 : spellid;

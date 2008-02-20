@@ -858,6 +858,14 @@ bool World::SetInitialWorldSettings()
 		case SPELL_HASH_BANISH:				// Banish
 			sp->buffIndexType = SPELL_TYPE_INDEX_BANISH;
 			break;
+
+		//case SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
+		case SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER:
+		case SPELL_HASH_JUDGEMENT_OF_LIGHT:
+		case SPELL_HASH_JUDGEMENT_OF_WISDOM:
+		case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
+			sp->buffIndexType = SPELL_TYPE_INDEX_JUDGEMENT;
+			break;
 		}
 
 		// HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
@@ -1509,7 +1517,7 @@ bool World::SetInitialWorldSettings()
 		}
 
 		if(
-			((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (sp->AttributesEx & ATTRIBUTESEX_DELAY_SOME_TRIGGERS)) //rogue cold blood
+			((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)) //rogue cold blood
 			|| ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC))
 			)
 		{
