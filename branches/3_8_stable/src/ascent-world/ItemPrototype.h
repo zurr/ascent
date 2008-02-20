@@ -553,7 +553,7 @@ struct ItemPrototype
 	uint32 ZoneNameID;
 	uint32 MapID;
 	uint32 BagFamily;
-	uint32 TotemCategory;
+	uint32 ToolCategory;
 	SocketInfo Sockets[3];
 	uint32 SocketBonus;
 	uint32 GemProperties;

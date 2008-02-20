@@ -161,7 +161,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
 	if(_player->m_currentSpell)
 	{
-		_player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+		_player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, 0);
 		return;
 	}
 
@@ -198,7 +198,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 	// this could fuck up things but meh it's needed ALOT of the newbs are using WPE now
 	// WPE allows them to mod the outgoing packet and basicly choose what ever spell they want :(
 
-	if( !GetPlayer()->HasSpell(spellId) || spellInfo->Attributes & ATTRIBUTES_PASSIVE )
+	if( !GetPlayer()->HasSpell(spellId) || spellInfo->Attributes & 64 )
 	{
 		sLog.outDetail("WORLD: Spell isn't casted because player \"%s\" is cheating", GetPlayer()->GetName());
 		return;
@@ -237,6 +237,12 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 			
 			if(!_player->m_onAutoShot)
 			{
+				if(_player->IsMounted())
+				{
+					if( !( spellInfo->Id & 2457 | 71 | 2458 ) )
+	                    _player->SendCastResult(spellInfo->Id, SPELL_FAILED_NOT_MOUNTED, 0);
+						return;
+				}
 				_player->m_AutoShotTarget = _player->GetSelection();
 				uint32 duration = _player->GetUInt32Value(UNIT_FIELD_RANGEDATTACKTIME);
 				SpellCastTargets targets(recvPacket,GetPlayer()->GetGUID());
@@ -264,7 +270,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
         if(_player->m_currentSpell)
         {
-            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
+            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, 0);
             return;
         }
 		Spell *spell = new Spell(GetPlayer(), spellInfo, false, NULL);

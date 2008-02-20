@@ -489,6 +489,7 @@ public:
 
 	uint32 mQueueUpdateInterval;
 	bool m_useIrc;
+	bool sendRevisionOnJoin;
 
 	void SaveAllPlayers();
 

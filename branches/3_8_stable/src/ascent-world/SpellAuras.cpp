@@ -1136,10 +1136,11 @@ void Aura::EventPeriodicDamage(uint32 amount)
 			{
 				if( GetSpellProto() && GetSpellProto()->NameHash == SPELL_HASH_IGNITE )  //static damage for Ignite. Need to be reworked when "static DoTs" will be implemented
 					bonus_damage=0;
-				else bonus_damage = (float)c->GetSpellDmgBonus(m_target,m_spellProto,amount,true);
+				else bonus_damage = (float)c->GetSpellDmgBonus(m_target,m_spellProto,amount);
 				float ticks= float((amp) ? GetDuration()/amp : 0);
 				float fbonus = float(bonus);
 				fbonus += (ticks) ? bonus_damage/ticks : 0;
+				fbonus *= float(GetDuration()) / 15000.0f;
 				bonus = float2int32(fbonus);
 			}
 			else bonus = 0;
@@ -2049,7 +2050,7 @@ void Aura::EventPeriodicHeal( uint32 amount )
 	{
 		bonus += float2int32( static_cast< Player* >( c )->SpellHealDoneByInt[m_spellProto->School] * static_cast< Player* >( c )->GetUInt32Value( UNIT_FIELD_STAT3 ) );
 		bonus += float2int32( static_cast< Player* >( c )->SpellHealDoneBySpr[m_spellProto->School] * static_cast< Player* >( c )->GetUInt32Value( UNIT_FIELD_STAT4 ) );
-		bonus += c->HealDoneMod[GetSpellProto()->School] + m_target->HealTakenMod[m_spellProto->School];
+		bonus += c->HealDoneMod[GetSpellProto()->School];
 		//Druid Tree of Life form. it should work not like this, but it's better then nothing. 
 		if( static_cast< Player* >( c )->IsInFeralForm() && static_cast< Player* >( c )->GetShapeShift() == FORM_TREE)
 			bonus += float2int32( 0.25f * static_cast< Player* >( c )->GetUInt32Value( UNIT_FIELD_STAT4 ) );
@@ -2057,25 +2058,7 @@ void Aura::EventPeriodicHeal( uint32 amount )
 
 	if( c != NULL )
 	{
-		//Spell Coefficient
-		if( m_spellProto->OTspell_coef_override >= 0 ) //In case we have forced coefficients
-			bonus = float2int32( float( bonus ) * m_spellProto->OTspell_coef_override );
-		else
-		{
-			//Bonus to HoT part
-			if( m_spellProto->fixed_hotdotcoef >= 0 )
-			{
-				bonus = float2int32( float( bonus ) * m_spellProto->fixed_hotdotcoef );
-				//we did most calculations in world.cpp, but talents that increase DoT spells duration
-				//must be included now.
-				if( c->IsPlayer() )
-				{
-					int durmod = 0;
-					SM_FIValue(c->SM_FDur, &durmod, m_spellProto->SpellGroupType);
-					bonus += float2int32( float( bonus * durmod ) / 15000.0f );
-				}
-			}
-		}
+		bonus += m_target->HealTakenMod[m_spellProto->School] + (amount * c->HealDonePctMod[m_spellProto->School]) / 100;
 	}
 
 	if( c != NULL && m_spellProto->SpellGroupType )
@@ -2097,7 +2080,7 @@ void Aura::EventPeriodicHeal( uint32 amount )
 	}
 
 	int amp = m_spellProto->EffectAmplitude[mod->i];
-	if( !amp ) 
+	if( amp > 0 ) 
 		amp = static_cast< EventableObject* >( this )->event_GetEventPeriod( EVENT_AURA_PERIODIC_HEAL );
 
 	if( GetDuration() )
@@ -3917,22 +3900,8 @@ void Aura::EventPeriodicLeech(uint32 amount)
 		if(m_target->SchoolImmunityList[GetSpellProto()->School])
 			return;
 
-		int amp = m_spellProto->EffectAmplitude[mod->i];
-		if( !amp ) 
-			amp = static_cast< EventableObject* >( this )->event_GetEventPeriod( EVENT_AURA_PERIODIC_LEECH );
-
-		int bonus = 0;
-
-		if(GetDuration())
-		{
-			float fbonus = float( m_caster->GetSpellDmgBonus(m_target,GetSpellProto(),amount,true) ) * 0.5f;
-			if(fbonus < 0) fbonus = 0.0f;
-			float ticks= float((amp) ? GetDuration()/amp : 0);
-			fbonus = (ticks) ? fbonus/ticks : 0;
-			bonus = float2int32(fbonus);
-		}
-
-		amount += bonus;
+		//zack: latest new is that this spell uses spell damage bonus only and not healing bonus
+		amount += m_caster->GetSpellDmgBonus(m_target,GetSpellProto(),amount)*50/100;
 	
 		uint32 Amount = (uint32)min( amount, m_target->GetUInt32Value( UNIT_FIELD_HEALTH ) );
 		uint32 newHealth = m_caster->GetUInt32Value(UNIT_FIELD_HEALTH) + Amount ;
@@ -4048,7 +4017,7 @@ void Aura::SpellAuraTransform(bool apply)
 		case 30167: // Red Ogre Costume
 		{
 			if( apply )
-				m_target->SetUInt32Value( UNIT_FIELD_DISPLAYID, 11549 );
+				m_target->SetUInt32Value( UNIT_FIELD_DISPLAYID, 10139 );
 			else
 				m_target->SetUInt32Value( UNIT_FIELD_DISPLAYID, m_target->GetUInt32Value( UNIT_FIELD_NATIVEDISPLAYID ) );
 		}
@@ -4056,7 +4025,7 @@ void Aura::SpellAuraTransform(bool apply)
 		case 41301: // Time-Lost Figurine
 		{
 			if( apply )
-				m_target->SetUInt32Value( UNIT_FIELD_DISPLAYID, 18628 );
+				m_target->SetUInt32Value( UNIT_FIELD_DISPLAYID, 23423 );
 			else
 				m_target->SetUInt32Value( UNIT_FIELD_DISPLAYID, m_target->GetUInt32Value( UNIT_FIELD_NATIVEDISPLAYID ) );
 		}
@@ -4466,6 +4435,13 @@ void Aura::SpellAuraFeignDeath(bool apply)
 							//static_cast< Player* >( (*itr) )->SetSelection(0);//loose selection
 							//static_cast< Player* >( (*itr) )->SetUInt64Value(UNIT_FIELD_TARGET, 0);
 						}
+						//if player is enemy then he will exit combat
+						if( static_cast< Player* >( *itr )->GetTarget() == pTarget->GetGUID() && static_cast< Player* >( *itr )->IsAttacking() )
+						{
+							static_cast< Player* >( *itr )->smsg_AttackStop( pTarget );
+							static_cast< Player* >( *itr )->EventAttackStop();
+						}
+
 						if( static_cast< Player* >( *itr )->isCasting())
 							static_cast< Player* >( *itr )->CancelSpell( NULL ); //cancel current casting spell
 
@@ -4528,26 +4504,8 @@ void Aura::SpellAuraSchoolAbsorb(bool apply)
 	if(apply)
 	{
 		SetPositive();
-
-		int32 val = mod->m_amount;
-		Player * plr = static_cast< Player* >( GetUnitCaster() );
-		if( plr )
-		{
-			//This will fix talents that affects damage absorved.
-			int flat = 0;
-			SM_FIValue( plr->SM_FSPELL_VALUE, &flat, GetSpellProto()->SpellGroupType );
-			val += float2int32( float( val * flat ) / 100.0f );
-
-			//For spells Affected by Bonus Healing we use Dspell_coef_override.
-			if( GetSpellProto()->Dspell_coef_override >= 0 )
-				val += float2int32( float( plr->HealDoneMod[GetSpellProto()->School] ) * GetSpellProto()->Dspell_coef_override );
-			//For spells Affected by Bonus Damage we use OTspell_coef_override.
-			else if( GetSpellProto()->OTspell_coef_override >= 0 )
-				val += float2int32( float( plr->GetDamageDoneMod( GetSpellProto()->School ) ) * GetSpellProto()->OTspell_coef_override );
-		}
-
 		ab = new Absorb;
-		ab->amt = val;
+		ab->amt = mod->m_amount;
 		ab->spellid = GetSpellId();
 		ab->caster = m_casterGuid;
 		for(uint32 x=0;x<7;x++)
@@ -4749,7 +4707,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
 			/* Supa's test run of Unit::RemoveAllAurasByMechanic */
 			if( m_target ) // just to be sure?
 			{
-				m_target->RemoveAllAurasByMechanic( (uint32)mod->m_miscValue , -1 , false );
+				m_target->RemoveAllAurasByMechanic( (uint32)mod->m_miscValue , -1 , true );
 			}
 
 			if(m_spellProto->Id==42292)
@@ -5977,10 +5935,10 @@ void Aura::SpellAuraModIncreaseSpeedAlways(bool apply)
 	if(apply)
 	{  
 		SetPositive();
-		m_target->m_speedModifier += mod->m_amount;
+		m_target->m_speedModifier -= mod->m_amount;//?????
 	}
 	else
-		m_target->m_speedModifier -= mod->m_amount;
+		m_target->m_speedModifier += mod->m_amount;
 
 	m_target->UpdateSpeed();
 }

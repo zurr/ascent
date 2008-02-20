@@ -26,12 +26,6 @@
 
 #pragma pack(push,1)
 
-struct BankSlotPrice
-{
-	uint32 Id;
-	uint32 Price;
-};
-
 struct ItemSetEntry
 {
     uint32 id;                  //1
@@ -338,8 +332,9 @@ struct SpellEntry
     uint32 FL;                              //206   only one spellid:6994 has this value = 369
     uint32 FM;                              //207   only one spellid:6994 has this value = 4
     uint32 FN;                              //208   only one spellid:26869  has this flag = 1   
-	uint32 TotemCategory[2];				//209-210 
-	uint32 RequiresAreaId;				     		//211 
+    uint32 unk201_4;						//209 
+    uint32 unk201_5;						//210 
+    uint32 unk201_6;						//211 
 
     /// CUSTOM: these fields are used for the modifications made in the world.cpp
     uint32 DiminishStatus;                  //
@@ -358,14 +353,6 @@ struct SpellEntry
     uint32 EffectSpellGroupRelation_high[3];     //!!! this is not contained in client dbc but server must have it
 	uint32 ThreatForSpell;
 	bool can_be_dispelled;					//!!! CUSTOM
-
-	//Spell Coefficient
-	float casttime_coef;                                    //!!! CUSTOM, faster spell bonus calculation
-	uint32 spell_coef_flags;                                //!!! CUSTOM, store flags for spell coefficient calculations
-	float fixed_dddhcoef;                                   //!!! CUSTOM, fixed DD-DH coefficient for some spells
-	float fixed_hotdotcoef;                                 //!!! CUSTOM, fixed HOT-DOT coefficient for some spells
-	float Dspell_coef_override;                             //!!! CUSTOM, overrides any spell coefficient calculation and use this value in DD&DH
-	float OTspell_coef_override;							//!!! CUSTOM, overrides any spell coefficient calculation and use this value in HOT&DOT
 };
 
 struct ItemExtendedCostEntry
@@ -869,11 +856,6 @@ struct ItemRandomSuffixEntry
 	uint32 prefixes[3];
 };
 
-struct gtFloat
-{
-	float val;
-};
-
 struct CombatRatingDBC
 {
 	float val;
@@ -883,18 +865,6 @@ struct ChatChannelDBC
 {
 	uint32 id;
 	uint32 flags;
-};
-
-struct DurabilityQualityEntry
-{
-    uint32 id;
-    float quality_modifier;
-};
-
-struct DurabilityCostsEntry
-{
-    uint32 itemlevel;
-    uint32 modifier[29];
 };
 
 #pragma pack(pop)
@@ -1201,18 +1171,6 @@ extern SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
 extern SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 extern SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 extern SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
-extern SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
-extern SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
-extern SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
-extern SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices; //uses same structure as Bank
-extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
-extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
-extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;
-extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCritBase;
-extern SERVER_DECL DBCStorage<gtFloat> dbcManaRegen;
-extern SERVER_DECL DBCStorage<gtFloat> dbcManaRegenBase;
-extern SERVER_DECL DBCStorage<gtFloat> dbcHPRegen;
-extern SERVER_DECL DBCStorage<gtFloat> dbcHPRegenBase;
 
 bool LoadDBCs();
 

@@ -762,11 +762,11 @@ void WorldSession::HandleCharterQuery(WorldPacket & recv_data)
     
 	if( c->CharterType == CHARTER_TYPE_GUILD )
 	{
-		data << uint32(1);                                      // 10
+		data << uint32(70);                                      // 10
 	}
 	else
 	{
-		data << uint32(70);                                      // 10
+		data << uint32(1);                                      // 10
 	}
 
     data << uint32(0);                                      // 11

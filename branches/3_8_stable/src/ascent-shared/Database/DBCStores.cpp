@@ -52,18 +52,6 @@ SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
 SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
-SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
-SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
-SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
-SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices;
-SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
-SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
-SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;
-SERVER_DECL DBCStorage<gtFloat> dbcSpellCritBase;
-SERVER_DECL DBCStorage<gtFloat> dbcManaRegen;
-SERVER_DECL DBCStorage<gtFloat> dbcManaRegenBase;
-SERVER_DECL DBCStorage<gtFloat> dbcHPRegen;
-SERVER_DECL DBCStorage<gtFloat> dbcHPRegenBase;
 
 const char* ItemSetFormat = "usxxxxxxxxxxxxxxxuuuuuuuuuxxxxxxxxxuuuuuuuuuuuuuuuuuu";
 const char* LockFormat = "uuuuuuxxxuuuuuxxxuuuuuxxxxxxxxxxx";
@@ -94,11 +82,8 @@ const char* charclassFormat = "uxuxsxxxxxxxxxxxxxxxxxxx";
 const char* creaturefamilyFormat = "ufufuuuusxxxxxxxxxxxxxxxxx";
 const char* mapentryFormat = "usuxsxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* itemrandomsuffixformat = "uxxxxxxxxxxxxxxxxxxuuuuuu";
+const char* combatratingformat = "f";
 const char* chatchannelformat = "uuxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const char * durabilityqualityFormat = "uf";
-const char * durabilitycostsFormat = "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
-const char* bankslotpriceformat = "uu";
-const char* gtfloatformat = "f";
 
 template<class T>
 bool loader_stub(const char * filename, const char * format, bool ind, T& l, bool loadstrs)
@@ -140,20 +125,8 @@ bool LoadDBCs()
 	LOAD_DBC("DBC/Map.dbc", mapentryFormat, true, dbcMap, true);
 	LOAD_DBC("DBC/AuctionHouse.dbc", auctionhousedbcFormat, true, dbcAuctionHouse, false);
 	LOAD_DBC("DBC/ItemRandomSuffix.dbc", itemrandomsuffixformat, true, dbcItemRandomSuffix, false);
-	LOAD_DBC("DBC/gtCombatRatings.dbc", gtfloatformat, false, dbcCombatRating, false);
+	LOAD_DBC("DBC/gtCombatRatings.dbc", combatratingformat, false, dbcCombatRating, false);
 	LOAD_DBC("DBC/ChatChannels.dbc", chatchannelformat, true, dbcChatChannels, false);
-	LOAD_DBC("DBC/DurabilityQuality.dbc", durabilityqualityFormat, true, dbcDurabilityQuality, false);
-	LOAD_DBC("DBC/DurabilityCosts.dbc", durabilitycostsFormat, true, dbcDurabilityCosts, false);
-	LOAD_DBC("DBC/BankBagSlotPrices.dbc", bankslotpriceformat, true, dbcBankSlotPrices, false);
-	LOAD_DBC("DBC/StableSlotPrices.dbc", bankslotpriceformat, true, dbcStableSlotPrices, false);
-	LOAD_DBC("DBC/gtChanceToMeleeCrit.dbc", gtfloatformat, false, dbcMeleeCrit, false);
-	LOAD_DBC("DBC/gtChanceToMeleeCritBase.dbc", gtfloatformat, false, dbcMeleeCritBase, false);
-	LOAD_DBC("DBC/gtChanceToSpellCrit.dbc", gtfloatformat, false, dbcSpellCrit, false);
-	LOAD_DBC("DBC/gtChanceToSpellCritBase.dbc", gtfloatformat, false, dbcSpellCritBase, false);
-	LOAD_DBC("DBC/gtRegenMPPerSpt.dbc", gtfloatformat, false, dbcManaRegenBase, false); //it's not a mistake.
-	LOAD_DBC("DBC/gtOCTRegenMP.dbc", gtfloatformat, false, dbcManaRegen, false); //it's not a mistake.
-	LOAD_DBC("DBC/gtRegenHPPerSpt.dbc", gtfloatformat, false, dbcHPRegenBase, false); //it's not a mistake.
-	LOAD_DBC("DBC/gtOCTRegenHP.dbc", gtfloatformat, false, dbcHPRegen, false); //it's not a mistake.
 	return true;
 }
 

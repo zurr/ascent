@@ -34,7 +34,7 @@ void WorldSession::HandlePetAction(WorldPacket & recv_data)
 
 	//printf("Pet_Action: 0x%.4X 0x%.4X\n", misc, action);
 
-	if(GUID_HIPART(petGuid) == HIGHGUID_UNIT)
+	if(UINT32_LOPART(GUID_HIPART(petGuid)) == HIGHGUID_UNIT)
 	{
 		Creature *pCharm = GetPlayer()->GetMapMgr()->GetCreature((uint32)petGuid);
 		if(!pCharm) 
@@ -362,12 +362,11 @@ void WorldSession::HandleBuyStableSlot(WorldPacket &recv_data)
 {
 	if(!_player->IsInWorld() || _player->GetStableSlotCount() == 2) return;
 	uint8 scount = _player->GetStableSlotCount();
-	BankSlotPrice* bsp = dbcStableSlotPrices.LookupEntry(scount+1);
-	int32 cost = (bsp != NULL) ? bsp->Price : 99999999;
-	if(cost > (int32)_player->GetUInt32Value(PLAYER_FIELD_COINAGE))
+	int32 cost = (scount == 0) ? -500 : -50000;
+	if(abs(cost) > (int32)_player->GetUInt32Value(PLAYER_FIELD_COINAGE))
 		return;
 
-	_player->ModUInt32Value(PLAYER_FIELD_COINAGE, -cost);
+	_player->ModUInt32Value(PLAYER_FIELD_COINAGE, cost);
 	
 	WorldPacket data(1);
 	data.SetOpcode(SMSG_STABLE_RESULT);

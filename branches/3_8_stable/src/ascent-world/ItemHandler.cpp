@@ -799,7 +799,7 @@ void WorldSession::HandleItemQuerySingleOpcode( WorldPacket & recv_data )
 	data << itemProto->ZoneNameID;
 	data << itemProto->MapID;
 	data << itemProto->BagFamily;
-	data << itemProto->TotemCategory;
+	data << itemProto->ToolCategory;
 	data << itemProto->Sockets[0].SocketColor ;
 	data << itemProto->Sockets[0].Unk;
 	data << itemProto->Sockets[1].SocketColor ;
@@ -1540,31 +1540,9 @@ void WorldSession::HandleReadItemOpcode(WorldPacket &recvPacket)
 	}
 }
 
-ASCENT_INLINE uint32 RepairItemCost(Player * pPlayer, Item * pItem)
-{
-	DurabilityCostsEntry * dcosts = dbcDurabilityCosts.LookupEntry(pItem->GetProto()->ItemLevel);
-	if(!dcosts)
-	{
-		sLog.outError("Repair: Unknown item level (%u)", dcosts);
-		return 0;
-	}
-
-	DurabilityQualityEntry * dquality = dbcDurabilityQuality.LookupEntry((pItem->GetProto()->Quality + 1) * 2);
-	if(!dquality)
-	{
-		sLog.outError("Repair: Unknown item quality (%u)", dquality);
-		return 0;
-	}
-
-	uint32 dmodifier = dcosts->modifier[pItem->GetProto()->Class == ITEM_CLASS_WEAPON ? pItem->GetProto()->SubClass : pItem->GetProto()->SubClass + 21];
-	uint32 cost = long2int32((pItem->GetDurabilityMax() - pItem->GetDurability()) * dmodifier * double(dquality->quality_modifier));
-	return cost;
-}
-
 ASCENT_INLINE void RepairItem(Player * pPlayer, Item * pItem)
 {
-	//int32 cost = (int32)pItem->GetUInt32Value( ITEM_FIELD_MAXDURABILITY ) - (int32)pItem->GetUInt32Value( ITEM_FIELD_DURABILITY );
-	int32 cost = RepairItemCost(pPlayer, pItem);
+	int32 cost = (int32)pItem->GetUInt32Value( ITEM_FIELD_MAXDURABILITY ) - (int32)pItem->GetUInt32Value( ITEM_FIELD_DURABILITY );
 	if( cost <= 0 )
 		return;
 
@@ -1580,7 +1558,6 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recvPacket, 12);
-	CHECK_INWORLD_RETURN
 	if(!GetPlayer())
 		return;
 
@@ -1591,13 +1568,6 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 	uint32 j, i;
 
 	recvPacket >> npcguid >> itemguid;
-
-	Creature * pCreature = _player->GetMapMgr()->GetCreature( (uint32)npcguid );
-	if( pCreature == NULL )
-		return;
-
-	if( pCreature->HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER ) )
-		return;
 
 	if( !itemguid ) 
 	{
@@ -1676,8 +1646,34 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
 	slots =(uint8) (bytes >> 16);
 
 	sLog.outDetail("PLAYER: Buy bytes bag slot, slot number = %d", slots);
-	BankSlotPrice* bsp = dbcBankSlotPrices.LookupEntry(slots+1);
-	price = (bsp != NULL ) ? bsp->Price : 99999999;
+
+	// Prices Hardcoded
+	switch (slots) 
+	{
+		case 0:
+			price = 1000;
+			break;
+		case 1:
+			price = 10000;
+			break;
+		case 2:
+			price = 100000;
+			break;
+		case 3:
+			price = 250000;
+			break;
+		case 4:
+			price = 250000;
+			break;
+		case 5:
+			price = 250000;
+			break;
+		case 6:
+			price = 250000;
+			break;
+		default:
+			return;
+	}
 
 	if ((int32)_player->GetUInt32Value(PLAYER_FIELD_COINAGE) >= price) 
 	{

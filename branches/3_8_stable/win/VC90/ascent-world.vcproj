@@ -1010,10 +1010,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\ascent-world\ScriptSetup.h"
-			>
-		</File>
-		<File
 			RelativePath="..\..\src\ascent-world\SkillHandler.cpp"
 			>
 		</File>
