@@ -2288,7 +2288,7 @@ bool Spell::TakePower()
 	//UNIT_FIELD_POWER_COST_MULTIPLIER
 	if( u_caster != NULL )
 	{
-		if( m_spellInfo->AttributesEx & ATTRIBUTEEX_DRAIN_WHOLE_MANA ) // Uses %100 mana
+		if( m_spellInfo->AttributesEx & ATTRIBUTESEX_DRAIN_WHOLE_MANA ) // Uses %100 mana
 		{
 			m_caster->SetUInt32Value(powerField, 0);
 			return true;
@@ -3587,7 +3587,7 @@ int32 Spell::CalculateEffect(uint32 i,Unit *target)
 	}
 exit:
 
-	int32 diff = -m_spellInfo->baseLevel;
+	int32 diff = -(int32)m_spellInfo->baseLevel;
 	if (m_spellInfo->maxLevel && u_caster->getLevel()>m_spellInfo->maxLevel)
 		diff +=m_spellInfo->maxLevel;
 	else
