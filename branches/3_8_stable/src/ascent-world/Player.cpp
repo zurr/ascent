@@ -4457,25 +4457,10 @@ void Player::UpdateChances()
 	SetFloatValue( PLAYER_PARRY_PERCENTAGE, std::max( 0.0f, std::min( tmp, 95.0f ) ) ); //let us not use negative parry. Some spells decrease it
 
 	//critical
+	gtFloat* baseCrit = dbcMeleeCritBase.LookupEntry(pClass-1);
+	gtFloat* CritPerAgi = dbcMeleeCrit.LookupEntry(pLevel - 1 + (pClass-1)*100);
 
-	/* The formula is generated as follows:
-
-	[agility] / [crit constant*] + [skill modifier] + [bonuses]
-
-	The crit constant is class and level dependent and for a level 70 character as follows:
-
-		* Rogue [40]
-		* Druid [25.00]
-		* Hunter [40]
-		* Mage [25.00]
-		* Paladin [25.00]
-		* Priest [25.00]
-		* Shaman [25.00]
-		* Warlock [24.69]
-		* Warrior [33] 
-	*/
-
-	tmp = baseCritChance[pClass] + GetUInt32Value( UNIT_FIELD_STAT1 ) * float( CritFromAgi[pLevel][pClass] );
+	tmp = 100*(baseCrit->val + GetUInt32Value( UNIT_FIELD_STAT1 ) * CritPerAgi->val);
 
 	//std::list<WeaponModifier>::iterator i = tocritchance.begin();
 	map< uint32, WeaponModifier >::iterator itr = tocritchance.begin();
