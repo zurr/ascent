@@ -2261,14 +2261,12 @@ void Unit::Strike( Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability
 		{
 		case MELEE:   // melee main hand weapon
 			it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_MAINHAND );
-			hitmodifier += pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_HIT );
 			self_skill = float2int32( pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_MAIN_HAND_SKILL ) );
 			if (it && it->GetProto())
 				dmg.school_type = it->GetProto()->Damage[0].Type;
 			break;
 		case OFFHAND: // melee offhand weapon (dualwield)
 			it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_OFFHAND );
-			hitmodifier += pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_HIT );
 			self_skill = float2int32( pr->CalcRating( PLAYER_RATING_MODIFIER_MELEE_OFF_HAND_SKILL ) );
 			hit_status |= HITSTATUS_DUALWIELD;//animation
 			if (it && it->GetProto())
@@ -2276,7 +2274,6 @@ void Unit::Strike( Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability
 			break;
 		case RANGED:  // ranged weapon
 			it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_RANGED );
-			hitmodifier += pr->CalcRating( PLAYER_RATING_MODIFIER_RANGED_HIT );
 			self_skill = float2int32( pr->CalcRating( PLAYER_RATING_MODIFIER_RANGED_SKILL ) );
 			if (it && it->GetProto())
 				dmg.school_type = it->GetProto()->Damage[0].Type;
@@ -2284,21 +2281,21 @@ void Unit::Strike( Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability
 		}
 
 		if(it && it->GetProto())
+		{
 			SubClassSkill = GetSkillByProto(it->GetProto()->Class,it->GetProto()->SubClass);
+			if(SubClassSkill==SKILL_FIST_WEAPONS) 
+				SubClassSkill = SKILL_UNARMED;
+		}
 		else
 			SubClassSkill = SKILL_UNARMED;
 
-		if(SubClassSkill==SKILL_FIST_WEAPONS) 
-			SubClassSkill = SKILL_UNARMED;
-
 		//chances in feral form don't depend on weapon skill
-		if(static_cast< Player* >( this )->IsInFeralForm()) 
+		if(pr->IsInFeralForm()) 
 		{
-			uint8 form = static_cast< Player* >( this )->GetShapeShift();
+			uint8 form = pr->GetShapeShift();
 			if(form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
 			{
 				SubClassSkill = SKILL_FERAL_COMBAT;
-				// Adjust skill for Level * 5 for Feral Combat
 				self_skill += pr->getLevel() * 5;
 			}
 		}
@@ -2367,28 +2364,7 @@ else
 		}
 	}
 	crit += (float)(pVictim->AttackerCritChanceMod[0]);
-//--------------------------------by damage type and by weapon type-------------------------
-	if( weapon_damage_type == RANGED ) 
-	{
-		dodge=0.0f;
-		parry=0.0f;
-		glanc=0.0f;
-	}
-	else
-		if(this->IsPlayer())
-		{
-			it = static_cast< Player* >( this )->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_OFFHAND );
-			if( it != NULL && it->GetProto()->InventoryType == INVTYPE_WEAPON && !ability )//dualwield to-hit penalty
-				hitmodifier -= 19.0f;
-			else
-			{
-				it = static_cast< Player* >( this )->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_MAINHAND );
-				if( it != NULL && it->GetProto()->InventoryType == INVTYPE_2HWEAPON )//2 handed weapon to-hit penalty
-  					hitmodifier -= 4.0f;
-			}
-		}
-
-	//--------------------------------by skill difference---------------------------------------
+//--------------------------------by skill difference---------------------------------------
 
 	float vsk = (float)self_skill - (float)victim_skill;
 	dodge = std::max( 0.0f, dodge - vsk * 0.04f );
@@ -2398,8 +2374,6 @@ else
 		block = std::max( 0.0f, block - vsk * 0.04f );
 
 	crit += pVictim->IsPlayer() ? vsk * 0.04f : min( vsk * 0.2f, 0.0f ); 
-	crit -= pVictim->IsPlayer() ? static_cast< Player* >(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_MELEE_CRIT_RESILIENCE ) : 0.0f;
-	if(crit<0) crit=0.0f;
 
 	if(vsk>0)
 			hitchance = std::max(hitchance,95.0f+vsk*0.02f+hitmodifier);
@@ -2422,8 +2396,60 @@ else
 			printf("!!!!spell critchance mod flat %f ,spell group %u\n",spell_flat_modifers,ability->SpellGroupType);
 #endif
 	}
+//--------------------------------by ratings------------------------------------------------
+	crit -= pVictim->IsPlayer() ? static_cast< Player* >(pVictim)->CalcRating( PLAYER_RATING_MODIFIER_MELEE_CRIT_RESILIENCE ) : 0.0f;
+	if(crit<0) crit=0.0f;
+	if (this->IsPlayer())
+	{
+		hitmodifier += (weapon_damage_type == RANGED) ? static_cast< Player* >(this)->CalcRating( PLAYER_RATING_MODIFIER_RANGED_HIT ) : static_cast< Player* >(this)->CalcRating( PLAYER_RATING_MODIFIER_MELEE_HIT );
+		dodge -=static_cast< Player* >(this)->CalcRating( PLAYER_RATING_MODIFIER_EXPERTISE );
+		if(dodge<0) dodge=0.0f;
+		parry -=static_cast< Player* >(this)->CalcRating( PLAYER_RATING_MODIFIER_EXPERTISE );
+		if(parry<0) parry=0.0f;
+	}
+	
 
-	//--------------------------------by victim state-------------------------------------------
+//--------------------------------by damage type and by weapon type-------------------------
+	if( weapon_damage_type == RANGED ) 
+	{
+		dodge=0.0f;
+		parry=0.0f;
+		glanc=0.0f;
+	}
+	else
+		if(this->IsPlayer())
+		{
+			it = static_cast< Player* >( this )->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_OFFHAND );
+			if( it != NULL && it->GetProto()->InventoryType == INVTYPE_WEAPON && !ability )//dualwield to-hit penalty
+				hitmodifier -= 19.0f;
+			else
+			{
+				it = static_cast< Player* >( this )->GetItemInterface()->GetInventoryItem( EQUIPMENT_SLOT_MAINHAND );
+				if( it != NULL && it->GetProto()->InventoryType == INVTYPE_2HWEAPON )//2 handed weapon to-hit penalty
+					hitmodifier -= 4.0f;
+			}
+		}
+
+	//Hackfix for Surprise Attacks
+	if(  this->IsPlayer() && ability && static_cast< Player* >( this )->m_finishingmovesdodge && ability->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE)
+			dodge = 0.0f;
+
+	if( skip_hit_check )
+	{
+		hitchance = 100.0f;
+		dodge = 0.0f;
+		parry = 0.0f;
+		block = 0.0f;
+	}
+
+	if( ability != NULL && ability->Attributes & ATTRIBUTES_CANT_BE_DPB )
+	{
+		dodge = 0.0f;
+		parry = 0.0f;
+		block = 0.0f;
+	}
+
+//--------------------------------by victim state-------------------------------------------
 	if(pVictim->IsPlayer()&&pVictim->GetStandState()) //every not standing state is >0
 	{
 		hitchance = 100.0f;
@@ -2433,21 +2459,6 @@ else
 		crush = 0.0f;
 		crit = 100.0f;
 	}
-
-	if(skip_hit_check)
-	{
-		hitchance=100.0f;
-		dodge=parry=block=0.0f;
-	}
-
-	if (ability->Attributes & ATTRIBUTES_CANT_BE_DPB)
-	{
-		dodge=parry=block=0.0f;
-	}
-
-	if( IsPlayer() && static_cast< Player* >( this )->m_finishingmovesdodge && ability && ( ability->EffectPointsPerComboPoint[0] > 0 || ability->EffectPointsPerComboPoint[1] > 0 || ability->EffectPointsPerComboPoint[2] > 0 ) )  // SPELL: Surprise Attacks
-		dodge = 0.0f;
-
 //==========================================================================================
 //==============================One Roll Processing=========================================
 //==========================================================================================
@@ -2471,21 +2482,21 @@ else
 //--------------------------------postroll processing---------------------------------------
 	uint32 abs = 0;
 
-
 	switch(r)
 	{ 
 //--------------------------------miss------------------------------------------------------
 	case 0:
 		hit_status |= HITSTATUS_MISS;
-
 		// dirty ai agro fix
-		// make mob aggro when u miss it
-		// grep: dirty fix for this
-		if(pVictim->GetTypeId() == TYPEID_UNIT)
+		if(pVictim->GetTypeId() == TYPEID_UNIT && pVictim->GetAIInterface()->GetNextTarget() == NULL)
 			pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
 		break;
 //--------------------------------dodge-----------------------------------------------------
 	case 1:
+		// dirty ai agro fix
+		if(pVictim->GetTypeId() == TYPEID_UNIT && pVictim->GetAIInterface()->GetNextTarget() == NULL)
+			pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
+
 		CALL_SCRIPT_EVENT(pVictim, OnTargetDodged)(this);
 		CALL_SCRIPT_EVENT(this, OnDodged)(this);
 		targetEvent = 1;
@@ -2512,6 +2523,10 @@ else
 		break;
 //--------------------------------parry-----------------------------------------------------
 	case 2:
+		// dirty ai agro fix
+		if(pVictim->GetTypeId() == TYPEID_UNIT && pVictim->GetAIInterface()->GetNextTarget() == NULL)
+			pVictim->GetAIInterface()->AttackReaction(this, 1, 0);
+
 		CALL_SCRIPT_EVENT(pVictim, OnTargetParried)(this);
 		CALL_SCRIPT_EVENT(this, OnParried)(this);
 		targetEvent = 3;
@@ -2579,17 +2594,27 @@ else
 					printf("!!!!!spell dmg bonus mod flat %d , spell dmg bonus pct %d , spell dmg bonus %d, spell group %u\n",spell_flat_modifers,spell_pct_modifers,dmg.full_damage,ability->SpellGroupType);
 #endif
 			}
-			dmg.full_damage += pVictim->DamageTakenMod[dmg.school_type]+add_damage;
+			dmg.full_damage += pVictim->DamageTakenMod[dmg.school_type] + add_damage;
 			if( weapon_damage_type == RANGED )
 			{
-				dmg.full_damage+=pVictim->RangedDamageTaken;
+				dmg.full_damage += pVictim->RangedDamageTaken;
 			}
 			
-			if(ability && ability->MechanicsType == MECHANIC_BLEEDING)
+			if( ability && ability->MechanicsType == MECHANIC_BLEEDING )
 				disable_dR = true; 
+			
+			//float summaryPCTmod = (pVictim->DamageTakenPctMod[dmg.school_type] / 100.0f) + (GetDamageDonePctMod( dmg.school_type ) / 100.0f) + 1;
 
-			if(pct_dmg_mod > 0)
-				dmg.full_damage = float2int32(dmg.full_damage*(float(pct_dmg_mod)/100.0f));
+			if( pct_dmg_mod > 0 )
+				dmg.full_damage = float2int32( dmg.full_damage *  ( float( pct_dmg_mod) / 100.0f ) );
+
+			//a bit dirty fix
+			/*if( ability != NULL && ability->NameHash == SPELL_HASH_SHRED )
+			{
+				summaryPCTmod *= 1 + pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING];
+			}*/
+
+			//dmg.full_damage = (dmg.full_damage < 0) ? 0 : float2int32(dmg.full_damage*summaryPCTmod);
 
 			// burlex: fixed this crap properly
 			float inital_dmg = float(dmg.full_damage);
@@ -2892,6 +2917,32 @@ else
 				SpellNonMeleeDamageLog(pVictim, itr->second.spellid, dmg, true);
 			}
 		}
+
+		// refresh judgements
+		// TODO: find the opcode to refresh the aura or just remove it and re add it
+		// rather than fuck with duration
+		for( uint32 x = MAX_POSITIVE_AURAS; x <= MAX_AURAS; x++ )
+		{
+			if( pVictim->m_auras[x] != NULL && pVictim->m_auras[x]->GetUnitCaster() != NULL && pVictim->m_auras[x]->GetUnitCaster()->GetGUID() == GetGUID() && pVictim->m_auras[x]->GetSpellProto()->buffIndexType == SPELL_TYPE_INDEX_JUDGEMENT )
+			{
+				pVictim->m_auras[x]->SetDuration( 20000 ); // 20 seconds?
+				sEventMgr.ModifyEventTimeLeft( pVictim->m_auras[x], EVENT_AURA_REMOVE, 20000 );
+			
+				// We have to tell the target that the aura has been refreshed.
+				if( pVictim->IsPlayer() )
+				{
+					WorldPacket data( 5 );
+					data.SetOpcode( SMSG_UPDATE_AURA_DURATION );
+					data << (uint8)pVictim->m_auras[x]->GetAuraSlot() << 20000;
+					static_cast< Player* >( pVictim )->GetSession()->SendPacket( &data );
+				}
+				// However, there is also an opcode that tells the caster that the aura has been refreshed.
+				// This isn't implemented anywhere else in the source, so I can't work on that part :P
+				// (The 'cooldown' meter on the target frame that shows how long the aura has until expired does not get reset)=
+				// I would say break; here, but apparently in Ascent, one paladin can have multiple judgements on the target. No idea if this is blizzlike or not.
+			}
+		}
+
 	}
 	
 //==========================================================================================
@@ -3121,6 +3172,7 @@ else
 		m_extrastriketargets = m_temp;
 	}
 }	
+
 
 void Unit::smsg_AttackStop(Unit* pVictim)
 {

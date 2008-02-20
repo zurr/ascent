@@ -6289,37 +6289,20 @@ void Player::RegenerateMana(bool is_interrupted)
 	SetUInt32Value(UNIT_FIELD_POWER1,(cur >= mm) ? mm : cur);
 }
 
-void Player::RegenerateHealth(bool inCombat)
+void Player::RegenerateHealth( bool inCombat )
 {
-	const static float ClassMultiplier[12]={
-		0.0f,0.8f,0.25f,0.25f,0.5f,0.1f,0.0f,0.11f,0.1f,0.11f,0.0f,0.09f};
+	gtFloat* HPRegenBase = dbcHPRegenBase.LookupEntry(getLevel()-1 + (getClass()-1)*100);
+	gtFloat* HPRegen =  dbcHPRegen.LookupEntry(getLevel()-1 + (getClass()-1)*100);
 
-	const static float ClassFlatMod[12]={
-			0.0f,6.0f,6.0f,6.0f,2.0f,4.0f,0.0f,6.0f,4.0f,6.0f,0.0f,6.5f};
-
-	float amt;
 	uint32 cur = GetUInt32Value(UNIT_FIELD_HEALTH);
 	uint32 mh = GetUInt32Value(UNIT_FIELD_MAXHEALTH);
 	if(cur >= mh)
 		return;
-	uint32 cl = getClass();
-	uint32 Spirit = GetUInt32Value(UNIT_FIELD_STAT4);
-	if(PctRegenModifier == 0.0f)
-		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl]);
-	else
-		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*(1+PctRegenModifier);
 
-	//Apply shit from conf file
-	amt *= sWorld.getRate(RATE_HEALTH);
-	//Near values from official
-	// wowwiki: Health Regeneration is increased by 33% while sitting.
-	if(m_isResting)
-		amt = amt * 1.33f;
+	float amt = (m_uint32Values[UNIT_FIELD_STAT4]*HPRegen->val+HPRegenBase->val*100)*(1+PctRegenModifier);
+	amt *= sWorld.getRate(RATE_HEALTH);//Apply shit from conf file
 
 	if(m_interruptRegen)
-		inCombat = true;
-
-	if(inCombat)
 		amt *= PctIgnoreRegenModifier;
 
 	if(amt != 0)
