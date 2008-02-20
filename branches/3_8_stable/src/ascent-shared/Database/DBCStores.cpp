@@ -52,6 +52,8 @@ SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
 SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
+SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
+SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
 
 const char* ItemSetFormat = "usxxxxxxxxxxxxxxxuuuuuuuuuxxxxxxxxxuuuuuuuuuuuuuuuuuu";
 const char* LockFormat = "uuuuuuxxxuuuuuxxxuuuuuxxxxxxxxxxx";
@@ -84,6 +86,8 @@ const char* mapentryFormat = "usuxsxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 const char* itemrandomsuffixformat = "uxxxxxxxxxxxxxxxxxxuuuuuu";
 const char* combatratingformat = "f";
 const char* chatchannelformat = "uuxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+const char * durabilityqualityFormat = "uf";
+const char * durabilitycostsFormat = "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
 
 template<class T>
 bool loader_stub(const char * filename, const char * format, bool ind, T& l, bool loadstrs)
@@ -127,6 +131,8 @@ bool LoadDBCs()
 	LOAD_DBC("DBC/ItemRandomSuffix.dbc", itemrandomsuffixformat, true, dbcItemRandomSuffix, false);
 	LOAD_DBC("DBC/gtCombatRatings.dbc", combatratingformat, false, dbcCombatRating, false);
 	LOAD_DBC("DBC/ChatChannels.dbc", chatchannelformat, true, dbcChatChannels, false);
+	LOAD_DBC("DBC/DurabilityQuality.dbc", durabilityqualityFormat, true, dbcDurabilityQuality, false);
+	LOAD_DBC("DBC/DurabilityCosts.dbc", durabilitycostsFormat, true, dbcDurabilityCosts, false);
 	return true;
 }
 

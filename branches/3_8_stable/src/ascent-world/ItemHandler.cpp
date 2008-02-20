@@ -1540,9 +1540,31 @@ void WorldSession::HandleReadItemOpcode(WorldPacket &recvPacket)
 	}
 }
 
+ASCENT_INLINE uint32 RepairItemCost(Player * pPlayer, Item * pItem)
+{
+	DurabilityCostsEntry * dcosts = dbcDurabilityCosts.LookupEntry(pItem->GetProto()->ItemLevel);
+	if(!dcosts)
+	{
+		sLog.outError("Repair: Unknown item level (%u)", dcosts);
+		return 0;
+	}
+
+	DurabilityQualityEntry * dquality = dbcDurabilityQuality.LookupEntry((pItem->GetProto()->Quality + 1) * 2);
+	if(!dquality)
+	{
+		sLog.outError("Repair: Unknown item quality (%u)", dquality);
+		return 0;
+	}
+
+	uint32 dmodifier = dcosts->modifier[pItem->GetProto()->Class == ITEM_CLASS_WEAPON ? pItem->GetProto()->SubClass : pItem->GetProto()->SubClass + 21];
+	uint32 cost = long2int32((pItem->GetDurabilityMax() - pItem->GetDurability()) * dmodifier * double(dquality->quality_modifier));
+	return cost;
+}
+
 ASCENT_INLINE void RepairItem(Player * pPlayer, Item * pItem)
 {
-	int32 cost = (int32)pItem->GetUInt32Value( ITEM_FIELD_MAXDURABILITY ) - (int32)pItem->GetUInt32Value( ITEM_FIELD_DURABILITY );
+	//int32 cost = (int32)pItem->GetUInt32Value( ITEM_FIELD_MAXDURABILITY ) - (int32)pItem->GetUInt32Value( ITEM_FIELD_DURABILITY );
+	int32 cost = RepairItemCost(pPlayer, pItem);
 	if( cost <= 0 )
 		return;
 
@@ -1558,6 +1580,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 {
 	if(!_player->IsInWorld()) return;
 	CHECK_PACKET_SIZE(recvPacket, 12);
+	CHECK_INWORLD_RETURN
 	if(!GetPlayer())
 		return;
 
@@ -1568,6 +1591,13 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket &recvPacket)
 	uint32 j, i;
 
 	recvPacket >> npcguid >> itemguid;
+
+	Creature * pCreature = _player->GetMapMgr()->GetCreature( (uint32)npcguid );
+	if( pCreature == NULL )
+		return;
+
+	if( pCreature->HasFlag( UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER ) )
+		return;
 
 	if( !itemguid ) 
 	{
