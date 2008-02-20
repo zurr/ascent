@@ -444,10 +444,6 @@
 				RelativePath="..\..\src\ascent-world\Master.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\src\ascent-world\ScriptSetup.h"
-				>
-			</File>
 			<Filter
 				Name="Console"
 				>
@@ -1011,6 +1007,10 @@
 		</File>
 		<File
 			RelativePath="..\..\src\ascent-world\ScriptMgr.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\src\ascent-world\ScriptSetup.h"
 			>
 		</File>
 		<File
