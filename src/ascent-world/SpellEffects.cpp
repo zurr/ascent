@@ -316,11 +316,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 		dmg = damage;
 		switch(m_spellInfo->NameHash)
 		{
-		case SPELL_HASH_ICE_LANCE: // Ice Lance
+		case 0xddaf1ac7: // Ice Lance
 			if (dmg>300)   //dirty bugfix.
 				dmg = (int32)(damage >> 1);
 			break;
-		case SPELL_HASH_INCINERATE:	// Incinerate -> Deals x-x extra damage if the target is affected by immolate
+		case 0x2bc0ae00:	// Incinerate -> Deals x-x extra damage if the target is affected by immolate
 			{
 				if( unitTarget->HasAurasWithNameHash( SPELL_HASH_IMMOLATE ) )
 				{
@@ -328,6 +328,30 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 					uint32 extra_dmg = 111 + (m_spellInfo->RankNumber * 11) + RandomUInt(m_spellInfo->RankNumber * 11);
 					dmg += extra_dmg;
 				}
+			}break;
+		case SPELL_HASH_GOUGE:	// Gouge: turns off your combat
+			{
+				if( p_caster != NULL )
+				{
+					p_caster->EventAttackStop();
+					p_caster->smsg_AttackStop( unitTarget );
+				}break;
+			}break;
+		case SPELL_HASH_BLIND:	// Blind: turns off your attack
+			{
+				if( p_caster != NULL )
+				{
+					p_caster->EventAttackStop();
+					p_caster->smsg_AttackStop( unitTarget );
+				}break;
+			}break;
+		case SPELL_HASH_MAIM:	// Maim: turns off your attack
+			{
+				if( p_caster != NULL )
+				{
+					p_caster->EventAttackStop();
+					p_caster->smsg_AttackStop( unitTarget );
+				}break;
 			}break;
 		case SPELL_HASH_ARCANE_SHOT: //hunter - arcane shot
 			{
@@ -1247,7 +1271,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 		uint32 Duration=this->GetDuration();
 		
 		// Handle diminishing returns, if it should be resisted, it'll make duration 0 here.
-		if(!(m_spellInfo->Attributes & ATTRIBUTES_PASSIVE)) // Passive
+		if(!(m_spellInfo->Attributes & 64)) // Passive
 			::ApplyDiminishingReturnTimer(&Duration, unitTarget, m_spellInfo);
 
 		if(!Duration)
@@ -1772,7 +1796,7 @@ void Spell::SpellEffectWeapon(uint32 i)
 	}
 
 	// Don't add skills to players logging in.
-	/*if((m_spellInfo->Attributes & ATTRIBUTES_PASSIVE) && playerTarget->m_TeleportState == 1)
+	/*if((m_spellInfo->Attributes & 64) && playerTarget->m_TeleportState == 1)
 		return;*/
 
 	if(skill)
@@ -2484,7 +2508,7 @@ void Spell::SpellEffectApplyAA(uint32 i) // Apply Area Aura
 
 void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
 {
-	if(playerTarget == 0 && unitTarget && unitTarget->GetGUIDHigh() == HIGHGUID_UNIT)
+	if(playerTarget == 0 && unitTarget && UINT32_LOPART(unitTarget->GetGUIDHigh()) == HIGHGUID_UNIT)
 	{
 		// bug in target map fill?
 		playerTarget = m_caster->GetMapMgr()->GetPlayer((uint32)m_targets.m_unitTarget);
@@ -2602,7 +2626,7 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
 		}
 	}*/
 
-	if(unitTarget && unitTarget->GetGUIDHigh() == HIGHGUID_PET && p_caster)
+	if(unitTarget && UINT32_LOPART(unitTarget->GetGUIDHigh()) == HIGHGUID_PET && p_caster)
 	{
 		Pet * pPet = static_cast<Pet*>( unitTarget );
 		if(pPet->IsSummon())
@@ -3184,9 +3208,8 @@ void Spell::SpellEffectWeapondamage( uint32 i ) // Weapon damage +
 	if( unitTarget == NULL || u_caster == NULL )
 		return;
 
-	//Hackfix for Mangle and Hemorrhage
-	if( (m_spellInfo->NameHash == SPELL_HASH_MANGLE__CAT_ || m_spellInfo->NameHash == SPELL_HASH_HEMORRHAGE) && u_caster->IsPlayer() )
-		static_cast< Player* >( u_caster )->AddComboPoints( unitTarget->GetGUID(), 1 );
+	if( m_spellInfo->NameHash == SPELL_HASH_MANGLE__CAT_ && u_caster->IsPlayer() ) //Hacky fix for druid - Mangle.
+			static_cast< Player* >( u_caster )->AddComboPoints( unitTarget->GetGUID(), 1 );
 
 	// Hacky fix for druid spells where it would "double attack".
 	if( m_spellInfo->Effect[2] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE || m_spellInfo->Effect[1] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE )

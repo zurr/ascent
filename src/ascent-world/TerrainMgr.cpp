@@ -49,7 +49,7 @@ TerrainMgr::~TerrainMgr()
 			}
 			delete [] CellInformation[x];
 		}
-		delete [] CellInformation;
+		delete CellInformation;
 	}
 #else
 
@@ -60,7 +60,7 @@ TerrainMgr::~TerrainMgr()
 	{
 		delete [] CellInformation[x];
 	}
-	delete [] CellInformation;
+	delete CellInformation;
 
 #ifdef WIN32
 	UnmapViewOfFile(m_Memory);

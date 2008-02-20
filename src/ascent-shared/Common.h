@@ -473,19 +473,16 @@ Scripting system exports/imports
 
 #endif
 
-#ifndef WIN32
 #ifdef USING_BIG_ENDIAN
-//#define GUID_HIPART(x) (*((uint32*)&(x)))
-//#define GUID_LOPART(x) (*(((uint32*)&(x))+1))
-#define GUID_LOPART(x) ( ( x >> 32 ) )
-#define GUID_HIPART(x) ( ( x & 0x00000000ffffffff ) )
-#else
-#define GUID_HIPART(x) ( ( x >> 32 ) )
-#define GUID_LOPART(x) ( ( x & 0x00000000ffffffff ) )
-#endif
+#define GUID_HIPART(x) (*((uint32*)&(x)))
+#define GUID_LOPART(x) (*(((uint32*)&(x))+1))
+#define UINT32_HIPART(x) (*((uint16*)&(x)))
+#define UINT32_LOPART(x) (*(((uint16*)&(x))+1))
 #else
 #define GUID_HIPART(x) (*(((uint32*)&(x))+1))
 #define GUID_LOPART(x) (*((uint32*)&(x)))
+#define UINT32_HIPART(x) (*(((uint16*)&(x))+1))
+#define UINT32_LOPART(x) (*((uint16*)&(x)))
 #endif
 
 #define atol(a) strtoul( a, NULL, 10)

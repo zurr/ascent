@@ -184,7 +184,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 	// get sessionkey!
 	uint32 error = 0;
 	Account * acct = sAccountMgr.GetAccount(account_name);
-	if(acct == NULL || acct->SessionKey == NULL)
+	if(acct->SessionKey == NULL || acct == 0)
 		error = 1;		  // Unauthorized user.
 
 	// build response packet

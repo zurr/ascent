@@ -1654,20 +1654,18 @@ void Object::DealDamage(Unit *pVictim, uint32 damage, uint32 targetEvent, uint32
 	}
 
 	//* BATTLEGROUND DAMAGE COUNTER *//
-	if( pVictim != this )
+	if(pVictim != this)
 	{
-		if( IsPlayer() )
-		{
+		if(IsPlayer())
 			plr = static_cast< Player* >( this );
-		}
-		else if( IsPet() )
+		else if(IsPet())
 		{
 			plr = static_cast< Pet* >( this )->GetPetOwner();
-			if( plr != NULL && plr->GetMapMgr() == GetMapMgr() )
+			if( plr && plr->GetMapMgr() == GetMapMgr() )
 				plr = NULL;
 		}
 
-		if( plr != NULL && plr->m_bg != NULL )
+		if(plr && plr->m_bg)
 		{
 			plr->m_bgScore.DamageDone += damage;
 			plr->m_bg->UpdatePvPData();
@@ -2187,7 +2185,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	{
 		Unit* caster = static_cast< Unit* >( this );
 		caster->RemoveAurasByInterruptFlag( AURA_INTERRUPT_ON_START_ATTACK );
-		res += caster->GetSpellDmgBonus( pVictim, spellInfo, ( int )res, false );
+		res += caster->GetSpellDmgBonus( pVictim, spellInfo, ( int )res );
 //==========================================================================================
 //==============================Post +SpellDamage Bonus Modifications=======================
 //==========================================================================================
@@ -2456,7 +2454,7 @@ bool Object::CanActivate()
 	{
 	case TYPEID_UNIT:
 		{
-			if(GetGUIDHigh() != HIGHGUID_PET)
+			if(UINT32_LOPART(GetGUIDHigh()) != HIGHGUID_PET)
 				return true;
 		}break;
 

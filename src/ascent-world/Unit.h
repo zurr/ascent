@@ -810,7 +810,7 @@ public:
 	void InterruptSpell();
 
 	//caller is the caster
-	int32 GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg, bool isdot);
+	int32 GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg);
    
 	Unit* create_guardian(uint32 guardian_entry,uint32 duration,float angle);//guardians are temporary spawn that will inherit master faction and will folow them. Apart from that they have their own mind
 

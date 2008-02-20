@@ -1278,14 +1278,18 @@ void Spell::cast(bool check)
 				p_caster->setAttackTimer( 0, true );
 				p_caster->setAttackTimer( 0, false );
 			}
-			if( p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH) )
+			if(p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_DELAY_SOME_TRIGGERS))
 			{
 				/* talents procing - don't remove stealth either */
-				if (!(m_spellInfo->Attributes & ATTRIBUTES_PASSIVE) && 
-					!( pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & ATTRIBUTES_PASSIVE ) )
+				if( m_spellInfo->Attributes & 64 || (pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & 64))
 				{
-					p_caster->RemoveAura(p_caster->m_stealth);
+
+				}
+				else
+				{
+					uint32 stealthid = p_caster->m_stealth;
 					p_caster->m_stealth = 0;
+					p_caster->RemoveAura(stealthid);
 				}
 			}
 		}
@@ -1670,12 +1674,6 @@ void Spell::finish()
 	//enable pvp when attacking another player with spells
 	if( p_caster != NULL )
 	{
-		if (m_spellInfo->Attributes & ATTRIBUTES_STOP_ATTACK)
-		{
-			p_caster->EventAttackStop();
-			p_caster->smsg_AttackStop( unitTarget );
-		}
-
 		if(m_requiresCP && !GetSpellFailed())
 		{
 			if(p_caster->m_spellcomboPoints)
@@ -1726,7 +1724,6 @@ void Spell::finish()
 
 void Spell::SendCastResult(uint8 result)
 {
-	uint32 Extra = 0;
 	if(result == SPELL_CANCAST_OK) return;
 
 	SetSpellFailed();
@@ -1740,24 +1737,7 @@ void Spell::SendCastResult(uint8 result)
 	if(!plr) return;
 
 	// for some reason, the result extra is not working for anything, including SPELL_FAILED_REQUIRES_SPELL_FOCUS
-	switch( result )
-	{
-	case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
-		Extra = m_spellInfo->RequiresSpellFocus;
-		break;
-
-	case SPELL_FAILED_REQUIRES_AREA:
-		Extra = m_spellInfo->RequiresAreaId;
-		break;
-
-	case SPELL_FAILED_TOTEMS:
-		Extra = m_spellInfo->Totem[1] ? m_spellInfo->Totem[1] : m_spellInfo->Totem[0];
-		break;
-
-	//case SPELL_FAILED_TOTEM_CATEGORY: seems to be fully client sided.
-	}
-
-	plr->SendCastResult(m_spellInfo->Id, result, extra_cast_number, Extra);
+	plr->SendCastResult(m_spellInfo->Id, result, 0);
 }
 
 // uint16 0xFFFF
@@ -2288,7 +2268,7 @@ bool Spell::TakePower()
 	//UNIT_FIELD_POWER_COST_MULTIPLIER
 	if( u_caster != NULL )
 	{
-		if( m_spellInfo->AttributesEx & ATTRIBUTESEX_DRAIN_WHOLE_MANA ) // Uses %100 mana
+		if( m_spellInfo->AttributesEx & ATTRIBUTEEX_DRAIN_WHOLE_MANA ) // Uses %100 mana
 		{
 			m_caster->SetUInt32Value(powerField, 0);
 			return true;
@@ -2389,7 +2369,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 		else
 		{
 			unitTarget = NULL;
-			switch(GUID_HIPART(guid))
+			switch(UINT32_LOPART(GUID_HIPART(guid)))
 			{
 			case HIGHGUID_UNIT:
 				unitTarget = m_caster->GetMapMgr()->GetCreature((uint32)guid);
@@ -2670,11 +2650,6 @@ uint8 Spell::CanCast(bool tolerate)
 			if( m_spellInfo->Id == 25860) // Reindeer Transformation
 				return SPELL_FAILED_ONLY_MOUNTED;
 		}
-		else
-		{
-			if (!(m_spellInfo->Attributes & ATTRIBUTES_MOUNT_CASTABLE))
-				return SPELL_FAILED_NOT_MOUNTED;
-		}
 
 		// check if spell is allowed while shapeshifted
 		if(p_caster->GetShapeShift())
@@ -2781,12 +2756,12 @@ uint8 Spell::CanCast(bool tolerate)
 		if( m_spellInfo->Totem[0] != 0)
 		{
 			if(!p_caster->GetItemInterface()->GetItemCount(m_spellInfo->Totem[0]))
-				return SPELL_FAILED_TOTEMS;
+				return SPELL_FAILED_ITEM_GONE;
 		}
 		if( m_spellInfo->Totem[1] != 0)
 		{
 			if(!p_caster->GetItemInterface()->GetItemCount(m_spellInfo->Totem[1]))
-				return SPELL_FAILED_TOTEMS;
+				return SPELL_FAILED_ITEM_GONE;
 		}
 
 		// stealth check
@@ -2838,9 +2813,6 @@ uint8 Spell::CanCast(bool tolerate)
 			if(!found)
 				return SPELL_FAILED_REQUIRES_SPELL_FOCUS;
 		}
-
-		if (m_spellInfo->RequiresAreaId && m_spellInfo->RequiresAreaId != p_caster->GetMapMgr()->GetAreaID(p_caster->GetPositionX(),p_caster->GetPositionY()))
-			return SPELL_FAILED_REQUIRES_AREA;
 	}
 
 	// Targetted Item Checks
@@ -3126,11 +3098,6 @@ uint8 Spell::CanCast(bool tolerate)
 					if(pPet && !pPet->isDead())
 						return SPELL_FAILED_TARGET_NOT_DEAD;
 				}
-				case 38177:
-				{
-					if(target->GetEntry() != 21387)
-						return SPELL_FAILED_BAD_TARGETS;
-				}break;
 			}
 
 			// if the target is not the unit caster and not the masters pet
@@ -3548,12 +3515,12 @@ int32 Spell::CalculateEffect(uint32 i,Unit *target)
 
 	float basePointsPerLevel    = m_spellInfo->EffectRealPointsPerLevel[i];
 	float randomPointsPerLevel  = m_spellInfo->EffectDicePerLevel[i];
-	int32 basePoints = m_spellInfo->EffectBasePoints[i] + 1;
-	int32 randomPoints = m_spellInfo->EffectDieSides[i];
+	int32 basePoints;
 
 	//added by Zack : some talents inherit their basepoints from the previously casted spell: see mage - Master of Elements
 	if(forced_basepoints[i])
 		basePoints = forced_basepoints[i];
+	else basePoints = m_spellInfo->EffectBasePoints[i] + 1;
 
 	/* Random suffix value calculation */
 	if(i_caster && (int32(i_caster->GetUInt32Value(ITEM_FIELD_RANDOM_PROPERTIES_ID)) < 0))
@@ -3587,25 +3554,40 @@ int32 Spell::CalculateEffect(uint32 i,Unit *target)
 	}
 exit:
 
-	int32 diff = -(int32)m_spellInfo->baseLevel;
-	if (m_spellInfo->maxLevel && u_caster->getLevel()>m_spellInfo->maxLevel)
-		diff +=m_spellInfo->maxLevel;
-	else
-		diff +=u_caster->getLevel();	
-
-	if( u_caster != NULL )
+	/* Shady: it's so strange cause almost all spells has BPPL!=0 so at lvl70 Fireball takes +280 damage.
+	I think it's imbalanced so committed and replaced with dirty fix.
+	if (m_caster->IsUnit())
+		basePoints += static_cast<Unit*>(m_caster)->getLevel()*basePointsPerLevel; */
+	if (u_caster)
 	{
-		randomPoints += float2int32(diff * randomPointsPerLevel);
-		basePoints += float2int32(diff * basePointsPerLevel );
+		switch (m_spellInfo->NameHash)
+		{
+		case 0x7424D6B3: //Gift of the Naaru
+		case 0xDE1C36C8: //Blood Fury
+		case 0xEE91A232: //Mana Tap
+		case 0x6632EB62: //Arcane Torrent
+			basePoints += float2int32(u_caster->getLevel()*basePointsPerLevel);
+			break;
+		}
 	}
 
+	int32 randomPoints = m_spellInfo->EffectDieSides[i];
+	if( u_caster != NULL )
+		randomPoints += u_caster->getLevel() * (int32)randomPointsPerLevel;
+	
 	if(randomPoints <= 1)
 		value = basePoints;
 	else
 		value = basePoints + rand() % randomPoints;
 
+    // druid passive forms
+	if( m_spellInfo->Id ==3025 ||m_spellInfo->Id==9635 || m_spellInfo->Id == 1178 || m_spellInfo->Id == 24905)
+	{
+		if( u_caster != NULL )
+			value += float2int32(m_spellInfo->EffectRealPointsPerLevel[i]*(u_caster->getLevel()-m_spellInfo->baseLevel));
+	}
 	//scripted shit
-	if( m_spellInfo->Id == 34120)
+	else if( m_spellInfo->Id == 34120)
 	{	//A steady shot that causes ${$RAP*0.3+$m1} damage. 
 		//	Actual Equation (http://www.wowwiki.com/Steady_Shot)
 		//		* The tooltip is proven to be wrong and the following is the best player worked out formula so far with data taken from [1]
@@ -3979,11 +3961,22 @@ void Spell::Heal(int32 amount)
 	//Make it critical
 	bool critical = false;
 	int32 bonus = 0;
-	float healdoneaffectperc = 1.0f;
+	float healdoneaffectperc = 0;
 	if( u_caster != NULL )
 	{
+		SpellCastTime *sd = dbcSpellCastTime.LookupEntry(m_spellInfo->CastingTimeIndex);
+
+		// affect the plus damage by duration
+		float castaff = float(GetCastTime(sd));
+		if(castaff > 3500) 
+            castaff = 3500;
+		else if(castaff < 1500) 
+            castaff = 1500;
+
+		healdoneaffectperc = castaff / 3500.0f;
+		
 		//Downranking
-		if(p_caster && p_caster->IsPlayer() && m_spellInfo->baseLevel > 0 && m_spellInfo->maxLevel > 0)
+		/*if( m_spellInfo->baseLevel > 0 && m_spellInfo->maxLevel > 0 && p_caster)
 		{
 			float downrank1 = 1.0f;
 			if (m_spellInfo->baseLevel < 20)
@@ -3992,32 +3985,10 @@ void Spell::Heal(int32 amount)
 			if (downrank2 >= 1 || downrank2 < 0)
 				downrank2 = 1.0f;
 			healdoneaffectperc *= downrank1 * downrank2;
-		}
+		}*/
 
-		//Spells Not affected by Bonus Healing
-		if(m_spellInfo->NameHash == SPELL_HASH_SEAL_OF_LIGHT) //Seal of Light
-			healdoneaffectperc = 0.0f;
-
-		//Basic bonus
-		bonus += u_caster->HealDoneMod[m_spellInfo->School];
-		bonus += unitTarget->HealTakenMod[m_spellInfo->School];
-
-		//Bonus from Intellect & Spirit
-		if( p_caster != NULL )  
-		{
-			bonus += float2int32(p_caster->SpellHealDoneByInt[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT3));
-			bonus += float2int32(p_caster->SpellHealDoneBySpr[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT4));
-		}
-
-		//Spell Coefficient
-		if(  m_spellInfo->Dspell_coef_override >= 0 ) //In case we have forced coefficients
-			bonus = float2int32( float( bonus ) * m_spellInfo->Dspell_coef_override );
-		else
-		{
-			//Bonus to DH part
-			if( m_spellInfo->fixed_dddhcoef >= 0 )
-				bonus = float2int32( float( bonus ) * m_spellInfo->fixed_dddhcoef );
-		}
+		//caster sided bonus
+		bonus += u_caster->HealDoneMod[m_spellInfo->School] + (amount*u_caster->HealDonePctMod[m_spellInfo->School])/100;
 
 		if(m_spellInfo->SpellGroupType)
 		{
@@ -4036,10 +4007,12 @@ void Spell::Heal(int32 amount)
 				printf("!!!!!HEAL : spell dmg bonus(p=24) mod flat %d , spell dmg bonus(p=24) pct %d , spell dmg bonus %d, spell group %u\n",spell_flat_modifers,spell_pct_modifers,bonus,m_spellInfo->SpellGroupType);
 #endif
 		}
-		
-		amount += float2int32( float( bonus ) * healdoneaffectperc ); //apply downranking on final value ?
-		amount += amount*u_caster->HealDonePctMod[m_spellInfo->School]/100;
-		amount += float2int32( float( amount ) * unitTarget->HealTakenPctMod[m_spellInfo->School] );
+//		amount += float2int32(u_caster->HealDoneMod[m_spellInfo->School] * healdoneaffectperc);
+//		amount += (amount*u_caster->HealDonePctMod[m_spellInfo->School])/100;
+		bonus += unitTarget->HealTakenMod[m_spellInfo->School];//amt of health that u RECIVE, not heal
+		bonus += float2int32(unitTarget->HealTakenPctMod[m_spellInfo->School]*amount);
+
+
 
 		float spellCrit = u_caster->spellcritperc + u_caster->SpellCritChanceSchool[m_spellInfo->School];
 		if(critical = Rand(spellCrit))
@@ -4058,6 +4031,14 @@ void Spell::Heal(int32 amount)
 		}
 		
 	}
+
+	if( p_caster != NULL )  
+	{
+		bonus += float2int32(p_caster->SpellHealDoneByInt[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT3));
+		bonus += float2int32(p_caster->SpellHealDoneBySpr[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT4));
+	}
+
+	amount += float2int32( float( bonus ) * healdoneaffectperc ); //apply downranking on final value ?
 
 	if(amount < 0) 
 		amount = 0;
@@ -4080,10 +4061,7 @@ void Spell::Heal(int32 amount)
 		unitTarget->ModUInt32Value(UNIT_FIELD_HEALTH, amount);
 
 	if (p_caster)
-	{
 		p_caster->m_casted_amount[m_spellInfo->School]=amount;
-		p_caster->HandleProc( PROC_ON_CAST_SPECIFIC_SPELL | PROC_ON_CAST_SPELL, unitTarget, m_spellInfo );
-	}
 
 	int doneTarget = 0;
 

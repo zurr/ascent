@@ -166,7 +166,7 @@ bool Master::Run(int argc, char ** argv)
 		sLog.m_screenLogLevel = 1;
 	}
 
-	printf(BANNER, BUILD_TAG, BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
+	printf(BANNER, BUILD_TAG, g_getRevision(), CONFIG, PLATFORM_TEXT, ARCH);
 #ifdef REPACK
 	printf("\nRepack: %s | Author: %s | %s\n", REPACK, REPACK_AUTHOR, REPACK_WEBSITE);
 #endif

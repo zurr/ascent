@@ -29,8 +29,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN revision..."
-				CommandLine="cd $(SolutionDir)\..\src\ascent-shared&#x0D;&#x0A;RevisionExtractor.exe"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -116,8 +114,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN revision..."
-				CommandLine="cd $(SolutionDir)\..\src\ascent-shared&#x0D;&#x0A;RevisionExtractor.exe"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -201,8 +197,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN revision..."
-				CommandLine="cd $(SolutionDir)\..\src\ascent-shared&#x0D;&#x0A;RevisionExtractor.exe"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -280,8 +274,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Extracting SVN revision..."
-				CommandLine="cd $(SolutionDir)\..\src\ascent-shared&#x0D;&#x0A;RevisionExtractor.exe"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

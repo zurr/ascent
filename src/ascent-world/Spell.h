@@ -326,75 +326,75 @@ enum ChannelInterruptFlags
 
 enum Attributes
 {
-	ATTRIBUTES_NULL								= 0x0,
-	ATTRIBUTES_UNK2								= 0x1,
-	ATTRIBUTES_UNK3								= 0x2, // related to ranged??
-	ATTRIBUTE_ON_NEXT_ATTACK					= 0x4,
-	ATTRIBUTES_UNUSED0							= 0x8,
-	ATTRIBUTES_UNK6								= 0x10,
-	ATTRIBUTES_UNK7								= 0x20, // Tradeskill recipies
-	ATTRIBUTES_PASSIVE							= 0x40,
-	ATTRIBUTES_NO_VISUAL_AURA					= 0x80,
-	ATTRIBUTES_UNK10							= 0x100,	//seems to be afflicts pet
-	ATTRIBUTES_UNK11							= 0x200, // looks like temp enchants.
-	ATTRIBUTES_UNK12							= 0x400, //completely the same as ATTRIBUTE_ON_NEXT_ATTACK for class spells. So difference somewhere in mob abilities.
-	ATTRIBUTES_UNK13							= 0x800,
-	ATTRIBUTES_UNUSED1							= 0x1000,
-	ATTRIBUTES_UNUSED2							= 0x2000,
-	ATTRIBUTES_UNUSED3							= 0x4000,
-	ATTRIBUTES_ONLY_OUTDOORS					= 0x8000,
-	ATTRIBUTES_UNK								= 0x10000,
-	ATTRIBUTES_REQ_STEALTH						= 0x20000,
-	ATTRIBUTES_UNK20							= 0x40000,//it's not : must be behind
-	ATTRIBUTES_UNK21							= 0x80000,
-	ATTRIBUTES_STOP_ATTACK						= 0x100000,//switch off auto attack on use. Maim,Gouge,Disengage,Polymorph etc
-	ATTRIBUTES_CANT_BE_DPB				    	= 0x200000,//can't be dodged, blocked, parried
-	ATTRIBUTES_UNK24							= 0x400000, // related to ranged
-	ATTRIBUTES_UNK25							= 0x800000,
-	ATTRIBUTES_MOUNT_CASTABLE					= 0x1000000, //castable on mounts
-	ATTRIBUTES_TRIGGER_COOLDOWN			        = 0x2000000, //also requires atributes ex = 32 ?
-	ATTRIBUTES_UNK28							= 0x4000000,
-	ATTRIBUTES_UNK29							= 0x8000000,
-	ATTRIBUTES_REQ_OOC							= 0x10000000, //     ATTRIBUTES_REQ_OUT_OF_COMBAT
-	ATTRIBUTES_UNK31							= 0x20000000,
-	ATTRIBUTES_UNK32							= 0x40000000, // seems like IS_DIMINISHING but some spells not there (f.e. Gouge)
-	ATTRIBUTES_UNUSED9							= 0x80000000,
+    ATTRIBUTES_NULL								= 0x0,
+    ATTRIBUTES_UNK2								= 0x1,
+    ATTRIBUTES_UNK3								= 0x2, // related to ranged??
+    ATTRIBUTE_ON_NEXT_ATTACK					= 0x4,
+    ATTRIBUTES_UNK5								= 0x8, // not used.
+    ATTRIBUTES_UNK6								= 0x10,
+    ATTRIBUTES_UNK7								= 0x20, // Reagents
+    ATTRIBUTES_PASSIVE							= 0x40,
+    ATTRIBUTES_NO_VISUAL_AURA					= 0x80,
+    ATTRIBUTES_UNK10							= 0x100,	//seems to be afflicts pet
+    ATTRIBUTES_UNK11							= 0x200, // only appears in shaman imbue weapon spells
+    ATTRIBUTES_UNK12							= 0x400,
+    ATTRIBUTES_UNK13							= 0x800,
+    ATTRIBUTES_UNUSED1							= 0x1000,
+    ATTRIBUTES_UNUSED2							= 0x2000,
+    ATTRIBUTES_UNUSED3							= 0x4000,
+    ATTRIBUTES_ONLY_OUTDOORS					= 0x8000,
+    ATTRIBUTES_UNK								= 0x10000,
+    ATTRIBUTES_REQ_STEALTH						= 0x20000,
+    ATTRIBUTES_UNK20							= 0x40000,//it's not : must be behind
+    ATTRIBUTES_UNK21							= 0x80000,
+    ATTRIBUTES_MUSTFACECASTER					= 0x100000,//may be wrong
+    ATTRIBUTES_UNK23							= 0x200000,
+    ATTRIBUTES_UNK24							= 0x400000,
+    ATTRIBUTES_UNK25							= 0x800000,
+    ATTRIBUTES_UNK26							= 0x1000000,
+    ATTRIBUTES_TRIGGER_COOLDOWN			        = 0x2000000, //also requires atributes ex = 32 ?
+    ATTRIBUTES_UNK28							= 0x4000000,
+    ATTRIBUTES_UNK29							= 0x8000000,
+    ATTRIBUTES_REQ_OOC							= 0x10000000, //     ATTRIBUTES_REQ_OUT_OF_COMBAT
+    ATTRIBUTES_UNK31							= 0x20000000,
+    ATTRIBUTES_UNK32							= 0x40000000,
+    ATTRIBUTES_UNUSED9							= 0x80000000,
 };
 
 enum AttributesEx
 {
-	ATTRIBUTESEX_NULL                         = 0x0,
-	ATTRIBUTESEX_UNK2                         = 0x1, // pet summonings
-	ATTRIBUTESEX_DRAIN_WHOLE_MANA             = 0x2,
-	ATTRIBUTESEX_UNK4                         = 0x4,
-	ATTRIBUTESEX_UNK5                         = 0x8,
-	ATTRIBUTESEX_UNK6                         = 0x10, // stealth effects but Rockbiter wtf 0_0
-	ATTRIBUTESEX_NOT_BREAK_STEALTH            = 0x20,
-	ATTRIBUTESEX_UNK8                         = 0x40,
-	ATTRIBUTESEX_UNK9                         = 0x80,
-	ATTRIBUTESEX_UNK10                        = 0x100,
-	ATTRIBUTESEX_UNK11                        = 0x200,
-	ATTRIBUTESEX_UNK12                        = 0x400,
-	ATTRIBUTESEX_UNK13                        = 0x800,
-	ATTRIBUTESEX_UNK14                        = 0x1000, // related to pickpocket
-	ATTRIBUTESEX_UNK15                        = 0x2000, // related to remote control
-	ATTRIBUTESEX_UNK16                        = 0x4000,
-	ATTRIBUTESEX_UNK17                        = 0x8000, // something like "grant immunity"
-	ATTRIBUTESEX_UNK18                        = 0x10000, // something like "grant immunity" too
-	ATTRIBUTESEX_REMAIN_OOC                   = 0x20000,
-	ATTRIBUTESEX_UNK20                        = 0x40000,
-	ATTRIBUTESEX_UNK21                        = 0x80000,
-	ATTRIBUTESEX_UNK22                        = 0x100000, // related to "Finishing move" and "Instantly overpowers"
-	ATTRIBUTESEX_UNK23                        = 0x200000,
-	ATTRIBUTESEX_UNK24                        = 0x400000, // only related to "Finishing move"
-	ATTRIBUTESEX_UNK25                        = 0x800000, // related to spells like "ClearAllBuffs"
-	ATTRIBUTESEX_UNK26                        = 0x1000000, // FISHING SPELLS
-	ATTRIBUTESEX_UNK27                        = 0x2000000, // related to "Detect" spell
-	ATTRIBUTESEX_UNK28                        = 0x4000000,
-	ATTRIBUTESEX_UNK29                        = 0x8000000,
-	ATTRIBUTESEX_UNK30                        = 0x10000000,
-	ATTRIBUTESEX_UNK31                        = 0x20000000,
-	ATTRIBUTESEX_UNK32                        = 0x40000000, // Overpower
+    ATTRIBUTESEX_NULL                         = 0x0,
+    ATTRIBUTESEX_UNK2                         = 0x1,
+    ATTRIBUTEEX_DRAIN_WHOLE_MANA              = 0x2,
+    ATTRIBUTESEX_UNK4                         = 0x4,
+    ATTRIBUTESEX_UNK5                         = 0x8,
+    ATTRIBUTESEX_UNK6                         = 0x10,
+    ATTRIBUTESEX_DELAY_SOME_TRIGGERS          = 0x20,
+    ATTRIBUTESEX_UNK8                         = 0x40,
+    ATTRIBUTESEX_UNK9                         = 0x80,
+    ATTRIBUTESEX_UNK10                        = 0x100,
+    ATTRIBUTESEX_UNK11                        = 0x200,
+    ATTRIBUTESEX_UNK12                        = 0x400,
+    ATTRIBUTESEX_UNK13                        = 0x800,
+    ATTRIBUTESEX_UNK14                        = 0x1000, // related to pickpocket
+    ATTRIBUTESEX_UNK15                        = 0x2000, // related to remote control
+    ATTRIBUTESEX_UNK16                        = 0x4000,
+    ATTRIBUTESEX_UNK17                        = 0x8000,
+    ATTRIBUTESEX_UNK18                        = 0x10000, 
+    ATTRIBUTESEX_REMAIN_OOC                   = 0x20000,
+    ATTRIBUTESEX_UNK20                        = 0x40000,
+    ATTRIBUTESEX_UNK21                        = 0x80000,
+    ATTRIBUTESEX_UNK22                        = 0x100000, // related to "Finishing move" and "Instantly overpowers"
+    ATTRIBUTESEX_UNK23                        = 0x200000,
+    ATTRIBUTESEX_UNK24                        = 0x400000, // only related to "Finishing move"
+    ATTRIBUTESEX_UNK25                        = 0x800000, // related to spells like "ClearAllBuffs"
+    ATTRIBUTESEX_UNK26                        = 0x1000000, // FISHING SPELLS
+    ATTRIBUTESEX_UNK27                        = 0x2000000, // related to "Detect" spell
+    ATTRIBUTESEX_UNK28                        = 0x4000000,
+    ATTRIBUTESEX_UNK29                        = 0x8000000,
+    ATTRIBUTESEX_UNK30                        = 0x10000000,
+    ATTRIBUTESEX_UNK31                        = 0x20000000,
+    ATTRIBUTESEX_UNK32                        = 0x40000000, // Overpower
 };
 
 enum Flags3
@@ -972,15 +972,6 @@ enum SpellIsFlags
     SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER	= 0x00000200, //we should cast these on owner too
     SPELL_FLAG_IS_EXPIREING_WITH_PET	= 0x00000400, //when pet dies, we remove this too
     SPELL_FLAG_IS_EXPIREING_ON_PET		= 0x00000800, //when pet is summoned
-};
-
-enum SpellCoefficientsFlags
-{
-	SPELL_FLAG_IS_DOT_OR_HOT_SPELL		= 0x00000001, //Damage over Time or Healing over Time Spells
-	SPELL_FLAG_IS_DD_OR_DH_SPELL		= 0x00000002, //Direct Damage or Direct Healing Spells
-	SPELL_FLAG_IS_DD_DH_DOT_SPELL		= SPELL_FLAG_IS_DOT_OR_HOT_SPELL | SPELL_FLAG_IS_DD_OR_DH_SPELL, //DoT+(DD|DH) Spells
-	SPELL_FLAG_AOE_SPELL				= 0x00000004, //AoE Spells
-	SPELL_FLAG_ADITIONAL_EFFECT			= 0x00000008, //Spells with aditional effect not DD or DoT or HoT
 };
 
 ASCENT_INLINE bool CanAgroHash(uint32 spellhashname)

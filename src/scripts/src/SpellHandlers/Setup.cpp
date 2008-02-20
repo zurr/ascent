@@ -17,7 +17,11 @@
 
 #include "StdAfx.h"
 #include "Setup.h"
-#include <ScriptSetup.h>
+
+extern "C" SCRIPT_DECL uint32 _exp_get_version()
+{
+    return MAKE_SCRIPT_VERSION(SCRIPTLIB_VERSION_MAJOR, SCRIPTLIB_VERSION_MINOR);
+}
 
 extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 {

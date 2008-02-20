@@ -31,7 +31,8 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
     Object *qst_giver = NULL;
 
 	recv_data >> guid;
-    if(GUID_HIPART(guid)==HIGHGUID_UNIT)
+
+    if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_UNIT)
     {
         Creature *quest_giver = _player->GetMapMgr()->GetCreature((uint32)guid);
         if(quest_giver)
@@ -45,7 +46,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
 		    return;
 	    }
     }
-    else if(GUID_HIPART(guid)==HIGHGUID_ITEM)
+    else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_ITEM)
 	{
 		Item *quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
 		if(quest_giver)
@@ -53,7 +54,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode( WorldPacket & recv_data )
 		else
 			return;
 	}
-    else if(GUID_HIPART(guid)==HIGHGUID_GAMEOBJECT)
+    else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
 		GameObject *quest_giver = _player->GetMapMgr()->GetGameObject((uint32)guid);
 		if(quest_giver)
@@ -128,7 +129,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode( WorldPacket & recv_data )
 		return;
 	}
 
-	if(GUID_HIPART(guid)==HIGHGUID_UNIT)
+	if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_UNIT)
 	{
 		Creature *quest_giver = _player->GetMapMgr()->GetCreature((uint32)guid);
 		if(quest_giver)
@@ -139,7 +140,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode( WorldPacket & recv_data )
 		if(bValid)
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
 	} 
-	else if(GUID_HIPART(guid)==HIGHGUID_GAMEOBJECT)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
 		GameObject *quest_giver = _player->GetMapMgr()->GetGameObject((uint32)guid);
 		if(quest_giver)
@@ -150,7 +151,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode( WorldPacket & recv_data )
 		if(bValid)
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
 	} 
-	else if(GUID_HIPART(guid)==HIGHGUID_ITEM)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_ITEM)
 	{
 		Item *quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
 		if(quest_giver)
@@ -219,7 +220,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 	Quest *qst = NULL;
 	Object *qst_giver = NULL;
 
-	if(GUID_HIPART(guid)==HIGHGUID_UNIT)
+	if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_UNIT)
 	{
 		Creature *quest_giver = _player->GetMapMgr()->GetCreature((uint32)guid);
 		if(quest_giver)
@@ -231,7 +232,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 		if(bValid)
 			qst = QuestStorage.LookupEntry(quest_id);
 	} 
-	else if(GUID_HIPART(guid)==HIGHGUID_GAMEOBJECT)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
 		GameObject *quest_giver = _player->GetMapMgr()->GetGameObject((uint32)guid);
 		if(quest_giver)
@@ -243,7 +244,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 		bValid = true;
 			qst = QuestStorage.LookupEntry(quest_id);
 	} 
-	else if(GUID_HIPART(guid)==HIGHGUID_ITEM)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_ITEM)
 	{
 		Item *quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
 		if(quest_giver)
@@ -254,7 +255,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode( WorldPacket & recv_data )
 		bSkipLevelCheck=true;
 		qst = QuestStorage.LookupEntry(quest_id);
 	}
-	else if(GUID_HIPART(guid)==HIGHGUID_PLAYER)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_PLAYER)
 	{
 		Player *quest_giver = _player->GetMapMgr()->GetPlayer((uint32)guid);
 		if(quest_giver)
@@ -465,7 +466,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 	Object *qst_giver = NULL;
 	uint32 status = 0;
 
-	if(GUID_HIPART(guid)==HIGHGUID_UNIT)
+	if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_UNIT)
 	{
 		Creature *quest_giver = _player->GetMapMgr()->GetCreature((uint32)guid);
 		if(quest_giver)
@@ -489,7 +490,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode( WorldPacket & recv_data 
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id),false);
 		}
 	} 
-	else if(GUID_HIPART(guid)==HIGHGUID_GAMEOBJECT)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
 		GameObject *quest_giver = _player->GetMapMgr()->GetGameObject((uint32)guid);
 		if(quest_giver)
@@ -550,7 +551,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 	Object *qst_giver = NULL;
 	uint32 status = 0;
 
-	if(GUID_HIPART(guid)==HIGHGUID_UNIT)
+	if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_UNIT)
 	{
 		Creature *quest_giver = _player->GetMapMgr()->GetCreature((uint32)guid);
 		if(quest_giver)
@@ -571,7 +572,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode( WorldPacket & recvPacket
 			status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id),false);
 		}
 	} 
-	else if(GUID_HIPART(guid)==HIGHGUID_GAMEOBJECT)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
 		GameObject *quest_giver = _player->GetMapMgr()->GetGameObject((uint32)guid);
 		if(quest_giver)
@@ -641,7 +642,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 	Quest *qst = NULL;
 	Object *qst_giver = NULL;
 
-	if(GUID_HIPART(guid)==HIGHGUID_UNIT)
+	if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_UNIT)
 	{
 		Creature *quest_giver = _player->GetMapMgr()->GetCreature((uint32)guid);
 		if(quest_giver)
@@ -652,7 +653,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 		if(bValid)
 			qst = QuestStorage.LookupEntry(quest_id);
 	} 
-	else if(GUID_HIPART(guid)==HIGHGUID_GAMEOBJECT)
+	else if(UINT32_LOPART(GUID_HIPART(guid))==HIGHGUID_GAMEOBJECT)
 	{
 		GameObject *quest_giver = _player->GetMapMgr()->GetGameObject((uint32)guid);
 		if(quest_giver)

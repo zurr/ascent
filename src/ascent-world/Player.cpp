@@ -2066,17 +2066,12 @@ void Player::DestroyForPlayer( Player *target ) const
 	Unit::DestroyForPlayer( target );
 }
 
-#define IS_ARENA(x) ( (x) >= BATTLEGROUND_ARENA_2V2 && (x) <= BATTLEGROUND_ARENA_5V5 )
 
 void Player::SaveToDB(bool bNewCharacter /* =false */)
 {
-	bool in_arena = false;
 	QueryBuffer * buf = NULL;
 	if(!bNewCharacter)
 		buf = new QueryBuffer;
-
-	if( m_bg != NULL && IS_ARENA( m_bg->GetType() ) )
-		in_arena = true;
 
 	if(m_uint32Values[PLAYER_CHARACTER_POINTS2]>2)
 		m_uint32Values[PLAYER_CHARACTER_POINTS2]=2;
@@ -2170,28 +2165,14 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	<< m_uint32Values[PLAYER_BYTES] << ","
 	<< m_uint32Values[PLAYER_BYTES_2] << ","
 	<< player_flags << ","
-	<< m_uint32Values[PLAYER_FIELD_BYTES] << ",";
+	<< m_uint32Values[PLAYER_FIELD_BYTES] << ","
 
-	if( in_arena )
-	{
-		// if its an arena, save the entry coords instead
-		ss << m_bgEntryPointX << ", ";
-		ss << m_bgEntryPointY << ", ";
-		ss << m_bgEntryPointZ << ", ";
-		ss << m_bgEntryPointO << ", ";
-		ss << m_bgEntryPointMap << ", ";
-	}
-	else
-	{
-		// save the normal position
-		ss << m_position.x << ", "
-			<< m_position.y << ", "
-			<< m_position.z << ", "
-			<< m_position.o << ", "
-			<< m_mapId << ", ";
-	}
-
-	ss << m_zoneId << ", '";
+	<< m_position.x << ", "
+	<< m_position.y << ", "
+	<< m_position.z << ", "
+	<< m_position.o << ", "
+	<< m_mapId << ", "
+	<< m_zoneId << ", '";
 		
 	for(uint32 i = 0; i < 8; i++ )
 		ss << m_taximask[i] << " ";
@@ -2233,16 +2214,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 		<< (uint32)m_StableSlotCount << ",";
 	
 	// instances
-	if( in_arena )
-	{
-		ss << m_bgEntryPointInstance << ", ";
-	}
-	else
-	{
-		ss << m_instanceId		   << ", ";
-	}
-
-	ss << m_bgEntryPointMap	  << ", " 
+	ss 
+	<< m_instanceId		   << ", "
+	<< m_bgEntryPointMap	  << ", " 
 	<< m_bgEntryPointX		<< ", " 
 	<< m_bgEntryPointY		<< ", " 
 	<< m_bgEntryPointZ		<< ", "
@@ -3276,12 +3250,6 @@ void Player::OnPushToWorld()
 #ifdef ENABLE_COMPRESSED_MOVEMENT
 	sEventMgr.AddEvent(this, &Player::EventDumpCompressedMovement, EVENT_PLAYER_FLUSH_MOVEMENT, World::m_movementCompressInterval, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 #endif
-
-	if( m_mapMgr->m_battleground != NULL && m_bg != m_mapMgr->m_battleground )
-	{
-		m_bg = m_mapMgr->m_battleground;
-		m_bg->PortPlayer( this, true );
-	}
 }
 
 void Player::ResetHeartbeatCoords()
@@ -4457,10 +4425,25 @@ void Player::UpdateChances()
 	SetFloatValue( PLAYER_PARRY_PERCENTAGE, std::max( 0.0f, std::min( tmp, 95.0f ) ) ); //let us not use negative parry. Some spells decrease it
 
 	//critical
-	gtFloat* baseCrit = dbcMeleeCritBase.LookupEntry(pClass-1);
-	gtFloat* CritPerAgi = dbcMeleeCrit.LookupEntry(pLevel - 1 + (pClass-1)*100);
 
-	tmp = 100*(baseCrit->val + GetUInt32Value( UNIT_FIELD_STAT1 ) * CritPerAgi->val);
+	/* The formula is generated as follows:
+
+	[agility] / [crit constant*] + [skill modifier] + [bonuses]
+
+	The crit constant is class and level dependent and for a level 70 character as follows:
+
+		* Rogue [40]
+		* Druid [25.00]
+		* Hunter [40]
+		* Mage [25.00]
+		* Paladin [25.00]
+		* Priest [25.00]
+		* Shaman [25.00]
+		* Warlock [24.69]
+		* Warrior [33] 
+	*/
+
+	tmp = baseCritChance[pClass] + GetUInt32Value( UNIT_FIELD_STAT1 ) * float( CritFromAgi[pLevel][pClass] );
 
 	//std::list<WeaponModifier>::iterator i = tocritchance.begin();
 	map< uint32, WeaponModifier >::iterator itr = tocritchance.begin();
@@ -4491,12 +4474,10 @@ void Player::UpdateChances()
 	float rcr = tmp + CalcRating( PLAYER_RATING_MODIFIER_RANGED_CRIT ) + ranged_bonus;
 	SetFloatValue( PLAYER_RANGED_CRIT_PERCENTAGE, min( rcr, 95.0f ) );
 
-	gtFloat* SpellCritBase  = dbcSpellCritBase.LookupEntry(pClass-1);
-	gtFloat* SpellCritPerInt = dbcSpellCrit.LookupEntry(pLevel - 1 + (pClass-1)*100);
-
-	spellcritperc = 100*(SpellCritBase->val + GetUInt32Value( UNIT_FIELD_STAT3 ) * SpellCritPerInt->val) +
-		this->GetSpellCritFromSpell() +
-		this->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT );
+	spellcritperc = baseSpellCrit[pClass] +
+					GetUInt32Value( UNIT_FIELD_STAT3 ) * float( SpellCritFromInt[pLevel][pClass] ) +
+					this->GetSpellCritFromSpell() +
+					this->CalcRating( PLAYER_RATING_MODIFIER_SPELL_CRIT );
 	UpdateChanceFields();
 }
 
@@ -5233,13 +5214,13 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 	if(!IsInWorld()) return;
 	Loot * pLoot = NULL;
 	
-	if(GUID_HIPART(guid) == HIGHGUID_UNIT)
+	if(UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_UNIT)
 	{
 		Creature* pCreature = GetMapMgr()->GetCreature((uint32)guid);
 		if(!pCreature)return;
 		pLoot=&pCreature->loot;
 		m_currentLoot = pCreature->GetGUID();
-	}else if(GUID_HIPART(guid) == HIGHGUID_GAMEOBJECT)
+	}else if(UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_GAMEOBJECT)
 	{
 		GameObject* pGO = GetMapMgr()->GetGameObject((uint32)guid);
 		if(!pGO)return;
@@ -5247,21 +5228,21 @@ void Player::SendLoot(uint64 guid,uint8 loot_type)
 		pLoot=&pGO->loot;
 		m_currentLoot = pGO->GetGUID();
 	}
-	else if((GUID_HIPART(guid) == HIGHGUID_PLAYER) )
+	else if((UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_PLAYER) )
 	{
 		Player *p=GetMapMgr()->GetPlayer((uint32)guid);
 		if(!p)return;
 		pLoot=&p->loot;
 		m_currentLoot = p->GetGUID();
 	}
-	else if( (GUID_HIPART(guid) == HIGHGUID_CORPSE))
+	else if( (UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_CORPSE))
 	{
 		Corpse *pCorpse = objmgr.GetCorpse((uint32)guid);
 		if(!pCorpse)return;
 		pLoot=&pCorpse->loot;
 		m_currentLoot = pCorpse->GetGUID();
 	}
-	else if( (GUID_HIPART(guid) == HIGHGUID_ITEM) )
+	else if( (UINT32_LOPART(GUID_HIPART(guid)) == HIGHGUID_ITEM) )
 	{
 		Item *pItem = GetItemInterface()->GetItemByGUID(guid);
 		if(!pItem)
@@ -5583,7 +5564,7 @@ int32 Player::CanShootRangedWeapon( uint32 spellid, Unit* target, bool autoshot 
 */
 	if( fail > 0 )// && fail != SPELL_FAILED_OUT_OF_RANGE)
 	{
-		SendCastResult( autoshot ? 75 : spellid, fail, 0, 0 );
+		SendCastResult( autoshot ? 75 : spellid, fail, 0 );
 		if( fail != SPELL_FAILED_OUT_OF_RANGE )
 		{
 			uint32 spellid2 = autoshot ? 75 : spellid;
@@ -6291,20 +6272,37 @@ void Player::RegenerateMana(bool is_interrupted)
 	SetUInt32Value(UNIT_FIELD_POWER1,(cur >= mm) ? mm : cur);
 }
 
-void Player::RegenerateHealth( bool inCombat )
+void Player::RegenerateHealth(bool inCombat)
 {
-	gtFloat* HPRegenBase = dbcHPRegenBase.LookupEntry(getLevel()-1 + (getClass()-1)*100);
-	gtFloat* HPRegen =  dbcHPRegen.LookupEntry(getLevel()-1 + (getClass()-1)*100);
+	const static float ClassMultiplier[12]={
+		0.0f,0.8f,0.25f,0.25f,0.5f,0.1f,0.0f,0.11f,0.1f,0.11f,0.0f,0.09f};
 
+	const static float ClassFlatMod[12]={
+			0.0f,6.0f,6.0f,6.0f,2.0f,4.0f,0.0f,6.0f,4.0f,6.0f,0.0f,6.5f};
+
+	float amt;
 	uint32 cur = GetUInt32Value(UNIT_FIELD_HEALTH);
 	uint32 mh = GetUInt32Value(UNIT_FIELD_MAXHEALTH);
 	if(cur >= mh)
 		return;
+	uint32 cl = getClass();
+	uint32 Spirit = GetUInt32Value(UNIT_FIELD_STAT4);
+	if(PctRegenModifier == 0.0f)
+		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl]);
+	else
+		amt = (Spirit*ClassMultiplier[cl]+ClassFlatMod[cl])*(1+PctRegenModifier);
 
-	float amt = (m_uint32Values[UNIT_FIELD_STAT4]*HPRegen->val+HPRegenBase->val*100)*(1+PctRegenModifier);
-	amt *= sWorld.getRate(RATE_HEALTH);//Apply shit from conf file
+	//Apply shit from conf file
+	amt *= sWorld.getRate(RATE_HEALTH);
+	//Near values from official
+	// wowwiki: Health Regeneration is increased by 33% while sitting.
+	if(m_isResting)
+		amt = amt * 1.33f;
 
 	if(m_interruptRegen)
+		inCombat = true;
+
+	if(inCombat)
 		amt *= PctIgnoreRegenModifier;
 
 	if(amt != 0)
