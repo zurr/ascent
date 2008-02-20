@@ -2440,6 +2440,11 @@ else
 		dodge=parry=block=0.0f;
 	}
 
+	if (ability->Attributes & ATTRIBUTES_CANT_BE_DPB)
+	{
+		dodge=parry=block=0.0f;
+	}
+
 	if( IsPlayer() && static_cast< Player* >( this )->m_finishingmovesdodge && ability && ( ability->EffectPointsPerComboPoint[0] > 0 || ability->EffectPointsPerComboPoint[1] > 0 || ability->EffectPointsPerComboPoint[2] > 0 ) )  // SPELL: Surprise Attacks
 		dodge = 0.0f;
 

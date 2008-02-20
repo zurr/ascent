@@ -1278,18 +1278,14 @@ void Spell::cast(bool check)
 				p_caster->setAttackTimer( 0, true );
 				p_caster->setAttackTimer( 0, false );
 			}
-			if(p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_DELAY_SOME_TRIGGERS))
+			if( p_caster->IsStealth() && !(m_spellInfo->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH) )
 			{
 				/* talents procing - don't remove stealth either */
-				if( m_spellInfo->Attributes & 64 || (pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & 64))
+				if (!(m_spellInfo->Attributes & ATTRIBUTES_PASSIVE) && 
+					!( pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & ATTRIBUTES_PASSIVE ) )
 				{
-
-				}
-				else
-				{
-					uint32 stealthid = p_caster->m_stealth;
+					p_caster->RemoveAura(p_caster->m_stealth);
 					p_caster->m_stealth = 0;
-					p_caster->RemoveAura(stealthid);
 				}
 			}
 		}
@@ -1674,6 +1670,12 @@ void Spell::finish()
 	//enable pvp when attacking another player with spells
 	if( p_caster != NULL )
 	{
+		if (m_spellInfo->Attributes & ATTRIBUTES_STOP_ATTACK)
+		{
+			p_caster->EventAttackStop();
+			p_caster->smsg_AttackStop( unitTarget );
+		}
+
 		if(m_requiresCP && !GetSpellFailed())
 		{
 			if(p_caster->m_spellcomboPoints)
@@ -2649,6 +2651,11 @@ uint8 Spell::CanCast(bool tolerate)
 		{
 			if( m_spellInfo->Id == 25860) // Reindeer Transformation
 				return SPELL_FAILED_ONLY_MOUNTED;
+		}
+		else
+		{
+			if (!(m_spellInfo->Attributes & ATTRIBUTES_MOUNT_CASTABLE))
+				return SPELL_FAILED_NOT_MOUNTED;
 		}
 
 		// check if spell is allowed while shapeshifted
