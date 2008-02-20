@@ -2066,12 +2066,17 @@ void Player::DestroyForPlayer( Player *target ) const
 	Unit::DestroyForPlayer( target );
 }
 
+#define IS_ARENA(x) ( (x) >= BATTLEGROUND_ARENA_2V2 && (x) <= BATTLEGROUND_ARENA_5V5 )
 
 void Player::SaveToDB(bool bNewCharacter /* =false */)
 {
+	bool in_arena = false;
 	QueryBuffer * buf = NULL;
 	if(!bNewCharacter)
 		buf = new QueryBuffer;
+
+	if( m_bg != NULL && IS_ARENA( m_bg->GetType() ) )
+		in_arena = true;
 
 	if(m_uint32Values[PLAYER_CHARACTER_POINTS2]>2)
 		m_uint32Values[PLAYER_CHARACTER_POINTS2]=2;
@@ -2165,14 +2170,28 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 	<< m_uint32Values[PLAYER_BYTES] << ","
 	<< m_uint32Values[PLAYER_BYTES_2] << ","
 	<< player_flags << ","
-	<< m_uint32Values[PLAYER_FIELD_BYTES] << ","
+	<< m_uint32Values[PLAYER_FIELD_BYTES] << ",";
 
-	<< m_position.x << ", "
-	<< m_position.y << ", "
-	<< m_position.z << ", "
-	<< m_position.o << ", "
-	<< m_mapId << ", "
-	<< m_zoneId << ", '";
+	if( in_arena )
+	{
+		// if its an arena, save the entry coords instead
+		ss << m_bgEntryPointX << ", ";
+		ss << m_bgEntryPointY << ", ";
+		ss << m_bgEntryPointZ << ", ";
+		ss << m_bgEntryPointO << ", ";
+		ss << m_bgEntryPointMap << ", ";
+	}
+	else
+	{
+		// save the normal position
+		ss << m_position.x << ", "
+			<< m_position.y << ", "
+			<< m_position.z << ", "
+			<< m_position.o << ", "
+			<< m_mapId << ", ";
+	}
+
+	ss << m_zoneId << ", '";
 		
 	for(uint32 i = 0; i < 8; i++ )
 		ss << m_taximask[i] << " ";
@@ -2214,9 +2233,16 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 		<< (uint32)m_StableSlotCount << ",";
 	
 	// instances
-	ss 
-	<< m_instanceId		   << ", "
-	<< m_bgEntryPointMap	  << ", " 
+	if( in_arena )
+	{
+		ss << m_bgEntryPointInstance << ", ";
+	}
+	else
+	{
+		ss << m_instanceId		   << ", ";
+	}
+
+	ss << m_bgEntryPointMap	  << ", " 
 	<< m_bgEntryPointX		<< ", " 
 	<< m_bgEntryPointY		<< ", " 
 	<< m_bgEntryPointZ		<< ", "
@@ -3250,6 +3276,12 @@ void Player::OnPushToWorld()
 #ifdef ENABLE_COMPRESSED_MOVEMENT
 	sEventMgr.AddEvent(this, &Player::EventDumpCompressedMovement, EVENT_PLAYER_FLUSH_MOVEMENT, World::m_movementCompressInterval, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 #endif
+
+	if( m_mapMgr->m_battleground != NULL && m_bg != m_mapMgr->m_battleground )
+	{
+		m_bg = m_mapMgr->m_battleground;
+		m_bg->PortPlayer( this, true );
+	}
 }
 
 void Player::ResetHeartbeatCoords()
