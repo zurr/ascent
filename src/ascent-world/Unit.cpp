@@ -3748,7 +3748,7 @@ void Unit::castSpell( Spell * pSpell )
 	pLastSpell = pSpell->m_spellInfo;
 }
 
-int32 Unit::GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg)
+int32 Unit::GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg, bool isdot)
 {
 	int32 plus_damage = 0;
 	Unit* caster = this;
@@ -3772,20 +3772,39 @@ int32 Unit::GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg
 //==============================+Spell Damage Bonus Modifications===========================
 //==========================================================================================
 //------------------------------by cast duration--------------------------------------------
-	SpellCastTime *sd = dbcSpellCastTime.LookupEntry(spellInfo->CastingTimeIndex);
-	float castaff = float(GetCastTime(sd));
-	if(castaff < 1500) castaff = 1500;
+	float dmgdoneaffectperc = 1.0f;
+	if( spellInfo->Dspell_coef_override >= 0 && !isdot )
+		plus_damage = float2int32( float( plus_damage ) * spellInfo->Dspell_coef_override );
+	else if( spellInfo->OTspell_coef_override >= 0 && isdot )
+		plus_damage = float2int32( float( plus_damage ) * spellInfo->OTspell_coef_override );
 	else
-		if(castaff > 7000) castaff = 7000;
-
-	float dmgdoneaffectperc = castaff / 3500;
+	{
+		//Bonus to DD part
+		if( spellInfo->fixed_dddhcoef >= 0 && !isdot )
+			plus_damage = float2int32( float( plus_damage ) * spellInfo->fixed_dddhcoef );
+		//Bonus to DoT part
+		else if( spellInfo->fixed_hotdotcoef >= 0 && isdot )
+		{
+			plus_damage = float2int32( float( plus_damage ) * spellInfo->fixed_hotdotcoef );
+			if( caster->IsPlayer() )
+			{
+				int durmod = 0;
+				SM_FIValue(caster->SM_FDur, &durmod, spellInfo->SpellGroupType);
+				plus_damage += float2int32( float( plus_damage * durmod ) / 15000.0f );
+			}
+		}
+		//In case we dont fit in previous cases do old thing
+		else
+		{
+			plus_damage = float2int32( float( plus_damage ) * spellInfo->casttime_coef );
+			float td = float( GetDuration( dbcSpellDuration.LookupEntry( spellInfo->DurationIndex ) ));
+			if( spellInfo->NameHash == SPELL_HASH_MOONFIRE || spellInfo->NameHash == SPELL_HASH_IMMOLATE || spellInfo->NameHash == SPELL_HASH_ICE_LANCE || spellInfo->NameHash == SPELL_HASH_PYROBLAST )
+				plus_damage = float2int32( float( plus_damage ) * float( 1.0f - ( ( td / 15000.0f ) / ( ( td / 15000.0f ) + dmgdoneaffectperc ) ) ) );
+		}
+	}
 
 	//------------------------------by downranking----------------------------------------------
 	//DOT-DD (Moonfire-Immolate-IceLance-Pyroblast)(Hack Fix)
-
-	float td = float( GetDuration( dbcSpellDuration.LookupEntry( spellInfo->DurationIndex )  ));
-	if( spellInfo->NameHash == SPELL_HASH_MOONFIRE || spellInfo->NameHash == SPELL_HASH_IMMOLATE || spellInfo->NameHash == SPELL_HASH_ICE_LANCE || spellInfo->NameHash == SPELL_HASH_PYROBLAST )
-		dmgdoneaffectperc *= float( 1.0f - ( ( td / 15000.0f ) / ( ( td / 15000.0f ) + dmgdoneaffectperc ) ) );
 
 	if(spellInfo->baseLevel > 0 && spellInfo->maxLevel > 0)
 	{
@@ -3801,6 +3820,7 @@ int32 Unit::GetSpellDmgBonus(Unit *pVictim, SpellEntry *spellInfo,int32 base_dmg
 //==============================Bonus Adding To Main Damage=================================
 //==========================================================================================
 	int32 bonus_damage = float2int32(plus_damage * dmgdoneaffectperc);
+
 	//bonus_damage +=pVictim->DamageTakenMod[school]; Bad copy-past i guess :P
 	if(spellInfo->SpellGroupType)
 	{

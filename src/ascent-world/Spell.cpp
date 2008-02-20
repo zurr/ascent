@@ -3966,22 +3966,11 @@ void Spell::Heal(int32 amount)
 	//Make it critical
 	bool critical = false;
 	int32 bonus = 0;
-	float healdoneaffectperc = 0;
+	float healdoneaffectperc = 1.0f;
 	if( u_caster != NULL )
 	{
-		SpellCastTime *sd = dbcSpellCastTime.LookupEntry(m_spellInfo->CastingTimeIndex);
-
-		// affect the plus damage by duration
-		float castaff = float(GetCastTime(sd));
-		if(castaff > 3500) 
-            castaff = 3500;
-		else if(castaff < 1500) 
-            castaff = 1500;
-
-		healdoneaffectperc = castaff / 3500.0f;
-		
 		//Downranking
-		/*if( m_spellInfo->baseLevel > 0 && m_spellInfo->maxLevel > 0 && p_caster)
+		if(p_caster && p_caster->IsPlayer() && m_spellInfo->baseLevel > 0 && m_spellInfo->maxLevel > 0)
 		{
 			float downrank1 = 1.0f;
 			if (m_spellInfo->baseLevel < 20)
@@ -3990,10 +3979,32 @@ void Spell::Heal(int32 amount)
 			if (downrank2 >= 1 || downrank2 < 0)
 				downrank2 = 1.0f;
 			healdoneaffectperc *= downrank1 * downrank2;
-		}*/
+		}
 
-		//caster sided bonus
-		bonus += u_caster->HealDoneMod[m_spellInfo->School] + (amount*u_caster->HealDonePctMod[m_spellInfo->School])/100;
+		//Spells Not affected by Bonus Healing
+		if(m_spellInfo->NameHash == SPELL_HASH_SEAL_OF_LIGHT) //Seal of Light
+			healdoneaffectperc = 0.0f;
+
+		//Basic bonus
+		bonus += u_caster->HealDoneMod[m_spellInfo->School];
+		bonus += unitTarget->HealTakenMod[m_spellInfo->School];
+
+		//Bonus from Intellect & Spirit
+		if( p_caster != NULL )  
+		{
+			bonus += float2int32(p_caster->SpellHealDoneByInt[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT3));
+			bonus += float2int32(p_caster->SpellHealDoneBySpr[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT4));
+		}
+
+		//Spell Coefficient
+		if(  m_spellInfo->Dspell_coef_override >= 0 ) //In case we have forced coefficients
+			bonus = float2int32( float( bonus ) * m_spellInfo->Dspell_coef_override );
+		else
+		{
+			//Bonus to DH part
+			if( m_spellInfo->fixed_dddhcoef >= 0 )
+				bonus = float2int32( float( bonus ) * m_spellInfo->fixed_dddhcoef );
+		}
 
 		if(m_spellInfo->SpellGroupType)
 		{
@@ -4012,12 +4023,10 @@ void Spell::Heal(int32 amount)
 				printf("!!!!!HEAL : spell dmg bonus(p=24) mod flat %d , spell dmg bonus(p=24) pct %d , spell dmg bonus %d, spell group %u\n",spell_flat_modifers,spell_pct_modifers,bonus,m_spellInfo->SpellGroupType);
 #endif
 		}
-//		amount += float2int32(u_caster->HealDoneMod[m_spellInfo->School] * healdoneaffectperc);
-//		amount += (amount*u_caster->HealDonePctMod[m_spellInfo->School])/100;
-		bonus += unitTarget->HealTakenMod[m_spellInfo->School];//amt of health that u RECIVE, not heal
-		bonus += float2int32(unitTarget->HealTakenPctMod[m_spellInfo->School]*amount);
-
-
+		
+		amount += float2int32( float( bonus ) * healdoneaffectperc ); //apply downranking on final value ?
+		amount += amount*u_caster->HealDonePctMod[m_spellInfo->School]/100;
+		amount += float2int32( float( amount ) * unitTarget->HealTakenPctMod[m_spellInfo->School] );
 
 		float spellCrit = u_caster->spellcritperc + u_caster->SpellCritChanceSchool[m_spellInfo->School];
 		if(critical = Rand(spellCrit))
@@ -4036,14 +4045,6 @@ void Spell::Heal(int32 amount)
 		}
 		
 	}
-
-	if( p_caster != NULL )  
-	{
-		bonus += float2int32(p_caster->SpellHealDoneByInt[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT3));
-		bonus += float2int32(p_caster->SpellHealDoneBySpr[m_spellInfo->School] * p_caster->GetUInt32Value(UNIT_FIELD_STAT4));
-	}
-
-	amount += float2int32( float( bonus ) * healdoneaffectperc ); //apply downranking on final value ?
 
 	if(amount < 0) 
 		amount = 0;
@@ -4066,7 +4067,10 @@ void Spell::Heal(int32 amount)
 		unitTarget->ModUInt32Value(UNIT_FIELD_HEALTH, amount);
 
 	if (p_caster)
+	{
 		p_caster->m_casted_amount[m_spellInfo->School]=amount;
+		p_caster->HandleProc( PROC_ON_CAST_SPECIFIC_SPELL | PROC_ON_CAST_SPELL, unitTarget, m_spellInfo );
+	}
 
 	int doneTarget = 0;
 

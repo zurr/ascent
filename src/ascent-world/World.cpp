@@ -658,6 +658,12 @@ bool World::SetInitialWorldSettings()
 
 		sp->proc_interval = 0;//trigger at each event
 		sp->c_is_flags = 0;
+		sp->spell_coef_flags = 0;
+		sp->Dspell_coef_override = -1;
+		sp->OTspell_coef_override = -1;
+		sp->casttime_coef = 0;
+		sp->fixed_dddhcoef = -1;
+		sp->fixed_hotdotcoef = -1;
 
 		talentSpellIterator = talentSpells.find(sp->Id);
 		if(talentSpellIterator == talentSpells.end())
@@ -1520,6 +1526,293 @@ bool World::SetInitialWorldSettings()
 //if(sp->Id==11267 || sp->Id==11289 || sp->Id==6409)
 //	printf("!!!!!!! name %s , id %u , hash %u \n",nametext,sp->Id, namehash);
 	}
+
+
+	/////////////////////////////////////////////////////////////////
+	//SPELL COEFFICIENT SETTINGS START
+	//////////////////////////////////////////////////////////////////
+
+	for(uint32 x=0; x < cnt; x++)
+	{
+		// SpellID
+		uint32 spellid = dbc.getRecord(x).getUInt(0);
+		// get spellentry
+		SpellEntry * sp = dbcSpell.LookupEntry(spellid);
+
+		//Setting Cast Time Coefficient
+		SpellCastTime *sd = dbcSpellCastTime.LookupEntry(sp->CastingTimeIndex);
+		float castaff = float(GetCastTime(sd));
+		if(castaff < 1500) castaff = 1500;
+		else
+			if(castaff > 7000) castaff = 7000;
+
+		sp->casttime_coef = castaff / 3500;		 
+
+		SpellEntry * spz;
+		bool spcheck = false;
+
+		//Flag for DoT and HoT
+		for( uint8 i = 0 ; i < 3 ; i++ )
+		{
+			if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_DAMAGE ||
+				sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_HEAL ||
+				sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_LEECH )
+			{
+				sp->spell_coef_flags |= SPELL_FLAG_IS_DOT_OR_HOT_SPELL;
+				break;
+			}
+		}
+
+		//Flag for DD or DH
+		for( uint8 i = 0 ; i < 3 ; i++ )
+		{
+			if ( sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL && sp->EffectTriggerSpell[i] )
+			{
+				spz = dbcSpell.LookupEntry( sp->EffectTriggerSpell[i] );
+				if( spz &&
+					spz->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE ||
+					spz->Effect[i] == SPELL_EFFECT_HEAL
+					) 
+					spcheck = true;
+			}
+			if (sp->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE ||
+				sp->Effect[i] == SPELL_EFFECT_HEAL ||
+				spcheck
+				)
+			{
+				sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
+				break;
+			}
+		}
+
+		for(uint8 i = 0 ; i < 3; i++)
+		{
+			switch (sp->EffectImplicitTargetA[i])
+			{
+				//AoE
+			case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS:
+			case EFF_TARGET_ALL_ENEMY_IN_AREA:
+			case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT:
+			case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
+			case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
+			case EFF_TARGET_IN_FRONT_OF_CASTER:
+			case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:
+			case EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED:
+			case EFF_TARGET_ALL_FRIENDLY_IN_AREA:
+			case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME:
+			case EFF_TARGET_ALL_PARTY:
+			case EFF_TARGET_LOCATION_INFRONT_CASTER:
+			case EFF_TARGET_BEHIND_TARGET_LOCATION:
+			case EFF_TARGET_LOCATION_INFRONT_CASTER_AT_RANGE:
+				{
+					sp->spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
+					break;
+				}
+			}	
+		}
+
+		for(uint8 i = 0 ; i < 3 ; i++)
+		{
+			switch (sp->EffectImplicitTargetB[i])
+			{
+				//AoE
+			case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS:
+			case EFF_TARGET_ALL_ENEMY_IN_AREA:
+			case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT:
+			case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
+			case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
+			case EFF_TARGET_IN_FRONT_OF_CASTER:
+			case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:
+			case EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED:
+			case EFF_TARGET_ALL_FRIENDLY_IN_AREA:
+			case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME:
+			case EFF_TARGET_ALL_PARTY:
+			case EFF_TARGET_LOCATION_INFRONT_CASTER:
+			case EFF_TARGET_BEHIND_TARGET_LOCATION:
+			case EFF_TARGET_LOCATION_INFRONT_CASTER_AT_RANGE:
+				{
+					sp->spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
+					break;
+				}
+			}	
+		}
+
+		//Special Cases
+		//Holy Light & Flash of Light
+		if(sp->NameHash == SPELL_HASH_HOLY_LIGHT ||
+			sp->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
+			sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
+
+		//Additional Effect (not healing or damaging)
+		for( uint8 i = 0 ; i < 3 ; i++ )
+		{
+			if(sp->Effect[i] == 0)
+				continue;
+
+			switch (sp->Effect[i])
+			{
+			case SPELL_EFFECT_SCHOOL_DAMAGE:
+			case SPELL_EFFECT_ENVIRONMENTAL_DAMAGE:
+			case SPELL_EFFECT_HEALTH_LEECH:
+			case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+			case SPELL_EFFECT_ADD_EXTRA_ATTACKS:
+			case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+			case SPELL_EFFECT_POWER_BURN:
+			case SPELL_EFFECT_ATTACK:
+			case SPELL_EFFECT_HEAL:
+			case SPELL_EFFECT_HEALTH_FUNNEL:
+			case SPELL_EFFECT_HEAL_MAX_HEALTH:
+			case SPELL_EFFECT_DUMMY:
+				continue;
+			}
+
+			switch (sp->EffectApplyAuraName[i])
+			{
+			case SPELL_AURA_PERIODIC_DAMAGE:
+			case SPELL_AURA_PROC_TRIGGER_DAMAGE:
+			case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+			case SPELL_AURA_POWER_BURN:
+			case SPELL_AURA_PERIODIC_HEAL:
+			case SPELL_AURA_MOD_INCREASE_HEALTH:
+			case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
+			case SPELL_AURA_DUMMY:
+				continue;
+			}
+
+			sp->spell_coef_flags |= SPELL_FLAG_ADITIONAL_EFFECT;
+			break;
+
+		}
+
+		//Calculating fixed coeficients
+		//Channeled spells
+		if( sp->ChannelInterruptFlags != 0 )
+		{
+			float Duration = float( GetDuration( dbcSpellDuration.LookupEntry( sp->DurationIndex ) ));
+			if(Duration < 1500) Duration = 1500;
+			else if(Duration > 7000) Duration = 7000;
+			sp->fixed_hotdotcoef = (Duration / 3500.0f);
+
+			if( sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT )
+				sp->fixed_hotdotcoef *= 0.95f;
+			if( sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL )
+				sp->fixed_hotdotcoef *= 0.5f;
+		}
+
+		//Standard spells
+		else if( (sp->spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && !(sp->spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL) )
+		{
+			sp->fixed_dddhcoef = sp->casttime_coef;
+			if( sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT )
+				sp->fixed_dddhcoef *= 0.95f;
+			if( sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL )
+				sp->fixed_dddhcoef *= 0.5f;
+		}
+
+		//Over-time spells
+		else if( !(sp->spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && (sp->spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL) )
+		{
+			float Duration = float( GetDuration( dbcSpellDuration.LookupEntry( sp->DurationIndex ) ));
+			sp->fixed_hotdotcoef = (Duration / 15000.0f);
+
+			if( sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT )
+				sp->fixed_hotdotcoef *= 0.95f;
+			if( sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL )
+				sp->fixed_hotdotcoef *= 0.5f;
+
+		}
+
+		//Combined standard and over-time spells
+		else if( sp->spell_coef_flags & SPELL_FLAG_IS_DD_DH_DOT_SPELL )
+		{
+			float Duration = float( GetDuration( dbcSpellDuration.LookupEntry( sp->DurationIndex ) ));
+			float Portion_to_Over_Time = (Duration / 15000.0f) / ((Duration / 15000.0f) + sp->casttime_coef );
+			float Portion_to_Standard = 1.0f - Portion_to_Over_Time;
+
+			sp->fixed_dddhcoef = sp->casttime_coef * Portion_to_Standard;
+			sp->fixed_hotdotcoef = (Duration / 15000.0f) * Portion_to_Over_Time;
+
+			if( sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT )
+			{
+				sp->fixed_dddhcoef *= 0.95f;
+				sp->fixed_hotdotcoef *= 0.95f;
+			}
+			if( sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL )
+			{
+				sp->fixed_dddhcoef *= 0.5f;
+				sp->fixed_hotdotcoef *= 0.5f;
+			}		
+		}
+	}
+
+	//Settings for special cases
+	QueryResult * resultx = WorldDatabase.Query("SELECT * FROM spell_coef_override");
+	if( resultx != NULL )
+	{
+		do 
+		{
+			Field * f;
+			f = resultx->Fetch();
+			SpellEntry * sp = dbcSpell.LookupEntry( f[0].GetUInt32() );
+			sp->Dspell_coef_override = f[2].GetFloat();
+			sp->OTspell_coef_override = f[3].GetFloat();
+		} while( resultx->NextRow() );
+	}
+
+	//Fully loaded coefficients, we must share channeled coefficient to its triggered spells
+	for(uint32 x=0; x < cnt; x++)
+	{
+		// SpellID
+		uint32 spellid = dbc.getRecord(x).getUInt(0);
+		// get spellentry
+		SpellEntry * sp = dbcSpell.LookupEntry(spellid);
+		SpellEntry * spz;
+
+		//Case SPELL_AURA_PERIODIC_TRIGGER_SPELL
+		for( uint8 i = 0 ; i < 3 ; i++ )
+		{
+			if ( sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL )
+			{
+				spz = dbcSpell.LookupEntry( sp->EffectTriggerSpell[i] );
+				if( spz != NULL ) 
+				{
+					if( sp->Dspell_coef_override >= 0 )
+						spz->Dspell_coef_override = sp->Dspell_coef_override;
+					else
+					{
+						//we must set bonus per tick on triggered spells now (i.e. Arcane Missiles)
+						if( sp->ChannelInterruptFlags != 0 )
+						{
+							float Duration = float( GetDuration( dbcSpellDuration.LookupEntry( sp->DurationIndex ) ));
+							float amp = float(sp->EffectAmplitude[i]);
+							sp->fixed_dddhcoef = sp->fixed_hotdotcoef * amp / Duration;
+						}			
+						spz->fixed_dddhcoef = sp->fixed_dddhcoef;
+					}
+
+					if( sp->OTspell_coef_override >= 0 )
+						spz->OTspell_coef_override = sp->OTspell_coef_override;
+					else
+					{
+						//we must set bonus per tick on triggered spells now (i.e. Arcane Missiles)
+						if( sp->ChannelInterruptFlags != 0 )
+						{
+							float Duration = float( GetDuration( dbcSpellDuration.LookupEntry( sp->DurationIndex ) ));
+							float amp = float(sp->EffectAmplitude[i]);
+							sp->fixed_hotdotcoef *= amp / Duration;
+						}
+						spz->fixed_hotdotcoef = sp->fixed_hotdotcoef;
+					}
+					break;
+				}
+			}
+		}
+	}	
+
+	/////////////////////////////////////////////////////////////////
+	//SPELL COEFFICIENT SETTINGS END
+	/////////////////////////////////////////////////////////////////
+
 	//this is so lame : shamanistic rage triggers a new spell which borrows it's stats from parent spell :S
 	SpellEntry * parentsp = dbcSpell.LookupEntryForced( 30823 );
 	SpellEntry * triggersp = dbcSpell.LookupEntryForced( 30824 );
