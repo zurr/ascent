@@ -161,7 +161,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
 	if(_player->m_currentSpell)
 	{
-		_player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, 0);
+		_player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
 		return;
 	}
 
@@ -264,7 +264,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
         if(_player->m_currentSpell)
         {
-            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, 0);
+            _player->SendCastResult(spellInfo->Id, SPELL_FAILED_SPELL_IN_PROGRESS, cn, 0);
             return;
         }
 		Spell *spell = new Spell(GetPlayer(), spellInfo, false, NULL);
