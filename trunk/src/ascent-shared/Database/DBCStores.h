@@ -335,9 +335,9 @@ struct SpellEntry
     uint32 FG;                              //201   0,1,2 related to Spell_Dmg_Type I think
     int32 FH;                               //202   related to paladin aura's 
     float dmg_multiplier[3];                //203 - 205   if the name is correct I dono
-    uint32 FL;                              //206   only one spellid:6994 has this value = 369
-    uint32 FM;                              //207   only one spellid:6994 has this value = 4
-    uint32 FN;                              //208   only one spellid:26869  has this flag = 1   
+    //uint32 FL;                              //206   only one spellid:6994 has this value = 369 UNUSED
+    //uint32 FM;                              //207   only one spellid:6994 has this value = 4 UNUSED
+    uint32 FN;                              //208  3 spells 1 or 2   
     uint32 TotemCategory[2];				//209-210 
     uint32 RequiresAreaId;				     		//211 
 

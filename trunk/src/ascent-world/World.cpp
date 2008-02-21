@@ -2150,13 +2150,30 @@ bool World::SetInitialWorldSettings()
 	//paladin - Light's Grace
 	sp = dbcSpell.LookupEntryForced( 31833 );
 	if( sp != NULL )
-		sp->procFlags = PROC_ON_CAST_SPELL;;
+		sp->procFlags = PROC_ON_CAST_SPELL;
 	sp = dbcSpell.LookupEntryForced( 31835 );
 	if( sp != NULL )
-		sp->procFlags = PROC_ON_CAST_SPELL;;
+		sp->procFlags = PROC_ON_CAST_SPELL;
 	sp = dbcSpell.LookupEntryForced( 31836 );
 	if( sp != NULL )
-		sp->procFlags = PROC_ON_CAST_SPELL;;
+		sp->procFlags = PROC_ON_CAST_SPELL;
+
+	//shaman - Lightning Mastery
+	sp = dbcSpell.LookupEntryForced( 16578 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]=1|2;
+	sp = dbcSpell.LookupEntryForced( 16579 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]=1|2;
+	sp = dbcSpell.LookupEntryForced( 16580 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]=1|2;
+	sp = dbcSpell.LookupEntryForced( 16581 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]=1|2;
+	sp = dbcSpell.LookupEntryForced( 16582 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]=1|2;
 
 	//shaman - Lightning Overload 
 	sp = dbcSpell.LookupEntryForced( 30675 ); 
