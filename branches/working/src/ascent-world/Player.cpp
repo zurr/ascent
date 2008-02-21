@@ -3261,7 +3261,6 @@ void Player::OnPushToWorld()
 		if( m_taxiMapChangeNode != 0 )
 		{
 			lastNode = m_taxiMapChangeNode;
-			m_taxiMapChangeNode = 0;
 		}
 
 		// Create HAS to be sent before this!
@@ -3269,6 +3268,8 @@ void Player::OnPushToWorld()
 		TaxiStart(GetTaxiPath(), 
 			GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID),
 			lastNode);
+
+		m_taxiMapChangeNode = 0;
 	}
 
 	 if(flying_aura && m_mapId != 530)
@@ -3395,6 +3396,9 @@ void Player::RemoveFromWorld()
 	m_movementBuffer.clear();
 	sEventMgr.RemoveEvents(this, EVENT_PLAYER_FLUSH_MOVEMENT);
 #endif
+
+	if(GetTaxiState())
+		event_RemoveEvents( EVENT_PLAYER_TAXI_INTERPOLATE );
 }
 
 // TODO: perhaps item should just have a list of mods, that will simplify code
@@ -5085,8 +5089,8 @@ void Player::AddInRangeObject(Object* pObj)
 
 		if (ntime > m_taxi_ride_time)
 			m_CurrentTaxiPath->SendMoveForTime( this, static_cast< Player* >( pObj ), ntime - m_taxi_ride_time);
-		else
-			m_CurrentTaxiPath->SendMoveForTime( this, static_cast< Player* >( pObj ), m_taxi_ride_time - ntime);
+		/*else
+			m_CurrentTaxiPath->SendMoveForTime( this, static_cast< Player* >( pObj ), m_taxi_ride_time - ntime);*/
 	}
 
 	Unit::AddInRangeObject(pObj);
@@ -6096,15 +6100,15 @@ void Player::UpdateNearbyGameObjects()
 
 void Player::EventTaxiInterpolate()
 {
-	if(!m_CurrentTaxiPath) return;
+	if(!m_CurrentTaxiPath || m_mapMgr==NULL) return;
 
 	float x,y,z;
 	uint32 ntime = getMSTime();
 
 	if (ntime > m_taxi_ride_time)
-		m_CurrentTaxiPath->SetPosForTime(x, y, z, ntime - m_taxi_ride_time, &lastNode);
-	else
-		m_CurrentTaxiPath->SetPosForTime(x, y, z, m_taxi_ride_time - ntime, &lastNode);
+		m_CurrentTaxiPath->SetPosForTime(x, y, z, ntime - m_taxi_ride_time, &lastNode, m_mapId);
+	/*else
+		m_CurrentTaxiPath->SetPosForTime(x, y, z, m_taxi_ride_time - ntime, &lastNode);*/
 
 	if(x < _minX || x > _maxX || y < _minY || y > _maxX)
 		return;
@@ -6118,6 +6122,7 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 	float mapchangex;
 	float mapchangey;
 	float mapchangez;
+	uint32 cn = m_taxiMapChangeNode;
 
 	m_taxiMapChangeNode = 0;
 
@@ -6219,7 +6224,8 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 	data << uint32( 0x00000300 );
 	data << uint32( traveltime );
 
-	m_taxi_ride_time -= add_time;
+	if(!cn)
+		m_taxi_ride_time -= add_time;
 	
 	data << uint32( endn - start_node );
 //	uint32 timer = 0, nodecount = 0;

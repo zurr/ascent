@@ -562,6 +562,7 @@ bool World::SetInitialWorldSettings()
 			p.second = result->Fetch()[2].GetInt32();
 			procMap.insert(make_pair(result->Fetch()[0].GetUInt32(), p));
 		} while(result->NextRow());
+		delete result;
 	}
 	uint32 cnt = (uint32)dbc.getRecordCount();
 	uint32 effect;
@@ -1761,10 +1762,14 @@ bool World::SetInitialWorldSettings()
 		{
 			Field * f;
 			f = resultx->Fetch();
-			SpellEntry * sp = dbcSpell.LookupEntry( f[0].GetUInt32() );
-			sp->Dspell_coef_override = f[2].GetFloat();
-			sp->OTspell_coef_override = f[3].GetFloat();
+			SpellEntry * sp = dbcSpell.LookupEntryForced( f[0].GetUInt32() );
+			if( sp != NULL )
+			{
+				sp->Dspell_coef_override = f[2].GetFloat();
+				sp->OTspell_coef_override = f[3].GetFloat();
+			}
 		} while( resultx->NextRow() );
+		delete resultx;
 	}
 
 	//Fully loaded coefficients, we must share channeled coefficient to its triggered spells
