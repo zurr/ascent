@@ -466,7 +466,7 @@ enum Flags3
     FLAGS3_REQ_RANGED_WEAPON  = 0x20000, // this is shit and has nothing to do with auto shot
     FLAGS3_REVIVE_PET         = 0x40000, // actually 1 spell, revive pet
     FLAGS3_UNK21              = 0x80000, // this is a group of spells that are triggered by something. (I have no clue on how to name this one)
-    FLAGS3_REQ_BEHIND_TARGET  = 0x100000,
+    FLAGS3_REQ_BEHIND_TARGET  = 0x100000, //wrong
     FLAGS3_UNK23              = 0x200000,
     FLAGS3_UNK24              = 0x400000,
     FLAGS3_UNK25              = 0x800000,
@@ -481,6 +481,7 @@ enum Flags3
 
 enum Flags4
 {
+	FLAGS4_BG_ONLY                      = 0x800,
     FLAGS4_PLAYER_RANGED_SPELLS         = 0x8000,
     CAN_PERSIST_AND_CASTED_WHILE_DEAD   = 0x100000,
     FLAGS4_PLAYER_RANGED_WAND           = 0x400000,
@@ -1318,7 +1319,7 @@ enum DISPEL_TYPE
     DISPEL_POISON,
     DISPEL_STEALTH,
     DISPEL_INVISIBILTY,
-    DISPEL_ALL,
+    DISPEL_ALL, //magic,curse,disease,poison
     DISPEL_SPECIAL_NPCONLY,
     DISPEL_FRENZY,
 };
@@ -1365,7 +1366,8 @@ enum MECHANICS
     MECHANIC_HORRIFIED,
     MECHANIC_INVULNARABLE,
     MECHANIC_INTERRUPTED,
-    MECHANIC_DAZED
+    MECHANIC_DAZED,
+	MECHANIC_DISCOVERY
 };
 
 typedef enum {
