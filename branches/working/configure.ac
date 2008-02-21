@@ -170,9 +170,9 @@ AC_ARG_ENABLE(voicechat,
      ],
 )
 
-AC_ARG_DISABLE(mysql,
-	AC_HELP_STRING([--disable-mysql],disables mysql backend),
-	[ if test "x$disable_mysql" = "xyes" ; then
+AC_ARG_ENABLE(mysql,
+	AC_HELP_STRING([--without-mysql],disables mysql backend),
+	[ if test "x$without_mysql" = "xyes" ; then
 		AC_DEFINE(NO_DBLAYER_MYSQL)
 		fi
 	],
