@@ -395,8 +395,6 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint8 flags, uint32 flags2,
 
 	if (flags & 0x40)
 	{
-		if(GetTypeId()==TYPEID_PLAYER)
-			printf("");
 		if(flags & 0x2)
 		{
 			*data << (float)m_position.x;

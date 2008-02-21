@@ -8623,7 +8623,7 @@ bool CharacterLoaderThread::run()
 	for(;;)
 	{
 		// Get a single connection to maintain for the whole process.
-		MysqlCon * con = CharacterDatabase.GetFreeConnection();
+		DatabaseConnection * con = CharacterDatabase.GetFreeConnection();
 
 		sWorld.PollCharacterInsertQueue(con);
 		sWorld.PollMailboxInsertQueue(con);
@@ -8631,7 +8631,7 @@ bool CharacterLoaderThread::run()
 		   WaitForSingleObject will suspend the thread,
 		   and on unix, select will as well. - Burlex
 			*/
-		con->busy.Release();
+		con->Busy.Release();
 #ifdef WIN32
 		WaitForSingleObject(hEvent,LOAD_THREAD_SLEEP*1000);
 #else
@@ -8649,7 +8649,7 @@ bool CharacterLoaderThread::run()
 	return true;
 }
 
-void World::PollMailboxInsertQueue(MysqlCon * con)
+void World::PollMailboxInsertQueue(DatabaseConnection * con)
 {
 	QueryResult * result;
 	Field * f;
@@ -8693,7 +8693,7 @@ void World::PollMailboxInsertQueue(MysqlCon * con)
 	}
 }
 
-void World::PollCharacterInsertQueue(MysqlCon * con)
+void World::PollCharacterInsertQueue(DatabaseConnection * con)
 {
 	// Our local stuff..
 	bool has_results = false;

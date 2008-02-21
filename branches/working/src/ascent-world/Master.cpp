@@ -468,9 +468,6 @@ bool Master::Run(int argc, char ** argv)
 			else
 				m_ShutdownTimer -= diff;
 		}
-		
-		Database_Character->CheckConnections();
-		Database_World->CheckConnections();
 
 		if( 50 > etime )
 		{
@@ -597,7 +594,7 @@ bool Master::_StartDB()
 	result = !result ? result : Config.MainConfig.GetString( "WorldDatabase", "Name", &database );
 	result = !result ? result : Config.MainConfig.GetInt( "WorldDatabase", "Port", &port );
 	result = !result ? result : Config.MainConfig.GetInt( "WorldDatabase", "Type", &type );
-	Database_World = new Database();
+	Database_World = Database::CreateDatabaseInterface(type);
 
 	if(result == false)
 	{
@@ -619,7 +616,7 @@ bool Master::_StartDB()
 	result = !result ? result : Config.MainConfig.GetString( "CharacterDatabase", "Name", &database );
 	result = !result ? result : Config.MainConfig.GetInt( "CharacterDatabase", "Port", &port );
 	result = !result ? result : Config.MainConfig.GetInt( "CharacterDatabase", "Type", &type );
-	Database_Character = new Database();
+	Database_Character = Database::CreateDatabaseInterface(type);
 
 	if(result == false)
 	{
