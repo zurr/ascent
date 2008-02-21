@@ -82,7 +82,9 @@
  * Currently supported, MySQL, (under development): PostgreSQL, SQLite
  */
 
+#if !defined(NO_DBLAYER_MYSQL)
 #define ENABLE_DATABASE_MYSQL 1
+#endif
 // #define ENABLE_DATABASE_POSTGRES 1
 // #define ENABLE_DATABASE_SQLITE 1
 

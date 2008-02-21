@@ -17,3 +17,4 @@ echo "" >> svn_revision.h
 
 mv svn_revision.h src/ascent-shared
 
+echo "1"

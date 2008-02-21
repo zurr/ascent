@@ -33,6 +33,9 @@ AH_TEMPLATE([USING_BIG_ENDIAN], Define this if you are on a big-endian system.)
 AH_TEMPLATE([USING_LITTLE_ENDIAN], Define this if you are on a non-big-endian system.)
 AH_TEMPLATE([X64], Define this if you are under an X64-based operating system.)
 AH_TEMPLATE([X86], Define this if you are under an X86-based 32bit operating system.)
+AH_TEMPLATE([NO_DBLAYER_MYSQL], Define this if you want to disable mysql support.)
+AH_TEMPLATE([ENABLE_DATABASE_POSTGRES], Define this if you want postgres support.)
+AH_TEMPLATE([ENABLE_DATABASE_SQLITE], Define this if you want sqlite support.)
 
 # Default prefix
 AC_PREFIX_DEFAULT(`pwd`)
@@ -85,14 +88,8 @@ esac
 
 AC_C_BIGENDIAN([AC_DEFINE(USING_BIG_ENDIAN)],[AC_DEFINE(USING_LITTLE_ENDIAN)],[])
 
-# Required for SVN revision magic
-AC_PROG_AWK
-
 AC_CHECK_PROG([SVN], [svn], yes)
 if test -z "$SVN"; then AC_MSG_ERROR(Subversion not found); fi
-
-AC_CHECK_PROG([SED], [sed], yes)
-if test -z "$SED"; then AC_MSG_ERROR(Sed not found); fi
 
 # Checks for libraries.
 AC_CHECK_LIB( pthread, pthread_create, [],
@@ -173,6 +170,29 @@ AC_ARG_ENABLE(voicechat,
      ],
 )
 
+AC_ARG_DISABLE(mysql,
+	AC_HELP_STRING([--disable-mysql],disables mysql backend),
+	[ if test "x$disable_mysql" = "xyes" ; then
+		AC_DEFINE(NO_DBLAYER_MYSQL)
+		fi
+	],
+)
+
+AC_ARG_ENABLE(postgres,
+	AC_HELP_STRING([--enable-postgres],enables postgres backend),
+	[ if test "x$enable_postgres" = "xyes" ; then
+		AC_DEFINE(ENABLE_DATABASE_POSTGRES)
+		fi
+	],
+)
+
+AC_ARG_ENABLE(sqlite,
+	AC_HELP_STRING([--enable-sqlite],enables sqlite backend),
+	[ if test "x$enable_sqlite" = "xyes" ; then
+		AC_DEFINE(ENABLE_DATABASE_SQLITE)
+		fi
+	],
+)
 
 # Check for networking stuff
 AC_MSG_CHECKING([detecting network socket engine])
@@ -206,6 +226,8 @@ AC_CHECK_LIB( mysqlclient, mysql_init, [],[AC_CHECK_LIB(mysql, mysql_init,[],[AC
 AC_DEFINE_UNQUOTED([PREFIX], "${prefix}", "Prefix")
 AC_DEFINE_UNQUOTED([SCRIPTDIR], "${scriptdir}", "librarydir")
 AC_DEFINE_UNQUOTED([CONFDIR], "${sysconfdir}", "configdir")
+
+AC_DEFINE_UNQUOTED([SVN_REVISION_DONE], `sh ./extract_svn_revision.h`, [SVN revision generated])
 
 AC_CONFIG_FILES([
    ./Makefile
