@@ -385,6 +385,7 @@ Player::Player ( uint32 high, uint32 low ) : m_mailBox(low)
 	m_lfgMatch = NULL;
 	m_lfgInviterGuid = 0;
 	m_mountCheckTimer = 0;
+	m_taxiMapChangeNode = 0;
 	this->OnLogin();
 #ifdef VOICE_CHAT
 	m_inPartyVoice = false;
@@ -3255,6 +3256,21 @@ void Player::OnPushToWorld()
 
 	m_TeleportState = 0;
 
+	if(GetTaxiState())
+	{
+		if( m_taxiMapChangeNode != 0 )
+		{
+			lastNode = m_taxiMapChangeNode;
+			m_taxiMapChangeNode = 0;
+		}
+
+		// Create HAS to be sent before this!
+		ProcessPendingUpdates();
+		TaxiStart(GetTaxiPath(), 
+			GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID),
+			lastNode);
+	}
+
 	 if(flying_aura && m_mapId != 530)
 	{
 		RemoveAura(flying_aura);
@@ -6098,6 +6114,13 @@ void Player::EventTaxiInterpolate()
 
 void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 {
+	int32 mapchangeid = -1;
+	float mapchangex;
+	float mapchangey;
+	float mapchangez;
+
+	m_taxiMapChangeNode = 0;
+
 	if(this->m_MountSpellId)
 		RemoveAura(m_MountSpellId);
 	//also remove morph spells
@@ -6159,6 +6182,18 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 			return;
 		}
 
+		if( pn->mapid != m_mapId )
+		{
+			endn = (i - 1);
+			m_taxiMapChangeNode = i;
+
+			mapchangeid = (int32)pn->mapid;
+			mapchangex = pn->x;
+			mapchangey = pn->y;
+			mapchangez = pn->z;
+			break;
+		}
+
 		if(!lastx || !lasty || !lastz)
 		{
 			lastx = pn->x;
@@ -6207,10 +6242,16 @@ void Player::TaxiStart(TaxiPath *path, uint32 modelid, uint32 start_node)
 	sEventMgr.AddEvent(this, &Player::EventTaxiInterpolate, 
 		EVENT_PLAYER_TAXI_INTERPOLATE, 900, 0,0);
 
-	TaxiPathNode *pn = path->GetPathNode((uint32)path->GetNodeCount() - 1);
-
-	sEventMgr.AddEvent(this, &Player::EventDismount, path->GetPrice(), 
-		pn->x, pn->y, pn->z, EVENT_PLAYER_TAXI_DISMOUNT, traveltime, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); 
+	if( mapchangeid < 0 )
+	{
+		TaxiPathNode *pn = path->GetPathNode((uint32)path->GetNodeCount() - 1);
+		sEventMgr.AddEvent(this, &Player::EventDismount, path->GetPrice(), 
+			pn->x, pn->y, pn->z, EVENT_PLAYER_TAXI_DISMOUNT, traveltime, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); 
+	}
+	else
+	{
+		sEventMgr.AddEvent( this, &Player::EventTeleport, (uint32)mapchangeid, mapchangex, mapchangey, mapchangez, EVENT_PLAYER_TELEPORT, traveltime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+	}
 }
 
 void Player::JumpToEndTaxiNode(TaxiPath * path)
@@ -8055,15 +8096,6 @@ void Player::CompleteLoading()
 	if(iActivePet)
 		SpawnPet(iActivePet);	   // only spawn if >0
 
-
-	if(GetTaxiState())
-	{
-		// Create HAS to be sent before this!
-		ProcessPendingUpdates();
-		TaxiStart(GetTaxiPath(), 
-			GetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID),
-			lastNode);
-	}
 
 	// useless logon spell
 	Spell *logonspell = new Spell(this, dbcSpell.LookupEntry(836), false, NULL);

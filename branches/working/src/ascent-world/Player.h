@@ -740,6 +740,7 @@ public:
     float               m_taxi_pos_y;
     float               m_taxi_pos_z;
     bool                m_onTaxi;
+	uint32				m_taxiMapChangeNode;
 
     /************************************************************************/
     /* Quests                                                               */

@@ -598,10 +598,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\ClassDiagram1.cd"
-			>
-		</File>
-		<File
 			RelativePath="..\..\src\ascent-world\ClusterInterface.cpp"
 			>
 		</File>
