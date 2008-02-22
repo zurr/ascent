@@ -351,13 +351,11 @@ struct SpellEntry
     uint32 NameHash;                        //!!! CUSTOM, related to custom spells, summon spell quest related spells
     float base_range_or_radius_sqr;         //!!! CUSTOM, needed for aoe spells most of the time
 	uint32 talent_tree;						//!!! CUSTOM,
-	bool removable_by_immunity;				//!!! CUSTOM,
 	uint32 in_front_status;					//!!! CUSTOM,
 	bool is_melee_spell;					//!!! CUSTOM,
 	bool is_ranged_spell;					//!!! CUSTOM,
     uint32 EffectSpellGroupRelation_high[3];     //!!! this is not contained in client dbc but server must have it
 	uint32 ThreatForSpell;
-	bool can_be_dispelled;					//!!! CUSTOM
 
 	//Spell Coefficient
 	float casttime_coef;                                    //!!! CUSTOM, faster spell bonus calculation

@@ -1894,7 +1894,7 @@ void Unit::RegeneratePower(bool isinterrupted)
 	}
 }
 
-void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
+void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg, SpellEntry* ability)
 {
 	float AverageResistance = 0.0f;
 	float ArmorReduce;
@@ -1931,10 +1931,13 @@ void Unit::CalculateResistanceReduction(Unit *pVictim,dealdamage * dmg)
 			AverageResistance = 0.75f;
 
 		  // NOT WOWWIKILIKE but i think it's actual to add some fullresist chance frome resistances
-		  float Resistchance=(float)pVictim->GetResistance( (*dmg).school_type)/(float)pVictim->getLevel();
-		  Resistchance*=Resistchance;
-		  if(Rand(Resistchance))
-			  AverageResistance=1.0f;
+		  if (!ability || !(ability->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+		  {
+			  float Resistchance=(float)pVictim->GetResistance( (*dmg).school_type)/(float)pVictim->getLevel();
+			  Resistchance*=Resistchance;
+			  if(Rand(Resistchance))
+				  AverageResistance=1.0f;
+		  }
 
 		if(AverageResistance>0)
 			(*dmg).resisted_damage = (uint32)(((*dmg).full_damage)*AverageResistance);
@@ -2798,12 +2801,12 @@ else
 				{
 					dmg.full_damage -= sh;
 					if(dmg.full_damage && !disable_dR)
-						CalculateResistanceReduction(pVictim,&dmg);
+						CalculateResistanceReduction(pVictim,&dmg, ability);
 					dmg.full_damage += sh;
 					abs+=sh;
 				}
 				else if(!disable_dR)
-					CalculateResistanceReduction(pVictim,&dmg);	
+					CalculateResistanceReduction(pVictim,&dmg, ability);	
 			}
 
 			if(abs)
@@ -5184,7 +5187,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
 {
 	for(uint32 x = 0; x < MAX_AURAS; ++x)
 	{
-		if(m_auras[x]  && m_auras[x]->GetSpellProto()->School == School && (!m_auras[x]->IsPositive() || Positive) && (!Immune && m_auras[x]->GetSpellProto()->removable_by_immunity))
+		if(m_auras[x]  && m_auras[x]->GetSpellProto()->School == School && (!m_auras[x]->IsPositive() || Positive) && (!Immune && m_auras[x]->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
 			m_auras[x]->Remove();
 	}
 }

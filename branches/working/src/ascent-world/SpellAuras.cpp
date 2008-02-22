@@ -1190,7 +1190,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
 
 		if(res > 0 && c && m_spellProto->MechanicsType != MECHANIC_BLEEDING)
 		{
-			c->CalculateResistanceReduction(m_target,&dmg);
+			c->CalculateResistanceReduction(m_target,&dmg, m_spellProto);
 			if((int32)dmg.resisted_damage > dmg.full_damage)
 				res = 0;
 			else

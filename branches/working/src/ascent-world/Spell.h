@@ -403,7 +403,7 @@ enum Attributes
 	ATTRIBUTES_UNK28							= 0x4000000,
 	ATTRIBUTES_UNK29							= 0x8000000,
 	ATTRIBUTES_REQ_OOC							= 0x10000000, //     ATTRIBUTES_REQ_OUT_OF_COMBAT
-	ATTRIBUTES_UNK31							= 0x20000000,
+    ATTRIBUTES_IGNORE_INVULNERABILITY           = 0x20000000, //debuffs that can't be removed by any spell and spells that can't be resisted in any case
 	ATTRIBUTES_UNK32							= 0x40000000, // seems like IS_DIMINISHING but some spells not there (f.e. Gouge)
 };
 
