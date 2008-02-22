@@ -5670,32 +5670,41 @@ void Aura::SendDummyModifierLog( std::map< SpellEntry*, uint32 >* m, SpellEntry*
 
 void Aura::SpellAuraAddTargetTrigger(bool apply)
 {
-//	uint32 spellid = GetSpellId();
-//	int32 val = mod->m_amount;
+#ifdef NEW_PROCFLAGS
+	if (m_target == NULL)
+		return;
 
-	/*
-	spellid: 11071
-	amount: 5
-	type = 109
-	misc valye 0
+	if( apply )
+	{
+		ProcTriggerSpell pts;
+		pts.parentId = GetSpellProto()->Id;
+		pts.caster = m_casterGuid;
+		pts.procCharges = GetSpellProto()->procCharges;
+		pts.i = mod->i;
+		pts.LastTrigger = 0;
 
-	spellid = 11095
-	amount 33
-	type 109
-	misc = 0
-
-	spellid = 12499
-	amount 15
-	type 109
-	misc = 0
-
-	spellid = 14179
-	amount 0
-	type 109
-	misc = 0
-
-	*/
-
+		if(GetSpellProto()->EffectTriggerSpell[mod->i])
+			pts.spellId=GetSpellProto()->EffectTriggerSpell[mod->i];
+		else
+		{
+			sLog.outDebug("Warning,trigger spell is null for spell %u",GetSpellProto()->Id);
+			return;
+		}
+		m_target->m_procSpells.push_front(pts);
+		sLog.outDebug("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u\n",pts.origId,pts.spellId,pts.procChance,m_spellProto->procFlags & ~PROC_TARGET_SELF,m_spellProto->procCharges,m_spellProto->procFlags & PROC_TARGET_SELF,m_spellProto->proc_interval);
+	}
+	else
+	{
+		for(std::list<struct ProcTriggerSpell>::iterator itr = m_target->m_procSpells.begin();itr != m_target->m_procSpells.end();itr++)
+		{
+			if(itr->parentId == GetSpellId() && itr->caster == m_casterGuid && !itr->deleted)
+			{
+				itr->deleted = true;
+				break; //only 1 instance of a proc spell per caster ?
+			}
+		}
+	}
+#endif
 }
 
 void Aura::SpellAuraModPowerRegPerc(bool apply)

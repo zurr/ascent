@@ -445,45 +445,46 @@ enum AttributesEx
 
 enum Flags3
 {
-    FLAGS3_NULL               = 0x0,
-    FLAGS3_UNK2               = 0x1,
-    FLAGS3_UNK3               = 0x2,    // Can be used while stealthed
-    FLAGS3_UNK4               = 0x4,    // request pet maybe
-    FLAGS3_UNK5               = 0x8,    // something todo with temp enchanted items
-    FLAGS3_PARTY_EFFECTING_AURA = 0x10, // Party affecting aura's
-    FLAGS3_ACTIVATE_AUTO_SHOT = 0x20,   // spell that enable's auto shoot
-    FLAGS3_UNK8               = 0x40,   //Polymorph spells
-    FLAGS3_UNK9               = 0x80,
-    FLAGS3_UNUSED1            = 0x100,
-    FLAGS3_UNK11              = 0x200,  // used by 2 spells, 30421 | Nether Portal - Perseverence and  30466 | Nether Portal - Perseverence
-    FLAGS3_TAME_X             = 0x400,  // tame [creature]
-    FLAGS3_FUNNEL             = 0x800,  // only funnel spells
-    FLAGS3_UNK14              = 0x1000, // swipe / Cleave spells
-    FLAGS3_ENCHANT_OWN_ONLY   = 0x2000, // no trade window targets, BoE items get soulbound to you
-    FLAGS3_SPELL_PLAYER_EVENT = 0x4000, // Player event's like logging in, finishing quests, triggering cinematic, being adored, Heartbroken etc
-    FLAGS3_UNUSED3            = 0x8000,
-    FLAGS3_CONTROL_UNIT       = 0x10000, // PvP Controller, RC, Creature taming, Taming Lesson
-    FLAGS3_REQ_RANGED_WEAPON  = 0x20000, // this is shit and has nothing to do with auto shot
-    FLAGS3_REVIVE_PET         = 0x40000, // actually 1 spell, revive pet
-    FLAGS3_UNK21              = 0x80000, // this is a group of spells that are triggered by something. (I have no clue on how to name this one)
-    FLAGS3_REQ_BEHIND_TARGET  = 0x100000,
-    FLAGS3_UNK23              = 0x200000,
-    FLAGS3_UNK24              = 0x400000,
-    FLAGS3_UNK25              = 0x800000,
-    FLAGS3_UNK26              = 0x1000000,
-    FLAGS3_UNK27              = 0x2000000,
-    FLAGS3_UNK28              = 0x4000000,
-    FLAGS3_UNK29              = 0x8000000, // fishing spells and enchanting weapons
-    FLAGS3_UNK30              = 0x10000000, // some secondairy spell triggers, especialy for lightning shield alike spells
-    FLAGS3_UNK31              = 0x20000000,
-    FLAGS3_UNK32              = 0x40000000,
+	FLAGS3_NULL               = 0x0,
+	FLAGS3_UNK2               = 0x1,
+	FLAGS3_UNK3               = 0x2,    // Can be used while stealthed
+	FLAGS3_UNK4               = 0x4,    // request pet maybe
+	FLAGS3_UNK5               = 0x8,    // something todo with temp enchanted items
+	FLAGS3_PARTY_EFFECTING_AURA = 0x10, // Party affecting aura's
+	FLAGS3_ACTIVATE_AUTO_SHOT = 0x20,   // spell that enable's auto shoot
+	FLAGS3_UNK8               = 0x40,   //Polymorph spells
+	FLAGS3_UNK9               = 0x80,
+	FLAGS3_UNUSED1            = 0x100,
+	FLAGS3_UNK11              = 0x200,  // used by 2 spells, 30421 | Nether Portal - Perseverence and  30466 | Nether Portal - Perseverence
+	FLAGS3_TAME_X             = 0x400,  // tame [creature]
+	FLAGS3_FUNNEL             = 0x800,  // only funnel spells
+	FLAGS3_UNK14              = 0x1000, // swipe / Cleave spells
+	FLAGS3_ENCHANT_OWN_ONLY   = 0x2000, // no trade window targets, BoE items get soulbound to you
+	FLAGS3_SPELL_PLAYER_EVENT = 0x4000, // Player event's like logging in, finishing quests, triggering cinematic, being adored, Heartbroken etc
+	FLAGS3_UNUSED3            = 0x8000,
+	FLAGS3_CONTROL_UNIT       = 0x10000, // PvP Controller, RC, Creature taming, Taming Lesson
+	FLAGS3_REQ_RANGED_WEAPON  = 0x20000, // this is shit and has nothing to do with auto shot
+	FLAGS3_REVIVE_PET         = 0x40000, // actually 1 spell, revive pet
+	FLAGS3_UNK21              = 0x80000, // this is a group of spells that are triggered by something. (I have no clue on how to name this one)
+	FLAGS3_REQ_BEHIND_TARGET  = 0x100000, //wrong
+	FLAGS3_UNK23              = 0x200000,
+	FLAGS3_UNK24              = 0x400000,
+	FLAGS3_UNK25              = 0x800000,
+	FLAGS3_UNK26              = 0x1000000,
+	FLAGS3_UNK27              = 0x2000000,
+	FLAGS3_UNK28              = 0x4000000,
+	FLAGS3_UNK29              = 0x8000000, // fishing spells and enchanting weapons
+	FLAGS3_UNK30              = 0x10000000, // some secondairy spell triggers, especialy for lightning shield alike spells
+	FLAGS3_UNK31              = 0x20000000,
+	FLAGS3_UNK32              = 0x40000000,
 };
 
 enum Flags4
 {
-    FLAGS4_PLAYER_RANGED_SPELLS         = 0x8000,
-    CAN_PERSIST_AND_CASTED_WHILE_DEAD   = 0x100000,
-    FLAGS4_PLAYER_RANGED_WAND           = 0x400000,
+	FLAGS4_BG_ONLY                      = 0x800,
+	FLAGS4_PLAYER_RANGED_SPELLS         = 0x8000,
+	CAN_PERSIST_AND_CASTED_WHILE_DEAD   = 0x100000,
+	FLAGS4_PLAYER_RANGED_WAND           = 0x400000,
 };
 
 enum Flags5
