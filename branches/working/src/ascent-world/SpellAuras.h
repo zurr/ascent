@@ -293,22 +293,34 @@ struct DamageProc
     void  *owner;//mark the owner of this proc to know which one to delete
 };
 
+#ifndef NEW_PROCFLAGS
 struct ProcTriggerSpell
 {
-  //  ProcTriggerSpell() : origId(0), trigger(0), spellId(0), caster(0), procChance(0), procFlags(0), procCharges(0) { }
-    uint32 origId;
-   // uint32 trigger;
-    uint32 spellId;
-    uint64 caster;
-    uint32 procChance;
-    uint32 procFlags;
-    uint32 procCharges;
-//    SpellEntry *ospinfo;
-//    SpellEntry *spinfo;
-    uint32 LastTrigger;
-	uint32 ProcType; //0=talents/spells 1=weapon 2=armor  TODO: implement.
-    bool deleted;
+	//  ProcTriggerSpell() : origId(0), trigger(0), spellId(0), caster(0), procChance(0), procFlags(0), procCharges(0) { }
+	uint32 origId;
+	// uint32 trigger;
+	uint32 spellId;
+	uint64 caster;
+	uint32 procChance;
+	uint32 procFlags;
+	uint32 procCharges;
+	//    SpellEntry *ospinfo;
+	//    SpellEntry *spinfo;
+	uint32 LastTrigger;
+	uint32 ProcType; //0=triggerspell/1=triggerclassspell
+	bool deleted;
 };
+#else
+struct ProcTriggerSpell
+{
+	uint32 spellId;
+	uint32 parentId;
+	uint32 procFlags;
+	uint32 procChance;
+	uint32 procCharges;
+	uint32 LastTrigger;
+};
+#endif
 
 struct SpellCharge
 {

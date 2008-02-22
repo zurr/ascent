@@ -1315,6 +1315,7 @@ bool World::SetInitialWorldSettings()
 		{
 			sp->School = 5;
 		}
+#ifndef NEW_PROCFLAGS
 		// Shadow Weaving
 		else if( strstr( nametext, "Shadow Weaving"))
 		{
@@ -1323,6 +1324,7 @@ bool World::SetInitialWorldSettings()
 			sp->procChance = sp->EffectBasePoints[0] + 1;
 			sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
 		}
+#endif
 		//Improved Aspect of the Hawk
 		else if( strstr( nametext, "Improved Aspect of the Hawk"))
 			sp->EffectSpellGroupRelation[1] = 0x00100000;
@@ -2143,6 +2145,60 @@ bool World::SetInitialWorldSettings()
 		sp->EffectMiscValue[0] = SMT_SPELL_VALUE;
 	}
 
+	//paladin - Improved Devotion Aura
+	sp = dbcSpell.LookupEntryForced( 20142 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+	sp = dbcSpell.LookupEntryForced( 20141 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+	sp = dbcSpell.LookupEntryForced( 20140 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+	sp = dbcSpell.LookupEntryForced( 20139 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+	sp = dbcSpell.LookupEntryForced( 20138 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+
+	//paladin - Guardian's Favor
+	sp = dbcSpell.LookupEntryForced( 20175 );
+	if (sp != NULL)
+	{
+		sp->EffectSpellGroupRelation[0]=128;
+		sp->EffectSpellGroupRelation[1]=268435472;
+	}
+	sp = dbcSpell.LookupEntryForced( 20174 );
+	if (sp != NULL)
+	{
+		sp->EffectSpellGroupRelation[0]=128;
+		sp->EffectSpellGroupRelation[1]=268435472;
+	}
+	//paladin - Improved Concentration Aura
+	sp = dbcSpell.LookupEntryForced( 20256 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=131072;
+	sp = dbcSpell.LookupEntryForced( 20255 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=131072;
+	sp = dbcSpell.LookupEntryForced( 20254 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=131072;
+	//paladin - Sacred Duty
+	sp = dbcSpell.LookupEntryForced( 31849 );
+	if (sp != NULL)
+	{
+		sp->EffectSpellGroupRelation[0]=4194304;
+		sp->EffectSpellGroupRelation[1]=4194304;
+	}
+	sp = dbcSpell.LookupEntryForced( 31848 );
+	if (sp != NULL)
+	{
+		sp->EffectSpellGroupRelation[0]=4194304;
+		sp->EffectSpellGroupRelation[1]=4194304;
+	}
+
 	//paladin - Aura Mastery
 	sp = dbcSpell.LookupEntryForced( 31821 );
 	if( sp != NULL )
@@ -2565,6 +2621,7 @@ bool World::SetInitialWorldSettings()
 	if( sp != NULL )
 		sp->EffectSpellGroupRelation[0] = group_relation_shaman_restorative_totems;
 	
+#ifndef NEW_PROCFLAGS
 	//shaman - Healing Way
 	sp = dbcSpell.LookupEntryForced( 29202 ); 
 	if( sp != NULL )
@@ -2584,6 +2641,18 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
 	}
+#else
+	//shaman - Healing Way
+	sp = dbcSpell.LookupEntryForced( 29202 ); 
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+	sp = dbcSpell.LookupEntryForced( 29205 ); 
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+	sp = dbcSpell.LookupEntryForced( 29206 ); 
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 64;
+#endif
 
 	//shaman - Elemental Devastation
 	sp = dbcSpell.LookupEntryForced( 29179 ); 
@@ -4448,7 +4517,8 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL;
 	}
 
-    //Improved Sprint
+#ifndef NEW_PROCFLAGS
+	//Improved Sprint
 	sp = dbcSpell.LookupEntryForced( 13743 );
 	if( sp != NULL )
 	{
@@ -4461,6 +4531,15 @@ bool World::SetInitialWorldSettings()
 		sp->procChance = 100;
 		sp->procFlags = PROC_ON_CAST_SPELL;
 	}
+#else
+	//Improved Sprint
+	sp = dbcSpell.LookupEntryForced( 13743 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]=64;
+	sp = dbcSpell.LookupEntryForced( 13875 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]=64;
+#endif
 
 	//warlock -  Seed of Corruption
 	sp = dbcSpell.LookupEntryForced( 27243 );
@@ -5921,7 +6000,7 @@ bool World::SetInitialWorldSettings()
 
 	//-----BLEED effects----- (setting mech to BLEED)
 	//garrot
-	sp = dbcSpell.LookupEntryForced( 14179 );
+	sp = dbcSpell.LookupEntryForced( 703 );
 	if( sp != NULL )
 		sp->MechanicsType = MECHANIC_BLEEDING;
 	sp = dbcSpell.LookupEntryForced( 8631 );
@@ -6101,6 +6180,29 @@ bool World::SetInitialWorldSettings()
 			sp->EffectSpellGroupRelation[0] = group;
 	}
 
+#ifdef NEW_PROCFLAGS
+	//priest -  Shadow Weaving
+	if (sp != NULL)
+	{
+		uint32 group = sp->EffectSpellGroupRelation[0];
+		sp = dbcSpell.LookupEntryForced(15334);
+		if (sp !=NULL)
+			sp->EffectSpellGroupRelation[0] = group;
+		sp = dbcSpell.LookupEntryForced(15333);
+		if (sp !=NULL)
+			sp->EffectSpellGroupRelation[0] = group;
+		sp = dbcSpell.LookupEntryForced(15332);
+		if (sp !=NULL)
+			sp->EffectSpellGroupRelation[0] = group;
+		sp = dbcSpell.LookupEntryForced(15331);
+		if (sp !=NULL)
+			sp->EffectSpellGroupRelation[0] = group;
+		sp = dbcSpell.LookupEntryForced(15257);
+		if (sp !=NULL)
+			sp->EffectSpellGroupRelation[0] = group;
+	}
+#endif
+
     //Priest - Inspiration proc spell
     sp = dbcSpell.LookupEntryForced( 14893 );
     if( sp != NULL )
@@ -6112,6 +6214,7 @@ bool World::SetInitialWorldSettings()
     if( sp != NULL )
         sp->rangeIndex = 4;
 
+#ifndef NEW_PROCFLAGS
 	//Relentless Strikes
 	sp = dbcSpell.LookupEntryForced( 14179 );
 	if( sp != NULL )
@@ -6120,6 +6223,13 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->EffectBasePoints[1] = 20; //client showes 20% chance but whe do not have it ? :O
 	}
+#else
+	//Relentless Strikes
+	sp = dbcSpell.LookupEntryForced( 14179 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0]= 262144 | 2097152 | 8388608 | 8519680 | 524288 | 1048576 | 8388608;
+#endif
+
 	//priest - surge of light
 	sp = dbcSpell.LookupEntryForced( 33150 );
 	if( sp != NULL )
@@ -6164,6 +6274,7 @@ bool World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 26635;
 	}
 
+#ifndef NEW_PROCFLAGS
 	//rogue - intiative
 	sp = dbcSpell.LookupEntryForced( 13976 );
 	if( sp != NULL )
@@ -6183,6 +6294,18 @@ bool World::SetInitialWorldSettings()
 		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
 		sp->procFlags = uint32(PROC_ON_CAST_SPELL|PROC_TARGET_SELF);
 	}
+#else
+	//rogue - intiative
+	sp = dbcSpell.LookupEntryForced( 13976 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 8389120 | 256 | 1024;
+	sp = dbcSpell.LookupEntryForced( 13979 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 8389120 | 256 | 1024;
+	sp = dbcSpell.LookupEntryForced( 13980 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 8389120 | 256 | 1024;
+#endif
 
 	//this an on equip item spell(2824) :  ice arrow(29501)
 	sp = dbcSpell.LookupEntryForced( 29501 );
@@ -6191,6 +6314,19 @@ bool World::SetInitialWorldSettings()
 		sp->procChance = 30;//some say it is triggered every now and then
 		sp->procFlags = PROC_ON_RANGED_ATTACK;
 	}
+
+#ifdef NEW_PROCFLAGS
+	//warrior - deep wounds
+	sp = dbcSpell.LookupEntry( 12162);
+	if ( sp!=NULL )
+		sp->SpellGroupType = 32;
+	sp = dbcSpell.LookupEntry( 12850);
+	if ( sp!=NULL )
+		sp->SpellGroupType = 32;
+	sp = dbcSpell.LookupEntry( 12868);
+	if ( sp!=NULL )
+		sp->SpellGroupType = 32;
+#endif
 
 	//warrior - second wind should trigger on self
 	sp = dbcSpell.LookupEntryForced( 29841 );
@@ -6228,6 +6364,7 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM | PROC_TARGET_SELF;
 	}
 
+#ifndef NEW_PROCFLAGS
 	//warrior - Blood Frenzy
 	sp = dbcSpell.LookupEntryForced( 29836 );
 	if( sp != NULL )
@@ -6241,6 +6378,15 @@ bool World::SetInitialWorldSettings()
 		sp->procFlags = PROC_ON_CAST_SPELL;
 		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
 	}
+#else
+	//warrior - Blood Frenzy
+	sp = dbcSpell.LookupEntryForced( 29836 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 32;
+	sp = dbcSpell.LookupEntryForced( 29859 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 32;
+#endif
 
 	//warrior - Rampage
 	sp = dbcSpell.LookupEntryForced( 30030 );
@@ -6728,6 +6874,132 @@ bool World::SetInitialWorldSettings()
 	}
 
 	//---------ITEMS-----------------
+#ifdef NEW_PROCFLAGS
+	//Bonescythe Armor
+	sp = dbcSpell.LookupEntryForced( 28814 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=8519680;
+
+	//Tome of the Lightbringer
+	sp = dbcSpell.LookupEntryForced( 41042 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=8388608;
+	//Gladiator's Libram of Fortitude
+	sp = dbcSpell.LookupEntryForced( 43850 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=8388608;
+	//Vengeful Gladiator's Libram of Fortitude
+	sp = dbcSpell.LookupEntryForced( 43852 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=8388608;
+	//Merciless Gladiator's Libram of Fortitude
+	sp = dbcSpell.LookupEntryForced( 43851 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=8388608;
+	//Gladiator's Libram of Vengeance
+	sp = dbcSpell.LookupEntryForced( 43854 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64;
+	//Merciless Gladiator's Libram of Vengeance
+	sp = dbcSpell.LookupEntryForced( 43855 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64;
+	//Vengeful Gladiator's Libram of Vengeance
+	sp = dbcSpell.LookupEntryForced( 43856 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64;
+	//The Earthshatterer
+	sp = dbcSpell.LookupEntryForced( 28821 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=1024;
+	//Idol of the White Stag
+	sp = dbcSpell.LookupEntryForced( 41037 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64 | 1024;
+	//Merciless Gladiator's Idol of Resolve
+	sp = dbcSpell.LookupEntryForced( 43842 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64 | 1024;
+	//Vengeful Gladiator's Idol of Resolve
+	sp = dbcSpell.LookupEntryForced( 43843 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64 | 1024;
+	//Merciless Gladiator's Idol of Steadfastness
+	sp = dbcSpell.LookupEntryForced( 43844 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=2;
+	//Vengeful Gladiator's Idol of Steadfastness
+	sp = dbcSpell.LookupEntryForced( 43845 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=2;
+	//Merciless Gladiator's Totem of Indomitability
+	sp = dbcSpell.LookupEntryForced( 43858 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=16;
+	//Vengeful Gladiator's Totem of Indomitability
+	sp = dbcSpell.LookupEntryForced( 43859 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=16;
+	//Gladiator's Totem of Indomitability
+	sp = dbcSpell.LookupEntryForced( 43857 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=16;
+	//Merciless Gladiator's Totem of Survival
+	sp = dbcSpell.LookupEntryForced( 43861 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]= 1048576 |268435456 | 2147483648;
+	//Vengeful Gladiator's Totem of Survival
+	sp = dbcSpell.LookupEntryForced( 43862 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]= 1048576 |268435456 | 2147483648;
+	//Gladiator's Totem of Survival
+	sp = dbcSpell.LookupEntryForced( 43861 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]= 1048576 |268435456 | 2147483648;
+	//Wolfshead Helm
+	sp = dbcSpell.LookupEntryForced( 17768 );
+	if (sp != NULL)
+	{
+		sp->EffectSpellGroupRelation[0]= 1073741824;
+		sp->EffectSpellGroupRelation[1]= 2147483648;
+	}
+	//Set: Plagueheart Raiment
+	sp = dbcSpell.LookupEntryForced( 28831 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]= 1;
+	//Set: Gladiator's Idol of Resolve
+	sp = dbcSpell.LookupEntryForced( 37191 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64 | 1024;
+	//Set: Gladiator's Idol of Steadfastness
+	sp = dbcSpell.LookupEntryForced( 43841 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=2;
+	//Set: Incarnate Raiment
+	sp = dbcSpell.LookupEntryForced( 37564 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=512;
+	//Talon of Al'ar
+	sp = dbcSpell.LookupEntryForced( 37507 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=2048;
+	//Set: Crystalforge Armor
+	sp = dbcSpell.LookupEntryForced( 37191 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation_high[0]=64;
+	//Set: Redemption Armor
+	sp = dbcSpell.LookupEntryForced( 28787 );
+	if (sp != NULL)
+		sp->EffectSpellGroupRelation[0]=4096;
+	//Idol of the Claw
+	sp = dbcSpell.LookupEntryForced( 34323 );
+	if( sp != NULL )
+	{
+		sp->Flags5 = FLAGS5_PROCCHANCE_COMBOBASED;
+		sp->EffectSpellGroupRelation[0]=8388608;
+		sp->EffectSpellGroupRelation_high[0]=128;
+	}
+#endif
 
 	//Thunderfury
 	sp = dbcSpell.LookupEntryForced( 21992 );
@@ -6875,6 +7147,7 @@ bool World::SetInitialWorldSettings()
 		sp->maxstack = 1;
 	}
 
+#ifndef NEW_PROCFLAGS
 	//Ashtongue Talisman of Lethality
 	sp = dbcSpell.LookupEntryForced( 40460 );
 	if( sp != NULL )
@@ -6886,6 +7159,11 @@ bool World::SetInitialWorldSettings()
 		sp->EffectTriggerSpell[0] = 40461;
 		sp->maxstack = 1;
 	}
+#else
+	sp = dbcSpell.LookupEntryForced( 40460 );
+	if( sp != NULL )
+		sp->EffectSpellGroupRelation[0] = 262144 | 2097152 | 8388608 | 8519680 | 524288 | 1048576 | 8388608;
+#endif
 
 	//Serpent-Coil Braid
 	sp = dbcSpell.LookupEntryForced( 37447 );
