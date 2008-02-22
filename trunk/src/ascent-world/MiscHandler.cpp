@@ -1913,20 +1913,34 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
 	uint32 slotid;
 	uint8 choice;
 	recv_data >> creatureguid >> slotid >> choice;
-
-	Creature *pCreature = _player->GetMapMgr()->GetCreature((uint32)creatureguid);
-	if(!pCreature)
-	{
-		return;
-	}
-
+	
 	LootRoll *li = NULL;
-	if(slotid >= pCreature->loot.items.size() || pCreature->loot.items.size()==0)
+
+	if (GUID_HIPART(creatureguid) == HIGHGUID_GAMEOBJECT) 
 	{
-		return;
-	} else {
+		GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32)creatureguid);
+		if (!pGO)
+			return;
+		
+		if (slotid >= pGO->loot.items.size() || pGO->loot.items.size() == 0)
+			return;
+		if (pGO->GetInfo() && pGO->GetInfo()->Type == GAMEOBJECT_TYPE_CHEST)
+		li = pGO->loot.items[slotid].roll;
+	} 
+	else if (GUID_HIPART(creatureguid) == HIGHGUID_UNIT) 
+	{
+		// Creatures
+		Creature *pCreature = _player->GetMapMgr()->GetCreature((uint32)creatureguid);
+		if (!pCreature)
+			return;
+		
+		if (slotid > pCreature->loot.items.size() || pCreature->loot.items.size() == 0)
+			return;
+
 		li = pCreature->loot.items[slotid].roll;
-	}
+	} 
+	else 
+		return;
 
 	if(!li)
 		return;
