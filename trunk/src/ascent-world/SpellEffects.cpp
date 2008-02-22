@@ -4147,19 +4147,13 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 	pTotem->SetTotemOwner(p_caster);
 	pTotem->SetTotemSlot(slot);
 
-    switch(p_caster->GetMapId())
-	{
-		case 0:
-		case 1:
-		case 530:
-		{
-    		pTotem->Create(ci->Name, p_caster->GetMapId(), x, y, p_caster->GetPositionZ(), p_caster->GetOrientation());
-		}break;
-		default:
-		{
-    		pTotem->Create(ci->Name, p_caster->GetMapId(), x, y, p_caster->GetPositionZ(), p_caster->GetOrientation());
-		}break;
-    }
+	float landh = p_caster->GetMapMgr()->GetLandHeight(x,y);
+	float landdiff = landh - p_caster->GetPositionZ();
+
+	if (fabs(landdiff)>15)
+		pTotem->Create(ci->Name, p_caster->GetMapId(), x, y, p_caster->GetPositionZ(), p_caster->GetOrientation());
+	else
+		pTotem->Create(ci->Name, p_caster->GetMapId(), x, y, landh, p_caster->GetOrientation());
 
 	uint32 displayID = 0;
 
