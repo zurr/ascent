@@ -1887,17 +1887,17 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
 {
 	if(!_player->IsInWorld()) return;
 	/* struct:
-		
-		{CLIENT} Packet: (0x02A0) CMSG_LOOT_ROLL PacketSize = 13
-		|------------------------------------------------|----------------|
-		|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
-		|------------------------------------------------|----------------|
-		|11 4D 0B 00 BD 06 01 F0 00 00 00 00 02		  |.M...........   |
-		-------------------------------------------------------------------
 
-		uint64 creatureguid
-		uint21 slotid
-		uint8  choice
+	{CLIENT} Packet: (0x02A0) CMSG_LOOT_ROLL PacketSize = 13
+	|------------------------------------------------|----------------|
+	|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
+	|------------------------------------------------|----------------|
+	|11 4D 0B 00 BD 06 01 F0 00 00 00 00 02		  |.M...........   |
+	-------------------------------------------------------------------
+
+	uint64 creatureguid
+	uint21 slotid
+	uint8  choice
 
 	*/
 	uint64 creatureguid;
@@ -1905,105 +1905,38 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
 	uint8 choice;
 	recv_data >> creatureguid >> slotid >> choice;
 
-	Creature *pCreature = _player->GetMapMgr()->GetCreature((uint32)creatureguid);
-	if(!pCreature)
-	{
-		return;
-	}
-
 	LootRoll *li = NULL;
-	if(slotid >= pCreature->loot.items.size() || pCreature->loot.items.size()==0)
+
+	if (GUID_HIPART(creatureguid) == HIGHGUID_GAMEOBJECT) 
 	{
-		return;
-	} else {
+		GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32)creatureguid);
+		if (!pGO)
+			return;
+		if (slotid >= pGO->loot.items.size() || pGO->loot.items.size() == 0)
+			return;
+		if (pGO->GetInfo() && pGO->GetInfo()->Type == GAMEOBJECT_TYPE_CHEST)
+			li = pGO->loot.items[slotid].roll;
+	} 
+	else if (GUID_HIPART(creatureguid) == HIGHGUID_UNIT) 
+	{
+		// Creatures
+		Creature *pCreature = _player->GetMapMgr()->GetCreature((uint32)creatureguid);
+		if (!pCreature)
+			return;
+
+		if (slotid > pCreature->loot.items.size() || pCreature->loot.items.size() == 0)
+			return;
+
 		li = pCreature->loot.items[slotid].roll;
-	}
+	} 
+	else 
+		return;
 
 	if(!li)
 		return;
 
 	li->PlayerRolled(_player, choice);
 }
-
-void WorldSession::HandleOpenItemOpcode(WorldPacket &recv_data)
-{
-	if(!_player->IsInWorld()) return;
-	CHECK_PACKET_SIZE(recv_data, 2);
-	int8 slot, containerslot;
-	recv_data >> containerslot >> slot;
-
-	Item *pItem = _player->GetItemInterface()->GetInventoryItem(containerslot, slot);
-	if(!pItem)
-		return;
-
-	// gift wrapping handler
-	if(pItem->GetUInt32Value(ITEM_FIELD_GIFTCREATOR) && pItem->wrapped_item_id)
-	{
-		ItemPrototype * it = ItemPrototypeStorage.LookupEntry(pItem->wrapped_item_id);
-
-		pItem->SetUInt32Value(ITEM_FIELD_GIFTCREATOR,0);
-		pItem->SetUInt32Value(OBJECT_FIELD_ENTRY,pItem->wrapped_item_id);
-		pItem->wrapped_item_id=0;
-		pItem->SetProto(it);
-
-		if(it->Bonding==ITEM_BIND_ON_PICKUP)
-			pItem->SetUInt32Value(ITEM_FIELD_FLAGS,1);
-		else
-			pItem->SetUInt32Value(ITEM_FIELD_FLAGS,0);
-
-		if(it->MaxDurability)
-		{
-			pItem->SetUInt32Value(ITEM_FIELD_DURABILITY,it->MaxDurability);
-			pItem->SetUInt32Value(ITEM_FIELD_MAXDURABILITY,it->MaxDurability);
-		}
-
-		pItem->m_isDirty=true;
-		pItem->SaveToDB(containerslot,slot, false, NULL);
-		return;
-	}
-
-	Lock *lock = dbcLock.LookupEntry( pItem->GetProto()->LockId );
-	
-	uint32 removeLockItems[5] = {0,0,0,0,0};
-	
-	if(lock) // locked item
-	{
-		for(int i=0;i<5;i++)
-		{
-			if(lock->locktype[i] == 1 && lock->lockmisc[i] > 0)
-			{
-				int8 slot = _player->GetItemInterface()->GetInventorySlotById(lock->lockmisc[i]);
-				if(slot != ITEM_NO_SLOT_AVAILABLE && slot >= INVENTORY_SLOT_ITEM_START && slot < INVENTORY_SLOT_ITEM_END)
-				{
-					removeLockItems[i] = lock->lockmisc[i];
-				}
-				else
-				{
-					_player->GetItemInterface()->BuildInventoryChangeError(pItem,NULL,INV_ERR_ITEM_LOCKED);
-					return;
-				}
-			}
-			else if(lock->locktype[i] == 2 && pItem->locked)
-			{
-				_player->GetItemInterface()->BuildInventoryChangeError(pItem,NULL,INV_ERR_ITEM_LOCKED);
-				return;
-			}
-		}
-		for(int i=0;i<5;i++)
-			if(removeLockItems[i])
-				_player->GetItemInterface()->RemoveItemAmt(removeLockItems[i],1);
-	}
-
-	// fill loot
-	_player->SetLootGUID(pItem->GetGUID());
-	if(!pItem->loot)
-	{
-		pItem->loot = new Loot;
-		lootmgr.FillItemLoot(pItem->loot, pItem->GetEntry());
-	}
-	_player->SendLoot(pItem->GetGUID(), 5);
-}
-
 
 void WorldSession::HandleCompleteCinematic(WorldPacket &recv_data)
 {

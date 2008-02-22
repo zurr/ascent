@@ -4056,27 +4056,23 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 
 	float x = p_caster->GetPositionX();
 	float y = p_caster->GetPositionY();
-	uint32 slot = 0;
+	uint32 slot = m_spellInfo->Effect[i] - SPELL_EFFECT_SUMMON_TOTEM_SLOT1;
 
 	switch(m_spellInfo->Effect[i])
 	{
 	case SPELL_EFFECT_SUMMON_TOTEM_SLOT1: 
-	case SPELL_EFFECT_SUMMON_GUARDIAN:// jewelery statue case, like totem without slot 
 		x -= 1.5f;
 		y -= 1.5f;
 		break;
 	case SPELL_EFFECT_SUMMON_TOTEM_SLOT2: 
-		slot = 1; 
 		x -= 1.5f;
 		y += 1.5f;
 		break;
-	case SPELL_EFFECT_SUMMON_TOTEM_SLOT3: 
-		slot = 2; 
+	case SPELL_EFFECT_SUMMON_TOTEM_SLOT3:  
 		x += 1.5f;
 		y -= 1.5f;
 		break;
 	case SPELL_EFFECT_SUMMON_TOTEM_SLOT4: 
-		slot = 3; 
 		x += 1.5f;
 		y += 1.5f;
 		break;
@@ -4105,32 +4101,47 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 	}
 
 	Creature * pTotem = p_caster->GetMapMgr()->CreateCreature();
-	
+
 	p_caster->m_TotemSlots[slot] = pTotem;
 	pTotem->SetTotemOwner(p_caster);
 	pTotem->SetTotemSlot(slot);
 
-	switch (slot)
-	{
-	case 0:
-		pTotem->Create(ci->Name, p_caster->GetMapId(), p_caster->GetPositionX()+1.5f, p_caster->GetPositionY()+1.5f, p_caster->GetPositionZ(), p_caster->GetOrientation());
-		break;
-	case 1:
-		pTotem->Create(ci->Name, p_caster->GetMapId(), p_caster->GetPositionX()+1.5f, p_caster->GetPositionY()-1.5f, p_caster->GetPositionZ(), p_caster->GetOrientation());
-		break;
-	case 2:
-		pTotem->Create(ci->Name, p_caster->GetMapId(), p_caster->GetPositionX()-1.5f, p_caster->GetPositionY()-1.5f, p_caster->GetPositionZ(), p_caster->GetOrientation());
-		break;
-	case 3:
-		pTotem->Create(ci->Name, p_caster->GetMapId(), p_caster->GetPositionX()-1.5f, p_caster->GetPositionY()+1.5f, p_caster->GetPositionZ(), p_caster->GetOrientation());
-		break;
-	}
+	float landh = p_caster->GetMapMgr()->GetLandHeight(x,y);
+	float landdiff = landh - p_caster->GetPositionZ();
 
-	uint32 displayID;
-	if (!p_caster->GetTeam() && (ci->Female_DisplayID != 0))
-		displayID = ci->Female_DisplayID;
+	if (fabs(landdiff)>15)
+		pTotem->Create(ci->Name, p_caster->GetMapId(), x, y, p_caster->GetPositionZ(), p_caster->GetOrientation());
 	else
+		pTotem->Create(ci->Name, p_caster->GetMapId(), x, y, landh, p_caster->GetOrientation());
+
+	uint32 displayID = 0;
+
+	if( p_caster->GetTeam() == 0 )
+	{
+		if ( ci->Female_DisplayID != 0 )
+		{
+			displayID = ci->Female_DisplayID; //this is the nice solution provided by emsy
+		}
+		else //this is the case when you are using a blizzlike db
+		{
+			if( ci->Male_DisplayID == 4587 )
+				displayID = 19075;
+			else if( ci->Male_DisplayID == 4588 )
+				displayID = 19073;
+			else if( ci->Male_DisplayID == 4589 )
+				displayID = 19074;
+			else if( ci->Male_DisplayID == 4590 )
+				displayID = 19071;
+			else if( ci->Male_DisplayID == 4683 )
+				displayID = 19074;
+			else
+				displayID = ci->Male_DisplayID;
+		}
+	}
+	else
+	{
 		displayID = ci->Male_DisplayID;
+	}
 
 	// Set up the creature.
 	pTotem->SetUInt32Value(OBJECT_FIELD_ENTRY, entry);
@@ -4163,15 +4174,14 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 
 	// Set up AI, depending on our spells.
 	uint32 j;
-	for(j = 0; j < 3; ++j)
+	for( j = 0; j < 3; ++j )
 	{
-		if(TotemSpell->Effect[j] == SPELL_EFFECT_APPLY_AREA_AURA
-			|| TotemSpell->Effect[j] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+		if( TotemSpell->Effect[j] == SPELL_EFFECT_APPLY_AREA_AURA || TotemSpell->Effect[j] == SPELL_EFFECT_PERSISTENT_AREA_AURA )
 		{
 			break;
 		}
 	}
-		// Setup complete. Add us to the world.
+	// Setup complete. Add us to the world.
 	pTotem->PushToWorld(m_caster->GetMapMgr());
 
 	if(j != 3)
@@ -4181,7 +4191,7 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 		pTotem->GetAIInterface()->totemspell = m_spellInfo;
 
 		Spell * pSpell = new Spell(pTotem, TotemSpell, true, 0);
-		
+
 		SpellCastTargets targets;
 		targets.m_destX = pTotem->GetPositionX();
 		targets.m_destY = pTotem->GetPositionY();
@@ -4200,19 +4210,19 @@ void Spell::SpellEffectSummonTotem(uint32 i) // Summon Totem
 
 		switch(TotemSpell->Id)
 		{
-			case 8146: //Tremor Totem
-			case 8167: //Poison Cleansing Totem
-			case 8172: //Disease Cleansing Totem
-				timer =  5000;
+		case 8146: //Tremor Totem
+		case 8167: //Poison Cleansing Totem
+		case 8172: //Disease Cleansing Totem
+			timer =  5000;
 			break;
-			case 8349: //Fire Nova Totem 1
-			case 8502: //Fire Nova Totem 2
-			case 8503: //Fire Nova Totem 3
-			case 11306: //Fire Nova Totem 4
-			case 11307: //Fire Nova Totem 5
-			case 25535: //Fire Nova Totem 6
-			case 25537: //Fire Nova Totem 7
-				timer =  4000;
+		case 8349: //Fire Nova Totem 1
+		case 8502: //Fire Nova Totem 2
+		case 8503: //Fire Nova Totem 3
+		case 11306: //Fire Nova Totem 4
+		case 11307: //Fire Nova Totem 5
+		case 25535: //Fire Nova Totem 6
+		case 25537: //Fire Nova Totem 7
+			timer =  4000;
 			break;
 		default:break;
 		}
