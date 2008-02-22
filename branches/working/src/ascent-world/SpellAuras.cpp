@@ -2053,10 +2053,7 @@ void Aura::EventPeriodicHeal( uint32 amount )
 		//Druid Tree of Life form. it should work not like this, but it's better then nothing. 
 		if( static_cast< Player* >( c )->IsInFeralForm() && static_cast< Player* >( c )->GetShapeShift() == FORM_TREE)
 			bonus += float2int32( 0.25f * static_cast< Player* >( c )->GetUInt32Value( UNIT_FIELD_STAT4 ) );
-	}
 
-	if( c != NULL )
-	{
 		//Spell Coefficient
 		if( m_spellProto->OTspell_coef_override >= 0 ) //In case we have forced coefficients
 			bonus = float2int32( float( bonus ) * m_spellProto->OTspell_coef_override );
@@ -2104,7 +2101,6 @@ void Aura::EventPeriodicHeal( uint32 amount )
 	{
 		int ticks = ( amp > 0 ) ? GetDuration() / amp : 0;
 		bonus = ( ticks > 0 ) ? bonus / ticks : 0;
-		bonus = float2int32( float( bonus * GetDuration() / 15000.0f ) );
 	}
 	else
 		bonus = 0;
