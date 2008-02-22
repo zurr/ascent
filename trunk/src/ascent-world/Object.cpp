@@ -2322,7 +2322,7 @@ void Object::SpellNonMeleeDamageLog(Unit *pVictim, uint32 spellID, uint32 damage
 	//------------------------------resistance reducing-----------------------------------------	
 	if(res > 0 && this->IsUnit())
 	{
-		static_cast<Unit*>(this)->CalculateResistanceReduction(pVictim,&dmg);
+		static_cast<Unit*>(this)->CalculateResistanceReduction(pVictim,&dmg,spellInfo);
 		if((int32)dmg.resisted_damage > dmg.full_damage)
 			res = 0;
 		else

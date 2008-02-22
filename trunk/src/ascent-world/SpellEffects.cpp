@@ -1133,7 +1133,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 			for(uint32 i = MAX_POSITIVE_AURAS; i < MAX_AURAS; ++i)
 			{
 				pAura = unitTarget->m_auras[i];
-				if( pAura != NULL && !pAura->IsPassive() && !pAura->IsPositive() && pAura->GetSpellProto()->can_be_dispelled )
+				if( pAura != NULL && !pAura->IsPassive() && !pAura->IsPositive() && !(pAura->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
 				{
 					pAura->Remove();
 				}
@@ -2680,7 +2680,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 	{
 		aur = unitTarget->m_auras[x];
 		//Nothing can dispel resurrection sickness;
-		if(!aur->IsPassive() && aur->GetSpellProto()->can_be_dispelled)
+		if(!aur->IsPassive() && !(aur->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
 		{
 			if(m_spellInfo->DispelType == DISPEL_ALL)
 			{

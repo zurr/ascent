@@ -662,6 +662,8 @@ uint8 Spell::DidHit(uint32 effindex,Unit* target)
 			printf("!!!!!spell to hit mod flat %f, spell resist chance %f, spell group %u\n",spell_flat_modifers,resistchance,m_spellInfo->SpellGroupType);
 #endif
 	}
+	if (m_spellInfo->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
+		resistchance = 0.0f;
 
 	if(resistchance >= 100.0f)
 		return SPELL_DID_HIT_RESIST;

@@ -730,7 +730,7 @@ public:
 	}
 
 	bool IsInInstance();
-    void CalculateResistanceReduction(Unit *pVictim,dealdamage *dmg) ;
+    void CalculateResistanceReduction(Unit *pVictim,dealdamage *dmg,SpellEntry* ability) ;
 	void RegenerateHealth();
 	void RegeneratePower(bool isinterrupted);
 	ASCENT_INLINE void setHRegenTimer(uint32 time) {m_H_regenTimer = time; }

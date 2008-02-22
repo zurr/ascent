@@ -403,7 +403,7 @@ enum Attributes
     ATTRIBUTES_UNK28							= 0x4000000,
     ATTRIBUTES_UNK29							= 0x8000000,
     ATTRIBUTES_REQ_OOC							= 0x10000000, //     ATTRIBUTES_REQ_OUT_OF_COMBAT
-    ATTRIBUTES_UNK31							= 0x20000000,
+    ATTRIBUTES_IGNORE_INVULNERABILITY           = 0x20000000, //debuffs that can't be removed by any spell and spells that can't be resisted in any case
     ATTRIBUTES_UNK32							= 0x40000000, // seems like IS_DIMINISHING but some spells not there (f.e. Gouge)
 };
 
@@ -457,7 +457,7 @@ enum Flags3
     FLAGS3_UNUSED1            = 0x100,
     FLAGS3_UNK11              = 0x200,  // used by 2 spells, 30421 | Nether Portal - Perseverence and  30466 | Nether Portal - Perseverence
     FLAGS3_TAME_X             = 0x400,  // tame [creature]
-    FLAGS3_FUNNEL             = 0x800,  // only funnel spells
+    FLAGS3_HP_PER_SEC         = 0x800,  // only funnel spells. takes hp per sec of cast. (only 1 spell not there 10260 )
     FLAGS3_UNK14              = 0x1000, // swipe / Cleave spells
     FLAGS3_ENCHANT_OWN_ONLY   = 0x2000, // no trade window targets, BoE items get soulbound to you
     FLAGS3_SPELL_PLAYER_EVENT = 0x4000, // Player event's like logging in, finishing quests, triggering cinematic, being adored, Heartbroken etc
