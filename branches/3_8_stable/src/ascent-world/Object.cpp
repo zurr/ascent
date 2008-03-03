@@ -1017,7 +1017,13 @@ void Object::RemoveFromWorld(bool free_guid)
 //! Set uint32 property
 void Object::SetUInt32Value( const uint32 index, const uint32 value )
 {
-	ASSERT( index < m_valuesCount );
+	//ASSERT( index < m_valuesCount );
+	if( index >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to set field %u to %u", GetGUID(), index, value);
+		return;
+	}
+
 	// save updating when val isn't changing.
 	if(m_uint32Values[index] == value)
 		return;
@@ -1085,14 +1091,25 @@ void Object::ModPUInt32Value(const uint32 index, const int32 value, bool apply )
 */
 uint32 Object::GetModPUInt32Value(const uint32 index, const int32 value)
 {
-	ASSERT( index < m_valuesCount );
+	//ASSERT( index < m_valuesCount );
+	if( index >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to get Pfield %u", GetGUID(), index);
+		return 0;
+	}
 	int32 basevalue = (int32)m_uint32Values[ index ];
 	return ((basevalue*value)/100);
 }
 
 void Object::ModUInt32Value(uint32 index, int32 value )
 {
-	ASSERT( index < m_valuesCount );
+	//ASSERT( index < m_valuesCount );
+	if( index >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to set mod %u to %u", GetGUID(), index, value);
+		return;
+	}
+
 	if(value == 0)
 		return;
 
@@ -1128,7 +1145,12 @@ void Object::ModUInt32Value(uint32 index, int32 value )
 
 void Object::ModFloatValue(const uint32 index, const float value )
 {
-	ASSERT( index < m_valuesCount );
+	if( index >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to set float %u to %f", GetGUID(), index, value);
+		return;
+	}
+
 	m_floatValues[ index ] += value;
 
 	if(IsInWorld())
@@ -1145,7 +1167,12 @@ void Object::ModFloatValue(const uint32 index, const float value )
 //! Set uint64 property
 void Object::SetUInt64Value( const uint32 index, const uint64 value )
 {
-	assert( index + 1 < m_valuesCount );
+	if( index + 1 >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to set 64field %u to %u", GetGUID(), index, value);
+		return;
+	}
+
 #ifndef USING_BIG_ENDIAN
 	if(m_uint32Values[index] == GUID_LOPART(value) && m_uint32Values[index+1] == GUID_HIPART(value))
 		return;
@@ -1173,7 +1200,12 @@ void Object::SetUInt64Value( const uint32 index, const uint64 value )
 //! Set float property
 void Object::SetFloatValue( const uint32 index, const float value )
 {
-	ASSERT( index < m_valuesCount );
+	//ASSERT( index < m_valuesCount );
+	if( index >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to set float %u to %f", GetGUID(), index, value);
+		return;
+	}
 	if(m_floatValues[index] == value)
 		return;
 
@@ -1194,7 +1226,12 @@ void Object::SetFloatValue( const uint32 index, const float value )
 
 void Object::SetFlag( const uint32 index, uint32 newFlag )
 {
-	ASSERT( index < m_valuesCount );
+	//ASSERT( index < m_valuesCount );
+	if( index  >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to set flag %u", GetGUID(), index);
+		return;
+	}
 
 	//no change -> no update
 	if((m_uint32Values[ index ] & newFlag)==newFlag)
@@ -1217,7 +1254,12 @@ void Object::SetFlag( const uint32 index, uint32 newFlag )
 
 void Object::RemoveFlag( const uint32 index, uint32 oldFlag )
 {
-	ASSERT( index < m_valuesCount );
+	//ASSERT( index < m_valuesCount );
+	if( index + 1 >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to remove flag %u", GetGUID(), index);
+		return;
+	}
 
 	//no change -> no update
 	if((m_uint32Values[ index ] & oldFlag)==0)
@@ -2501,7 +2543,12 @@ void Object::Deactivate(MapMgr * mgr)
 
 void Object::SetByte(uint32 index, uint32 index1,uint8 value)
 {
-	ASSERT( index < m_valuesCount );
+	//ASSERT( index < m_valuesCount );
+	if( index  >= m_valuesCount )
+	{
+		printf("Object "I64FMT" trying to set byte %u", GetGUID(), index);
+		return;
+	}
 	// save updating when val isn't changing.
 	#ifndef USING_BIG_ENDIAN
 	uint8 * v =&((uint8*)m_uint32Values)[index*4+index1];

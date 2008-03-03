@@ -9858,3 +9858,8 @@ void Player::EventDumpCompressedMovement()
 	m_movementBuffer.clear();
 }
 #endif
+
+void Player::addDeletedSpell(uint32 sp)
+{
+	mDeletedSpells.insert(sp);
+}
