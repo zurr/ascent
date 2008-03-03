@@ -1892,8 +1892,8 @@ int8 ItemInterface::CanAffordItem(ItemPrototype * item,uint32 amount, Creature *
 	}
 	if(item->BuyPrice)
 	{
-		int32 price = GetBuyPriceForItem(item, amount, m_pOwner, pVendor) * amount;
-		if((int32)m_pOwner->GetUInt32Value(PLAYER_FIELD_COINAGE) < price)
+		int32 price = GetBuyPriceForItem(item, amount, m_pOwner, pVendor);
+		if(price < 0 || (int32)m_pOwner->GetUInt32Value(PLAYER_FIELD_COINAGE) < price)
 		{
 			return CAN_AFFORD_ITEM_ERROR_NOT_ENOUGH_MONEY;
 		}
