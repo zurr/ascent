@@ -694,6 +694,9 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 		return;
 	}
 
+	if( reward_slot > 5 )
+		return;
+
 	// remove icon
 	/*if(qst_giver->GetTypeId() == TYPEID_UNIT)
 	{

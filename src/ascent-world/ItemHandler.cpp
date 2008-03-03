@@ -141,6 +141,9 @@ void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 	
 	recv_data >> DstInvSlot >> DstSlot >> SrcInvSlot >> SrcSlot;
 
+	if(DstSlot < 0 || SrcSlot < 0)
+		return;
+
 	sLog.outDetail("ITEM: swap, DstInvSlot %i DstSlot %i SrcInvSlot %i SrcSlot %i", DstInvSlot, DstSlot, SrcInvSlot, SrcSlot);
 
 	if(DstInvSlot == SrcSlot && SrcInvSlot == -1) // player trying to add self container to self container slots

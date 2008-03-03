@@ -184,9 +184,16 @@ bool ItemInterface::SafeAddItem(Item *pItem, int8 ContainerSlot, int8 slot)
 //-------------------------------------------------------------------//
 bool ItemInterface::m_AddItem(Item *item, int8 ContainerSlot, int8 slot)
 {
-	ASSERT( slot < MAX_INVENTORY_SLOT );
-	ASSERT( ContainerSlot < MAX_INVENTORY_SLOT );
+	if( slot >= MAX_INVENTORY_SLOT )
+		return false;
+
+	if( ContainerSlot >= MAX_INVENTORY_SLOT )
+		return false;
+
 	if( item == NULL || !item->GetProto() )
+		return false;
+
+	if( ContainerSlot < 0 && slot < 0 )
 		return false;
 
 	item->m_isDirty = true;

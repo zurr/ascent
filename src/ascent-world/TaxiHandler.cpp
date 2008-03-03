@@ -251,7 +251,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket & recvPacket)
 	WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
 
 	recvPacket >> guid >> moocost >> nodecount;
-	if(nodecount < 2)
+	if(nodecount < 2 || nodecount > 20)
 		return;
 
 	for(uint32 i = 0; i < nodecount; ++i)
