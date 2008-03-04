@@ -289,25 +289,41 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 
 	if(!VerifyName(name.c_str(), name.length()))
 	{
+#ifndef ASCENT_240
 		OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
+#else
+		OutPacket(SMSG_CHAR_CREATE, 1, "\x32");
+#endif
 		return;
 	}
 
 	if(g_characterNameFilter->Parse(name, false))
 	{
+#ifndef ASCENT_240
 		OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
+#else
+		OutPacket(SMSG_CHAR_CREATE, 1, "\x32");
+#endif
 		return;
 	}
 
 	if(objmgr.GetPlayerInfoByName(name) != 0)
 	{
+#ifndef ASCENT_240
 		OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
+#else
+		OutPacket(SMSG_CHAR_CREATE, 1, "\x32");
+#endif
 		return;
 	}
 
 	if(!sHookInterface.OnNewCharacter(race, class_, this, name.c_str()))
 	{
+#ifndef ASCENT_240
 		OutPacket(SMSG_CHAR_CREATE, 1, "\x31");
+#else
+		OutPacket(SMSG_CHAR_CREATE, 1, "\x32");
+#endif
 		return;
 	}
 
@@ -318,7 +334,11 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 		if(result->Fetch()[0].GetUInt32() > 0)
 		{
 			// That name is banned!
+#ifndef ASCENT_240
 			OutPacket(SMSG_CHAR_CREATE, 1, "\x50"); // You cannot use that name
+#else
+			OutPacket(SMSG_CHAR_CREATE, 1, "\x51");
+#endif
 			delete result;
 			return;
 		}
@@ -349,7 +369,11 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 			delete pNewChar;
 			WorldPacket data(1);
 			data.SetOpcode(SMSG_CHAR_CREATE);
+#ifndef ASCENT_240
 			data << (uint8)ALL_CHARS_ON_PVP_REALM_MUST_AT_SAME_SIDE;
+#else
+			data << (uint8)ALL_CHARS_ON_PVP_REALM_MUST_AT_SAME_SIDE + 1;
+#endif
 			SendPacket( &data );
 			return;
 		}
@@ -386,7 +410,11 @@ void WorldSession::HandleCharCreateOpcode( WorldPacket & recv_data )
 	delete  pNewChar;
 
 	// CHAR_CREATE_SUCCESS
+#ifdef ASCENT_240
+	OutPacket(SMSG_CHAR_CREATE, 1, "\x2F");
+#else
 	OutPacket(SMSG_CHAR_CREATE, 1, "\x2E");
+#endif
 
 	sLogonCommHandler.UpdateAccountCount(GetAccountId(), 1);
 }
@@ -482,7 +510,11 @@ All further codes give the number in dec.
 void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 {
 	CHECK_PACKET_SIZE(recv_data, 8);
+#ifndef ASCENT_240
 	uint8 fail = 0x3A;
+#else
+	uint8 fail = 0x3B;
+#endif
 
 	uint64 guid;
 	recv_data >> guid;
@@ -490,7 +522,11 @@ void WorldSession::HandleCharDeleteOpcode( WorldPacket & recv_data )
 	if(objmgr.GetPlayer((uint32)guid) != NULL)
 	{
 		// "Char deletion failed"
+#ifndef ASCENT_240
 		fail = 0x3B;
+#else
+		fail = 0x3C;
+#endif
 	} else {
 
 		QueryResult * result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", (uint32)guid, _accountId);
