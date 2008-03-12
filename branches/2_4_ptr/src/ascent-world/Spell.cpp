@@ -2016,7 +2016,8 @@ void Spell::writeSpellGoTargets( WorldPacket * data )
 	for ( i = UniqueTargets.begin(); i != UniqueTargets.end(); i++ )
 	{
 		SendCastSuccess(*i);
-		*data << (*i);
+		FastGUIDPack(*data, *i);
+		//*data << (*i);
 	}
 }
 
