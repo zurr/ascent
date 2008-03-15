@@ -1289,6 +1289,7 @@ void GossipMenu::AddItem(GossipMenuItem* GossipItem)
 void GossipMenu::BuildPacket(WorldPacket& Packet)
 {
 	Packet << CreatureGuid;
+	Packet << uint32(0); // unk 2.4.0
 	Packet << TextId;
 	Packet << uint32(Menu.size());
 
