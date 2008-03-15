@@ -322,7 +322,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 	uint32 t = 0;
 #ifdef ASCENT_240
 	if( m_fullAccountName != NULL )
-		sha.UpdateData( (const uint8*)m_fullAccountName->c_str(), m_fullAccountName->size() );
+		sha.UpdateData( (const uint8*)m_fullAccountName->c_str(), (int)m_fullAccountName->size() );
 	else
 		sha.UpdateData(AccountName);
 #else

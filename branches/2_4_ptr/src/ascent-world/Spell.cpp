@@ -40,6 +40,10 @@ void SpellCastTargets::read( WorldPacket & data,uint64 caster )
 
 	data >> m_targetMask;
 	WoWGuid guid;
+#ifdef ASCENT_240
+	uint16 unk; // 2.4.0
+	data >> unk;
+#endif
 
 	if( m_targetMask == TARGET_FLAG_SELF )
 	{
