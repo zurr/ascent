@@ -1973,7 +1973,7 @@ void Spell::SendSpellGo()
 	if( flags & 0x400 )
 		writeSpellMissedTargets( &data );
 	else
-		data << uint8( 0 );
+		data << uint8(0);
 
 	m_targets.write( data ); // this write is included the target flag
 
@@ -2004,8 +2004,7 @@ void Spell::SendSpellGo()
 		if( ip != NULL)
 			data << ip->DisplayInfoID << ip->InventoryType;
 	}
-   
-	data << uint8(0);
+
 	m_caster->SendMessageToSet( &data, true );
 
 	// spell log execute is still send 2.08
@@ -2020,8 +2019,8 @@ void Spell::writeSpellGoTargets( WorldPacket * data )
 	for ( i = UniqueTargets.begin(); i != UniqueTargets.end(); i++ )
 	{
 		SendCastSuccess(*i);
-		FastGUIDPack(*data, *i);
-		//*data << (*i);
+		//FastGUIDPack(*data, *i);
+		*data << (*i);
 	}
 }
 
